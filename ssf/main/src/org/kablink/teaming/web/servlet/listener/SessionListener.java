@@ -36,8 +36,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.asmodule.bridge.BridgeUtil;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
@@ -49,17 +47,10 @@ import org.kablink.teaming.web.util.Tabs;
 
 public class SessionListener implements HttpSessionListener {
 
-	private static Log logger = LogFactory.getLog(SessionListener.class);
-	
 	public void sessionCreated(HttpSessionEvent se) {
-		if(logger.isDebugEnabled())
-			logger.debug("Creating session: " + se.getSession().getId());
 	}
 
 	public void sessionDestroyed(HttpSessionEvent se) {
-		if(logger.isDebugEnabled())
-			logger.debug("Destroying session: " + se.getSession().getId());
-
 		// This listener is invoked in the same thread executing portal-side code
 		// as side effect of the portal session being invalidated. Consequently,
 		// the context class loader is that of the portal web application, which is

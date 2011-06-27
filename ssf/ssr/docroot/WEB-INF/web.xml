@@ -44,10 +44,6 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-    <listener>
-     	<listener-class>org.kablink.teaming.ssr.web.servlet.listener.SessionListener</listener-class>
-    </listener>
-
 	<servlet>
 		<servlet-name>AxisServlet</servlet-name>
 		<servlet-class>org.kablink.teaming.asmodule.servlet.SSFClassLoaderServlet</servlet-class>

@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -45,15 +44,16 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -64,9 +64,9 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -85,7 +85,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author nbjensen
  *
  */
-public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
+public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePreviewHandler{
 
 	private String binderId;
 	private Grid grid;
@@ -98,19 +98,15 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	private Label statusLabel;
 	
 	private String userName;
+	private ActionHandler actionHandler;
 	private Image avatar;
 	private Anchor miniBlogA;
 	private ProfileActionWidget instantMessageBtn;
 	@SuppressWarnings("unused")
 	private Element clientElement;
 	private FlowPanel pictureDiv;
-
-	/*
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
-	 */
-	private GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
+	
+	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
 			int pos2, String binderId, String userName, Element element) {
 		super(autoHide, modal, pos, pos2);
 
@@ -541,8 +537,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					}
 					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.OTHER );
 					
-					//Fire Teaming action to notify that a selection has changed
-					GwtTeaming.fireEvent(new TeamingActionEvent(TeamingAction.SELECTION_CHANGED, osbInfo ));
+					actionHandler.handleAction(TeamingAction.SELECTION_CHANGED, osbInfo );
 					
 					hide();
 				}// end onSuccess()
@@ -550,6 +545,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		}
 	}
 
+	public void addActionHandler(ActionHandler actionHandler) {
+		this.actionHandler = actionHandler;
+	}
+	
 	/**
 	 * Checks to see if the current User is following this person
 	 * @return
@@ -864,49 +863,4 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		}
 	}
 
-	/**
-	 * Callback interface to interact with the quick view dialog
-	 * asynchronously after it loads. 
-	 */
-	public interface GwtQuickViewDlgClient {
-		void onSuccess(GwtQuickViewDlg qvd);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the GwtQuickViewDlg split point and returns an
-	 * instance of it via the callback.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param pos
-	 * @param pos2
-	 * @param binderId
-	 * @param userName
-	 * @param element
-	 * @param qvdClient
-	 */
-	public static void createAsync(
-			final boolean autoHide,
-			final boolean modal,
-			final int pos,
-			final int pos2,
-			final String binderId,
-			final String userName,
-			final Element element,
-			final GwtQuickViewDlgClient qvdClient) {
-		GWT.runAsync(GwtQuickViewDlg.class, new RunAsyncCallback() {			
-			@Override
-			public void onSuccess() {
-				GwtQuickViewDlg qvd = new GwtQuickViewDlg(autoHide, modal, pos, pos2, binderId, userName, element);
-				qvdClient.onSuccess(qvd);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_QuickViewDlg());
-				qvdClient.onUnavailable();
-			}
-		});
-	}
 }

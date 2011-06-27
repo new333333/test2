@@ -92,18 +92,10 @@
 				</td>
 			</tr>
 		</table>
-		
-		<c:if test="${ss_fileQuotaWouldBeExceeded}">
-		  <div class="ss_bold" style="padding:16px;">
-		    <ssf:nlt tag="file.quotaWouldBeExceeded"/>
-		  </div>
-		</c:if>
 	</div>
 
 	<div class="teamingDlgBoxFooter">
-	  <c:if test="${!ss_fileQuotaWouldBeExceeded}">
 		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
-	  </c:if>
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>"
 			onClick="ss_cancelButtonCloseWindow();return false;"/>
 	</div>		

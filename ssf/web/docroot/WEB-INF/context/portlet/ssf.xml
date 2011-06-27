@@ -58,7 +58,6 @@
 	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LicenseReportController" />
 	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageLicenseController" />
 	<bean id="manageBinderQuotaController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ManageBinderQuotaController" />
-	<bean id="manageVersionControlsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ManageVersionControlsController" />
 	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
 	<bean id="activityReportByUserController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportByUserController" />
 	<bean id="userAccessReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.UserAccessReportController" />
@@ -196,7 +195,6 @@
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
 						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
 						<entry key="manage_binder_quota"><ref bean="manageBinderQuotaController"/></entry>
-						<entry key="manage_version_controls"><ref bean="manageVersionControlsController"/></entry>
 						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
 						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>

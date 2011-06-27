@@ -44,7 +44,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
@@ -119,13 +118,7 @@ public class EntryVersionController extends  SAbstractController {
 									}
 								}
 								if (fileVer != null) {
-									try {
-										getFileModule().revertFileVersion(entity, fileVer);
-									} catch(DataQuotaException e) {
-							    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
-							    		response.setRenderParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
-							    		return;
-									}
+									getFileModule().revertFileVersion(entity, fileVer);
 								}
 							}
 						}

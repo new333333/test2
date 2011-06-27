@@ -107,7 +107,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
@@ -119,9 +118,9 @@ import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -2229,39 +2228,41 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Returns a TreeInfo containing the display information for the
-	 * Binder hierarchy referred to by a BucketInfo
+	 * Binder hierarchy referred to by a List<Long> of Binder IDs
+	 * (i.e., a bucket list.)
 	 * 
 	 * The information returned is typically used for driving a
 	 * horizontal WorkspaceTreeControl widget.
 	 * 
 	 * @param ri
-	 * @param bucketInfo
+	 * @param bucketList
 	 * 
 	 * @return
 	 */
-	public TreeInfo expandHorizontalBucket( HttpRequestInfo ri, BucketInfo bucketInfo )
+	public TreeInfo expandHorizontalBucket( HttpRequestInfo ri, List<Long> bucketList )
 	{
 		// Expand the bucket list without regard to persistent Binder
 		// expansions.
-		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketInfo, null );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketList, null );
 	}//end expandHorizontalBucket()
 	
 	/**
 	 * Returns a TreeInfo containing the display information for the
-	 * Binder hierarchy referred to by a BucketInfo.
+	 * Binder hierarchy referred to by a List<Long> of Binder IDs
+	 * (i.e., a bucket list.)
 	 * 
 	 * The information returned is typically used for driving a
 	 * vertical WorkspaceTreeControl widget.
 	 * 
 	 * @param ri
-	 * @param bucketInfo
+	 * @param bucketList
 	 * 
 	 * @return
 	 */
-	public TreeInfo expandVerticalBucket( HttpRequestInfo ri, BucketInfo bucketInfo ) {
+	public TreeInfo expandVerticalBucket( HttpRequestInfo ri, List<Long> bucketList ) {
 		// Expand the bucket list taking any persistent Binder
 		// expansions into account.
-		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketInfo, new ArrayList<Long>() );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketList, new ArrayList<Long>() );
 	}
 
 	/**

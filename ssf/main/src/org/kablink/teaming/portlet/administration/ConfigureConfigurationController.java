@@ -535,6 +535,17 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url, qualifiersBlock);
 
+		//Quota
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_BINDER_QUOTA);
+		url.setParameter(WebKeys.URL_BINDER_ID, configId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
+		if (config.getEntityType().equals(EntityType.folder)) {
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.manage_folder_quota"), url, qualifiersBlock);
+		} else {
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.manage_workspace_quota"), url, qualifiersBlock);
+		}
+
 		if (manager) {
 			//Modify target
 			url = response.createActionURL();

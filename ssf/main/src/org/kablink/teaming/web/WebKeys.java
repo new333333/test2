@@ -340,7 +340,6 @@ public class WebKeys {
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
 	public static final String ACTION_MANAGE_BINDER_QUOTA="manage_binder_quota";
-	public static final String ACTION_MANAGE_VERSION_CONTROLS="manage_version_controls";
 	public static final String ACTION_EXPORT_IMPORT="export_import";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
@@ -723,13 +722,6 @@ public class WebKeys {
 	public static final String BINDER_PATH_NAME="binderPathName";
 	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
-	public static final String BINDER_FILE_ENCRYPTION_ENABLED = "ss_binder_file_encryption_enabled";
-	public static final String BINDER_VERSIONS_INHERITED = "ss_binder_versions_inherited";
-	public static final String BINDER_VERSIONS_ENABLED = "ss_binder_versions_enabled";
-	public static final String BINDER_VERSIONS_ENABLED_INHERITED = "ss_binder_versions_enabled_inherited";
-	public static final String BINDER_VERSIONS_TO_KEEP = "ss_binder_versions_to_keep";
-	public static final String BINDER_VERSIONS_MAX_FILE_SIZE = "ss_binder_versions_max_file_size";
-	public static final String BINDER_VERSIONS_MAX_AGE = "ss_binder_versions_max_age";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String BLOG_PAGES="ssBlogPages"; 
 	public static final String BLOG_SET_BINDER="ssBlogSetBinder"; 
@@ -908,7 +900,6 @@ public class WebKeys {
 	public static final String FIELD_MODIFICATIONS_ALLOWED = "ss_fieldModificationsAllowed";
     public static final String FILE_ATTACHMENT = "ss_fileAttachment";
     public static final String FILE_HANDLE = "ss_fileHandle";
-    public static final String FILE_QUOTA_WOULD_BE_EXCEEDED = "ss_fileQuotaWouldBeExceeded";
     public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
@@ -1562,7 +1553,6 @@ public class WebKeys {
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
     public static final String VIEW_MANAGE_BINDER_QUOTA="binder/manage_binder_quota";
-    public static final String VIEW_MANAGE_BINDER_VERSION_CONTROLS="binder/manage_binder_version_controls";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";

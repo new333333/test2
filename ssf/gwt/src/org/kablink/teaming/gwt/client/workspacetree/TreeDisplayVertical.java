@@ -38,18 +38,15 @@ import java.util.Iterator;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
-import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -137,7 +134,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Asynchronously collapses the current row.
 		 */
 		private void doCollapseRowAsync() {
-			ScheduledCommand collapser = new ScheduledCommand() {
+			Scheduler.ScheduledCommand collapser;
+			collapser = new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					doCollapseRowNow();
@@ -162,7 +160,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Asynchronously expands the current row.
 		 */
 		private void doExpandRowAsync(final TreeInfo expandedTI) {
-			ScheduledCommand expander = new ScheduledCommand() {
+			Scheduler.ScheduledCommand expander;
+			expander = new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					doExpandRowNow(expandedTI);
@@ -227,7 +226,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
-					rpcService.expandVerticalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketInfo(), new AsyncCallback<TreeInfo>() {
+					rpcService.expandVerticalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -504,7 +503,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * sidebar.
 	 */
 	private void enterActivityStreamModeAsync(final TreeInfo asRootTI, final ActivityStreamInfo defaultASI) {
-		ScheduledCommand asLoader = new ScheduledCommand() {
+		Scheduler.ScheduledCommand asLoader;
+		asLoader = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				enterActivityStreamModeNow(asRootTI, defaultASI);
@@ -648,10 +648,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (ti.isBucket()) {
 			// Yes!  Generate an appendage based on the range of names
 			// the bucket spans.
-			BucketInfo bi = ti.getBucketInfo();
-			StringBuffer sb = new StringBuffer(String.valueOf(bi.getBucketTuple1()));
+			StringBuffer sb = new StringBuffer(String.valueOf(ti.getBucketList().get(0)));
 			sb.append("_");
-			sb.append(bi.getBucketTuple2());
+			sb.append(ti.getBucketList().get(ti.getBucketList().size() - 1));
 			reply = sb.toString();
 		}
 
@@ -1082,7 +1081,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * and optionally selects a binder.
 	 */
 	private void reRootTreeAsync(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode, final TreeInfo rootTI) {
-		ScheduledCommand treeRooter = new ScheduledCommand() {
+		Scheduler.ScheduledCommand treeRooter;
+		treeRooter = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				reRootTreeNow(
@@ -1240,7 +1240,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Asynchronously selects a binder and/or re-roots the tree.
 	 */
 	private void selectRootWorkspaceIdAsync(final String binderId, final boolean forceReload, final TreeInfo targetTI, final String rootWorkspaceId) {
-		ScheduledCommand rootWSSelector = new ScheduledCommand() {
+		Scheduler.ScheduledCommand rootWSSelector;
+		rootWSSelector = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				selectRootWorkspaceIdNow(binderId, forceReload, targetTI, rootWorkspaceId);

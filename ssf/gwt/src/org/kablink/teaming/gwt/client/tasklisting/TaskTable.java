@@ -61,7 +61,6 @@ import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -1653,7 +1652,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 		persistLinkageChangeAsync(
 			task,
-			new ScheduledCommand() {
+			new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					updateCalculatedDatesNow(
@@ -1669,7 +1668,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * the change into affect.
 	 */
 	private void handleTaskPostRemoveAsync(final List<TaskId> taskIds) {
-		ScheduledCommand postRemover = new ScheduledCommand() {
+		Scheduler.ScheduledCommand postRemover;
+		postRemover = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				handleTaskPostRemoveNow(taskIds);
@@ -1700,7 +1700,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// TaskTable.
 		persistLinkageChangeNow(
 			null,	// null  -> No task.  We don't need one when not updating the calculated dates.
-			new ScheduledCommand() {
+			new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					// Refreshing the TaskTable will reread the tasks
@@ -1927,8 +1927,9 @@ public class TaskTable extends Composite implements ActionHandler {
 			// Do we have a new status value to put into affect?
 			if (null != newStatus) {
 				// Yes!  Apply it.
+				Scheduler.ScheduledCommand statusUpdater;
 				final String finalNewStatus = newStatus;
-				ScheduledCommand statusUpdater = new ScheduledCommand() {
+				statusUpdater = new Scheduler.ScheduledCommand() {
 					@Override
 					public void execute() {
 						handleTaskSetStatus(task, finalNewStatus);
@@ -2191,8 +2192,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
-	private void persistLinkageChangeAsync(final TaskListItem task, final ScheduledCommand postChangeCommand) {
-		ScheduledCommand persistor = new ScheduledCommand() {
+	private void persistLinkageChangeAsync(final TaskListItem task, final Scheduler.ScheduledCommand postChangeCommand) {
+		Scheduler.ScheduledCommand persistor;
+		persistor = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				persistLinkageChangeNow(task, postChangeCommand);
@@ -2201,7 +2203,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		Scheduler.get().scheduleDeferred(persistor);
 	}
 	
-	private void persistLinkageChangeNow(final TaskListItem task, final ScheduledCommand postChangeCommand) {
+	private void persistLinkageChangeNow(final TaskListItem task, final Scheduler.ScheduledCommand postChangeCommand) {
 		// If we're not in a state were link changes can be saved...
 		if (!(canPersistLinkage())) {
 			// ...bail.
@@ -2261,7 +2263,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * new task.
 	 */
 	private void promptForDispositionAsync(final Long newTaskId, final Long selectedTaskId) {
-		ScheduledCommand promptor = new ScheduledCommand() {
+		Scheduler.ScheduledCommand promptor;
+		promptor = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				promptForDispositionNow(newTaskId, selectedTaskId);
@@ -2292,7 +2295,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
 	private void refreshTaskTableAsync(final boolean preserveChecks, final boolean persistLinkage) {
-		ScheduledCommand refresher = new ScheduledCommand() {
+		Scheduler.ScheduledCommand refresher;
+		refresher = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				refreshTaskTableNow(preserveChecks, persistLinkage);
@@ -2984,7 +2988,8 @@ public class TaskTable extends Composite implements ActionHandler {
 				m_messages.taskProcess_unSelectAll()),
 			0);
 		
-		ScheduledCommand selector = new ScheduledCommand() {
+		Scheduler.ScheduledCommand selector;
+		selector = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				selectAllTasksNow(pa, select);
@@ -3245,7 +3250,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	private void updateCalculatedDatesAsync(final ProcessActive pa, final Long binderId, final Long entryId) {
-		ScheduledCommand updater = new ScheduledCommand() {
+		Scheduler.ScheduledCommand updater;
+		updater = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				updateCalculatedDatesNow(pa, binderId, entryId);
@@ -3259,7 +3265,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * in the TaskListing.
 	 */
 	private void validateTaskToolsAsync() {
-		ScheduledCommand validator = new ScheduledCommand() {
+		Scheduler.ScheduledCommand validator;
+		validator = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				validateTaskToolsNow();

@@ -36,67 +36,54 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
-import org.kablink.teaming.gwt.client.event.TeamingActionEventHandler;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
-import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
-import org.kablink.teaming.gwt.client.widgets.AdminControl.AdminControlClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
-import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
-import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
-import org.kablink.teaming.gwt.client.widgets.LoginDlg.LoginDlgClient;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
-import org.kablink.teaming.gwt.client.widgets.MainMenuControl.MainMenuControlClient;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
-import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
-import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.web.bindery.event.shared.Event;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
-	implements ActionHandler, ResizeHandler, TeamingActionEventHandler
+	implements ActionHandler, ResizeHandler
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
@@ -124,186 +111,15 @@ public class GwtMainPage extends Composite
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
-	private HandlerRegistration handlerRegistration;
 	
-	/*
-	 * Class constructor.
-	 *  
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	/**
+	 * Class constructor. 
 	 */
-	private GwtMainPage()
-	{
-		constructMainPage_Start();
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( m_teamingRootPanel );
-	}
-	
-	/*
-	 * Various control loaders used to load the split points containing
-	 * the code for the controls in the main page.
-	 * 
-	 * Loads the split point for the MainMenuControl and instantiates
-	 * an object from it.
-	 */
-	private void loadMainMenuControl()
-	{
-		MainMenuControl.createAsync( this, new MainMenuControlClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( MainMenuControl mainMenuCtrl )
-			{
-				m_mainMenuCtrl = mainMenuCtrl;				
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						loadWorkspaceTreeControl();
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
-			}// end onSuccess()
-		} );
-	}// end loadMainMenuControl()
-
-	/*
-	 * Loads the split point for the WorkspaceTreeControl and
-	 * instantiates an object from it.
-	 */
-	private void loadWorkspaceTreeControl()
-	{
-		WorkspaceTreeControl.createAsync( this, m_selectedBinderId, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
-			{
-				m_wsTreeCtrl = wsTreeCtrl;				
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						loadContentControl();
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
-			}// end onSuccess()
-		} );
-	}// end loadWorkspaceTreeControl()
-
-	/*
-	 * Loads the split point for the ContentControl and instantiates an
-	 * object from it.
-	 */
-	private void loadContentControl()
-	{
-		ContentControl.createAsync( "gwtContentIframe", new ContentControlClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( ContentControl contentCtrl )
-			{
-				m_contentCtrl = contentCtrl;				
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						ActivityStreamCtrl();
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
-			}// end onSuccess()
-		} );
-	}// end loadContentControl()
-
-	/*
-	 * Loads the split point for the ActivityStreamCtrl and
-	 * instantiates an object from it.
-	 */
-	private void ActivityStreamCtrl()
-	{
-		ActivityStreamCtrl.createAsync( this, new ActivityStreamCtrlClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( ActivityStreamCtrl asCtrl )
-			{
-				m_activityStreamCtrl = asCtrl;
-				constructMainPage_Finish();
-			}// end onSuccess()
-		} );
-	}// end ActivityStreamCtrl()
-	
-	/*
-	 * Starts the initializations of the main page.
-	 */
-	private void constructMainPage_Start()
-	{
-		// Get information about the request we are dealing with.
-		m_requestInfo = getRequestInfo();
-		m_selectedBinderId = m_requestInfo.getBinderId();
-		if ( ! ( GwtClientHelper.hasString( m_selectedBinderId ) ) )
-		{
-			m_selectedBinderId = m_requestInfo.getCurrentUserWorkspaceId();
-			if ( ! ( GwtClientHelper.hasString( m_selectedBinderId ) ) )
-			{
-				m_selectedBinderId = m_requestInfo.getTopWSId();
-			}
-		}
-		m_novellTeaming = m_requestInfo.isNovellTeaming();
-		
-		m_teamingRootPanel = new FlowPanel();
-		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
-
-		ScheduledCommand loadControls = new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				loadMainMenuControl();
-			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( loadControls );		
-	}// end constructMainPage_Start();
-	
-	/*
-	 * Finishes the initialization of the main page.
-	 */
-	private void constructMainPage_Finish()
+	public GwtMainPage()
 	{
 		Element bodyElement;
 		String url;
 
-		// Initialize the eventBus Handlers
-		updateEventBusHandlers(true);
-		
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
@@ -322,9 +138,9 @@ public class GwtMainPage extends Composite
 		// administration content panel.
 		initCloseAdministrationContentPanelJS( this );
 		
-		// Initialize the native JavaScript to allow any content to fire an event on the main event bus for the application
-		// See GwtClientHelper:jsFireEvent
-		initFireEventOnEventBusJS( this );
+		// Initialize ReguestActionHandler as native JavaScript to allow any content to register
+		//as an ActionRequestor - See GwtClientHelper:jsRegisterActionHandler
+		initRequestActionHandler( this );
 		
 		// Initialize JavaScript to perform Popup for User Profile
 		initSimpleUserProfileJS( this );
@@ -343,22 +159,40 @@ public class GwtMainPage extends Composite
 		
 		// Create a UIStateManager that we will use to save/restore the ui state.
 		m_uiStateManager = new UIStateManager();
+		m_uiStateManager.addActionHandler( this );
 		
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
 		
+		m_teamingRootPanel = new FlowPanel();
+		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
+
+		// Get information about the request we are dealing with.
+		m_requestInfo = getRequestInfo();
+		m_selectedBinderId = m_requestInfo.getBinderId();
+		if (!(GwtClientHelper.hasString(m_selectedBinderId))) {
+			m_selectedBinderId = m_requestInfo.getCurrentUserWorkspaceId();
+			if (!(GwtClientHelper.hasString(m_selectedBinderId))) {
+				m_selectedBinderId = m_requestInfo.getTopWSId();
+			}
+		}
+		m_novellTeaming = m_requestInfo.isNovellTeaming();
+		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
+		registerActionHandler( m_mastHead );
 		m_teamingRootPanel.add( m_mastHead );
 
 		// Is there an error message to be displayed?
 		final String errMsg = m_requestInfo.getErrMsg();
 		if ( GwtClientHelper.hasString( errMsg ) )
 		{
+			Scheduler.ScheduledCommand cmd;
+
 			// Yes
 			// Execute a deferred command the will display it.
-			ScheduledCommand cmd = new ScheduledCommand()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -367,7 +201,7 @@ public class GwtMainPage extends Composite
 					{
 						// Yes
 						// Take the user to their workspace.
-						handleActionImpl( TeamingAction.MY_WORKSPACE, null );
+						handleAction( TeamingAction.MY_WORKSPACE, null );
 					}
 					
 					// Tell the user.  We do this as a deferred command
@@ -380,6 +214,8 @@ public class GwtMainPage extends Composite
 		}
 		
 		// Add the main menu to the page.
+		m_mainMenuCtrl = new MainMenuControl( this );
+		registerActionHandler( m_mainMenuCtrl );
 		m_teamingRootPanel.add( m_mainMenuCtrl );
 		
 		// Create a panel to hold the WorkspaceTree control and the content control
@@ -387,14 +223,18 @@ public class GwtMainPage extends Composite
 		m_contentPanel.addStyleName( "mainContentPanel" );
 		
 		// Create the WorkspaceTree control.
+		m_wsTreeCtrl = new WorkspaceTreeControl( this, m_selectedBinderId, TreeMode.VERTICAL );
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
+		registerActionHandler( m_wsTreeCtrl );
 		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
+		m_contentCtrl = new ContentControl( "gwtContentIframe" );
 		m_contentCtrl.addStyleName( "mainContentControl" );
 		m_contentPanel.add( m_contentCtrl );
 		
 		// Create an activity stream control.
+		m_activityStreamCtrl = new ActivityStreamCtrl( this );
 		m_activityStreamCtrl.hide();
 		m_contentPanel.add( m_activityStreamCtrl );
 		
@@ -418,13 +258,15 @@ public class GwtMainPage extends Composite
 			// Should we invoke the login dialog?
 			if ( m_requestInfo.promptForLogin() == true )
 			{
+				Scheduler.ScheduledCommand cmd;
+				
 				// Yes
 				// Hide the workspace tree control and the menu bar.
 				m_wsTreeCtrl.setVisible( false );
 				m_mainMenuCtrl.setVisible( false );
 				
 				// invoke the login dialog.
-				ScheduledCommand cmd = new ScheduledCommand()
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					public void execute()
 					{
@@ -435,41 +277,22 @@ public class GwtMainPage extends Composite
 			}
 		}
 				
+		// All composites must call initWidget() in their constructors.
+		initWidget( m_teamingRootPanel );
+
 		// If we're running GroupWise integrations or otherwise require
 		// session captive mode...
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
-			handleActionImpl(TeamingAction.HIDE_MASTHEAD,        Boolean.FALSE);	// false -> Done resize the content now...
-			handleActionImpl(TeamingAction.HIDE_LEFT_NAVIGATION, Boolean.FALSE);	// ...will happen when the frame has loaded.
+			handleAction(TeamingAction.HIDE_MASTHEAD,        Boolean.FALSE);	// false -> Done resize the content now...
+			handleAction(TeamingAction.HIDE_LEFT_NAVIGATION, Boolean.FALSE);	// ...will happen when the frame has loaded.
 			
 			// Have the masthead hide the logout link
 			m_mastHead.hideLogoutLink();
 		}
-	}// end constructMainPage_Finish()
+	}// end GwtMainPage()
 
-	/**
-	 * Add event handlers to the event bus
-	 * 
-	 * @param active - true passing true will add the event Handlers to the event bus
-	 * passing in false will remove the event handlers
-	 */
-	private void updateEventBusHandlers(boolean active) {
-		if(active) {
-			final  com.google.web.bindery.event.shared.HandlerRegistration teamingActionHandler = GwtTeaming.getEventBus().addHandler(TeamingActionEvent.TYPE, this);
-			this.handlerRegistration = new HandlerRegistration() {
-				public void removeHandler() {
-					teamingActionHandler.removeHandler();
-				}
-			};
-		} else {
-			if (handlerRegistration != null ) {
-				handlerRegistration.removeHandler();
-				handlerRegistration = null;
-			}
-		}
-	}
-	
 	/**
 	 * Returns the main menu control.
 	 * 
@@ -580,15 +403,13 @@ public class GwtMainPage extends Composite
 
 	/*
 	 * Called to create a JavaScript method that will allow independent Content pages that are not 
-	 * instantiated in the GWTMainPage to be able fire a event on the EventBus to notify any listeners.
-	 * 
-	 * com.google.web.bindery.event.shared.Event
+	 * instantiated in the GWTMainPage to be able to register as a actionRequestor.
 	 */
-	private native void initFireEventOnEventBusJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_fireEvent = function( event )
+	private native void initRequestActionHandler( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_registerActionHandler = function( actionRequestor )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireEvent(Lcom/google/web/bindery/event/shared/Event;)( event );
-		}//end ss_fireEvent
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::registerActionHandler(Lorg/kablink/teaming/gwt/client/util/ActionRequestor;)( actionRequestor );
+		}//end ss_registerActionHanler
 	}-*/;
 
 	/*
@@ -742,14 +563,14 @@ public class GwtMainPage extends Composite
 	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
-	private void editBranding( GwtBrandingData brandingDataIn )
+	private void editBranding( GwtBrandingData brandingData )
 	{
 		String brandingBinderId;
-		int xCalc;
-		int yCalc;
+		int x;
+		int y;
 		
 		// Will the user be editing the site branding?
-		if ( brandingDataIn.isSiteBranding() == false )
+		if ( brandingData.isSiteBranding() == false )
 		{
 			GwtBrandingData siteBrandingData;
 
@@ -766,26 +587,21 @@ public class GwtMainPage extends Composite
 		
 		// Is the branding data inherited?  Branding is inherited if it came from a binder other than
 		// the binder we are working with.
-		brandingBinderId = brandingDataIn.getBinderId();
-		if ( brandingDataIn.isSiteBranding() == false && brandingBinderId.equalsIgnoreCase( m_mastHead.getBinderId() ) == false )
+		brandingBinderId = brandingData.getBinderId();
+		if ( brandingData.isSiteBranding() == false && brandingBinderId.equalsIgnoreCase( m_mastHead.getBinderId() ) == false )
 		{
 			// Yes, start with empty branding data.
-			brandingDataIn = new GwtBrandingData();
-			brandingDataIn.setBinderId( m_selectedBinderId );
+			brandingData = new GwtBrandingData();
+			brandingData.setBinderId( m_selectedBinderId );
 		}
 		
-		final GwtBrandingData brandingData = brandingDataIn;
-		
 		// Get the position of the content control.
-		xCalc = m_contentCtrl.getAbsoluteLeft();
-		if ( xCalc < 75 )
-			xCalc = 75;
-		yCalc = m_contentCtrl.getAbsoluteTop();
-		if ( yCalc < 75 )
-			yCalc = 75;
-		
-		final int x = xCalc;
-		final int y = yCalc;
+		x = m_contentCtrl.getAbsoluteLeft();
+		if ( x < 75 )
+			x = 75;
+		y = m_contentCtrl.getAbsoluteTop();
+		if ( y < 75 )
+			y = 75;
 		
 		// Create a handler that will be called when the user presses the ok button in the dialog.
 		if ( m_editBrandingSuccessHandler == null )
@@ -876,43 +692,14 @@ public class GwtMainPage extends Composite
 		if ( m_editBrandingDlg == null )
 		{
 			// No, create one.
-			EditBrandingDlg.createAsync(
-					m_editBrandingSuccessHandler,
-					m_editBrandingCancelHandler,
-					false,
-					true,
-					x,
-					y,
-					new EditBrandingDlgClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( EditBrandingDlg ebDlg )
-				{
-					m_editBrandingDlg = ebDlg;
-					editBrandingImpl( brandingData, x, y );
-				}// end onSuccess()
-			} );
+			m_editBrandingDlg = new EditBrandingDlg( m_editBrandingSuccessHandler, m_editBrandingCancelHandler, false, true, x, y );
 		}
 		
-		else
-		{
-			editBrandingImpl( brandingData, x, y );
-		}
-		
-		
-	}// end editBranding()
-	
-	private void editBrandingImpl( GwtBrandingData brandingData, int x, int y ) {
 		m_editBrandingDlg.init( brandingData );
 		m_editBrandingDlg.setPopupPosition( x, y );
 		m_editBrandingDlg.show();
-	}
+		
+	}// end editBranding()
 
 	
 	/**
@@ -1048,7 +835,7 @@ public class GwtMainPage extends Composite
 		if ( ( m_activityStreamCtrl != null ) && m_activityStreamCtrl.isVisible() )
 		{
 			// ...exit out it.
-			handleActionImpl( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+			handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
 		}
 	}// end exitActivityStreamIfActive()	
 
@@ -1060,24 +847,12 @@ public class GwtMainPage extends Composite
 		return $wnd.m_requestInfo;
 	}-*/;
 	
+	
 	/**
 	 * Handle the action that was requested by the user somewhere in the main page.
 	 * For example, the user clicked on "My Workspace" in the masthead.
-	 * 
-	 * Implements ActionHandler.handleActionImpl()
-	 * 
-	 * @param action
-	 * @param obj
 	 */
 	public void handleAction( TeamingAction action, Object obj )
-	{
-		handleAction( this, action, obj );
-	}// end handleAction()
-	
-	/*
-	 * Handles actions requested by the user somewhere.
-	 */
-	private void handleActionImpl( TeamingAction action, Object obj )
 	{
 		switch (action)
 		{
@@ -1085,12 +860,26 @@ public class GwtMainPage extends Composite
 			// Save the current ui state
 			saveUIState();
 			
-			// Hide any popup entry iframe divs...
+			// Hide any popup entry iframe divs.
 			GwtClientHelper.jsHideEntryPopupDiv();
 			
-			// ...and show the admin control.
-			showAdminControl();
+			// Hide everything on the menu, the workspace tree control and the content control.
+			m_mainMenuCtrl.showAdministrationMenubar();
+			m_wsTreeCtrl.setVisible( false );
+			m_contentCtrl.setVisible( false );
+			m_activityStreamCtrl.hide();
 			
+			// Have we already created an AdminControl?
+			if ( m_adminControl == null )
+			{
+				// No, create it.
+				m_adminControl = new AdminControl();
+				registerActionHandler( m_adminControl );
+				m_contentPanel.add( m_adminControl );
+			}
+			
+			m_adminControl.showControl();
+			relayoutPage( false );
 			break;
 		
 		case CHECK_FOR_UPGRADE_TASKS:
@@ -1100,6 +889,8 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case CLOSE_ADMINISTRATION:
+			Scheduler.ScheduledCommand cmd;
+			
 			// Hide the AdminControl.
 			if ( m_adminControl != null )
 				m_adminControl.hideControl();
@@ -1119,7 +910,7 @@ public class GwtMainPage extends Composite
 			m_mainMenuCtrl.hideAdministrationMenubar();
 
 			// Restore the ui state to what it was before we opened the site administration.
-			ScheduledCommand cmd = new ScheduledCommand()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -1176,7 +967,7 @@ public class GwtMainPage extends Composite
 			if ( isAdminActive() )
 			{
 				// ...close it first.
-				handleActionImpl( TeamingAction.CLOSE_ADMINISTRATION, null );
+				handleAction( TeamingAction.CLOSE_ADMINISTRATION, null );
 			}
 			
 			// Change the browser's URL.
@@ -1360,7 +1151,7 @@ public class GwtMainPage extends Composite
 			}
 			else
 			{
-				Window.alert( "In handleActionImpl( INVOKE_SIMPLE_PROFILE, obj ) obj is not a SimpleProfileParams object." );
+				Window.alert( "In handleAction( INVOKE_SIMPLE_PROFILE, obj ) obj is not a SimpleProfileParams object." );
 			}
 			break;
 			
@@ -1371,7 +1162,7 @@ public class GwtMainPage extends Composite
 			}
 			else
 			{
-				Window.alert( "In handleActionImpl( VIEW_FOLDER_ENTRY, obj ) obj is not a String object" );
+				Window.alert( "In handleAction( VIEW_FOLDER_ENTRY, obj ) obj is not a String object" );
 			}
 			break;
 			
@@ -1382,7 +1173,7 @@ public class GwtMainPage extends Composite
 			}
 			else
 			{
-				Window.alert( "In handleActionImpl( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
+				Window.alert( "In handleAction( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
 			}
 			break;
 			
@@ -1410,7 +1201,7 @@ public class GwtMainPage extends Composite
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
 			break;
 		}
-	}// end handleActionImpl()
+	}// end handleAction()
 	
 	
 	/**
@@ -1430,9 +1221,9 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )
-				handleActionImpl( TeamingAction.HIDE_LEFT_NAVIGATION, null );
+				handleAction( TeamingAction.HIDE_LEFT_NAVIGATION, null );
 			else
-				handleActionImpl( TeamingAction.SHOW_LEFT_NAVIGATION, null );
+				handleAction( TeamingAction.SHOW_LEFT_NAVIGATION, null );
 			
 			// Figure out if we should show the masthead.
 			if ( hideMasthead == false || showBranding == true )
@@ -1442,9 +1233,9 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the masthead.
 			if ( showMasthead )
-				handleActionImpl( TeamingAction.SHOW_MASTHEAD, null );
+				handleAction( TeamingAction.SHOW_MASTHEAD, null );
 			else
-				handleActionImpl( TeamingAction.HIDE_MASTHEAD, null );
+				handleAction( TeamingAction.HIDE_MASTHEAD, null );
 		}
 	}// end handleLandingPageOptions()
 	
@@ -1457,7 +1248,7 @@ public class GwtMainPage extends Composite
 		if ( pageName != null && pageName.length() > 0 )
 		{
 			if ( pageName.equalsIgnoreCase( "login-page" ) )
-				handleActionImpl( TeamingAction.LOGIN, null );
+				handleAction( TeamingAction.LOGIN, null );
 			else
 			{
 				Window.alert( "In handlePageWithGWT(), unknown page: " + pageName );
@@ -1481,15 +1272,18 @@ public class GwtMainPage extends Composite
 	 */
 	private void invokeAdminPage()
 	{
-		handleActionImpl( TeamingAction.ADMINISTRATION, null );
+		handleAction( TeamingAction.ADMINISTRATION, null );
 	}
 	
 	
 	/**
 	 * Invoke the "login" dialog.
 	 */
-	private void invokeLoginDlg( final boolean allowCancel )
+	private void invokeLoginDlg( boolean allowCancel )
 	{
+		PopupPanel.PositionCallback posCallback;
+		String loginErr;
+		
 		if ( m_loginDlg == null )
 		{
 			String refererUrl;
@@ -1498,56 +1292,61 @@ public class GwtMainPage extends Composite
 			refererUrl = m_requestInfo.getLoginRefererUrl();
 			
 			// Create the login dialog.
-			LoginDlg.createAsync(
-				false,
-				true,
-				0,
-				0,
-				null,
-				m_requestInfo.getLoginUrl(),
-				refererUrl,
-				new LoginDlgClient()
-				{					
-					@Override
-					public void onUnavailable()
-					{
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}// end onUnavailable()
-					
-					@Override
-					public void onSuccess( LoginDlg dlg )
-					{
-						m_loginDlg = dlg;
-						invokeLoginDlgImpl( allowCancel );
-					}// end onSuccess()
-				} );
+			m_loginDlg = new LoginDlg( false, true, 0, 0, null, m_requestInfo.getLoginUrl(), refererUrl );
 		}
 		
+		// Tell the login dialog if we allow cancel.
+		m_loginDlg.setAllowCancel( allowCancel );
+		
+		// Was there an error from a previous login attempt?
+		// Is there an error from a previous login attempt?
+		loginErr = m_requestInfo.getLoginError();
+		if ( loginErr != null && loginErr.length() > 0 )
+		{
+			// Yes, tell the user the login failed.
+			m_loginDlg.showLoginFailedMsg();
+		}
 		else
 		{
-			invokeLoginDlgImpl( allowCancel );
+			// No, clear the login failed message.
+			m_loginDlg.hideLoginFailedMsg();
 		}
-	}// end invokeLoginDlg()
-	
-	private void invokeLoginDlgImpl( final boolean allowCancel )
-	{
-		String loginErr = m_requestInfo.getLoginError();
-		boolean showLoginFailedMsg = ( loginErr != null && loginErr.length() > 0 );
 		
-		LoginDlg.initAndShow( m_loginDlg, allowCancel, showLoginFailedMsg );
-	}//end involeLoginDlgImpl()
+		m_loginDlg.hideAuthenticatingMsg();
+		
+		// Show the login dialog.
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition(int offsetWidth, int offsetHeight)
+			{
+				int x;
+				int y;
+				
+				x = (Window.getClientWidth() - offsetWidth) / 2;
+				y = (Window.getClientHeight() - offsetHeight) / 3;
+				
+				m_loginDlg.setPopupPosition( x, y );
+			}// end setPosition()
+		};
+		m_loginDlg.setPopupPositionAndShow( posCallback );
+	}// end invokeLoginDlg()
 	
 	
 	/**
 	 * This method is used to invoke the "Tag this" dialog from the old jsp code.
 	 */
-	private void invokeTagDlg( final String entryId, final String entryTitle, com.google.gwt.dom.client.Element tagPanelElement )
+	private void invokeTagDlg( String entryId, String entryTitle, com.google.gwt.dom.client.Element tagPanelElement )
 	{
+		int x;
+		int y;
+		
 		m_tagPanelElement = tagPanelElement;
 		
-		final int x = m_contentCtrl.getAbsoluteLeft() + 500;
-		final int y = m_contentCtrl.getAbsoluteTop() + 25;
+		x = m_contentCtrl.getAbsoluteLeft() + 500;
+		y = m_contentCtrl.getAbsoluteTop() + 25;
 
 		if ( m_tagThisDlg == null )
 		{
@@ -1640,46 +1439,13 @@ public class GwtMainPage extends Composite
 					}
 				};
 			}
-
-			TagThisDlg.createAsync(
-					false,
-					true,
-					m_editTagsSuccessHandler,
-					x,
-					y,
-					GwtTeaming.getMessages().tagThisEntry(),
-					new TagThisDlgClient() {						
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( TagThisDlg dlg )
-				{
-					m_tagThisDlg = dlg;
-					invokeTagDlgImpl( entryId, entryTitle, x, y );
-				}// end onSuccess()
-			} );
+			
+			m_tagThisDlg = new TagThisDlg( false, true, m_editTagsSuccessHandler, x, y, GwtTeaming.getMessages().tagThisEntry() );
 		}
 		
-		else
-		{
-			invokeTagDlgImpl( entryId, entryTitle, x, y );
-		}		
-	}// end invokeTagDlg()
-	
-	private void invokeTagDlgImpl( String entryId, String entryTitle, int x, int y )
-	{
-		TagThisDlg.initAndShow(
-			m_tagThisDlg,
-			entryId,
-			entryTitle,
-			x,
-			y );
-	}// end invokeTagDlgImpl()
+		m_tagThisDlg.init( entryId, entryTitle );
+		m_tagThisDlg.showDlg( true, x, y );
+	}
 	
 	
 	/*
@@ -1804,7 +1570,7 @@ public class GwtMainPage extends Composite
 	 * 
 	 * Implements the BROWSE_HIERARCHY teaming action.
 	 */
-	private void runBreadCrumbBrowser( final Object obj )
+	private void runBreadCrumbBrowser( Object obj )
 	{
 		// If we're already running a bread crumb browser...
 		if (( m_breadCrumbBrowser != null ) && m_breadCrumbBrowser.isShowing() )
@@ -1816,42 +1582,26 @@ public class GwtMainPage extends Composite
 		
 		if ( obj instanceof OnBrowseHierarchyInfo )
 		{
-			WorkspaceTreeControl.createAsync(
-					this,
-					m_selectedBinderId,
-					TreeMode.HORIZONTAL,
-					new WorkspaceTreeControlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
-				{
-					OnBrowseHierarchyInfo bhi;
-					WorkspaceTreeControl breadCrumbTree;
-					
-					// A WorkspaceTreeControl in horizontal mode serves as the
-					// bread crumb browser.  Create one...
-					breadCrumbTree = wsTreeCtrl;
-					breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
-					m_breadCrumbBrowser = new TeamingPopupPanel(true);
-					GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
-					GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
-					m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
-					m_breadCrumbBrowser.setWidget( breadCrumbTree );
-					
-					// ...position it as per the browse hierarchy request...
-					bhi = ((OnBrowseHierarchyInfo) obj);
-					m_breadCrumbBrowser.setPopupPosition(bhi.getLeft(), bhi.getTop());
+			OnBrowseHierarchyInfo bhi;
+			WorkspaceTreeControl breadCrumbTree;
+			
+			// A WorkspaceTreeControl in horizontal mode serves as the
+			// bread crumb browser.  Create one...
+			breadCrumbTree = new WorkspaceTreeControl( this, m_selectedBinderId, TreeMode.HORIZONTAL );
+			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
+			registerActionHandler( breadCrumbTree );
+			m_breadCrumbBrowser = new TeamingPopupPanel(true);
+			GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
+			GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
+			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
+			m_breadCrumbBrowser.setWidget( breadCrumbTree );
+			
+			// ...position it as per the browse hierarchy request...
+			bhi = ((OnBrowseHierarchyInfo) obj);
+			m_breadCrumbBrowser.setPopupPosition(bhi.getLeft(), bhi.getTop());
 
-					// ...and play the opening effect.
-					m_breadCrumbBrowser.show();
-				}// end onSuccess()
-			} );
+			// ...and play the opening effect.
+			m_breadCrumbBrowser.show();
 		}
 		else
 			Window.alert( "in runBreadCrumbBrowser() and obj is not an OnBrowseHierarchyInfo object" );
@@ -2319,7 +2069,9 @@ public class GwtMainPage extends Composite
 		}
 		else
 		{
-			ScheduledCommand cmd = new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -2344,6 +2096,18 @@ public class GwtMainPage extends Composite
 		m_contentCtrl.reload();
 	}// end reloadContentPanel()
 	
+	
+	/*
+	 * Does what's necessary to wire the GwtMainPage to an
+	 * ActionRequestor.
+	 */
+	private void registerActionHandler( ActionRequestor actionRequestor )
+	{
+		// For now, all we need to do is add the GwtMainPage as an
+		// ActionHandler to the ActionRequestor.
+		actionRequestor.addActionHandler( this );
+	}// end registerActionHandler()
+	
 	/**
 	 * Restore the previous ui state.
 	 */
@@ -2351,6 +2115,7 @@ public class GwtMainPage extends Composite
 	{
 		m_uiStateManager.restoreUIState();
 	}
+	
 	
 	/*
 	 * Invoke the Simple Profile Dialog
@@ -2362,41 +2127,26 @@ public class GwtMainPage extends Composite
 			return;
 		}
 		
-		GwtQuickViewDlg.createAsync(
-				false,
-				true,
-				0,
-				0,
-				binderId,
-				userName,
-				element,
-				new GwtQuickViewDlgClient() {			
-			@Override
-			public void onUnavailable()
+		final GwtQuickViewDlg dlg;
+		PopupPanel.PositionCallback posCallback;
+		
+		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName, element);
+		this.registerActionHandler(dlg);
+		
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			public void setPosition(int offsetWidth, int offsetHeight)
 			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( final GwtQuickViewDlg qvd )
-			{
-				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
-				{
-					public void setPosition(int offsetWidth, int offsetHeight)
-					{
-						int x;
-						int y;
-						
-						x = (Window.getClientWidth() - offsetWidth) / 2;
-						y = (Window.getClientHeight() - offsetHeight) / 3;
-						
-						qvd.setPopupPosition( x, y );
-					}// end setPosition()
-				};
-				qvd.setPopupPositionAndShow( posCallback );
-			}// end onSuccess()
-		} );
+				int x;
+				int y;
+				
+				x = (Window.getClientWidth() - offsetWidth) / 2;
+				y = (Window.getClientHeight() - offsetHeight) / 3;
+				
+				dlg.setPopupPosition( x, y );
+			}// end setPosition()
+		};
+		dlg.setPopupPositionAndShow( posCallback );
 	}
 
 	/*
@@ -2440,319 +2190,4 @@ public class GwtMainPage extends Composite
 	{
 		return ( ( null != m_adminControl ) && m_adminControl.isVisible() );
 	}// end isAdminActive()
-
-	private void showAdminControl()
-	{
-		// If we've already load the admin control...
-		if ( null != m_adminControl ) {
-			// ...simply show it.
-			showAdminControlImpl();
-		}
-		
-		else
-		{
-			// ...otherwise, we load its split point...
-			AdminControl.createAsync(
-					new AdminControlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( AdminControl adminCtrl )
-				{
-					m_adminControl = adminCtrl;
-					m_contentPanel.add( m_adminControl );
-					
-					ScheduledCommand showAdminControl = new ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							// ...and then show it.
-							showAdminControlImpl();
-						}// end execute()
-					};
-					Scheduler.get().scheduleDeferred( showAdminControl );
-				}// end onSuccess()
-			} );
-		}
-	}// end showAdminControl()
-	
-	private void showAdminControlImpl()
-	{
-		// Hide everything on the menu, the workspace tree control and the content control.
-		m_mainMenuCtrl.showAdministrationMenubar();
-		m_wsTreeCtrl.setVisible( false );
-		m_contentCtrl.setVisible( false );
-		m_activityStreamCtrl.hide();
-		
-		m_adminControl.showControl();
-		relayoutPage( false );
-	}// end showAdminControlImpl()
-	
-	@Override
-	public void onTeamingAction(TeamingActionEvent event) {
-		if(event != null) {
-			TeamingAction action = event.getAction();
-			Object obj = event.getSource();
-			
-			//call the old action handler
-			handleActionImpl(action, obj);
-		}
-	}
-	
-	public void fireEvent(Event<?> event) {
-		GwtTeaming.fireEvent(event);
-	}
-
-	public void resetMenuContext() {
-		m_mainMenuCtrl.resetContext();
-	}
-	
-	public void setMenuContext(String selectedBinderId, boolean inSearch, String searchTabId) {
-		m_mainMenuCtrl.setContext(selectedBinderId, inSearch, searchTabId);
-	}
-	
-	/**
-	 * Callback interface to interact with the main page asynchronously
-	 * after it loads. 
-	 */
-	public interface GwtMainPageClient {
-		void onSuccess(GwtMainPage mainPage);
-		void onUnavailable();
-	}
-
-	/*
-	 * Asynchronously loads the GwtMainPage and performs some
-	 * operation against the code.
-	 */
-	private static void doAsyncOperation(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final GwtMainPageClient mainPageClient,
-		final boolean prefetch,
-		
-		// Creation parameters (there aren't any.)
-		
-		// Teaming action parameters.
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
-	{		
-		loadControl1(
-			// Prefetch parameters.
-			mainPageClient,
-			prefetch,
-				
-			// Creation parameters (there aren't any.)
-				
-			// Teaming action parameters.
-			mainPage,
-			action,
-			actionParam );
-	}// end doAsyncOperation()
-	
-	/*
-	 * Various control loaders used to load the split points containing
-	 * the code for the controls by the GwtMainPage.
-	 * 
-	 * Loads the split point for the GwtMainPage.
-	 */
-	private static void loadControl1(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final GwtMainPageClient mainPageClient,
-		final boolean prefetch,
-		
-		// Creation parameters (there aren't any.)
-		
-		// Teaming action parameters.
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
-	{		
-		GWT.runAsync( GwtMainPage.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess()
-			{
-				initMainPage_Finish(
-					// Prefetch parameters.
-					mainPageClient,
-					prefetch,
-						
-					// Creation parameters (there aren't any.)
-						
-					// Teaming action parameters.
-					mainPage,
-					action,
-					actionParam );
-			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainPage() );
-				mainPageClient.onUnavailable();
-			}// end onFailure()
-		} );
-	}// end doAsyncOperation()
-		
-	/*
-	 * Finishes the initialization of the GwtMainPage object.
-	 */
-	private static void initMainPage_Finish(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final GwtMainPageClient mainPageClient,
-		final boolean prefetch,
-		
-		// Creation parameters (there aren't any.)
-		
-		// Teaming action parameters.
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
-	{		
-		if (prefetch)
-		{
-			mainPageClient.onSuccess( null );
-		}
-		
-		else if ( null == mainPage )
-		{
-			GwtMainPage newMainPage = new GwtMainPage();
-			mainPageClient.onSuccess( newMainPage );
-		}
-		
-		else
-		{
-			mainPage.handleActionImpl( action, actionParam );
-			mainPageClient.onSuccess( mainPage );
-		}
-	}// end initMainPage_Finish()
-			
-	/**
-	 * Loads the GwtMainPage split point and returns an instance of it
-	 * via the callback.
-	 * 
-	 * @param mainPageClient
-	 */
-	public static void createAsync( final GwtMainPageClient mainPageClient )
-	{
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.  
-			mainPageClient,
-			false,
-			
-			// Creation parameters (there aren't any.)
-			
-			// Teaming action parameters ignored.
-			null,
-			null,
-			null );
-	}// end createAsync()	
-
-	/**
-	 * Handle the action that was requested by the user somewhere in
-	 * the main page.  For example, the user clicked on "My Workspace"
-	 * in the masthead.
-	 * 
-	 * @param mainPageClient
-	 * @param mainPage
-	 * @param action
-	 * @param actionParam
-	 */
-	public static void handleAction(
-		GwtMainPageClient mainPageClient,
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
-	{
-		if ( null == mainPageClient )
-		{
-			mainPageClient = new GwtMainPageClient()
-			{				
-				@Override
-				public void onUnavailable()
-				{
-					// Unused.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( GwtMainPage mainPage )
-				{
-					// Unused.
-				}// end onSuccess()
-			};
-		}
-		
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.  
-			mainPageClient,
-			false,
-			
-			// Creation parameters (there aren't any.)
-			
-			// Teaming action parameters.
-			mainPage,
-			action,
-			actionParam);
-	}// end handleAction()
-
-	public static void handleAction(
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
-	{
-		// Always use the initial form of the method.
-		handleAction( null, mainPage, action, actionParam );
-	}// end handleAction()
-	
-	/**
-	 * Causes the split point for the GwtMainPage to be fetched.
-	 * 
-	 * @param mainPageClient
-	 */
-	public static void prefetch ( GwtMainPageClient mainPageClient )
-	{
-		// If we weren't given a GwtMainPageClient...
-		if ( null == mainPageClient )
-		{
-			// ...create one we can use.
-			mainPageClient = new GwtMainPageClient()
-			{				
-				@Override
-				public void onUnavailable()
-				{
-					// Unused.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( GwtMainPage mainPage )
-				{
-					// Unused.
-				}// end onSuccess()
-			};
-		}
-		
-		doAsyncOperation(
-			// Prefetch parameters.  true -> Prefetch only.  
-			mainPageClient,
-			true,
-			
-			// Creation parameters (there aren't any.)
-			
-			// Teaming action parameters ignored.
-			null,
-			null,
-			null );
-	}// end prefetch()
-	
-	public static void prefetch()
-	{
-		// Always use the initial form of the method.
-		prefetch(null);
-	}// end prefetch()
 }// end GwtMainPage

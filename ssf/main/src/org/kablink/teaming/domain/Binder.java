@@ -95,12 +95,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean postingEnabled;
     protected String type;
     protected Definition entryDef; // initialized by hibernate access=field
-    //File related settings
-    protected Boolean versionsEnabled;
-	protected Integer versionsToKeep;
-    protected Integer maxVersionAge;
-    protected Integer maxFileSize;	//MB
-    protected Boolean fileEncryptionEnabled;
     public Binder() {
     }
     /**
@@ -799,48 +793,4 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         setProperty(processorKey, processorClassName);
     }
     /*****************End InstanceLevelProcessorSupport interface stuff***********/	
-    
-    /*****************File Related Stuff***********/	
-    public Boolean isVersionsEnabled() {
-    	if (versionsEnabled == null) return true;		//Default is that versions are enabled
-    	return versionsEnabled;
-	}
-	public void setVersionsInherited() {
-		this.versionsEnabled = null;
-		this.versionsToKeep = null;
-		this.maxFileSize = null;
-		this.maxVersionAge = null;
-	}
-	public Boolean getVersionsEnabled() {
-		return versionsEnabled;
-	}
-	public void setVersionsEnabled(Boolean versionsEnabled) {
-		this.versionsEnabled = versionsEnabled;
-	}
-	public Integer getVersionsToKeep() {
-		return versionsToKeep;
-	}
-	public void setVersionsToKeep(Integer versionsToKeep) {
-		this.versionsToKeep = versionsToKeep;
-	}
-	public Integer getMaxVersionAge() {
-		return maxVersionAge;
-	}
-	public void setMaxVersionAge(Integer maxVersionAge) {
-		this.maxVersionAge = maxVersionAge;
-	}
-	public Integer getMaxFileSize() {
-		return maxFileSize;
-	}
-	public void setMaxFileSize(Integer maxFileSize) {
-		this.maxFileSize = maxFileSize;
-	}
-	public Boolean isFileEncryptionEnabled() {
-		return fileEncryptionEnabled != null && fileEncryptionEnabled;
-	}
-	public void setFileEncryptionEnabled(Boolean fileEncryptionEnabled) {
-		this.fileEncryptionEnabled = fileEncryptionEnabled;
-	}
-	/*****************End File Related Stuff***********/
-
 }

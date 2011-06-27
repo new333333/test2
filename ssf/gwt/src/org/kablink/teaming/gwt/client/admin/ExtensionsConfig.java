@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -75,11 +74,9 @@ public class ExtensionsConfig  extends Composite {
 	private ArrayList <ExtensionInfoClient> extList = new ArrayList<ExtensionInfoClient>();
 
 	/*
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	 * 
 	 */
-	private ExtensionsConfig() {
+	public ExtensionsConfig() {
 
 		fPanel.setStyleName("ss_form");
 		fPanel.add(new HTML("<br/>"));
@@ -309,36 +306,5 @@ public class ExtensionsConfig  extends Composite {
 			extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
 			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
 			gwtRpcService.removeExtension(HttpRequestInfo.createHttpRequestInfo(), extInfo.getId(), callback);
-		}
-	
-		/**
-		 * Callback interface to interact with the extensions
-		 * configuration utility asynchronously after it loads. 
-		 */
-		public interface ExtensionsConfigClient {
-			void onSuccess(ExtensionsConfig ec);
-			void onUnavailable();
-		}
-	
-		/**
-		 * Loads the ExtensionsConfig split point and returns an
-		 * instance of it via the callback.
-		 * 
-		 * @param ecClient
-		 */
-		public static void createAsync(final ExtensionsConfigClient ecClient) {
-			GWT.runAsync(ExtensionsConfig.class, new RunAsyncCallback() {			
-				@Override
-				public void onSuccess() {
-					ExtensionsConfig ec = new ExtensionsConfig();
-					ecClient.onSuccess(ec);
-				}
-				
-				@Override
-				public void onFailure(Throwable reason) {
-					Window.alert(GwtTeaming.getMessages().codeSplitFailure_ExtensionsConfig());
-					ecClient.onUnavailable();
-				}
-			});
 		}
 	}

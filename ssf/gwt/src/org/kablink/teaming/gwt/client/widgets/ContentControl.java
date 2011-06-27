@@ -35,12 +35,9 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
@@ -55,14 +52,10 @@ public class ContentControl extends Composite
 {
 	private NamedFrame m_frame;
 	
-	/*
+	/**
 	 * Constructor method.
-	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
 	 */
-	private ContentControl( String name )
+	public ContentControl( String name )
 	{
 		FlowPanel mainPanel;
 
@@ -183,39 +176,4 @@ public class ContentControl extends Composite
 		m_frame.setUrl( url );
 	}// end setUrl()
 
-	/**
-	 * Callback interface to interact with the content control
-	 * asynchronously after it loads. 
-	 */
-	public interface ContentControlClient {
-		void onSuccess(ContentControl contentCtrl);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the ContentControl split point and returns an instance of
-	 * it via the callback.
-	 * 
-	 * @param name
-	 * @param contentCtrlClient
-	 */
-	public static void createAsync( final String name, final ContentControlClient contentCtrlClient )
-	{
-		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess()
-			{
-				ContentControl contentCtrl = new ContentControl( name );
-				contentCtrlClient.onSuccess( contentCtrl );
-			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
-				contentCtrlClient.onUnavailable();
-			}// end onFailure()
-		} );
-	}// end createAsync()
 }// end ContentControl

@@ -156,7 +156,7 @@ function ss_checkForFileSelected() {
 		</td></tr>
 	</table>
 
-	<div class="ss_formBreak margintop3">
+	<div class="ss_formBreak margintop3"/>
 		<div class="ss_buttonBarLeft">
 	
 			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"

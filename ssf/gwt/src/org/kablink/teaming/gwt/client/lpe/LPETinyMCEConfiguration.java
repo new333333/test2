@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,8 @@
  */
 
 package org.kablink.teaming.gwt.client.lpe;
+
+import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -48,15 +50,17 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 {
+	private String m_binderId = null;	// Id of the binder we are dealing with.
+	private AsyncCallback<String> m_rpcCallback = null;
+	private ArrayList<String> m_listOfFileAttachments = null;
 	private LandingPageEditor m_lpe;
+	private boolean m_rpcInProgress;
 	
 	/**
 	 * 
 	 */
 	public LPETinyMCEConfiguration( LandingPageEditor lpe, String binderId )
 	{
-		super();
-		
 		m_lpe = lpe;
 		m_binderId = binderId;
 		m_rpcInProgress = false;
@@ -222,7 +226,7 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	 * Issue an ajax request to get the base url for the binder we are working with.
 	 * This url will be used for the document_base_url.
 	 */
-	protected void getDocumentBaseUrlFromServer()
+	private void getDocumentBaseUrlFromServer()
 	{
 		if ( m_binderId != null )
 		{
@@ -233,6 +237,30 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			// Issue an ajax request to get the base url for the binder.
 			m_rpcInProgress = true;
 			rpcService.getDocumentBaseUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
+		}
+	}
+	
+	/**
+	 * Return whether we are waiting for an rpc request to finish.
+	 */
+	public boolean isRpcInProgress()
+	{
+		return m_rpcInProgress;
+	}
+	
+	
+	/**
+	 * This method should be called to notify us that we are now working with a new binder.
+	 */
+	public void setBinderId( String binderId )
+	{
+		// Is the binder id changing?
+		if ( m_binderId == null || m_binderId.equalsIgnoreCase( binderId ) == false )
+		{
+			// Yes
+			// Issue an ajax request to get the document base url for this binder.
+			m_binderId = binderId;
+			getDocumentBaseUrlFromServer();
 		}
 	}
 	
@@ -251,5 +279,13 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	public void setLanguage()
 	{
 		language = m_lpe.getLanguage();
+	}
+	
+	/**
+	 * Set the list of file attachments the user can choose from when they invoke the "Add image" dialog.
+	 */
+	public void setListOfFileAttachments( 	ArrayList<String> listOfFileAttachments )
+	{
+		m_listOfFileAttachments = listOfFileAttachments;
 	}
 }

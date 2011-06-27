@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,8 +46,6 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
@@ -94,14 +92,17 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		}
 	}
 
-	/*
+	/**
 	 * Class constructor.
 	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	 * @param autoHide
+	 * @param modal
+	 * @param left
+	 * @param top
+	 * @param ssList
+	 * @param searchTabId
 	 */
-	private ManageSavedSearchesDlg(boolean autoHide, boolean modal, ActionTrigger actionTrigger, int left, int top, List<SavedSearchInfo> ssList, String searchTabId) {
+	public ManageSavedSearchesDlg(boolean autoHide, boolean modal, ActionTrigger actionTrigger, int left, int top, List<SavedSearchInfo> ssList, String searchTabId) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top, DlgButtonMode.Close);
 
@@ -505,52 +506,5 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		// If we get here, reply refers to the validated string or an
 		// empty string if the name was not valid.  Return it.
 		return reply;
-	}
-	
-	/**
-	 * Callback interface to interact with the manage saved searches
-	 * dialog asynchronously after it loads. 
-	 */
-	public interface ManageSavedSearchesDlgClient {
-		void onSuccess(ManageSavedSearchesDlg mssd);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the ManageSavedSearchesDlg split point and returns an
-	 * instance of it via the callback.
-	 *
-	 * @param autoHide
-	 * @param modeal
-	 * @param actionTrigger
-	 * @param left
-	 * @param top
-	 * @param ssList
-	 * @param searchTabId
-	 * @param mssdClient
-	 */
-	public static void createAsync(
-			final boolean autoHide,
-			final boolean modal,
-			final ActionTrigger actionTrigger,
-			final int left,
-			final int top,
-			final List<SavedSearchInfo> ssList,
-			final String searchTabId,
-			final ManageSavedSearchesDlgClient mssdClient) {
-		GWT.runAsync(ManageSavedSearchesDlg.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				ManageSavedSearchesDlg mmp = new ManageSavedSearchesDlg(autoHide, modal, actionTrigger, left, top, ssList, searchTabId);
-				mssdClient.onSuccess(mmp);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ManageSavedSearchesDlg() );
-				mssdClient.onUnavailable();
-			}
-		});
 	}
 }

@@ -41,9 +41,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -57,12 +54,7 @@ public class ProfileAttributeWidget  {
 	private Widget widget;
 	private boolean isEditMode = false;
 
-	/*
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
-	 */
-	private ProfileAttributeWidget(ProfileAttribute attr, boolean editMode) {
+	public ProfileAttributeWidget(ProfileAttribute attr, boolean editMode) {
 		isEditMode = editMode;
 		
 		createWidget(attr);
@@ -250,158 +242,5 @@ public class ProfileAttributeWidget  {
 			}
 		}
 		return index;
-	}
-	
-	/**
-	 * Callback interface to interact with the profile attribute widget
-	 * asynchronously after it loads. 
-	 */
-	public interface ProfileAttributeWidgetClient {
-		void onSuccess(ProfileAttributeWidget paw, int row);
-		void onUnavailable();
-	}
-
-	/*
-	 * Asynchronously loads the ProfileAttributeWidget and performs
-	 * some operation against the code.
-	 */
-	private static void doAsyncOperation(
-			// Prefetch parameters.  If true, only a prefetch is performed.
-			final ProfileAttributeWidgetClient pawClient,
-			final boolean prefetch,
-			
-			// Creation parameters.
-			final ProfileAttribute attr,
-			final boolean editMode,
-			final int row) {
-		loadControl1(
-			// Prefetch parameters.
-			pawClient,
-			prefetch,
-				
-			// Creation parameters.
-			attr,
-			editMode,
-			row);		
-	}
-	
-	/*
-	 * Various control loaders used to load the split points containing
-	 * the code for the controls by the LandingPageEditor.
-	 * 
-	 * Loads the split point for the ProfileAttributeWidget.
-	 */
-	private static void loadControl1(
-			// Prefetch parameters.  If true, only a prefetch is performed.
-			final ProfileAttributeWidgetClient pawClient,
-			final boolean prefetch,
-			
-			// Creation parameters.
-			final ProfileAttribute attr,
-			final boolean editMode,
-			final int row) {
-		GWT.runAsync(ProfileAttributeWidget.class, new RunAsyncCallback() {			
-			@Override
-			public void onSuccess() {
-				initPAW_Finish(
-					// Prefetch parameters.
-					pawClient,
-					prefetch,
-						
-					// Creation parameters.
-					attr,
-					editMode,
-					row);		
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ProfileAttributeWidget());
-				pawClient.onUnavailable();
-			}
-		});
-	}
-	
-	/*
-	 * Finishes the initialization of the ProfileAttributeWidget
-	 * object.
-	 */
-	private static void initPAW_Finish(
-			// Prefetch parameters.  If true, only a prefetch is performed.
-			final ProfileAttributeWidgetClient pawClient,
-			final boolean prefetch,
-			
-			// Creation parameters.
-			final ProfileAttribute attr,
-			final boolean editMode,
-			final int row) {		
-		ProfileAttributeWidget paw;
-		if (prefetch)
-		     paw = null;
-		else paw = new ProfileAttributeWidget(attr, editMode);
-		pawClient.onSuccess(paw, row);
-	}
-	
-	/**
-	 * Loads the ProfileAttributeWidget split point and returns an
-	 * instance of it via the callback.
-	 *
-	 * @param attr
-	 * @param editMode
-	 * @param row
-	 * @param pawClient
-	 */
-	public static void createAsync(
-			final ProfileAttribute attr,
-			final boolean editMode,
-			final int row,
-			final ProfileAttributeWidgetClient pawClient) {
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.  
-			pawClient,
-			false,
-			
-			// Required creation parameters.
-			attr,
-			editMode,
-			row);
-	}
-
-	/**
-	 * Causes the split point for the ProfileAttributeWidget to be
-	 * fetched.
-	 * 
-	 * @param pawClient
-	 */
-	public static void prefetch (ProfileAttributeWidgetClient pawClient) {
-		// If we weren't given a ProfileAttributeWidgetClient...
-		if (null == pawClient) {
-			// ...create one we can use.
-			pawClient = new ProfileAttributeWidgetClient() {				
-				@Override
-				public void onUnavailable() {
-					// Unused.
-				}
-				
-				@Override
-				public void onSuccess(ProfileAttributeWidget paw, int row) {
-					// Unused.
-				}
-			};
-		}
-		
-		doAsyncOperation(
-			// Prefetch parameters.  true -> Prefetch only.  
-			pawClient,
-			true,
-			
-			// Creation parameters ignored.
-			null,
-			false,
-			-1);
-	}
-	
-	public static void prefetch() {
-		prefetch(null);
 	}
 }

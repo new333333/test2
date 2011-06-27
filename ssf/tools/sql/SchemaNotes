@@ -89,7 +89,3 @@ In SS_SeenMap:
   
 Version 20:
   More than a dozen changes to the indexes on various tables
-  
-Version 21:
-  Add SS_Forums columns for file version management
-  versionsEnabled, versionsToKeep, maxVersionAge, maxFileSize, and fileEncryptionEnabled

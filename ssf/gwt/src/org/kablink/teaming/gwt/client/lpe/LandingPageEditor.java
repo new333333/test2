@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,13 +40,8 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -96,17 +91,15 @@ public class LandingPageEditor extends Composite
 	private Hidden m_configResultsInputCtrl = null;
 	private ArrayList<DropZone> m_dropZones = null;
 	private LandingPageConfig m_lpeConfig = null;
-	private AbstractTinyMCEConfiguration m_tinyMCEConfig = null;
+	private LPETinyMCEConfiguration m_tinyMCEConfig = null;
 	
 	private static TextArea m_textBox = null;//!!!
 	public static RequestInfo m_requestInfo = null;
 	
-	/*
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	/**
+	 * 
 	 */
-	private LandingPageEditor()
+	public LandingPageEditor()
 	{
 		ConfigData		configData;
 		HorizontalPanel	hPanel;
@@ -511,7 +504,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * Get the configuration that can be used to create a TinyMCEDlg 
 	 */
-	public AbstractTinyMCEConfiguration getTinyMCEConfig()
+	public LPETinyMCEConfiguration getTinyMCEConfig()
 	{
 		return m_tinyMCEConfig;
 	}
@@ -566,46 +559,27 @@ public class LandingPageEditor extends Composite
 		// time for it to complete before we invoke the tinyMCE dialog.
 		if ( m_tinyMCEConfig == null )
 		{
-			TinyMCEDlg.createLPETinyMCEConfiguration(
-					this, getBinderId(),
-					new TinyMCEDlg.TinyMCEDlgClient()
-			{				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
+			FileAttachments fileAttachments;
+			ArrayList<String> listOfFileNames = null;
+
+			m_tinyMCEConfig = new LPETinyMCEConfiguration( this, getBinderId() );
+			
+			// Get the file attachments for the landing page.
+			listOfFileNames = new ArrayList<String>();
+			fileAttachments = getFileAttachments();
+			if ( fileAttachments != null )
+			{
+				int i;
 				
-				@Override
-				public void onSuccess( AbstractTinyMCEConfiguration config )
+				for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
 				{
-					m_tinyMCEConfig = config;
+					String fileName;
 					
-					// Get the file attachments for the landing page.
-					ArrayList<String> listOfFileNames = new ArrayList<String>();
-					FileAttachments fileAttachments = getFileAttachments();
-					if ( fileAttachments != null )
-					{
-						int i;
-						
-						for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
-						{
-							String fileName;
-							
-							fileName = fileAttachments.getFileName( i );
-							listOfFileNames.add( fileName );
-						}
-					}
-					m_tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
-				}// end onSuccess()
-				
-				@Override
-				public void onSuccess( TinyMCEDlg dlg )
-				{
-					// Unused.
-				}// end onSuccess()
-			} );
+					fileName = fileAttachments.getFileName( i );
+					listOfFileNames.add( fileName );
+				}
+			}
+			m_tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
 		}
 	}
 	
@@ -1146,179 +1120,4 @@ public class LandingPageEditor extends Composite
 		};
 		Scheduler.get().scheduleDeferred( cmd );
 	}
-	
-	/**
-	 * Callback interface to interact with the landing page editor
-	 * asynchronously after it loads. 
-	 */
-	public interface LandingPageEditorClient
-	{
-		void onSuccess( LandingPageEditor lpe );
-		void onUnavailable();
-	}
-
-	/*
-	 * Asynchronously loads the LandingPageEditor split point and
-	 * performs some operation on it.
-	 */
-	private static void doAsyncOperation( final boolean prefetch, final LandingPageEditorClient lpeClient )
-	{
-		loadControl1( prefetch, lpeClient );
-	}// end doAsyncOperation()
-
-	/*
-	 * Various control loaders used to load the split points containing
-	 * the code for the controls by the LandingPageEditor.
-	 * 
-	 * Loads the split point for the FindCtrl.
-	 */
-	private static void loadControl1( final boolean prefetch, final LandingPageEditorClient lpeClient )
-	{
-		// The LandingPageEditor is dependent on the FindCtrl.  Make
-		// sure it has been fetched before trying to use it.
-		FindCtrl.prefetch( new FindCtrlClient() {			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-				lpeClient.onUnavailable();
-			}
-			
-			@Override
-			public void onSuccess( FindCtrl findCtrl )
-			{
-				Scheduler.ScheduledCommand loadNextControl;
-				loadNextControl = new Scheduler.ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						loadControl2( prefetch, lpeClient );
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
-			}// end onSuccess()
-		} );
-	}// end loadControl1()
-	
-	/*
-	 * Loads the split point for the TinyMCE.
-	 */
-	private static void loadControl2( final boolean prefetch, final LandingPageEditorClient lpeClient )
-	{
-		// The LandingPageEditor is also dependent on the TinyMCE.
-		// Make sure it has been fetched before trying to use it.
-		TinyMCEDlg.prefetch( new TinyMCEDlg.TinyMCEDlgClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-				lpeClient.onUnavailable();
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( TinyMCEDlg dlg )
-			{
-				Scheduler.ScheduledCommand loadNextControl;
-				loadNextControl = new Scheduler.ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						loadControl3( prefetch, lpeClient );
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
-			}// end onSuccess()
-			
-			@Override
-			public void onSuccess( AbstractTinyMCEConfiguration config )
-			{
-				// Unused.
-			}// end onSuccess()
-		} );
-	}// end loadControl2()
-	
-	/*
-	 * Loads the split point for the LandingPageEditor.
-	 */
-	private static void loadControl3( final boolean prefetch, final LandingPageEditorClient lpeClient )
-	{
-		GWT.runAsync( LandingPageEditor.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess()
-			{
-				initLPE_Finish( prefetch, lpeClient );
-			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPageEditor() );
-				lpeClient.onUnavailable();
-			}// end onFailure()
-		} );
-	}// end loadControl3()
-	
-	/*
-	 * Finishes the initialization of the LandingPageEditor object.
-	 */
-	private static void initLPE_Finish( final boolean prefetch, final LandingPageEditorClient lpeClient )
-	{
-		LandingPageEditor lpe;
-		if ( prefetch )
-		     lpe = null;
-		else lpe = new LandingPageEditor();
-		lpeClient.onSuccess( lpe );
-	}// end initLPE_Finish()
-	
-	/**
-	 * Loads the LandingPageEditor split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 * @param lpeClient
-	 */
-	public static void createAsync( final LandingPageEditorClient lpeClient )
-	{
-		doAsyncOperation(
-			false,	// false -> Not a prefetch.  Create a new LandingPageEditor.
-			lpeClient );
-	}// end createAsync()
-	
-	/**
-	 * Causes the split point for the LandingPageEditor to be fetched.
-	 * 
-	 * @param LandingPageEditorClient
-	 */
-	public static void prefetch( LandingPageEditorClient lpeClient )
-	{
-		// If we weren't given a LandingPageEditorClient...
-		if (null == lpeClient) {
-			// ...create one we can use.
-			lpeClient = new LandingPageEditorClient() {			
-				@Override
-				public void onUnavailable()
-				{
-					// Unused.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( LandingPageEditor lpe )
-				{
-					// Unused.
-				}// end onSuccess()
-			};
-		}
-		
-		doAsyncOperation(
-			true,	// true -> Prefetch only.
-			lpeClient );
-	}// end prefetch()
-	
-	public static void prefetch()
-	{
-		prefetch( null );
-	}// end prefetch()
 }// end LandingPageEditor

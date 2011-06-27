@@ -244,8 +244,6 @@ public class ConfigureController extends AbstractBinderController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		model.put(WebKeys.OPERATION, op);
 
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		if (binderId != null) {

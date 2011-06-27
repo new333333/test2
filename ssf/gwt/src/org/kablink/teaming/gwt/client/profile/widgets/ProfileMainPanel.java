@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
-import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
@@ -80,7 +79,6 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.dom.client.NodeList;
 
-@SuppressWarnings("unchecked")
 public class ProfileMainPanel extends Composite implements SubmitCompleteHandler {
 
 	ProfileRequestInfo profileRequestInfo;
@@ -326,7 +324,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * @param rowCount
 	 * @return
 	 */
-	public void createProfileInfoSection(final ProfileCategory cat, final FlexTable grid) {
+	public void createProfileInfoSection(final ProfileCategory cat, FlexTable grid) {
 
 		int row = grid.getRowCount();
 		
@@ -359,25 +357,14 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				
 				Label title = new Label(stitle + ":");
 				title.setStyleName("attrLabel");
+
+				Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();
 				row = grid.getRowCount();
 				grid.setWidget(row, 0, title);
-
-				ProfileAttributeWidget.createAsync(attr, isEditable, row, new ProfileAttributeWidgetClient() {					
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(ProfileAttributeWidget paw, int row) {
-						Widget value = paw.getWidget();
-						grid.setWidget(row, 1, value);
-						grid.getFlexCellFormatter().setWidth(row, 1, "70%");
-						grid.getFlexCellFormatter().setHorizontalAlignment(row, 1,
-								HasHorizontalAlignment.ALIGN_LEFT);
-					}
-				});
+				grid.setWidget(row, 1, value);
+				grid.getFlexCellFormatter().setWidth(row, 1, "70%");
+				grid.getFlexCellFormatter().setHorizontalAlignment(row, 1,
+						HasHorizontalAlignment.ALIGN_LEFT);
 			} else {
 				//This must be a picture attribute
 				profileAvatarArea = new ProfileAvatarArea(attr, isEditable, getRequestInfo(), editAvatarSuccessHandler);

@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.workspacetree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,9 +73,11 @@ public class TreeInfo implements IsSerializable {
 	private boolean				m_activityStream;
 	private TeamingAction		m_activityStreamAction = TeamingAction.UNDEFINED;
 	
-	// The following is only used for TreeInfo's that represent a
+	// The following are only used for TreeInfo's that represent a
 	// bucket of Binder's.
-	private BucketInfo m_bucketInfo;
+	private List<Long>	m_bucketList;
+	private String		m_bucketFirstTitle;
+	private String		m_bucketLastTitle;
 
 	// Used on the client side only by the sidebar tree to cache the
 	// Image object used for the binder.  It uses this to hold a
@@ -506,12 +508,30 @@ public class TreeInfo implements IsSerializable {
 	}
 	
 	/**
-	 * Returns the BucketInfo of this bucket.
+	 * Returns the List<Long> of the Binder ID's in this bucket.
 	 * 
 	 * @return
 	 */
-	public BucketInfo getBucketInfo() {
-		return m_bucketInfo;
+	public List<Long> getBucketList() {
+		return m_bucketList;
+	}
+	
+	/**
+	 * Returns the name of the first Binder in this bucket.
+	 * 
+	 * @return
+	 */
+	public String getBucketFirstTitle() {
+		return m_bucketFirstTitle;
+	}
+
+	/**
+	 * Returns the title of the last Binder in this bucket.
+	 * 
+	 * @return
+	 */
+	public String getBucketLastTitle() {
+		return m_bucketLastTitle;
 	}
 	
 	/*
@@ -593,7 +613,7 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public String getPreBucketTitle() {
-		return getBucketTitlePart(getBucketInfo().getBucketTuple1());
+		return getBucketTitlePart(getBucketFirstTitle());
 	}
 	
 	/**
@@ -602,7 +622,7 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public String getPostBucketTitle() {
-		return getBucketTitlePart(getBucketInfo().getBucketTuple2());
+		return getBucketTitlePart(getBucketLastTitle());
 	}
 
 	/**
@@ -632,7 +652,7 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public boolean isBucket() {
-		return (null != m_bucketInfo);
+		return (null != m_bucketList);
 	}
 
 	/**
@@ -765,10 +785,33 @@ public class TreeInfo implements IsSerializable {
 	/**
 	 * Stores information about a bucket of Binders.
 	 * 
-	 * @param bucketInfo
+	 * @param bucketList
+	 * @param bucketFirstTitle
+	 * @param bucketLastTitle
 	 */
-	public void setBucketInfo(BucketInfo bucketInfo) {
-		m_bucketInfo = bucketInfo;
+	public void setBucketInfo(List<Long> bucketList, String bucketFirstTitle, String bucketLastTitle) {
+		// Validate and store the parameters.
+		m_bucketList = bucketList;
+		if (null == bucketList) {
+			bucketFirstTitle =
+			bucketLastTitle  = null;
+		}
+		else {
+			bucketFirstTitle = ((null == bucketFirstTitle) ? "" : bucketFirstTitle);
+			bucketLastTitle  = ((null == bucketLastTitle)  ? "" : bucketLastTitle);
+		}
+		m_bucketFirstTitle = bucketFirstTitle;
+		m_bucketLastTitle  = bucketLastTitle;
+
+		// If we have a bucket list.
+		if (null != bucketList) {
+			// Generate a title that can be used for it.
+			StringBuffer binderTitle = new StringBuffer();
+			binderTitle.append(getPreBucketTitle());
+			binderTitle.append(" <-> ");
+			binderTitle.append(getPostBucketTitle());
+			setBinderTitle(binderTitle.toString());
+		}
 	}
 	
 	/**

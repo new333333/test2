@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,12 +50,8 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -131,14 +127,13 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		}
 	}
 	
-	/*
+	/**
 	 * Class constructor.
 	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	 * @param searchOptionsPopup
+	 * @param actionTrigger
 	 */
-	private SearchOptionsComposite(PopupPanel searchOptionsPopup, ActionTrigger actionTrigger) {
+	public SearchOptionsComposite(PopupPanel searchOptionsPopup, ActionTrigger actionTrigger) {
 		// Store the parameter...
 		m_searchOptionsPopup = searchOptionsPopup;
 		m_actionTrigger = actionTrigger;
@@ -152,6 +147,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		m_mainPanel.addStyleName("searchOptionsDlg_Content");
 		addHeader();
 		addContent();
+		setFocusOnSearch();
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget(m_mainPanel);
@@ -184,17 +180,16 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		asPanel.addStyleName("searchOptionsDlg_AdvancedSearchPanel margintop3");
 		asPanel.add(asAnchor);
 		m_mainPanel.add(asPanel);
-	}	
+	}
+	
 	
 	/*
 	 * Adds the content to the main panel.
 	 */
 	private void addContent() {
 		addFinders();
-		
-		// After asynchronously loading and adding the FindCtrl,
-		// addFinders() will add the saved searches and advanced
-		// search widgets.
+		addSavedSearches();
+		addAdvancedSearch();
 	}
 
 	/*
@@ -215,25 +210,9 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		m_mainPanel.add(rbPanel);
 
 		// ...and add a finder widget for it.
-		FindCtrl.createAsync(this, GwtSearchCriteria.SearchType.PERSON, 30, new FindCtrlClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(FindCtrl findCtrl) {
-				m_finderControl = findCtrl;
-				m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2 marginbottom2");
-				m_mainPanel.add(m_finderControl);
-				
-				addSavedSearches();
-				addAdvancedSearch();
-				
-				setFocusOnSearch();
-			}
-		});
+		m_finderControl = new FindCtrl(this, GwtSearchCriteria.SearchType.PERSON, 30);
+		m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2 marginbottom2");
+		m_mainPanel.add(m_finderControl);
 	}
 	
 	
@@ -418,59 +397,15 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	 * widget.
 	 */
 	private void setFocusOnSearch() {
-		ScheduledCommand cmd = new ScheduledCommand() {
-			public void execute() {
+		Scheduler.ScheduledCommand cmd;
+
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			public void execute()
+			{
     			m_finderControl.getFocusWidget().setFocus(true);
 			}
 		};
-		Scheduler.get().scheduleDeferred(cmd);
-	}
-	
-	/**
-	 * Callback interface to interact with the search options composite
-	 * asynchronously after it loads. 
-	 */
-	public interface SearchOptionsCompositeClient {
-		void onSuccess(SearchOptionsComposite soc);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the SearchOptionsComposite split point and returns an
-	 * instance of it via the callback.
-	 * 
-	 * @param searchOptionsPopup
-	 * @param actonTrigger
-	 * @param socClient
-	 */
-	public static void createAsync(final PopupPanel searchOptionsPopup, final ActionTrigger actionTrigger, final SearchOptionsCompositeClient socClient) {
-		// The SearchOptionsComposite is dependent on the FindCtrl.
-		// Make sure it has been fetched before trying to use it.
-		FindCtrl.prefetch(new FindCtrl.FindCtrlClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-				socClient.onUnavailable();
-			}
-			
-			@Override
-			public void onSuccess(FindCtrl findCtrl) {
-				GWT.runAsync(SearchOptionsComposite.class, new RunAsyncCallback()
-				{			
-					@Override
-					public void onSuccess() {
-						SearchOptionsComposite soc = new SearchOptionsComposite(searchOptionsPopup, actionTrigger);
-						socClient.onSuccess(soc);
-					}
-					
-					@Override
-					public void onFailure(Throwable reason) {
-						Window.alert( GwtTeaming.getMessages().codeSplitFailure_SearchOptionsComposite() );
-						socClient.onUnavailable();
-					}
-				});
-			}
-		});
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 }

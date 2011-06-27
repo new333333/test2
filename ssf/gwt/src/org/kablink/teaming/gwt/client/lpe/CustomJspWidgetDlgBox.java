@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.core.client.Scheduler;
@@ -258,6 +257,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		// Add a "find" control.
 		{
 			InlineLabel findLabel;
+			FlexTable findTable;
 			
 			m_entryFindPanel = new FlowPanel();
 			m_entryFindPanel.addStyleName( "findCtrlPanel" );
@@ -296,31 +296,15 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				img.addClickHandler( clickHandler );
 			}
 			
-			final FlexTable findTable = new FlexTable();
+			findTable = new FlexTable();
 			
 			findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
 			findLabel.addStyleName( "findCtrlLabel" );
 			findTable.setWidget( 0, 0, findLabel );
 			
-			FindCtrl.createAsync(
-					this,
-					GwtSearchCriteria.SearchType.ENTRIES,
-					new FindCtrlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( FindCtrl findCtrl )
-				{
-					m_entryFindCtrl = findCtrl;
-					m_entryFindCtrl.enableScope( m_lpe.getBinderId() );
-					findTable.setWidget( 0, 1, m_entryFindCtrl );
-				}// end onSuccess()
-			} );
+			m_entryFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
+			m_entryFindCtrl.enableScope( m_lpe.getBinderId() );
+			findTable.setWidget( 0, 1, m_entryFindCtrl );
 			
 			m_entryFindPanel.add( findTable );
 			mainPanel.add( m_entryFindPanel );
@@ -335,6 +319,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 
 		return mainPanel;
 	}// end createSelectEntryPanel()
+	
 	
 	/**
 	 * Create the controls that will be needed if the user selects "Associate a folder with this custom jsp"
@@ -408,6 +393,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		// Add a "find" control
 		{
 			InlineLabel findLabel;
+			FlexTable findTable;
 			
 			m_folderFindPanel = new FlowPanel();
 			m_folderFindPanel.addStyleName( "findCtrlPanel" );
@@ -446,32 +432,16 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				img.addClickHandler( clickHandler );
 			}
 			
-			final FlexTable findTable = new FlexTable();
+			findTable = new FlexTable();
 			
 			findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
 			findLabel.addStyleName( "findCtrlLabel" );
 			findTable.setWidget( 0, 0, findLabel );
 			
-			FindCtrl.createAsync(
-					this,
-					GwtSearchCriteria.SearchType.PLACES,
-					new FindCtrlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( FindCtrl findCtrl )
-				{
-					m_folderFindCtrl = findCtrl;
-					m_folderFindCtrl.enableScope( m_lpe.getBinderId() );
-					m_folderFindCtrl.setSearchForFoldersOnly( true );
-					findTable.setWidget( 0, 1, m_folderFindCtrl );
-				}// end onSuccess()
-			} );
+			m_folderFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
+			m_folderFindCtrl.enableScope( m_lpe.getBinderId() );
+			m_folderFindCtrl.setSearchForFoldersOnly( true );
+			findTable.setWidget( 0, 1, m_folderFindCtrl );
 			
 			m_folderFindPanel.add( findTable );
 			mainPanel.add( m_folderFindPanel );

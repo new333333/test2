@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.EditHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 
 import com.google.gwt.core.client.Scheduler;
@@ -155,90 +154,77 @@ public abstract class DropWidget extends Composite
 	 * @param xPos
 	 * @param yPos
 	 */
-	public void editProperties( EditSuccessfulHandler onSuccess, EditCanceledHandler onCancel, final int xPos, final int yPos )
+	public void editProperties( EditSuccessfulHandler onSuccess, EditCanceledHandler onCancel, int xPos, int yPos )
 	{
 		m_editSuccessfulHandler = onSuccess;
 		m_editCanceledHandler = onCancel;
 		
 		// Get the dialog box that is used to edit properties for this widget.
-		getPropertiesDlgBox( xPos, yPos, new DlgBoxClient()
-		{			
-			@Override
-			public void onUnavailable()
+		m_dlgBox = getPropertiesDlgBox( xPos, yPos );
+		
+		// Remember the position where the dialog should be shown.
+		m_dlgX = xPos + Window.getScrollLeft();
+		m_dlgY = yPos + Window.getScrollTop();
+		
+		// Create a popup callback if we haven't created one yet.
+		if ( m_popupCallback == null )
+		{
+			m_popupCallback = new PopupPanel.PositionCallback()
 			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess(DlgBox dlg) {
-				m_dlgBox = dlg;
-				
-				// Remember the position where the dialog should be shown.
-				m_dlgX = xPos + Window.getScrollLeft();
-				m_dlgY = yPos + Window.getScrollTop();
-				
-				// Create a popup callback if we haven't created one yet.
-				if ( m_popupCallback == null )
+				/**
+				 * 
+				 */
+				public void setPosition( int offsetWidth, int offsetHeight )
 				{
-					m_popupCallback = new PopupPanel.PositionCallback()
+					int canvasRightEdge;
+					int canvasBottomEdge;
+					int dlgRightEdge;
+					int dlgBottomEdge;
+					int overlap;
+					
+					canvasRightEdge = m_lpe.getCanvasLeft() + m_lpe.getCanvasWidth();
+					dlgRightEdge = m_dlgX + offsetWidth;
+					
+					// If we position the dialog where the mouse is will the right side of the dialog
+					// extend past the right side of the canvas?
+					overlap = dlgRightEdge - canvasRightEdge;
+					if ( overlap > 0 )
 					{
-						/**
-						 * 
-						 */
-						public void setPosition( int offsetWidth, int offsetHeight )
-						{
-							int canvasRightEdge;
-							int canvasBottomEdge;
-							int dlgRightEdge;
-							int dlgBottomEdge;
-							int overlap;
-							
-							canvasRightEdge = m_lpe.getCanvasLeft() + m_lpe.getCanvasWidth();
-							dlgRightEdge = m_dlgX + offsetWidth;
-							
-							// If we position the dialog where the mouse is will the right side of the dialog
-							// extend past the right side of the canvas?
-							overlap = dlgRightEdge - canvasRightEdge;
-							if ( overlap > 0 )
-							{
-								// Adjust the x position so the right edge of the dialog does not extend past the right edge of the canvas.
-								m_dlgX -= overlap;
-								if ( m_dlgX < 0 )
-									m_dlgX = m_lpe.getCanvasLeft();
-							}
-							
-							// For some unknown reason the tiny mce dialog does not position correctly.  Alway
-							// place its left edge on the left edge of the canvas.
-							if ( m_dlgBox instanceof TinyMCEDlg )
-							{
-								m_dlgX = m_lpe.getCanvasLeft();
-							}
-							
-							canvasBottomEdge = m_lpe.getCanvasTop() + m_lpe.getCanvasHeight();
-							dlgBottomEdge = m_dlgY + offsetHeight;
-							
-							// If we position the dialog where the mouse is will the bottom of the dialog
-							// extend past the bottom of the canvas?
-							overlap = dlgBottomEdge - canvasBottomEdge;
-							if ( overlap > 0 )
-							{
-								// Adjust the y position so the bottom of the dialog does not extend pas the bottom of the canvas.
-								m_dlgY -= overlap;
-								if ( m_dlgY < 0 )
-									m_dlgY = 50;
-							}
-							
-							m_dlgBox.setPopupPosition( m_dlgX, m_dlgY );
-						}// end setPosition()
-					};
-				}
+						// Adjust the x position so the right edge of the dialog does not extend past the right edge of the canvas.
+						m_dlgX -= overlap;
+						if ( m_dlgX < 0 )
+							m_dlgX = m_lpe.getCanvasLeft();
+					}
+					
+					// For some unknown reason the tiny mce dialog does not position correctly.  Alway
+					// place its left edge on the left edge of the canvas.
+					if ( m_dlgBox instanceof TinyMCEDlg )
+					{
+						m_dlgX = m_lpe.getCanvasLeft();
+					}
+					
+					canvasBottomEdge = m_lpe.getCanvasTop() + m_lpe.getCanvasHeight();
+					dlgBottomEdge = m_dlgY + offsetHeight;
+					
+					// If we position the dialog where the mouse is will the bottom of the dialog
+					// extend past the bottom of the canvas?
+					overlap = dlgBottomEdge - canvasBottomEdge;
+					if ( overlap > 0 )
+					{
+						// Adjust the y position so the bottom of the dialog does not extend pas the bottom of the canvas.
+						m_dlgY -= overlap;
+						if ( m_dlgY < 0 )
+							m_dlgY = 50;
+					}
+					
+					m_dlgBox.setPopupPosition( m_dlgX, m_dlgY );
+				}// end setPosition()
+			};
+		}
 
-				// We call setPopupPositionAndShow() instead of show() so we can position the
-				// dialog based on the dialog width which is not available until the popup is visible.
-				m_dlgBox.setPopupPositionAndShow( m_popupCallback );
-			}
-		});		
+		// We call setPopupPositionAndShow() instead of show() so we can position the
+		// dialog based on the dialog width which is not available until the popup is visible.
+		m_dlgBox.setPopupPositionAndShow( m_popupCallback );
 	}// end editProperties()
 	
 	
@@ -288,7 +274,7 @@ public abstract class DropWidget extends Composite
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
-	public abstract void getPropertiesDlgBox( int xPos, int yPos, DlgBoxClient dlgClient );
+	public abstract DlgBox getPropertiesDlgBox( int xPos, int yPos );
 	
 	
 	/**

@@ -38,13 +38,10 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -59,14 +56,10 @@ public class AdminInfoDlg extends DlgBox
 	private Button m_closeBtn;
 	private FlexTable m_table;
 	
-	/*
-	 * Class constructor.
+	/**
 	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
 	 */
-	private AdminInfoDlg(
+	public AdminInfoDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -270,256 +263,6 @@ public class AdminInfoDlg extends DlgBox
 			}
 		}
 	}
-	
-	/**
-	 * Callback interface to interact with the dialog asynchronously
-	 * after it loads. 
-	 */
-	public interface AdminInfoDlgClient
-	{
-		void onSuccess( AdminInfoDlg dlg );
-		void onUnavailable();
-	}
-	
-	/*
-	 * Asynchronously loads the AdminInfoDlg and performs some operation
-	 * against the code.
-	 */
-	private static void doAsyncOperation(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final AdminInfoDlgClient dlgClient,
-		final boolean prefetch,
-		
-		// Creation parameters.
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		
-		// initAndShow parameters.
-		final AdminInfoDlg adminInfoDlg,
-		final GwtUpgradeInfo upgradeInfo )
-	{
-		loadControl1(
-			// Prefetch parameters.
-			dlgClient,
-			prefetch,
-			
-			// Creation parameters.
-			autoHide,
-			modal,
-			xPos,
-			yPos,
-			
-			// initAndShow parameters.
-			adminInfoDlg,
-			upgradeInfo );
-	}// doAsyncOperation
-
-	/*
-	 * Various control loaders used to load the split points containing
-	 * the code for the controls by the AdminInfoDlg object.
-	 * 
-	 * Loads the split point for the AdminInfoDlg.
-	 */
-	private static void loadControl1(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final AdminInfoDlgClient dlgClient,
-		final boolean prefetch,
-		
-		// Creation parameters.
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		
-		// initAndShow parameters.
-		final AdminInfoDlg adminInfoDlg,
-		final GwtUpgradeInfo upgradeInfo )
-	{
-		GWT.runAsync( AdminInfoDlg.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess()
-			{
-				initAdminInfoDlg_Finish(
-					// Prefetch parameters.
-					dlgClient,
-					prefetch,
-					
-					// Creation parameters.
-					autoHide,
-					modal,
-					xPos,
-					yPos,
-					
-					// initAndShow parameters.
-					adminInfoDlg,
-					upgradeInfo );
-			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminInfoDlg() );
-				dlgClient.onUnavailable();
-			}// end onFailure()
-		});
-	}
-	
-	/*
-	 * Finishes the initialization of the AdminInfoDlg object.
-	 */
-	private static void initAdminInfoDlg_Finish(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final AdminInfoDlgClient dlgClient,
-		final boolean prefetch,
-		
-		// Creation parameters.
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		
-		// initAndShow parameters.
-		final AdminInfoDlg adminInfoDlg,
-		final GwtUpgradeInfo upgradeInfo )
-	{
-		// On a prefetch...
-		if ( prefetch )
-		{
-			// ...we simply call the success handler with null for the
-			// ...parameter.
-			dlgClient.onSuccess( null );
-		}
-
-		// If we weren't given a AdminInfoDlg...
-		else if ( null == adminInfoDlg )
-		{
-			// ...we assume we're to create one.
-			AdminInfoDlg dlg = new AdminInfoDlg(
-				autoHide,
-				modal,
-				xPos,
-				yPos  );
-			
-			dlgClient.onSuccess( dlg );
-		}
-		
-		else {
-			// Otherwise, we assume we're to initialize and show the
-			// AdminInfoDlg we were given!  Initialize...
-			adminInfoDlg.refreshContent( upgradeInfo );
-			adminInfoDlg.show();
-		}
-	}
-	
-	/**
-	 * Loads the AdminInfoDlg split point and returns an instance of it via
-	 * the callback.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param xPos
-	 * @param yPos
-	 * @param dlgClient
-	 */
-	public static void createAsync(
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		final AdminInfoDlgClient dlgClient )
-	{
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
-			dlgClient,
-			false,
-			
-			// Creation parameters.
-			autoHide,
-			modal,
-			xPos,
-			yPos,
-			
-			// initAndShow parameters ignored.
-			null,
-			null );
-	}// end createAsync()
-
-	/**
-	 * Initialize and show the dialog.
-	 * 
-	 * @param adminInfoDlg
-	 * @param upgradeInfo
-	 */
-	public static void initAndShow(
-		final AdminInfoDlg adminInfoDlg,
-		final GwtUpgradeInfo upgradeInfo )
-	{
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
-			null,
-			false,
-			
-			// Creation parameters ignored.
-			false,
-			false,
-			-1,
-			-1,
-			
-			// initAndShow parameters.
-			adminInfoDlg,
-			upgradeInfo );
-	}// end initAndShow()
-	
-	/**
-	 * Causes the split point for the AdminInfoDlg to be fetched.
-	 * 
-	 * @param dlgClient
-	 */
-	public static void prefetch( AdminInfoDlgClient dlgClient )
-	{
-		// If we weren't give a AdminInfoDlgClient...
-		if ( null == dlgClient )
-		{
-			// ...create a dummy one...
-			dlgClient = new AdminInfoDlgClient()
-			{				
-				@Override
-				public void onUnavailable()
-				{
-					// Unused.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( AdminInfoDlg dlg )
-				{
-					// Unused.
-				}// end onSuccess()
-			};
-		}
-
-		// ...and perform the prefetch.
-		doAsyncOperation(
-			// Prefetch parameters.  true -> Prefetch only.
-			dlgClient,
-			true,
-			
-			// Creation parameters ignored.
-			false,
-			false,
-			-1,
-			-1,
-			
-			// initAndShow parameters ignored.
-			null,
-			null );
-	}// end prefetch()
-	
-	public static void prefetch()
-	{
-		// Always use the initial form of the method.
-		prefetch( null );
-	}// end prefetch()
 }
+
+

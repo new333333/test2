@@ -90,7 +90,6 @@ public class FilesErrors implements Serializable {
 		public static int PROBLEM_MIRRORED_FILE_MULTIPLE			= 16;
 		public static int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER   = 17;
 		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 18;
-		public static int PROBLEM_OVER_QUOTA						= 19;
 		
 		// Message codes corresponding to each problem type.
 		public static String[] typeCodes = {
@@ -112,8 +111,7 @@ public class FilesErrors implements Serializable {
 			"file.error.mirrored.file.in.regular.folder",
 			"file.error.mirrored.file.multiple",
 			"file.error.regular.file.in.mirrored.folder",
-			"file.error.mirrored.file.readonly.driver",
-			"file.error.over.quota"
+			"file.error.mirrored.file.readonly.driver"
 		};
 		
 		private String repositoryName; // required

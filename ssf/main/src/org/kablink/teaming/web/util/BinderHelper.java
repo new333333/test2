@@ -474,9 +474,7 @@ public class BinderHelper {
 			if (user != null) {
 				UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 				if (userFolderProperties == null) userFolderProperties = new UserProperties(user.getId(), binderId);
-				Object ufp = userFolderProperties.getProperties();
-				if (ufp == null) ufp = new HashMap();
-				model.put(WebKeys.USER_FOLDER_PROPERTIES, ufp);
+				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties.getProperties());
 				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
 				
 				Boolean brandingAccess = true;
