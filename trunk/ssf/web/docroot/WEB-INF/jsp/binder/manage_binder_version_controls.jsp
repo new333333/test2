@@ -117,7 +117,7 @@ function ss_checkIfNumberValid(s) {
 		/>
 		<span class="ss_bold"><ssf:nlt tag="binder.versions.enableVersionsForFolder" /></span>
 		<c:if test="${ss_binder_versions_inherited}">
-		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
 	  </legend>
       
@@ -129,8 +129,12 @@ function ss_checkIfNumberValid(s) {
 		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
           >
         <c:if test="${ss_binder_versions_inherited}">
-		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
+		<br/>
+		<span class="ss_smallprint" style="padding-left:16px;">
+		  <ssf:nlt tag="binder.versions.leaveBlankForNoLimit"/>
+		</span>
        </div>
       
        <div style="padding:10px 10px 0px 10px;">
@@ -142,8 +146,16 @@ function ss_checkIfNumberValid(s) {
 		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
           >
         <c:if test="${ss_binder_versions_inherited}">
-		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
+		<br/>
+		<span class="ss_smallprint" style="padding-left:16px;">
+		  <ssf:nlt tag="binder.versions.leaveBlankForNoLimit"/>
+		</span>
+ 		<br/>
+		<span class="ss_smallprint" style="padding-left:16px;">
+		  <ssf:nlt tag="binder.versions.versionsMaxAgeHint1"/>
+		</span>
        </div>
       
        <div style="padding:10px 10px 0px 10px;">
@@ -155,8 +167,12 @@ function ss_checkIfNumberValid(s) {
 		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
           ><ssf:nlt tag="file.sizeMB"/>
         <c:if test="${ss_binder_versions_inherited}">
-		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
+		<br/>
+		<span class="ss_smallprint" style="padding-left:16px;">
+		  <ssf:nlt tag="binder.versions.leaveBlankForNoLimit"/>
+		</span>
        </div>
       
        <div style="padding:10px 10px 0px 10px;">
@@ -175,7 +191,8 @@ function ss_checkIfNumberValid(s) {
     </fieldset>
     
     <br/>
-    
+
+<c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
 	    <input type="checkbox" name="enableFileEncryption" 
@@ -187,6 +204,7 @@ function ss_checkIfNumberValid(s) {
 	    </c:if>
 	</fieldset>
 <br/>
+</c:if>
 <br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >

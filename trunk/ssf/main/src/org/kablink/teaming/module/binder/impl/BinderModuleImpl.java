@@ -2383,6 +2383,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			result = parent.getVersionsEnabled();
 			parent = parent.getParentBinder();
 		}
+		if (result == null) {
+			//This value has never been set anywhere, so default to true
+			result = Boolean.TRUE;
+		}
 		return result;
 	}
 
