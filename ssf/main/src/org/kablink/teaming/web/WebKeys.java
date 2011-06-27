@@ -908,6 +908,7 @@ public class WebKeys {
 	public static final String FIELD_MODIFICATIONS_ALLOWED = "ss_fieldModificationsAllowed";
     public static final String FILE_ATTACHMENT = "ss_fileAttachment";
     public static final String FILE_HANDLE = "ss_fileHandle";
+    public static final String FILE_QUOTA_WOULD_BE_EXCEEDED = "ss_fileQuotaWouldBeExceeded";
     public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";

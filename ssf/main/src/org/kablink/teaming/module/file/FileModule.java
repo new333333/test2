@@ -438,4 +438,12 @@ public interface FileModule {
 	 */
 	public FileAttachment getFileAttachmentById(String fileId) throws AccessControlException;
 
+	/**
+	 * Check if adding a file would go over quota.
+	 *  
+	 * @param binder
+	 * @param fileSize
+	 * @param fileName
+	 */
+	public boolean checkIfQuotaWouldBeExceeded(Binder binder, long fileSize, String fileName);
 }	
