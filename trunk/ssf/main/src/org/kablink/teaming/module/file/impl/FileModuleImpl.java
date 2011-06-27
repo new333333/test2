@@ -1643,6 +1643,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 			//Check that the binder and its parents aren't over quota
 			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
+			
+			//Check if not too big
+			checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());			
 		}
     	
     	String versionName = null;
@@ -1847,6 +1850,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			
 			//Check that the binder and its parents aren't over quota
 			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
+			
+			//Check if not too big
+			checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());			
 		}
 				
 		FileAttachment fAtt = createFileAttachment(entry, fui);
@@ -1933,6 +1939,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if (!getBinderModule().isBinderDiskQuotaOk(binder, fileSize)) {
 			//Adding this file would cause the quota to be exceeded
 			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{fileName});
+		}
+	}
+	
+	private void checkFileSizeLimit(Binder binder, Long fileSize, String fileName) 
+			throws DataQuotaException {
+		//Check that the file isn't too big
+		Integer maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
+		if (maxFileSize != null) {
+			//There is a file size limit, go check it
+			if (fileSize > maxFileSize * 1000000) {
+				throw new DataQuotaException("file.maxSizeExceeded", 
+						new Object[]{fileName});
+			}
 		}
 	}
 	
