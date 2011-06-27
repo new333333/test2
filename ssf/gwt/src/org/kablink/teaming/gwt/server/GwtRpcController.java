@@ -98,6 +98,8 @@ public class GwtRpcController extends RemoteServiceServlet
 
             rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
 
+        	m_logger.debug( "in GwtRpcController.processCall() for rpc request:  " + rpcRequest.getMethod().getName() );
+
             // If the first parameter to the method is an
             // HttpRequestInfo object...
             Object[] parameters = rpcRequest.getParameters();
