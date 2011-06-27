@@ -439,12 +439,23 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	     				loginName = (String) result.getName();
 	     			}
 	     			
-	     			// This is not used for authentication but for synchronization.
-	     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate()" );
-	    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-	    					loginName, (String) result.getCredentials(),
-	    					(Map) result.getPrincipal(), getAuthenticator());
-	     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate()" );
+	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
+		     			// This is not used for authentication but for synchronization.
+		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
+		    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+		    					loginName, (String) result.getCredentials(),
+		    					(Map) result.getPrincipal(), getAuthenticator());
+		     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate1" );
+	     			}
+	     			else {
+	        			// This is not used for authentication or synchronization but merely to log the authenticator.
+		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate2" );
+	        			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+	        					(String) result.getName(), (String) result.getCredentials(),
+	        					false, false, true, 
+	        					(Map) result.getPrincipal(), getAuthenticator());			
+		     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate2" );
+	     			}
 	     			
 	    			if(result instanceof SynchNotifiableAuthentication)
 	    				((SynchNotifiableAuthentication)result).synchDone();
