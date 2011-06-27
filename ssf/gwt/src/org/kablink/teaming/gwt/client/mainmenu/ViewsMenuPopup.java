@@ -36,20 +36,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg.ManageSavedSearchesDlgClient;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -76,14 +72,12 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem			m_whoHasAccessTBI;		// The who has access  toolbar item, if found.
 	private ToolbarItem			m_mobileUiTBI;			// The mobile UI  	   toolbar item, if found.
 
-	/*
+	/**
 	 * Class constructor.
 	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	 * @param actionTrigger
 	 */
-	private ViewsMenuPopup(ActionTrigger actionTrigger, boolean inSearch, String searchTabId) {
+	public ViewsMenuPopup(ActionTrigger actionTrigger, boolean inSearch, String searchTabId) {
 		// Initialize the super class...
 		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarViews());
 		
@@ -116,27 +110,16 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 						}
 						
 						public void onSuccess(List<SavedSearchInfo> ssList) {
-							ManageSavedSearchesDlg.createAsync(
+							ManageSavedSearchesDlg mssDlg = new ManageSavedSearchesDlg(
 								false,	// false -> Don't auto hide.
 								true,	// true  -> Modal.
 								m_actionTrigger,
 								m_menuLeft,
 								m_menuTop,
 								ssList,
-								m_searchTabId,
-								new ManageSavedSearchesDlgClient() {										
-									@Override
-									public void onUnavailable() {
-										// Nothing to do.  Error handled in
-										// asynchronous provider.
-									}
-									
-									@Override
-									public void onSuccess(ManageSavedSearchesDlg mssd) {
-										mssd.addStyleName("manageSavedSearchesDlg");
-										mssd.show();
-									}
-								});
+								m_searchTabId);
+							mssDlg.addStyleName("manageSavedSearchesDlg");
+							mssDlg.show();
 						}
 					});
 				}
@@ -378,40 +361,5 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 					
 		// ...and show it.
 		show();
-	}
-	
-	/**
-	 * Callback interface to interact with the view menu popup
-	 * asynchronously after it loads. 
-	 */
-	public interface ViewsMenuPopupClient {
-		void onSuccess(ViewsMenuPopup vmp);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the ViewsMenuPopup split point and returns an
-	 * instance of it via the callback.
-	 *
-	 * @param actionTrigger
-	 * @param inSearch
-	 * @param searchTabId
-	 * @param vmpClient
-	 */
-	public static void createAsync(final ActionTrigger actionTrigger, final boolean inSearch, final String searchTabId, final ViewsMenuPopupClient vmpClient) {
-		GWT.runAsync(ViewsMenuPopup.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				ViewsMenuPopup vmp = new ViewsMenuPopup(actionTrigger, inSearch, searchTabId);
-				vmpClient.onSuccess(vmp);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ViewsMenuPopup());
-				vmpClient.onUnavailable();
-			}
-		});
 	}
 }

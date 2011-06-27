@@ -35,20 +35,11 @@ package org.kablink.teaming.ssfs.web.servlet.listener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class SessionListener implements HttpSessionListener {
 
-	private static Log logger = LogFactory.getLog(SessionListener.class);
-
 	public void sessionCreated(HttpSessionEvent se) {
-		if(logger.isDebugEnabled())
-			logger.debug("Creating session: " + se.getSession().getId());
 	}
 
 	public void sessionDestroyed(HttpSessionEvent se) {
-		if(logger.isDebugEnabled())
-			logger.debug("Destroying session: " + se.getSession().getId());
 	}
 }

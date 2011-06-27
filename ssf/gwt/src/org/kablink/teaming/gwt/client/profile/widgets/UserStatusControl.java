@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,19 +33,21 @@
 
 package org.kablink.teaming.gwt.client.profile.widgets;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -53,8 +55,8 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -65,7 +67,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-public class UserStatusControl extends Composite implements Event.NativePreviewHandler {
+public class UserStatusControl extends Composite implements ActionRequestor, Event.NativePreviewHandler {
 	
 	private final static int LINES = 3;
 	private final static int ONE_LINE = 1;
@@ -80,13 +82,10 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	private int totalChar = 0;
 	private InlineLabel limitExceeded;
 	private boolean savingUserStatusInProgress = false;
+	
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 
-	/*
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
-	 */
-	private UserStatusControl () {
+	public UserStatusControl () {
 
 		String userStatus = "";
 		
@@ -220,7 +219,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	private void initialize() {
 		//Register with GwtMainPage, so we can fire an event
 		try {
-			GwtClientHelper.jsFireEvent(null);
+			GwtClientHelper.jsRegisterActionHandler((ActionRequestor) this);
 		} catch(Exception e) {
 			if(GwtClientHelper.jsIsIE()) {
 				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
@@ -470,8 +469,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
      * @param modifyDate
      * @param date 
      */
-    @SuppressWarnings("deprecation")
-	private void setTime(Date modifyDate, Date currentDate) {
+    private void setTime(Date modifyDate, Date currentDate) {
     	
     	long sec = 1000;
     	long min = 60 * sec;
@@ -526,6 +524,13 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 			}
 		}
 	}
+
+    /**
+	 * Add an action Handler.  This handler will perform the necessary action when an action is triggered.
+	 */
+	public void addActionHandler(ActionHandler actionHandler) {
+		m_actionHandlers.add(actionHandler);
+	}
 	
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
@@ -536,7 +541,11 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		GwtClientHelper.jsFireEvent(new TeamingActionEvent(action, obj));
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
 	}
 	
 	/**
@@ -548,34 +557,4 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		triggerAction(action, null);
 	}
 
-	/**
-	 * Callback interface to interact with the user status control
-	 * asynchronously after it loads. 
-	 */
-	public interface UserStatusControlClient {
-		void onSuccess(UserStatusControl usc);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the UserStatusControl split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 * @param uscClient
-	 */
-	public static void createAsync(final UserStatusControlClient uscClient) {
-		GWT.runAsync(UserStatusControl.class, new RunAsyncCallback() {			
-			@Override
-			public void onSuccess() {
-				UserStatusControl usc = new UserStatusControl();
-				uscClient.onSuccess(usc);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_UserStatusControl());
-				uscClient.onUnavailable();
-			}
-		});
-	}
 }

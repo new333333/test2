@@ -1768,6 +1768,23 @@ public class ListFolderHelper {
 			//adminMenuCreated=true;	
 		}
 
+		//Set Binder Quota
+		if (!folder.isMirrored() && 
+				(bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration) ||
+				bs.getAdminModule().testAccess(AdminOperation.manageFunction))) {
+			if (bs.getAdminModule().isBinderQuotaEnabled()) {
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_BINDER_QUOTA);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_SHOW_MENU, "true");
+				folderToolbar.addToolbarMenuItem("1_administration", "", 
+						NLT.get("toolbar.menu.manage_folder_quota"), url, qualifiers);
+			}
+		}
+		
+
 		//set email
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageMail) &&
 				(folder.isTop() || bs.getAdminModule().getMailConfig().isPostingEnabled()))  {

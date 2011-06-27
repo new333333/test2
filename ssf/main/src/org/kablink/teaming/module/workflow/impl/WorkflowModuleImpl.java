@@ -75,7 +75,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
@@ -595,7 +594,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 					ws.setDefinition(workflowDef);
 					//need to save explicitly - actions called by the node.enter may look it up 
 					getCoreDao().save(ws);
-					entry.startWorkflowStateLoopDetector();
 					entry.addWorkflowState(ws);
 					//Start the workflow process at the initial state
 				    ExecutionContext executionContext = new ExecutionContext(token);
@@ -605,7 +603,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		    } catch (Exception ex) {
 		        throw convertJbpmException(ex);
 		    } finally {
-	            entry.stopWorkflowStateLoopDetector();
 		    	context.close();
 		    }
 		}
@@ -677,9 +674,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * Signal a transition.  The caller is responsible for updating the index.
 	 */
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState) {
-		entry.startWorkflowStateLoopDetector();
 		WorkflowProcessUtils.processManualTransition(entry, state, toState);
-		entry.stopWorkflowStateLoopDetector();
 	}
 	/**
 	 * Set some workflow variables and continue processing.
@@ -841,10 +836,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
-		entry.startWorkflowStateLoopDetector();
-		boolean result = WorkflowProcessUtils.processConditions(entry, true, false);
-		entry.stopWorkflowStateLoopDetector();
-		return result;
+		return WorkflowProcessUtils.processConditions(entry, true, false);
 	}
 	/**
 	 * See if any conditions have been met for a transition to a new state.
@@ -853,10 +845,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public boolean modifyWorkflowStateOnResponse(WorkflowSupport entry) {
-		entry.startWorkflowStateLoopDetector();
-		boolean result = WorkflowProcessUtils.processConditions(entry, false, false);
-		entry.stopWorkflowStateLoopDetector();
-		return result;
+		return WorkflowProcessUtils.processConditions(entry, false, false);
 	}
 	/**
 	 * See if reply will trigger a transition to a new state.
@@ -864,17 +853,12 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public boolean modifyWorkflowStateOnReply(WorkflowSupport entry) {
-		entry.startWorkflowStateLoopDetector();
-		boolean result = WorkflowProcessUtils.processConditions(entry, false, true);	
-		entry.stopWorkflowStateLoopDetector();
-		return result;
+		return WorkflowProcessUtils.processConditions(entry, false, true);	
 	}	
 
 	//see if anything to do after a deleted entry gets restored
     public void  modifyWorkflowStateOnRestore(WorkflowSupport wfEntry) {
-    	wfEntry.startWorkflowStateLoopDetector();
 		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
-		wfEntry.stopWorkflowStateLoopDetector();
 		if (changed) {
 			Entry entry = (Entry)wfEntry;
 			EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
@@ -887,9 +871,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	
 	//see if anything to do after some external event
     public void  modifyWorkflowStateOnChange(WorkflowSupport wfEntry) {
-    	wfEntry.startWorkflowStateLoopDetector();
 		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
-    	wfEntry.stopWorkflowStateLoopDetector();
 		if (changed) {
 			Entry entry = (Entry)wfEntry;
 			EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());

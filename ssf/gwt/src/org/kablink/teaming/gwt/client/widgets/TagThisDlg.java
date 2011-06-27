@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,12 +50,8 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -170,14 +166,10 @@ public class TagThisDlg extends DlgBox
 	}
 	
 	
-	/*
+	/**
 	 * Class constructor.
-	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
 	 */
-	private TagThisDlg(
+	public TagThisDlg(
 		boolean autoHide,
 		boolean modal,
 		EditSuccessfulHandler editSuccessfulHandler,
@@ -187,7 +179,7 @@ public class TagThisDlg extends DlgBox
 	{
 		// Initialize the superclass...
 		super(autoHide, modal, left, top );
-		
+
 		// ...initialize everything else...
 		m_onEditSuccessfulHandler = editSuccessfulHandler;
 		m_messages = GwtTeaming.getMessages();
@@ -198,8 +190,8 @@ public class TagThisDlg extends DlgBox
 		m_currentListOfGlobalTags = new ArrayList<TagInfo>();
 		
 		// Read the tag sort order from the user's properties.
-		getSortOrderAsync();
-		
+		getSortOrder();
+
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			dlgCaption,
@@ -304,10 +296,18 @@ public class TagThisDlg extends DlgBox
 					source = event.getSource();
 					if ( source != null && source instanceof InlineLabel )
 					{
-						final String tagName = ((InlineLabel) source).getText();
-						ScheduledCommand cmd = new ScheduledCommand() {
-							@Override
-							public void execute() {
+						final String tagName;
+						Scheduler.ScheduledCommand cmd;
+						
+						tagName = ((InlineLabel) source).getText();
+
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							public void execute()
+							{
 								handleClickOnTag( tagName );
 							}
 						};
@@ -375,7 +375,9 @@ public class TagThisDlg extends DlgBox
 	 */
 	private void adjustTagTablePanelHeight()
 	{
-		ScheduledCommand cmd = new ScheduledCommand()
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
 		{
 			public void execute()
 			{
@@ -448,7 +450,9 @@ public class TagThisDlg extends DlgBox
 			{
 				public void onClick( ClickEvent clickEvent )
 				{
-					ScheduledCommand cmd = new ScheduledCommand()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
 						public void execute()
 						{
@@ -473,7 +477,9 @@ public class TagThisDlg extends DlgBox
 			{
 				public void onClick( ClickEvent clickEvent )
 				{
-					ScheduledCommand cmd = new ScheduledCommand()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
 						public void execute()
 						{
@@ -489,33 +495,17 @@ public class TagThisDlg extends DlgBox
 
 		// Add the find control.
 		{
+			FlexTable table;
 			HTMLTable.RowFormatter rowFormatter;
 
-			final FlexTable table = new FlexTable();
+			table = new FlexTable();
 			rowFormatter = table.getRowFormatter();
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			mainPanel.add( table );
 			
-			final KeyUpHandler kuh = this;
-			FindCtrl.createAsync(
-					this,
-					GwtSearchCriteria.SearchType.PERSONAL_TAGS,
-					new FindCtrlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( FindCtrl findCtrl )
-				{
-					m_findCtrl = findCtrl;
-					m_findCtrl.addKeyUpHandler( kuh );
-					table.setWidget( 0, 0, m_findCtrl );
-				}// end onSuccess()
-			} );
+			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PERSONAL_TAGS );
+			m_findCtrl.addKeyUpHandler( this );
+			table.setWidget( 0, 0, m_findCtrl );
 	
 			// Add an "add tag" image.
 			{
@@ -534,7 +524,9 @@ public class TagThisDlg extends DlgBox
 				{
 					public void onClick( ClickEvent clickEvent )
 					{
-						ScheduledCommand cmd = new ScheduledCommand()
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
 							public void execute()
 							{
@@ -585,7 +577,9 @@ public class TagThisDlg extends DlgBox
 				{
 					public void onClick( ClickEvent clickEvent )
 					{
-						ScheduledCommand cmd = new ScheduledCommand()
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
 							public void execute()
 							{
@@ -605,7 +599,9 @@ public class TagThisDlg extends DlgBox
 				{
 					public void onClick( ClickEvent clickEvent )
 					{
-						ScheduledCommand cmd = new ScheduledCommand()
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
 							public void execute()
 							{
@@ -838,21 +834,10 @@ public class TagThisDlg extends DlgBox
 		return m_findCtrl.getFocusWidget();
 	}
 	
-	/*
+	/**
 	 * Issue an ajax request to get the tag sort order from the user's properties.
 	 */
-	private void getSortOrderAsync() {
-		ScheduledCommand getSortOrder = new ScheduledCommand() {
-			@Override
-			public void execute()
-			{
-				getSortOrderNow();
-			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( getSortOrder );
-	}
-	
-	private void getSortOrderNow()
+	private void getSortOrder()
 	{
 		AsyncCallback<TagSortOrder> callback;
 		
@@ -1212,6 +1197,8 @@ public class TagThisDlg extends DlgBox
 				 */
 				public void onSuccess( ArrayList<Boolean> tagRights )
 				{
+					Scheduler.ScheduledCommand cmd;
+					
 					// If the user can't manage personal tags then hide the "Personal tag" radio button.
 					m_canManagePersonalTags = tagRights.get( 0 ).booleanValue();
 					m_personalRB.setVisible( m_canManagePersonalTags );
@@ -1220,7 +1207,7 @@ public class TagThisDlg extends DlgBox
 					m_canManageGlobalTags = tagRights.get( 1 ).booleanValue();
 					m_communityRB.setVisible( m_canManageGlobalTags );
 					
-					ScheduledCommand cmd = new ScheduledCommand()
+					cmd = new Scheduler.ScheduledCommand()
 					{
 						/**
 						 * 
@@ -1402,6 +1389,7 @@ public class TagThisDlg extends DlgBox
 	public void onKeyUp( KeyUpEvent event )
 	{
         final int keyCode;
+        Scheduler.ScheduledCommand cmd;
 
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
@@ -1414,7 +1402,7 @@ public class TagThisDlg extends DlgBox
         	event.preventDefault();
         }
 
-        ScheduledCommand cmd = new ScheduledCommand()
+        cmd = new Scheduler.ScheduledCommand()
         {
 			public void execute()
 			{
@@ -1672,453 +1660,5 @@ public class TagThisDlg extends DlgBox
 				m_cellFormatter.addStyleName( row, i, "oltLastRowBorderBottom" );
 			}
 		}
-	}
-	
-	/**
-	 * Callback interface to interact with the dialog asynchronously
-	 * after it loads. 
-	 */
-	public interface TagThisDlgClient {
-		void onSuccess(TagThisDlg dlg);
-		void onUnavailable();
-	}
-
-	/*
-	 * Asynchronously loads the TagThisDialog and performs some
-	 * operation against the code.
-	 */
-	private static void doAsyncOperation(
-			// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-			final boolean prefetch,
-			final TagThisDlgClient dlgClient,
-			
-			// Creation parameters.
-			final boolean autoHide,
-			final boolean modal,
-			final EditSuccessfulHandler editSuccessfulHandler,
-			final int left,
-			final int top,
-			final String dlgCaption,
-
-			// First initAndShow variation parameters.
-			final TagThisDlg first_initAndShowDlg,
-			final String first_binderId,
-			final String first_binderTitle,
-			final BinderType first_binderType,
-	
-			// Second initAndShow variation parameters.
-			final TagThisDlg second_initAndShowDlg,
-			final String second_entryId,
-			final String second_entryTitle,
-			final int second_x,
-			final int second_y) {
-		loadControl1(
-			// Prefetch parameters.
-			prefetch,
-			dlgClient,
-			
-			// Creation parameters.
-			autoHide,
-			modal,
-			editSuccessfulHandler,
-			left,
-			top,
-			dlgCaption,
-
-			// First initAndShow variation parameters.
-			first_initAndShowDlg,
-			first_binderId,
-			first_binderTitle,
-			first_binderType,
-	
-			// Second initAndShow variation parameters.
-			second_initAndShowDlg,
-			second_entryId,
-			second_entryTitle,
-			second_x,
-			second_y);
-	}
-	
-	/*
-	 * Various control loaders used to load the split points containing
-	 * the code for the controls by the TagThisDlg object.
-	 * 
-	 * Loads the split point for the FindCtrl.
-	 */
-	private static void loadControl1(
-			// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-			final boolean prefetch,
-			final TagThisDlgClient dlgClient,
-			
-			// Creation parameters.
-			final boolean autoHide,
-			final boolean modal,
-			final EditSuccessfulHandler editSuccessfulHandler,
-			final int left,
-			final int top,
-			final String dlgCaption,
-	
-			// First initAndShow variation parameters.
-			final TagThisDlg first_initAndShowDlg,
-			final String first_binderId,
-			final String first_binderTitle,
-			final BinderType first_binderType,
-	
-			// Second initAndShow variation parameters.
-			final TagThisDlg second_initAndShowDlg,
-			final String second_entryId,
-			final String second_entryTitle,
-			final int second_x,
-			final int second_y) {		
-		// The TagThisDlg is dependent on the FindCtrl.  Make sure
-		// it has been fetched before trying to use it.
-		FindCtrl.prefetch(new FindCtrlClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-				dlgClient.onUnavailable();
-			}
-			
-			@Override
-			public void onSuccess( FindCtrl findCtrl )
-			{
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
-					@Override
-					public void execute() {
-						loadControl2(
-							// Prefetch parameters.
-							prefetch,
-							dlgClient,
-							
-							// Creation parameters.
-							autoHide,
-							modal,
-							editSuccessfulHandler,
-							left,
-							top,
-							dlgCaption,
-	
-							// First initAndShow variation parameters.
-							first_initAndShowDlg,
-							first_binderId,
-							first_binderTitle,
-							first_binderType,
-					
-							// Second initAndShow variation parameters.
-							second_initAndShowDlg,
-							second_entryId,
-							second_entryTitle,
-							second_x,
-							second_y);
-					}
-				};
-				Scheduler.get().scheduleDeferred(loadNextControl);
-			}
-		} );
-	}
-
-	/*
-	 * Loads the split point for the TagThisDlg.
-	 */
-	private static void loadControl2(
-			// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-			final boolean prefetch,
-			final TagThisDlgClient dlgClient,
-			
-			// Creation parameters.
-			final boolean autoHide,
-			final boolean modal,
-			final EditSuccessfulHandler editSuccessfulHandler,
-			final int left,
-			final int top,
-			final String dlgCaption,
-	
-			// First initAndShow variation parameters.
-			final TagThisDlg first_initAndShowDlg,
-			final String first_binderId,
-			final String first_binderTitle,
-			final BinderType first_binderType,
-	
-			// Second initAndShow variation parameters.
-			final TagThisDlg second_initAndShowDlg,
-			final String second_entryId,
-			final String second_entryTitle,
-			final int second_x,
-			final int second_y) {		
-		GWT.runAsync(TagThisDlg.class, new RunAsyncCallback() {			
-			@Override
-			public void onSuccess() {
-				initTagThisDlg_Finish(
-					// Prefetch parameters.
-					prefetch,
-					dlgClient,
-					
-					// Creation parameters.
-					autoHide,
-					modal,
-					editSuccessfulHandler,
-					left,
-					top,
-					dlgCaption,
-
-					// First initAndShow variation parameters.
-					first_initAndShowDlg,
-					first_binderId,
-					first_binderTitle,
-					first_binderType,
-			
-					// Second initAndShow variation parameters.
-					second_initAndShowDlg,
-					second_entryId,
-					second_entryTitle,
-					second_x,
-					second_y);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_TagThisDlg());
-				dlgClient.onUnavailable();
-			}
-		});
-	}
-	
-	/*
-	 * Finishes the initialization of the TagThisDlg object.
-	 */
-	private static void initTagThisDlg_Finish(
-			// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-			final boolean prefetch,
-			final TagThisDlgClient dlgClient,
-			
-			// Creation parameters.
-			final boolean autoHide,
-			final boolean modal,
-			final EditSuccessfulHandler editSuccessfulHandler,
-			final int left,
-			final int top,
-			final String dlgCaption,
-	
-			// First initAndShow variation parameters.
-			final TagThisDlg first_initAndShowDlg,
-			final String first_binderId,
-			final String first_binderTitle,
-			final BinderType first_binderType,
-	
-			// Second initAndShow variation parameters.
-			final TagThisDlg second_initAndShowDlg,
-			final String second_entryId,
-			final String second_entryTitle,
-			final int second_x,
-			final int second_y) {		
-		if (prefetch) {
-			dlgClient.onSuccess(null);
-		}
-		
-		else if ((null == first_initAndShowDlg) && (null == second_initAndShowDlg)) {
-			TagThisDlg dlg = new TagThisDlg(
-				autoHide,
-				modal,
-				editSuccessfulHandler,
-				left,
-				top,
-				dlgCaption );
-			
-			dlgClient.onSuccess(dlg);
-		}
-		
-		else if (null != first_initAndShowDlg) {
-			first_initAndShowDlg.init(first_binderId, first_binderTitle, first_binderType);
-			first_initAndShowDlg.showDlg();
-		}
-		
-		else if (null != second_initAndShowDlg){
-			second_initAndShowDlg.init( second_entryId, second_entryTitle );
-			second_initAndShowDlg.showDlg( true, second_x, second_y );
-		}
-	}	
-		
-	/**
-	 * Loads the TagThisDlg split point and returns an instance of it
-	 * via the callback.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param editSuccessfulHandler
-	 * @param left
-	 * @param top
-	 * @param dlgCaption
-	 * @param dlgClient
-	 */
-	public static void createAsync(
-			final boolean autoHide,
-			final boolean modal,
-			final EditSuccessfulHandler editSuccessfulHandler,
-			final int left,
-			final int top,
-			final String dlgCaption,
-			final TagThisDlgClient dlgClient) {
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
-			false,
-			dlgClient,
-			
-			// Required creation parameters.
-			autoHide,
-			modal,
-			editSuccessfulHandler,
-			left,
-			top,
-			dlgCaption,
-			
-			// First initAndShow variation parameters ignored.
-			null,
-			null,
-			null,
-			null,
-			
-			// Second initAndShow variation parameters ignored.
-			null,
-			null,
-			null,
-			-1,
-			-1);
-	}
-
-	/**
-	 * Initialize and show the dialog (first variation.)
-	 * 
-	 * @param tagThisDlg
-	 * @param binderId
-	 * @param binderTitle
-	 * @param binderType
-	 */
-	public static void initAndShow(
-			final TagThisDlg tagThisDlg,
-			final String binderId,
-			final String binderTitle,
-			final BinderType binderType) {
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
-			false,
-			null,
-			
-			// Ignore creation parameters.
-			false,
-			false,
-			null,
-			-1,
-			-1,
-			null,
-			
-			// Required First initAndShow variation parameters.
-			tagThisDlg,
-			binderId,
-			binderTitle,
-			binderType,
-
-			// Second initAndShow variation parameters ignored.
-			null,
-			null,
-			null,
-			-1,
-			-1);
-	}
-
-	/**
-	 * Initialize and show the dialog (second variation.)
-	 * 
-	 * @param tagThisDlg
-	 * @param entryId
-	 * @param entryTitle
-	 * @param x
-	 * @param y
-	 */
-	public static void initAndShow(
-			final TagThisDlg tagThisDlg,
-			final String entryId,
-			final String entryTitle,
-			final int x,
-			final int y) {
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
-			false,
-			null,
-			
-			// Creation parameters ignored.
-			false,
-			false,
-			null,
-			-1,
-			-1,
-			null,
-			
-			// First initAndShow variation parameters ignored.
-			null,
-			null,
-			null,
-			null,
-			
-			// Required second initAndShow variation parameters.
-			tagThisDlg,
-			entryId,
-			entryTitle,
-			x,
-			y);
-	}
-	
-	/**
-	 * Causes the split point for the TagThisDlg to be fetched.
-	 * 
-	 * @param dlgClient
-	 */
-	public static void prefetch(TagThisDlgClient dlgClient) {
-		// If we weren't give a TagThisDlgClient...
-		if (null == dlgClient) {
-			// ...create a dummy one...
-			dlgClient = new TagThisDlgClient() {				
-				@Override
-				public void onUnavailable() {
-					// Unused.
-				}
-				
-				@Override
-				public void onSuccess(TagThisDlg dlg) {
-					// Unused.
-				}
-			};
-		}
-
-		// ...and perform the prefetch.
-		doAsyncOperation(
-			// Prefetch parameters.  true -> Prefetch only.
-			true,
-			dlgClient,
-			
-			// Creation parameters ignored.
-			false,
-			false,
-			null,
-			-1,
-			-1,
-			null,
-			
-			// First initAndShow variation parameters ignored.
-			null,
-			null,
-			null,
-			null,
-			
-			// Second initAndShow variation parameters ignored.
-			null,
-			null,
-			null,
-			-1,
-			-1);
-	}
-	
-	public static void prefetch() {
-		prefetch(null);
 	}
 }

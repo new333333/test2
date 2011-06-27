@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -226,7 +225,9 @@ public class PopupMenu extends TeamingPopupPanel
 		 */
 		public void onMouseUp( MouseUpEvent event )
 		{
-			ScheduledCommand cmd = new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				/**
 				 * 

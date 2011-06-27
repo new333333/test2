@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -54,7 +53,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.web.bindery.event.shared.Event;
 
 
 /**
@@ -126,12 +124,16 @@ public class GwtClientHelper {
 	 */
 	public static void deferredAlert(final String msg) {
 		if (hasString(msg)) {
-			ScheduledCommand cmd = new ScheduledCommand() {
-				public void execute() {
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
 					Window.alert(msg);
 				}
 			};
-			Scheduler.get().scheduleDeferred(cmd);
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 
@@ -544,11 +546,11 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Use to pass an Event to the EventBus on GwtMainPage
-	 * @param GWTEvent -  Example TeamingActionEvent extends GWTEvent
+	 * Use to register as an ActionRequestor to the GwtMainPage
+	 * @param requestor
 	 */
-	public static native void jsFireEvent( Event<?> event ) /*-{
-		$wnd.top.ss_fireEvent( event );
+	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
+		$wnd.top.ss_registerActionHandler( requestor );
 	}-*/;
 
 	/**

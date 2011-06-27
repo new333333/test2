@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
+import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -102,7 +102,7 @@ public class GraphicDropWidget extends DropWidget
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
-	public void getPropertiesDlgBox( int xPos, int yPos, DlgBoxClient dBoxClient )
+	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
 		// Have we already created a dialog box?
 		if ( m_graphicDlgBox == null )
@@ -117,7 +117,7 @@ public class GraphicDropWidget extends DropWidget
 			m_graphicDlgBox.initHandlers( this, this );
 		}
 		
-		dBoxClient.onSuccess( m_graphicDlgBox );
+		return m_graphicDlgBox;
 	}// end getPropertiesDlgBox()
 	
 	

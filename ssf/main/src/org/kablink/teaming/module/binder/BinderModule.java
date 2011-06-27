@@ -547,66 +547,6 @@ public interface BinderModule {
 	 */
     public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent)
     	throws AccessControlException;
-
-	/**
-     * Set this inherited.
-     * 
-     * @param binderVersionsInherited
-     * @throws AccessControlException
-     */
-    public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited)
-		throws AccessControlException;
-
-	/**
-     * Set the binderVersionsEnabled flag.
-     * 
-     * @param versionsEnabled
-     * @throws AccessControlException
-     */
-    public void setBinderVersionsEnabled(Long binderId, final Boolean binderVersionsEnabled)
-		throws AccessControlException;
-	//Get the versionsEnabled setting from the first binder it is set in up the ancestor chain
-    public Boolean getBinderVersionsEnabled(Binder binder);
-	/**
-     * Set versionsToKeep.
-     * 
-     * @param versionsToKeep
-     * @throws AccessControlException
-     */
-    public void setBinderVersionsToKeep(Long binderId, final Integer binderVersionsToKeep)
-		throws AccessControlException;
-    //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderVersionsToKeep(Binder binder);
-	/**
-     * Set maxVersionAge.
-     * 
-     * @param maxVersionAge
-     * @throws AccessControlException
-     */
-    public void setBinderMaxVersionAge(Long binderId, final Integer maxVersionAge)
-		throws AccessControlException;
-	//Get the maxVersionAge setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderMaxVersionAge(Binder binder);
-	/**
-     * Set maxFileSize.
-     * 
-     * @param maxFileSize
-     * @throws AccessControlException
-     */
-    public void setBinderMaxFileSize(Long binderId, final Integer maxFileSize)
-		throws AccessControlException;
-	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderMaxFileSize(Binder binder);
-
-	/**
-     * Set the fileEncryptionEnabled flag.
-     * 
-     * @param fileEncryptionEnabled
-     * @throws AccessControlException
-     */
-    public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled)
-		throws AccessControlException;
-
     /**
      * Set the postingEnabled flag.
      * 

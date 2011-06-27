@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -42,19 +44,15 @@ import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -80,8 +78,9 @@ import com.google.gwt.user.client.ui.Label;
  * that displays the page for the selected administration action.
  */
 public class AdminControl extends Composite
-	implements ActionTrigger 
+	implements ActionRequestor, ActionTrigger 
 {
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
 
@@ -494,14 +493,14 @@ public class AdminControl extends Composite
 	}// end AdminActionsTreeControl
 
 	
-	/*
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	/**
+	 * 
 	 */
-	private AdminControl()
+	public AdminControl()
 	{
-		final FlowPanel mainPanel = new FlowPanel();
+		FlowPanel mainPanel;
+
+		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "adminControl" );
 		
 		// Create the control that holds all of the administration actions
@@ -509,29 +508,28 @@ public class AdminControl extends Composite
 		mainPanel.add( m_adminActionsTreeControl );
 		
 		// Create a control to hold the administration page for the selection administration action.
-		ContentControl.createAsync(
-				"adminContentControl",
-				new ContentControlClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( ContentControl contentCtrl )
-			{
-				m_contentControl = contentCtrl;
-				m_contentControl.addStyleName( "adminContentControl" );
-				mainPanel.add( m_contentControl );
-			}// end onSuccess()
-		} );
+		m_contentControl = new ContentControl( "adminContentControl" );
+		m_contentControl.addStyleName( "adminContentControl" );
+		mainPanel.add( m_contentControl );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end AdminControl()
+	
+	
+
+	/**
+	 * Called to add an ActionHandler to this AdminControl.
+	 * 
+	 * Implements the ActionRequestor.addActionHandler() interface method.
+	 * 
+	 * @param actionHandler
+	 */
+	public void addActionHandler( ActionHandler actionHandler )
+	{
+		m_actionHandlers.add( actionHandler );
+	}// end addActionHandler()
+
 
 	/**
 	 * This method gets called when the user selects one of the administration actions.
@@ -753,35 +751,16 @@ public class AdminControl extends Composite
 	/**
 	 * 
 	 */
-	public static void showAdminInfoDlg( final GwtUpgradeInfo upgradeInfo, final int x, final int y )
+	public static void showAdminInfoDlg( GwtUpgradeInfo upgradeInfo, int x, int y )
 	{
-		AdminInfoDlg.createAsync( false, true, x, y, new AdminInfoDlgClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( final AdminInfoDlg adminInfoDlg )
-			{
-				ScheduledCommand initAndShowDlg = new ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						showAdminInfoDlgImpl( adminInfoDlg, upgradeInfo );
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( initAndShowDlg );
-			}// onSuccess()
-		} );
+		AdminInfoDlg adminInfoDlg = null;
+		
+		// Invoke the "Administration Information" dialog.
+		adminInfoDlg = new AdminInfoDlg( false, true, x, y );
+		
+		adminInfoDlg.refreshContent( upgradeInfo );
+		adminInfoDlg.show();
 	}// end showAdminInfoDlg()
-	
-	private static void showAdminInfoDlgImpl( final AdminInfoDlg adminInfoDlg, final GwtUpgradeInfo upgradeInfo ) {
-		AdminInfoDlg.initAndShow( adminInfoDlg, upgradeInfo );
-	}
 	
 	
 	/**
@@ -853,7 +832,12 @@ public class AdminControl extends Composite
 	 */
 	public void triggerAction( TeamingAction action, Object obj )
 	{
-		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
+		// Scan the ActionHandler's that have been registered...
+		for ( Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); )
+		{
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
 	}// end triggerAction()
 	
 	/**
@@ -864,39 +848,5 @@ public class AdminControl extends Composite
 		// Always use the initial form of the method.
 		triggerAction( action, null );
 	}// end triggerAction()
-
-	/**
-	 * Callback interface to interact with the admin control
-	 * asynchronously after it loads. 
-	 */
-	public interface AdminControlClient {
-		void onSuccess(AdminControl adminCtrl);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the AdminControl split point and returns an instance of it
-	 * via the callback.
-	 * 
-	 * @param adminCtrlClient
-	 */
-	public static void createAsync( final AdminControlClient adminCtrlClient )
-	{
-		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess()
-			{
-				AdminControl adminCtrl = new AdminControl();
-				adminCtrlClient.onSuccess( adminCtrl );
-			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
-				adminCtrlClient.onUnavailable();
-			}// end onFailure()
-		} );
-	}// end createAsync()
+	
 }// end AdminControl

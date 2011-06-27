@@ -56,7 +56,4 @@ public interface WorkflowSupport  {
     public void removeWorkflowState(WorkflowState workflowState);
     public void removeWorkflowResponse(WorkflowResponse workflowResponse);
     public void setWorkflowChange(HistoryStamp workflowChange);
-    public void startWorkflowStateLoopDetector();
-    public void stopWorkflowStateLoopDetector();
-    public boolean checkForWorkflowStateLoop(WorkflowState ws);
 }

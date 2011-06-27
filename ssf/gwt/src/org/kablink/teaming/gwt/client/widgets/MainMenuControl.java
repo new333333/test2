@@ -33,15 +33,15 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
@@ -50,11 +50,11 @@ import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
 import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
-import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite.SearchOptionsCompositeClient;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup.ViewsMenuPopupClient;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -64,15 +64,11 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -85,7 +81,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * 
  * @author drfoster@novell.com
  */
-public class MainMenuControl extends Composite implements ActionTrigger {
+public class MainMenuControl extends Composite implements ActionRequestor, ActionTrigger {
 	private BinderInfo						m_contextBinder;
 	private ContextLoadInfo					m_lastContextLoaded;
 	private FlowPanel						m_buttonsPanel;
@@ -93,6 +89,7 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	private GwtMainPage						m_mainPage;
 	private GwtTeamingMainMenuImageBundle	m_images         = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages 				m_messages       = GwtTeaming.getMessages();
+	private List<ActionHandler>				m_actionHandlers = new ArrayList<ActionHandler>();
 	private MenuBarBox						m_closeAdminBox;
 	private MenuBarBox						m_myFavoritesBox;
 	private MenuBarBox						m_myTeamsBox;
@@ -128,14 +125,10 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		}
 	}
 	
-	/*
+	/**
 	 * Constructor method.
-	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
 	 */
-	private MainMenuControl(GwtMainPage mainPage) {
+	public MainMenuControl(GwtMainPage mainPage) {
 		// Store the parameter.
 		m_mainPage = mainPage;
 		
@@ -163,45 +156,19 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 				final TeamingPopupPanel soPopup = new TeamingPopupPanel(true, false);
 				GwtClientHelper.rollDownPopup(soPopup);
 				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
-				SearchOptionsComposite.createAsync(
-						soPopup,
-						mainMenu,
-						new SearchOptionsCompositeClient() {					
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(SearchOptionsComposite soc) {
-						// Connect things together...
-						soc.addStyleName("mainMenuSearchOptions");
-						soPopup.setWidget(soc);
-						soPopup.setGlassEnabled(true);
-						soPopup.setGlassStyleName("mainMenuPopup_Glass");
-						
-						// ...and show the search options popup.  We do
-						// ...this as a scheduled command so that the
-						// ...asynchronous processing related to the
-						// ...creation of the SearchOptionsComposite
-						// ...has a chance to complete.
-						ScheduledCommand showSOPopup = new ScheduledCommand() {
-							@Override
-							public void execute() {
-								// Position and show the popup as per
-								// the position of the search panel on
-								// the menu.
-								soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-									public void setPosition(int offsetWidth, int offsetHeight) {
-										int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
-										int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
-										soPopup.setPopupPosition(soPopupLeft, soPopupTop);
-									}
-								});
-							}
-						};
-						Scheduler.get().scheduleDeferred(showSOPopup);
+				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, mainMenu);
+				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
+				soPopup.setWidget(searchOptionsComposite);
+				soPopup.setGlassEnabled(true);
+				soPopup.setGlassStyleName("mainMenuPopup_Glass");
+				
+				// ...and position and show it as per the position of
+				// ...the search panel on the menu.
+				soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+					public void setPosition(int offsetWidth, int offsetHeight) {
+						int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
+						int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
+						soPopup.setPopupPosition(soPopupLeft, soPopupTop);
 					}
 				});
 			}});
@@ -211,6 +178,18 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		// ...and finally, all composites must call initWidget() in
 		// ...their constructors.
 		initWidget(menuPanel);
+	}
+
+	/**
+	 * Called to add an ActionHandler to this MainMenuControl.
+	 * 
+	 * Implements the ActionRequestor.addActionHandler() interface
+	 * method.
+	 * 
+	 * @param actionHandler
+	 */
+	public void addActionHandler(ActionHandler actionHandler) {
+		m_actionHandlers.add(actionHandler);
 	}
 
 	/*
@@ -271,41 +250,30 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	 * bar.
 	 */
 	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
-		String manageNameCalc;
+		String manageName;
 		switch (m_contextBinder.getBinderType()) {
 		default:
-		case OTHER:                                                          return;
-		case FOLDER:     manageNameCalc = m_messages.mainMenuBarFolder();    break;
-		case WORKSPACE:  manageNameCalc = m_messages.mainMenuBarWorkspace(); break;
+		case OTHER:                                                      return;
+		case FOLDER:     manageName = m_messages.mainMenuBarFolder();    break;
+		case WORKSPACE:  manageName = m_messages.mainMenuBarWorkspace(); break;
 		}
-		final String manageName = manageNameCalc;
-
-		ManageMenuPopup.createAsync(this, manageName, new ManageMenuPopupClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(final ManageMenuPopup mmp) {
-				mmp.setCurrentBinder(m_contextBinder);
-				mmp.setToolbarItemList(toolbarItemList);
-				mmp.setTeamManagementInfo(tmi);
-				if (mmp.shouldShowMenu()) {
-					final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true);
-					manageBox.addClickHandler(
-						new ClickHandler() {
-							public void onClick(ClickEvent event) {
-								if (mmp.isShowing())
-								     mmp.hideMenu();
-								else mmp.showMenu(manageBox);
-							}
-						});
-					m_contextPanel.add(manageBox);
-				}
-			}
-		});
+		
+		final ManageMenuPopup mmp = new ManageMenuPopup(this, manageName);
+		mmp.setCurrentBinder(m_contextBinder);
+		mmp.setToolbarItemList(toolbarItemList);
+		mmp.setTeamManagementInfo(tmi);
+		if (mmp.shouldShowMenu()) {
+			final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true);
+			manageBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						if (mmp.isShowing())
+						     mmp.hideMenu();
+						else mmp.showMenu(manageBox);
+					}
+				});
+			m_contextPanel.add(manageBox);
+		}
 	}
 	
 	/*
@@ -402,32 +370,22 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	 * Adds the Views item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
-		ViewsMenuPopup.createAsync(this, inSearch, searchTabId, new ViewsMenuPopupClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(final ViewsMenuPopup vmp) {
-				vmp.setCurrentBinder(m_contextBinder);
-				vmp.setToolbarItemList(toolbarItemList);
-				if (vmp.shouldShowMenu()) {
-					final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), true);
-					actionsBox.addClickHandler(
-						new ClickHandler() {
-							public void onClick(ClickEvent event) {
-								if (vmp.isShowing())
-								     vmp.hideMenu();
-								else vmp.showMenu(actionsBox);
-							}
-						});
-					m_contextPanel.add(actionsBox);
-				}
-			}
-		});
+	private void addViewsToContext(List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
+		final ViewsMenuPopup vmp = new ViewsMenuPopup(this, inSearch, searchTabId);
+		vmp.setCurrentBinder(m_contextBinder);
+		vmp.setToolbarItemList(toolbarItemList);
+		if (vmp.shouldShowMenu()) {
+			final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), true);
+			actionsBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						if (vmp.isShowing())
+						     vmp.hideMenu();
+						else vmp.showMenu(actionsBox);
+					}
+				});
+			m_contextPanel.add(actionsBox);
+		}
 	}
 	
 	/*
@@ -609,7 +567,8 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	 * Asynchronously shows the context that was loaded.
 	 */
 	private void showContextAsync(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
-		ScheduledCommand showContext = new ScheduledCommand() {
+		Scheduler.ScheduledCommand showContext;
+		showContext = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				showContextNow(binderInfo, binderId, inSearch, searchTabId);
@@ -656,7 +615,8 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	 * Asynchronously shows the toolbar items.
 	 */
 	private void showToolbarItemsAsync(final boolean inSearch, final String searchTabId, final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
-		ScheduledCommand showTBIs = new ScheduledCommand() {
+		Scheduler.ScheduledCommand showTBIs;
+		showTBIs = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				showToolbarItemsNow(inSearch, searchTabId, toolbarItemList, tmi);
@@ -693,44 +653,15 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
 	}
 	
 	public void triggerAction(TeamingAction action) {
 		// Always use the initial form of the method.
 		triggerAction(action, null);
-	}
-	
-	/**
-	 * Callback interface to interact with the menu asynchronously
-	 * after it loads. 
-	 */
-	public interface MainMenuControlClient {
-		void onSuccess(MainMenuControl mainMenuCtrl);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the MainMenuControl split point and returns an instance of
-	 * it via the callback.
-	 * 
-	 * @param mainPage
-	 * @param menuClient
-	 */
-	public static void createAsync(final GwtMainPage mainPage, final MainMenuControlClient menuClient) {
-		GWT.runAsync(MainMenuControl.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				MainMenuControl mainMenuCtrl = new MainMenuControl(mainPage);
-				menuClient.onSuccess(mainMenuCtrl);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainMenuControl() );
-				menuClient.onUnavailable();
-			}
-		});
 	}
 }

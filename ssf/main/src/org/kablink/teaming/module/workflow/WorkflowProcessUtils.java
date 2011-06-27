@@ -1019,9 +1019,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 				} else if (type.equals("transitionImmediate")) {
 					setVariables(condition, executionContext, entry, state);
 					if (debugEnabled) logger.debug("Take auto transition " + state.getState() + "." + toState);
-					if (!entry.checkForWorkflowStateLoop(state)) {
-						return toState;					
-					}
+					return toState;					
 				}
 
 			}

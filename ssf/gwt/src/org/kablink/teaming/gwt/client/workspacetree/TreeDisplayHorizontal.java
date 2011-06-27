@@ -41,11 +41,9 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -97,7 +95,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		 * Asynchronously expands the current node.
 		 */
 		private void doExpandNodeAsync(final TreeInfo expandedTI) {
-			ScheduledCommand expander = new ScheduledCommand() {
+			Scheduler.ScheduledCommand expander;
+			expander = new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					doExpandNodeNow(expandedTI);
@@ -135,7 +134,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// expanding it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
-					getRpcService().expandHorizontalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketInfo(), new AsyncCallback<TreeInfo>() {
+					getRpcService().expandHorizontalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,

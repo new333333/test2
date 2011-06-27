@@ -551,13 +551,4 @@ public abstract class DlgBox extends PopupPanel
 	{
 		m_errorPanel.setVisible( true );
 	}
-	
-	/**
-	 * Callback interface to interact with a dialog asynchronously
-	 * after it loads. 
-	 */
-	public interface DlgBoxClient {
-		void onSuccess(DlgBox dlg);
-		void onUnavailable();
-	}
 }

@@ -448,15 +448,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				 getAdminModule().setBinderQuota(destination, quotaDestination);
 			 }
 		 }
-		 //Copy version controls, etc
-		 if (source.getVersionsEnabled() != null) {
-			 //Version controls are not inherited, so copy them
-			 destination.setVersionsEnabled(source.getVersionsEnabled());
-			 destination.setVersionsToKeep(source.getVersionsToKeep());
-			 destination.setMaxVersionAge(source.getMaxVersionAge());
-			 destination.setMaxFileSize(source.getMaxFileSize());
-		 }
-		 destination.setFileEncryptionEnabled(source.isFileEncryptionEnabled());
 		 return destination;		
 	}
 	 protected TemplateBinder addTemplate(TemplateBinder parentConfig, TemplateBinder srcConfig) {

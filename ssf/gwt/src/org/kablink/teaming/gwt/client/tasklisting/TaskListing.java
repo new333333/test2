@@ -47,10 +47,7 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -219,7 +216,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 		 * Asynchronously sets/clears a filter.
 		 */
 		private void filterListAsync(final String filter) {
-			ScheduledCommand doFilter = new ScheduledCommand() {
+			Scheduler.ScheduledCommand doFilter;
+			doFilter = new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					filterListNow(filter);
@@ -291,14 +289,10 @@ public class TaskListing extends Composite implements ActionTrigger {
 		}
 	}
 	
-	/*
+	/**
 	 * Class constructor.
-	 * 
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
 	 */
-	private TaskListing() {
+	public TaskListing() {
 		super();
 		
 		// Initialize the JSNI components...
@@ -339,7 +333,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 		m_taskRootDIV.add(m_taskListingDIV);
 		
 		// ...populate the task panels...
-		ScheduledCommand populateCommand = new ScheduledCommand() {
+		Scheduler.ScheduledCommand populateCommand;
+		populateCommand = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateTaskDIVs();
@@ -625,7 +620,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * on the current size of the content frame.
 	 */
 	public void resize() {
-		ScheduledCommand resizeCommand = new ScheduledCommand() {
+		Scheduler.ScheduledCommand resizeCommand;
+		resizeCommand = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				resizeNow();
@@ -687,7 +683,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * Shows the TaskBundle into the task listing DIV.
 	 */
 	private void showTaskBundle(final long readTime) {
-		ScheduledCommand showCommand = new ScheduledCommand() {
+		Scheduler.ScheduledCommand showCommand;
+		showCommand = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				showTaskBundleNow(readTime);
@@ -703,7 +700,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 		final long showTime = m_taskTable.showTasks(m_taskBundle);
 		if (newTaskTable) m_taskListingDIV.add(m_taskTable);
 		if (m_taskBundle.getIsDebug()) {
-			ScheduledCommand showTimeCommand = new ScheduledCommand() {
+			Scheduler.ScheduledCommand showTimeCommand;
+			showTimeCommand = new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					Window.alert(m_messages.taskDebug_times(
@@ -733,36 +731,4 @@ public class TaskListing extends Composite implements ActionTrigger {
 	public void triggerAction(TeamingAction action, Object obj) {
 		m_taskTable.handleAction(action, obj);
 	}	
-	
-	/**
-	 * Callback interface to interact with the task listing
-	 * asynchronously after it loads. 
-	 */
-	public interface TaskListingClient {
-		void onSuccess(TaskListing taskListing);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the TaskListing split point and returns an instance of it
-	 * via the callback.
-	 * 
-	 * @param taskListingClient
-	 */
-	public static void createAsync(final TaskListingClient taskListingClient) {
-		GWT.runAsync(TaskListing.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				TaskListing taskListing = new TaskListing();
-				taskListingClient.onSuccess(taskListing);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_TaskListing() );
-				taskListingClient.onUnavailable();
-			}
-		});
-	}
 }

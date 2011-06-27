@@ -34,11 +34,16 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
-import org.kablink.teaming.gwt.client.GwtBrandingData;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -59,11 +64,12 @@ import com.google.gwt.user.client.ui.Image;
  * This widget will display branding data 
  */
 public class BrandingPanel extends Composite
-	implements LoadHandler
+	implements ActionRequestor, LoadHandler
 {
 	public static final String NO_IMAGE = "__no image__";
 	public static final String DEFAULT_TEAMING_IMAGE = "__default teaming image__";
 	
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private RequestInfo m_requestInfo = null;
 	private FlowPanel m_mainPanel = null;
 	private FlowPanel m_bgPanel;
@@ -294,10 +300,10 @@ public class BrandingPanel extends Composite
 	 * Called to add an ActionHandler to this masthead
 	 * @param actionHandler
 	 */
-//	public void addActionHandler( ActionHandler actionHandler )
-//	{
-//		m_actionHandlers.add( actionHandler );
-//	}// end addActionHandler()
+	public void addActionHandler( ActionHandler actionHandler )
+	{
+		m_actionHandlers.add( actionHandler );
+	}// end addActionHandler()
 	
 
 	/**
@@ -379,8 +385,12 @@ public class BrandingPanel extends Composite
 		{
 			public void execute()
 			{
-				// Calling each OnSizeChangeHandler
-				GwtTeaming.fireEvent(new TeamingActionEvent(TeamingAction.SIZE_CHANGED, this ));
+				// Notify all OnSizeChangeHandler that have registered.
+				for (Iterator<ActionHandler> oschIT = m_actionHandlers.iterator(); oschIT.hasNext(); )
+				{
+					// Calling each OnSizeChangeHandler
+					oschIT.next().handleAction( TeamingAction.SIZE_CHANGED, this );
+				}
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );

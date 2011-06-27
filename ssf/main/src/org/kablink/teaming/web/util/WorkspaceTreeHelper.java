@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -177,7 +177,13 @@ public class WorkspaceTreeHelper {
 				binder = bs.getProfileModule().addUserWorkspace(user, null);
 				if (binder == null) {
 					// Redirect to profile list
-					return redirectToProfileListing(response, String.valueOf(binderId), entryIdString, model);
+					PortletURL reloadUrl = response.createRenderURL();
+					reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+					reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+					reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
+					reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
+					model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
+					return WebKeys.VIEW_WORKSPACE;
 				}
 				workspaceId = binder.getId(); 
 			} else if (workspaceId != null) {
@@ -193,9 +199,10 @@ public class WorkspaceTreeHelper {
 					BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
 					if (WebHelper.isUserLoggedIn(request) && 
 							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-						// Access is not allowed to the workspace.
-						// Redirect to the profile list.
-						return redirectToProfileListing(response, String.valueOf(binderId), entryIdString, model);
+						//Access is not allowed
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
+						return WebKeys.VIEW_ACCESS_DENIED;
 					} else {
 						//Please log in
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
@@ -935,6 +942,21 @@ public class WorkspaceTreeHelper {
 			//adminMenuCreated=true;	
 		}
 		
+		//Set Binder Quota
+		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration) ||
+				bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			if (bs.getAdminModule().isBinderQuotaEnabled()) {
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_BINDER_QUOTA);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_SHOW_MENU, "true");
+				toolbar.addToolbarMenuItem("1_administration", "configuration", 
+						NLT.get("toolbar.menu.manage_workspace_quota"), url, qualifiers);
+			}
+		}
+		
 		//if no menu items were added, remove the empty menu
 		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
 		
@@ -1290,16 +1312,6 @@ public class WorkspaceTreeHelper {
 		String[] as = new String[principals.size()];
 		principals.toArray(as);
 		return as;
-	}
-	
-	private static String redirectToProfileListing(RenderResponse response, String binderIdString, String entryIdString, Map model) {
-		PortletURL reloadUrl = response.createRenderURL();
-		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderIdString);
-		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-		reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
-		reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
-		model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
-		return WebKeys.VIEW_WORKSPACE;
 	}
 	
 	

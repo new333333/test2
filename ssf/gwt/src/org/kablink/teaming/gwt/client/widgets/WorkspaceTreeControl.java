@@ -32,29 +32,29 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -67,10 +67,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  * @author drfoster@novell.com
  */
-public class WorkspaceTreeControl extends Composite implements ActionTrigger {
+public class WorkspaceTreeControl extends Composite implements ActionRequestor, ActionTrigger {
 	private GwtMainPage m_mainPage;
 	private TreeDisplayBase m_treeDisplay;
 	private TreeMode m_tm;
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	
 	/**
 	 * The mode this WorkspaceTreeControl is running in.
@@ -83,15 +84,14 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 		VERTICAL,
 	}
 	
-	/*
+	/**
 	 * Constructs a WorkspaceTreeControl based on the information
 	 * in the RequestInfo object.
 	 *
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
+	 * @param mainPage
+	 * @param tm
 	 */
-	private WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
+	public WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
 		m_mainPage = mainPage;
 		m_tm       = tm;
 
@@ -149,6 +149,17 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget(mainPanel);
+	}
+
+	/**
+	 * Called to add an ActionHandler to this WorkspaceTreeControl.
+	 * 
+	 * Implements the ActionRequestor.addActionHandler() method.
+	 * 
+	 * @param actionHandler
+	 */
+	public void addActionHandler(ActionHandler actionHandler) {
+		m_actionHandlers.add(actionHandler);
 	}
 
 	/**
@@ -244,7 +255,8 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 		// mode.  Is it?
 		if (TreeMode.VERTICAL == m_tm) {
 			// Yes!  Force it to lay itself out again.
-			ScheduledCommand layouter = new ScheduledCommand() {
+			Scheduler.ScheduledCommand layouter;
+			layouter = new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
 					relayoutPageNow();
@@ -274,7 +286,8 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * Asynchronously renders a horizontal tree.
 	 */
 	private void renderHTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final String selectedBinderId, final List<TreeInfo> tiList) {
-		ScheduledCommand renderHTree = new ScheduledCommand() {
+		Scheduler.ScheduledCommand renderHTree;
+		renderHTree = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				renderHTreeNow(mainPanel, wsTree, selectedBinderId, tiList);
@@ -295,7 +308,8 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * Asynchronously renders a vertical tree.
 	 */
 	private void renderVTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final String selectedBinderId, final TreeInfo ti) {
-		ScheduledCommand renderVTree = new ScheduledCommand() {
+		Scheduler.ScheduledCommand renderVTree;
+		renderVTree = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				renderVTreeNow(mainPanel, wsTree, selectedBinderId, ti);
@@ -307,7 +321,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	/*
 	 * Synchronously renders a vertical tree.
 	 */
-	private void renderVTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, final String selectedBinderId, TreeInfo ti) {
+	private void renderVTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, String selectedBinderId, TreeInfo ti) {
 		// Construct the vertical tree display.
 		m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
 		
@@ -315,7 +329,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 		if (m_mainPage.getRequestInfo().isShowWhatsNewOnLogin()) {
 			// Yes!  Then we enter activity stream mode by
 			// default.  Tell the menu about the context...
-			m_mainPage.setMenuContext(selectedBinderId, false, "");
+			m_mainPage.getMainMenu().setContext(selectedBinderId, false, "");
 			
 			// ...and enter activity stream mode.
 			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
@@ -360,7 +374,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * Called to reset the main menu context to that previously loaded.
 	 */
 	public void resetMenuContext() {
-		m_mainPage.resetMenuContext();
+		m_mainPage.getMainMenu().resetContext();
 	}
 	
 	/**
@@ -383,46 +397,15 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
 	}
 	
 	public void triggerAction(TeamingAction action) {
 		// Always use the initial form of the method.
 		triggerAction(action, null);
-	}
-	
-	/**
-	 * Callback interface to interact with the workspace tree control
-	 * asynchronously after it loads. 
-	 */
-	public interface WorkspaceTreeControlClient {
-		void onSuccess(WorkspaceTreeControl wsTreeCtrl);
-		void onUnavailable();
-	}
-
-	/**
-	 * Loads the WorkspaceTreeControl split point and returns an
-	 * instance of it via the callback.
-	 * 
-	 * @param mainPage
-	 * @param selectedBinderId
-	 * @param mode
-	 * @param wsTreeCtrlClient
-	 */
-	public static void createAsync(final GwtMainPage mainPage, final String selectedBinderId, final TreeMode mode, final WorkspaceTreeControlClient wsTreeCtrlClient) {
-		GWT.runAsync(WorkspaceTreeControl.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				WorkspaceTreeControl wsTreeCtrl = new WorkspaceTreeControl(mainPage, selectedBinderId, mode);
-				wsTreeCtrlClient.onSuccess(wsTreeCtrl);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_WorkspaceTreeControl() );
-				wsTreeCtrlClient.onUnavailable();
-			}
-		});
 	}
 }

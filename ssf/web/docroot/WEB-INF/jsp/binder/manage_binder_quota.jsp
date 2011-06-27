@@ -79,21 +79,8 @@ function ss_checkIfQuotaValid(s) {
 </script>
 
 <div class="ss_style ss_portlet">
-	<div style="padding:10px;">
-		<br>
-		
-		<c:if test="${!empty ssException}">
-		  <font color="red">
-		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
-		  </font>
-		  <br/>
-		</c:if>
-	
-<c:set var="ss_tab_quota" value="on"/>
-<%@ include file="/WEB-INF/jsp/binder/configure_tabs.jsp" %>
-
-<div style="display:block;" class="wg-tab-content marginbottom3">
-
+<ssf:form titleTag="${tag}">
+<br/>
 <c:if test="${ssBinder.entityType == 'folder'}">
   <span><ssf:nlt tag="access.currentFolder"/></span>
 </c:if>
@@ -117,6 +104,7 @@ function ss_checkIfQuotaValid(s) {
   scope="request" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
+<br/>
 <form class="ss_form" method="post" style="display:inline;" 
 	action="<ssf:url action="manage_binder_quota" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -201,8 +189,7 @@ function ss_checkIfQuotaValid(s) {
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
   onClick="ss_cancelButtonCloseWindow();return false;">
 </form>
-</div>
-</div>
+</ssf:form>
 </div>
 
 </body>

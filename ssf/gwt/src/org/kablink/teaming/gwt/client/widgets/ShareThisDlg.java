@@ -51,7 +51,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -634,32 +633,17 @@ public class ShareThisDlg extends DlgBox
 
 		// Add the find control.
 		{
+			FlexTable table;
 			HTMLTable.RowFormatter rowFormatter;
 
-			final FlexTable table = new FlexTable();
+			table = new FlexTable();
 			rowFormatter = table.getRowFormatter();
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			mainPanel.add( table );
 			
-			FindCtrl.createAsync(
-					this,
-					GwtSearchCriteria.SearchType.USER,
-					new FindCtrlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// onUnavailable()
-				
-				@Override
-				public void onSuccess( FindCtrl findCtrl )
-				{
-					m_findCtrl = findCtrl;
-					m_findCtrl.setIsSendingEmail( true );
-					table.setWidget( 0, 0, m_findCtrl );
-				}// end onSuccess()
-			} );
+			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.USER );
+			m_findCtrl.setIsSendingEmail( true );
+			table.setWidget( 0, 0, m_findCtrl );
 		}
 		
 		// Add some space

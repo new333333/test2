@@ -71,7 +71,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
@@ -82,8 +81,8 @@ import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -146,8 +145,8 @@ public interface GwtRpcServiceAsync
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public void expandHorizontalBucket(         HttpRequestInfo ri, BucketInfo bucketInfo, AsyncCallback<TreeInfo>       callback );
-	public void expandVerticalBucket(           HttpRequestInfo ri, BucketInfo bucketInfo, AsyncCallback<TreeInfo>       callback );
+	public void expandHorizontalBucket(         HttpRequestInfo ri, List<Long> bucketList, AsyncCallback<TreeInfo>       callback );
+	public void expandVerticalBucket(           HttpRequestInfo ri, List<Long> bucketList, AsyncCallback<TreeInfo>       callback );
 	public void getHorizontalTree(              HttpRequestInfo ri, String     binderId,   AsyncCallback<List<TreeInfo>> callback );
 	public void getHorizontalNode(              HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
 	public void getRootWorkspaceId(             HttpRequestInfo ri, String     binderId,   AsyncCallback<String>         callback );

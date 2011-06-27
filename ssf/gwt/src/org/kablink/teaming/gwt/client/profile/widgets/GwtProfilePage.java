@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,21 +33,24 @@
 
 package org.kablink.teaming.gwt.client.profile.widgets;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
-import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -56,24 +59,20 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
-public class GwtProfilePage extends Composite implements ActionTrigger {
+public class GwtProfilePage extends Composite implements ActionRequestor, ActionTrigger {
 	// profileRequestInfo is now public static to match the definition
 	// of the m_requestInfo in GwtMainPage.  This was necessary for the
 	// proper operation of HttpRequestInfo.createHttpRequestInfo() from
 	// both the main page and the profile page.
 	public static ProfileRequestInfo profileRequestInfo = null;
 	
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private ProfileMainPanel profileMainPanel;
 	private ProfileSidePanel profileSidePanel;
 	private FlowPanel profilePanel;
 	private FlowPanel mainProfilePage;
 
-	/*
-	 * Note that the class constructor is private to facilitate code
-	 * splitting.  All instantiations of this object must be done
-	 * through its createAsync().
-	 */
-	private GwtProfilePage() {
+	public GwtProfilePage() {
 		// Get information about the request we are dealing with.
 		profileRequestInfo = getProfileRequestInfo();
 
@@ -113,7 +112,7 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 
 		//Register with GwtMainPage, so we can fire an event
 		try {
-			GwtClientHelper.jsFireEvent(null);
+			GwtClientHelper.jsRegisterActionHandler((ActionRequestor) this);
 		} catch(Exception e) {
 			if(GwtClientHelper.jsIsIE()) {
 				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
@@ -216,6 +215,13 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
 	}-*/;
+
+	/**
+	 * Add an action Handler.  This handler will perform the necessary action when an action is triggered.
+	 */
+	public void addActionHandler(ActionHandler actionHandler) {
+		m_actionHandlers.add(actionHandler);
+	}
 	
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
@@ -226,7 +232,11 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		GwtClientHelper.jsFireEvent(new TeamingActionEvent(action, obj));
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
 	}
 	
 	/**
@@ -241,50 +251,5 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 	public void updateQuota(String usedQuota) {
 		profileSidePanel.updateQuota(usedQuota);
 	}
-	
-	/**
-	 * Callback interface to interact with the profile page
-	 * asynchronously after it loads. 
-	 */
-	public interface GwtProfilePageClient {
-		void onSuccess(GwtProfilePage profilePage);
-		void onUnavailable();
-	}
 
-	/**
-	 * Loads the GwtProfilePage split point and returns an
-	 * instance of it via the callback.
-	 * 
-	 * @param profilePageClient
-	 */
-	public static void createAsync(final GwtProfilePageClient profilePageClient) {
-		// The GwtProfilePage is dependent on the
-		// ProfileAttributeWidget.  Make sure it has been fetched
-		// before trying to use it.
-		ProfileAttributeWidget.prefetch(new ProfileAttributeWidgetClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-				profilePageClient.onUnavailable();
-			}
-			
-			@Override
-			public void onSuccess(ProfileAttributeWidget paw, int row) {
-				GWT.runAsync(GwtProfilePage.class, new RunAsyncCallback() {			
-					@Override
-					public void onSuccess() {
-						GwtProfilePage profilePage = new GwtProfilePage();
-						profilePageClient.onSuccess(profilePage);
-					}
-					
-					@Override
-					public void onFailure(Throwable reason) {
-						Window.alert(GwtTeaming.getMessages().codeSplitFailure_ProfilePage());
-						profilePageClient.onUnavailable();
-					}
-				});
-			}
-		});
-	}
 }

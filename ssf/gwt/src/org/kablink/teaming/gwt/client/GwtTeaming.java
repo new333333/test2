@@ -33,23 +33,17 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.admin.ExtensionsConfig;
-import org.kablink.teaming.gwt.client.GwtMainPage.GwtMainPageClient;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
-import org.kablink.teaming.gwt.client.lpe.LandingPageEditor.LandingPageEditorClient;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl;
-import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl.UserStatusControlClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
-import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.web.bindery.event.shared.Event;
-import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -62,7 +56,6 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		=                       GWT.create( GwtTeamingMainMenuImageBundle.class      );
 	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
 	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
-	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class );
 	
 	private static GwtMainPage	m_mainPage = null;	
 	
@@ -190,150 +183,78 @@ public class GwtTeaming implements EntryPoint
 		}
 		
 		// Are we in the the Landing Page Editor?
-		final RootPanel lpRootPanel = RootPanel.get( "gwtLandingPageEditorDiv" );
-		if ( lpRootPanel != null )
+		rootPanel = RootPanel.get( "gwtLandingPageEditorDiv" );
+		if ( rootPanel != null )
 		{
-			// Yes!  Load the landing page editor's split point.
-			LandingPageEditor.createAsync(
-					new LandingPageEditorClient() {
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( LandingPageEditor lpe )
-				{
-					// Add the new Landing Page Editor to the page.
-					lpRootPanel.add( lpe );
-				}// end onSuccess()
-			} );
+			LandingPageEditor	lpEditor;
+			
+			// Yes
+			// Create a Landing Page Editor and add it to the page.
+			lpEditor = new LandingPageEditor();
+			rootPanel.add( lpEditor );
 			
 			return;
 		}
 
 		// Are we in the the Extensions page?
-		final RootPanel extRootPanel = RootPanel.get( "gwtExtensionsConfigDiv" );
-		if ( extRootPanel != null )
+		rootPanel = RootPanel.get( "gwtExtensionsConfigDiv" );
+		if ( rootPanel != null )
 		{
-			// Yes!  Load the extensions page split point.
-			ExtensionsConfig.createAsync( new ExtensionsConfig.ExtensionsConfigClient()
-			{				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( ExtensionsConfig ec )
-				{
-					// Add extensions configuration utility to the page.
-					extRootPanel.add(ec);
-				}// end onSuccess()
-			} );
+			ExtensionsConfig cfgExtension;
+			
+			// Yes
+			// Create the Extensions ui and add it to the page.
+			cfgExtension = new ExtensionsConfig();
+			rootPanel.add( cfgExtension );
 			
 			return;
 		}
 		
 		// Are we in the main page?
-		final RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
-		if ( mainRootPanel != null )
+		rootPanel = RootPanel.get( "gwtMainPageDiv" );
+		if ( rootPanel != null )
 		{
-			// Yes!  Load the main page's split point.
-			GwtMainPage.createAsync(
-					new GwtMainPageClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( GwtMainPage mainPage )
-				{
-					m_mainPage = mainPage;
-					mainRootPanel.add( mainPage );
-				}// end onSuccess()
-			} );
+			// Create the Teaming main page.
+			m_mainPage = new GwtMainPage();
+			rootPanel.add( m_mainPage );
 			
 			return;
 		}
 		
 		
 		// Are we loading the profile page?
-		final RootPanel profileRootPanel = RootPanel.get( "gwtProfileDiv" );
-		if ( profileRootPanel != null )
+		rootPanel = RootPanel.get( "gwtProfileDiv" );
+		if ( rootPanel != null )
 		{
-			// Yes!  Load the profile page's split point.
-			GwtProfilePage.createAsync(
-					new GwtProfilePage.GwtProfilePageClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( GwtProfilePage profilePage )
-				{
-					profileRootPanel.add( profilePage );
-				}// end onSuccess()
-			} );
+			GwtProfilePage profilePage;
+			
+			profilePage = new GwtProfilePage();
+			rootPanel.add( profilePage );
 					
 			return;
 		}
 
 		
 		// Are we loading the profile page?
-		final RootPanel usRootPanel = RootPanel.get( "gwtUserStatusDiv" );
-		if ( usRootPanel != null )
+		rootPanel = RootPanel.get( "gwtUserStatusDiv" );
+		if ( rootPanel != null )
 		{
-			// Yes!  Load the user status control's split point.
-			UserStatusControl.createAsync(
-					new UserStatusControlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( UserStatusControl usc )
-				{
-					usRootPanel.add( usc );
-				}// end onSuccess()
-			} );
+			UserStatusControl userStatus;
+			
+			userStatus = new UserStatusControl();
+			rootPanel.add( userStatus );
 					
 			return;
 		}
 		
 		// Are we loading the task listing?
-		final RootPanel taskRootPanel = RootPanel.get( "gwtTasks" );
-		if ( taskRootPanel != null )
+		rootPanel = RootPanel.get( "gwtTasks" );
+		if ( rootPanel != null )
 		{
-			// Yes!  Load the task listing's split point.
-			TaskListing.createAsync(
-					new TaskListingClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( TaskListing taskListing )
-				{
-					taskRootPanel.add( taskListing );
-				}// end onSuccess()
-			} );
+			TaskListing taskListing;
+			
+			taskListing = new TaskListing();
+			rootPanel.add( taskListing );
 			
 			return;
 		}
@@ -380,23 +301,5 @@ public class GwtTeaming implements EntryPoint
 	public static native void passUrlToMainPage( String url ) /*-{
 		window.top.location.href = url;
 	}-*/;
-	
-	/**
-	 * Get the Event Bus for this Application
-	 * 
-	 * @return
-	 */
-	public static SimpleEventBus getEventBus() {
-		return m_eventBus;
-	}
-	
-	/**
-	 * Fire a global event on the event bus
-	 * 
-	 * @param event
-	 */
-	public static void fireEvent(Event<?> event) {
-		getEventBus().fireEvent(event);
-	}
 	
 }// end GwtTeaming
