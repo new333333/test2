@@ -898,4 +898,17 @@ public class StringUtil {
 	public static boolean isPackedString(String s) {
 		return PackTools.isPackedString(s);
 	}
+	
+	public static String definedUnicode(String s) {
+		// This will filter out all illegal unicode characters as well as valid supplemental characters.
+		if(s == null || s.equals(""))
+			return s;
+		StringBuilder sb = new StringBuilder();
+		char[] cs = s.toCharArray();
+		for(char c:cs) {
+			if(Character.isDefined(c))
+				sb.append(c);
+		}
+		return sb.toString();
+	}
 }

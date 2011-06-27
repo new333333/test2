@@ -215,6 +215,7 @@ public class EmailLog extends ZonedObject {
 		return subj;
 	}
 	public void setSubj(String subj) {
+		subj = StringUtil.definedUnicode(subj);
 		if (subj.length() > maxSubjLength) {
 			this.subj = subj.substring(0, maxSubjLength - 4) + "...";
 		} else {
