@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<project name="tomcat" basedir=".">
+	<import file="../build-common.xml" />
+	
+	<property name="jar.file" value="kablink-teaming-tomcat.jar" />
+	
+	<target name="deploy" depends="jar">
+		<!-- With Tomcat 5.* -->
+		<!--<copy file="${jar.file}" todir="${app.server.dir}/server/lib"/>-->
+	
+		<!-- With Tomcat 6.* -->
+		<copy file="${jar.file}" todir="${app.server.dir}/lib/ext"/>
+	</target>
+	
+</project>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
+
+<beans>
+
+    <!-- Sample custom background job using quartz. It is important to note that this defines
+         its own custom scheduler. Do NOT re-use the factory-shipped scheduler bean for this. -->
+    
+	<!--<bean id="customJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass" value="org.kablink.teaming.samples.backgroundjob.PrintNumberOfUsersJob" />
+	  <property name="jobDataAsMap">
+	    <map>
+	      <entry key="profileModule"><ref bean="profileModule"/></entry>
+	      <entry key="zoneName" value="liferay.com"/>
+	      <entry key="userName" value="admin"/>
+	    </map>
+	  </property>
+	</bean>
+
+	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	    <property name="jobDetail" ref="customJob" />
+	    <property name="startDelay" value="30000" />
+	    <property name="repeatInterval" value="50000" />
+	</bean>
+
+	<bean id="customScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	    <property name="triggers">
+	        <list>
+	            <ref bean="simpleTrigger" />
+	        </list>
+	    </property>
+	</bean>-->
+
+</beans>

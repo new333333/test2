@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<project name="portal-jsr168" basedir="." default="build">
+	<!-- This setting will override the value in the properties file -->
+	<property name="web.dir" value="${basedir}/webroot"/>
+	<property name="portal.type" value="liferay"/>
+	<property name="project.dir" value="${basedir}/../../.."/>
+	
+	<import file="../../../build-common.xml" />
+	<import file="../../../deploy-support.xml" />
+	
+	<property name="jar.file" value="teaming-portlet.jar" />
+	<property name="war.file" value="teaming-portlet.war" />
+	
+	<target name="clean">
+		<delete file="${jar.file}" failonerror="false" />
+		<delete file="${war.file}" failonerror="false" />
+		<delete dir="classes"/>
+		<delete dir="data"/>
+		<delete dir="temp"/>
+		<delete dir="${web.dir}/WEB-INF/lib"/>
+	</target>
+	
+	<target name="copy-libraries">
+		<copy todir="${web.dir}/WEB-INF/lib" file="${jar.file}"/>
+		<copy todir="${web.dir}/WEB-INF/lib" file="${project.dir}/main-minimum/kablink-teaming-main-minimum.jar"/>
+		<copy todir="${web.dir}/WEB-INF/lib" file="${project.dir}/util/kablink-teaming-util.jar"/>
+		<copy todir="${web.dir}/WEB-INF/lib">
+			<fileset dir="${project.dir}/lib" includes="commons-logging.jar,spring.jar,spring-webmvc.jar,spring-webmvc-portlet.jar,dom4j.jar,jstl.jar,jstl-impl.jar,log4j.jar"/>
+		</copy>
+	</target>
+	
+	<target name="build" depends="war"/>
+	
+	<target name="war" depends="clean,jar,copy-libraries">
+		<war
+			basedir="${web.dir}"
+			destfile="${war.file}"
+			webxml="${web.dir}/WEB-INF/web.xml"
+		>
+		</war>
+	</target>
+
+</project>
