@@ -98,6 +98,10 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
+import org.kablink.teaming.gwt.client.shared.GetBinderBrandingResponse;
+import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
@@ -169,6 +173,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 {
 	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
 
+	/**
+	 * Execute the given command.
+	 */
+	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException
+	{
+		HttpServletRequest req;
+		
+		req = getRequest( ri );
+		
+		if ( cmd instanceof GetBinderBrandingCmd )
+		{
+			GetBinderBrandingResponse response;
+			GwtBrandingData brandingData;
+			
+			brandingData = GwtServerHelper.getBinderBrandingData( this, ((GetBinderBrandingCmd) cmd).getBinderId(), req );
+
+			response = new GetBinderBrandingResponse( brandingData );
+			return response;
+		}
+		
+		return null;
+	}
+	
+	
 	/**
 	 * Marks the given task in the given binder as having its subtask
 	 * display collapsed.

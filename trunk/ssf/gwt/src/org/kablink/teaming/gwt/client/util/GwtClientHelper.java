@@ -40,6 +40,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.Scheduler;
@@ -49,6 +52,7 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -135,6 +139,16 @@ public class GwtClientHelper {
 		}
 	}
 
+	/**
+	 * Execute the given command via GWT's rpc mechanism
+	 */
+	@SuppressWarnings("rawtypes")
+	public static void executeCommand( VibeRpcCmd cmd, AsyncCallback callback )
+	{
+		GwtTeaming.getRpcService().executeCommand( HttpRequestInfo.createHttpRequestInfo(), cmd, callback );
+	}
+	
+	
 	/**
 	 * Returns the RequestInfo object from whatever component we're
 	 * running as.
