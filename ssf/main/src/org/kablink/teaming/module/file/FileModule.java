@@ -166,6 +166,9 @@ public interface FileModule {
     public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
     		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
+    public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
+    		List<FileUploadItem> fileUploadItems, FilesErrors errors, Boolean prune) 
+    	throws ReservedByAnotherUserException;
     
     /**
      * Run configured filter on the files in the list. Depending on how the
@@ -406,6 +409,9 @@ public interface FileModule {
 	 */
 	public void revertFileVersion(DefinableEntity entity, VersionAttachment va) 
 			throws UncheckedIOException, RepositoryServiceException;
+	public void revertFileVersion(DefinableEntity entity, VersionAttachment va, Boolean prune) 
+			throws UncheckedIOException, RepositoryServiceException;
+
 	
 	/**
 	 * Delete the specified version. 
