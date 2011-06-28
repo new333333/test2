@@ -6,4 +6,6 @@ alter table SS_Forums add column maxVersionAge bigint;
 alter table SS_Forums add column maxFileSize bigint;
 alter table SS_Forums add column fileEncryptionEnabled bit;
 
-INSERT INTO SS_SchemaInfo values (21);
+alter table SS_Attachments add column fileAgingDate datetime;
+
+INSERT INTO SS_SchemaInfo values (22);
