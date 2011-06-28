@@ -62,6 +62,7 @@
       <property name="majorVersion" column="majorVersion"/>
       <property name="minorVersion" column="minorVersion"/>
       <property name="fileStatus" column="fileStatus"/>
+      <property name="fileAgingDate" column="fileAgingDate" type="timestamp"/>
 
       <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
         <key column="parentAttachment"/>
