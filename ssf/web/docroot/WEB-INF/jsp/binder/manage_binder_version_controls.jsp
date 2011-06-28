@@ -126,7 +126,7 @@ function ss_checkIfNumberValid(s) {
           <input type="text" name="versionsToKeep" value="${ss_binder_versions_to_keep}" 
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
+		    <c:if test="${ss_binder_versions_inherited || !ss_binder_versions_enabled}">disabled=disabled</c:if>
           >
         <c:if test="${ss_binder_versions_inherited}">
 		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
@@ -143,7 +143,7 @@ function ss_checkIfNumberValid(s) {
             value="${ss_binder_versions_max_age}"
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
+		    <c:if test="${ss_binder_versions_inherited || !ss_binder_versions_enabled}">disabled=disabled</c:if>
           >
         <c:if test="${ss_binder_versions_inherited}">
 		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
@@ -157,7 +157,27 @@ function ss_checkIfNumberValid(s) {
 		  <ssf:nlt tag="binder.versions.versionsMaxAgeHint1"/>
 		</span>
        </div>
+            
+       <div style="padding:10px 10px 0px 10px;">
+		<c:if test="${ss_binder_versions_inherited}">
+		  <input type="submit" name="stopInheritBtn" 
+		    value="<ssf:nlt tag='binder.versions.inheritVersionControlsStop'/>"
+		  />
+		</c:if>
+		<c:if test="${!ss_binder_versions_inherited}">
+		  <input type="submit" name="inheritBtn" 
+		    value="<ssf:nlt tag='binder.versions.inheritVersionControls'/>"
+		  />
+		</c:if>
+       </div>
       
+    </fieldset>
+    <br/>
+
+    <fieldset class="ss_fieldset">
+	  <legend class="ss_legend">
+	    <span class="ss_bold"><ssf:nlt tag="binder.file.uploadSizeLimit" /></span>
+	  </legend>
        <div style="padding:10px 10px 0px 10px;">
           <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsMaxFileSize"/></span>
           <input type="text" name="maxFileSize" 
@@ -174,23 +194,8 @@ function ss_checkIfNumberValid(s) {
 		  <ssf:nlt tag="binder.versions.leaveBlankForNoLimit"/>
 		</span>
        </div>
-      
-       <div style="padding:10px 10px 0px 10px;">
-		<c:if test="${ss_binder_versions_inherited}">
-		  <input type="submit" name="stopInheritBtn" 
-		    value="<ssf:nlt tag='binder.versions.inheritVersionControlsStop'/>"
-		  />
-		</c:if>
-		<c:if test="${!ss_binder_versions_inherited}">
-		  <input type="submit" name="inheritBtn" 
-		    value="<ssf:nlt tag='binder.versions.inheritVersionControls'/>"
-		  />
-		</c:if>
-       </div>
-      
-    </fieldset>
-    
-    <br/>
+	</fieldset>
+<br/>
 
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
