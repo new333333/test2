@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
@@ -67,7 +68,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper.GwtServerProfiler;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -991,8 +991,8 @@ public class GwtActivityStreamHelper {
 		reply.setActivityStream(true);
 		reply.setBinderTitle(title);
 		reply.setBinderHover(hover);
-		reply.setActivityStreamAction(
-			TeamingAction.ACTIVITY_STREAM,
+		reply.setActivityStreamEvent(
+			TeamingEvents.ACTIVITY_STREAM,
 			buildASI(
 				as,
 				id,
@@ -1025,9 +1025,9 @@ public class GwtActivityStreamHelper {
 		ActivityStreamInfo reply = null;
 		ActivityStream as = asi.getActivityStream();		
 		for (TreeInfo ti:  tiList) {
-			// Does this child contain an activity stream action?
-			if (TeamingAction.ACTIVITY_STREAM == ti.getActivityStreamAction()) {
-				// Yes!  Does that action's activity stream match that
+			// Does this child contain an activity stream event?
+			if (TeamingEvents.ACTIVITY_STREAM == ti.getActivityStreamEvent()) {
+				// Yes!  Does that event's activity stream match that
 				// we were given?
 				ActivityStreamInfo tiASI = ti.getActivityStreamInfo();
 				if (tiASI.getActivityStream() == as) {
@@ -1455,8 +1455,8 @@ public class GwtActivityStreamHelper {
 				if (!(asIdsList.isEmpty())) {
 					// ...update the parent TreeInfo.
 					asTI.updateChildBindersCount();
-					asTI.setActivityStreamAction(
-						TeamingAction.ACTIVITY_STREAM,
+					asTI.setActivityStreamEvent(
+						TeamingEvents.ACTIVITY_STREAM,
 						buildASI(
 							ActivityStream.MY_FAVORITES,
 							asIdsList,
@@ -1465,11 +1465,11 @@ public class GwtActivityStreamHelper {
 			}
 	
 			// If we didn't add any favorites...
-			if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
-				// ...we need a base action so that we can display no
+			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+				// ...we need a base event so that we can display no
 				// ...selections in the control.
-				asTI.setActivityStreamAction(
-					TeamingAction.ACTIVITY_STREAM,
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.MY_FAVORITES,
 						((ArrayList<String>) null),
@@ -1511,8 +1511,8 @@ public class GwtActivityStreamHelper {
 				if (!(asIdsList.isEmpty())) {
 					// ...update the parent TreeInfo.
 					asTI.updateChildBindersCount();
-					asTI.setActivityStreamAction(
-						TeamingAction.ACTIVITY_STREAM,
+					asTI.setActivityStreamEvent(
+						TeamingEvents.ACTIVITY_STREAM,
 						buildASI(
 							ActivityStream.MY_TEAMS,
 							asIdsList,
@@ -1521,11 +1521,11 @@ public class GwtActivityStreamHelper {
 			}
 			
 			// If we didn't add any teams...
-			if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
-				// ...we need a base action so that we can display no
+			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+				// ...we need a base event so that we can display no
 				// ...selections in the control.
-				asTI.setActivityStreamAction(
-					TeamingAction.ACTIVITY_STREAM,
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.MY_TEAMS,
 						((ArrayList<String>) null),
@@ -1567,8 +1567,8 @@ public class GwtActivityStreamHelper {
 				if (!(asIdsList.isEmpty())) {
 					// ...update the parent TreeInfo.
 					asTI.updateChildBindersCount();
-					asTI.setActivityStreamAction(
-						TeamingAction.ACTIVITY_STREAM,
+					asTI.setActivityStreamEvent(
+						TeamingEvents.ACTIVITY_STREAM,
 						buildASI(
 							ActivityStream.FOLLOWED_PEOPLE,
 							asIdsList,
@@ -1577,11 +1577,11 @@ public class GwtActivityStreamHelper {
 			}
 			
 			// If we didn't add any people...
-			if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
-				// ...we need a base action so that we can display no
+			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+				// ...we need a base event so that we can display no
 				// ...selections in the control.
-				asTI.setActivityStreamAction(
-					TeamingAction.ACTIVITY_STREAM,
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.FOLLOWED_PEOPLE,
 						((ArrayList<String>) null),
@@ -1623,8 +1623,8 @@ public class GwtActivityStreamHelper {
 				if (!(asIdsList.isEmpty())) {
 					// ...update the parent TreeInfo.
 					asTI.updateChildBindersCount();
-					asTI.setActivityStreamAction(
-						TeamingAction.ACTIVITY_STREAM,
+					asTI.setActivityStreamEvent(
+						TeamingEvents.ACTIVITY_STREAM,
 						buildASI(
 							ActivityStream.FOLLOWED_PLACES,
 							asIdsList,
@@ -1633,11 +1633,11 @@ public class GwtActivityStreamHelper {
 			}
 			
 			// If we didn't add any places...
-			if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
-				// ...we need a base action so that we can display no
+			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+				// ...we need a base event so that we can display no
 				// ...selections in the control.
-				asTI.setActivityStreamAction(
-					TeamingAction.ACTIVITY_STREAM,
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.FOLLOWED_PLACES,
 						((ArrayList<String>) null),

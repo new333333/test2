@@ -389,6 +389,9 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WorkspaceTreeControl();
 	
+	// Strings used to describe various event handling errors.
+	String eventHandling_UnhandledEvent(String eventName, String className);
+	
 	// Strings used with the MastHead
 	String administrationHint();
 	String guest();

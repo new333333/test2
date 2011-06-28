@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -216,7 +217,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Closes this WorkspaceTreeControl.
 	 */
 	private void closeTree() {
-		triggerAction(TeamingAction.HIERARCHY_BROWSER_CLOSED);
+		GwtTeaming.getEventBus().fireEvent(
+			new TeamingActionEvent(
+				TeamingAction.HIERARCHY_BROWSER_CLOSED));
 	}
 	
 	/*

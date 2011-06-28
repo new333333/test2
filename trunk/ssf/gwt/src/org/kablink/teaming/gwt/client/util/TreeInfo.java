@@ -38,10 +38,10 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -71,7 +71,7 @@ public class TreeInfo implements IsSerializable {
 	// activity streams.
 	private ActivityStreamInfo	m_activityStreamInfo;
 	private boolean				m_activityStream;
-	private TeamingAction		m_activityStreamAction = TeamingAction.UNDEFINED;
+	private TeamingEvents		m_activityStreamEvent = TeamingEvents.UNDEFINED;
 	
 	// The following is only used for TreeInfo's that represent a
 	// bucket of Binder's.
@@ -118,15 +118,15 @@ public class TreeInfo implements IsSerializable {
 		TreeInfo reply = new TreeInfo();
 
 		// ...copy the information from this TreeInfo...
-		reply.setActivityStream(      isActivityStream()                                );
-		reply.setActivityStreamAction(getActivityStreamAction(), getActivityStreamInfo());
-		reply.setBinderExpanded(      isBinderExpanded()                                );
-		reply.setBinderHover(         getBinderHover()                                  );
-		reply.setBinderIconName(      getBinderIconName()                               );
-		reply.setBinderInfo(          getBinderInfo().copyBinderInfo()                  );
-		reply.setBinderPermalink(     getBinderPermalink()                              );
-		reply.setBinderTitle(         getBinderTitle()                                  );
-		reply.setBinderTrashPermalink(getBinderTrashPermalink()                         );
+		reply.setActivityStream(      isActivityStream()                               );
+		reply.setActivityStreamEvent( getActivityStreamEvent(), getActivityStreamInfo());
+		reply.setBinderExpanded(      isBinderExpanded()                               );
+		reply.setBinderHover(         getBinderHover()                                 );
+		reply.setBinderIconName(      getBinderIconName()                              );
+		reply.setBinderInfo(          getBinderInfo().copyBinderInfo()                 );
+		reply.setBinderPermalink(     getBinderPermalink()                             );
+		reply.setBinderTitle(         getBinderTitle()                                 );
+		reply.setBinderTrashPermalink(getBinderTrashPermalink()                        );
 		
 		// ...store an empty child Binder's List<TreeInfo>...
 		reply.setChildBindersList(new ArrayList<TreeInfo>());
@@ -263,17 +263,17 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
-	 * Returns the TeamingAction associated with the activity stream
+	 * Returns the teaming event associated with the activity stream
 	 * associated with this TreeInfo object.
 	 *  
 	 * @return
 	 */
-	public TeamingAction getActivityStreamAction() {
-		TeamingAction reply;
+	public TeamingEvents getActivityStreamEvent() {
+		TeamingEvents reply;
 		
 		if (isActivityStream())
-			 reply = m_activityStreamAction;
-		else reply = TeamingAction.UNDEFINED;
+			 reply = m_activityStreamEvent;
+		else reply = TeamingEvents.UNDEFINED;
 		
 		return reply;
 	}
@@ -646,14 +646,14 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
-	 * Stores a TeamingAction for an activity stream stored in the
+	 * Stores a teaming event for an activity stream stored in the
 	 * TreeInfo object.
 	 * 
-	 * @param ta
+	 * @param te
 	 */
-	public void setActivityStreamAction(TeamingAction ta, ActivityStreamInfo asi) {
+	public void setActivityStreamEvent(TeamingEvents te, ActivityStreamInfo asi) {
 		if (isActivityStream()) {
-			m_activityStreamAction = ta;
+			m_activityStreamEvent = te;
 			setActivityStreamInfo(asi);
 		}
 	}

@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
@@ -222,7 +223,9 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		m_closeAdminBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					triggerAction(TeamingAction.CLOSE_ADMINISTRATION);
+					GwtTeaming.getEventBus().fireEvent(
+						new TeamingActionEvent(
+							TeamingAction.CLOSE_ADMINISTRATION));
 				}
 			});
 		menuPanel.add(m_closeAdminBox);
@@ -370,7 +373,9 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		m_myWorkspaceBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					triggerAction(TeamingAction.MY_WORKSPACE);
+					GwtTeaming.getEventBus().fireEvent(
+						new TeamingActionEvent(
+							TeamingAction.MY_WORKSPACE));
 				}
 			});
 		menuPanel.add(m_myWorkspaceBox);
@@ -446,13 +451,13 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 						asi.setActivityStream(ActivityStream.CURRENT_BINDER);
 						asi.setBinderId(m_contextBinder.getBinderId());
 						asi.setTitle(   m_contextBinder.getBinderTitle());
-						triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE, asi);
+						GwtTeaming.getEventBus().fireEvent(new ActivityStreamEnterEvent(asi));
 					}
 					
 					else {
 						// No, we're not connected to a binder!  Just
 						// use the UI supplied default activity stream.
-						triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE);
+						GwtTeaming.getEventBus().fireEvent(new ActivityStreamEnterEvent());
 					}
 				}
 			});

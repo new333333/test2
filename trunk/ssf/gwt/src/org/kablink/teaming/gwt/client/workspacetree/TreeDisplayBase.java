@@ -37,8 +37,10 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -61,7 +63,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public abstract class TreeDisplayBase implements ActionTrigger {
+public abstract class TreeDisplayBase {
 	private List<TreeInfo>			m_rootTIList;	// The root TreeInfo object being displayed.
 	private TreeInfo				m_rootTI;		// The root TreeInfo object being displayed.
 	private WorkspaceTreeControl	m_wsTree;		// The WorkspaceTreeControl being displayed.
@@ -100,11 +102,13 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 
 			// No, the item is not a bucket!  Is it an activity stream?
 			else if (m_ti.isActivityStream()) {
-				// Yes!  Does it have an action defined on it?
-				TeamingAction ta = m_ti.getActivityStreamAction();
-				if ((null != ta) && (TeamingAction.UNDEFINED != ta)) {
-					// Yes!  Trigger it.
-					triggerAction(ta, m_ti.getActivityStreamInfo());
+				// Yes!  Does it have an event defined on it?
+				TeamingEvents te = m_ti.getActivityStreamEvent();
+				if ((null != te) && (TeamingEvents.UNDEFINED != te)) {
+					// Yes!  Fire it.
+					GwtTeaming.getEventBus().fireEvent(
+						new ActivityStreamEvent(
+							m_ti.getActivityStreamInfo()));
 				}
 			}
 			
@@ -115,7 +119,10 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 					// Yes!  Select the Binder and tell the
 					// WorkspaceTreeControl to handle it.
 					selectBinder(m_ti);
-					triggerAction(TeamingAction.SELECTION_CHANGED, buildOnSelectBinderInfo(m_ti));
+					GwtTeaming.getEventBus().fireEvent(
+						new TeamingActionEvent(
+							TeamingAction.SELECTION_CHANGED,
+							buildOnSelectBinderInfo(m_ti)));
 				}
 			}
 		}
@@ -339,25 +346,6 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 */
 	void setRootTreeInfoList(List<TreeInfo> rootTIList) {
 		m_rootTIList = rootTIList;
-	}
-
-	/**
-	 * Fires a TeamingAction at the WorkspaceTreeControl's registered
-	 * ActionHandler's.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 *
-	 * @param action
-	 * @param obj
-	 */
-	public void triggerAction(TeamingAction action, Object obj) {
-		// Simply pass the action to the WorkspaceTreeControl.
-		m_wsTree.triggerAction(action, obj);
-	}
-	
-	public void triggerAction(TeamingAction action) {
-		// Always use the initial form of the method.
-		triggerAction(action, null);
 	}
 
 	/**
