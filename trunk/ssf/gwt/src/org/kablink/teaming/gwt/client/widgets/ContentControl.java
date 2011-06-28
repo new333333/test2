@@ -33,6 +33,9 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.core.client.GWT;
@@ -52,8 +55,19 @@ import com.google.gwt.user.client.ui.NamedFrame;
  * @author jwootton@novell.com
  */
 public class ContentControl extends Composite
+	implements
+	// EventBus handlers implemented by this class.
+		AdministrationExitEvent.Handler
 {
 	private NamedFrame m_frame;
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Administration events.
+		TeamingEvents.ADMINISTRATION_EXIT,
+	};
 	
 	/*
 	 * Constructor method.
@@ -66,6 +80,12 @@ public class ContentControl extends Composite
 	{
 		FlowPanel mainPanel;
 
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this );
+		
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
 
@@ -183,6 +203,19 @@ public class ContentControl extends Composite
 		m_frame.setUrl( url );
 	}// end setUrl()
 
+	/**
+	 * Handles AdministrationExitEvent's received by this class.
+	 * 
+	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationExit( AdministrationExitEvent event )
+	{
+		setVisible( true );
+	}// end onAdministrationExit()
+	
 	/**
 	 * Callback interface to interact with the content control
 	 * asynchronously after it loads. 

@@ -35,12 +35,16 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
@@ -86,7 +90,11 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * 
  * @author drfoster@novell.com
  */
-public class MainMenuControl extends Composite implements ActionTrigger {
+public class MainMenuControl extends Composite
+	implements ActionTrigger,
+	// EventBus handlers implemented by this class.
+		AdministrationExitEvent.Handler
+{
 	private BinderInfo						m_contextBinder;
 	private ContextLoadInfo					m_lastContextLoaded;
 	private FlowPanel						m_buttonsPanel;
@@ -107,6 +115,14 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
 	private SearchMenuPanel					m_searchPanel;
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Administration events.
+		TeamingEvents.ADMINISTRATION_EXIT,
+	};
+	
 	/*
 	 * Inner class used to track the information used to load a
 	 * context.
@@ -139,6 +155,12 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	private MainMenuControl(GwtMainPage mainPage) {
 		// Store the parameter.
 		m_mainPage = mainPage;
+		
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
 		
 		// Create the menu's main panel...
 		FlowPanel menuPanel = new FlowPanel();
@@ -224,8 +246,7 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					GwtTeaming.getEventBus().fireEvent(
-						new TeamingActionEvent(
-							TeamingAction.CLOSE_ADMINISTRATION));
+						new AdministrationExitEvent());
 				}
 			});
 		menuPanel.add(m_closeAdminBox);
@@ -253,8 +274,9 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		m_buttonsPanel.add(m_mastHeadSlider);
 
 		// ...add the browse hierarchy button...
-		m_bhButton = new MenuBarButton(this, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY);
-		m_bhButton.setActionObject(new OnBrowseHierarchyInfo(m_bhButton));
+		BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
+		m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
+		bhe.setOnBrowseHierarchyInfo(new OnBrowseHierarchyInfo(m_bhButton));
 		m_bhButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_buttonsPanel.add(m_bhButton);
 
@@ -543,6 +565,18 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	}
 
 	/**
+	 * Handles AdministrationExitEvent's received by this class.
+	 * 
+	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationExit(AdministrationExitEvent event) {
+		hideAdministrationMenubar();
+	}
+	
+	/**
 	 * Resets the current menu context to the one that was last
 	 * loaded.
 	 */
@@ -582,7 +616,6 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	public void setWorkspaceTreeSliderMenuItemState(TeamingAction action) {
 		m_wsTreeSlider.setState(action);
 	}
-	
 	
 	/**
 	 * Hide all the menus and controls on this menu control and shows

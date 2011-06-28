@@ -390,6 +390,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_WorkspaceTreeControl();
 	
 	// Strings used to describe various event handling errors.
+	String eventHandling_NoEventHandlerDefined(String eventName, String className);
 	String eventHandling_UnhandledEvent(String eventName, String className);
 	
 	// Strings used with the MastHead

@@ -32,12 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -65,8 +65,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
 
 
 /**
@@ -86,18 +84,14 @@ public class WorkspaceTreeControl extends Composite
 	private TreeMode m_tm;
 	
 	// The following defines the TeamingEvents that are handled by
-	// this class.  See registerEventHandlers() for how this array is
-	// used.
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 	};
-	
-	// The following is used to track the events that are registered so
-	// that they may be cleaned up, if necessary.
-	private List<HandlerRegistration> m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 	
 	/**
 	 * The mode this WorkspaceTreeControl is running in.
@@ -124,7 +118,10 @@ public class WorkspaceTreeControl extends Composite
 		m_tm       = tm;
 
 		// Register the events to be handled by this class.
-		registerEventHandlers(true);
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
 
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
@@ -282,60 +279,6 @@ public class WorkspaceTreeControl extends Composite
 		exitActivityStreamMode();
 	}
 
-	/*
-	 * Register/unregister event handlers on the event bus
-	 * 
-	 * @param register	true  -> Events will be registered.
-	 * 					false -> Registered events will be removed.
-	 */
-	private void registerEventHandlers(boolean register) {
-		// Are we registering even handlers?
-		if (register) {
-			// Yes!  Scan the events we need to register...
-			SimpleEventBus eventBus = GwtTeaming.getEventBus();
-			for (int i = 0; i < m_registeredEvents.length; i += 1) {
-				// ...registering each...
-				final HandlerRegistration handler;
-				TeamingEvents te = m_registeredEvents[i];
-				switch (te) {
-				case ACTIVITY_STREAM:        handler = ActivityStreamEvent.registerEvent(     eventBus, this); break;
-				case ACTIVITY_STREAM_ENTER:  handler = ActivityStreamEnterEvent.registerEvent(eventBus, this); break;
-				case ACTIVITY_STREAM_EXIT:   handler = ActivityStreamExitEvent.registerEvent( eventBus, this); break;
-				
-				default:
-				case UNDEFINED:
-					Window.alert(GwtTeaming.getMessages().eventHandling_UnhandledEvent(te.name(), this.getClass().getName()));
-					handler = null;
-					break;
-				}
-
-				// ...and for those that we successfully registered...
-				if (null != handler) {
-					// ...add their registration to the list of
-					// ...handlers that we've registered.
-					m_registeredEventHandlers.add(new HandlerRegistration() {
-						@Override
-						public void removeHandler() {
-							handler.removeHandler();
-						}
-					});
-				}
-			}
-		}
-		
-		else {
-			// No, we aren't registering even handlers!  We must be
-			// unregistering them.  Scan those we've registered...
-			for (HandlerRegistration hr: m_registeredEventHandlers) {
-				// ...unregistering each...
-				hr.removeHandler();
-			}
-			
-			// ...and clear the list of those we've registered.
-			m_registeredEventHandlers.clear();
-		}
-	}
-	
 	/**
 	 * Called to select an activity stream in the sidebar.
 	 *

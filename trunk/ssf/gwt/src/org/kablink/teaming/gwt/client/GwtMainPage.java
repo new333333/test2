@@ -34,12 +34,15 @@
 package org.kablink.teaming.gwt.client;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
@@ -93,8 +96,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.web.bindery.event.shared.Event;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
 
 
 /**
@@ -105,7 +106,10 @@ public class GwtMainPage extends Composite
 	// EventBus handlers implemented by this class.
 		TeamingActionEvent.Handler,
 		ActivityStreamEvent.Handler,
-		ActivityStreamEnterEvent.Handler
+		ActivityStreamEnterEvent.Handler,
+		AdministrationEvent.Handler,
+		AdministrationExitEvent.Handler,
+		BrowseHierarchyEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
@@ -135,8 +139,8 @@ public class GwtMainPage extends Composite
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
 
 	// The following defines the TeamingEvents that are handled by
-	// this class.  See registerEventHandlers() for how this array is
-	// used.
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Event whose pay load is one of our original TeamingActions.
 		TeamingEvents.TEAMING_ACTION,
@@ -144,11 +148,14 @@ public class GwtMainPage extends Composite
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
+		
+		// Administration events.
+		TeamingEvents.ADMINISTRATION,
+		TeamingEvents.ADMINISTRATION_EXIT,
+		
+		// Miscellaneous events.
+		TeamingEvents.BROWSE_HIERARCHY,
 	};
-	
-	// The following is used to track the events that are registered so
-	// that they may be cleaned up, if necessary.
-	private List<HandlerRegistration> m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 	
 	/*
 	 * Class constructor.
@@ -326,7 +333,10 @@ public class GwtMainPage extends Composite
 		String url;
 
 		// Register the events to be handled by this class.
-		registerEventHandlers(true);
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
 		
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
@@ -472,57 +482,6 @@ public class GwtMainPage extends Composite
 		}
 	}// end constructMainPage_Finish()
 
-	/*
-	 * Register/unregister event handlers on the event bus
-	 * 
-	 * @param register	true  -> Events will be registered.
-	 * 					false -> Registered events will be removed.
-	 */
-	private void registerEventHandlers( boolean register )
-	{
-		if ( register )
-		{
-			SimpleEventBus eventBus = GwtTeaming.getEventBus();
-			for ( int i = 0; i < m_registeredEvents.length; i += 1 )
-			{
-				final HandlerRegistration handler;
-				TeamingEvents te = m_registeredEvents[i];
-				switch ( te ) {
-				case TEAMING_ACTION:         handler = TeamingActionEvent.registerEvent(       eventBus, this ); break;
-				case ACTIVITY_STREAM:        handler = ActivityStreamEvent.registerEvent(      eventBus, this ); break;
-				case ACTIVITY_STREAM_ENTER:  handler = ActivityStreamEnterEvent.registerEvent( eventBus, this ); break;
-				
-				default:
-				case UNDEFINED:
-					Window.alert( GwtTeaming.getMessages().eventHandling_UnhandledEvent( te.name(), this.getClass().getName() ) );
-					handler = null;
-					break;
-				}
-				
-				if ( null != handler )
-				{
-					m_registeredEventHandlers.add( new HandlerRegistration()
-					{
-						@Override
-						public void removeHandler()
-						{
-							handler.removeHandler();
-						}// end removeHandler()
-					});
-				}
-			}
-		}
-		
-		else
-		{
-			for ( HandlerRegistration hr: m_registeredEventHandlers )
-			{
-				hr.removeHandler();
-			}
-			m_registeredEventHandlers.clear();
-		}
-	}// end registerEventHandlers()
-	
 	/**
 	 * Returns the main menu control.
 	 * 
@@ -1134,53 +1093,9 @@ public class GwtMainPage extends Composite
 	{
 		switch (action)
 		{
-		case ADMINISTRATION:
-			// Save the current ui state
-			saveUIState();
-			
-			// Hide any popup entry iframe divs...
-			GwtClientHelper.jsHideEntryPopupDiv();
-			
-			// ...and show the admin control.
-			showAdminControl();
-			
-			break;
-		
 		case CHECK_FOR_UPGRADE_TASKS:
 			// Show a list of upgrade tasks that still need to be performed.
 			AdminControl.showUpgradeTasks();
-			
-			break;
-			
-		case CLOSE_ADMINISTRATION:
-			// Hide the AdminControl.
-			if ( m_adminControl != null )
-				m_adminControl.hideControl();
-			
-			// Should we go back into activity stream mode?
-			if ( m_wsTreeCtrl.isInActivityStreamMode() )
-			{
-				// Yes
-				if ( m_activityStreamCtrl != null )
-					m_activityStreamCtrl.show();
-			}
-
-			// Show the content control.
-			m_contentCtrl.setVisible( true );
-
-			// Hide the administration menu bar.
-			m_mainMenuCtrl.hideAdministrationMenubar();
-
-			// Restore the ui state to what it was before we opened the site administration.
-			ScheduledCommand cmd = new ScheduledCommand()
-			{
-				public void execute()
-				{
-					restoreUIState();
-					relayoutPage( true );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
 			
 			break;
 			
@@ -1229,7 +1144,7 @@ public class GwtMainPage extends Composite
 			if ( isAdminActive() )
 			{
 				// ...close it first.
-				handleActionImpl( TeamingAction.CLOSE_ADMINISTRATION, null );
+				GwtTeaming.getEventBus().fireEvent(new AdministrationExitEvent());
 			}
 			
 			// Change the browser's URL.
@@ -1250,14 +1165,6 @@ public class GwtMainPage extends Composite
 			toggleGwtUI();
 			break;
 
-		case BROWSE_HIERARCHY:
-			runBreadCrumbBrowser( obj );
-			break;
-			
-		case HIERARCHY_BROWSER_CLOSED:
-			closeBreadCrumbBrowser();
-			break;
-			
 		case VIEW_TEAM_MEMBERS:
 			viewTeamMembers();
 			break;
@@ -1522,7 +1429,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void invokeAdminPage()
 	{
-		handleActionImpl( TeamingAction.ADMINISTRATION, null );
+		GwtTeaming.getEventBus().fireEvent(new AdministrationEvent());
 	}
 	
 	
@@ -1838,79 +1745,6 @@ public class GwtMainPage extends Composite
 			}-*/; // end jsLoadUserWorkspace()
 		});// end AsyncCallback()
 	}// end toggleGwtUI()
-	
-	
-	/*
-	 * Called to run the Teaming hierarchy (i.e., bread crumb) browser.
-	 * 
-	 * Implements the BROWSE_HIERARCHY teaming action.
-	 */
-	private void runBreadCrumbBrowser( final Object obj )
-	{
-		// If we're already running a bread crumb browser...
-		if (( m_breadCrumbBrowser != null ) && m_breadCrumbBrowser.isShowing() )
-		{
-			// ...we simply ignore requests to open one.
-			return;
-			
-		}
-		
-		if ( obj instanceof OnBrowseHierarchyInfo )
-		{
-			WorkspaceTreeControl.createAsync(
-					this,
-					m_selectedBinderId,
-					TreeMode.HORIZONTAL,
-					new WorkspaceTreeControlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
-				{
-					OnBrowseHierarchyInfo bhi;
-					WorkspaceTreeControl breadCrumbTree;
-					
-					// A WorkspaceTreeControl in horizontal mode serves as the
-					// bread crumb browser.  Create one...
-					breadCrumbTree = wsTreeCtrl;
-					breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
-					m_breadCrumbBrowser = new TeamingPopupPanel(true);
-					GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
-					GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
-					m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
-					m_breadCrumbBrowser.setWidget( breadCrumbTree );
-					
-					// ...position it as per the browse hierarchy request...
-					bhi = ((OnBrowseHierarchyInfo) obj);
-					m_breadCrumbBrowser.setPopupPosition(bhi.getLeft(), bhi.getTop());
-
-					// ...and play the opening effect.
-					m_breadCrumbBrowser.show();
-				}// end onSuccess()
-			} );
-		}
-		else
-			Window.alert( "in runBreadCrumbBrowser() and obj is not an OnBrowseHierarchyInfo object" );
-	}// end runBreadCrumbBrowser()
-	
-	/*
-	 * Called when the current Teaming hierarchy (i.e., bread crumb)
-	 * browser has been closed.
-	 * 
-	 * Implements the HIERARCHY_BROWSER_CLOSED teaming action.
-	 */
-	private void closeBreadCrumbBrowser()
-	{
-		if (null != m_breadCrumbBrowser)
-		{
-			m_breadCrumbBrowser.hide();
-		}
-	}// end closeBreadCrumbBrowser()
 	
 	/*
 	 * Called to view the membership of the currently selected binder.
@@ -2265,6 +2099,106 @@ public class GwtMainPage extends Composite
 		GwtClientHelper.jsHideEntryPopupDiv();
 	}//end enterActivityStreamMode()
 
+	/**
+	 * Handles AdministrationEvent's received by this class.
+	 * 
+	 * Implements the AdministrationEvent.Handler.onAdministration() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministration( AdministrationEvent event )
+	{
+		// Save the current ui state
+		saveUIState();
+		
+		// Hide any popup entry iframe divs...
+		GwtClientHelper.jsHideEntryPopupDiv();
+		
+		// ...and show the admin control.
+		showAdminControl();
+	}
+	
+	/**
+	 * Handles AdministrationExitEvent's received by this class.
+	 * 
+	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationExit( AdministrationExitEvent event )
+	{
+		ScheduledCommand cmd = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				// Restore the ui state to what it was before we opened
+				// the site administration.
+				restoreUIState();
+				relayoutPage( true );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * Handles BrowseHierarchyEvent's received by this class.
+	 * 
+	 * Implements the BrowseHierarchyEvent.Handler.onBrowseHierarchy() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onBrowseHierarchy( final BrowseHierarchyEvent event )
+	{
+		// If we're already running a bread crumb browser...
+		if (( m_breadCrumbBrowser != null ) && m_breadCrumbBrowser.isShowing() )
+		{
+			// ...we simply ignore requests to open one.
+			return;
+			
+		}
+		
+		WorkspaceTreeControl.createAsync(
+				this,
+				m_selectedBinderId,
+				TreeMode.HORIZONTAL,
+				new WorkspaceTreeControlClient() {				
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
+			{
+				OnBrowseHierarchyInfo bhi;
+				WorkspaceTreeControl breadCrumbTree;
+				
+				// A WorkspaceTreeControl in horizontal mode serves as the
+				// bread crumb browser.  Create one...
+				breadCrumbTree = wsTreeCtrl;
+				breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
+				m_breadCrumbBrowser = new TeamingPopupPanel(true);
+				GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
+				GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
+				m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
+				m_breadCrumbBrowser.setWidget( breadCrumbTree );
+				
+				// ...position it as per the browse hierarchy request...
+				bhi = event.getOnBrowseHierarchyInfo();
+				m_breadCrumbBrowser.setPopupPosition(bhi.getLeft(), bhi.getTop());
+
+				// ...and play the opening effect.
+				m_breadCrumbBrowser.show();
+			}// end onSuccess()
+		} );
+	}// end onBrowseHierarchy()
+	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
 	 * control we adjust is the ContentControl.
