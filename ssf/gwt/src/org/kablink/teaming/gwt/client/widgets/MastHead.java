@@ -37,10 +37,10 @@ import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -735,7 +735,7 @@ public class MastHead extends Composite
 		// Send Appropriate event
 		if ( eventSource == m_adminLink )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.ADMINISTRATION, null ));
+			GwtTeaming.fireEvent(new AdministrationEvent() );
 		}
 		else if ( eventSource == m_personalPrefsLink )
 		{

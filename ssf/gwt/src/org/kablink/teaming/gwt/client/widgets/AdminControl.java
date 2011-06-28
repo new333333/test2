@@ -36,6 +36,9 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
@@ -80,11 +83,21 @@ import com.google.gwt.user.client.ui.Label;
  * that displays the page for the selected administration action.
  */
 public class AdminControl extends Composite
-	implements ActionTrigger 
+	implements ActionTrigger, 
+	// EventBus handlers implemented by this class.
+		AdministrationExitEvent.Handler
 {
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Administration events.
+		TeamingEvents.ADMINISTRATION_EXIT,
+	};
+	
 	/**
 	 * Class used for the ui for an administration action.
 	 */
@@ -501,6 +514,12 @@ public class AdminControl extends Composite
 	 */
 	private AdminControl()
 	{
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this );
+		
 		final FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "adminControl" );
 		
@@ -865,6 +884,19 @@ public class AdminControl extends Composite
 		triggerAction( action, null );
 	}// end triggerAction()
 
+	/**
+	 * Handles AdministrationExitEvent's received by this class.
+	 * 
+	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationExit( AdministrationExitEvent event )
+	{
+		hideControl();
+	}// end onAdministrationExit()
+	
 	/**
 	 * Callback interface to interact with the admin control
 	 * asynchronously after it loads. 

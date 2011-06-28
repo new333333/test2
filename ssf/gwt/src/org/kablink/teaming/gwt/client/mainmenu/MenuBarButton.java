@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
@@ -51,6 +53,7 @@ import com.google.gwt.user.client.ui.Image;
  */
 public class MenuBarButton extends Anchor {
 	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
+	private GwtEvent<?>		m_event;			// The event to fire when the button is clicked.
 	private Object			m_actionObject;		// The Object to send with the TeamingAction.
 	private TeamingAction	m_action;			// The TeamingAction to trigger when the button is clicked.
 	
@@ -64,8 +67,16 @@ public class MenuBarButton extends Anchor {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			// Fire the action.
-			m_actionTrigger.triggerAction(m_action, m_actionObject);
+			// If we have an event...
+			if (null != m_event) {
+				// ...fire it...
+				GwtTeaming.getEventBus().fireEvent(m_event);
+			}
+			
+			else {
+				// ...otherwise, fire the action.
+				m_actionTrigger.triggerAction(m_action, m_actionObject);
+			}
 		}
 	}
 
@@ -79,7 +90,7 @@ public class MenuBarButton extends Anchor {
 	 * @param actionObject
 	 * @param clickHandler
 	 */
-	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject, ClickHandler clickHandler) {
+	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject, GwtEvent<?> event, ClickHandler clickHandler) {
 		// Initialize the super class...
 		super();
 		
@@ -87,6 +98,7 @@ public class MenuBarButton extends Anchor {
 		m_actionTrigger	= actionTrigger;
 		m_action		= action;
 		m_actionObject	= actionObject;
+		m_event			= event;
 		
 		// Create the Image...
 		Image img = new Image(imgRes);
@@ -111,17 +123,22 @@ public class MenuBarButton extends Anchor {
 	
 	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject) {
 		// Always use the initial form of the constructor.
-		this(actionTrigger, imgRes, imgTitle, action, actionObject, null);
+		this(actionTrigger, imgRes, imgTitle, action, actionObject, null, null);
 	}
 	
 	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action) {
 		// Always use the initial form of the constructor.
-		this(actionTrigger, imgRes, imgTitle, action, null, null);
+		this(actionTrigger, imgRes, imgTitle, action, null, null, null);
+	}
+	
+	public MenuBarButton(ImageResource imgRes, String imgTitle, GwtEvent<?> event) {
+		// Always use the initial form of the constructor.
+		this(null, imgRes, imgTitle, null, null, event, null);
 	}
 	
 	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler) {
 		// Always use the initial form of the constructor.
-		this(null, imgRes, imgTitle, null, null, clickHandler);
+		this(null, imgRes, imgTitle, null, null, null, clickHandler);
 	}
 
 	/**

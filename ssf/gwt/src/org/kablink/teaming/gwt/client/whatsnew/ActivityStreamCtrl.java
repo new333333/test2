@@ -41,6 +41,8 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -86,8 +88,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
 
 
 /**
@@ -99,7 +99,8 @@ public class ActivityStreamCtrl extends Composite
 	implements ActionHandler, ClickHandler,
 	// EventBus handlers implemented by this class.
 		ActivityStreamEvent.Handler,
-		ActivityStreamExitEvent.Handler
+		ActivityStreamExitEvent.Handler,
+		AdministrationExitEvent.Handler
 {
 	private int m_width;
 	private int m_height;
@@ -108,6 +109,7 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_searchResultsPanel;
 	private FlowPanel m_footerPanel;
 	private FlowPanel m_showSettingPanel;
+	private GwtMainPage m_mainPage;
 	private Object m_selectedObj = null;
 	private ActionHandler m_actionHandler;
 	private AsyncCallback<ActivityStreamData> m_searchResultsCallback;
@@ -147,17 +149,16 @@ public class ActivityStreamCtrl extends Composite
 	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
 
 	// The following defines the TeamingEvents that are handled by
-	// this class.  See registerEventHandlers() for how this array is
-	// used.
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
+		
+		// Administration events.
+		TeamingEvents.ADMINISTRATION_EXIT,
 	};
-	
-	// The following is used to track the events that are registered so
-	// that they may be cleaned up, if necessary.
-	private List<HandlerRegistration> m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 	
 	
 	/*
@@ -166,21 +167,25 @@ public class ActivityStreamCtrl extends Composite
 	 * through its createAsync().
 	 */
 	private ActivityStreamCtrl(
-		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
+		GwtMainPage mainPage )
 	{
-		FlowPanel mainPanel;
+		// Store the parameter.
+		m_mainPage = mainPage;
 
 		// Register the events to be handled by this class.
-		registerEventHandlers(true);
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this );
 
 		// Get the rpc service.
 		m_rpcService = GwtTeaming.getRpcService();
 		
-		mainPanel = new FlowPanel();
+		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "activityStreamCtrl" );
 		
 		// Remember the handler we should call when the user selects an item from the search results.
-		m_actionHandler = actionHandler;
+		m_actionHandler = mainPage;
 		
 		// Create the list that will hold the ui widgets, one for each entry returned by the search.
 		m_searchResultsUIWidgets = new ArrayList<ActivityStreamTopEntry>();
@@ -1800,10 +1805,11 @@ public class ActivityStreamCtrl extends Composite
 	 * @param event
 	 */
 	@Override
-	public void onActivityStream(ActivityStreamEvent event) {
+	public void onActivityStream( ActivityStreamEvent event )
+	{
 		setActivityStream( event.getActivityStreamInfo() );
 		show();
-	}
+	}// end onActivityStream()
 	
 	/**
 	 * Handles ActivityStreamExitEvent's received by this class.
@@ -1813,59 +1819,28 @@ public class ActivityStreamCtrl extends Composite
 	 * @param event
 	 */
 	@Override
-	public void onActivityStreamExit(ActivityStreamExitEvent event) {
-		hide();
-	}
-	
-	/*
-	 * Register/unregister event handlers on the event bus
-	 * 
-	 * @param register	true  -> Events will be registered.
-	 * 					false -> Registered events will be removed.
-	 */
-	private void registerEventHandlers( boolean register )
+	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
-		if ( register )
+		hide();
+	}// end onActivityStreamExit()
+	
+	/**
+	 * Handles AdministrationExitEvent's received by this class.
+	 * 
+	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationExit( AdministrationExitEvent event )
+	{
+		// Should we go back into activity stream mode?
+		if ( m_mainPage.getWorkspaceTree().isInActivityStreamMode() )
 		{
-			SimpleEventBus eventBus = GwtTeaming.getEventBus();
-			for ( int i = 0; i < m_registeredEvents.length; i += 1 )
-			{
-				final HandlerRegistration handler;
-				TeamingEvents te = m_registeredEvents[i];
-				switch ( te ) {
-				case ACTIVITY_STREAM:      handler = ActivityStreamEvent.registerEvent(     eventBus, this ); break;
-				case ACTIVITY_STREAM_EXIT: handler = ActivityStreamExitEvent.registerEvent( eventBus, this ); break;
-				
-				default:
-				case UNDEFINED:
-					Window.alert( GwtTeaming.getMessages().eventHandling_UnhandledEvent( te.name(), this.getClass().getName() ) );
-					handler = null;
-					break;
-				}
-				
-				if ( null != handler )
-				{
-					m_registeredEventHandlers.add(new HandlerRegistration()
-					{
-						@Override
-						public void removeHandler()
-						{
-							handler.removeHandler();
-						}// end removeHandler()
-					});
-				}
-			}
+			// Yes
+			show();
 		}
-		
-		else
-		{
-			for ( HandlerRegistration hr: m_registeredEventHandlers )
-			{
-				hr.removeHandler();
-			}
-			m_registeredEventHandlers.clear();
-		}
-	}// end registerEventHandlers()
+	}// end onAdministrationExit()
 	
 	/**
 	 * Callback interface to interact with the content control

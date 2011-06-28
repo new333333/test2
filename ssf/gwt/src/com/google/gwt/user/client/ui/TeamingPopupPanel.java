@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,6 +31,12 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package com.google.gwt.user.client.ui;
+
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -45,15 +51,18 @@ import com.google.gwt.user.client.ui.PopupPanel;
  *  
  * @author drfoster@novell.com
  */
-public class TeamingPopupPanel extends PopupPanel {
-	/**
-	 * Creates an empty popup panel, specifying its auto-hide property.
-	 * 
-	 * @param autoHide
-	 */
-	public TeamingPopupPanel(boolean autoHide) {
-		super(autoHide);
-	}
+public class TeamingPopupPanel extends PopupPanel
+	implements
+	// EventBus handlers implemented by this class.
+		BrowseHierarchyExitEvent.Handler
+{
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Miscellaneous events.
+		TeamingEvents.BROWSE_HIERARCHY_EXIT,
+	};
 	
 	/**
 	 * Creates an empty popup panel, specifying its auto-hide and modal
@@ -64,6 +73,16 @@ public class TeamingPopupPanel extends PopupPanel {
 	 */
 	public TeamingPopupPanel(boolean autoHide, boolean modal) {
 		super(autoHide, modal);
+		
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+	}
+	
+	public TeamingPopupPanel(boolean autoHide) {
+		// Always use the initial form of the constructor.
+		this(autoHide, false);
 	}
 
 	/**
@@ -73,6 +92,21 @@ public class TeamingPopupPanel extends PopupPanel {
 		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 	}
 
+	/**
+	 * Handles BrowseHierarchyExitEvent's received by this class.
+	 * 
+	 * Implements the BrowseHierarchyExitEvent.Handler.onBrowseHierarchyExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onBrowseHierarchyExit( final BrowseHierarchyExitEvent event ) {
+		Widget widget = getWidget();
+		if ((null != widget) && (widget instanceof WorkspaceTreeControl)) {
+			hide();
+		}
+	}
+	
 	/*
 	 * Overrides PopupPanel.onPreviewNativeEvent() to address an issue
 	 * with PopupPanel's in FF closing with auto hide if the user
