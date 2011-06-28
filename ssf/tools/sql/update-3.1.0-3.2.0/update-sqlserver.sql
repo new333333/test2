@@ -6,4 +6,6 @@ alter table SS_Forums add maxVersionAge numeric(19,0);
 alter table SS_Forums add maxFileSize numeric(19,0);
 alter table SS_Forums add fileEncryptionEnabled tinyint null;
 
-INSERT INTO SS_SchemaInfo values (21);
+alter table SS_Attachments add fileAgingDate datetime;
+
+INSERT INTO SS_SchemaInfo values (22);
