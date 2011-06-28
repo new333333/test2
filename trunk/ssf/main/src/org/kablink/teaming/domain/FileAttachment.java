@@ -68,6 +68,7 @@ public class FileAttachment extends Attachment {
     private Integer majorVersion;
     private Integer minorVersion;
     private Integer fileStatus = FileStatus.valueOf(FileStatus.not_set);
+    private Date fileAgingDate;
     private boolean fileExists = true;
    
     public FileAttachment() {
@@ -222,6 +223,17 @@ public class FileAttachment extends Attachment {
     }
     public String getFileStatusText() {
     	return NLT.get("file.status" + String.valueOf(this.getFileStatus()));
+    }
+
+    /**
+     * @hibernate.property type="timestamp" column="fileAgingDate"
+     * @return
+     */
+    public Date getFileAgingDate() {
+        return fileAgingDate;
+    }
+    public void setFileAgingDate(Date fileAgingDate) {
+        this.fileAgingDate = fileAgingDate;
     }
 
     /**
