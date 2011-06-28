@@ -45,6 +45,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.mail.MimeMessagePreparator;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.StringUtil;
@@ -55,6 +57,8 @@ import org.kablink.util.StringUtil;
  */
 public class EmailLog extends ZonedObject {
 
+	private static final Log logger = LogFactory.getLog(EmailLog.class);
+	
 	private int maxFromAddressLength = 255;
 	private int maxSubjLength = 255;
 	
@@ -215,10 +219,17 @@ public class EmailLog extends ZonedObject {
 		return subj;
 	}
 	public void setSubj(String subj) {
-		if (subj.length() > maxSubjLength) {
-			this.subj = subj.substring(0, maxSubjLength - 4) + "...";
+		if(subj == null)
+			subj = "";
+		String subj2 = StringUtil.definedUnicode(subj);
+		if(logger.isDebugEnabled()) {
+			if(subj.length() != subj2.length())
+				logger.debug((subj.length()-subj2.length()) + " unsafe characters removed from original subj size of " + subj.length());
+		}
+		if (subj2.length() > maxSubjLength) {
+			this.subj = subj2.substring(0, maxSubjLength - 4) + "...";
 		} else {
-			this.subj = subj;
+			this.subj = subj2;
 		}
 	}
 	public EmailLogStatus getStatus() {
