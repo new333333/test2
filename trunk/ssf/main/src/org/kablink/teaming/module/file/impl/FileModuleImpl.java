@@ -422,6 +422,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
+    	return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE);
+    }
+	public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
+    		List fileUploadItems, FilesErrors errors, Boolean prune) 
+    	throws ReservedByAnotherUserException {
 		if(errors == null)
     		errors = new FilesErrors();
     	
@@ -432,7 +437,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	checkReservation(entry);
     	
-    	for(int i = 0; i < fileUploadItems.size();) {
+    	for (int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
     			// Unlike deleteFileInternal, writeFileTransactional is transactional.
@@ -457,12 +462,44 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			fileUploadItems.remove(i);
     		}
     	}
+		//Now see if any versions need to be pruned
+    	if (prune) {
+    		//Go prune the minor versions
+    		pruneFileVersions(binder, entry);
+    	}
     	
     	// Because writeFileTransactional itself is transactional, we do not trigger
     	// another transaction here. 
 		
 		return errors;
     }
+	
+	public void pruneFileVersions(Binder binder, DefinableEntity entry) {
+    	Integer maxVersions = getBinderModule().getBinderVersionsToKeep(binder);
+    	if (maxVersions != null) {
+	    	Collection<FileAttachment> atts = entry.getFileAttachments();
+	    	for (FileAttachment fa : atts) {
+				Integer currentMajorVersion = -1;
+				int minorVersionsSeen = 0;
+        		Set<VersionAttachment> fileVersions = fa.getFileVersions();
+        		for (VersionAttachment va : fileVersions) {
+					//Is this version in the same major version category?
+        			if (va.getMajorVersion() != currentMajorVersion) {
+        				//This is a new major version category, reset the counters
+        				currentMajorVersion = va.getMajorVersion();
+        				minorVersionsSeen = 0;
+        			}
+        			if (minorVersionsSeen > maxVersions) {
+        				//This version is over the number to be kept, so delete it
+        				try {
+        					deleteVersion(binder, entry, va);
+        				} catch(Exception e) {}
+        			}
+        			minorVersionsSeen++;
+				}
+	    	}
+    	}
+	}
     
     protected void executeContentFilters(Binder binder, DefinableEntity entity, String fileName, FileUploadItem fui)
     throws IOException, FilterException, UncheckedIOException {
@@ -682,7 +719,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void revertFileVersion(DefinableEntity entity, VersionAttachment va) 
-		throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
+			throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
+		revertFileVersion(entity, va, Boolean.TRUE);
+	}
+	public void revertFileVersion(DefinableEntity entity, VersionAttachment va, Boolean prune) 
+			throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
 		//First, check to see if there is quota enough for this
 		User user = RequestContextHolder.getRequestContext().getUser();
 		checkQuota(user, va.getFileItem().getLength(), va.getFileItem().getName());
@@ -711,13 +752,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fui = new FileUploadItem(type, name, file, va.getRepositoryName());
    		fuis.add(fui);
 
+   		Integer maxVersionsToKeep = getBinderModule().getBinderVersionsToKeep(binder);
+   		if (maxVersionsToKeep != null && maxVersionsToKeep == 0) {
+   			//This is a special case. We explicitly turn off pruning of versions 
+   			//  so the user doesn't lose the original top version during this operation
+   			prune = Boolean.FALSE;
+   		}
     	try {	
-    		writeFiles(binder, entity, fuis, null);
+    		writeFiles(binder, entity, fuis, null, prune);
     	}
     	finally {}
     	
     	//Copy up the status, comment and major version
-    	VersionAttachment newTopVa = va.getParentAttachment().getHighestVersion();
+    	VersionAttachment newTopVa = fa.getHighestVersion();
     	newTopVa.setFileStatus(va.getFileStatus());
     	newTopVa.getParentAttachment().setFileStatus(va.getFileStatus());
     	newTopVa.getFileItem().setDescription(va.getFileItem().getDescription());
@@ -766,7 +813,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void incrementMajorFileVersion(DefinableEntity entity, FileAttachment fileAtt) {
 		//First, make a copy of the higest version (if there is quota)
-		revertFileVersion(entity, fileAtt.getHighestVersion());
+		revertFileVersion(entity, fileAtt.getHighestVersion(), Boolean.FALSE);
 		fileAtt = fileAtt.getHighestVersion().getParentAttachment();
 		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
 		fileAtt.setMinorVersion(0);
@@ -775,6 +822,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			hVer.setMajorVersion(fileAtt.getMajorVersion());
 			hVer.setMinorVersion(fileAtt.getMinorVersion());
 		}
+    	Binder binder;
+    	if (entity instanceof Entry) {
+    		binder = ((Entry)entity).getParentBinder();
+    	} else {
+    		binder = (Binder) entity;
+    	}
+		pruneFileVersions(binder, entity);	//After all the work is finished, make sure to prune the versions
 		setEntityModification(entity);
 		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION);
