@@ -134,7 +134,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// expanding it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
-					getRpcService().expandHorizontalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
+					getRpcService().expandHorizontalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketInfo(), new AsyncCallback<TreeInfo>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
