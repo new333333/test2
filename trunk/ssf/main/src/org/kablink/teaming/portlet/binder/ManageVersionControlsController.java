@@ -84,35 +84,47 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		} else if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
-				//Save the settings
-				//Are versions enabled
-				Boolean enableBinderVersions = PortletRequestUtils.getBooleanParameter(request, "enableBinderVersions", Boolean.FALSE);
-				getBinderModule().setBinderVersionsEnabled(binderId, enableBinderVersions);
-				
-				// Get the maximum number of versions.
-				String s_versionsToKeep;
-				Integer versionsToKeep = null;
-				try {
-					s_versionsToKeep = PortletRequestUtils.getStringParameter(request, "versionsToKeep", "");
-					if (!s_versionsToKeep.equals("")) {
-						versionsToKeep = Integer.valueOf(s_versionsToKeep);
+				//See if inheriting
+				if (binder.getVersionsEnabled() != null) {
+					//Save the settings
+					//Are versions enabled
+					Boolean enableBinderVersions = PortletRequestUtils.getBooleanParameter(request, "enableBinderVersions", Boolean.FALSE);
+					getBinderModule().setBinderVersionsEnabled(binderId, enableBinderVersions);
+					
+					// Get the maximum number of versions.
+					String s_versionsToKeep;
+					Integer versionsToKeep = null;
+					try {
+						s_versionsToKeep = PortletRequestUtils.getStringParameter(request, "versionsToKeep", "");
+						if (!enableBinderVersions) {
+							//If versions are disabled, then set the versions to keep to 0
+							s_versionsToKeep = "0";
+						}
+						if (!s_versionsToKeep.equals("")) {
+							versionsToKeep = Integer.valueOf(s_versionsToKeep);
+						}
+						getBinderModule().setBinderVersionsToKeep(binderId, versionsToKeep);
+					} catch (Exception ex) {
+						// The value entered by the user must not be valid, don't set it.
 					}
-					getBinderModule().setBinderVersionsToKeep(binderId, versionsToKeep);
-				} catch (Exception ex) {
-					// The value entered by the user must not be valid, don't set it.
-				}
-				
-				// Get the maximum age of versions.
-				String s_maxVersionAge;
-				Integer maxVersionAge = null;
-				try {
-					s_maxVersionAge = PortletRequestUtils.getStringParameter(request, "maxVersionAge", "");
-					if (!s_maxVersionAge.equals("")) {
-						maxVersionAge = Integer.valueOf(s_maxVersionAge);
+					
+					// Get the maximum age of versions.
+					String s_maxVersionAge;
+					Integer maxVersionAge = null;
+					try {
+						s_maxVersionAge = PortletRequestUtils.getStringParameter(request, "maxVersionAge", "");
+						if (!enableBinderVersions) {
+							//If versions are disabled, then turn the version aging off
+							s_maxVersionAge = "";
+						}
+						if (!s_maxVersionAge.equals("")) {
+							maxVersionAge = Integer.valueOf(s_maxVersionAge);
+						}
+						getBinderModule().setBinderMaxVersionAge(binderId, maxVersionAge);
+					} catch (Exception ex) {
+						// The value entered by the user must not be valid, don't set it.
 					}
-					getBinderModule().setBinderMaxVersionAge(binderId, maxVersionAge);
-				} catch (Exception ex) {
-					// The value entered by the user must not be valid, don't set it.
+					
 				}
 				
 				// Get the maximum file size.

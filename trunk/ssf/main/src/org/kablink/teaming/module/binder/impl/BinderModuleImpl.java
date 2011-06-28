@@ -2405,6 +2405,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
     public Integer getBinderVersionsToKeep(Binder binder) {
+    	Boolean versionsEnabled = binder.getVersionsEnabled();
+    	if (versionsEnabled != null && !versionsEnabled) {
+    		//Versions have been explicitly turned off. Simulate no versions by returning 0
+    		return 0;
+    	}
     	Integer result = binder.getVersionsToKeep();
 		Binder parent = binder;
 		while (parent.getParentBinder() != null) {
@@ -2428,6 +2433,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	//Get the maxVersionAge setting from the first binder it is set in up the ancestor chain
     public Integer getBinderMaxVersionAge(Binder binder) {
+    	Boolean versionsEnabled = binder.getVersionsEnabled();
+    	if (versionsEnabled != null && !versionsEnabled) {
+    		//Versions have been explicitly turned off. Return null to indicate no age
+    		return null;
+    	}
     	Integer result = binder.getMaxVersionAge();
 		Binder parent = binder;
 		while (parent.getParentBinder() != null) {
