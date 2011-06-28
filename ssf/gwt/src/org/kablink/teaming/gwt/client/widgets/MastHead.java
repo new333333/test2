@@ -40,6 +40,8 @@ import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
+import org.kablink.teaming.gwt.client.shared.GetBinderBrandingResponse;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -108,7 +110,7 @@ public class MastHead extends Composite
 	private AsyncCallback<GwtBrandingData> m_rpcGetSiteBrandingCallback = null;
 
 	// m_rpcGetBinderBrandingCallback is our callback that gets called when the ajax request to get the binder branding data completes.
-	private AsyncCallback<GwtBrandingData> m_rpcGetBinderBrandingCallback = null;
+	private AsyncCallback<GetBinderBrandingResponse> m_rpcGetBinderBrandingCallback = null;
 	
 	
 	
@@ -216,7 +218,7 @@ public class MastHead extends Composite
 		};
 
 		// Create the callback that will be used when we issue an ajax call to get the binder branding
-		m_rpcGetBinderBrandingCallback = new AsyncCallback<GwtBrandingData>()
+		m_rpcGetBinderBrandingCallback = new AsyncCallback<GetBinderBrandingResponse>()
 		{
 			/**
 			 * 
@@ -235,7 +237,7 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( final GwtBrandingData brandingData )
+			public void onSuccess( final GetBinderBrandingResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
@@ -244,8 +246,8 @@ public class MastHead extends Composite
 					public void execute()
 					{
 						// Update the binder branding panel with the branding data
-						m_binderBrandingData = brandingData;
-						m_binderBrandingPanel.updateBrandingPanel( brandingData );
+						m_binderBrandingData = response.getValue();
+						m_binderBrandingPanel.updateBrandingPanel( m_binderBrandingData );
 						
 						// Display site and binder branding based on the branding rule found in
 						// the site branding.
@@ -653,16 +655,14 @@ public class MastHead extends Composite
 	 */
 	private void getBinderBrandingDataFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-		
-		rpcService = GwtTeaming.getRpcService();
-		
 		// Do we have a binder id?
 		if ( m_mastheadBinderId != null && m_mastheadBinderId.length() > 0 )
 		{
-			//!!!Window.alert( "about to call getBinderBrandingData(), binderId: '" + m_mastheadBinderId + "'" );
+			GetBinderBrandingCmd cmd;
+			
 			// Yes, Issue an ajax request to get the branding data for the given binder.
-			rpcService.getBinderBrandingData( HttpRequestInfo.createHttpRequestInfo(), m_mastheadBinderId, m_rpcGetBinderBrandingCallback );
+			cmd = new GetBinderBrandingCmd( m_mastheadBinderId );
+			GwtClientHelper.executeCommand( cmd, m_rpcGetBinderBrandingCallback );
 		}
 	}// end getBinderBrandingDataFromServer()
 

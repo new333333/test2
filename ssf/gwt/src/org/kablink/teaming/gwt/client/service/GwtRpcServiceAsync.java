@@ -62,6 +62,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
@@ -93,6 +95,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface GwtRpcServiceAsync
 {
+	// Execute the given command.
+	@SuppressWarnings("rawtypes")
+	public void executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd, AsyncCallback callback );
+	
+	
+	
 	// Do a search given the criteria found in the GwtSearchCriteria object.
 	public void executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria, AsyncCallback<GwtSearchResults> callback );
 	

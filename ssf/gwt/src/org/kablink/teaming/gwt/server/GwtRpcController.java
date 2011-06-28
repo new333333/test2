@@ -100,13 +100,13 @@ public class GwtRpcController extends RemoteServiceServlet
 
         	m_logger.debug( "in GwtRpcController.processCall() for rpc request:  " + rpcRequest.getMethod().getName() );
 
-            // If the first parameter to the method is an
-            // HttpRequestInfo object...
             Object[] parameters = rpcRequest.getParameters();
             
         	//Run the data through the XSS checker
             parameters = performStringCheck(parameters);
             
+            // If the first parameter to the method is an
+            // HttpRequestInfo object...
             if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
             {
             	HttpServletRequest req;
