@@ -33,50 +33,47 @@
 
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.event.ActivityStreamEvent.Handler;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
-public class TeamingActionEvent extends GwtEvent<TeamingActionEvent.Handler> {
+/**
+ * The ActivityStreamEvent used to activate activity streams.
+ * 
+ * @author drfoster@novell.com
+ */
+public class ActivityStreamEvent extends GwtEvent<ActivityStreamEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-	private TeamingAction	m_action;
-	private Object			m_actionData;
+	
+	private ActivityStreamInfo m_asi;
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onTeamingAction(TeamingActionEvent event);
+		void onActivityStream(ActivityStreamEvent event);
 	}
 	
 	/**
-	 * The TeamingActionEvent used to fire off a number of actions in Teaming
+	 * Class constructor.
 	 * 
-	 * @param action     - The action to perform. 
-	 * @param actionData - This can be null, but some actions expect one.
+	 * @param asi
 	 */
-	public TeamingActionEvent(TeamingAction action, Object actionData) {
+	public ActivityStreamEvent(ActivityStreamInfo asi) {
 		super();
-		m_action     = action;
-		m_actionData = actionData;
+		m_asi = asi;
 	}
-	
-	public TeamingActionEvent(TeamingAction action) {
-		this(action, null);
-	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public TeamingAction getAction()     {return m_action;    }
-	public Object        getActionData() {return m_actionData;}
-	
+	public ActivityStreamInfo getActivityStreamInfo() {return m_asi;}
+
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 * 
@@ -94,9 +91,9 @@ public class TeamingActionEvent extends GwtEvent<TeamingActionEvent.Handler> {
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onTeamingAction(this);
+		handler.onActivityStream(this);
 	}
-	
+
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

@@ -39,6 +39,9 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -83,6 +86,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 
 /**
@@ -91,7 +96,10 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ActivityStreamCtrl extends Composite
-	implements ActionHandler, ClickHandler
+	implements ActionHandler, ClickHandler,
+	// EventBus handlers implemented by this class.
+		ActivityStreamEvent.Handler,
+		ActivityStreamExitEvent.Handler
 {
 	private int m_width;
 	private int m_height;
@@ -138,6 +146,19 @@ public class ActivityStreamCtrl extends Composite
 	private ShareThisDlg m_shareThisDlg = null;
 	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See registerEventHandlers() for how this array is
+	// used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Activity stream events.
+		TeamingEvents.ACTIVITY_STREAM,
+		TeamingEvents.ACTIVITY_STREAM_EXIT,
+	};
+	
+	// The following is used to track the events that are registered so
+	// that they may be cleaned up, if necessary.
+	private List<HandlerRegistration> m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+	
 	
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -148,6 +169,9 @@ public class ActivityStreamCtrl extends Composite
 		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
 	{
 		FlowPanel mainPanel;
+
+		// Register the events to be handled by this class.
+		registerEventHandlers(true);
 
 		// Get the rpc service.
 		m_rpcService = GwtTeaming.getRpcService();
@@ -1768,6 +1792,81 @@ public class ActivityStreamCtrl extends Composite
 		m_showSettingLabel.setText( text );
 	}
 
+	/**
+	 * Handles ActivityStreamEvent's received by this class.
+	 * 
+	 * Implements the ActivityStreamEvent.Handler.onActivityStream() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onActivityStream(ActivityStreamEvent event) {
+		setActivityStream( event.getActivityStreamInfo() );
+		show();
+	}
+	
+	/**
+	 * Handles ActivityStreamExitEvent's received by this class.
+	 * 
+	 * Implements the ActivityStreamExitEvent.Handler.onActivityStreamExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onActivityStreamExit(ActivityStreamExitEvent event) {
+		hide();
+	}
+	
+	/*
+	 * Register/unregister event handlers on the event bus
+	 * 
+	 * @param register	true  -> Events will be registered.
+	 * 					false -> Registered events will be removed.
+	 */
+	private void registerEventHandlers( boolean register )
+	{
+		if ( register )
+		{
+			SimpleEventBus eventBus = GwtTeaming.getEventBus();
+			for ( int i = 0; i < m_registeredEvents.length; i += 1 )
+			{
+				final HandlerRegistration handler;
+				TeamingEvents te = m_registeredEvents[i];
+				switch ( te ) {
+				case ACTIVITY_STREAM:      handler = ActivityStreamEvent.registerEvent(     eventBus, this ); break;
+				case ACTIVITY_STREAM_EXIT: handler = ActivityStreamExitEvent.registerEvent( eventBus, this ); break;
+				
+				default:
+				case UNDEFINED:
+					Window.alert( GwtTeaming.getMessages().eventHandling_UnhandledEvent( te.name(), this.getClass().getName() ) );
+					handler = null;
+					break;
+				}
+				
+				if ( null != handler )
+				{
+					m_registeredEventHandlers.add(new HandlerRegistration()
+					{
+						@Override
+						public void removeHandler()
+						{
+							handler.removeHandler();
+						}// end removeHandler()
+					});
+				}
+			}
+		}
+		
+		else
+		{
+			for ( HandlerRegistration hr: m_registeredEventHandlers )
+			{
+				hr.removeHandler();
+			}
+			m_registeredEventHandlers.clear();
+		}
+	}// end registerEventHandlers()
+	
 	/**
 	 * Callback interface to interact with the content control
 	 * asynchronously after it loads. 

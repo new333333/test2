@@ -34,10 +34,14 @@
 package org.kablink.teaming.gwt.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
-import org.kablink.teaming.gwt.client.event.TeamingActionEventHandler;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -90,13 +94,18 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 
 /**
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
-	implements ActionHandler, ResizeHandler, TeamingActionEventHandler
+	implements ActionHandler, ResizeHandler,
+	// EventBus handlers implemented by this class.
+		TeamingActionEvent.Handler,
+		ActivityStreamEvent.Handler,
+		ActivityStreamEnterEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
@@ -124,7 +133,22 @@ public class GwtMainPage extends Composite
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
-	private HandlerRegistration handlerRegistration;
+
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See registerEventHandlers() for how this array is
+	// used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Event whose pay load is one of our original TeamingActions.
+		TeamingEvents.TEAMING_ACTION,
+		
+		// Activity stream events.
+		TeamingEvents.ACTIVITY_STREAM,
+		TeamingEvents.ACTIVITY_STREAM_ENTER,
+	};
+	
+	// The following is used to track the events that are registered so
+	// that they may be cleaned up, if necessary.
+	private List<HandlerRegistration> m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 	
 	/*
 	 * Class constructor.
@@ -301,8 +325,8 @@ public class GwtMainPage extends Composite
 		Element bodyElement;
 		String url;
 
-		// Initialize the eventBus Handlers
-		updateEventBusHandlers(true);
+		// Register the events to be handled by this class.
+		registerEventHandlers(true);
 		
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
@@ -448,27 +472,56 @@ public class GwtMainPage extends Composite
 		}
 	}// end constructMainPage_Finish()
 
-	/**
-	 * Add event handlers to the event bus
+	/*
+	 * Register/unregister event handlers on the event bus
 	 * 
-	 * @param active - true passing true will add the event Handlers to the event bus
-	 * passing in false will remove the event handlers
+	 * @param register	true  -> Events will be registered.
+	 * 					false -> Registered events will be removed.
 	 */
-	private void updateEventBusHandlers(boolean active) {
-		if(active) {
-			final  com.google.web.bindery.event.shared.HandlerRegistration teamingActionHandler = GwtTeaming.getEventBus().addHandler(TeamingActionEvent.TYPE, this);
-			this.handlerRegistration = new HandlerRegistration() {
-				public void removeHandler() {
-					teamingActionHandler.removeHandler();
+	private void registerEventHandlers( boolean register )
+	{
+		if ( register )
+		{
+			SimpleEventBus eventBus = GwtTeaming.getEventBus();
+			for ( int i = 0; i < m_registeredEvents.length; i += 1 )
+			{
+				final HandlerRegistration handler;
+				TeamingEvents te = m_registeredEvents[i];
+				switch ( te ) {
+				case TEAMING_ACTION:         handler = TeamingActionEvent.registerEvent(       eventBus, this ); break;
+				case ACTIVITY_STREAM:        handler = ActivityStreamEvent.registerEvent(      eventBus, this ); break;
+				case ACTIVITY_STREAM_ENTER:  handler = ActivityStreamEnterEvent.registerEvent( eventBus, this ); break;
+				
+				default:
+				case UNDEFINED:
+					Window.alert( GwtTeaming.getMessages().eventHandling_UnhandledEvent( te.name(), this.getClass().getName() ) );
+					handler = null;
+					break;
 				}
-			};
-		} else {
-			if (handlerRegistration != null ) {
-				handlerRegistration.removeHandler();
-				handlerRegistration = null;
+				
+				if ( null != handler )
+				{
+					m_registeredEventHandlers.add( new HandlerRegistration()
+					{
+						@Override
+						public void removeHandler()
+						{
+							handler.removeHandler();
+						}// end removeHandler()
+					});
+				}
 			}
 		}
-	}
+		
+		else
+		{
+			for ( HandlerRegistration hr: m_registeredEventHandlers )
+			{
+				hr.removeHandler();
+			}
+			m_registeredEventHandlers.clear();
+		}
+	}// end registerEventHandlers()
 	
 	/**
 	 * Returns the main menu control.
@@ -1048,7 +1101,7 @@ public class GwtMainPage extends Composite
 		if ( ( m_activityStreamCtrl != null ) && m_activityStreamCtrl.isVisible() )
 		{
 			// ...exit out it.
-			handleActionImpl( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+			GwtTeaming.getEventBus().fireEvent(new ActivityStreamExitEvent());
 		}
 	}// end exitActivityStreamIfActive()	
 
@@ -1336,18 +1389,6 @@ public class GwtMainPage extends Composite
 			
 			teamingFeedUrl = m_requestInfo.getTeamingFeedUrl();
 			Window.open( teamingFeedUrl, "_teaming_feed", "width=500,height=700,resizable,scrollbars" );
-			break;
-			
-		case ACTIVITY_STREAM:
-			activityStream( obj );
-			break;
-			
-		case ENTER_ACTIVITY_STREAM_MODE:
-			enterActivityStreamMode( obj );
-			break;
-			
-		case EXIT_ACTIVITY_STREAM_MODE:
-			exitActivityStreamMode();
 			break;
 			
 		case INVOKE_SIMPLE_PROFILE:
@@ -2175,91 +2216,54 @@ public class GwtMainPage extends Composite
 			Window.alert( "in tagSearch() and obj is not a String object" );
 	}//end tagSearch()
 
-	/*
-	 * This method will be called to load an activity stream based on
-	 * the Object received as a parameter.
+	/**
+	 * Handles ActivityStreamEvent's received by this class.
 	 * 
-	 * Implements the ACTIVITY_STREAM teaming action.
+	 * Implements the ActivityStreamEvent.Handler.onActivityStream() method.
+	 * 
+	 * @param event
 	 */
-	private void activityStream( Object obj )
+	@Override
+	public void onActivityStream( ActivityStreamEvent event )
 	{
-		// Do we have an ActivityStreamInfo parameter?
-		if ( obj instanceof ActivityStreamInfo )
+		// Restore the UI state (i.e., sidebar, ...)
+		restoreUIState();
+
+		// Put the activity stream text in the tab...
+		final ActivityStreamInfo asi = event.getActivityStreamInfo();
+		GwtClientHelper.jsSetMainTitle( GwtTeaming.getMessages().whatsNewWithName( asi.getTitle() ) );
+		
+		// ...and persist this activity stream in the user's profile.
+		GwtTeaming.getRpcService().persistActivityStreamSelection( HttpRequestInfo.createHttpRequestInfo(), asi, new AsyncCallback<Boolean>()
 		{
-			// Yes!  Restore the UI state (i.e., sidebar, ...)
-			restoreUIState();
-
-			// Put the activity stream text in the tab...
-			final ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
-			GwtClientHelper.jsSetMainTitle( GwtTeaming.getMessages().whatsNewWithName( asi.getTitle() ) );
-			
-			// ...load the activity stream control...
-			m_activityStreamCtrl.setActivityStream( asi );
-			m_activityStreamCtrl.show();
-			
-			// ...tell the sidebar to display the appropriate
-			// ...content and/or selection...
-			m_wsTreeCtrl.setActivityStream( asi );
-
-			// ...and persist this activity stream in the user's profile.
-			GwtTeaming.getRpcService().persistActivityStreamSelection( HttpRequestInfo.createHttpRequestInfo(), asi, new AsyncCallback<Boolean>()
+			public void onFailure( Throwable t )
 			{
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
-				}// end onFailure()
-				
-				public void onSuccess( Boolean   result )
-				{
-					// Note that we're not doing anything with the results
-					// good or bad.  If it fails, so what?  The activity
-					// stream will simply not persist for the user.
-				}// end onSuccess()
-			});
-		}
-		else
-			Window.alert( "in activityStream() and obj is not an ActivityStreamInfo object" );
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
+			}// end onFailure()
+			
+			public void onSuccess( Boolean   result )
+			{
+				// Note that we're not doing anything with the results
+				// good or bad.  If it fails, so what?  The activity
+				// stream will simply not persist for the user.
+			}// end onSuccess()
+		});
 	}//end activityStream()
 
-	/*
-	 * This method will be called to enter activity stream mode.
+	/**
+	 * Handles ActivityStreamEnterEvent's received by this class.
 	 * 
-	 * Implements the ENTER_ACTIVITY_STREAM_MODE teaming action.
+	 * Implements the ActivityStreamEnterEvent.Handler.onActivityStreamEnter() method.
+	 * 
+	 * @param event
 	 */
-	private void enterActivityStreamMode( Object obj )
+	public void onActivityStreamEnter( ActivityStreamEnterEvent event )
 	{
 		// Hide any popup entry iframe divs.
 		GwtClientHelper.jsHideEntryPopupDiv();
-		
-		// Do we have no parameter or an ActivityStreamInfo parameter?
-		if ( ( null == obj) || ( obj instanceof ActivityStreamInfo ))
-		{
-			// Yes!  Pass the request to the workspace tree control.
-			//
-			// Note:  If this is passed a default activity stream to
-			//    load, a separate ACTIVITY_STREAM teaming action will
-			//    be triggered by the workspace tree control AFTER it
-			//    has entered activity stream mode.
-			m_wsTreeCtrl.enterActivityStreamMode( (ActivityStreamInfo) obj );
-		}
-		else
-			Window.alert( "in enterActivityStreamMode() and obj is not null and is not an ActivityStreamInfo object" );
 	}//end enterActivityStreamMode()
-
-	/*
-	 * This method will be called to exit activity stream mode.
-	 * 
-	 * Implements the EXIT_ACTIVITY_STREAM_MODE teaming action.
-	 */
-	private void exitActivityStreamMode()
-	{
-		// Hide the activity stream control and pass the request to
-		// the workspace tree control.
-		m_activityStreamCtrl.hide();
-		m_wsTreeCtrl.exitActivityStreamMode();
-	}//end exitActivityStreamMode()
 
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
@@ -2497,14 +2501,16 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onTeamingAction(TeamingActionEvent event) {
 		if(event != null) {
-			TeamingAction action = event.getAction();
-			Object obj = event.getSource();
-			
 			//call the old action handler
-			handleActionImpl(action, obj);
+			handleActionImpl(event.getAction(), event.getActionData());
 		}
 	}
-	
+
+	/**
+	 * Fires an event on the event bus.
+	 * 
+	 * @param event
+	 */
 	public void fireEvent(Event<?> event) {
 		GwtTeaming.fireEvent(event);
 	}

@@ -36,6 +36,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -44,7 +47,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
@@ -404,7 +406,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		closePBAnchor.addStyleName("workspaceTreeControlHeader_closeA");
 		closePBAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				triggerAction(TeamingAction.EXIT_ACTIVITY_STREAM_MODE);
+				GwtTeaming.fireEvent(
+					new ActivityStreamExitEvent());
 			}
 		});
 		
@@ -527,7 +530,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// ...and if we have a default activity stream to select...
 		if (null != defaultASI) {
 			// ...put it into affect.
-			triggerAction(TeamingAction.ACTIVITY_STREAM, defaultASI);
+			GwtTeaming.getEventBus().fireEvent(new ActivityStreamEvent(defaultASI));
 		}
 
 		// Finally, reset the menu so that it display what's
@@ -603,8 +606,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		else {
 			reply = "cursorPointer";
 			if (ti.isActivityStream()) {
-				TeamingAction ta = ti.getActivityStreamAction();
-				if ((null == ta) || (TeamingAction.UNDEFINED == ta)) {
+				TeamingEvents te = ti.getActivityStreamEvent();
+				if ((null == te) || (TeamingEvents.UNDEFINED == te)) {
 					reply = "cursorDefault";
 				}
 			}

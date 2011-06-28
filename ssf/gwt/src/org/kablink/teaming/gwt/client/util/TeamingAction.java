@@ -44,7 +44,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public enum TeamingAction implements IsSerializable
 {
-	ACTIVITY_STREAM( "Loads an Activity Stream" ),
 	ADMINISTRATION( "Invoke Administration Page" ),
 	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
 	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
@@ -53,8 +52,6 @@ public enum TeamingAction implements IsSerializable
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
 	EDIT_SITE_BRANDING ("Edit Site Branding" ),
-	ENTER_ACTIVITY_STREAM_MODE( "Enters Activity Streams in the Sidebar and Content Panel" ),
-	EXIT_ACTIVITY_STREAM_MODE( "Exits Activity Streams Mode" ),
 	GOTO_CONTENT_URL( "Changes the Current Context to a non-Permalink URL" ),
 	GOTO_PERMALINK_URL( "Changes the Current Context to a Permalink URL" ),
 	HELP( "Help" ),
