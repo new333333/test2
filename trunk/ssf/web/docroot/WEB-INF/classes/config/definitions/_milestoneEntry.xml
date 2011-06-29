@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_milestoneEntry" caption="__definition_default_milestone_entry" type="1" nextId="47" definitionType="1" databaseId="40288182131a1e4501131a2fe53a0048"> 
+<definition name="_milestoneEntry" caption="__definition_default_milestone_entry" type="1" nextId="49" definitionType="1" databaseId="40288182131a1e4501131a2fe53a0048"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -206,12 +206,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="45">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="45"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <properties> 
@@ -256,10 +256,14 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="46">
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="47">
       <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="48">
+      <properties>
+        <property name="caption" value="__entry_comments"/>
       </properties>
     </item>
   </item>  

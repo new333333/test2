@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_guestbookEntry" caption="__definition_default_guestbook_entry" type="1" nextId="25" definitionType="1" databaseId="402883c6115753d8011157811ae1000e"> 
+<definition name="_guestbookEntry" caption="__definition_default_guestbook_entry" type="1" nextId="27" definitionType="1" databaseId="402883c6115753d8011157811ae1000e"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -87,12 +87,12 @@
     <properties> 
       <property name="type" value="guestbook"/> 
     </properties>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="23">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="23"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <item name="titleBlogView" caption="__title" id="17"> 
@@ -113,10 +113,14 @@
     <properties> 
       <property name="type" value="guestbook"/> 
     </properties>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="24">
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="25">
       <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="26">
+      <properties>
+        <property name="caption" value="__entry_comments"/>
       </properties>
     </item>
   </item>  
