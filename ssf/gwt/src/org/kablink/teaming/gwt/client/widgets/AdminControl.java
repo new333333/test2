@@ -37,6 +37,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -85,7 +86,8 @@ import com.google.gwt.user.client.ui.Label;
 public class AdminControl extends Composite
 	implements ActionTrigger, 
 	// EventBus handlers implemented by this class.
-		AdministrationExitEvent.Handler
+		AdministrationExitEvent.Handler,
+		AdministrationUpgradeCheckEvent.Handler
 {
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
@@ -96,6 +98,7 @@ public class AdminControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
+		TeamingEvents.ADMINISTRATION_UPGRADE_CHECK,
 	};
 	
 	/**
@@ -896,6 +899,19 @@ public class AdminControl extends Composite
 	{
 		hideControl();
 	}// end onAdministrationExit()
+	
+	/**
+	 * Handles AdministrationUpgradeCheckEvent's received by this class.
+	 * 
+	 * Implements the AdministrationUpgradeCheckEvent.Handler.onAdministrationUpgradeCheck() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationUpgradeCheck( AdministrationUpgradeCheckEvent event )
+	{
+		showUpgradeTasks();
+	}// end onAdministrationUpgradeCheck()
 	
 	/**
 	 * Callback interface to interact with the admin control

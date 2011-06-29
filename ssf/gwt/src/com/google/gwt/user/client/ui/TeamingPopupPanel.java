@@ -32,12 +32,6 @@
  */
 package com.google.gwt.user.client.ui;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
-
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.user.client.Event;
@@ -51,19 +45,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  *  
  * @author drfoster@novell.com
  */
-public class TeamingPopupPanel extends PopupPanel
-	implements
-	// EventBus handlers implemented by this class.
-		BrowseHierarchyExitEvent.Handler
-{
-	// The following defines the TeamingEvents that are handled by
-	// this class.  See EventHelper.registerEventHandlers() for how
-	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		// Miscellaneous events.
-		TeamingEvents.BROWSE_HIERARCHY_EXIT,
-	};
-	
+public class TeamingPopupPanel extends PopupPanel {
 	/**
 	 * Creates an empty popup panel, specifying its auto-hide and modal
 	 * properties.
@@ -73,18 +55,13 @@ public class TeamingPopupPanel extends PopupPanel
 	 */
 	public TeamingPopupPanel(boolean autoHide, boolean modal) {
 		super(autoHide, modal);
-		
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
 	}
-	
+
 	public TeamingPopupPanel(boolean autoHide) {
 		// Always use the initial form of the constructor.
 		this(autoHide, false);
 	}
-
+	
 	/**
 	 * Sets the popup panel's animation type to roll down.
 	 */
@@ -92,21 +69,6 @@ public class TeamingPopupPanel extends PopupPanel
 		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 	}
 
-	/**
-	 * Handles BrowseHierarchyExitEvent's received by this class.
-	 * 
-	 * Implements the BrowseHierarchyExitEvent.Handler.onBrowseHierarchyExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onBrowseHierarchyExit( final BrowseHierarchyExitEvent event ) {
-		Widget widget = getWidget();
-		if ((null != widget) && (widget instanceof WorkspaceTreeControl)) {
-			hide();
-		}
-	}
-	
 	/*
 	 * Overrides PopupPanel.onPreviewNativeEvent() to address an issue
 	 * with PopupPanel's in FF closing with auto hide if the user

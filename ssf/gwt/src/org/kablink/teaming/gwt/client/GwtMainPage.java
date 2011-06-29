@@ -78,6 +78,7 @@ import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
+import org.kablink.teaming.gwt.client.workspacetree.BreadcrumbTreePopup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -94,7 +95,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.web.bindery.event.shared.Event;
 
 
@@ -130,7 +130,7 @@ public class GwtMainPage extends Composite
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
-	private TeamingPopupPanel m_breadCrumbBrowser;
+	private BreadcrumbTreePopup m_breadCrumbBrowser;
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
 	private UIStateManager m_uiStateManager;
@@ -1093,12 +1093,6 @@ public class GwtMainPage extends Composite
 	{
 		switch (action)
 		{
-		case CHECK_FOR_UPGRADE_TASKS:
-			// Show a list of upgrade tasks that still need to be performed.
-			AdminControl.showUpgradeTasks();
-			
-			break;
-			
 		case EDIT_BRANDING:
 			GwtBrandingData brandingData;
 			
@@ -2183,7 +2177,7 @@ public class GwtMainPage extends Composite
 				// bread crumb browser.  Create one...
 				breadCrumbTree = wsTreeCtrl;
 				breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
-				m_breadCrumbBrowser = new TeamingPopupPanel(true);
+				m_breadCrumbBrowser = new BreadcrumbTreePopup(true);
 				GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
 				GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
 				m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
