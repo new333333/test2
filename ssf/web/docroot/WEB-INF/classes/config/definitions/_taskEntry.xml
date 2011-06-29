@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="69" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
+<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="71" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -35,16 +35,16 @@
         <property name="type" value="task"/> 
       </properties>  
       <item name="event" caption="__event" type="data" category="entryData" id="22" dataType="event" display="form"> 
-        <properties>
-          <property name="caption" value="__task_time_period"/>
-          <property name="name" value="start_end"/>
-          <property name="hasDuration" value="true"/>
-          <property name="hasDurationDays" value="true"/>
-          <property name="hasRecurrence" value="false"/>
-          <property name="timeZoneSensitiveActive" value="false"/>
-          <property name="required" value="false"/>
-          <property name="fieldModificationAllowed" value="false"/>
-        </properties>
+        <properties> 
+          <property name="caption" value="__task_time_period"/>  
+          <property name="name" value="start_end"/>  
+          <property name="hasDuration" value="true"/>  
+          <property name="hasDurationDays" value="true"/>  
+          <property name="hasRecurrence" value="false"/>  
+          <property name="timeZoneSensitiveActive" value="false"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/> 
+        </properties> 
       </item>  
       <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="23" display="form"> 
         <item name="selectboxSelection" caption="__selection" id="24"> 
@@ -366,11 +366,11 @@
         <property name="name" value="start_end"/>  
         <property name="caption" value="__task_time_period"/> 
       </properties>  
-      <operations>
-        <operation name="deleteItem" caption="__delete"/>
-        <operation name="modifyItem" caption="__modify"/>
-        <operation name="moveItem" caption="__move"/>
-      </operations>
+      <operations> 
+        <operation name="deleteItem" caption="__delete"/>  
+        <operation name="modifyItem" caption="__modify"/>  
+        <operation name="moveItem" caption="__move"/> 
+      </operations> 
     </item>  
     <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="67"> 
       <properties> 
@@ -428,12 +428,16 @@
         <property name="caption" value="__task_status"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="68"> 
-      <properties> 
-        <property name="caption" value=""/>  
-        <property name="tabTitle" value="comments"/> 
-      </properties> 
-    </item> 
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="69">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="70">
+      <properties>
+        <property name="caption" value="__entry_comments"/>
+      </properties>
+    </item>
   </item>  
   <properties> 
     <property name="name" value="_taskEntry"/>  
