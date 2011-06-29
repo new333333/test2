@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
@@ -366,7 +367,7 @@ public class MastHead extends Composite
 								// Since the user has administration rights, show them a list of
 								// upgrade tasks that still need to be performed.
 								// Sent event to check for tasks
-								GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.CHECK_FOR_UPGRADE_TASKS, null));
+								GwtTeaming.fireEvent( new AdministrationUpgradeCheckEvent() );
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );

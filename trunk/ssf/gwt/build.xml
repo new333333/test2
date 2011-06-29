@@ -27,21 +27,25 @@
 	</target>
 	<target name="init-gwt-production" if="production.build">
 		<echo message="Compiling ${build.gwt.module} for production."/>
-		<property name="gwt.base"           value="${build.gwt.module}_prod" />
-		<property name="gwt.localWorkers"   value="-localWorkers 4"          />
-		<property name="gwt.logLevel"       value="-logLevel INFO"           />
-		<property name="gwt.style"          value="-style OBF"               />
-		<property name="gwt.additionalArgs" value=""                         />
+		<property name="gwt.base"            value="${build.gwt.module}_prod" />
+		<property name="gwt.localWorkers"    value="-localWorkers 4"          />
+		<property name="gwt.logLevel"        value="-logLevel INFO"           />
+		<property name="gwt.style"           value="-style OBF"               />
+		<property name="gwt.additionalArgs1" value=""                         />
 	</target>
 	<target name="init-gwt-development" if="development.build">
 		<echo message="Compiling ${build.gwt.module} for development."/>
-		<property name="gwt.base"           value="${build.gwt.module}_dev"          />
-		<property name="gwt.localWorkers"   value="-localWorkers 2"                  />
-		<property name="gwt.logLevel"       value="-logLevel INFO"                   />
-		<property name="gwt.style"          value="-style DETAILED"                  />
-		<property name="gwt.additionalArgs" value="-draftCompile -ea -compileReport" />
+		<property name="gwt.base"            value="${build.gwt.module}_dev" />
+		<property name="gwt.localWorkers"    value="-localWorkers 2"         />
+		<property name="gwt.logLevel"        value="-logLevel INFO"          />
+		<property name="gwt.style"           value="-style DETAILED"         />
+		<property name="gwt.additionalArgs1" value="-draftCompile -ea"       />
 	</target>
 
+	<!-- Are we supposed to generate a compilation report? -->
+	<condition property="gwt.additionalArgs2" value="-compileReport" else="">
+		<istrue value="${build.gwt.compileReport}" />
+	</condition>
 	
 	<!-- Define the platform that we're building on. -->
 	<condition property="build.mac"      value="true" else="false">                                     <os family="mac"     />      </condition>
@@ -50,8 +54,8 @@
 
 	
 	<!-- Define the GWT development jar. -->
-	<condition property="gwt.dev.jar" value="gwt-dev.jar"  ><istrue value="${build.linux}"   /></condition>
-	<condition property="gwt.dev.jar" value="gwt-dev.jar"    ><istrue value="${build.mac}"     /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"><istrue value="${build.linux}"   /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"><istrue value="${build.mac}"     /></condition>
 	<condition property="gwt.dev.jar" value="gwt-dev.jar"><istrue value="${build.windows}" /></condition>
 
 	
@@ -109,7 +113,7 @@
 			<jvmarg value="-XX:MaxPermSize=32m"      />
 			<jvmarg value="-Djava.awt.headless=true" />
 			<!-- GWT Compiler arguments. -->
-			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.localWorkers} ${gwt.additionalArgs} ${gwt.module}" />
+			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.module}" />
 		</java>
 	</target>
 

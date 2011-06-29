@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.event;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -65,16 +64,13 @@ public class EventHelper {
 	 * @param eventBus
 	 * @param registerdEvents
 	 * @param eventHandler
-	 * 
-	 * @return
+	 * @param registeredEventHandlers	Optional.  May be null.
 	 */
-	public static List<HandlerRegistration> registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler)
-	{
+	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler, List<HandlerRegistration> registeredEventHandlers) {
 		// Scan the events we were given to register.
-		List<HandlerRegistration> registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		boolean returnRegisteredEventHandlers = (null != registeredEventHandlers);
 		int events = ((null == eventsToBeRegistered) ? 0 : eventsToBeRegistered.length);
-		for (int i = 0; i < events; i += 1)
-		{
+		for (int i = 0; i < events; i += 1) {
 			// Which event is this?
 			boolean handlerNotDefined = true;
 			HandlerRegistration registrationHandler = null;
@@ -134,6 +130,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case ADMINISTRATION_UPGRADE_CHECK:
+				// An AdministrationUpgradeCheckEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof AdministrationUpgradeCheckEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = AdministrationUpgradeCheckEvent.registerEvent(eventBus, ((AdministrationUpgradeCheckEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case BROWSE_HIERARCHY:
 				// An BrowseHierarchEvent!  Can the event handler we
 				// were given handle that?
@@ -170,11 +175,11 @@ public class EventHelper {
 			}
 			
 			// Yes, the event handler we were given was able to handle
-			// this event!  We're we able to register it?
-			else if (null != registrationHandler)
-			{
+			// this event!  We're we able to register it and is the
+			// wanting to keep track of them?
+			else if ((null != registrationHandler) && returnRegisteredEventHandlers) {
 				// Yes!  Add its HandlerRegistration to the list of
-				// them we'll return.
+				// them.
 				final HandlerRegistration finalRegistrationHandler = registrationHandler;
 				registeredEventHandlers.add(new HandlerRegistration() {
 					@Override
@@ -184,14 +189,19 @@ public class EventHelper {
 				});
 			}
 		}
-
-		// If we get here, registeredEventHandlers refers to a list of
-		// the HandlerRegistration's that were registered.  Return it.
-		return registeredEventHandlers;
+	}
+	
+	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler) {
+		// Always use the initial form of the method.
+		registerEventHandlers(
+			eventBus,
+			eventsToBeRegistered,
+			eventHandler,
+			null);
 	}
 
 	/**
-	 * Unregisters the HandlerRegistration objects in a list of them.
+	 * Unregisters the HandlerRegistration objects from a list of them.
 	 * 
 	 * @param registeredEventHandlers
 	 */
@@ -199,8 +209,7 @@ public class EventHelper {
 		// If we were given a list of HandlerRegistration's...
 		if ((null != registeredEventHandlers) && (!(registeredEventHandlers.isEmpty()))) {
 			// ...scan them...
-			for (HandlerRegistration hr: registeredEventHandlers)
-			{
+			for (HandlerRegistration hr: registeredEventHandlers) {
 				// ...removing the handler for each...
 				hr.removeHandler();
 			}

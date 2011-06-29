@@ -45,7 +45,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public enum TeamingAction implements IsSerializable
 {
 	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
-	CHECK_FOR_UPGRADE_TASKS( "Check for upgrade tasks that need to be performed" ),
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
 	EDIT_SITE_BRANDING ("Edit Site Branding" ),

@@ -39,7 +39,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The AdministrationExitEvent used to exit activity stream mode.
+ * The AdministrationExitEvent used to exit administration mode.
  * 
  * @author drfoster@novell.com
  */

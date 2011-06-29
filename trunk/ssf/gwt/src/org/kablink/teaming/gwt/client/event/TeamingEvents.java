@@ -46,17 +46,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum TeamingEvents implements IsSerializable {
-	TEAMING_ACTION,			// Event whose pay load is one of our original TeamingActions.
+	TEAMING_ACTION,					// Event whose pay load is one of our original TeamingActions.
 	
-	ACTIVITY_STREAM,		// Changes the selected an activity stream.
-	ACTIVITY_STREAM_ENTER,	// Enters activity stream mode.
-	ACTIVITY_STREAM_EXIT,	// Exits  activity stream mode.
+	ACTIVITY_STREAM,				// Changes the selected an activity stream.
+	ACTIVITY_STREAM_ENTER,			// Enters activity stream mode.
+	ACTIVITY_STREAM_EXIT,			// Exits  activity stream mode.
 	
-	ADMINISTRATION,			// Enters administration mode.
-	ADMINISTRATION_EXIT,	// Exits  administration mode.
+	ADMINISTRATION,					// Enters administration mode.
+	ADMINISTRATION_EXIT,			// Exits  administration mode.
+	ADMINISTRATION_UPGRADE_CHECK,	// Tell the administration control to check for upgrade tasks that need to be performed.
 	
-	BROWSE_HIERARCHY,		// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 
-	BROWSE_HIERARCHY_EXIT,	// Exits the bread crumb browser, if open. 
+	BROWSE_HIERARCHY,				// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 
+	BROWSE_HIERARCHY_EXIT,			// Exits the bread crumb browser, if open. 
 	
 	UNDEFINED;
 }

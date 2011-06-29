@@ -39,29 +39,28 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The AdministrationEvent used to activate administration mode.
+ * The AdministrationUpgradeCheckEvent used to check whether
+ * administration mode need to display the upgrade tasks warning.
  * 
  * @author drfoster@novell.com
  */
-public class AdministrationEvent extends GwtEvent<AdministrationEvent.Handler> {
+public class AdministrationUpgradeCheckEvent extends GwtEvent<AdministrationUpgradeCheckEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-	
+
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onAdministration(AdministrationEvent event);
+		void onAdministrationUpgradeCheck(AdministrationUpgradeCheckEvent event);
 	}
 	
 	/**
 	 * Class constructor.
-	 * 
-	 * @param asi
 	 */
-	public AdministrationEvent() {
+	public AdministrationUpgradeCheckEvent() {
 		super();
 	}
-
+	
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 * 
@@ -79,9 +78,9 @@ public class AdministrationEvent extends GwtEvent<AdministrationEvent.Handler> {
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onAdministration(this);
+		handler.onAdministrationUpgradeCheck(this);
 	}
-
+	
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

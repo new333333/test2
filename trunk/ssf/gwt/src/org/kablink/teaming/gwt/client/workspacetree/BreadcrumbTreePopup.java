@@ -30,68 +30,66 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.workspacetree;
 
-package org.kablink.teaming.gwt.client.event;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 
-import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
+
 
 /**
- * The AdministrationEvent used to activate administration mode.
+ * Class used to drive the display of the WorkspaceTreeControl,
+ * typically used for Teaming's bread crumbs.
  * 
  * @author drfoster@novell.com
+ *
  */
-public class AdministrationEvent extends GwtEvent<AdministrationEvent.Handler> {
-	public static Type<Handler> TYPE = new Type<Handler>();
+public class BreadcrumbTreePopup extends TeamingPopupPanel
+	implements
+	// EventBus handlers implemented by this class.
+		BrowseHierarchyExitEvent.Handler
+{
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Miscellaneous events.
+		TeamingEvents.BROWSE_HIERARCHY_EXIT,
+	};
 	
 	/**
-	 * Handler interface for this event.
+	 * Creates an empty popup panel, specifying its auto-hide and modal
+	 * properties.
+	 * 
+	 * @param autoHide
+	 * @param modal
 	 */
-	public interface Handler extends EventHandler {
-		void onAdministration(AdministrationEvent event);
+	public BreadcrumbTreePopup(boolean autoHide, boolean modal) {
+		super(autoHide, modal);
+		
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
 	}
 	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param asi
-	 */
-	public AdministrationEvent() {
-		super();
+	public BreadcrumbTreePopup(boolean autoHide) {
+		// Always use the initial form of the constructor.
+		this(autoHide, false);
 	}
 
 	/**
-	 * Returns the GwtEvent.Type of this event.
+	 * Handles BrowseHierarchyExitEvent's received by this class.
 	 * 
-	 * @return
+	 * Implements the BrowseHierarchyExitEvent.Handler.onBrowseHierarchyExit() method.
+	 * 
+	 * @param event
 	 */
 	@Override
-	public Type<Handler> getAssociatedType() {
-		return TYPE;
-	}
-
-	/**
-	 * Dispatches this event when one is triggered.
-	 * 
-	 * @param handler
-	 */
-	@Override
-	protected void dispatch(Handler handler) {
-		handler.onAdministration(this);
-	}
-
-	/**
-	 * Registers this event on the given event bus and returns its
-	 * HandlerRegistration.
-	 * 
-	 * @param eventBus
-	 * @param handler
-	 * 
-	 * @return
-	 */
-	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
-		return eventBus.addHandler(TYPE, handler);
-	}
+	public void onBrowseHierarchyExit( final BrowseHierarchyExitEvent event ) {
+		hide();
+	}	
 }
