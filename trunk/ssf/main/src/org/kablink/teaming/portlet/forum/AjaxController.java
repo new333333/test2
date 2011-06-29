@@ -104,7 +104,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
@@ -136,7 +135,6 @@ import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.relevance.util.RelevanceUtils;
-import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFiltersBuilder;
 import org.kablink.teaming.security.AccessControlException;
@@ -152,7 +150,6 @@ import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -166,8 +163,6 @@ import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
-import org.kablink.teaming.web.util.GwtUIHelper;
-import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.Favorites;
@@ -187,7 +182,7 @@ import org.kablink.util.search.Order;
  * @author Peter Hurley
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public class AjaxController  extends SAbstractControllerRetry {
 	
 	//caller will retry on OptimisiticLockExceptions
@@ -570,9 +565,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		else if (op.equals(WebKeys.OPERATION_GET_FILE_RELATIONSHIPS_BY_ENTRY)) {
 			return ajaxGetFileRelationshipsByEntry(request, response);
 		}
-		else if (op.equals(WebKeys.OPERATION_TOGGLE_GWT_UI)) {
-			return ajaxToggleGwtUI(request, response);
-		}
 		else if (op.equals(WebKeys.OPERATION_VALIDATE_BINDER_QUOTAS)) {
 			return ajaxValidateBinderQuotas(request, response);
 		}
@@ -844,24 +836,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 	
 	/**
-	 * Toggles the current GWT UI mode.
-	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	private ModelAndView ajaxToggleGwtUI(RenderRequest request, RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		Binder userWS = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
-		model.put("userWorkspaceURL", PermaLinkUtil.getPermalink(userWS));
-		GwtUIHelper.setGwtUIActive(request, (!(GwtUIHelper.isGwtUIActive(request))));
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/toggle_gwtUI", model);
-	}
-
-	/**
-	 * Toggles the current GWT UI mode.
+	 * ?
 	 * 
 	 * @param request
 	 * @param response

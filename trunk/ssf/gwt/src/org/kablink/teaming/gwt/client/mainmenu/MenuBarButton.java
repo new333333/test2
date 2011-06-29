@@ -70,7 +70,7 @@ public class MenuBarButton extends Anchor {
 			// If we have an event...
 			if (null != m_event) {
 				// ...fire it...
-				GwtTeaming.getEventBus().fireEvent(m_event);
+				GwtTeaming.fireEvent(m_event);
 			}
 			
 			else {

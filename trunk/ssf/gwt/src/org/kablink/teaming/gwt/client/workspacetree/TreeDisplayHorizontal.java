@@ -216,8 +216,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Closes this WorkspaceTreeControl.
 	 */
 	private void closeTree() {
-		GwtTeaming.getEventBus().fireEvent(
-			new BrowseHierarchyExitEvent());
+		GwtTeaming.fireEvent(new BrowseHierarchyExitEvent());
 	}
 	
 	/*

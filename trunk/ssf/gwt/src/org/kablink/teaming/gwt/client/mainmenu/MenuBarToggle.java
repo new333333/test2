@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -52,13 +53,12 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class MenuBarToggle extends Anchor {
-	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
-	private Image			m_altImg;			// The alternate Image.
-	private Image			m_baseImg;			// The base      Image.
-	private Image 			m_currentImg;		// Current image being displayed.
-	private TeamingAction	m_altAction;		// The alternate TeamingAction.
-	private TeamingAction	m_baseAction;		// The base      TeamingAction.
-	private Widget			m_hoverWidget;		// The Widget any hover interaction is tied to. 
+	private Image			m_altImg;		// The alternate Image.
+	private Image			m_baseImg;		// The base      Image.
+	private Image 			m_currentImg;	// Current image being displayed.
+	private TeamingEvents	m_altEvent;		// The alternate TeamingEvents.
+	private TeamingEvents	m_baseEvent;	// The base      TeamingEvents.
+	private Widget			m_hoverWidget;	// The Widget any hover interaction is tied to. 
 	
 	/*
 	 * Inner class that implements clicking on a MenuBarToggle.
@@ -76,28 +76,26 @@ public class MenuBarToggle extends Anchor {
 		/**
 		 * Called when the toggle is clicked.
 		 * 
-		 * @param event
+		 * @param clickEvent
 		 */
-		public void onClick(ClickEvent event) {
-			TeamingAction action;
+		public void onClick(ClickEvent clickEvent) {
+			TeamingEvents event;
 			
 			// Remove any hover style from the button...
 			m_hoverWidget.removeStyleName("subhead-control-bg2");
 			
-			// ...fire the action...
-			if ( m_currentImg == m_baseImg )
-				action = m_baseAction;
-			else
-				action = m_altAction;
+			// ...fire the event...
+			if (m_currentImg == m_baseImg)
+			     event = m_baseEvent;
+			else event = m_altEvent;
 			
-			m_actionTrigger.triggerAction( action );
+			GwtTeaming.fireEvent(EventHelper.createSimpleEvent(event));
 			
 			// ...and toggle the state of the MenuBarToggle.
-			if ( action == m_baseAction )
-				action = m_altAction;
-			else
-				action = m_baseAction;
-			setImage( action );
+			if (event == m_baseEvent)
+			     event = m_altEvent;
+			else event = m_baseEvent;
+			setImage(event);
 		}
 	}
 
@@ -105,23 +103,21 @@ public class MenuBarToggle extends Anchor {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param actionTrigger
 	 * @param baseImgRes
 	 * @param baseTitle
-	 * @param baseAction
+	 * @param baseEvent
 	 * @param altImgRes
 	 * @param altTitle
-	 * @param altAction
+	 * @param altEvent
 	 */
-	public MenuBarToggle(ActionTrigger actionTrigger, ImageResource baseImgRes, String baseTitle, TeamingAction baseAction, ImageResource altImgRes, String altTitle, TeamingAction altAction) {
+	public MenuBarToggle(ImageResource baseImgRes, String baseTitle, TeamingEvents baseEvent, ImageResource altImgRes, String altTitle, TeamingEvents altEvent) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_hoverWidget   = this;
-		m_actionTrigger	= actionTrigger;
-		m_baseAction	= baseAction;
-		m_altAction		= altAction;
+		m_hoverWidget = this;
+		m_baseEvent	  = baseEvent;
+		m_altEvent    = altEvent;
 		
 		// ...create the alternate Image...
 		m_altImg = new Image(altImgRes);
@@ -147,44 +143,43 @@ public class MenuBarToggle extends Anchor {
 	
 	/**
 	 * Set the image for this menu bar toggle.
+	 * 
+	 * @param event
 	 */
-	public void setImage( TeamingAction action )
-	{
+	public void setImage(TeamingEvents event) {
 		Image addImg;
 		Image removeImg;
 		
-		if ( action == m_altAction ) {
+		if (event == m_altEvent) {
 			addImg    = m_altImg;
 			removeImg = m_baseImg;
 		}
+		
 		else {
 			addImg    = m_baseImg;
 			removeImg = m_altImg;
 		}
 		
 		// Does the image need to change?
-		if ( addImg != m_currentImg )
-		{
+		if (addImg != m_currentImg) {
 			// Yes
 			m_currentImg = addImg;
 			getElement().replaceChild(addImg.getElement(), removeImg.getElement());
 		}
+	}
 		
-	}// end setImage()
-	
-	
 	/**
-	 * Set the state of this toggle to the given action.
+	 * Set the state of this toggle to the given event.
+	 * 
+	 * @param event
 	 */
-	public void setState( TeamingAction action )
-	{
+	public void setState(TeamingEvents event) {
 		// Make sure we were based a valid state.
-		if ( action != m_baseAction && action != m_altAction )
-		{
-			Window.alert( "invalid state passed to MenuBarToggle.setState(): " + action.name() );
+		if ((event != m_baseEvent) && (event != m_altEvent)) {
+			Window.alert("invalid state passed to MenuBarToggle.setState(): " + event.name());
 			return;
 		}
 		
-		setImage( action );
-	}// end setState()
+		setImage(event);
+	}
 }

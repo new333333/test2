@@ -34,8 +34,11 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
+import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.core.client.GWT;
@@ -57,8 +60,11 @@ import com.google.gwt.user.client.ui.NamedFrame;
 public class ContentControl extends Composite
 	implements
 	// EventBus handlers implemented by this class.
-		AdministrationExitEvent.Handler
+		AdministrationExitEvent.Handler,
+		SidebarHideEvent.Handler,
+		SidebarShowEvent.Handler
 {
+	private GwtMainPage m_mainPage;
 	private NamedFrame m_frame;
 	
 	// The following defines the TeamingEvents that are handled by
@@ -67,6 +73,10 @@ public class ContentControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
+		
+		// Sidebar events.
+		TeamingEvents.SIDEBAR_HIDE,
+		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
 	/*
@@ -76,9 +86,10 @@ public class ContentControl extends Composite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ContentControl( String name )
+	private ContentControl( GwtMainPage mainPage, String name )
 	{
-		FlowPanel mainPanel;
+		// Store the parameters.
+		m_mainPage = mainPage;
 
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -86,7 +97,7 @@ public class ContentControl extends Composite
 			m_registeredEvents,
 			this );
 		
-		mainPanel = new FlowPanel();
+		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
 
 		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
@@ -217,6 +228,38 @@ public class ContentControl extends Composite
 	}// end onAdministrationExit()
 	
 	/**
+	 * Handles SidebarHideEvent's received by this class.
+	 * 
+	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarHide( SidebarHideEvent event )
+	{
+		if ( !m_mainPage.isAdminActive() )
+		{
+			addStyleName( "mainWorkspaceTreeControl" );
+		}
+	}// end onSidebarHide()
+	
+	/**
+	 * Handles SidebarShowEvent's received by this class.
+	 * 
+	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarShow( SidebarShowEvent event )
+	{
+		if ( !m_mainPage.isAdminActive() )
+		{
+			removeStyleName( "mainWorkspaceTreeControl" );
+		}
+	}// end onSidebarShow()
+	
+	/**
 	 * Callback interface to interact with the content control
 	 * asynchronously after it loads. 
 	 */
@@ -229,17 +272,18 @@ public class ContentControl extends Composite
 	 * Loads the ContentControl split point and returns an instance of
 	 * it via the callback.
 	 * 
+	 * @param mainPage
 	 * @param name
 	 * @param contentCtrlClient
 	 */
-	public static void createAsync( final String name, final ContentControlClient contentCtrlClient )
+	public static void createAsync( final GwtMainPage mainPage, final String name, final ContentControlClient contentCtrlClient )
 	{
 		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ContentControl contentCtrl = new ContentControl( name );
+				ContentControl contentCtrl = new ContentControl( mainPage, name );
 				contentCtrlClient.onSuccess( contentCtrl );
 			}// end onSuccess()
 			

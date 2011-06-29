@@ -38,6 +38,8 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
+import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -77,7 +79,9 @@ public class WorkspaceTreeControl extends Composite
 	// EventBus handlers implemented by this class.
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamEvent.Handler,
-		ActivityStreamExitEvent.Handler
+		ActivityStreamExitEvent.Handler,
+		SidebarHideEvent.Handler,
+		SidebarShowEvent.Handler
 {	
 	private GwtMainPage m_mainPage;
 	private TreeDisplayBase m_treeDisplay;
@@ -91,6 +95,10 @@ public class WorkspaceTreeControl extends Composite
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
+		
+		// Sidebar events.
+		TeamingEvents.SIDEBAR_HIDE,
+		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
 	/**
@@ -289,6 +297,34 @@ public class WorkspaceTreeControl extends Composite
 		if ((TreeMode.VERTICAL == m_tm) && (null != m_treeDisplay)) {
 			// ...tell it to select this activity stream.
 			m_treeDisplay.setActivityStream(asi);
+		}
+	}
+	
+	/**
+	 * Handles SidebarHideEvent's received by this class.
+	 * 
+	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarHide(SidebarHideEvent event) {
+		if ((TreeMode.VERTICAL == m_tm) && (!(m_mainPage.isAdminActive()))) {
+			setVisible(false);
+		}
+	}
+	
+	/**
+	 * Handles SidebarShowEvent's received by this class.
+	 * 
+	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarShow(SidebarShowEvent event) {
+		if ((TreeMode.VERTICAL == m_tm) && (!(m_mainPage.isAdminActive()))) {
+			setVisible(true);
 		}
 	}
 	

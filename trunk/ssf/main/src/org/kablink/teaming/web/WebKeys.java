@@ -599,7 +599,6 @@ public class WebKeys {
     public static final String OPERATION_VIEW_ERROR_MESSAGE = "view_error_message";
     public static final String OPERATION_VIEW_EDIT_HISTORY = "view_edit_history";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";
-	public static final String OPERATION_TOGGLE_GWT_UI = "toggle_gwtUI";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";

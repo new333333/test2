@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -48,11 +49,63 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * @author drfoster@novell.com
  */
 public class EventHelper {
+	// The following controls whether the validateEvents() method
+	// actually does anything.  true -> It performs full validation,
+	// false -> It performs no validate.
+	//
+	// I decided to take this tact rather than always enumerate the
+	// enumeration values in the registerEventHandlers() for
+	// performance reasons.  I didn't want each class that registers
+	// events to pay the price of checking whether perhaps 100's of
+	// events were implemented.
+	//
+	// Prior to shipping, this needs to be set false !!!
+	private final static boolean VALIDATE_EVENT_HANDLERS = true;
+	
 	/*
 	 * Constructor method.
 	 */
 	private EventHelper() {
 		// Inhibits this class from being instantiated.
+	}
+	
+	/**
+	 * Given an event that requires no parameters, generates the
+	 * corresponding GwtEvent object for it.
+	 * 
+	 * @param event
+	 * 
+	 * @return
+	 */
+	public static GwtEvent<?> createSimpleEvent(TeamingEvents event) {
+		GwtEvent<?> reply;
+		switch (event) {
+		case MASTHEAD_HIDE:  reply = new MastheadHideEvent(); break;
+		case MASTHEAD_SHOW:  reply = new MastheadShowEvent(); break;
+		case SIDEBAR_HIDE:   reply = new SidebarHideEvent();  break;
+		case SIDEBAR_SHOW:   reply = new SidebarShowEvent();  break;
+			
+		default:
+		case UNDEFINED:
+			Window.alert(GwtTeaming.getMessages().eventHandling_NonSimpleEvent(event.name(), EventHelper.class.getName()));
+			reply = null;
+			break;
+		}
+		return reply;
+	}
+	
+	/*
+	 * Returns true of an event is an an array of events and false
+	 * otherwise.
+	 */
+	private static boolean isTEInA(TeamingEvents event, TeamingEvents[] events) {
+		int c = ((null == events) ? 0 : events.length);
+		for (int i = 0; i < c; i += 1) {
+			if (event.ordinal() == events[i].ordinal()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -67,6 +120,10 @@ public class EventHelper {
 	 * @param registeredEventHandlers	Optional.  May be null.
 	 */
 	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler, List<HandlerRegistration> registeredEventHandlers) {
+		// Validate what's being asked for vs. what the object is
+		// defined to support.
+		validateEvents(eventsToBeRegistered, eventHandler);
+		
 		// Scan the events we were given to register.
 		boolean returnRegisteredEventHandlers = (null != registeredEventHandlers);
 		int events = ((null == eventsToBeRegistered) ? 0 : eventsToBeRegistered.length);
@@ -149,11 +206,65 @@ public class EventHelper {
 				break;
 			
 			case BROWSE_HIERARCHY_EXIT:
-				// An BrowseHierarchExitEvent!  Can the event handler
+				// An BrowseHierarchyExitEvent!  Can the event handler
 				// we were given handle that?
 				if (eventHandler instanceof BrowseHierarchyExitEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = BrowseHierarchyExitEvent.registerEvent(eventBus, ((BrowseHierarchyExitEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case LOGIN:
+				// An LoginEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof LoginEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = LoginEvent.registerEvent(eventBus, ((LoginEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case LOGOUT:
+				// An LogoutEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof LogoutEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = LogoutEvent.registerEvent(eventBus, ((LogoutEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case MASTHEAD_HIDE:
+				// A MastheadHideEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof MastheadHideEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MastheadHideEvent.registerEvent(eventBus, ((MastheadHideEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case MASTHEAD_SHOW:
+				// A MastheadShowEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof MastheadShowEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MastheadShowEvent.registerEvent(eventBus, ((MastheadShowEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SIDEBAR_HIDE:
+				// A SidebarHideEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SidebarHideEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SidebarHideEvent.registerEvent(eventBus, ((SidebarHideEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SIDEBAR_SHOW:
+				// A SidebarShowEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SidebarShowEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SidebarShowEvent.registerEvent(eventBus, ((SidebarShowEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -216,6 +327,79 @@ public class EventHelper {
 			
 			// ...and emptying the list.
 			registeredEventHandlers.clear();
+		}
+	}
+
+	/*
+	 * Validate that the event handlers implemented by eventHandler are
+	 * include in the events array.
+	 */
+	private static void validateEvents(TeamingEvents[] eventsToCheck, Object eventHandler) {
+		// If we're not validating things...
+		if (!VALIDATE_EVENT_HANDLERS) {
+			// ...bail.
+			return;
+		}
+
+		// If we don't have any events to validate or a handler to
+		// validate them against...
+		int events = ((null == eventsToCheck) ? 0 : eventsToCheck.length);
+		if ((0 == events) || (null == eventHandler)) {
+			// ...bail.
+			return;
+		}
+
+		// Scan the defined events looking for what's defined and
+		// what should be defined.
+		for (TeamingEvents te:  TeamingEvents.values() ) {
+			boolean needsHandler = isTEInA(te, eventsToCheck);
+			boolean hasHandler   = false;
+			switch (te) {
+			case TEAMING_ACTION:                hasHandler = (eventHandler instanceof TeamingActionEvent.Handler);              break;
+			
+			case ACTIVITY_STREAM:               hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);             break;
+			case ACTIVITY_STREAM_ENTER:         hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);        break;
+			case ACTIVITY_STREAM_EXIT:          hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);         break;
+			
+			case ADMINISTRATION:                hasHandler = (eventHandler instanceof AdministrationEvent.Handler);             break;
+			case ADMINISTRATION_EXIT:           hasHandler = (eventHandler instanceof AdministrationExitEvent.Handler);         break;
+			case ADMINISTRATION_UPGRADE_CHECK:  hasHandler = (eventHandler instanceof AdministrationUpgradeCheckEvent.Handler); break;
+			
+			case BROWSE_HIERARCHY:              hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);            break;
+			case BROWSE_HIERARCHY_EXIT:         hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);        break;
+			
+			case MASTHEAD_HIDE:                 hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);               break;
+			case MASTHEAD_SHOW:                 hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);               break;
+			
+			case LOGIN:                         hasHandler = (eventHandler instanceof LoginEvent.Handler);                      break;
+			case LOGOUT:                        hasHandler = (eventHandler instanceof LogoutEvent.Handler);                     break;
+			
+			case SIDEBAR_HIDE:                  hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                break;
+			case SIDEBAR_SHOW:                  hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                break;
+			
+			case UNDEFINED:
+				// Ignore.
+				continue;
+				
+			default:
+				// Somebody forget to add a validation handler for
+				// this!
+				Window.alert(GwtTeaming.getMessages().eventHandling_Validation_NoValidator(te.name()));
+				continue;
+			}
+
+			// Is something wrong with this (i.e., we need a handler
+			// but don't have one or we have a handler that wasn't in
+			// the list?
+			if (needsHandler != hasHandler) {
+				// Yes!  Tell the user about the problem.
+				String teName = te.name();
+				String className = eventHandler.getClass().getName();
+				String error = "*???*";
+				if      (needsHandler) error = GwtTeaming.getMessages().eventHandling_Validation_NoHandler(teName, className);
+				else if (hasHandler)   error = GwtTeaming.getMessages().eventHandling_Validation_NotListed(teName, className);
+				Window.alert(error);
+			}
 		}
 	}
 }

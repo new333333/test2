@@ -39,6 +39,9 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.LogoutEvent;
+import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
+import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -87,7 +90,10 @@ public class AdminControl extends Composite
 	implements ActionTrigger, 
 	// EventBus handlers implemented by this class.
 		AdministrationExitEvent.Handler,
-		AdministrationUpgradeCheckEvent.Handler
+		AdministrationUpgradeCheckEvent.Handler,
+		LogoutEvent.Handler,
+		SidebarHideEvent.Handler,
+		SidebarShowEvent.Handler
 {
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
@@ -99,6 +105,13 @@ public class AdminControl extends Composite
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.ADMINISTRATION_UPGRADE_CHECK,
+		
+		// Login/out events.
+		TeamingEvents.LOGOUT,
+		
+		// Sidebar events.
+		TeamingEvents.SIDEBAR_HIDE,
+		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
 	/**
@@ -515,7 +528,7 @@ public class AdminControl extends Composite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private AdminControl()
+	private AdminControl( GwtMainPage mainPage )
 	{
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -532,6 +545,7 @@ public class AdminControl extends Composite
 		
 		// Create a control to hold the administration page for the selection administration action.
 		ContentControl.createAsync(
+				mainPage,
 				"adminContentControl",
 				new ContentControlClient()
 		{			
@@ -914,6 +928,51 @@ public class AdminControl extends Composite
 	}// end onAdministrationUpgradeCheck()
 	
 	/**
+	 * Handles LogoutEvent's received by this class.
+	 * 
+	 * Implements the LogoutEvent.Handler.onLogout() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onLogout( LogoutEvent event )
+	{
+		doPreLogoutCleanup();
+	}// end onLogout()
+	
+	/**
+	 * Handles SidebarHideEvent's received by this class.
+	 * 
+	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarHide( SidebarHideEvent event )
+	{
+		if ( isVisible() )
+		{
+			hideTreeControl();
+		}
+	}// end onSidebarHide()
+	
+	/**
+	 * Handles SidebarShowEvent's received by this class.
+	 * 
+	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarShow( SidebarShowEvent event )
+	{
+		if ( isVisible() )
+		{
+			showTreeControl();
+		}
+	}// end onSidebarShow()
+	
+	/**
 	 * Callback interface to interact with the admin control
 	 * asynchronously after it loads. 
 	 */
@@ -928,14 +987,14 @@ public class AdminControl extends Composite
 	 * 
 	 * @param adminCtrlClient
 	 */
-	public static void createAsync( final AdminControlClient adminCtrlClient )
+	public static void createAsync( final GwtMainPage mainPage, final AdminControlClient adminCtrlClient )
 	{
 		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				AdminControl adminCtrl = new AdminControl();
+				AdminControl adminCtrl = new AdminControl( mainPage );
 				adminCtrlClient.onSuccess( adminCtrl );
 			}// end onSuccess()
 			

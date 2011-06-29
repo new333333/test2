@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
+import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -100,7 +102,9 @@ public class ActivityStreamCtrl extends Composite
 	// EventBus handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
-		AdministrationExitEvent.Handler
+		AdministrationExitEvent.Handler,
+		SidebarHideEvent.Handler,
+		SidebarShowEvent.Handler
 {
 	private int m_width;
 	private int m_height;
@@ -158,6 +162,10 @@ public class ActivityStreamCtrl extends Composite
 		
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
+		
+		// Sidebar events.
+		TeamingEvents.SIDEBAR_HIDE,
+		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
 	
@@ -1841,6 +1849,38 @@ public class ActivityStreamCtrl extends Composite
 			show();
 		}
 	}// end onAdministrationExit()
+	
+	/**
+	 * Handles SidebarHideEvent's received by this class.
+	 * 
+	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarHide( SidebarHideEvent event )
+	{
+		if ( !m_mainPage.isAdminActive() )
+		{
+			addStyleName( "mainWorkspaceTreeControl" );
+		}
+	}// end onSidebarHide()
+	
+	/**
+	 * Handles SidebarShowEvent's received by this class.
+	 * 
+	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarShow( SidebarShowEvent event )
+	{
+		if ( !m_mainPage.isAdminActive() )
+		{
+			removeStyleName( "mainWorkspaceTreeControl" );
+		}
+	}// end onSidebarShow()
 	
 	/**
 	 * Callback interface to interact with the content control
