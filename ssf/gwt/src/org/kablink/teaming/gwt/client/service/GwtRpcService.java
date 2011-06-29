@@ -107,14 +107,8 @@ public interface GwtRpcService extends RemoteService
 	
 	
 	
-	// Do a search given the criteria found in the GwtSearchCriteria object.
-	public GwtSearchResults executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria ) throws Exception;
-	
 	// Return the administration actions the user has rights to run.
 	public ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-	
-	// Return a GwtBrandingData object for the given binder.
-	public GwtBrandingData getBinderBrandingData( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;

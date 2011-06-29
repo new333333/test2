@@ -47,6 +47,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.shared.ExecuteSearchCmd;
+import org.kablink.teaming.gwt.client.shared.ExecuteSearchResponse;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -449,7 +451,7 @@ public class FindCtrl extends Composite
 	private SearchResultsWidget m_searchResultsWidget;
 	private Object m_selectedObj = null;
 	private ActionHandler m_actionHandler;
-	private AsyncCallback<GwtSearchResults> m_searchResultsCallback;
+	private AsyncCallback<ExecuteSearchResponse> m_searchResultsCallback;
 	private Timer m_timer = null;
 	private Timer m_searchTimer = null;
 	private GwtSearchCriteria m_searchCriteria;
@@ -578,7 +580,7 @@ public class FindCtrl extends Composite
 		m_actionHandler = actionHandler;
 		
 		// Create the callback that will be used when we issue an ajax call to do a search.
-		m_searchResultsCallback = new AsyncCallback<GwtSearchResults>()
+		m_searchResultsCallback = new AsyncCallback<ExecuteSearchResponse>()
 		{
 			/**
 			 * 
@@ -597,8 +599,12 @@ public class FindCtrl extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtSearchResults gwtSearchResults )
+			public void onSuccess( ExecuteSearchResponse response )
 			{
+				GwtSearchResults gwtSearchResults;
+				
+				gwtSearchResults = response.getValue();
+				
 				m_searchResultsWidget.hideSearchingText();
 
 				if ( gwtSearchResults != null )
@@ -675,15 +681,18 @@ public class FindCtrl extends Composite
 	 */
 	public void executeSearch()
 	{
-		GwtRpcServiceAsync rpcService;
-
 		// Clear any results we may be currently displaying.
 		m_searchResultsWidget.clearCurrentContent();
 
 		// Issue an ajax request to search for the specified type of object.
-		m_searchInProgress = true;
-		rpcService = GwtTeaming.getRpcService();
-		rpcService.executeSearch( HttpRequestInfo.createHttpRequestInfo(), m_searchCriteria, m_searchResultsCallback );
+		{
+			ExecuteSearchCmd cmd;
+			
+			m_searchInProgress = true;
+			
+			cmd = new ExecuteSearchCmd( m_searchCriteria );
+			GwtClientHelper.executeCommand( cmd, m_searchResultsCallback );
+		}
 
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?

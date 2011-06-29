@@ -101,14 +101,8 @@ public interface GwtRpcServiceAsync
 	
 	
 	
-	// Do a search given the criteria found in the GwtSearchCriteria object.
-	public void executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria, AsyncCallback<GwtSearchResults> callback );
-	
 	// Return the administration actions the user has rights to run.
 	public void getAdminActions( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<GwtAdminCategory>> callback );
-	
-	// Return a GwtBrandingData object for the given binder.
-	public void getBinderBrandingData( HttpRequestInfo ri, String binderId, AsyncCallback<GwtBrandingData> callback );
 	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public void getDocumentBaseUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );

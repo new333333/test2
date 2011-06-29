@@ -41,7 +41,31 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author jwootton
  *
  */
-public interface VibeRpcCmd extends IsSerializable
+public abstract class VibeRpcCmd implements IsSerializable
 {
-
+	/**
+	 * This class defines all the possible commands
+	 */
+	public enum VibeRpcCmdType implements IsSerializable
+	{
+		EXECUTE_SEARCH,
+		GET_BINDER_BRANDING;
+	}
+	
+	protected VibeRpcCmdType m_cmdType;
+	
+	/**
+	 * 
+	 */
+	public VibeRpcCmd()
+	{
+	}
+	
+	/**
+	 * 
+	 */
+	public VibeRpcCmdType getCmdType()
+	{
+		return m_cmdType;
+	}
 }

@@ -33,21 +33,23 @@
 
 package org.kablink.teaming.gwt.client.shared;
 
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+
 
 /**
- * This class holds all of the information necessary to execute the "Get Branding" command.
+ * This class holds all of the information necessary to execute the "Execute Search" command.
  * 
  * @author jwootton
  *
  */
-public class GetBinderBrandingCmd extends VibeRpcCmd
+public class ExecuteSearchCmd extends VibeRpcCmd
 {
-	private String m_binderId;
+	private GwtSearchCriteria m_searchCriteria;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetBinderBrandingCmd()
+	public ExecuteSearchCmd()
 	{
 		super();
 		
@@ -57,9 +59,9 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GetBinderBrandingCmd( String binderId )
+	public ExecuteSearchCmd( GwtSearchCriteria searchCriteria )
 	{
-		m_binderId = binderId;
+		m_searchCriteria = searchCriteria;
 		
 		init();
 	}
@@ -67,9 +69,9 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public String getBinderId()
+	public GwtSearchCriteria getSearchCriteria()
 	{
-		return m_binderId;
+		return m_searchCriteria;
 	}
 	
 	/**
@@ -77,6 +79,6 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	 */
 	private void init()
 	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_BINDER_BRANDING;
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.EXECUTE_SEARCH;
 	}
 }

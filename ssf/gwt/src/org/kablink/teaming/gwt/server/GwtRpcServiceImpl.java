@@ -98,6 +98,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.shared.ExecuteSearchCmd;
+import org.kablink.teaming.gwt.client.shared.ExecuteSearchResponse;
 import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.shared.GetBinderBrandingResponse;
 import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
@@ -182,7 +184,53 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		req = getRequest( ri );
 		
-		if ( cmd instanceof GetBinderBrandingCmd )
+		switch ( cmd.getCmdType() )
+		{
+		case EXECUTE_SEARCH:
+		{
+			GwtSearchResults searchResults;
+			GwtSearchCriteria searchCriteria;
+			ExecuteSearchResponse response;
+			
+			searchCriteria = ((ExecuteSearchCmd) cmd).getSearchCriteria();
+			
+			switch ( searchCriteria.getSearchType() )
+			{
+			case APPLICATION:
+			case APPLICATION_GROUP:
+			case COMMUNITY_TAGS:
+			case ENTRIES:
+			case GROUP:
+			case PERSON:
+			case PERSONAL_TAGS:
+			case PLACES:
+			case TAG:
+			case TEAMS:
+			case USER:
+				try
+				{
+					searchResults = doSearch( getRequest( ri ), searchCriteria );
+				}
+				catch (Exception ex)
+				{
+					GwtTeamingException gtEx;
+					
+					gtEx = GwtServerHelper.getGwtTeamingException( ex );
+					throw gtEx;
+				}
+				break;
+					
+			default:
+				//!!! Finish.
+				searchResults = null;
+				break;
+			}
+			
+			response = new ExecuteSearchResponse( searchResults );
+			return response;
+		}
+			
+		case GET_BINDER_BRANDING:
 		{
 			GetBinderBrandingResponse response;
 			GwtBrandingData brandingData;
@@ -192,7 +240,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new GetBinderBrandingResponse( brandingData );
 			return response;
 		}
+		}
 		
+		m_logger.warn( "In GwtRpcServiceImpl.executeCommand(), unknown command: " + cmd.getClass().getName() );
 		return null;
 	}
 	
@@ -829,45 +879,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
-	 * Execute a search based on the given search criteria.
-	 * 
-	 * @param ri
-	 * @param searchCriteria
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception 
-	 */
-	public GwtSearchResults executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria ) throws Exception
-	{
-		GwtSearchResults searchResults;
-		
-		switch ( searchCriteria.getSearchType() )
-		{
-		case APPLICATION:
-		case APPLICATION_GROUP:
-		case COMMUNITY_TAGS:
-		case ENTRIES:
-		case GROUP:
-		case PERSON:
-		case PERSONAL_TAGS:
-		case PLACES:
-		case TAG:
-		case TEAMS:
-		case USER:
-			searchResults = doSearch( getRequest( ri ), searchCriteria );
-			break;
-				
-		default:
-			//!!! Finish.
-			searchResults = null;
-			break;
-		}
-		
-		return searchResults;
-	}// end executeSearch()
-	
-	/**
 	 * Returns a ActivityStreamData of corresponding to activity stream
 	 * parameters, paging data and info provided.
 	 * 
@@ -1002,22 +1013,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 	}// end getAdminActions()
-	
-	
-	/**
-	 * Return a GwtBrandingData object for the given binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
-	 */
-	public GwtBrandingData getBinderBrandingData( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
-	{
-		return GwtServerHelper.getBinderBrandingData( this, binderId, getRequest( ri ) );
-	}// end getBinderBrandingData()
 	
 	
 	/**
