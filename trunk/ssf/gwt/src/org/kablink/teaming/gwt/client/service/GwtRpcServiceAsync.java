@@ -41,8 +41,6 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
-import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
@@ -97,7 +95,7 @@ public interface GwtRpcServiceAsync
 {
 	// Execute the given command.
 	@SuppressWarnings("rawtypes")
-	public void executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd, AsyncCallback callback );
+	public void executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback );
 	
 	
 	

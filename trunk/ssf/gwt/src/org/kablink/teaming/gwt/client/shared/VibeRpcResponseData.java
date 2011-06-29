@@ -33,37 +33,12 @@
 
 package org.kablink.teaming.gwt.client.shared;
 
-import org.kablink.teaming.gwt.client.GwtBrandingData;
-
 /**
- * This class holds the response to the "Get Branding" command
+ * Marker interface used to signal that a class holds rpc response data.
  * @author jwootton
  *
  */
-public class GetBinderBrandingResponse implements VibeRpcResponse
+public interface VibeRpcResponseData
 {
-	private GwtBrandingData m_brandingData;
-	
-	/**
-	 * For GWT serialization, must have a zero param contructor
-	 */
-	public GetBinderBrandingResponse()
-	{
-	}
-	
-	/**
-	 * 
-	 */
-	public GetBinderBrandingResponse( GwtBrandingData brandingData )
-	{
-		m_brandingData = brandingData;
-	}
-	
-	/**
-	 * 
-	 */
-	public GwtBrandingData getValue()
-	{
-		return m_brandingData;
-	}
+
 }
