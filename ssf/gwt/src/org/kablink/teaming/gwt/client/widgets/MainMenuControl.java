@@ -35,16 +35,20 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
+import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
+import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
-import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
@@ -93,7 +97,11 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
 public class MainMenuControl extends Composite
 	implements ActionTrigger,
 	// EventBus handlers implemented by this class.
-		AdministrationExitEvent.Handler
+		AdministrationExitEvent.Handler,
+		MastheadHideEvent.Handler,
+		MastheadShowEvent.Handler,
+		SidebarHideEvent.Handler,
+		SidebarShowEvent.Handler
 {
 	private BinderInfo						m_contextBinder;
 	private ContextLoadInfo					m_lastContextLoaded;
@@ -121,6 +129,14 @@ public class MainMenuControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
+		
+		// Masthead events.
+		TeamingEvents.MASTHEAD_HIDE,
+		TeamingEvents.MASTHEAD_SHOW,
+		
+		// Sidebar events.
+		TeamingEvents.SIDEBAR_HIDE,
+		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
 	/*
@@ -245,8 +261,7 @@ public class MainMenuControl extends Composite
 		m_closeAdminBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					GwtTeaming.getEventBus().fireEvent(
-						new AdministrationExitEvent());
+					GwtTeaming.fireEvent(new AdministrationExitEvent());
 				}
 			});
 		menuPanel.add(m_closeAdminBox);
@@ -264,12 +279,12 @@ public class MainMenuControl extends Composite
 		m_buttonsPanel.addStyleName("mainMenuButton_Group");
 		
 		// ...add the slide-left/right toggle...
-		m_wsTreeSlider = new MenuBarToggle(this, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
+		m_wsTreeSlider = new MenuBarToggle(m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_HIDE, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_SHOW);
 		m_wsTreeSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_buttonsPanel.add(m_wsTreeSlider);
 
 		// ...add the slide-up/down toggle...
-		m_mastHeadSlider = new MenuBarToggle(this, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
+		m_mastHeadSlider = new MenuBarToggle(m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_HIDE, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_SHOW);
 		m_mastHeadSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_buttonsPanel.add(m_mastHeadSlider);
 
@@ -395,9 +410,7 @@ public class MainMenuControl extends Composite
 		m_myWorkspaceBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					GwtTeaming.getEventBus().fireEvent(
-						new TeamingActionEvent(
-							TeamingAction.MY_WORKSPACE));
+					GwtTeaming.fireEvent(new TeamingActionEvent(TeamingAction.MY_WORKSPACE));
 				}
 			});
 		menuPanel.add(m_myWorkspaceBox);
@@ -473,13 +486,13 @@ public class MainMenuControl extends Composite
 						asi.setActivityStream(ActivityStream.CURRENT_BINDER);
 						asi.setBinderId(m_contextBinder.getBinderId());
 						asi.setTitle(   m_contextBinder.getBinderTitle());
-						GwtTeaming.getEventBus().fireEvent(new ActivityStreamEnterEvent(asi));
+						GwtTeaming.fireEvent(new ActivityStreamEnterEvent(asi));
 					}
 					
 					else {
 						// No, we're not connected to a binder!  Just
 						// use the UI supplied default activity stream.
-						GwtTeaming.getEventBus().fireEvent(new ActivityStreamEnterEvent());
+						GwtTeaming.fireEvent(new ActivityStreamEnterEvent());
 					}
 				}
 			});
@@ -577,6 +590,54 @@ public class MainMenuControl extends Composite
 	}
 	
 	/**
+	 * Handles MastheadHideEvent's received by this class.
+	 * 
+	 * Implements the MastheadHideEvent.Handler.onMastheadHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMastheadHide(MastheadHideEvent event) {
+		setMastheadSliderMenuItemState(TeamingEvents.MASTHEAD_SHOW);
+	}
+	
+	/**
+	 * Handles MastheadShowEvent's received by this class.
+	 * 
+	 * Implements the MastheadShowEvent.Handler.onMastheadShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMastheadShow(MastheadShowEvent event) {
+		setMastheadSliderMenuItemState(TeamingEvents.MASTHEAD_HIDE);
+	}
+	
+	/**
+	 * Handles SidebarHideEvent's received by this class.
+	 * 
+	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarHide(SidebarHideEvent event) {
+		setWorkspaceTreeSliderMenuItemState(TeamingEvents.SIDEBAR_SHOW);
+	}
+	
+	/**
+	 * Handles SidebarShowEvent's received by this class.
+	 * 
+	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarShow(SidebarShowEvent event) {
+		setWorkspaceTreeSliderMenuItemState(TeamingEvents.SIDEBAR_HIDE);
+	}
+	
+	/**
 	 * Resets the current menu context to the one that was last
 	 * loaded.
 	 */
@@ -604,17 +665,21 @@ public class MainMenuControl extends Composite
 	
 	/**
 	 * Set the state of the "show/hide masthead" menu item.
+	 * 
+	 * @param event
 	 */
-	public void setMastheadSliderMenuItemState(TeamingAction action) {
-		m_mastHeadSlider.setState(action);
+	public void setMastheadSliderMenuItemState(TeamingEvents event) {
+		m_mastHeadSlider.setState(event);
 	}
 	
 	
 	/**
 	 * Set the state of the "show/hide workspace tree" menu item.
+	 * 
+	 * @param event
 	 */
-	public void setWorkspaceTreeSliderMenuItemState(TeamingAction action) {
-		m_wsTreeSlider.setState(action);
+	public void setWorkspaceTreeSliderMenuItemState(TeamingEvents event) {
+		m_wsTreeSlider.setState(event);
 	}
 	
 	/**

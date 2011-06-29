@@ -530,7 +530,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// ...and if we have a default activity stream to select...
 		if (null != defaultASI) {
 			// ...put it into affect.
-			GwtTeaming.getEventBus().fireEvent(new ActivityStreamEvent(defaultASI));
+			GwtTeaming.fireEvent(new ActivityStreamEvent(defaultASI));
 		}
 
 		// Finally, reset the menu so that it display what's

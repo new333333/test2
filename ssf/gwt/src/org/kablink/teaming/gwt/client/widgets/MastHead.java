@@ -33,13 +33,19 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.event.AdministrationEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.LoginEvent;
+import org.kablink.teaming.gwt.client.event.LogoutEvent;
+import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
+import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
-import org.kablink.teaming.gwt.client.event.AdministrationEvent;
-import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.shared.GetBinderBrandingResponse;
@@ -72,7 +78,10 @@ import com.google.gwt.user.client.ui.Widget;
  * This widget will display the MastHead 
  */
 public class MastHead extends Composite
-	implements ClickHandler, MouseOutHandler, MouseOverHandler
+	implements ClickHandler, MouseOutHandler, MouseOverHandler,
+	// EventBus handlers implemented by this class.
+		MastheadHideEvent.Handler,
+		MastheadShowEvent.Handler
 {
 	private BrandingPanel m_siteBrandingPanel = null;
 	private BrandingPanel m_binderBrandingPanel = null;
@@ -113,7 +122,15 @@ public class MastHead extends Composite
 	// m_rpcGetBinderBrandingCallback is our callback that gets called when the ajax request to get the binder branding data completes.
 	private AsyncCallback<GetBinderBrandingResponse> m_rpcGetBinderBrandingCallback = null;
 	
-	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Masthead events.
+		TeamingEvents.MASTHEAD_HIDE,
+		TeamingEvents.MASTHEAD_SHOW,
+	};
+		
 	
 	/**
 	 * 
@@ -122,6 +139,12 @@ public class MastHead extends Composite
 	{
 		Scheduler.ScheduledCommand cmd;
 		final boolean beta = true;
+		
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this );
 		
         m_requestInfo = requestInfo;
         m_mastheadBinderId = m_requestInfo.getBinderId();
@@ -748,11 +771,11 @@ public class MastHead extends Composite
 		}
 		else if ( eventSource == m_logoutLink )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.LOGOUT, null ));
+			GwtTeaming.fireEvent( new LogoutEvent() );
 		}
 		else if ( eventSource == m_loginLink )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.LOGIN, null ));
+			GwtTeaming.fireEvent( new LoginEvent() );
 		}
 		else if ( eventSource == m_helpLink )
 		{
@@ -1086,4 +1109,30 @@ public class MastHead extends Composite
 			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}// end showBranding()
+	
+	/**
+	 * Handles MastheadHideEvent's received by this class.
+	 * 
+	 * Implements the MastheadHideEvent.Handler.onMastheadHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMastheadHide( MastheadHideEvent event )
+	{
+		setVisible( false );
+	}// end onMastheadHide()
+	
+	/**
+	 * Handles MastheadShowEvent's received by this class.
+	 * 
+	 * Implements the MastheadShowEvent.Handler.onMastheadShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMastheadShow( MastheadShowEvent event )
+	{
+		setVisible( true );
+	}// end onMastheadShow()	
 }// end MastHead

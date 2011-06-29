@@ -43,6 +43,12 @@ import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.LoginEvent;
+import org.kablink.teaming.gwt.client.event.LogoutEvent;
+import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
+import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
+import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
@@ -109,7 +115,13 @@ public class GwtMainPage extends Composite
 		ActivityStreamEnterEvent.Handler,
 		AdministrationEvent.Handler,
 		AdministrationExitEvent.Handler,
-		BrowseHierarchyEvent.Handler
+		BrowseHierarchyEvent.Handler,
+		LoginEvent.Handler,
+		LogoutEvent.Handler,
+		MastheadHideEvent.Handler,
+		MastheadShowEvent.Handler,
+		SidebarHideEvent.Handler,
+		SidebarShowEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
@@ -155,6 +167,18 @@ public class GwtMainPage extends Composite
 		
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY,
+
+		// Login/out events.
+		TeamingEvents.LOGIN,
+		TeamingEvents.LOGOUT,
+		
+		// Masthead events.
+		TeamingEvents.MASTHEAD_HIDE,
+		TeamingEvents.MASTHEAD_SHOW,
+
+		// Sidebar events.
+		TeamingEvents.SIDEBAR_HIDE,
+		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
 	/*
@@ -243,7 +267,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void loadContentControl()
 	{
-		ContentControl.createAsync( "gwtContentIframe", new ContentControlClient()
+		ContentControl.createAsync( this, "gwtContentIframe", new ContentControlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -474,8 +498,8 @@ public class GwtMainPage extends Composite
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
-			handleActionImpl(TeamingAction.HIDE_MASTHEAD,        Boolean.FALSE);	// false -> Done resize the content now...
-			handleActionImpl(TeamingAction.HIDE_LEFT_NAVIGATION, Boolean.FALSE);	// ...will happen when the frame has loaded.
+			fireVibeEvent( new MastheadHideEvent( false ) );	// false -> Done resize the content now...
+			fireVibeEvent( new SidebarHideEvent(  false ) );	// ...will happen when the frame has loaded.
 			
 			// Have the masthead hide the logout link
 			m_mastHead.hideLogoutLink();
@@ -599,7 +623,7 @@ public class GwtMainPage extends Composite
 	private native void initFireEventOnEventBusJS( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_fireEvent = function( event )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireEvent(Lcom/google/web/bindery/event/shared/Event;)( event );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireVibeEvent(Lcom/google/web/bindery/event/shared/Event;)( event );
 		}//end ss_fireEvent
 	}-*/;
 
@@ -1060,7 +1084,7 @@ public class GwtMainPage extends Composite
 		if ( ( m_activityStreamCtrl != null ) && m_activityStreamCtrl.isVisible() )
 		{
 			// ...exit out it.
-			GwtTeaming.getEventBus().fireEvent(new ActivityStreamExitEvent());
+			fireVibeEvent( new ActivityStreamExitEvent() );
 		}
 	}// end exitActivityStreamIfActive()	
 
@@ -1120,25 +1144,12 @@ public class GwtMainPage extends Composite
 			Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
 			break;
 
-		case LOGIN:
-			invokeLoginDlg( true );
-			break;
-			
-		case LOGOUT:
-			// If the user has gone into the administration page, tell the administration page
-			// to do whatever cleanup it needs to do.
-			if ( m_adminControl != null )
-				m_adminControl.doPreLogoutCleanup();
-			
-			GwtClientHelper.jsLogout();
-			break;
-			
 		case MY_WORKSPACE:
 			// If we're currently running site administration...
 			if ( isAdminActive() )
 			{
 				// ...close it first.
-				GwtTeaming.getEventBus().fireEvent(new AdministrationExitEvent());
+				fireVibeEvent( new AdministrationExitEvent() );
 			}
 			
 			// Change the browser's URL.
@@ -1155,10 +1166,6 @@ public class GwtMainPage extends Composite
 			sizeChanged( obj );
 			break;
 			
-		case TOGGLE_GWT_UI:
-			toggleGwtUI();
-			break;
-
 		case VIEW_TEAM_MEMBERS:
 			viewTeamMembers();
 			break;
@@ -1221,70 +1228,6 @@ public class GwtMainPage extends Composite
 			tagSearch( obj );
 			break;
 			
-		case HIDE_MASTHEAD:
-			m_mastHead.setVisible( false );
-			m_mainMenuCtrl.setMastheadSliderMenuItemState( TeamingAction.SHOW_MASTHEAD );
-			if ( getBooleanActionParam( obj, true ) )
-			{
-				relayoutPage( true );
-			}
-			break;
-			
-		case SHOW_MASTHEAD:
-			m_mastHead.setVisible( true );
-			m_mainMenuCtrl.setMastheadSliderMenuItemState( TeamingAction.HIDE_MASTHEAD );
-			relayoutPage( true );
-			break;
-			
-		case HIDE_LEFT_NAVIGATION:
-			// Are we displaying the administration page?
-			if ( m_adminControl != null && m_adminControl.isVisible() == true )
-			{
-				// Yes
-				m_adminControl.hideTreeControl();
-			}
-			else
-			{
-				// Hide the tree control
-				m_wsTreeCtrl.setVisible( false );
-				
-				// Reposition the content control to where the tree control used to be.
-				m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
-				m_activityStreamCtrl.addStyleName( "mainWorkspaceTreeControl" );
-			}
-
-			m_mainMenuCtrl.setWorkspaceTreeSliderMenuItemState( TeamingAction.SHOW_LEFT_NAVIGATION );
-			
-			if ( getBooleanActionParam( obj, true ) )
-			{
-				// Relayout the content panel.
-				relayoutPage( false );
-			}
-			break;
-			
-		case SHOW_LEFT_NAVIGATION:
-			// Are we displaying the administration page?
-			if ( m_adminControl != null && m_adminControl.isVisible() == true )
-			{
-				// Yes
-				m_adminControl.showTreeControl();
-			}
-			else
-			{
-				// Reposition the content control to its original position.
-				m_contentCtrl.removeStyleName( "mainWorkspaceTreeControl" );
-				m_activityStreamCtrl.removeStyleName( "mainWorkspaceTreeControl" );
-				
-				// Show the tree control.
-				m_wsTreeCtrl.setVisible( true );
-			}
-			
-			m_mainMenuCtrl.setWorkspaceTreeSliderMenuItemState( TeamingAction.HIDE_LEFT_NAVIGATION );
-
-			// Relayout the content panel.
-			relayoutPage( false );
-			break;
-		
 		case TEAMING_FEED:
 			String teamingFeedUrl;
 			
@@ -1372,34 +1315,32 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )
-				handleActionImpl( TeamingAction.HIDE_LEFT_NAVIGATION, null );
-			else
-				handleActionImpl( TeamingAction.SHOW_LEFT_NAVIGATION, null );
+			     fireVibeEvent( new SidebarHideEvent() );
+			else fireVibeEvent( new SidebarShowEvent() );
 			
 			// Figure out if we should show the masthead.
 			if ( hideMasthead == false || showBranding == true )
-				showMasthead = true;
-			else
-				showMasthead = false;
+				 showMasthead = true;
+			else showMasthead = false;
 			
 			// Hide or show the masthead.
 			if ( showMasthead )
-				handleActionImpl( TeamingAction.SHOW_MASTHEAD, null );
-			else
-				handleActionImpl( TeamingAction.HIDE_MASTHEAD, null );
+			     fireVibeEvent( new MastheadShowEvent() );
+			else fireVibeEvent( new MastheadHideEvent() );
 		}
 	}// end handleLandingPageOptions()
 	
 
-	/**
-	 * This method will handle the given page ui in gwt instead of having the jsp page do the work.
+	/*
+	 * This method will handle the given page ui in gwt instead of
+	 * having the jsp page do the work.
 	 */
 	private void handlePageWithGWT( String pageName )
 	{
 		if ( pageName != null && pageName.length() > 0 )
 		{
 			if ( pageName.equalsIgnoreCase( "login-page" ) )
-				handleActionImpl( TeamingAction.LOGIN, null );
+				fireVibeEvent( new LoginEvent() );
 			else
 			{
 				Window.alert( "In handlePageWithGWT(), unknown page: " + pageName );
@@ -1423,7 +1364,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void invokeAdminPage()
 	{
-		GwtTeaming.getEventBus().fireEvent(new AdministrationEvent());
+		fireVibeEvent( new AdministrationEvent() );
 	}
 	
 	
@@ -1701,45 +1642,6 @@ public class GwtMainPage extends Composite
 		relayoutPage( false );
 	}// end sizeChanged()
 
-	
-	/*
-	 * Toggles the state of the GWT UI.
-	 * 
-	 * Implements the TOGGLE_GWT_UI teaming action.
-	 */
-	private void toggleGwtUI()
-	{
-		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getUserWorkspacePermalink( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<String>()
-		{
-			public void onFailure( Throwable t ) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetUserWorkspaceUrl());
-			}
-			
-			public void onSuccess( String userWorkspaceURL )
-			{
-				jsToggleGwtUI();
-				jsLoadUserWorkspaceURL( userWorkspaceURL + "/captive/false/seen_by_gwt/0" );
-			}// end onSuccess()
-			
-			private native void jsToggleGwtUI()
-			/*-{
-				// Toggle the GWT UI state.
-				$wnd.top.ss_toggleGwtUI( false );
-			}-*/; // end jsToggleGwtUI()
-
-			private native void jsLoadUserWorkspaceURL( String userWorkspaceURL )
-			/*-{
-				// Give the GWT UI state toggling 1/2
-				// second to complete and reload the user
-				// workspace.
-				$wnd.setTimeout( function(){$wnd.top.location.href = userWorkspaceURL;}, 500 );
-			}-*/; // end jsLoadUserWorkspace()
-		});// end AsyncCallback()
-	}// end toggleGwtUI()
-	
 	/*
 	 * Called to view the membership of the currently selected binder.
 	 * 
@@ -2194,6 +2096,90 @@ public class GwtMainPage extends Composite
 	}// end onBrowseHierarchy()
 	
 	/**
+	 * Handles LoginEvent's received by this class.
+	 * 
+	 * Implements the LoginEvent.Handler.onLogin() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onLogin( LoginEvent event )
+	{
+		invokeLoginDlg( true );
+	}// end onLogin()
+	
+	/**
+	 * Handles LogoutEvent's received by this class.
+	 * 
+	 * Implements the LogoutEvent.Handler.onLogout() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onLogout( LogoutEvent event )
+	{
+		GwtClientHelper.jsLogout();
+	}// end onLogout()
+	
+	/**
+	 * Handles MastheadHideEvent's received by this class.
+	 * 
+	 * Implements the MastheadHideEvent.Handler.onMastheadHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMastheadHide( MastheadHideEvent event )
+	{
+		if ( event.getResizeContentImmediately() )
+		{
+			relayoutPage( true );
+		}
+	}// end onMastheadHide()
+	
+	/**
+	 * Handles MastheadShowEvent's received by this class.
+	 * 
+	 * Implements the MastheadShowEvent.Handler.onMastheadShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMastheadShow( MastheadShowEvent event )
+	{
+		relayoutPage( true );
+	}// end onMastheadShow()
+	
+	/**
+	 * Handles SidebarHideEvent's received by this class.
+	 * 
+	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarHide( SidebarHideEvent event )
+	{
+		if ( event.getResizeContentImmediately() )
+		{
+			relayoutPage( true );
+		}
+	}// end onSidebarHide()
+	
+	/**
+	 * Handles SidebarShowEvent's received by this class.
+	 * 
+	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarShow( SidebarShowEvent event )
+	{
+		relayoutPage( true );
+	}// end onSidebarShow()
+	
+	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
 	 * control we adjust is the ContentControl.
 	 */
@@ -2364,11 +2350,13 @@ public class GwtMainPage extends Composite
 		return reply;
 	}// end getBooleanActionParam()
 	
-	/*
+	/**
 	 * Returns true if the administration control is active and visible
 	 * and false otherwise.
+	 * 
+	 * @return
 	 */
-	private boolean isAdminActive()
+	public boolean isAdminActive()
 	{
 		return ( ( null != m_adminControl ) && m_adminControl.isVisible() );
 	}// end isAdminActive()
@@ -2385,6 +2373,7 @@ public class GwtMainPage extends Composite
 		{
 			// ...otherwise, we load its split point...
 			AdminControl.createAsync(
+					this,
 					new AdminControlClient() {				
 				@Override
 				public void onUnavailable()
@@ -2434,13 +2423,11 @@ public class GwtMainPage extends Composite
 		}
 	}
 
-	/**
+	/*
 	 * Fires an event on the event bus.
-	 * 
-	 * @param event
 	 */
-	public void fireEvent(Event<?> event) {
-		GwtTeaming.fireEvent(event);
+	private void fireVibeEvent(Event<?> event) {
+		GwtTeaming.fireEvent( event );
 	}
 
 	public void resetMenuContext() {

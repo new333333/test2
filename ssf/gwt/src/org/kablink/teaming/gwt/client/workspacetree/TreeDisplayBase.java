@@ -106,7 +106,7 @@ public abstract class TreeDisplayBase {
 				TeamingEvents te = m_ti.getActivityStreamEvent();
 				if ((null != te) && (TeamingEvents.UNDEFINED != te)) {
 					// Yes!  Fire it.
-					GwtTeaming.getEventBus().fireEvent(
+					GwtTeaming.fireEvent(
 						new ActivityStreamEvent(
 							m_ti.getActivityStreamInfo()));
 				}
@@ -119,7 +119,7 @@ public abstract class TreeDisplayBase {
 					// Yes!  Select the Binder and tell the
 					// WorkspaceTreeControl to handle it.
 					selectBinder(m_ti);
-					GwtTeaming.getEventBus().fireEvent(
+					GwtTeaming.fireEvent(
 						new TeamingActionEvent(
 							TeamingAction.SELECTION_CHANGED,
 							buildOnSelectBinderInfo(m_ti)));

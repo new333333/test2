@@ -9393,33 +9393,6 @@ function ss_checkIfVisible(obj) {
 	}
 	return true;
 }
-function ss_toggleGwtUI(goToUserWorkspace) {
-	ajaxToggleGwtUI_Submit(goToUserWorkspace);
-}
-
-/*
- * Called to handle the response from an AJAX operation to toggle the GWT UI
- * mode.
- */
-function ajaxToggleGwtUI_Response(data, goToUserWorkspace) {
-	if (goToUserWorkspace) {
-		document.location.href = data.userWorkspaceURL;
-	}
-}
-
-/*
- * Called to submit an AJAX request to toggle the GWT UI.
- */
-function ajaxToggleGwtUI_Submit(goToUserWorkspace) {
-	ss_get_url(
-		ss_buildAdapterUrl(
-			ss_AjaxBaseUrl,
-			{
-				operation:"toggle_gwtUI"
-			}),
-		ajaxToggleGwtUI_Response,
-		goToUserWorkspace);
-}
 
 /*
  * Called to force the GWT content IFRAME to resize itself based on it's
