@@ -567,7 +567,7 @@
 		</jsps>
 	</item>
 		
-	<item name="entryBlogComments" caption="__entry_comments" category="blogEntryViewData" display="view">
+	<item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_comments"/>
 		</properties>
@@ -577,7 +577,7 @@
 		</jsps>
 	</item>
 		
-	<item name="entryBlogReplies" caption="__entry_replies" category="blogEntryViewData" display="view">
+	<item name="entryBlogReplies" caption="__entry_blog_replies" category="blogEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
 		</properties>
