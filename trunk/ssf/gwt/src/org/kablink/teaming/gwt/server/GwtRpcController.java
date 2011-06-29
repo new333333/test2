@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -98,10 +99,28 @@ public class GwtRpcController extends RemoteServiceServlet
 
             rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
 
-        	m_logger.debug( "in GwtRpcController.processCall() for rpc request:  " + rpcRequest.getMethod().getName() );
-
             Object[] parameters = rpcRequest.getParameters();
             
+            if ( m_logger.isDebugEnabled() )
+            {
+            	String methodName;
+            	
+            	methodName = rpcRequest.getMethod().getName();
+            	if ( methodName.equalsIgnoreCase( "executeCommand" ) )
+            	{
+            		String cmdName = "Unknown";
+            		
+            		// Get the name of the command we are trying to execute.
+            		if ( parameters != null && parameters.length > 1 && parameters[1] instanceof VibeRpcCmd )
+            		{
+            			cmdName = ((VibeRpcCmd)parameters[1]).getClass().getSimpleName();
+            		}
+        			m_logger.debug( "--> Executing rpc command:  " + cmdName );
+            	}
+            	else
+            		m_logger.debug( "!!! Processing old style rpc request:  " + methodName );
+            }
+
         	//Run the data through the XSS checker
             parameters = performStringCheck(parameters);
             

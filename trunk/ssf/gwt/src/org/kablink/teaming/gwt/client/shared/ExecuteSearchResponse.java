@@ -33,50 +33,38 @@
 
 package org.kablink.teaming.gwt.client.shared;
 
+import org.kablink.teaming.gwt.client.GwtSearchResults;
+
 
 /**
- * This class holds all of the information necessary to execute the "Get Branding" command.
- * 
+ * This class holds the response to the "Execute Search" command
  * @author jwootton
  *
  */
-public class GetBinderBrandingCmd extends VibeRpcCmd
+public class ExecuteSearchResponse implements VibeRpcResponse
 {
-	private String m_binderId;
+	private GwtSearchResults m_searchResults;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetBinderBrandingCmd()
+	public ExecuteSearchResponse()
 	{
-		super();
-		
-		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public GetBinderBrandingCmd( String binderId )
+	public ExecuteSearchResponse( GwtSearchResults searchResults )
 	{
-		m_binderId = binderId;
-		
-		init();
+		m_searchResults = searchResults;
 	}
 	
 	/**
 	 * 
 	 */
-	public String getBinderId()
+	public GwtSearchResults getValue()
 	{
-		return m_binderId;
-	}
-	
-	/**
-	 * 
-	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_BINDER_BRANDING;
+		return m_searchResults;
 	}
 }
