@@ -48,7 +48,7 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
-import org.kablink.teaming.gwt.client.shared.GetBinderBrandingResponse;
+import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -120,7 +120,7 @@ public class MastHead extends Composite
 	private AsyncCallback<GwtBrandingData> m_rpcGetSiteBrandingCallback = null;
 
 	// m_rpcGetBinderBrandingCallback is our callback that gets called when the ajax request to get the binder branding data completes.
-	private AsyncCallback<GetBinderBrandingResponse> m_rpcGetBinderBrandingCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_rpcGetBinderBrandingCallback = null;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -242,7 +242,7 @@ public class MastHead extends Composite
 		};
 
 		// Create the callback that will be used when we issue an ajax call to get the binder branding
-		m_rpcGetBinderBrandingCallback = new AsyncCallback<GetBinderBrandingResponse>()
+		m_rpcGetBinderBrandingCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -261,16 +261,17 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( final GetBinderBrandingResponse response )
+			public void onSuccess( VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
+				m_binderBrandingData = (GwtBrandingData) response.getResponseData();
+
 				cmd = new Scheduler.ScheduledCommand()
 				{
 					public void execute()
 					{
 						// Update the binder branding panel with the branding data
-						m_binderBrandingData = response.getValue();
 						m_binderBrandingPanel.updateBrandingPanel( m_binderBrandingData );
 						
 						// Display site and binder branding based on the branding rule found in

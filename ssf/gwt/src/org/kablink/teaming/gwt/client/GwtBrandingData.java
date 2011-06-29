@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client;
 
 
+import org.kablink.teaming.gwt.client.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -42,7 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class GwtBrandingData
-	implements IsSerializable
+	implements IsSerializable, VibeRpcResponseData
 {
 	// The binder this branding data is from.
 	private String m_binderId = null;

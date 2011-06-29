@@ -41,7 +41,31 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author jwootton
  *
  */
-public interface VibeRpcResponse extends IsSerializable
+public class VibeRpcResponse implements IsSerializable
 {
-
+	private VibeRpcResponseData m_responseData;
+	
+	/**
+	 * 
+	 */
+	public VibeRpcResponse()
+	{
+	}
+	
+	/**
+	 * 
+	 */
+	public VibeRpcResponse( VibeRpcResponseData responseData )
+	{
+		m_responseData = responseData;
+	}
+	
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public VibeRpcResponseData getResponseData()
+	{
+		return m_responseData;
+	}
 }

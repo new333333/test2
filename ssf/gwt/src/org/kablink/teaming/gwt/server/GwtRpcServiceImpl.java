@@ -99,9 +99,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.shared.ExecuteSearchCmd;
-import org.kablink.teaming.gwt.client.shared.ExecuteSearchResponse;
 import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
-import org.kablink.teaming.gwt.client.shared.GetBinderBrandingResponse;
 import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
@@ -180,6 +178,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException
 	{
+		VibeRpcResponse response = null;
 		HttpServletRequest req;
 		
 		req = getRequest( ri );
@@ -190,7 +189,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GwtSearchResults searchResults;
 			GwtSearchCriteria searchCriteria;
-			ExecuteSearchResponse response;
 			
 			searchCriteria = ((ExecuteSearchCmd) cmd).getSearchCriteria();
 			
@@ -226,18 +224,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				break;
 			}
 			
-			response = new ExecuteSearchResponse( searchResults );
+			response = new VibeRpcResponse( searchResults );
 			return response;
 		}
 			
 		case GET_BINDER_BRANDING:
 		{
-			GetBinderBrandingResponse response;
 			GwtBrandingData brandingData;
 			
 			brandingData = GwtServerHelper.getBinderBrandingData( this, ((GetBinderBrandingCmd) cmd).getBinderId(), req );
 
-			response = new GetBinderBrandingResponse( brandingData );
+			response = new VibeRpcResponse( brandingData );
 			return response;
 		}
 		}
