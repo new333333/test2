@@ -75,6 +75,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -95,6 +96,7 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
@@ -148,6 +150,7 @@ import static org.kablink.util.search.Restrictions.in;
 @SuppressWarnings({"unchecked", "unused"})
 public class ExportHelper {
 	protected static final Log logger = LogFactory.getLog(ExportHelper.class);
+	private static AdminModule adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
 	private static BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 	private static FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
 	private static FileModule fileModule = (FileModule) SpringContextUtil.getBean("fileModule");
@@ -988,11 +991,8 @@ public class ExportHelper {
 		Element settingsEle = element.addElement("settings");
 
 		// views
-
 		List<Definition> viewDefinitions = binder.getViewDefinitions();
-
 		Element views = settingsEle.addElement("views");
-
 		for (int i = 0; i < viewDefinitions.size(); i++) {
 			if (views != null) {
 				Element value = views.addElement("view");
@@ -1003,11 +1003,8 @@ public class ExportHelper {
 		}
 
 		// entries
-
 		List<Definition> entryDefinitions = binder.getEntryDefinitions();
-
 		Element entries = settingsEle.addElement("entries");
-
 		for (int i = 0; i < entryDefinitions.size(); i++) {
 			if (entries != null) {
 				Element value = entries.addElement("entry");
@@ -1015,6 +1012,36 @@ public class ExportHelper {
 						.getId());
 				value.addAttribute("definitionName", entryDefinitions.get(i).getName());
 			}
+		}
+		
+		// version controls
+		Element versionControls = settingsEle.addElement("versionControls");
+		Boolean versionsEnabled = binder.getVersionsEnabled();
+		if (versionsEnabled != null) {
+			versionControls.addAttribute("versionsEnabled", versionsEnabled.toString());
+		}
+		Integer versionsToKeep = binder.getVersionsToKeep();
+		if (versionsToKeep != null) {
+			versionControls.addAttribute("versionsToKeep", versionsToKeep.toString());
+		}
+		Integer versionsMaxAge = binder.getMaxVersionAge();
+		if (versionsMaxAge != null) {
+			versionControls.addAttribute("versionsMaxAge", versionsMaxAge.toString());
+		}
+		Integer versionsMaxFileSize = binder.getMaxFileSize();
+		if (versionsMaxFileSize != null) {
+			versionControls.addAttribute("versionsMaxFileSize", versionsMaxFileSize.toString());
+		}
+		Boolean fileEncryptionEnabled = binder.isFileEncryptionEnabled();
+		if (fileEncryptionEnabled != null) {
+			versionControls.addAttribute("fileEncryptionEnabled", fileEncryptionEnabled.toString());
+		}
+		
+		// binder quota
+		Element binderQuotaEle = settingsEle.addElement("binderQuota");
+		BinderQuota binderQuota = adminModule.getBinderQuota(binder);
+		if (binderQuota.getDiskQuota() != null) {
+			binderQuotaEle.addAttribute("binderQuota", binderQuota.getDiskQuota().toString());
 		}
 	}
 
@@ -2452,10 +2479,8 @@ public class ExportHelper {
 		List<Definition> newDefinitionList = binder.getDefinitions();
 
 		// views
-
 		String xPath = "//settings//views//view";
 		List<Element> views = entityDoc.selectNodes(xPath);
-
 		for (Element view : views) {
 			String defId = view.attributeValue("definitionId", "");
 			String defName = view.attributeValue("definitionName", "");
@@ -2469,10 +2494,8 @@ public class ExportHelper {
 		}
 
 		// entries
-
 		xPath = "//settings//entries//entry";
 		List<Element> entries = entityDoc.selectNodes(xPath);
-
 		for (Element entry : entries) {
 			String defId = entry.attributeValue("definitionId", "");
 			String defName = entry.attributeValue("definitionName", "");
@@ -2484,8 +2507,46 @@ public class ExportHelper {
 				}
 			}
 		}
-
 		binder.setDefinitions(newDefinitionList);
+		
+		// version controls
+		xPath = "//settings//versionControls";
+		Element versionControls = (Element)entityDoc.selectSingleNode(xPath);
+		if (versionControls != null) {
+			String versionsEnabled = versionControls.attributeValue("versionsEnabled", null);
+			if (versionsEnabled != null) {
+				binder.setVersionsEnabled(Boolean.valueOf(versionsEnabled));
+			}
+			String versionsToKeep = versionControls.attributeValue("versionsToKeep", null);
+			if (versionsToKeep != null) {
+				binder.setVersionsToKeep(Integer.valueOf(versionsToKeep));
+			}
+			String versionsMaxAge = versionControls.attributeValue("versionsMaxAge", null);
+			if (versionsMaxAge != null) {
+				binder.setMaxVersionAge(Integer.valueOf(versionsMaxAge));
+			}
+			String versionsMaxFileSize = versionControls.attributeValue("versionsMaxFileSize", null);
+			if (versionsMaxFileSize != null) {
+				binder.setMaxFileSize(Integer.valueOf(versionsMaxFileSize));
+			}
+			String fileEncryptionEnabled = versionControls.attributeValue("fileEncryptionEnabled", null);
+			if (fileEncryptionEnabled != null) {
+				binder.setFileEncryptionEnabled(Boolean.valueOf(fileEncryptionEnabled));
+			}
+		}
+
+		// binder quota
+		xPath = "//settings//binderQuota";
+		Element binderQuotaEle = (Element)entityDoc.selectSingleNode(xPath);
+		if (binderQuotaEle != null) {
+			String binderQuota = binderQuotaEle.attributeValue("binderQuota", null);
+			if (binderQuota != null) {
+				BinderQuota bq = adminModule.getBinderQuota(binder);
+				bq.setDiskQuota(Long.valueOf(binderQuota));
+				adminModule.setBinderQuota(binder, bq);
+			}
+		}
+
 	}
 
 	//Keep this in sync with the same routine in BinderModuleImpl
