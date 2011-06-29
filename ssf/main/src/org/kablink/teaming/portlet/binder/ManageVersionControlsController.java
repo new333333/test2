@@ -172,9 +172,12 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		model.put(WebKeys.BINDER, binder);
 		
 		model.put(WebKeys.BINDER_VERSIONS_INHERITED, Boolean.FALSE);
-		if (binder.getVersionsEnabled() == null && binder.getMaxVersionAge() == null && 
-				binder.getVersionsToKeep() == null) {
+		if (binder.getVersionsEnabled() == null) {
 			model.put(WebKeys.BINDER_VERSIONS_INHERITED, Boolean.TRUE);
+		}
+		model.put(WebKeys.BINDER_FILE_SIZE_LIMIT_INHERITED, Boolean.FALSE);
+		if (binder.getMaxFileSize() == null) {
+			model.put(WebKeys.BINDER_FILE_SIZE_LIMIT_INHERITED, Boolean.TRUE);
 		}
 		model.put(WebKeys.BINDER_VERSIONS_ENABLED, getBinderModule().getBinderVersionsEnabled(binder));
 		model.put(WebKeys.BINDER_VERSIONS_TO_KEEP, getBinderModule().getBinderVersionsToKeep(binder));

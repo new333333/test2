@@ -2409,6 +2409,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	if (versionsEnabled != null && !versionsEnabled) {
     		//Versions have been explicitly turned off. Simulate no versions by returning 0
     		return 0;
+    	} else if (versionsEnabled != null && versionsEnabled) {
+    		//Versions have been explicitly turned on, so don't inherit anything
+    		return binder.getVersionsToKeep();
     	}
     	Integer result = binder.getVersionsToKeep();
 		Binder parent = binder;
@@ -2437,6 +2440,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	if (versionsEnabled != null && !versionsEnabled) {
     		//Versions have been explicitly turned off. Return null to indicate no age
     		return null;
+    	} else if (versionsEnabled != null && versionsEnabled) {
+    		//Versions have been explicitly turned on, so don't inherit anything
+    		return binder.getMaxVersionAge();
     	}
     	Integer result = binder.getMaxVersionAge();
 		Binder parent = binder;

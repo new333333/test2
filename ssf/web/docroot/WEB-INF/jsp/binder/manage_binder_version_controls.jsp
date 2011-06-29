@@ -184,14 +184,13 @@ function ss_checkIfNumberValid(s) {
             value="${ss_binder_versions_max_file_size}"
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
           ><ssf:nlt tag="file.sizeMB"/>
-        <c:if test="${ss_binder_versions_inherited}">
+        <c:if test="${ss_binder_file_size_limit_inherited}">
 		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
 		<br/>
 		<span class="ss_smallprint" style="padding-left:16px;">
-		  <ssf:nlt tag="binder.versions.leaveBlankForNoLimit"/>
+		  <ssf:nlt tag="binder.versions.leaveBlankToInherit"/>
 		</span>
        </div>
 	</fieldset>
