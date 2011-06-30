@@ -97,11 +97,13 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.shared.ExecuteSearchCmd;
-import org.kablink.teaming.gwt.client.shared.GetBinderBrandingCmd;
-import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
-import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
@@ -192,42 +194,36 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			searchCriteria = ((ExecuteSearchCmd) cmd).getSearchCriteria();
 			
-			switch ( searchCriteria.getSearchType() )
+			try
 			{
-			case APPLICATION:
-			case APPLICATION_GROUP:
-			case COMMUNITY_TAGS:
-			case ENTRIES:
-			case GROUP:
-			case PERSON:
-			case PERSONAL_TAGS:
-			case PLACES:
-			case TAG:
-			case TEAMS:
-			case USER:
-				try
-				{
-					searchResults = doSearch( getRequest( ri ), searchCriteria );
-				}
-				catch (Exception ex)
-				{
-					GwtTeamingException gtEx;
-					
-					gtEx = GwtServerHelper.getGwtTeamingException( ex );
-					throw gtEx;
-				}
-				break;
-					
-			default:
-				//!!! Finish.
-				searchResults = null;
-				break;
+				searchResults = executeSearch( ri, searchCriteria );
+			}
+			catch (Exception ex)
+			{
+				GwtTeamingException gtEx;
+				
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
+				throw gtEx;				
 			}
 			
 			response = new VibeRpcResponse( searchResults );
 			return response;
 		}
+		
+		case GET_ADMIN_ACTIONS:
+		{
+			ArrayList<GwtAdminCategory> adminActions;
+			String binderId;
+			AdminActionsRpcResponseData responseData;
 			
+			binderId = ((GetAdminActionsCmd)cmd).getBinderId();
+			adminActions = getAdminActions( ri, binderId );
+			
+			responseData = new AdminActionsRpcResponseData( adminActions );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_BINDER_BRANDING:
 		{
 			GwtBrandingData brandingData;
@@ -237,12 +233,61 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( brandingData );
 			return response;
 		}
+		
+		case GET_UPGRADE_INFO:
+		{
+			GwtUpgradeInfo upgradeInfo;
+			
+			upgradeInfo = getUpgradeInfo( ri );
+			response = new VibeRpcResponse( upgradeInfo );
+			return response;
+		}
+		
 		}
 		
 		m_logger.warn( "In GwtRpcServiceImpl.executeCommand(), unknown command: " + cmd.getClass().getName() );
 		return null;
 	}
 	
+	
+	/**
+	 * Execute a search based on the given search criteria.
+	 * 
+	 * @param ri
+	 * @param searchCriteria
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception 
+	 */
+	private GwtSearchResults executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria ) throws Exception
+	{
+		GwtSearchResults searchResults;
+		
+		switch ( searchCriteria.getSearchType() )
+		{
+		case APPLICATION:
+		case APPLICATION_GROUP:
+		case COMMUNITY_TAGS:
+		case ENTRIES:
+		case GROUP:
+		case PERSON:
+		case PERSONAL_TAGS:
+		case PLACES:
+		case TAG:
+		case TEAMS:
+		case USER:
+			searchResults = doSearch( getRequest( ri ), searchCriteria );
+			break;
+				
+		default:
+			//!!! Finish.
+			searchResults = null;
+			break;
+		}
+		
+		return searchResults;
+	}// end executeSearch()
 	
 	/**
 	 * Marks the given task in the given binder as having its subtask
@@ -964,53 +1009,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtActivityStreamHelper.persistActivityStreamSelection( getRequest( ri ), this, asi );
 	}// end persistActivityStreamSelection()
-	
-	/**
-	 * Return the administration options the user has rights to run.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
-	 */
-	@SuppressWarnings("unused")
-	public ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
-	{
-		try
-		{
-			ArrayList<GwtAdminCategory> adminActions;
-			BinderModule binderModule;
-			Long binderIdL;
-			
-			binderModule = getBinderModule();
-	
-			binderIdL = new Long( binderId );
-			
-			if ( binderIdL != null )
-			{
-				Binder binder;
-				
-				binder = binderModule.getBinder( binderIdL );
-
-				adminActions = GwtServerHelper.getAdminActions( getRequest( ri ), binder, this );
-			}
-			else
-			{
-				m_logger.warn( "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
-				adminActions = new ArrayList<GwtAdminCategory>();
-			}
-			
-			return adminActions;
-		}
-		catch (Exception e)
-		{
-			throw GwtServerHelper.getGwtTeamingException( e );
-		}
-		
-	}// end getAdminActions()
-	
 	
 	/**
 	 * Return the "document base url" that is used in tinyMCE configuration
@@ -2027,7 +2025,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public GwtUpgradeInfo getUpgradeInfo( HttpRequestInfo ri ) throws GwtTeamingException
+	private GwtUpgradeInfo getUpgradeInfo( HttpRequestInfo ri ) throws GwtTeamingException
 	{
 		GwtUpgradeInfo upgradeInfo;
 		User user;
@@ -2740,6 +2738,53 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.canManagePublicEntryTags( this, entryId );
 	}
+	
+	/**
+	 * Return the administration options the user has rights to run.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	@SuppressWarnings("unused")
+	private ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	{
+		try
+		{
+			ArrayList<GwtAdminCategory> adminActions;
+			BinderModule binderModule;
+			Long binderIdL;
+			
+			binderModule = getBinderModule();
+	
+			binderIdL = new Long( binderId );
+			
+			if ( binderIdL != null )
+			{
+				Binder binder;
+				
+				binder = binderModule.getBinder( binderIdL );
+
+				adminActions = GwtServerHelper.getAdminActions( getRequest( ri ), binder, this );
+			}
+			else
+			{
+				m_logger.warn( "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
+				adminActions = new ArrayList<GwtAdminCategory>();
+			}
+			
+			return adminActions;
+		}
+		catch (Exception e)
+		{
+			throw GwtServerHelper.getGwtTeamingException( e );
+		}
+		
+	}// end getAdminActions()
+
 	
 	/**
 	 * Returns a BinderInfo describing a binder.

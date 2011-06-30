@@ -31,14 +31,41 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.shared;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
- * Marker interface used to signal that a class holds rpc response data.
+ * A marker interface for a VibeRpcCmd response.
  * @author jwootton
  *
  */
-public interface VibeRpcResponseData
+public class VibeRpcResponse implements IsSerializable
 {
-
+	private VibeRpcResponseData m_responseData;
+	
+	/**
+	 * 
+	 */
+	public VibeRpcResponse()
+	{
+	}
+	
+	/**
+	 * 
+	 */
+	public VibeRpcResponse( VibeRpcResponseData responseData )
+	{
+		m_responseData = responseData;
+	}
+	
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public VibeRpcResponseData getResponseData()
+	{
+		return m_responseData;
+	}
 }

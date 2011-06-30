@@ -31,25 +31,23 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.shared;
-
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * This class holds all of the information necessary to execute the "Execute Search" command.
+ * This class holds all of the information necessary to execute the "Get Branding" command.
  * 
  * @author jwootton
  *
  */
-public class ExecuteSearchCmd extends VibeRpcCmd
+public class GetBinderBrandingCmd extends VibeRpcCmd
 {
-	private GwtSearchCriteria m_searchCriteria;
+	private String m_binderId;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public ExecuteSearchCmd()
+	public GetBinderBrandingCmd()
 	{
 		super();
 		
@@ -59,9 +57,9 @@ public class ExecuteSearchCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public ExecuteSearchCmd( GwtSearchCriteria searchCriteria )
+	public GetBinderBrandingCmd( String binderId )
 	{
-		m_searchCriteria = searchCriteria;
+		m_binderId = binderId;
 		
 		init();
 	}
@@ -69,9 +67,9 @@ public class ExecuteSearchCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GwtSearchCriteria getSearchCriteria()
+	public String getBinderId()
 	{
-		return m_searchCriteria;
+		return m_binderId;
 	}
 	
 	/**
@@ -79,6 +77,6 @@ public class ExecuteSearchCmd extends VibeRpcCmd
 	 */
 	private void init()
 	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.EXECUTE_SEARCH;
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_BINDER_BRANDING;
 	}
 }

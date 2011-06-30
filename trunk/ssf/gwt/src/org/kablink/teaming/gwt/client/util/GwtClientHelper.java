@@ -40,9 +40,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
-import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.Scheduler;
@@ -143,7 +143,7 @@ public class GwtClientHelper {
 	 * Execute the given command via GWT's rpc mechanism
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void executeCommand( VibeRpcCmd cmd, AsyncCallback callback )
+	public static void executeCommand( VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback )
 	{
 		GwtTeaming.getRpcService().executeCommand( HttpRequestInfo.createHttpRequestInfo(), cmd, callback );
 	}

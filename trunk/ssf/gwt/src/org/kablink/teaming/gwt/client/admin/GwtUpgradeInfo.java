@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.admin;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -45,7 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class GwtUpgradeInfo
-	implements IsSerializable
+	implements IsSerializable, VibeRpcResponseData
 {
 	private String m_releaseInfo;
 	private ArrayList<UpgradeTask> m_upgradeTasks = null;
