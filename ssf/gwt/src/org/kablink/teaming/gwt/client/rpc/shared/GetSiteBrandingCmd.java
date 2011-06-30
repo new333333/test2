@@ -30,49 +30,30 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
- * 
+ * This class represents the "Get site branding" command.
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class GetSiteBrandingCmd extends VibeRpcCmd
 {
 	/**
-	 * This class defines all the possible commands
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public enum VibeRpcCmdType implements IsSerializable
+	public GetSiteBrandingCmd()
 	{
-		EXECUTE_SEARCH,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_PERSONAL_PREFERENCES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
-	
-	/**
-	 * 
-	 */
-	public VibeRpcCmd()
-	{
+		super();
+		
+		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	private void init()
 	{
-		return m_cmdType;
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_SITE_BRANDING;
 	}
 }

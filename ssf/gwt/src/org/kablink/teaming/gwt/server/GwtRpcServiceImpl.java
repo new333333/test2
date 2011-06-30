@@ -98,9 +98,14 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -234,12 +239,67 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PERSONAL_PREFERENCES:
+		{
+			GwtPersonalPreferences prefs;
+			
+			prefs = getPersonalPreferences( ri );
+			response = new VibeRpcResponse( prefs );
+			return response;
+		}
+
+		case GET_SITE_ADMIN_URL:
+		{
+			String url;
+			String binderId;
+			StringRpcResponseData responseData;
+			
+			binderId = ((GetSiteAdminUrlCmd) cmd).getBinderId();
+			url = getSiteAdministrationUrl( ri, binderId );
+			responseData = new StringRpcResponseData( url );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_SITE_BRANDING:
+		{
+			GwtBrandingData brandingData;
+			
+			brandingData = getSiteBrandingData( ri );
+			response = new VibeRpcResponse( brandingData );
+			return response;
+		}
+		
 		case GET_UPGRADE_INFO:
 		{
 			GwtUpgradeInfo upgradeInfo;
 			
 			upgradeInfo = getUpgradeInfo( ri );
 			response = new VibeRpcResponse( upgradeInfo );
+			return response;
+		}
+
+		case SAVE_BRANDING:
+		{
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			SaveBrandingCmd cmd2;
+			
+			cmd2 = (SaveBrandingCmd) cmd; 
+			result = saveBrandingData( ri, cmd2.getBinderId(), cmd2.getBrandingData() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_PERSONAL_PREFERENCES:
+		{
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			result = savePersonalPreferences( ri, ((SavePersonalPrefsCmd) cmd).getPersonalPrefs() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -1518,7 +1578,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri )
+	private GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri )
 	{
 		GwtPersonalPreferences personalPrefs;
 		
@@ -1614,7 +1674,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		// Does the user have rights to run the "site administration" page?
 		if ( getAdminModule().testAccess( AdminOperation.manageFunction ) )
@@ -1681,7 +1741,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException
+	private GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException
 	{
 		Binder topWorkspace;
 		GwtBrandingData brandingData;
@@ -3524,7 +3584,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public Boolean saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData ) throws GwtTeamingException
+	private Boolean saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
 		Long binderIdL;
@@ -3582,7 +3642,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public Boolean savePersonalPreferences( HttpRequestInfo ri, GwtPersonalPreferences personalPrefs ) throws GwtTeamingException
+	private Boolean savePersonalPreferences( HttpRequestInfo ri, GwtPersonalPreferences personalPrefs ) throws GwtTeamingException
 	{
 		try
 		{

@@ -36,11 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
-import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -126,13 +124,6 @@ public interface GwtRpcService extends RemoteService
 	public String getBinderPermalink( HttpRequestInfo ri, String binderId );
 	public String getModifyBinderUrl( HttpRequestInfo ri, String binderId );
 	
-	// The following deal with personal preferences.
-	public GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri );
-	public Boolean savePersonalPreferences( HttpRequestInfo ri, GwtPersonalPreferences personalPrefs ) throws GwtTeamingException;
-	
-	// Return a GwtBrandingData object for the global workspace.
-	public GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException;
-	
 	public String getTutorialPanelState( HttpRequestInfo ri );
 	public ExtensionInfoClient[] getExtensionInfo( HttpRequestInfo ri );
 	public ExtensionInfoClient[] removeExtension( HttpRequestInfo ri, String id ) throws ExtensionDefinitionInUseException;
@@ -194,9 +185,6 @@ public interface GwtRpcService extends RemoteService
 	public Boolean      untrackBinder(    HttpRequestInfo ri, String binderId );
 	public Boolean      untrackPerson(    HttpRequestInfo ri, String binderId );
 	
-	// Save the branding data to the given binder.
-	public Boolean saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
-	
 	// The following are used in the implementation of the
 	// User Profiles
 	public ProfileInfo 		getProfileInfo(    HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
@@ -220,9 +208,6 @@ public interface GwtRpcService extends RemoteService
 	
 	// Return login information such as self registration and auto complete.
 	public GwtLoginInfo getLoginInfo( HttpRequestInfo ri ) throws GwtTeamingException;
-	
-	// Return the url needed to invoke the "site administration" page.
-	public String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Get DiskUsageInfo.
 	public  DiskUsageInfo getDiskUsageInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
