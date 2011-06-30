@@ -50,6 +50,8 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
@@ -142,6 +144,8 @@ public class GwtMainPage extends Composite
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
 		GotoPermalinkUrlEvent.Handler,
+		InvokeHelpEvent.Handler,
+		InvokeSimpleProfileEvent.Handler,
 		LoginEvent.Handler,
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
@@ -211,6 +215,10 @@ public class GwtMainPage extends Composite
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGING,
 
+		// Invoke events.
+		TeamingEvents.INVOKE_HELP,
+		TeamingEvents.INVOKE_SIMPLE_PROFILE,
+		
 		// Login/out events.
 		TeamingEvents.LOGIN,
 		TeamingEvents.LOGOUT,
@@ -694,8 +702,8 @@ public class GwtMainPage extends Composite
 	private native void initSimpleUserProfileJS( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_invokeSimpleProfile = function( element, binderId, userName )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
-		}//end ss_invokeSimpleProfile
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireInvokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
+		}//end ss_fireInvokeSimpleProfile
 	}-*/;	
 
 	/*
@@ -1190,13 +1198,6 @@ public class GwtMainPage extends Composite
 			editBranding( siteBrandingData );
 			break;
 			
-		case HELP:
-			String url;
-			
-			url = m_requestInfo.getHelpUrl();
-			Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
-			break;
-
 		case SIZE_CHANGED:
 			sizeChanged( obj );
 			break;
@@ -1222,20 +1223,6 @@ public class GwtMainPage extends Composite
 			
 			teamingFeedUrl = m_requestInfo.getTeamingFeedUrl();
 			Window.open( teamingFeedUrl, "_teaming_feed", "width=500,height=700,resizable,scrollbars" );
-			break;
-			
-		case INVOKE_SIMPLE_PROFILE:
-			if ( obj instanceof SimpleProfileParams )
-			{
-				SimpleProfileParams params;
-				
-				params = (SimpleProfileParams) obj;
-				invokeSimpleProfile( params.getElement(), params.getBinderId(), params.getUserName() );
-			}
-			else
-			{
-				Window.alert( "In handleActionImpl( INVOKE_SIMPLE_PROFILE, obj ) obj is not a SimpleProfileParams object." );
-			}
 			break;
 			
 		case VIEW_FOLDER_ENTRY:
@@ -2027,6 +2014,81 @@ public class GwtMainPage extends Composite
 	}// end onLogin()
 	
 	/**
+	 * Handles InvokeHelpEvent's received by this class.
+	 * 
+	 * Implements the InvokeHelpEvent.Handler.onInvokeHelp() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeHelp( InvokeHelpEvent event )
+	{
+		Window.open(
+			m_requestInfo.getHelpUrl(),
+			"teaming_help_window",
+			"resizeable,scrollbars" );
+	}// end onInvokeHelp()
+	
+	/**
+	 * Handles InvokeSimpleProfileEvent's received by this class.
+	 * 
+	 * Implements the InvokeSimpleProfileEvent.Handler.onInvokeSimpleProfile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeSimpleProfile( InvokeSimpleProfileEvent event )
+	{
+		SimpleProfileParams params = event.getSimpleProfileParams();
+		
+		Element element = params.getElement();
+		String binderId = params.getBinderId();
+		String userName = params.getUserName();
+		
+		if( ! GwtClientHelper.hasString( binderId ) )
+		{
+			Window.alert( GwtTeaming.getMessages().qViewErrorWorkspaceDoesNotExist() );
+			return;
+		}
+		
+		GwtQuickViewDlg.createAsync(
+				false,
+				true,
+				0,
+				0,
+				binderId,
+				userName,
+				element,
+				new GwtQuickViewDlgClient() {			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( final GwtQuickViewDlg qvd )
+			{
+				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
+				{
+					public void setPosition(int offsetWidth, int offsetHeight)
+					{
+						int x;
+						int y;
+						
+						x = (Window.getClientWidth() - offsetWidth) / 2;
+						y = (Window.getClientHeight() - offsetHeight) / 3;
+						
+						qvd.setPopupPosition( x, y );
+					}// end setPosition()
+				};
+				qvd.setPopupPositionAndShow( posCallback );
+			}// end onSuccess()
+		} );		
+	}// end onInvokeSimpleProfile()
+	
+	/**
 	 * Handles LogoutEvent's received by this class.
 	 * 
 	 * Implements the LogoutEvent.Handler.onLogout() method.
@@ -2305,53 +2367,6 @@ public class GwtMainPage extends Composite
 	}
 	
 	/*
-	 * Invoke the Simple Profile Dialog
-	 */
-	private void invokeSimpleProfile(Element element, String binderId, String userName ) {
-
-		if(!GwtClientHelper.hasString(binderId)) {
-			Window.alert(GwtTeaming.getMessages().qViewErrorWorkspaceDoesNotExist());
-			return;
-		}
-		
-		GwtQuickViewDlg.createAsync(
-				false,
-				true,
-				0,
-				0,
-				binderId,
-				userName,
-				element,
-				new GwtQuickViewDlgClient() {			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( final GwtQuickViewDlg qvd )
-			{
-				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
-				{
-					public void setPosition(int offsetWidth, int offsetHeight)
-					{
-						int x;
-						int y;
-						
-						x = (Window.getClientWidth() - offsetWidth) / 2;
-						y = (Window.getClientHeight() - offsetHeight) / 3;
-						
-						qvd.setPopupPosition( x, y );
-					}// end setPosition()
-				};
-				qvd.setPopupPositionAndShow( posCallback );
-			}// end onSuccess()
-		} );
-	}
-
-	/*
 	 * Returns defaultValue if actionParam is null or not a Boolean.
 	 * Otherwise, returns the boolean value.
 	 */
@@ -2465,6 +2480,15 @@ public class GwtMainPage extends Composite
 		GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
 	}// end fireGotoContentUrl()
 		
+	/*
+	 * Fires an InvokeSimpleProfileEvent from the JSP based UI.
+	 */
+	private void fireInvokeSimpleProfile( Element element, String binderId, String userName )
+	{
+		SimpleProfileParams params = new SimpleProfileParams( element, binderId, userName );
+		GwtTeaming.fireEvent( new InvokeSimpleProfileEvent( params ) );
+	}// end fireInvokeSimpleProfile()
+
 	/*
 	 * Fires an arbitrary event from the JSP based UI.
 	 */

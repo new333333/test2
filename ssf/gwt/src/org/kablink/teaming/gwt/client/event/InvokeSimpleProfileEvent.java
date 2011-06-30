@@ -31,54 +31,77 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.event;
 
-import com.google.gwt.user.client.Element;
+import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class is used to pass the required parameters needed by the
- * InvokeSimpleProfileEvent.
- *
- * @author nbjensen@novell.com
+ * The InvokeSimpleProfileEvent is used to the simple profile dialog.
+ * 
+ * @author drfoster@novell.com
  */
-public class SimpleProfileParams
-{
-	private Element m_element;
-	private String m_binderId;
-	private String m_userName;
+public class InvokeSimpleProfileEvent extends GwtEvent<InvokeSimpleProfileEvent.Handler> {
+	public static Type<Handler> TYPE = new Type<Handler>();
 	
+	public SimpleProfileParams m_simpleProfileParams;
+
 	/**
-	 * 
+	 * Handler interface for this event.
 	 */
-	public SimpleProfileParams( Element element, String binderId, String userName )
-	{
-		m_element = element;
-		m_binderId = binderId;
-		m_userName = userName;
+	public interface Handler extends EventHandler {
+		void onInvokeSimpleProfile(InvokeSimpleProfileEvent event);
 	}
 	
 	/**
-	 * 
+	 * Class constructor.
 	 */
-	public String getBinderId()
-	{
-		return m_binderId;
+	public InvokeSimpleProfileEvent(SimpleProfileParams simpleProfileParams) {
+		super();
+		m_simpleProfileParams = simpleProfileParams;
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public Element getElement()
-	{
-		return m_element;
+	public SimpleProfileParams getSimpleProfileParams() {return m_simpleProfileParams;}
+
+	/**
+	 * Returns the GwtEvent.Type of this event.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type<Handler> getAssociatedType() {
+		return TYPE;
+	}
+
+	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onInvokeSimpleProfile(this);
 	}
 	
 	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
 	 * 
+	 * @param eventBus
+	 * @param handler
+	 * 
+	 * @return
 	 */
-	public String getUserName()
-	{
-		return m_userName;
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 }

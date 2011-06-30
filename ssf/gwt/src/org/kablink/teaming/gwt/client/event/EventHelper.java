@@ -83,6 +83,7 @@ public class EventHelper {
 		case CONTEXT_CHANGING:              ContextChangingEvent.fireOne();            break;
 		case FULL_UI_RELOAD:                FullUIReloadEvent.fireOne();               break;
 		case GOTO_MY_WORKSPACE:             GotoMyWorkspaceEvent.fireOne();            break;
+		case INVOKE_HELP:                   InvokeHelpEvent.fireOne();                 break;
 		case LOGIN:                         LoginEvent.fireOne();                      break;
 		case LOGOUT:                        LogoutEvent.fireOne();                     break;
 		case MASTHEAD_HIDE:                 MastheadHideEvent.fireOne();               break;
@@ -270,6 +271,24 @@ public class EventHelper {
 				if (eventHandler instanceof GotoPermalinkUrlEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = GotoPermalinkUrlEvent.registerEvent(eventBus, ((GotoPermalinkUrlEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case INVOKE_HELP:
+				// An InvokeHelpEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof InvokeHelpEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeHelpEvent.registerEvent(eventBus, ((InvokeHelpEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case INVOKE_SIMPLE_PROFILE:
+				// An InvokeSimpleProfileEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeSimpleProfileEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeSimpleProfileEvent.registerEvent(eventBus, ((InvokeSimpleProfileEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -501,6 +520,9 @@ public class EventHelper {
 			case GOTO_CONTENT_URL:              hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);             break;
 			case GOTO_MY_WORKSPACE:             hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);            break;
 			case GOTO_PERMALINK_URL:            hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);           break;
+			
+			case INVOKE_HELP:                   hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                 break;
+			case INVOKE_SIMPLE_PROFILE:         hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);        break;
 			
 			case LOGIN:                         hasHandler = (eventHandler instanceof LoginEvent.Handler);                      break;
 			case LOGOUT:                        hasHandler = (eventHandler instanceof LogoutEvent.Handler);                     break;
