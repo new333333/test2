@@ -66,6 +66,8 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup.ViewsMenuPopupClient;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -538,11 +540,14 @@ public class MainMenuControl extends Composite
 	 * @param searchTabId
 	 */
 	public void contextLoaded(final String binderId, final boolean inSearch, final String searchTabId) {
+		GetBinderInfoCmd cmd;
+		
 		// Keep track of the context that we're loading.
 		setContext(binderId, inSearch, searchTabId);
 		
 		// Rebuild the context based panel based on the new context.
-		GwtTeaming.getRpcService().getBinderInfo(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<BinderInfo>() {
+		cmd = new GetBinderInfoCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;
 				GwtClientHelper.handleGwtRPCFailure(
@@ -550,7 +555,11 @@ public class MainMenuControl extends Composite
 					m_messages.rpcFailure_GetBinderInfo(),
 					binderId);
 			}
-			public void onSuccess(BinderInfo binderInfo) {
+			public void onSuccess(VibeRpcResponse response) {
+				BinderInfo binderInfo;
+				
+				binderInfo = (BinderInfo) response.getResponseData();
+				
 				// Show the context asynchronously so that we can
 				// release the AJAX request ASAP.
 				showContextAsync(binderInfo, binderId, inSearch, searchTabId);

@@ -67,6 +67,10 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamParamsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -118,8 +122,8 @@ public class ActivityStreamCtrl extends Composite
 	private Object m_selectedObj = null;
 	private ActionHandler m_actionHandler;
 	private AsyncCallback<ActivityStreamData> m_searchResultsCallback;
-	private AsyncCallback<Boolean> m_checkForChangesCallback = null;
-	private AsyncCallback<ActivityStreamParams> m_getActivityStreamParamsCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_checkForChangesCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_getActivityStreamParamsCallback = null;
 	private PagingData m_pagingData = null;
 	private ActivityStreamParams m_activityStreamParams = null;
 	private Timer m_searchTimer = null;
@@ -426,7 +430,7 @@ public class ActivityStreamCtrl extends Composite
 		// Create the callback that will be used when we issue an ajax call to do check for updates.
 		if ( m_checkForChangesCallback == null )
 		{
-			m_checkForChangesCallback = new AsyncCallback<Boolean>()
+			m_checkForChangesCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -445,8 +449,14 @@ public class ActivityStreamCtrl extends Composite
 				 * 
 				 * @param result
 				 */
-				public void onSuccess( Boolean haveChanges )
+				public void onSuccess( VibeRpcResponse response )
 				{
+					Boolean haveChanges;
+					BooleanRpcResponseData responseData;
+					
+					responseData = (BooleanRpcResponseData) response.getResponseData();
+					haveChanges = responseData.getBooleanValue();
+					
 					if ( haveChanges )
 					{
 						// Is the user composing a reply?
@@ -474,7 +484,12 @@ public class ActivityStreamCtrl extends Composite
 		updatePauseTitle();
 		
 		// Issue an ajax request to see if there is anything new.
-		m_rpcService.hasActivityStreamChanged( HttpRequestInfo.createHttpRequestInfo(), m_activityStreamInfo, m_checkForChangesCallback );
+		{
+			HasActivityStreamChangedCmd cmd;
+			
+			cmd = new HasActivityStreamChangedCmd( m_activityStreamInfo );
+			GwtClientHelper.executeCommand( cmd, m_checkForChangesCallback );
+		}
 	}
 	
 	
@@ -1514,7 +1529,7 @@ public class ActivityStreamCtrl extends Composite
 		
 		if ( m_getActivityStreamParamsCallback == null )
 		{
-			m_getActivityStreamParamsCallback = new AsyncCallback<ActivityStreamParams>()
+			m_getActivityStreamParamsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -1528,11 +1543,11 @@ public class ActivityStreamCtrl extends Composite
 				/**
 				 * 
 				 */
-				public void onSuccess( ActivityStreamParams activityStreamParams )
+				public void onSuccess( VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
 					
-					m_activityStreamParams = activityStreamParams;
+					m_activityStreamParams = (ActivityStreamParams) response.getResponseData();
 					m_showSetting = m_activityStreamParams.getShowSetting();
 					
 					// Check the appropriate menu item to reflect the show setting.
@@ -1558,8 +1573,12 @@ public class ActivityStreamCtrl extends Composite
 		}
 		
 		// Issue an ajax request to get the activity stream params.
-		ri = HttpRequestInfo.createHttpRequestInfo();
-		m_rpcService.getActivityStreamParams( ri, m_getActivityStreamParamsCallback );
+		{
+			GetActivityStreamParamsCmd cmd;
+			
+			cmd = new GetActivityStreamParamsCmd();
+			GwtClientHelper.executeCommand( cmd, m_getActivityStreamParamsCallback );
+		}
 		
 		// Is the source of the activity stream a binder or person?
 		m_asSourcePermalink = null;

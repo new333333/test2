@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
- * This class represents the "Get Upgrade Info" command.
+ *  * This class holds all of the information necessary to execute the "Get Upgrade Info" command.
  * @author jwootton
  *
  */

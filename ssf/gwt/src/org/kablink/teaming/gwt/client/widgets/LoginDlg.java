@@ -36,7 +36,10 @@ import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -86,7 +89,7 @@ public class LoginDlg extends DlgBox
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
-	private AsyncCallback<GwtLoginInfo> m_rpcGetLoginInfoCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_rpcGetLoginInfoCallback = null;
 
 	/**
 	 * 
@@ -133,7 +136,7 @@ public class LoginDlg extends DlgBox
 			headerText = GwtTeaming.getMessages().loginDlgKablinkHeader();
 		
 		// Create the callback that will be used when we issue an ajax call to get login information
-		m_rpcGetLoginInfoCallback = new AsyncCallback<GwtLoginInfo>()
+		m_rpcGetLoginInfoCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -152,8 +155,12 @@ public class LoginDlg extends DlgBox
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtLoginInfo loginInfo )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtLoginInfo loginInfo;
+				
+				loginInfo = (GwtLoginInfo) response.getResponseData();
+				
 				m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
 				
 				// Hide or show the self registration controls.
@@ -421,12 +428,11 @@ public class LoginDlg extends DlgBox
 	 */
 	private void getLoginInfoFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-		
-		rpcService = GwtTeaming.getRpcService();
+		GetLoginInfoCmd cmd;
 		
 		// Issue an ajax request to get login information
-		rpcService.getLoginInfo( HttpRequestInfo.createHttpRequestInfo(), m_rpcGetLoginInfoCallback );
+		cmd = new GetLoginInfoCmd();
+		GwtClientHelper.executeCommand( cmd, m_rpcGetLoginInfoCallback );
 	}
 	
 	/**
