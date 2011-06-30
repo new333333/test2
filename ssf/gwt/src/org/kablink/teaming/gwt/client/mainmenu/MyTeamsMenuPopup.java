@@ -36,12 +36,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
@@ -87,25 +86,23 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 			// Hide the menu...
 			hide();
 			
-			// ...and trigger a selection changed event.
-			m_actionTrigger.triggerAction(
-				TeamingAction.SELECTION_CHANGED,
-				new OnSelectBinderInfo(
-					m_myTeam.getBinderId(),
-					m_myTeam.getPermalinkUrl(),
-					false,
-					Instigator.OTHER));
+			// ...and fire a selection changed event.
+			GwtTeaming.fireEvent(
+				new ContextChangedEvent(
+					new OnSelectBinderInfo(
+						m_myTeam.getBinderId(),
+						m_myTeam.getPermalinkUrl(),
+						false,
+						Instigator.TEAM_SELECT)));
 		}
 	}
 	
 	/**
 	 * Class constructor.
-	 * 
-	 * @param actionTrigger
 	 */
-	public MyTeamsMenuPopup(ActionTrigger actionTrigger) {
+	public MyTeamsMenuPopup() {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarMyTeams());
+		super(GwtTeaming.getMessages().mainMenuBarMyTeams());
 	}
 	
 	/**

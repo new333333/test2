@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -59,9 +58,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("deprecation")
 public abstract class MenuBarPopupBase extends TeamingPopupPanel {
-	protected ActionTrigger					m_actionTrigger;	// Used to trigger actions from the popup.
 	private   boolean						m_spacerNeeded;		// false -> The last widget added was a spacer.  true -> It was something else.
 	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
 	protected GwtTeamingMessages			m_messages;			// The menu's messages.
@@ -75,7 +72,7 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	 * @param actionTrigger
 	 * @param title
 	 */
-	public MenuBarPopupBase(ActionTrigger actionTrigger, String title) {
+	public MenuBarPopupBase(String title) {
 		// Construct the super class...
 		super(true);
 		setGlassEnabled(true);
@@ -91,10 +88,9 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 			}});
 
 		// ...store the parameters...
-		m_actionTrigger	= actionTrigger;
-		m_images		= GwtTeaming.getMainMenuImageBundle();
-		m_messages		= GwtTeaming.getMessages();
-		m_rpcService	= GwtTeaming.getRpcService();
+		m_images     = GwtTeaming.getMainMenuImageBundle();
+		m_messages   = GwtTeaming.getMessages();
+		m_rpcService = GwtTeaming.getRpcService();
 		
 		// ...and initialize everything else.
 		addStyleName("mainMenuPopup_Core roundcornerSM-bottom");

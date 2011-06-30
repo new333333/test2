@@ -39,17 +39,19 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
@@ -91,7 +93,9 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ShareThisDlg extends DlgBox
-	implements ActionHandler, EditSuccessfulHandler, EditCanceledHandler
+	implements EditSuccessfulHandler, EditCanceledHandler,
+	// EventBus handlers implemented by this class.
+		SearchFindResultsEvent.Handler
 {
 	private TextBox m_titleTextBox;
 	private TextArea m_msgTextArea;
@@ -108,6 +112,14 @@ public class ShareThisDlg extends DlgBox
 	private AsyncCallback<List<TeamInfo>> m_readTeamsCallback;
 	private AsyncCallback<GwtShareEntryResults> m_shareEntryCallback;
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Search events.
+		TeamingEvents.SEARCH_FIND_RESULTS,
+	};
+	
 	/**
 	 * This class is a checkbox with a TeamInfo object associated with it.
 	 */
@@ -377,6 +389,12 @@ public class ShareThisDlg extends DlgBox
 		// Initialize the superclass
 		super( autoHide, modal, left, top );
 
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
 		// Create the dialog's content
 		createAllDlgContent(
 			dlgCaption,
@@ -1040,61 +1058,6 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
-	 * This method gets called when the user selects an item from the search results in the "find" control.
-	 */
-	public void handleAction( TeamingAction ta, Object selectedObj )
-	{
-		if ( TeamingAction.SELECTION_CHANGED == ta )
-		{
-			RecipientInfo recipientInfo;
-
-			recipientInfo = null;
-			
-			// Are we dealing with a User?
-			if ( selectedObj instanceof GwtUser )
-			{
-				GwtUser user;
-				
-				// Yes
-				user = (GwtUser) selectedObj;
-				
-				recipientInfo = new RecipientInfo();
-				recipientInfo.setName( user.getShortDisplayName() );
-				recipientInfo.setType( RecipientType.USER );
-				recipientInfo.setId( user.getUserId() );
-			}
-			// Are we dealing with a group?
-			else if ( selectedObj instanceof GwtGroup )
-			{
-				GwtGroup group;
-				
-				// Yes
-				group = (GwtGroup) selectedObj;
-				
-				recipientInfo = new RecipientInfo();
-				recipientInfo.setName( group.getShortDisplayName() );
-				recipientInfo.setType( RecipientType.GROUP );
-				recipientInfo.setId( group.getId() );
-			}
-
-			// Do we have an object to add to our list of recipients?
-			if ( recipientInfo != null )
-			{
-				// Yes
-				
-				// Add the recipient to our list of recipients
-				addRecipient( recipientInfo );
-				
-				// Hide the search-results widget.
-				m_findCtrl.hideSearchResults();
-				
-				// Clear the text from the find control.
-				m_findCtrl.clearText();
-			}
-		}
-	}
-	
-	/**
 	 * Find the given recipient in the table that holds the recipients.
 	 */
 	private int findRecipientInTable( RecipientInfo recipientInfo )
@@ -1295,5 +1258,66 @@ public class ShareThisDlg extends DlgBox
 			adjustMyTeamsPanelHeight();
 		}
 	}
+	
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults( SearchFindResultsEvent event )
+	{
+		// If the find results aren't for this share this dialog...
+		if ( !((Widget) event.getSource()).equals( this ) )
+		{
+			// ...ignore the event.
+			return;
+		}
+		
+		// Are we dealing with a User?
+		RecipientInfo recipientInfo = null;
+		GwtTeamingItem selectedObj = event.getSearchResults();
+		if ( selectedObj instanceof GwtUser )
+		{
+			GwtUser user;
+			
+			// Yes
+			user = (GwtUser) selectedObj;
+			
+			recipientInfo = new RecipientInfo();
+			recipientInfo.setName( user.getShortDisplayName() );
+			recipientInfo.setType( RecipientType.USER );
+			recipientInfo.setId( user.getUserId() );
+		}
+		// Are we dealing with a group?
+		else if ( selectedObj instanceof GwtGroup )
+		{
+			GwtGroup group;
+			
+			// Yes
+			group = (GwtGroup) selectedObj;
+			
+			recipientInfo = new RecipientInfo();
+			recipientInfo.setName( group.getShortDisplayName() );
+			recipientInfo.setType( RecipientType.GROUP );
+			recipientInfo.setId( group.getId() );
+		}
 
+		// Do we have an object to add to our list of recipients?
+		if ( recipientInfo != null )
+		{
+			// Yes
+			
+			// Add the recipient to our list of recipients
+			addRecipient( recipientInfo );
+			
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+			
+			// Clear the text from the find control.
+			m_findCtrl.clearText();
+		}
+	}// end onSearchFindResults()
 }

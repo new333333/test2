@@ -94,6 +94,13 @@ public class EventHelper {
 		return reply;
 	}
 	
+	/**
+	 * Simple event firing methods.
+	 */
+	public static void fireActivityStreamExit() {GwtTeaming.fireEvent(new ActivityStreamExitEvent());}
+	public static void fireContextChanging()    {GwtTeaming.fireEvent(new ContextChangingEvent());   }
+	public static void fireFullUIReload()       {GwtTeaming.fireEvent(new FullUIReloadEvent());      }
+	
 	/*
 	 * Returns true of an event is an an array of events and false
 	 * otherwise.
@@ -197,7 +204,7 @@ public class EventHelper {
 				break;
 			
 			case BROWSE_HIERARCHY:
-				// An BrowseHierarchEvent!  Can the event handler we
+				// An BrowseHierarchyEvent!  Can the event handler we
 				// were given handle that?
 				if (eventHandler instanceof BrowseHierarchyEvent.Handler) {
 					handlerNotDefined = false;
@@ -214,6 +221,33 @@ public class EventHelper {
 				}
 				break;
 			
+			case CONTEXT_CHANGED:
+				// A ContextChangedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ContextChangedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ContextChangedEvent.registerEvent(eventBus, ((ContextChangedEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CONTEXT_CHANGING:
+				// A ContextChangingEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ContextChangingEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ContextChangingEvent.registerEvent(eventBus, ((ContextChangingEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case FULL_UI_RELOAD:
+				// An FullUIReloadEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof FullUIReloadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = FullUIReloadEvent.registerEvent(eventBus, ((FullUIReloadEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case LOGIN:
 				// An LoginEvent!  Can the event handler we
 				// were given handle that?
@@ -247,6 +281,24 @@ public class EventHelper {
 				if (eventHandler instanceof MastheadShowEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = MastheadShowEvent.registerEvent(eventBus, ((MastheadShowEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SEARCH_FIND_RESULTS:
+				// A SearchFindResultsEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SearchFindResultsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SearchFindResultsEvent.registerEvent(eventBus, ((SearchFindResultsEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SEARCH_RECENT_PLACE:
+				// A SearchRecentPlaceEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SearchRecentPlaceEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SearchRecentPlaceEvent.registerEvent(eventBus, ((SearchRecentPlaceEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -368,11 +420,19 @@ public class EventHelper {
 			case BROWSE_HIERARCHY:              hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);            break;
 			case BROWSE_HIERARCHY_EXIT:         hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);        break;
 			
+			case CONTEXT_CHANGED:               hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);             break;
+			case CONTEXT_CHANGING:              hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);            break;
+			
 			case MASTHEAD_HIDE:                 hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);               break;
 			case MASTHEAD_SHOW:                 hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);               break;
 			
+			case FULL_UI_RELOAD:                hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);               break;
+			
 			case LOGIN:                         hasHandler = (eventHandler instanceof LoginEvent.Handler);                      break;
 			case LOGOUT:                        hasHandler = (eventHandler instanceof LogoutEvent.Handler);                     break;
+			
+			case SEARCH_FIND_RESULTS:           hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);          break;
+			case SEARCH_RECENT_PLACE:           hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);          break;
 			
 			case SIDEBAR_HIDE:                  hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                break;
 			case SIDEBAR_SHOW:                  hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                break;

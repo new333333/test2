@@ -428,7 +428,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
 		// Construct an OnSelectBinderInfo for this TreeInfo object.
-		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti, Instigator.SIDEBAR_TREE);
+		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti, Instigator.SIDEBAR_TREE_SELECT);
 		
 		// Is this TreeInfo object the trash Binder?
 		if (ti.getBinderInfo().isBinderTrash()) {
@@ -1191,15 +1191,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Is the requested Binder available in those we've already
 		// got loaded?
 		Instigator instigator = binderInfo.getInstigator();
-		final boolean forceReload = (binderInfo.getForceSidebarReload() || (Instigator.SIDEBAR_RELOAD == instigator));
+		final boolean forceReload = (binderInfo.getForceSidebarReload() || (Instigator.FORCE_SIDEBAR_RELOAD == instigator));
 		final String binderId = String.valueOf(binderInfo.getBinderId());
 		final TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
 		if (null != targetTI) {
 			// Yes!  Should the request cause the tree to be re-rooted?
 			switch (instigator) {
-			case CONTENT_CONTEXT_CHANGE:
-			case SIDEBAR_RELOAD:
-			case SIDEBAR_TREE:
+			case CONTENT_AREA_CHANGED:
+			case FORCE_SIDEBAR_RELOAD:
+			case SIDEBAR_TREE_SELECT:
 				if (forceReload)
 					 reloadTree();
 				else selectBinder(targetTI);

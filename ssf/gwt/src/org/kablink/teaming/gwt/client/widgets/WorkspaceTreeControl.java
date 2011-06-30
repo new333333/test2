@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -52,6 +53,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
@@ -80,6 +82,7 @@ public class WorkspaceTreeControl extends Composite
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
+		ContextChangedEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {	
@@ -95,6 +98,9 @@ public class WorkspaceTreeControl extends Composite
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
+		
+		// Context events.
+		TeamingEvents.CONTEXT_CHANGED,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -207,7 +213,7 @@ public class WorkspaceTreeControl extends Composite
 	 */
 	public void enterActivityStreamMode(ActivityStreamInfo defaultASI) {
 		// If we're displaying a sidebar tree...
-		if ((TreeMode.VERTICAL == m_tm) && (null != m_treeDisplay)) {
+		if (isSidebarTree() && (null != m_treeDisplay)) {
 			// ...tell it to load the activity stream navigation
 			// ...points.
 			m_treeDisplay.enterActivityStreamMode(defaultASI);
@@ -220,7 +226,7 @@ public class WorkspaceTreeControl extends Composite
 	 */
 	public void exitActivityStreamMode() {
 		// If we're displaying a sidebar tree...
-		if ((TreeMode.VERTICAL == m_tm) && (null != m_treeDisplay)) {
+		if (isSidebarTree() && (null != m_treeDisplay)) {
 			// ...tell it to exit activity stream mode.
 			m_treeDisplay.exitActivityStreamMode();
 		}
@@ -237,6 +243,16 @@ public class WorkspaceTreeControl extends Composite
 	}
 
 	/**
+	 * Returns true if the WorkspaceTreeControl is a bread crumb tree
+	 * and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBreadcrumbTree() {
+		return (TreeMode.HORIZONTAL == m_tm);
+	}
+	
+	/**
 	 * Returns true if the workspace tree control is in activity stream
 	 * mode and false otherwise.
 	 * 
@@ -244,6 +260,16 @@ public class WorkspaceTreeControl extends Composite
 	 */
 	public boolean isInActivityStreamMode() {
 		return ((null != m_treeDisplay) && m_treeDisplay.isInActivityStreamMode());
+	}
+
+	/**
+	 * Returns true if the WorkspaceTreeControl is a sidebar tree and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isSidebarTree() {
+		return (TreeMode.VERTICAL == m_tm);
 	}
 	
 	/**
@@ -294,9 +320,41 @@ public class WorkspaceTreeControl extends Composite
 	 */
 	public void setActivityStream(ActivityStreamInfo asi) {
 		// If we're displaying a sidebar tree...
-		if ((TreeMode.VERTICAL == m_tm) && (null != m_treeDisplay)) {
+		if (isSidebarTree() && (null != m_treeDisplay)) {
 			// ...tell it to select this activity stream.
 			m_treeDisplay.setActivityStream(asi);
+		}
+	}
+	
+	/**
+	 * Handles ContextChangedEvent's received by this class.
+	 * 
+	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContextChanged(final ContextChangedEvent event)
+	{
+		if (isSidebarTree()) {
+			OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
+			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
+				Instigator instigator = osbInfo.getInstigator();
+				if ((Instigator.SIDEBAR_TREE_SELECT  != instigator) ||
+				    (Instigator.FORCE_SIDEBAR_RELOAD == instigator) ||
+				     osbInfo.getForceSidebarReload())
+				{
+					// Tell the WorkspaceTreeControl to change contexts.
+					setSelectedBinder(osbInfo);
+				}
+				
+				if (Instigator.CONTENT_AREA_CHANGED == instigator) {
+					contextLoaded(osbInfo.getBinderId().toString());
+				}
+				else if (Instigator.FORCE_SIDEBAR_RELOAD != instigator) {
+					showBinderBusy(osbInfo);
+				}
+			}
 		}
 	}
 	
@@ -309,7 +367,7 @@ public class WorkspaceTreeControl extends Composite
 	 */
 	@Override
 	public void onSidebarHide(SidebarHideEvent event) {
-		if ((TreeMode.VERTICAL == m_tm) && (!(m_mainPage.isAdminActive()))) {
+		if (isSidebarTree() && (!(m_mainPage.isAdminActive()))) {
 			setVisible(false);
 		}
 	}
@@ -323,7 +381,7 @@ public class WorkspaceTreeControl extends Composite
 	 */
 	@Override
 	public void onSidebarShow(SidebarShowEvent event) {
-		if ((TreeMode.VERTICAL == m_tm) && (!(m_mainPage.isAdminActive()))) {
+		if (isSidebarTree() && (!(m_mainPage.isAdminActive()))) {
 			setVisible(true);
 		}
 	}
@@ -347,7 +405,7 @@ public class WorkspaceTreeControl extends Composite
 	public void relayoutPageAsync() {
 		// We only worry about layout if the tree if it's in vertical
 		// mode.  Is it?
-		if (TreeMode.VERTICAL == m_tm) {
+		if (isSidebarTree()) {
 			// Yes!  Force it to lay itself out again.
 			ScheduledCommand layouter = new ScheduledCommand() {
 				@Override

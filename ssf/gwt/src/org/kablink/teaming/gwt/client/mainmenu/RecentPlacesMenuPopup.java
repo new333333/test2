@@ -36,12 +36,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
@@ -90,20 +90,21 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			// ...and trigger the appropriate action for the place.
 			switch (m_place.getTypeEnum()) {
 			case BINDER:
-				m_actionTrigger.triggerAction(
-					TeamingAction.SELECTION_CHANGED,
-					new OnSelectBinderInfo(
-						m_place.getBinderId(),
-						m_place.getPermalinkUrl(),
-						false,
-						Instigator.OTHER));
+				GwtTeaming.fireEvent(
+					new ContextChangedEvent(
+						new OnSelectBinderInfo(
+							m_place.getBinderId(),
+							m_place.getPermalinkUrl(),
+							false,
+							Instigator.RECENT_PLACE_SELECT)));
 				
 				break;
 			
 			case SEARCH:
-				m_actionTrigger.triggerAction(
-					TeamingAction.RECENT_PLACE_SEARCH,
-					new Integer(m_place.getId()));
+				GwtTeaming.fireEvent(
+					new SearchRecentPlaceEvent(
+						new Integer(
+							m_place.getId())));
 				
 				break;
 			}
@@ -115,9 +116,9 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	 * 
 	 * @param actionTrigger
 	 */
-	public RecentPlacesMenuPopup(ActionTrigger actionTrigger) {
+	public RecentPlacesMenuPopup() {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarRecentPlaces());
+		super(GwtTeaming.getMessages().mainMenuBarRecentPlaces());
 	}
 	
 	/**

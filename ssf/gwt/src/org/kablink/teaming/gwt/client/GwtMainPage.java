@@ -38,15 +38,18 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
-import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
@@ -116,10 +119,14 @@ public class GwtMainPage extends Composite
 		AdministrationEvent.Handler,
 		AdministrationExitEvent.Handler,
 		BrowseHierarchyEvent.Handler,
+		ContextChangedEvent.Handler,
+		ContextChangingEvent.Handler,
+		FullUIReloadEvent.Handler,
 		LoginEvent.Handler,
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
+		SearchRecentPlaceEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
@@ -167,6 +174,11 @@ public class GwtMainPage extends Composite
 		
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY,
+		TeamingEvents.FULL_UI_RELOAD,
+
+		// Context events.
+		TeamingEvents.CONTEXT_CHANGED,
+		TeamingEvents.CONTEXT_CHANGING,
 
 		// Login/out events.
 		TeamingEvents.LOGIN,
@@ -176,6 +188,9 @@ public class GwtMainPage extends Composite
 		TeamingEvents.MASTHEAD_HIDE,
 		TeamingEvents.MASTHEAD_SHOW,
 
+		// Search events.
+		TeamingEvents.SEARCH_RECENT_PLACE,
+		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_SHOW,
@@ -362,14 +377,14 @@ public class GwtMainPage extends Composite
 			m_registeredEvents,
 			this);
 		
-		// Initialize the context load handler used by the traditional
+		// Initialize the context load handler used by the JSP based
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
 		
 		// Initialize the pre context switch handler used by the
-		// traditional UI to tell the GWT UI that a context switch is
+		// JSP based UI to tell the GWT UI that a context switch is
 		// about to occur.
-		initPreContextSwitchJS(this);
+		initFireContextChangingJS(this);
 		
 		// Initialize the JavaScript function that gets called when we want to handle a page using
 		// GWT instead of in jsp.
@@ -498,8 +513,8 @@ public class GwtMainPage extends Composite
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
-			fireVibeEvent( new MastheadHideEvent( false ) );	// false -> Done resize the content now...
-			fireVibeEvent( new SidebarHideEvent(  false ) );	// ...will happen when the frame has loaded.
+			GwtTeaming.fireEvent( new MastheadHideEvent( false ) );	// false -> Done resize the content now...
+			GwtTeaming.fireEvent( new SidebarHideEvent(  false ) );	// ...will happen when the frame has loaded.
 			
 			// Have the masthead hide the logout link
 			m_mastHead.hideLogoutLink();
@@ -515,6 +530,16 @@ public class GwtMainPage extends Composite
 	{
 		return m_mainMenuCtrl;
 	}//end getMainMenu()
+
+	/**
+	 * Returns any current search tab ID.
+	 * 
+	 * @return
+	 */
+	public String getSearchTabId()
+	{
+		return m_searchTabId;
+	}// end getSearchTabId()
 	
 	/**
 	 * Returns the workspace tree control.
@@ -560,12 +585,12 @@ public class GwtMainPage extends Composite
 
 	/*
 	 * Called to create a JavaScript method that will be invoked from
-	 * the traditional UI just before a context switch occurs.
+	 * the JSP based UI just before a context switch occurs.
 	 */
-	private native void initPreContextSwitchJS(GwtMainPage gwtMainPage) /*-{
+	private native void initFireContextChangingJS(GwtMainPage gwtMainPage) /*-{
 		$wnd.ss_preContextSwitch = function()
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::preContextSwitch()();
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireContextChanging()();
 		}//end ss_preContextSwitch()
 	}-*/;
 
@@ -667,12 +692,12 @@ public class GwtMainPage extends Composite
 	}// end closeAdministrationContentPanel()
 	
 	/*
-	 * Puts a context change from the traditional UI into effect.
+	 * Puts a context change from the JSP based UI into effect.
 	 */
 	private void contextLoaded( String binderId, String inSearch, String searchTabId ) {
 		contextLoaded(
 			binderId,
-			Instigator.CONTENT_CONTEXT_CHANGE,
+			Instigator.CONTENT_AREA_CHANGED,
 			((null != inSearch) && Boolean.parseBoolean( inSearch )),
 			searchTabId );
 	}
@@ -731,7 +756,7 @@ public class GwtMainPage extends Composite
 
 		// If we're in a search panel, we always show the root
 		// workspace in the sidebar tree.  That's the way it worked
-		// in the traditional UI so I kept that functionality intact.
+		// in the JSP based UI so I kept that functionality intact.
 		final String contextBinderId;
 		if      ( m_inSearch )                            contextBinderId = m_selectedBinderId; // Teaming 2.x equivalent would have been:  m_requestInfo.getTopWSId();
 		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
@@ -755,12 +780,12 @@ public class GwtMainPage extends Composite
 					binderPermalink,
 					false,	// false -> Not trash.
 					instigator );
-				if (validateOSBI(osbInfo))
+				if (GwtClientHelper.validateOSBI(osbInfo))
 				{
 					if (forceSidebarReload) {
 						osbInfo.setForceSidebarReload(forceSidebarReload);
 					}
-					selectionChangedImpl(osbInfo);
+					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
 				}
 			}// end onSuccess()
 		});
@@ -1075,19 +1100,6 @@ public class GwtMainPage extends Composite
 		}
 	}// end editPersonalPreferences()
 
-	/*
-	 * Exists What's New mode if it's currently active.
-	 */
-	private void exitActivityStreamIfActive()
-	{
-		// If we're currently in "activity stream" mode...
-		if ( ( m_activityStreamCtrl != null ) && m_activityStreamCtrl.isVisible() )
-		{
-			// ...exit out it.
-			fireVibeEvent( new ActivityStreamExitEvent() );
-		}
-	}// end exitActivityStreamIfActive()	
-
 	/**
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
 	 */
@@ -1149,19 +1161,15 @@ public class GwtMainPage extends Composite
 			if ( isAdminActive() )
 			{
 				// ...close it first.
-				fireVibeEvent( new AdministrationExitEvent() );
+				GwtTeaming.fireEvent( new AdministrationExitEvent() );
 			}
 			
 			// Change the browser's URL.
-			exitActivityStreamIfActive();
-			preContextSwitch();
+			EventHelper.fireActivityStreamExit();
+			EventHelper.fireContextChanging();
 			gotoUrl( m_requestInfo.getMyWorkspaceUrl() );
 			break;
 			
-		case SELECTION_CHANGED:
-			selectionChanged( obj );
-			break;
-		
 		case SIZE_CHANGED:
 			sizeChanged( obj );
 			break;
@@ -1171,12 +1179,12 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case GOTO_CONTENT_URL:
-			preContextSwitch();
+			EventHelper.fireContextChanging();
 			gotoUrl( obj );
 			break;
 
 		case GOTO_PERMALINK_URL:
-			preContextSwitch();
+			EventHelper.fireContextChanging();
 			gotoUrl( obj, false );
 			break;
 
@@ -1193,30 +1201,21 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case SIMPLE_SEARCH:
-			exitActivityStreamIfActive();
-			preContextSwitch();
+			EventHelper.fireActivityStreamExit();
+			EventHelper.fireContextChanging();
 			simpleSearch( obj );
 			break;
 			
 		case ADVANCED_SEARCH:
-			exitActivityStreamIfActive();
-			preContextSwitch();
+			EventHelper.fireActivityStreamExit();
+			EventHelper.fireContextChanging();
 			advancedSearch();
 			break;
 			
 		case SAVED_SEARCH:
-			exitActivityStreamIfActive();
-			preContextSwitch();
+			EventHelper.fireActivityStreamExit();
+			EventHelper.fireContextChanging();
 			savedSearch( obj );
-			break;
-			
-		case RECENT_PLACE_SEARCH:
-			preContextSwitch();
-			recentPlaceSearch( obj );
-			break;
-			
-		case PRE_CONTEXT_SWITCH:
-			preContextSwitch();
 			break;
 			
 		case RELOAD_LEFT_NAVIGATION:
@@ -1224,7 +1223,7 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case TAG_SEARCH:
-			preContextSwitch();
+			EventHelper.fireContextChanging();
 			tagSearch( obj );
 			break;
 			
@@ -1315,8 +1314,8 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )
-			     fireVibeEvent( new SidebarHideEvent() );
-			else fireVibeEvent( new SidebarShowEvent() );
+			     GwtTeaming.fireEvent( new SidebarHideEvent() );
+			else GwtTeaming.fireEvent( new SidebarShowEvent() );
 			
 			// Figure out if we should show the masthead.
 			if ( hideMasthead == false || showBranding == true )
@@ -1325,8 +1324,8 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the masthead.
 			if ( showMasthead )
-			     fireVibeEvent( new MastheadShowEvent() );
-			else fireVibeEvent( new MastheadHideEvent() );
+			     GwtTeaming.fireEvent( new MastheadShowEvent() );
+			else GwtTeaming.fireEvent( new MastheadHideEvent() );
 		}
 	}// end handleLandingPageOptions()
 	
@@ -1340,7 +1339,7 @@ public class GwtMainPage extends Composite
 		if ( pageName != null && pageName.length() > 0 )
 		{
 			if ( pageName.equalsIgnoreCase( "login-page" ) )
-				fireVibeEvent( new LoginEvent() );
+				GwtTeaming.fireEvent( new LoginEvent() );
 			else
 			{
 				Window.alert( "In handlePageWithGWT(), unknown page: " + pageName );
@@ -1364,7 +1363,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void invokeAdminPage()
 	{
-		fireVibeEvent( new AdministrationEvent() );
+		GwtTeaming.fireEvent( new AdministrationEvent() );
 	}
 	
 	
@@ -1564,65 +1563,6 @@ public class GwtMainPage extends Composite
 			y );
 	}// end invokeTagDlgImpl()
 	
-	
-	/*
-	 * This method will be called when the user selects a binder from
-	 * the workspace tree control.
-	 * 
-	 * Implements the SELECTION_CHANGED teaming action.
-	 */
-	private void selectionChanged( Object obj ) {
-		if ( obj instanceof OnSelectBinderInfo )
-		{
-			OnSelectBinderInfo osbInfo = ((OnSelectBinderInfo) obj);
-			if (validateOSBI( osbInfo ))
-			{
-				exitActivityStreamIfActive();
-				preContextSwitch();
-				selectionChangedImpl( osbInfo );
-			}
-		}
-		else
-			Window.alert( "in selectionChanged() and obj is not an OnSelectBinderInfo object" );
-	}
-	
-	private void selectionChangedImpl( OnSelectBinderInfo binderInfo )
-	{
-		Instigator instigator;
-
-		// Tell the masthead to update the branding for the newly selected binder.
-		m_selectedBinderId = binderInfo.getBinderId().toString();
-		m_mastHead.setBinderId( m_selectedBinderId );
-		
-		// If we're not coming from a WorkspaceTreeControl context
-		// change...
-		instigator = binderInfo.getInstigator();
-		if (( Instigator.SIDEBAR_TREE   != instigator ) ||
-		    ( Instigator.SIDEBAR_RELOAD == instigator ) ||
-		      binderInfo.getForceSidebarReload() )
-		{
-			// Tell the WorkspaceTreeControl to change contexts.
-			m_wsTreeCtrl.setSelectedBinder( binderInfo );
-		}
-
-		// Are we handling a context change in the content panel?
-		if ( Instigator.CONTENT_CONTEXT_CHANGE == instigator )
-		{
-			// Yes!  Update the menu bar accordingly.
-			m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch, m_searchTabId );
-			m_wsTreeCtrl.contextLoaded( m_selectedBinderId );
-		}
-		else if ( Instigator.SIDEBAR_RELOAD != instigator )
-		{
-			// No, we aren't handling a context change in the
-			// content panel! Tell the content panel to view the
-			// selected binder.
-			m_wsTreeCtrl.showBinderBusy( binderInfo );
-			m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
-		}
-	}// end selectionChangedImpl()
-
-	
 	/**
 	 * This method gets called when the browser gets resized.
 	 */
@@ -1664,10 +1604,10 @@ public class GwtMainPage extends Composite
 				OnSelectBinderInfo osbInfo;
 				
 				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
-				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.OTHER );
-				if (validateOSBI( osbInfo ))
+				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.VIEW_TEAM_MEMBERS );
+				if (GwtClientHelper.validateOSBI( osbInfo ))
 				{
-					selectionChangedImpl( osbInfo );
+					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
 				}
 			}// end onSuccess()
 		});// end AsyncCallback()
@@ -1690,8 +1630,8 @@ public class GwtMainPage extends Composite
 	 */
 	private void gotoContentUrl( String url )
 	{
-		exitActivityStreamIfActive();
-		preContextSwitch();
+		EventHelper.fireActivityStreamExit();
+		EventHelper.fireContextChanging();
 		gotoUrl( url, true );
 	}
 	
@@ -1746,7 +1686,7 @@ public class GwtMainPage extends Composite
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				contextLoaded( m_selectedBinderId, Instigator.OTHER );
+				EventHelper.fireFullUIReload();
 			}// end onSuccess()
 		});
 	}
@@ -1774,7 +1714,7 @@ public class GwtMainPage extends Composite
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				contextLoaded( m_selectedBinderId, Instigator.OTHER );
+				EventHelper.fireFullUIReload();
 			}// end onSuccess()
 		});
 	}
@@ -1802,7 +1742,7 @@ public class GwtMainPage extends Composite
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				contextLoaded( m_selectedBinderId, Instigator.OTHER );
+				EventHelper.fireFullUIReload();
 			}// end onSuccess()
 		});
 	}
@@ -1879,50 +1819,13 @@ public class GwtMainPage extends Composite
 	}
 
 	/*
-	 * This method will be called to perform a recent place search on
-	 * an integer received as a parameter.
-	 * 
-	 * Implements the RECENT_PLACE_SEARCH teaming action.
-	 */
-	private void recentPlaceSearch( Object obj )
-	{
-		if ( ( null == obj ) || ( obj instanceof Integer ))
-		{
-			Integer searchFor;
-
-			// What tab is the recent place search for?
-			searchFor = ((Integer) obj);
-			String searchUrl = (m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf(searchFor.intValue()));
-			GwtClientHelper.loadUrlInContentFrame(searchUrl);
-		}
-		else
-			Window.alert( "in recentPlaceSearch() and obj is not an Integer object" );
-	}//end recentPlaceSearch()
-
-	/*
-	 * This method will do whatever needs to be done from a UI
-	 * perspective to prepare for an pending context switch.
-	 * 
-	 * Implements the PRE_CONTEXT_SWITCH teaming action.
-	 */
-	private void preContextSwitch() {
-		// Restore any ui state that may be saved.
-		restoreUIState();
-		
-		if ( null != m_mainMenuCtrl )
-		{
-			m_mainMenuCtrl.clearContextMenus();
-		}
-	}// end preContextSwitch()
-	
-	/*
 	 * Forces the workspace tree to reload itself.
 	 * 
 	 * Implements the RELOAD_LEFT_NAVIGATION teaming action.
 	 */
 	private void reloadLeftNavigation()
 	{
-		contextLoaded(m_selectedBinderId, Instigator.SIDEBAR_RELOAD);
+		contextLoaded(m_selectedBinderId, Instigator.FORCE_SIDEBAR_RELOAD);
 	}// end reloadLeftNavigation()
 
 	/*
@@ -2096,6 +1999,55 @@ public class GwtMainPage extends Composite
 	}// end onBrowseHierarchy()
 	
 	/**
+	 * Handles ContextChangedEvent's received by this class.
+	 * 
+	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContextChanged( final ContextChangedEvent event )
+	{
+		// If the event data is valid...
+		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
+		if (GwtClientHelper.validateOSBI( osbInfo ))
+		{
+			// ...put it into effect.
+			m_selectedBinderId = osbInfo.getBinderId().toString();
+			
+			EventHelper.fireActivityStreamExit();
+			EventHelper.fireContextChanging();
+		}
+	}// end onContextChanged()
+	
+	/**
+	 * Handles ContextChangingEvent's received by this class.
+	 * 
+	 * Implements the ContextChangingEvent.Handler.onContextChanging() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContextChanging( final ContextChangingEvent event )
+	{
+		// Restore any ui state that may be saved.
+		restoreUIState();
+	}// end onContextChanging()
+	
+	/**
+	 * Handles FullUIReloadEvent's received by this class.
+	 * 
+	 * Implements the FullUIReloadEvent.Handler.onFullUIReload() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFullUIReload( FullUIReloadEvent event )
+	{
+		EventHelper.fireFullUIReload();
+	}// end onFullUIReload()
+	
+	/**
 	 * Handles LoginEvent's received by this class.
 	 * 
 	 * Implements the LoginEvent.Handler.onLogin() method.
@@ -2149,6 +2101,25 @@ public class GwtMainPage extends Composite
 	{
 		relayoutPage( true );
 	}// end onMastheadShow()
+	
+	/**
+	 * Handles SearchRecentPlaceEvent's received by this class.
+	 * 
+	 * Implements the SearchRecentPlaceEvent.Handler.onSearchRecentPlace() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchRecentPlace( SearchRecentPlaceEvent event )
+	{
+		// Tell everybody that a context switch is about to happen...
+		EventHelper.fireContextChanging();
+
+		// ...and perform the search.
+		Integer searchFor = event.getSearchTabId();
+		String searchUrl = (m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf(searchFor.intValue()));
+		GwtClientHelper.loadUrlInContentFrame(searchUrl);
+	}// end onSearchRecentPlace()
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.
@@ -2318,26 +2289,6 @@ public class GwtMainPage extends Composite
 	}
 
 	/*
-	 * Validates we have a URL in an OnSelectBinderInfo object.
-	 * Displays an error if there isn't and returns false.  Otherwise,
-	 * returns true.
-	 */
-	private static boolean validateOSBI( OnSelectBinderInfo osbi )
-	{
-		// If we the OnSelectBinderInfo doesn't have a permalink to the
-		// binder...
-		if (!(GwtClientHelper.hasString(osbi.getBinderUrl()))) {
-			// ...tell the user and return false.
-			GwtClientHelper.deferredAlert( GwtTeaming.getMessages().cantAccessFolder() );
-			return false;
-		}
-		
-		// If we get here, the OnSelectBinderInfo has a permalink to
-		// the binder.  Return true.
-		return true;
-	}// end validateOSBI()
-
-	/*
 	 * Returns defaultValue if actionParam is null or not a Boolean.
 	 * Otherwise, returns the boolean value.
 	 */
@@ -2361,6 +2312,17 @@ public class GwtMainPage extends Composite
 		return ( ( null != m_adminControl ) && m_adminControl.isVisible() );
 	}// end isAdminActive()
 
+	/**
+	 * Returns true if we currently processing search results and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isInSearch()
+	{
+		return m_inSearch;
+	}// end isInSearch()
+	
 	private void showAdminControl()
 	{
 		// If we've already load the admin control...
@@ -2424,19 +2386,40 @@ public class GwtMainPage extends Composite
 	}
 
 	/*
-	 * Fires an event on the event bus.
+	 * Fires a ContextChangingEvent from the JSP based UI.
 	 */
-	private void fireVibeEvent(Event<?> event) {
-		GwtTeaming.fireEvent( event );
-	}
-
-	public void resetMenuContext() {
-		m_mainMenuCtrl.resetContext();
-	}
+	private void fireContextChanging()
+	{
+		EventHelper.fireContextChanging();
+	}// end fireContextChanging()
 	
-	public void setMenuContext(String selectedBinderId, boolean inSearch, String searchTabId) {
+	/*
+	 * Fires an event on the event bus from the JSP based UI.
+	 */
+	private void fireVibeEvent( Event<?> event )
+	{
+		GwtTeaming.fireEvent( event );
+	}// end fireVibeEvent()
+
+	/**
+	 * ?
+	 */
+	public void resetMenuContext()
+	{
+		m_mainMenuCtrl.resetContext();
+	}// end resetMenuContext()
+	
+	/**
+	 * ?
+	 * 
+	 * @param selectedBinderId
+	 * @param inSearch
+	 * @param searchTabId
+	 */
+	public void setMenuContext( String selectedBinderId, boolean inSearch, String searchTabId )
+	{
 		m_mainMenuCtrl.setContext(selectedBinderId, inSearch, searchTabId);
-	}
+	}// end setMenuContext()
 	
 	/**
 	 * Callback interface to interact with the main page asynchronously

@@ -35,14 +35,18 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -70,6 +74,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -77,7 +82,11 @@ import com.google.gwt.user.client.ui.RadioButton;
  * 
  * @author drfoster@novell.com
  */
-public class SearchOptionsComposite extends Composite implements ActionHandler {
+public class SearchOptionsComposite extends Composite
+	implements
+	// EventBus handlers implemented by this class.
+		SearchFindResultsEvent.Handler
+{
 	private ActionTrigger m_actionTrigger;
 	private FindCtrl m_finderControl;
 	private FlowPanel m_mainPanel;
@@ -85,6 +94,14 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	private GwtTeamingMessages m_messages;
 	private PopupPanel m_searchOptionsPopup;
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Search events.
+		TeamingEvents.SEARCH_FIND_RESULTS,
+	};
+	
 	/*
 	 * Inner class used to wrap the finder radio buttons.
 	 */
@@ -143,6 +160,12 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		m_searchOptionsPopup = searchOptionsPopup;
 		m_actionTrigger = actionTrigger;
 
+		// ...register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
 		// ...and initialize everything else.
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
@@ -293,65 +316,6 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		populateSavedSearchList(ssList);
 	}
 
-	/**
-	 * Called when something is selected in the FindCtrl widget. 
-	 *  
-	 * Implementation of ActionHandler.handleAction() interface method.
-	 */
-	public void handleAction(TeamingAction action, Object obj) {
-		// We should only ever receive a selection changed action.  Is
-		// that what this is?
-		if (action == TeamingAction.SELECTION_CHANGED)
-		{
-			// Yes!  Hide the search results list.
-			m_finderControl.hideSearchResults();
-
-			// Is the action object a GwtFolder?
-			if (obj instanceof GwtFolder) {
-				// Yes!  Hide the search options popup and switch to
-				// that folder.
-				m_searchOptionsPopup.hide();
-				loadBinder(((GwtFolder) obj).getFolderId());
-				return;
-			}
-			
-			// No, it's not a GwtFolder!  Is it a GwtUser?
-			else if (obj instanceof GwtUser) {
-				// Yes!  Hide the search options popup.
-				m_searchOptionsPopup.hide();
-				
-				// Does the user have a workspace we can access?
-				GwtUser user = ((GwtUser) obj);
-				String userWSId = user.getWorkspaceId();
-				if (GwtClientHelper.hasString(userWSId)) {
-					// Yes!  Switch to it.
-					loadBinder(userWSId);
-				}
-				else {
-					// No, the user doesn't have a workspace we can
-					// access!  Activate their permalink instead.
-					m_actionTrigger.triggerAction(TeamingAction.GOTO_PERMALINK_URL, user.getViewWorkspaceUrl());
-				}
-				return;
-			}
-			
-			// No, it's not a GwtUser either!  Is it a GwtTag?
-			else if (obj instanceof GwtTag) {
-				// Yes!  Hide the search options popup and perform a
-				// search for the tag.
-				m_searchOptionsPopup.hide();
-				m_actionTrigger.triggerAction(TeamingAction.TAG_SEARCH, ((GwtTag) obj).getTagName());
-			}
-			
-			else
-			{
-				// No, it's not a GwtTag either!  Whatever it is, we're
-				// not built to handle it.
-				Window.alert(m_messages.mainMenuSearchOptionsInvalidResult());
-			}
-		}
-	}
-
 	/*
 	 * Loads a binder into the context pane.
 	 */
@@ -365,12 +329,77 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 			}
 			
 			public void onSuccess(final String binderPermalink) {
-				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.OTHER);
-				m_actionTrigger.triggerAction(TeamingAction.SELECTION_CHANGED, osbInfo);
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.SEARCH_SELECT);
+				GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
 			}// end onSuccess()
 		});
 	}
 
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults(SearchFindResultsEvent event) {
+		// If the find results aren't for the search options
+		// composite...
+		if (!(((Widget) event.getSource()).equals(this))) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// Yes!  Hide the search results list.
+		m_finderControl.hideSearchResults();
+
+		// Is the action object a GwtFolder?
+		GwtTeamingItem obj = event.getSearchResults();
+		if (obj instanceof GwtFolder) {
+			// Yes!  Hide the search options popup and switch to
+			// that folder.
+			m_searchOptionsPopup.hide();
+			loadBinder(((GwtFolder) obj).getFolderId());
+			return;
+		}
+		
+		// No, it's not a GwtFolder!  Is it a GwtUser?
+		else if (obj instanceof GwtUser) {
+			// Yes!  Hide the search options popup.
+			m_searchOptionsPopup.hide();
+			
+			// Does the user have a workspace we can access?
+			GwtUser user = ((GwtUser) obj);
+			String userWSId = user.getWorkspaceId();
+			if (GwtClientHelper.hasString(userWSId)) {
+				// Yes!  Switch to it.
+				loadBinder(userWSId);
+			}
+			else {
+				// No, the user doesn't have a workspace we can
+				// access!  Activate their permalink instead.
+				m_actionTrigger.triggerAction(TeamingAction.GOTO_PERMALINK_URL, user.getViewWorkspaceUrl());
+			}
+			return;
+		}
+		
+		// No, it's not a GwtUser either!  Is it a GwtTag?
+		else if (obj instanceof GwtTag) {
+			// Yes!  Hide the search options popup and perform a
+			// search for the tag.
+			m_searchOptionsPopup.hide();
+			m_actionTrigger.triggerAction(TeamingAction.TAG_SEARCH, ((GwtTag) obj).getTagName());
+		}
+		
+		else
+		{
+			// No, it's not a GwtTag either!  Whatever it is, we're
+			// not built to handle it.
+			Window.alert(m_messages.mainMenuSearchOptionsInvalidResult());
+		}
+	}
+	
 	/*
 	 * Called to use GWT RPC to populate the saved searches list box.
 	 */

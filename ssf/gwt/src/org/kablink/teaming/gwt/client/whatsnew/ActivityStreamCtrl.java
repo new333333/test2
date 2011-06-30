@@ -42,6 +42,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -644,8 +645,8 @@ public class ActivityStreamCtrl extends Composite
 						// Yes
 						// Take the user to the source of the selected activity stream.
 						asSourceId = getActivityStreamSourceBinderId();
-						binderInfo = new OnSelectBinderInfo( asSourceId, m_asSourcePermalink, false, Instigator.OTHER );
-						m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, binderInfo );
+						binderInfo = new OnSelectBinderInfo( asSourceId, m_asSourcePermalink, false, Instigator.ACTIVITY_STREAM_SOURCE_SELECT );
+						GwtTeaming.fireEvent( new ContextChangedEvent(  binderInfo ));
 					}
 				}
 				

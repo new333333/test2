@@ -37,12 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
@@ -351,8 +351,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		if ( m_parentBinderId != null && m_parentBinderPermalink != null )
 		{
-			binderInfo = new OnSelectBinderInfo( m_parentBinderId, m_parentBinderPermalink, false, Instigator.OTHER );
-			m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, binderInfo );
+			binderInfo = new OnSelectBinderInfo( m_parentBinderId, m_parentBinderPermalink, false, Instigator.ACTIVITY_STREAM_BINDER_SELECT );
+			GwtTeaming.fireEvent( new ContextChangedEvent( binderInfo ) );
 		}
 	}
 	

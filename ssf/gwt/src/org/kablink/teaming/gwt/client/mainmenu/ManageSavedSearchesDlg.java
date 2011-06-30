@@ -40,7 +40,6 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -76,7 +75,6 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 	private final static String SECTION_HEADER_ID	= "sectionHeader";		// The ID used for section headers in the dialog.
 	private final static int	VISIBLE_NAME_LENGTH	= 20;					// Any better guesses?
 
-	private ActionTrigger m_actionTrigger;			// Interface to use to trigger teaming actions.
 	private Grid m_ssGrid;							// Once displayed, the Grid with the dialog's contents.
 	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
@@ -101,12 +99,11 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageSavedSearchesDlg(boolean autoHide, boolean modal, ActionTrigger actionTrigger, int left, int top, List<SavedSearchInfo> ssList, String searchTabId) {
+	private ManageSavedSearchesDlg(boolean autoHide, boolean modal, int left, int top, List<SavedSearchInfo> ssList, String searchTabId) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top, DlgButtonMode.Close);
 
 		// ...initialize everything else...
-		m_actionTrigger = actionTrigger;
 		m_messages = GwtTeaming.getMessages();
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_searchTabId = searchTabId;
@@ -443,7 +440,9 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 			public void onClick(ClickEvent event) {
 				// Hide the dialog and perform the saved search.
 				hide();
-				m_actionTrigger.triggerAction(TeamingAction.SAVED_SEARCH, ssi.getName());
+				GwtTeaming.getMainPage().handleAction(
+					TeamingAction.SAVED_SEARCH,
+					ssi.getName());
 			}
 		});
 		searchLinksPanel.add(searchAnchor);
@@ -522,7 +521,6 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 	 *
 	 * @param autoHide
 	 * @param modeal
-	 * @param actionTrigger
 	 * @param left
 	 * @param top
 	 * @param ssList
@@ -532,7 +530,6 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 	public static void createAsync(
 			final boolean autoHide,
 			final boolean modal,
-			final ActionTrigger actionTrigger,
 			final int left,
 			final int top,
 			final List<SavedSearchInfo> ssList,
@@ -542,7 +539,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		{			
 			@Override
 			public void onSuccess() {
-				ManageSavedSearchesDlg mmp = new ManageSavedSearchesDlg(autoHide, modal, actionTrigger, left, top, ssList, searchTabId);
+				ManageSavedSearchesDlg mmp = new ManageSavedSearchesDlg(autoHide, modal, left, top, ssList, searchTabId);
 				mssdClient.onSuccess(mmp);
 			}
 			

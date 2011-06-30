@@ -36,12 +36,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
@@ -98,7 +97,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			// Hide the menu...
 			hide();
 
-			// ...and trigger a selection changed event.
+			// ...and fire a selection changed event.
 			m_rpcService.getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), m_favorite.getValue(), new AsyncCallback<String>()
 			{
 				public void onFailure(Throwable t) {
@@ -109,37 +108,37 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				}
 				
 				public void onSuccess(String binderPermalink) {
-					// Trigger the selection changed action
+					// Fire the selection changed event
 					// asynchronously so that we can release the AJAX
 					// request ASAP.
-					triggerSelectionChangedAsync(
+					fireSelectionChangedAsync(
 						new OnSelectBinderInfo(
 							m_favorite.getValue(),
 							binderPermalink,
 							false,
-							Instigator.OTHER));
+							Instigator.FAVORITE_SELECT));
 				}
 			});
 		}
 
 		/*
-		 * Asynchronously triggers a selection changed action.
+		 * Asynchronously fires a selection changed event.
 		 */
-		private void triggerSelectionChangedAsync(final OnSelectBinderInfo osbi) {
+		private void fireSelectionChangedAsync(final OnSelectBinderInfo osbi) {
 			ScheduledCommand changeSelection = new ScheduledCommand() {
 				@Override
 				public void execute() {
-					triggerSelectionChangedNow(osbi);
+					fireSelectionChangedNow(osbi);
 				}
 			};
 			Scheduler.get().scheduleDeferred(changeSelection);
 		}
 		
 		/*
-		 * Synchronously triggers a selection changed action.
+		 * Synchronously fires a selection changed event.
 		 */
-		private void triggerSelectionChangedNow(OnSelectBinderInfo osbi) {
-			m_actionTrigger.triggerAction(TeamingAction.SELECTION_CHANGED, osbi);
+		private void fireSelectionChangedNow(OnSelectBinderInfo osbi) {
+			GwtTeaming.fireEvent(new ContextChangedEvent(osbi));
 		}
 	}
 	
@@ -222,12 +221,10 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	
 	/**
 	 * Class constructor.
-	 * 
-	 * @param actionTrigger
 	 */
-	public MyFavoritesMenuPopup(ActionTrigger actionTrigger) {
+	public MyFavoritesMenuPopup() {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarMyFavorites());
+		super(GwtTeaming.getMessages().mainMenuBarMyFavorites());
 	}
 	
 	/**

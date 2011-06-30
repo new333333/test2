@@ -41,8 +41,6 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.Scheduler;
@@ -142,8 +140,8 @@ public class GwtClientHelper {
 	/**
 	 * Execute the given command via GWT's rpc mechanism
 	 */
-	@SuppressWarnings("rawtypes")
-	public static void executeCommand( VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback )
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public static void executeCommand( VibeRpcCmd cmd, AsyncCallback callback )
 	{
 		GwtTeaming.getRpcService().executeCommand( HttpRequestInfo.createHttpRequestInfo(), cmd, callback );
 	}
@@ -802,5 +800,37 @@ public class GwtClientHelper {
 		else {
 			return s;
 		}
+	}
+	
+	/**
+	 * Validates we have a URL in an OnSelectBinderInfo object.
+	 * 
+	 * Optionally displays an error if there isn't and returns false.
+	 * Otherwise, returns true.
+	 * 
+	 * @param osbi
+	 * @param displayError
+	 * 
+	 * @return
+	 */
+	public static boolean validateOSBI(OnSelectBinderInfo osbi, boolean displayError) {
+		// If we the OnSelectBinderInfo doesn't have a permalink to the
+		// binder...
+		if (!(GwtClientHelper.hasString(osbi.getBinderUrl()))) {
+			// ...tell the user and return false.
+			if (displayError) {
+				deferredAlert(GwtTeaming.getMessages().cantAccessFolder());
+			}
+			return false;
+		}
+		
+		// If we get here, the OnSelectBinderInfo has a permalink to
+		// the binder.  Return true.
+		return true;
+	}
+	
+	public static boolean validateOSBI( OnSelectBinderInfo osbi ) {
+		// Always use the initial form of the method.
+		return validateOSBI( osbi, true );
 	}
 }
