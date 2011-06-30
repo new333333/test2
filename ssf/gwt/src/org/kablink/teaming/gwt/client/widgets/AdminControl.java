@@ -104,7 +104,6 @@ public class AdminControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
-		TeamingEvents.ADMINISTRATION_UPGRADE_CHECK,
 		
 		// Login/out events.
 		TeamingEvents.LOGOUT,
