@@ -64,6 +64,10 @@ public enum TeamingEvents implements IsSerializable {
 
 	FULL_UI_RELOAD,					// Forces the full Vibe OnPrem UI to be reloaded.
 	
+	GOTO_CONTENT_URL,				// Changes the current context to a non-permalink URL.
+	GOTO_MY_WORKSPACE,				// Changes the current context to the user's workspace.
+	GOTO_PERMALINK_URL,				// Changes the current context to a permalink URL.
+	
 	LOGIN,							// logs into   Vibe OnPrem.
 	LOGOUT,							// logs out of Vibe OnPrem.
 	
@@ -75,9 +79,11 @@ public enum TeamingEvents implements IsSerializable {
 	SEARCH_RECENT_PLACE,			// Executes a recent place search.
 	SEARCH_SAVED,					// Executes a saved search using a string as the name.
 	SEARCH_SIMPLE,					// Performs a simple search on a string.
+	SEARCH_TAG,						// Executes a search using a string as a tag Name.
 	
-	SIDEBAR_HIDE,					// Hides the Left Navigation Panel.
-	SIDEBAR_SHOW,					// Shows the Left Navigation Panel.
+	SIDEBAR_HIDE,					// Hides the left navigation panel.
+	SIDEBAR_RELOAD,					// Tells the left navigation panel to reload itself.
+	SIDEBAR_SHOW,					// Shows the left navigation panel.
 	
 	UNDEFINED;						// Undefined event - Should never be fired !!!
 }

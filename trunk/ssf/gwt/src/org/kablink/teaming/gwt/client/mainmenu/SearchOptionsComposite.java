@@ -36,9 +36,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.SearchAdvancedEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
+import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -49,11 +51,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -89,7 +89,6 @@ public class SearchOptionsComposite extends Composite
 	// EventBus handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private ActionTrigger m_actionTrigger;
 	private FindCtrl m_finderControl;
 	private FlowPanel m_mainPanel;
 	private GwtTeamingMainMenuImageBundle m_images;
@@ -157,10 +156,9 @@ public class SearchOptionsComposite extends Composite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private SearchOptionsComposite(PopupPanel searchOptionsPopup, ActionTrigger actionTrigger) {
+	private SearchOptionsComposite(PopupPanel searchOptionsPopup) {
 		// Store the parameter...
 		m_searchOptionsPopup = searchOptionsPopup;
-		m_actionTrigger = actionTrigger;
 
 		// ...register the events to be handled by this class...
 		EventHelper.registerEventHandlers(
@@ -356,7 +354,7 @@ public class SearchOptionsComposite extends Composite
 		// Yes!  Hide the search results list.
 		m_finderControl.hideSearchResults();
 
-		// Is the action object a GwtFolder?
+		// Is the search result a GwtFolder?
 		GwtTeamingItem obj = event.getSearchResults();
 		if (obj instanceof GwtFolder) {
 			// Yes!  Hide the search options popup and switch to
@@ -381,7 +379,9 @@ public class SearchOptionsComposite extends Composite
 			else {
 				// No, the user doesn't have a workspace we can
 				// access!  Activate their permalink instead.
-				m_actionTrigger.triggerAction(TeamingAction.GOTO_PERMALINK_URL, user.getViewWorkspaceUrl());
+				GwtTeaming.fireEvent(
+					new GotoPermalinkUrlEvent(
+						user.getViewWorkspaceUrl()));
 			}
 			return;
 		}
@@ -391,7 +391,7 @@ public class SearchOptionsComposite extends Composite
 			// Yes!  Hide the search options popup and perform a
 			// search for the tag.
 			m_searchOptionsPopup.hide();
-			m_actionTrigger.triggerAction(TeamingAction.TAG_SEARCH, ((GwtTag) obj).getTagName());
+			GwtTeaming.fireEvent(new SearchTagEvent(((GwtTag) obj).getTagName()));
 		}
 		
 		else
@@ -474,7 +474,7 @@ public class SearchOptionsComposite extends Composite
 	 * @param actonTrigger
 	 * @param socClient
 	 */
-	public static void createAsync(final PopupPanel searchOptionsPopup, final ActionTrigger actionTrigger, final SearchOptionsCompositeClient socClient) {
+	public static void createAsync(final PopupPanel searchOptionsPopup, final SearchOptionsCompositeClient socClient) {
 		// The SearchOptionsComposite is dependent on the FindCtrl.
 		// Make sure it has been fetched before trying to use it.
 		FindCtrl.prefetch(new FindCtrl.FindCtrlClient() {			
@@ -491,7 +491,7 @@ public class SearchOptionsComposite extends Composite
 				{			
 					@Override
 					public void onSuccess() {
-						SearchOptionsComposite soc = new SearchOptionsComposite(searchOptionsPopup, actionTrigger);
+						SearchOptionsComposite soc = new SearchOptionsComposite(searchOptionsPopup);
 						socClient.onSuccess(soc);
 					}
 					

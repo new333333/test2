@@ -47,6 +47,9 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
+import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
@@ -55,7 +58,9 @@ import org.kablink.teaming.gwt.client.event.SearchAdvancedEvent;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
+import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
+import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -134,6 +139,9 @@ public class GwtMainPage extends Composite
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
 		FullUIReloadEvent.Handler,
+		GotoContentUrlEvent.Handler,
+		GotoMyWorkspaceEvent.Handler,
+		GotoPermalinkUrlEvent.Handler,
 		LoginEvent.Handler,
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
@@ -142,7 +150,9 @@ public class GwtMainPage extends Composite
 		SearchRecentPlaceEvent.Handler,
 		SearchSavedEvent.Handler,
 		SearchSimpleEvent.Handler,
+		SearchTagEvent.Handler,
 		SidebarHideEvent.Handler,
+		SidebarReloadEvent.Handler,
 		SidebarShowEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
@@ -192,6 +202,11 @@ public class GwtMainPage extends Composite
 		TeamingEvents.BROWSE_HIERARCHY,
 		TeamingEvents.FULL_UI_RELOAD,
 
+		// Goto events.
+		TeamingEvents.GOTO_CONTENT_URL,
+		TeamingEvents.GOTO_MY_WORKSPACE,
+		TeamingEvents.GOTO_PERMALINK_URL,
+
 		// Context events.
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGING,
@@ -209,9 +224,11 @@ public class GwtMainPage extends Composite
 		TeamingEvents.SEARCH_RECENT_PLACE,
 		TeamingEvents.SEARCH_SAVED,
 		TeamingEvents.SEARCH_SIMPLE,
+		TeamingEvents.SEARCH_TAG,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
+		TeamingEvents.SIDEBAR_RELOAD,
 		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
@@ -459,7 +476,7 @@ public class GwtMainPage extends Composite
 					{
 						// Yes
 						// Take the user to their workspace.
-						handleActionImpl( TeamingAction.MY_WORKSPACE, null );
+						GotoMyWorkspaceEvent.fireOne();
 					}
 					
 					// Tell the user.  We do this as a deferred command
@@ -598,7 +615,7 @@ public class GwtMainPage extends Composite
 		
 		$wnd.ss_gotoContentUrl = function( url )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::gotoContentUrl(Ljava/lang/String;)( url );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireGotoContentUrl(Ljava/lang/String;)( url );
 		}
 	}-*/;
 
@@ -1065,6 +1082,7 @@ public class GwtMainPage extends Composite
 									 */
 									public void onSuccess( VibeRpcResponse response )
 									{
+										@SuppressWarnings("unused")
 										Boolean result;
 										
 										result = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
@@ -1179,20 +1197,6 @@ public class GwtMainPage extends Composite
 			Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
 			break;
 
-		case MY_WORKSPACE:
-			// If we're currently running site administration...
-			if ( isAdminActive() )
-			{
-				// ...close it first.
-				AdministrationExitEvent.fireOne();
-			}
-			
-			// Change the browser's URL.
-			ActivityStreamExitEvent.fireOne();
-			ContextChangingEvent.fireOne();
-			gotoUrl( m_requestInfo.getMyWorkspaceUrl() );
-			break;
-			
 		case SIZE_CHANGED:
 			sizeChanged( obj );
 			break;
@@ -1201,16 +1205,6 @@ public class GwtMainPage extends Composite
 			viewTeamMembers();
 			break;
 			
-		case GOTO_CONTENT_URL:
-			ContextChangingEvent.fireOne();
-			gotoUrl( obj );
-			break;
-
-		case GOTO_PERMALINK_URL:
-			ContextChangingEvent.fireOne();
-			gotoUrl( obj, false );
-			break;
-
 		case TRACK_BINDER:
 			trackCurrentBinder();
 			break;
@@ -1221,15 +1215,6 @@ public class GwtMainPage extends Composite
 			
 		case UNTRACK_PERSON:
 			untrackCurrentPerson();
-			break;
-			
-		case RELOAD_LEFT_NAVIGATION:
-			reloadLeftNavigation();
-			break;
-			
-		case TAG_SEARCH:
-			ContextChangingEvent.fireOne();
-			tagSearch( obj );
 			break;
 			
 		case TEAMING_FEED:
@@ -1629,45 +1614,44 @@ public class GwtMainPage extends Composite
 			alert( 'ss_showForumEntry() is undefined' );
 	}-*/;
 
-
-	/**
-	 * 
-	 */
-	private void gotoContentUrl( String url )
-	{
-		ActivityStreamExitEvent.fireOne();
-		ContextChangingEvent.fireOne();
-		gotoUrl( url, true );
-	}
-	
-	
 	/*
-	 * This method will be called to goto a URL, permalink or
-	 * otherwise, received as a parameter.
-	 * 
-	 * Implements the GOTO_CONTENT_URL, GOTO_PERMALINK_URL and
-	 * MY_WORKSPACE teaming actions.
+	 * This method will be called asynchronously goto a URL,
+	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrl( Object obj )
+	private void gotoUrlDeferred( final String url, final boolean submitToContentFrame )
+	{
+		ScheduledCommand gotoUrl = new ScheduledCommand() {
+			@Override
+			public void execute()
+			{
+				gotoUrlNow( url, submitToContentFrame );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( gotoUrl );
+	}// end gotoUrlDeferred()
+	
+	private void gotoUrlDeferred( final String url )
 	{
 		// Default to submitting the URL to the content frame.
-		gotoUrl( obj, true );
-	}//end gotoUrl()
+		gotoUrlDeferred( url, true );
+	}//end gotoUrlDeferred()
 	
-	private void gotoUrl( Object obj, boolean submitToContentFrame )
+	/*
+	 * This method will be called synchronously goto a URL,
+	 * permalink or otherwise, received as a parameter.
+	 */
+	private void gotoUrlNow( final String url, final boolean submitToContentFrame )
 	{
-		if ( obj instanceof String )
-		{
-			String url = ((String) obj);
-			if (submitToContentFrame)
-				 GwtClientHelper.loadUrlInContentFrame( url );
-			else Window.Location.replace(                 url );
-		}
-		else
-		{
-			Window.alert( "in gotoUrl() and obj is not a String object" );
-		}
-	}//end gotoUrl()
+		if ( submitToContentFrame )
+			 GwtClientHelper.loadUrlInContentFrame( url );
+		else Window.Location.replace(               url );
+	}//end gotoUrlNow()
+	
+	private void gotoUrlNow( final String url )
+	{
+		// Default to submitting the URL to the content frame.
+		gotoUrlNow( url, true );
+	}// end gotoUrlNow()
 
 	/*
 	 * This method will be called to track the current binder.
@@ -1764,37 +1748,6 @@ public class GwtMainPage extends Composite
 		uiState.setSidebarVisibility( m_wsTreeCtrl.isVisible() );
 		m_uiStateManager.saveUIState( uiState );
 	}
-
-	/*
-	 * Forces the workspace tree to reload itself.
-	 * 
-	 * Implements the RELOAD_LEFT_NAVIGATION teaming action.
-	 */
-	private void reloadLeftNavigation()
-	{
-		contextLoaded(m_selectedBinderId, Instigator.FORCE_SIDEBAR_RELOAD);
-	}// end reloadLeftNavigation()
-
-	/*
-	 * This method will be called to perform a search on a tag name
-	 * received as a parameter.
-	 * 
-	 * Implements the TAG_SEARCH teaming action.
-	 */
-	private void tagSearch( Object obj )
-	{
-		if ( ( null == obj ) || ( obj instanceof String ))
-		{
-			String tagName;
-
-			// What's the tag to be searched?
-			tagName = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
-			String searchUrl = GwtClientHelper.jsBuildTagSearchUrl(tagName);
-			GwtClientHelper.loadUrlInContentFrame(searchUrl);
-		}
-		else
-			Window.alert( "in tagSearch() and obj is not a String object" );
-	}//end tagSearch()
 
 	/**
 	 * Handles ActivityStreamEvent's received by this class.
@@ -1978,10 +1931,8 @@ public class GwtMainPage extends Composite
 		if (GwtClientHelper.validateOSBI( osbInfo ))
 		{
 			// ...put it into effect.
-			m_selectedBinderId = osbInfo.getBinderId().toString();
-			
 			ActivityStreamExitEvent.fireOne();
-			ContextChangingEvent.fireOne();
+			m_selectedBinderId = osbInfo.getBinderId().toString();			
 		}
 	}// end onContextChanged()
 	
@@ -2011,6 +1962,56 @@ public class GwtMainPage extends Composite
 	{
 		FullUIReloadEvent.fireOne();
 	}// end onFullUIReload()
+	
+	/**
+	 * Handles GotoContentUrlEvent's received by this class.
+	 * 
+	 * Implements the GotoContentUrlEvent.Handler.onGotoContentUrl() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGotoContentUrl( GotoContentUrlEvent event )
+	{
+		ContextChangingEvent.fireOne();
+		gotoUrlNow( event.getContentUrl() );
+	}// end onGotoContentUrl()
+	
+	/**
+	 * Handles GotoMyWorkspaceEvent's received by this class.
+	 * 
+	 * Implements the GotoMyWorkspaceEvent.Handler.onGotoMyWorkspace() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGotoMyWorkspace( GotoMyWorkspaceEvent event )
+	{
+		// If we're currently running site administration...
+		if ( isAdminActive() )
+		{
+			// ...close it first.
+			AdministrationExitEvent.fireOne();
+		}
+		
+		// Change the browser's URL.
+		ActivityStreamExitEvent.fireOne();
+		ContextChangingEvent.fireOne();
+		gotoUrlNow( m_requestInfo.getMyWorkspaceUrl() );
+	}// end onGotoMyWorkspace()
+	
+	/**
+	 * Handles GotoPermalinkUrlEvent's received by this class.
+	 * 
+	 * Implements the GotoPermalinkUrlEvent.Handler.onGotoPermalinkUrl() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGotoPermalinkUrl( GotoPermalinkUrlEvent event )
+	{
+		gotoUrlNow( event.getPermalinkUrl(), true );
+	}// end onGotoPermalinkUrl()
 	
 	/**
 	 * Handles LoginEvent's received by this class.
@@ -2152,6 +2153,25 @@ public class GwtMainPage extends Composite
 	}// end onSearchSimple()
 	
 	/**
+	 * Handles SearchTagEvent's received by this class.
+	 * 
+	 * Implements the SearchTagEvent.Handler.onSearchTag() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchTag( SearchTagEvent event )
+	{
+		ContextChangingEvent.fireOne();
+		
+		// What's the tag to be searched?
+		String tagName = event.getTagName();
+		tagName = ( ( null == tagName ) ? "" : GwtClientHelper.jsEncodeURIComponent( tagName ));
+		String searchUrl = GwtClientHelper.jsBuildTagSearchUrl( tagName );
+		GwtClientHelper.loadUrlInContentFrame( searchUrl );
+	}// end onSearchTag()
+	
+	/**
 	 * Handles SidebarHideEvent's received by this class.
 	 * 
 	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
@@ -2166,6 +2186,19 @@ public class GwtMainPage extends Composite
 			relayoutPage( true );
 		}
 	}// end onSidebarHide()
+	
+	/**
+	 * Handles SidebarReloadEvent's received by this class.
+	 * 
+	 * Implements the SidebarReloadEvent.Handler.onSidebarReload() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSidebarReload( SidebarReloadEvent event )
+	{
+		contextLoaded(m_selectedBinderId, Instigator.FORCE_SIDEBAR_RELOAD);
+	}// end onSidebarReload()
 	
 	/**
 	 * Handles SidebarShowEvent's received by this class.
@@ -2424,7 +2457,16 @@ public class GwtMainPage extends Composite
 	}// end fireContextChanging()
 	
 	/*
-	 * Fires an event on the event bus from the JSP based UI.
+	 * Fires a GotoContentUrlEvent from the JSP based UI.
+	 */
+	private void fireGotoContentUrl( String url )
+	{
+		ActivityStreamExitEvent.fireOne();
+		GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
+	}// end fireGotoContentUrl()
+		
+	/*
+	 * Fires an arbitrary event from the JSP based UI.
 	 */
 	private void fireVibeEvent( Event<?> event )
 	{

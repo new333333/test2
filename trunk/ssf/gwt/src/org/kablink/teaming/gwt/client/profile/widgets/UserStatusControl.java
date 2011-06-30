@@ -35,14 +35,13 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.Date;
 
+import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -264,7 +263,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					showStatus(false);
 				}
 				
-				triggerAction(TeamingAction.RELOAD_LEFT_NAVIGATION);
+				SidebarReloadEvent.fireOne();
 				
 				savingUserStatusInProgress = false;
 			}
@@ -527,27 +526,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		}
 	}
 	
-	/**
-	 * Fires a TeamingAction at the registered ActionHandler's.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 *
-	 * @param action
-	 * @param obj
-	 */
-	public void triggerAction(TeamingAction action, Object obj) {
-		GwtClientHelper.jsFireEvent(new TeamingActionEvent(action, obj));
-	}
-	
-	/**
-	 * Use to trigger an action to GwtMainPage
-	 * @param action
-	 */
-	public void triggerAction(TeamingAction action) {
-		// Always use the initial form of the method.
-		triggerAction(action, null);
-	}
-
 	/**
 	 * Callback interface to interact with the user status control
 	 * asynchronously after it loads. 

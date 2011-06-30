@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
@@ -54,7 +55,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -804,7 +804,7 @@ public class MastHead extends Composite
 		}
 		else if ( eventSource == m_userName )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.MY_WORKSPACE, null ));
+			GotoMyWorkspaceEvent.fireOne();
 		}
 	}// end onClick()
 	
