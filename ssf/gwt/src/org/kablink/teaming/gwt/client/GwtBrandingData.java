@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client;
 
 
-import org.kablink.teaming.gwt.client.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

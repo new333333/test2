@@ -41,16 +41,12 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
-import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
-import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
-import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -64,8 +60,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
-import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -106,9 +102,6 @@ public interface GwtRpcService extends RemoteService
 	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException;
 	
 	
-	
-	// Return the administration actions the user has rights to run.
-	public ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
@@ -230,9 +223,6 @@ public interface GwtRpcService extends RemoteService
 	
 	// Return the url needed to invoke the "site administration" page.
 	public String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-	
-	// Get upgrade information
-	public GwtUpgradeInfo getUpgradeInfo(HttpRequestInfo ri) throws GwtTeamingException;
 	
 	// Get DiskUsageInfo.
 	public  DiskUsageInfo getDiskUsageInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;

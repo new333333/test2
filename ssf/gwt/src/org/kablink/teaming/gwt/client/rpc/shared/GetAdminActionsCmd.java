@@ -31,67 +31,54 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.ArrayList;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class is used to hold the results of a search.
+ * This class holds all of the information necessary to execute the "Get Admin Actions" command.
+ * 
  * @author jwootton
  *
  */
-public class GwtSearchResults
-	implements IsSerializable, VibeRpcResponseData
+public class GetAdminActionsCmd extends VibeRpcCmd
 {
-	private int m_countTotal = 0;	// The total number of items found by the search.
-	private ArrayList<GwtTeamingItem> m_results = null;
+	private String m_binderId;
+	
+	/**
+	 * For GWT serialization, must have a zero param contructor
+	 */
+	public GetAdminActionsCmd()
+	{
+		super();
+		
+		init();
+	}
 	
 	/**
 	 * 
 	 */
-	public GwtSearchResults()
+	public GetAdminActionsCmd( String binderId )
 	{
-	}// end GwtSearchResults()
-	
-	
-	/**
-	 * Return the total number of items found by the search.
-	 */
-	public int getCountTotal()
-	{
-		return m_countTotal;
-	}// end getCountTotal()
-	
-	
-	/**
-	 * Return the list of items found by the search.
-	 */
-	public ArrayList<GwtTeamingItem> getResults()
-	{
-		return m_results;
-	}// end getResults()
-	
+		m_binderId = binderId;
+		
+		init();
+	}
 	
 	/**
 	 * 
 	 */
-	public void setCountTotal( int total )
+	public String getBinderId()
 	{
-		m_countTotal = total;
-	}// end setCountTotal()
-	
+		return m_binderId;
+	}
 	
 	/**
 	 * 
 	 */
-	public void setResults( ArrayList<GwtTeamingItem> results )
+	private void init()
 	{
-		// Save away the results of a search.
-		m_results = results;
-	}// end setResults()
-	
-}// end GwtSearchResults
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_ADMIN_ACTIONS;
+	}
+}

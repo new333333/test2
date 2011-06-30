@@ -60,8 +60,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.client.shared.VibeRpcCmd;
-import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
@@ -98,9 +98,6 @@ public interface GwtRpcServiceAsync
 	public void executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback );
 	
 	
-	
-	// Return the administration actions the user has rights to run.
-	public void getAdminActions( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<GwtAdminCategory>> callback );
 	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public void getDocumentBaseUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
@@ -223,9 +220,6 @@ public interface GwtRpcServiceAsync
 	// Return the url needed to invoke the "site administration" page.
 	public void getSiteAdministrationUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 
-	// Return upgrade information.
-	public void getUpgradeInfo( HttpRequestInfo ri, AsyncCallback<GwtUpgradeInfo> callback );
-	
 	// Get DiskUsage Info.
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
 

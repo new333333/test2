@@ -30,68 +30,44 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class is used to hold the results of a search.
+ * This class holds the response data for the "Get Admin Actions" rpc command
  * @author jwootton
  *
  */
-public class GwtSearchResults
+public class AdminActionsRpcResponseData
 	implements IsSerializable, VibeRpcResponseData
 {
-	private int m_countTotal = 0;	// The total number of items found by the search.
-	private ArrayList<GwtTeamingItem> m_results = null;
+	private ArrayList<GwtAdminCategory> m_adminActions;
 	
 	/**
 	 * 
 	 */
-	public GwtSearchResults()
+	public AdminActionsRpcResponseData()
 	{
-	}// end GwtSearchResults()
-	
-	
-	/**
-	 * Return the total number of items found by the search.
-	 */
-	public int getCountTotal()
-	{
-		return m_countTotal;
-	}// end getCountTotal()
-	
-	
-	/**
-	 * Return the list of items found by the search.
-	 */
-	public ArrayList<GwtTeamingItem> getResults()
-	{
-		return m_results;
-	}// end getResults()
-	
+	}
 	
 	/**
 	 * 
 	 */
-	public void setCountTotal( int total )
+	public AdminActionsRpcResponseData( ArrayList<GwtAdminCategory> adminActions )
 	{
-		m_countTotal = total;
-	}// end setCountTotal()
-	
+		m_adminActions = adminActions;
+	}
 	
 	/**
 	 * 
 	 */
-	public void setResults( ArrayList<GwtTeamingItem> results )
+	public ArrayList<GwtAdminCategory> getAdminActions()
 	{
-		// Save away the results of a search.
-		m_results = results;
-	}// end setResults()
-	
-}// end GwtSearchResults
+		return m_adminActions;
+	}
+}

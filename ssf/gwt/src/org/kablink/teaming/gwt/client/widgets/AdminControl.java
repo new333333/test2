@@ -50,10 +50,12 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
@@ -331,8 +333,8 @@ public class AdminControl extends Composite
 	private class AdminActionsTreeControl extends Composite
 	{
 		// m_rpcGetAdminActionsCallback is our callback that gets called when the ajax request to get the administration actions completes.
-		private AsyncCallback<ArrayList<GwtAdminCategory>> m_rpcGetAdminActionsCallback = null;
-		private AsyncCallback<GwtUpgradeInfo> m_rpcGetUpgradeInfoCallback2 = null;
+		private AsyncCallback<VibeRpcResponse> m_rpcGetAdminActionsCallback = null;
+		private AsyncCallback<VibeRpcResponse> m_rpcGetUpgradeInfoCallback2 = null;
 		private FlexTable m_mainTable;
 		
 		/**
@@ -414,7 +416,7 @@ public class AdminControl extends Composite
 			}
 			
 			// Create the callback that will be used when we issue an ajax call to get the administration actions.
-			m_rpcGetAdminActionsCallback = new AsyncCallback<ArrayList<GwtAdminCategory>>()
+			m_rpcGetAdminActionsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -431,18 +433,24 @@ public class AdminControl extends Composite
 				 * 
 				 * @param result
 				 */
-				public void onSuccess( ArrayList<GwtAdminCategory> adminCategories )
+				@SuppressWarnings("unchecked")
+				public void onSuccess( VibeRpcResponse response )
 				{
+					ArrayList<GwtAdminCategory> adminCategories;
+					AdminActionsRpcResponseData responseData;
+					
+					responseData = (AdminActionsRpcResponseData) response.getResponseData();
+					adminCategories = responseData.getAdminActions();
 					for ( GwtAdminCategory category : adminCategories )
 					{
 						// Add this administration category to the page.
 						addCategory( category );
 					}
-				}// end onSuccess()
+				}
 			};
 
 			// Create the callback that will be used when we issue an ajax call to get upgrade information
-			m_rpcGetUpgradeInfoCallback2 = new AsyncCallback<GwtUpgradeInfo>()
+			m_rpcGetUpgradeInfoCallback2 = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -458,10 +466,13 @@ public class AdminControl extends Composite
 				 * 
 				 * @param result
 				 */
-				public void onSuccess( GwtUpgradeInfo upgradeInfo )
+				public void onSuccess( VibeRpcResponse response )
 				{
 					int x;
 					int y;
+					GwtUpgradeInfo upgradeInfo;
+					
+					upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
 					
 					// Show the AdminInfoDlg
 					x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth();
@@ -511,15 +522,14 @@ public class AdminControl extends Composite
 		 */
 		public void getAdminActionsFromServer()
 		{
-			GwtRpcServiceAsync rpcService;
 			String binderId;
-			
-			rpcService = GwtTeaming.getRpcService();
+			GetAdminActionsCmd cmd;
 			
 			// Issue an ajax request to get the administration actions the user has rights to perform.
 			binderId = GwtMainPage.m_requestInfo.getBinderId();
-			rpcService.getAdminActions( HttpRequestInfo.createHttpRequestInfo(), binderId, m_rpcGetAdminActionsCallback );
-		}// end getAdminActionsFromServer()
+			cmd = new GetAdminActionsCmd( binderId );
+			GwtClientHelper.executeCommand( cmd, m_rpcGetAdminActionsCallback );
+		}
 	}// end AdminActionsTreeControl
 
 	
@@ -632,10 +642,10 @@ public class AdminControl extends Composite
 	 */
 	public static void showUpgradeTasks()
 	{
-		AsyncCallback<GwtUpgradeInfo> rpcGetUpgradeInfoCallback = null;
+		AsyncCallback<VibeRpcResponse> rpcGetUpgradeInfoCallback = null;
 
 		// Create the callback that will be used when we issue an ajax call to get upgrade information
-		rpcGetUpgradeInfoCallback = new AsyncCallback<GwtUpgradeInfo>()
+		rpcGetUpgradeInfoCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -651,7 +661,7 @@ public class AdminControl extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( final GwtUpgradeInfo upgradeInfo )
+			public void onSuccess( final VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
@@ -662,6 +672,10 @@ public class AdminControl extends Composite
 					 */
 					public void execute()
 					{
+						GwtUpgradeInfo upgradeInfo;
+						
+						upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
+						
 						// Are there upgrade tasks that need to be performed?
 						if ( upgradeInfo.doUpgradeTasksExist() )
 						{
@@ -684,15 +698,14 @@ public class AdminControl extends Composite
 	/**
 	 * Issue an ajax request to get the upgrade information from the server.
 	 */
-	public static void getUpgradeInfoFromServer( AsyncCallback<GwtUpgradeInfo> callback )
+	public static void getUpgradeInfoFromServer( AsyncCallback<VibeRpcResponse> callback )
 	{
-		GwtRpcServiceAsync rpcService;
-		
-		rpcService = GwtTeaming.getRpcService();
+		GetUpgradeInfoCmd cmd;
 		
 		// Issue an ajax request to get the upgrade information
-		rpcService.getUpgradeInfo(  HttpRequestInfo.createHttpRequestInfo(), callback );
-	}// end getUpgradeInfoFromServer()
+		cmd = new GetUpgradeInfoCmd();
+		GwtClientHelper.executeCommand( cmd, callback );
+	}
 
 	
 	/**

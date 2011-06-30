@@ -45,8 +45,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.shared.ExecuteSearchCmd;
-import org.kablink.teaming.gwt.client.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
