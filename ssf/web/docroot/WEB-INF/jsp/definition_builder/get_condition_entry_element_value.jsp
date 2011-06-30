@@ -64,9 +64,9 @@
 		             <input type="text" size="3" name="operationDuration"/>
 		           </td>
 		           <td valign="top">
-		             <input type="radio" name="operationDurationType" value="minutes" /><ssf:nlt tag="minutes" text="minutes"/><br/>
-		             <input type="radio" name="operationDurationType" value="hours" /><ssf:nlt tag="hours" text="hours"/><br/>
-		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="days" text="days"/>
+		             <input type="radio" name="operationDurationType" value="minutes" /><ssf:nlt tag="smallWords.minutes" text="minutes"/><br/>
+		             <input type="radio" name="operationDurationType" value="hours" /><ssf:nlt tag="smallWords.hours" text="hours"/><br/>
+		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="smallWords.days" text="days"/>
 		           </td>
 		         </tr>
 		        </tbody>
@@ -84,9 +84,9 @@
 		             <input type="text" size="3" name="operationDuration"/>
 		           </td>
 		           <td valign="top">
-		             <input type="radio" name="operationDurationType" value="minutes" /><ssf:nlt tag="minutes" text="minutes"/><br/>
-		             <input type="radio" name="operationDurationType" value="hours" /><ssf:nlt tag="hours" text="hours"/><br/>
-		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="days" text="days"/>
+		             <input type="radio" name="operationDurationType" value="minutes" /><ssf:nlt tag="smallWords.minutes" text="minutes"/><br/>
+		             <input type="radio" name="operationDurationType" value="hours" /><ssf:nlt tag="smallWords.hours" text="hours"/><br/>
+		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="smallWords.days" text="days"/>
 		           </td>
 		         </tr>
 		        </tbody>
@@ -103,7 +103,7 @@
 		             <input type="text" size="3" name="operationDuration"/>
 		           </td>
 		           <td valign="top">
-		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="days" text="days"/>
+		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="smallWords.days" text="days"/>
 		           </td>
 		         </tr>
 		        </tbody>
