@@ -943,7 +943,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 						String month = tdStamp.substring(4, 6);
 						String day   = tdStamp.substring(6, 8);
 						if (8 < tdStamp.length()) {
-							String time = tdStamp.substring(8);
+							String time = tdStamp.substring(8, 12);
 							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
 							date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
 							%>
