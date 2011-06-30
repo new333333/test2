@@ -37,14 +37,15 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
@@ -74,6 +75,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -83,8 +85,18 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class FindCtrl extends Composite
-	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler, ActionHandler
+	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler,
+	// EventBus handlers implemented by this class.
+		SearchFindResultsEvent.Handler
 {
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Search events.
+		TeamingEvents.SEARCH_FIND_RESULTS,
+	};
+	
 	/**
 	 * This widget is used to hold an item from a search result.
 	 */
@@ -154,7 +166,6 @@ public class FindCtrl extends Composite
 	public class SearchResultsWidget extends Composite
 		implements ClickHandler
 	{
-		private ActionHandler m_actionHandler;
 		private FlowPanel m_mainPanel;
 		private FlowPanel m_contentPanel;
 		private Image m_prevDisabledImg;
@@ -170,15 +181,12 @@ public class FindCtrl extends Composite
 		/**
 		 * 
 		 */
-		public SearchResultsWidget( ActionHandler actionHandler )
+		public SearchResultsWidget()
 		{
 			FlowPanel footer;
 			InlineLabel searching;
 			Image spinnerImg;
 
-			// Remember the ActionHandler we need to call when the user selects an item from the list of search results.
-			m_actionHandler = actionHandler;
-			
 			m_mainPanel = new FlowPanel();
 			m_mainPanel.addStyleName( "findSearchResults" );
 			
@@ -395,21 +403,17 @@ public class FindCtrl extends Composite
 		 */
 		public void onClick( ClickEvent clickEvent )
 		{
-			// If we have an ActionHandler, call it.
-			if ( m_actionHandler != null )
+			GwtTeamingItem selectedItem;
+			
+			// Get the item selected by the user.
+			if ( clickEvent.getSource() instanceof SearchResultItemWidget )
 			{
-				GwtTeamingItem selectedItem;
+				SearchResultItemWidget tmp;
 				
-				// Get the item selected by the user.
-				if ( clickEvent.getSource() instanceof SearchResultItemWidget )
-				{
-					SearchResultItemWidget tmp;
-					
-					tmp = (SearchResultItemWidget) clickEvent.getSource();
-					selectedItem = tmp.getTeamingItem();
-					
-					m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, selectedItem );
-				}
+				tmp = (SearchResultItemWidget) clickEvent.getSource();
+				selectedItem = tmp.getTeamingItem();
+				
+				GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
 			}
 		}// end onClick()
 		
@@ -448,7 +452,6 @@ public class FindCtrl extends Composite
 	private TextBox m_txtBox;
 	private SearchResultsWidget m_searchResultsWidget;
 	private Object m_selectedObj = null;
-	private ActionHandler m_actionHandler;
 	private AsyncCallback<VibeRpcResponse> m_searchResultsCallback;
 	private Timer m_timer = null;
 	private Timer m_searchTimer = null;
@@ -459,6 +462,7 @@ public class FindCtrl extends Composite
 	private RadioButton m_searchSiteRb;
 	private RadioButton m_searchBinderRb;
 	private static int m_count = 0;
+	private Widget m_containerWidget;
 	
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -466,12 +470,18 @@ public class FindCtrl extends Composite
 	 * through its createAsync().
 	 */
 	private FindCtrl(
-		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		Widget containerWidget,
 		GwtSearchCriteria.SearchType searchType,
 		int visibleLength )
 	{
-		FlowPanel mainPanel;
-
+		m_containerWidget = containerWidget;
+		
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
 		++m_count;
 		
 		m_searchCriteria = new GwtSearchCriteria();
@@ -480,7 +490,7 @@ public class FindCtrl extends Composite
 		m_searchCriteria.setPageNumber( 0 );
 		m_searchCriteria.setSearchScope( SearchScope.SEARCH_LOCAL );
 
-		mainPanel = new FlowPanel();
+		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "gwtFindCtrl" );
 		
 		// Create a panel where the controls for setting the scope of the search will live.
@@ -562,7 +572,7 @@ public class FindCtrl extends Composite
 		mainPanel.add( m_txtBox );
 		
 		// Create a widget where the search results will live.
-		m_searchResultsWidget = new SearchResultsWidget( this );
+		m_searchResultsWidget = new SearchResultsWidget();
 		hideSearchResults();
 		mainPanel.add( m_searchResultsWidget );
 		
@@ -573,9 +583,6 @@ public class FindCtrl extends Composite
 		// Register a preview-event handler.  We do this so we can see the mouse-down event
 		// and close the search results.
 		Event.addNativePreviewHandler( this );
-		
-		// Remember the handler we should call when the user selects an item from the search results.
-		m_actionHandler = actionHandler;
 		
 		// Create the callback that will be used when we issue an ajax call to do a search.
 		m_searchResultsCallback = new AsyncCallback<VibeRpcResponse>()
@@ -895,35 +902,6 @@ public class FindCtrl extends Composite
 	
 	
 	/**
-	 * This method gets called when the user clicks on an item from a search result.
-	 */
-	public void handleAction( TeamingAction ta, Object obj )
-	{
-		if ( TeamingAction.SELECTION_CHANGED == ta )
-		{
-			// Make sure we were handed a GwtTeamingItem.
-			if ( obj instanceof GwtTeamingItem )
-			{
-				String name;
-				GwtTeamingItem selectedItem;
-				
-				selectedItem = (GwtTeamingItem) obj;
-				
-				// Get the name of the selected item.
-				name = selectedItem.getShortDisplayName();
-				
-				// Put the name of the selected item in the text box.
-				m_txtBox.setText( name );
-				
-				// If we were passed an ActionHandler, call it.
-				if ( m_actionHandler != null )
-					m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, selectedItem );
-			}
-		}
-	}// end handleAction()
-	
-	
-	/**
 	 * 
 	 */
 	public void setInitialSearchString( String searchString )
@@ -993,7 +971,7 @@ public class FindCtrl extends Composite
 		final boolean prefetch,
 		
 		// Creation parameters.
-		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final Widget containerWidget,
 		final GwtSearchCriteria.SearchType searchType,
 		final int visibleLength )
 	{
@@ -1003,7 +981,7 @@ public class FindCtrl extends Composite
 			prefetch,
 			
 			// Creation parameters.
-			actionHandler,
+			containerWidget,
 			searchType,
 			visibleLength );				
 	}// end doAsyncOperation()
@@ -1020,7 +998,7 @@ public class FindCtrl extends Composite
 		final boolean prefetch,
 		
 		// Creation parameters.
-		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final Widget containerWidget,
 		final GwtSearchCriteria.SearchType searchType,
 		final int visibleLength )
 	{
@@ -1035,7 +1013,7 @@ public class FindCtrl extends Composite
 					prefetch,
 					
 					// Creation parameters.
-					actionHandler,
+					containerWidget,
 					searchType,
 					visibleLength );
 			}// end onSuccess()
@@ -1058,28 +1036,56 @@ public class FindCtrl extends Composite
 		final boolean prefetch,
 		
 		// Creation parameters.
-		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final Widget containerWidget,
 		final GwtSearchCriteria.SearchType searchType,
 		final int visibleLength )
 	{
 		FindCtrl findCtrl;
 		if (prefetch)
 		     findCtrl = null;
-		else findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
+		else findCtrl = new FindCtrl( containerWidget, searchType, visibleLength );
 		findCtrlClient.onSuccess( findCtrl );
 	}// end initFindCtrl_Finish()
+
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults( SearchFindResultsEvent event )
+	{
+		String name;
+		GwtTeamingItem selectedItem = event.getSearchResults();
+		
+		// Get the name of the selected item.
+		name = selectedItem.getShortDisplayName();
+		
+		// Put the name of the selected item in the text box.
+		m_txtBox.setText( name );
+
+		// 20110630 (DRF):
+		//    Back in the pre-event days, we were handling a
+		//    SELECTION_CHANGED action and then triggering another.
+		//    Based on the switch to events, everybody that's
+		//    interested in the event now listens for it and can
+		//    process the results independently.  Hence, we don't need
+		//    to send this along again.  Right?
+		// GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
+	}// end onSearchFindResults()
 
 	/**
 	 * Loads the FindCtrl split point and returns an instance of it
 	 * via the callback.
 	 *
-	 * @param actionHandler
 	 * @param searchType
 	 * @param visibleLength
 	 * @param findCtrlClient
 	 */
 	public static void createAsync(
-		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final Widget containerWidget,
 		final GwtSearchCriteria.SearchType searchType,
 		final int visibleLength,
 		final FindCtrlClient findCtrlClient )
@@ -1090,15 +1096,15 @@ public class FindCtrl extends Composite
 			false,
 			
 			// Required creation parameters.
-			actionHandler,
+			containerWidget,
 			searchType,
 			visibleLength );
 	}// end createAsync()
 	
 	public static void createAsync(
-		ActionHandler actionHandler,
-		GwtSearchCriteria.SearchType searchType,
-		FindCtrlClient findCtrlClient )
+		final Widget containerWidget,
+		final GwtSearchCriteria.SearchType searchType,
+		final FindCtrlClient findCtrlClient )
 	{
 		doAsyncOperation(
 			// Prefetch parameters.  false -> Not a prefetch.
@@ -1106,7 +1112,7 @@ public class FindCtrl extends Composite
 			false,
 			
 			// Required creation parameters.
-			actionHandler,
+			containerWidget,
 			searchType,
 			40 );
 	}// end createAsync()

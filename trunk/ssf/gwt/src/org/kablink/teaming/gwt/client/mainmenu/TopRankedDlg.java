@@ -40,7 +40,6 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
@@ -66,7 +65,6 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * @author drfoster@novell.com
  */
 public class TopRankedDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private ActionTrigger 					m_actionTrigger;	// Used to trigger Teaming actions.
 	private Grid							m_triGrid;			// Once displayed, the table of top ranked items.
 	private GwtTeamingMainMenuImageBundle	m_images;			// Access to the GWT UI menu images.
 	private GwtTeamingMessages				m_messages;			// Access to the GWT UI messages.
@@ -96,14 +94,13 @@ public class TopRankedDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	 * @param top
 	 * @param triList
 	 */
-	public TopRankedDlg(boolean autoHide, boolean modal, ActionTrigger actionTrigger, int left, int top, List<TopRankedInfo> triList) {
+	public TopRankedDlg(boolean autoHide, boolean modal, int left, int top, List<TopRankedInfo> triList) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top, DlgButtonMode.Close);
 
 		// ...initialize everything else...
-		m_actionTrigger = actionTrigger;
-		m_images        = GwtTeaming.getMainMenuImageBundle();
-		m_messages      = GwtTeaming.getMessages();
+		m_images   = GwtTeaming.getMainMenuImageBundle();
+		m_messages = GwtTeaming.getMessages();
 		initializeLists(triList);
 	
 		// ...and create the dialog's content.
@@ -291,7 +288,7 @@ public class TopRankedDlg extends DlgBox implements EditSuccessfulHandler, EditC
 				// Hide the dialog and go to the top ranked item's
 				// permalink.
 				hide();
-				m_actionTrigger.triggerAction(
+				GwtTeaming.getMainPage().handleAction(
 					TeamingAction.GOTO_PERMALINK_URL,
 					tri.getTopRankedPermalinkUrl());
 			}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,7 +45,7 @@ public class OnSelectBinderInfo {
 	private boolean m_forceSidebarReload;	// true -> Regardless of the instigator, force the sidebar tree to reload.
 	private boolean m_isPermalinkUrl;
 	private boolean m_isTrash;
-	private Instigator m_instigator = Instigator.OTHER;
+	private Instigator m_instigator = Instigator.UNKNOWN;
 	private Long m_binderId;
 	private String m_binderUrl;
 
@@ -53,15 +53,24 @@ public class OnSelectBinderInfo {
 	private final static String CAPTIVE_MARKER = "captive";
 	private final static String GWT_MARKER = "seen_by_gwt";
 
-	// Used to identify the instigator of the Binder selection, if
-	// known.
+	// Used to identify the instigator of the Binder selection.
 	public enum Instigator {
-		BREAD_CRUMB_TREE,
-		CONTENT_CONTEXT_CHANGE,
-		SIDEBAR_RELOAD,
-		SIDEBAR_TREE,
+		ACTIVITY_STREAM_BINDER_SELECT,	// The binder link in an activity stream was selected.
+		ACTIVITY_STREAM_SOURCE_SELECT,	// The top level source link of an activity stream was selected.
+		BREADCRUMB_TREE_SELECT,			// A binder in the bread crumb tree was selected. 
+		CONTENT_AREA_CHANGED,			// The content of the content area changed.
+		FAVORITE_SELECT,				// A favorite was selected from the My Favorites menu.
+		FORCE_SIDEBAR_RELOAD,			// Forces the sidebar to reload.
+		FORCE_FULL_RELOAD,				// Forces the full UI to reload.
+		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
+		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
+		SEARCH_SELECT,					// A link from the search options dialog search results was selected.
+		SIDEBAR_TREE_SELECT,			// A binder in the sidebar tree was select.
+		TEAM_SELECT,					// A team was selected from the My Teams menu.
+		TRACKED_USER_SELECT,			// A tracked user was selected from the profile page.
+		VIEW_TEAM_MEMBERS,				// The members of the current binders team are to be show.
 		
-		OTHER,
+		UNKNOWN,						// Default value.  Should never be processed.
 	}
 
 	/**

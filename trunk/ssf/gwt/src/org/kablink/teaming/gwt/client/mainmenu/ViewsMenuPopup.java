@@ -37,7 +37,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg.ManageSavedSearchesDlgClient;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -83,9 +82,9 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ViewsMenuPopup(ActionTrigger actionTrigger, boolean inSearch, String searchTabId) {
+	private ViewsMenuPopup(boolean inSearch, String searchTabId) {
 		// Initialize the super class...
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarViews());
+		super(GwtTeaming.getMessages().mainMenuBarViews());
 		
 		// ...and save the other parameters.
 		m_inSearch    = inSearch;
@@ -119,7 +118,6 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 							ManageSavedSearchesDlg.createAsync(
 								false,	// false -> Don't auto hide.
 								true,	// true  -> Modal.
-								m_actionTrigger,
 								m_menuLeft,
 								m_menuTop,
 								ssList,
@@ -171,7 +169,6 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 							TopRankedDlg topRankedDlg = new TopRankedDlg(
 								false,	// false -> Don't auto hide.
 								true,	// true  -> Modal.
-								m_actionTrigger,
 								m_menuLeft,
 								m_menuTop,
 								triList);
@@ -398,12 +395,12 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 * @param searchTabId
 	 * @param vmpClient
 	 */
-	public static void createAsync(final ActionTrigger actionTrigger, final boolean inSearch, final String searchTabId, final ViewsMenuPopupClient vmpClient) {
+	public static void createAsync(final boolean inSearch, final String searchTabId, final ViewsMenuPopupClient vmpClient) {
 		GWT.runAsync(ViewsMenuPopup.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				ViewsMenuPopup vmp = new ViewsMenuPopup(actionTrigger, inSearch, searchTabId);
+				ViewsMenuPopup vmp = new ViewsMenuPopup(inSearch, searchTabId);
 				vmpClient.onSuccess(vmp);
 			}
 			

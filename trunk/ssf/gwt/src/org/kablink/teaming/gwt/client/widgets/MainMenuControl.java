@@ -38,6 +38,8 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
@@ -71,6 +73,8 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
@@ -98,6 +102,8 @@ public class MainMenuControl extends Composite
 	implements ActionTrigger,
 	// EventBus handlers implemented by this class.
 		AdministrationExitEvent.Handler,
+		ContextChangedEvent.Handler,
+		ContextChangingEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -129,6 +135,10 @@ public class MainMenuControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
+
+		// Context events.
+		TeamingEvents.CONTEXT_CHANGED,
+		TeamingEvents.CONTEXT_CHANGING,
 		
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
@@ -320,7 +330,7 @@ public class MainMenuControl extends Composite
 		}
 		final String manageName = manageNameCalc;
 
-		ManageMenuPopup.createAsync(this, manageName, new ManageMenuPopupClient() {			
+		ManageMenuPopup.createAsync(manageName, new ManageMenuPopupClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in
@@ -354,12 +364,11 @@ public class MainMenuControl extends Composite
 	 */
 	private void addMyFavoritesToCommon(FlowPanel menuPanel) {
 		m_myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), true);
-		final ActionTrigger actionTrigger = this;
 		m_myFavoritesBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (null == m_myFavoritesMenuPopup) {
-						m_myFavoritesMenuPopup = new MyFavoritesMenuPopup(actionTrigger);
+						m_myFavoritesMenuPopup = new MyFavoritesMenuPopup();
 						m_myFavoritesMenuPopup.setCurrentBinder(m_contextBinder);
 						m_myFavoritesMenuPopup.showMenu(m_myFavoritesBox);
 						m_myFavoritesMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
@@ -380,12 +389,11 @@ public class MainMenuControl extends Composite
 	 */
 	private void addMyTeamsToCommon(FlowPanel menuPanel) {
 		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true);
-		final ActionTrigger actionTrigger = this;
 		m_myTeamsBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (null == m_myTeamsMenuPopup) {
-						m_myTeamsMenuPopup = new MyTeamsMenuPopup(actionTrigger);
+						m_myTeamsMenuPopup = new MyTeamsMenuPopup();
 						m_myTeamsMenuPopup.setCurrentBinder(m_contextBinder);
 						m_myTeamsMenuPopup.showMenu(m_myTeamsBox);
 						m_myTeamsMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
@@ -421,7 +429,7 @@ public class MainMenuControl extends Composite
 	 * menu bar.
 	 */
 	private void addRecentPlacesToContext(List<ToolbarItem> toolbarItemList) {
-		final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup(this);
+		final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup();
 		rpmp.setCurrentBinder(m_contextBinder);
 		rpmp.setToolbarItemList(toolbarItemList);
 		if (rpmp.shouldShowMenu()) {
@@ -443,7 +451,7 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
-		ViewsMenuPopup.createAsync(this, inSearch, searchTabId, new ViewsMenuPopupClient() {			
+		ViewsMenuPopup.createAsync(inSearch, searchTabId, new ViewsMenuPopupClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in
@@ -587,6 +595,42 @@ public class MainMenuControl extends Composite
 	@Override
 	public void onAdministrationExit(AdministrationExitEvent event) {
 		hideAdministrationMenubar();
+	}
+	
+	/**
+	 * Handles ContextChangedEvent's received by this class.
+	 * 
+	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContextChanged(final ContextChangedEvent event)
+	{
+		// Is the event data is valid?
+		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
+		if (GwtClientHelper.validateOSBI(osbInfo, false)) {
+			// Yes!  Put it into effect.
+			Instigator instigator = osbInfo.getInstigator();
+			if (Instigator.CONTENT_AREA_CHANGED == instigator) {
+				contextLoaded(
+					osbInfo.getBinderId().toString(),
+					m_mainPage.isInSearch(),
+					m_mainPage.getSearchTabId());
+			}
+		}
+	}
+	
+	/**
+	 * Handles ContextChangingEvent's received by this class.
+	 * 
+	 * Implements the ContextChangingEvent.Handler.onContextChanging() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContextChanging(final ContextChangingEvent event) {
+		clearContextMenus();
 	}
 	
 	/**

@@ -36,7 +36,7 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -49,7 +49,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -539,10 +538,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					} else {
 						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showWorkspace" );
 					}
-					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.OTHER );
+					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.PROFILE_QUICK_VIEW_SELECT );
 					
-					//Fire Teaming action to notify that a selection has changed
-					GwtTeaming.fireEvent(new TeamingActionEvent(TeamingAction.SELECTION_CHANGED, osbInfo ));
+					//Fire event to notify that a selection has changed
+					GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
 					
 					hide();
 				}// end onSuccess()

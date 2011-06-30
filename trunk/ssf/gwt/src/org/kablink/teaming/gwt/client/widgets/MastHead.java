@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
@@ -52,6 +53,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
@@ -80,6 +82,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class MastHead extends Composite
 	implements ClickHandler, MouseOutHandler, MouseOverHandler,
 	// EventBus handlers implemented by this class.
+		ContextChangedEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler
 {
@@ -126,6 +129,9 @@ public class MastHead extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Context events.
+		TeamingEvents.CONTEXT_CHANGED,
+		
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
 		TeamingEvents.MASTHEAD_SHOW,
@@ -1110,6 +1116,23 @@ public class MastHead extends Composite
 			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}// end showBranding()
+	
+	/**
+	 * Handles ContextChangedEvent's received by this class.
+	 * 
+	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContextChanged( final ContextChangedEvent event )
+	{
+		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
+		if ( GwtClientHelper.validateOSBI( osbInfo, false ))
+		{
+			setBinderId( osbInfo.getBinderId().toString() );
+		}
+	}// end onContextChanged()
 	
 	/**
 	 * Handles MastheadHideEvent's received by this class.

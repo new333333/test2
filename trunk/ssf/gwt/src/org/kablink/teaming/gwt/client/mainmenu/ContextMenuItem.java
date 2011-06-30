@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ClientActionParameter;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -211,7 +212,7 @@ public class ContextMenuItem {
 				break;
 				
 			case TEAMING_ACTION:
-				m_contextMenu.m_actionTrigger.triggerAction(
+				GwtTeaming.getMainPage().handleAction(
 					m_teamingAction,
 					((null == m_clientActionParameter) ?
 						m_url                          :
@@ -219,7 +220,7 @@ public class ContextMenuItem {
 				break;
 
 			case URL_IN_CONTENT_FRAME:
-				m_contextMenu.m_actionTrigger.triggerAction(TeamingAction.GOTO_CONTENT_URL, m_url);
+				GwtTeaming.getMainPage().handleAction(TeamingAction.GOTO_CONTENT_URL, m_url);
 				break;
 				
 			case URL_IN_POPUP_NO_FORM:

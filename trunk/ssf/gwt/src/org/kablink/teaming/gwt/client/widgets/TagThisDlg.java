@@ -36,13 +36,16 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -87,7 +90,9 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TagThisDlg extends DlgBox
-	implements ActionHandler, EditSuccessfulHandler, EditCanceledHandler, KeyUpHandler
+	implements EditSuccessfulHandler, EditCanceledHandler, KeyUpHandler,
+	// EventBus handlers implemented by this class.
+		SearchFindResultsEvent.Handler
 {
 	private final static int	MAX_TAG_LENGTH		= 60;				// As per ObjectKeys.MAX_TAG_LENGTH.
 	private final static int	VISIBLE_TAG_LENGTH	= 20;				// Any better guesses?
@@ -119,6 +124,14 @@ public class TagThisDlg extends DlgBox
 	private TagSortOrder m_sortOrder;
 	private FlowPanel m_errorPanel;
 	private Label m_errorLabel;
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Search events.
+		TeamingEvents.SEARCH_FIND_RESULTS,
+	};
 	
 
 	/**
@@ -187,6 +200,12 @@ public class TagThisDlg extends DlgBox
 	{
 		// Initialize the superclass...
 		super(autoHide, modal, left, top );
+		
+		// ...register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
 		
 		// ...initialize everything else...
 		m_onEditSuccessfulHandler = editSuccessfulHandler;
@@ -880,62 +899,6 @@ public class TagThisDlg extends DlgBox
 		
 		// Issue an ajax request to get the tag sort order from the user's properties.
 		GwtTeaming.getRpcService().getTagSortOrder( HttpRequestInfo.createHttpRequestInfo(),  callback );
-	}
-	
-	/**
-	 * This method gets called when the user selects an item from the search results in the "find" control.
-	 */
-	public void handleAction( TeamingAction ta, Object selectedObj )
-	{
-		if ( TeamingAction.SELECTION_CHANGED == ta )
-		{
-			// Make sure we are dealing with a tag.
-			if ( selectedObj instanceof GwtTag )
-			{
-				TagInfo tagInfo;
-				TagType tagType;
-				String tagName;
-				
-				// Get the name of the selected tag.
-				tagName = ((GwtTag) selectedObj).getTagName();
-				
-				// Get the type of tag we are dealing with.
-				tagType = getSelectedTagType();
-				
-				// Is this tag already in our list of tags?
-				if ( isTagADuplicate( tagName, tagType ) )
-				{
-					// Yes,  isTagADuplicate() will have told the user
-					// about the problem.  Simply bail.
-					
-					// Hide the search-results widget.
-					m_findCtrl.hideSearchResults();
-
-					return;
-				}
-				
-				// Hide any error message that may be visible.
-				hideError();
-				
-				// If we get here the tag is valid.
-				// Create a TagInfo object and initialize it.
-				tagInfo = new TagInfo();
-				tagInfo.setTagName( tagName );
-				tagInfo.setTagType( tagType );
-				
-				// Add the tag to the table that holds the list of tags.
-				addTagToTable( tagInfo );
-				
-				// Add this tag to our "to be added" list.
-				m_toBeAdded.add( tagInfo );
-				
-				// Hide the search-results widget.
-				m_findCtrl.hideSearchResults();
-
-				// Clear what the user has typed.
-				m_findCtrl.clearText();
-			}
-		}
 	}
 	
 	/**
@@ -1671,6 +1634,70 @@ public class TagThisDlg extends DlgBox
 			{
 				m_cellFormatter.addStyleName( row, i, "oltLastRowBorderBottom" );
 			}
+		}
+	}
+	
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults(SearchFindResultsEvent event) {
+		// If the find results aren't for this widget...
+		if (!(((Widget) event.getSource()).equals(this))) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// Make sure we are dealing with a tag.
+		GwtTeamingItem selectedObj = event.getSearchResults();
+		if ( selectedObj instanceof GwtTag )
+		{
+			TagInfo tagInfo;
+			TagType tagType;
+			String tagName;
+			
+			// Get the name of the selected tag.
+			tagName = ((GwtTag) selectedObj).getTagName();
+			
+			// Get the type of tag we are dealing with.
+			tagType = getSelectedTagType();
+			
+			// Is this tag already in our list of tags?
+			if ( isTagADuplicate( tagName, tagType ) )
+			{
+				// Yes,  isTagADuplicate() will have told the user
+				// about the problem.  Simply bail.
+				
+				// Hide the search-results widget.
+				m_findCtrl.hideSearchResults();
+
+				return;
+			}
+			
+			// Hide any error message that may be visible.
+			hideError();
+			
+			// If we get here the tag is valid.
+			// Create a TagInfo object and initialize it.
+			tagInfo = new TagInfo();
+			tagInfo.setTagName( tagName );
+			tagInfo.setTagType( tagType );
+			
+			// Add the tag to the table that holds the list of tags.
+			addTagToTable( tagInfo );
+			
+			// Add this tag to our "to be added" list.
+			m_toBeAdded.add( tagInfo );
+			
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+
+			// Clear what the user has typed.
+			m_findCtrl.clearText();
 		}
 	}
 	

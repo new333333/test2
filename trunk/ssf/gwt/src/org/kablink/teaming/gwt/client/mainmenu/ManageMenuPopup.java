@@ -38,7 +38,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlgClient;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -93,9 +92,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageMenuPopup(ActionTrigger actionTrigger, String manageName) {
+	private ManageMenuPopup(String manageName) {
 		// Simply initialize the super class.
-		super(actionTrigger, manageName);
+		super(manageName);
 	}
 
 	/*
@@ -636,12 +635,12 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * @param name
 	 * @param mmpClient
 	 */
-	public static void createAsync(final ActionTrigger actionTrigger, final String name, final ManageMenuPopupClient mmpClient) {
+	public static void createAsync(final String name, final ManageMenuPopupClient mmpClient) {
 		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				ManageMenuPopup mmp = new ManageMenuPopup(actionTrigger, name);
+				ManageMenuPopup mmp = new ManageMenuPopup(name);
 				mmpClient.onSuccess(mmp);
 			}
 			

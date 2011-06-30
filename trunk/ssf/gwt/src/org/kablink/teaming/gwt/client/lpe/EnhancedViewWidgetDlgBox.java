@@ -36,14 +36,16 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -73,6 +75,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -80,7 +83,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class EnhancedViewWidgetDlgBox extends DlgBox
-	implements KeyPressHandler, ActionHandler
+	implements KeyPressHandler,
+	// EventBus handlers implemented by this class.
+		SearchFindResultsEvent.Handler
 {
 	private ListBox m_evListBox = null;
 	private Label m_descLabel;
@@ -111,6 +116,14 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private InlineLabel m_currentEntryNameLabel = null;
 	private Button m_entryEditBtn;
 	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Search events.
+		TeamingEvents.SEARCH_FIND_RESULTS,
+	};
+	
 	/**
 	 * 
 	 */
@@ -125,6 +138,12 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		EnhancedViewProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
+		
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this );
 		
 		EnhancedViewInfo evInfo;
 		
@@ -1099,44 +1118,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	
 
 	/**
-	 * This method gets called when the user selects an item from the search results in the "find" control.
-	 */
-	public void handleAction( TeamingAction ta, Object selectedObj )
-	{
-		if ( TeamingAction.SELECTION_CHANGED == ta )
-		{
-			// Are we dealing with a GwtFolder object?
-			if ( selectedObj instanceof GwtFolder )
-			{
-				GwtFolder gwtFolder;
-				
-				gwtFolder = (GwtFolder) selectedObj;
-				m_folderId = gwtFolder.getFolderId();
-				
-				// Hide the find control.
-				hideFolderFindControl();
-				
-				// Issue an ajax request to get information about the selected folder.
-				getFolder( m_folderId );
-			}
-			// Are we dealing with a GwtFolderEntry object?
-			else if ( selectedObj instanceof GwtFolderEntry )
-			{
-				GwtFolderEntry gwtFolderEntry;
-				
-				gwtFolderEntry = (GwtFolderEntry) selectedObj;
-				m_entryId = gwtFolderEntry.getEntryId();
-
-				// Hide the find control.
-				hideEntryFindControl();
-				
-				// Issue an ajax request to get information about the selected entry.
-				getEntry( m_entryId );
-			}
-		}
-	}
-	
-	/**
 	 * This method gets called when the user selects a view in the listbox.
 	 */
 	private void handleViewSelected()
@@ -1423,5 +1404,52 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		if ( focusWidget != null )
 			focusWidget.setFocus( true );
 	}
+	
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults( SearchFindResultsEvent event )
+	{
+		// If the find results aren't for this widget...
+		if ( !((Widget) event.getSource()).equals( this ) )
+		{
+			// ...ignore the event.
+			return;
+		}
+		
+		// Are we dealing with a GwtFolder object?
+		GwtTeamingItem selectedObj = event.getSearchResults();
+		if ( selectedObj instanceof GwtFolder )
+		{
+			GwtFolder gwtFolder;
+			
+			gwtFolder = (GwtFolder) selectedObj;
+			m_folderId = gwtFolder.getFolderId();
+			
+			// Hide the find control.
+			hideFolderFindControl();
+			
+			// Issue an ajax request to get information about the selected folder.
+			getFolder( m_folderId );
+		}
+		// Are we dealing with a GwtFolderEntry object?
+		else if ( selectedObj instanceof GwtFolderEntry )
+		{
+			GwtFolderEntry gwtFolderEntry;
+			
+			gwtFolderEntry = (GwtFolderEntry) selectedObj;
+			m_entryId = gwtFolderEntry.getEntryId();
 
+			// Hide the find control.
+			hideEntryFindControl();
+			
+			// Issue an ajax request to get information about the selected entry.
+			getEntry( m_entryId );
+		}
+	}// end onSearchFindResults()
 }

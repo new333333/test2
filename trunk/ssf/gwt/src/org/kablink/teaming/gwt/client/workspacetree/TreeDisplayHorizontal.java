@@ -201,7 +201,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * @return
 	 */
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
-		return new OnSelectBinderInfo(ti, Instigator.BREAD_CRUMB_TREE);
+		return new OnSelectBinderInfo(ti, Instigator.BREADCRUMB_TREE_SELECT);
 	}
 
 	/*

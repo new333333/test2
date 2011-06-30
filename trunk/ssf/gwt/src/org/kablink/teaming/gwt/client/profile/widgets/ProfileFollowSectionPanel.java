@@ -35,13 +35,14 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -130,8 +131,8 @@ public class ProfileFollowSectionPanel extends ProfileSectionPanel {
 			
 			if(GwtClientHelper.hasString(trackedUser.getUserId())) {
 				String url = GwtClientHelper.appendUrlParam( trackedUser.getViewWorkspaceUrl(), "operation", "showProfile" );
-				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( trackedUser.getWorkspaceId(), url, false, Instigator.OTHER );
-				actionTrigger.triggerAction(TeamingAction.SELECTION_CHANGED, osbInfo );
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( trackedUser.getWorkspaceId(), url, false, Instigator.TRACKED_USER_SELECT );
+				GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
 			}
 
 //			if(GwtClientHelper.hasString(trackedUser.getUserId())) {
@@ -147,7 +148,7 @@ public class ProfileFollowSectionPanel extends ProfileSectionPanel {
 //						OnSelectBinderInfo osbInfo;
 //						url = GwtClientHelper.appendUrlParam( url, "operation", "showProfile" );
 //						osbInfo = new OnSelectBinderInfo( trackedUser.getWorkspaceId(), url, false, Instigator.OTHER );
-//						actionTrigger.triggerAction(TeamingAction.SELECTION_CHANGED, osbInfo );
+//						GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
 //					}// end onSuccess()
 //				});// end AsyncCallback()
 //			} 

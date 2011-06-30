@@ -34,13 +34,15 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -64,6 +66,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -71,7 +74,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class LinkToEntryWidgetDlgBox extends DlgBox
-	implements ActionHandler
+	implements
+	// EventBus handlers implemented by this class.
+		SearchFindResultsEvent.Handler
 {
 	private FindCtrl m_findCtrl = null;
 	private TextBox 	m_titleTxtBox = null;
@@ -81,6 +86,14 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	private FlowPanel m_findPanel;
 	private Button m_editBtn;
 	private LandingPageEditor m_lpe;
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		// Search events.
+		TeamingEvents.SEARCH_FIND_RESULTS,
+	};
 	
 	/**
 	 * 
@@ -96,6 +109,12 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		LinkToEntryProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
+		
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this );
 		
 		m_lpe = lpe;
 		
@@ -452,30 +471,6 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	
 
 	/**
-	 * This method gets called when the user selects an item from the search results in the "find" control.
-	 */
-	public void handleAction( TeamingAction ta, Object selectedObj )
-	{
-		if ( TeamingAction.SELECTION_CHANGED == ta )
-		{
-			// Make sure we are dealing with a GwtFolderEntry object.
-			if ( selectedObj instanceof GwtFolderEntry )
-			{
-				GwtFolderEntry gwtFolderEntry;
-				
-				gwtFolderEntry = (GwtFolderEntry) selectedObj;
-				m_entryId = gwtFolderEntry.getEntryId();
-				
-				// Hide the find control.
-				hideFindControl();
-				
-				// Issue an ajax request to get information about the selected entry.
-				getEntry( m_entryId );
-			}
-		}
-	}// end handleAction()
-	
-	/**
 	 * Show the find control and give it the focus.
 	 */
 	private void showFindControl()
@@ -488,5 +483,38 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		if ( focusWidget != null )
 			focusWidget.setFocus( true );
 	}
-
+	
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults( SearchFindResultsEvent event )
+	{
+		// If the find results aren't for this widget...
+		if ( !((Widget) event.getSource()).equals( this ) )
+		{
+			// ...ignore the event.
+			return;
+		}
+		
+		// Make sure we are dealing with a GwtFolderEntry object.
+		GwtTeamingItem selectedObj = event.getSearchResults();
+		if ( selectedObj instanceof GwtFolderEntry )
+		{
+			GwtFolderEntry gwtFolderEntry;
+			
+			gwtFolderEntry = (GwtFolderEntry) selectedObj;
+			m_entryId = gwtFolderEntry.getEntryId();
+			
+			// Hide the find control.
+			hideFindControl();
+			
+			// Issue an ajax request to get information about the selected entry.
+			getEntry( m_entryId );
+		}
+	}// end onSearchFindResults()
 }// end LinkToEntryWidgetDlgBox
