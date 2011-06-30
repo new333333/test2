@@ -36,17 +36,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
-import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
-import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
-import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -124,13 +120,6 @@ public interface GwtRpcServiceAsync
 	
     public void getTutorialPanelState( HttpRequestInfo ri, AsyncCallback<String> callback );
 
-	// The following deal with personal preferences.
-	public void getPersonalPreferences( HttpRequestInfo ri, AsyncCallback<GwtPersonalPreferences> callback );
-	public void savePersonalPreferences( HttpRequestInfo ri, GwtPersonalPreferences personalPrefs, AsyncCallback<Boolean> callback );
-	
-    // Return a GwtBrandingData object for the global workspace.
-	public void getSiteBrandingData( HttpRequestInfo ri, AsyncCallback<GwtBrandingData> callback );
-	
 	public void getExtensionInfo( HttpRequestInfo ri, AsyncCallback<ExtensionInfoClient[]> callback );
 	public void removeExtension(HttpRequestInfo ri, String id, AsyncCallback<ExtensionInfoClient[]> callback);
 	public void getExtensionFiles(HttpRequestInfo ri, String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
@@ -192,9 +181,6 @@ public interface GwtRpcServiceAsync
 	public void untrackBinder(    HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
 	public void untrackPerson(    HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
 	
-	// Save the branding data to the given binder.
-	public void saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
-
 	// Return information about the User Profile
 	public void getProfileInfo(		HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileInfo> 	    callback );
 	public void getProfileStats(	HttpRequestInfo ri, String binderId, String userId, AsyncCallback<ProfileStats> 	callback );
@@ -217,9 +203,6 @@ public interface GwtRpcServiceAsync
 	// Return login information such as self registration and auto complete.
 	public void getLoginInfo( HttpRequestInfo ri, AsyncCallback<GwtLoginInfo> callback );
 	
-	// Return the url needed to invoke the "site administration" page.
-	public void getSiteAdministrationUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
-
 	// Get DiskUsage Info.
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
 

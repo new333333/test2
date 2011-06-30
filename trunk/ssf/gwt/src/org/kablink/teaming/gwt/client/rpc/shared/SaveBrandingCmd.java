@@ -30,107 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
 
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.GwtBrandingData;
 
 
 /**
- * This class is used to hold Teamin personal preferences such as Entry Display Style, Editor Configuration,
- * Video Tutorial Panel.
+ * This class holds all of the information necessary to execute the "Save Branding" command.
+ * 
  * @author jwootton
  *
  */
-public class GwtPersonalPreferences
-	implements IsSerializable, VibeRpcResponseData
+public class SaveBrandingCmd extends VibeRpcCmd
 {
-	private String m_displayStyle = null;
-	private boolean m_showTutorialPanel = false;
-	private int m_numEntriesPerPage = 0;
+	private String m_binderId;
+	private GwtBrandingData m_brandingData;
 	
-	// m_editorOverridesSupported is not actually a personal preference.  It is a system-wide
-	// setting that lets us know if we should allow the user to define editor overrides.
-	private boolean m_editorOverridesSupported = false;
+	/**
+	 * For GWT serialization, must have a zero param contructor
+	 */
+	public SaveBrandingCmd()
+	{
+		super();
+		
+		init();
+	}
 	
 	/**
 	 * 
 	 */
-	public GwtPersonalPreferences()
+	public SaveBrandingCmd( String binderId, GwtBrandingData brandingData )
 	{
-	}// end PersonalPreferences()
-	
+		m_binderId = binderId;
+		m_brandingData = brandingData;
+		
+		init();
+	}
 	
 	/**
 	 * 
 	 */
-	public String getDisplayStyle()
+	public String getBinderId()
 	{
-		return m_displayStyle;
-	}// end getDisplayStyle()
-	
+		return m_binderId;
+	}
 	
 	/**
 	 * 
 	 */
-	public int getNumEntriesPerPage()
+	public GwtBrandingData getBrandingData()
 	{
-		return m_numEntriesPerPage;
-	}// end getNumEntriesPerPage()
-	
+		return m_brandingData;
+	}
 	
 	/**
 	 * 
 	 */
-	public boolean getShowTutorialPanel()
+	private void init()
 	{
-		return m_showTutorialPanel;
-	}// end geShowtTutorialPanel()
-	
-	
-	/**
-	 * 
-	 */
-	public boolean isEditorOverrideSupported()
-	{
-		return m_editorOverridesSupported;
-	}// end isEditorOverrideSupported()
-	
-	
-	/**
-	 * 
-	 */
-	public void setDisplayStyle( String displayStyle )
-	{
-		m_displayStyle = displayStyle;
-	}// end setDisplayStyle()
-	
-	/**
-	 * 
-	 */
-	public void setEditorOverrideSupported( boolean supported )
-	{
-		m_editorOverridesSupported = supported;
-	}// end setEditorOverrideSupported()
-	
-	
-	
-	/**
-	 * 
-	 */
-	public void setNumEntriesPerPage( int numEntriesPerPage )
-	{
-		m_numEntriesPerPage = numEntriesPerPage;
-	}// end setNumEntriesPerPage()
-	
-	
-	/**
-	 * 
-	 */
-	public void setShowTutorialPanel( boolean showTutorialPanel )
-	{
-		m_showTutorialPanel = showTutorialPanel;
-	}// end setShowTutorialPanel()
-}// end GwtPersonalPreferences
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_BRANDING;
+	}
+}

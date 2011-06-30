@@ -30,49 +30,55 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
+
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class holds all of the information necessary to execute the "Save Personal Preferences" command.
  * 
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class SavePersonalPrefsCmd extends VibeRpcCmd
 {
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_PERSONAL_PREFERENCES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+	private GwtPersonalPreferences m_personalPrefs;
 	
 	/**
-	 * 
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public VibeRpcCmd()
+	public SavePersonalPrefsCmd()
 	{
+		super();
+		
+		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	public SavePersonalPrefsCmd( GwtPersonalPreferences personalPrefs )
 	{
-		return m_cmdType;
+		m_personalPrefs = personalPrefs;
+		
+		init();
 	}
+	
+	/**
+	 * 
+	 */
+	public GwtPersonalPreferences getPersonalPrefs()
+	{
+		return m_personalPrefs;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_PERSONAL_PREFERENCES;
+	}
+
 }

@@ -33,46 +33,50 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class holds all of the information necessary to execute the "Get Site Admin Url" command.
  * 
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class GetSiteAdminUrlCmd extends VibeRpcCmd
 {
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_PERSONAL_PREFERENCES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+	private String m_binderId;
 	
 	/**
-	 * 
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public VibeRpcCmd()
+	public GetSiteAdminUrlCmd()
 	{
+		super();
+		
+		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	public GetSiteAdminUrlCmd( String binderId )
 	{
-		return m_cmdType;
+		m_binderId = binderId;
+		
+		init();
+	}
+	
+	/**
+	 * 
+	 */
+	public String getBinderId()
+	{
+		return m_binderId;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_SITE_ADMIN_URL;
 	}
 }

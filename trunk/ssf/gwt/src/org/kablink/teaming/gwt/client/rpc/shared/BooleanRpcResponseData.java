@@ -30,107 +30,40 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
-
-
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * This class is used to hold Teamin personal preferences such as Entry Display Style, Editor Configuration,
- * Video Tutorial Panel.
+ * This class holds the response data for the for any command that expects a Boolean response
  * @author jwootton
  *
  */
-public class GwtPersonalPreferences
+public class BooleanRpcResponseData
 	implements IsSerializable, VibeRpcResponseData
 {
-	private String m_displayStyle = null;
-	private boolean m_showTutorialPanel = false;
-	private int m_numEntriesPerPage = 0;
-	
-	// m_editorOverridesSupported is not actually a personal preference.  It is a system-wide
-	// setting that lets us know if we should allow the user to define editor overrides.
-	private boolean m_editorOverridesSupported = false;
+	private Boolean m_value;
 	
 	/**
 	 * 
 	 */
-	public GwtPersonalPreferences()
+	public BooleanRpcResponseData()
 	{
-	}// end PersonalPreferences()
-	
+	}
 	
 	/**
 	 * 
 	 */
-	public String getDisplayStyle()
+	public BooleanRpcResponseData( Boolean value )
 	{
-		return m_displayStyle;
-	}// end getDisplayStyle()
-	
+		m_value = value;
+	}
 	
 	/**
 	 * 
 	 */
-	public int getNumEntriesPerPage()
+	public Boolean getBooleanValue()
 	{
-		return m_numEntriesPerPage;
-	}// end getNumEntriesPerPage()
-	
-	
-	/**
-	 * 
-	 */
-	public boolean getShowTutorialPanel()
-	{
-		return m_showTutorialPanel;
-	}// end geShowtTutorialPanel()
-	
-	
-	/**
-	 * 
-	 */
-	public boolean isEditorOverrideSupported()
-	{
-		return m_editorOverridesSupported;
-	}// end isEditorOverrideSupported()
-	
-	
-	/**
-	 * 
-	 */
-	public void setDisplayStyle( String displayStyle )
-	{
-		m_displayStyle = displayStyle;
-	}// end setDisplayStyle()
-	
-	/**
-	 * 
-	 */
-	public void setEditorOverrideSupported( boolean supported )
-	{
-		m_editorOverridesSupported = supported;
-	}// end setEditorOverrideSupported()
-	
-	
-	
-	/**
-	 * 
-	 */
-	public void setNumEntriesPerPage( int numEntriesPerPage )
-	{
-		m_numEntriesPerPage = numEntriesPerPage;
-	}// end setNumEntriesPerPage()
-	
-	
-	/**
-	 * 
-	 */
-	public void setShowTutorialPanel( boolean showTutorialPanel )
-	{
-		m_showTutorialPanel = showTutorialPanel;
-	}// end setShowTutorialPanel()
-}// end GwtPersonalPreferences
+		return m_value;
+	}
+}

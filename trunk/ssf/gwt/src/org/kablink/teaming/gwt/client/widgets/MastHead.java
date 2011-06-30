@@ -48,8 +48,10 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -120,7 +122,7 @@ public class MastHead extends Composite
 	private GwtBrandingData m_binderBrandingData = null;
 	
 	// m_rpcGetSiteBrandingCallback is our callback that gets called when the ajax request to get the site branding data completes.
-	private AsyncCallback<GwtBrandingData> m_rpcGetSiteBrandingCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_rpcGetSiteBrandingCallback = null;
 
 	// m_rpcGetBinderBrandingCallback is our callback that gets called when the ajax request to get the binder branding data completes.
 	private AsyncCallback<VibeRpcResponse> m_rpcGetBinderBrandingCallback = null;
@@ -208,7 +210,7 @@ public class MastHead extends Composite
 		}
 		
 		// Create the callback that will be used when we issue an ajax call to get the site branding
-		m_rpcGetSiteBrandingCallback = new AsyncCallback<GwtBrandingData>()
+		m_rpcGetSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -227,17 +229,18 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( final GwtBrandingData brandingData )
+			public void onSuccess( final VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
+				
+				m_siteBrandingData = (GwtBrandingData) response.getResponseData();
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
 					public void execute()
 					{
 						// Update the site branding panel with the branding data
-						m_siteBrandingData = brandingData;
-						m_siteBrandingPanel.updateBrandingPanel( brandingData );
+						m_siteBrandingPanel.updateBrandingPanel( m_siteBrandingData );
 
 						// Issue an ajax request to get the binder branding
 						getBinderBrandingDataFromServer();
@@ -351,10 +354,10 @@ public class MastHead extends Composite
 		
 		// Issue an ajax request to see if the user has the rights to run the "site administration" page.
 		{
-			AsyncCallback<String> rpcCallback;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
 
 			// No
-			rpcCallback = new AsyncCallback<String>()
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -377,8 +380,14 @@ public class MastHead extends Composite
 				 * 
 				 * @param result
 				 */
-				public void onSuccess( String url )
+				public void onSuccess( VibeRpcResponse response )
 				{
+					String url;
+					StringRpcResponseData responseData;
+					
+					responseData = (StringRpcResponseData) response.getResponseData();
+					url = responseData.getStringValue();
+					
 					// Did we get a url for the "site administration" action?
 					if ( url != null && url.length() > 0 )
 					{
@@ -408,8 +417,10 @@ public class MastHead extends Composite
 			// Issue an ajax request to get the url for the "site administration" action.
 			if ( m_mastheadBinderId != null && m_mastheadBinderId.length() > 0 )
 			{
-				//!!!Window.alert( "about to call getSiteAdministrationUrl(), binderId: '" + m_mastheadBinderId + "'" );
-				GwtTeaming.getRpcService().getSiteAdministrationUrl( HttpRequestInfo.createHttpRequestInfo(), m_mastheadBinderId, rpcCallback );
+				GetSiteAdminUrlCmd cmd;
+
+				cmd = new GetSiteAdminUrlCmd( m_mastheadBinderId );
+				GwtClientHelper.executeCommand( cmd, rpcCallback );
 			}
 			
 		}
@@ -731,13 +742,12 @@ public class MastHead extends Composite
 	 */
 	private void getSiteBrandingDataFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-		
-		rpcService = GwtTeaming.getRpcService();
+		GetSiteBrandingCmd cmd;
 		
 		// Issue an ajax request to get the site branding data.
-		rpcService.getSiteBrandingData( HttpRequestInfo.createHttpRequestInfo(), m_rpcGetSiteBrandingCallback );
-	}// end getSiteBrandingDataFromServer()
+		cmd = new GetSiteBrandingCmd();
+		GwtClientHelper.executeCommand( cmd, m_rpcGetSiteBrandingCallback );
+	}
 	
 
 	/**

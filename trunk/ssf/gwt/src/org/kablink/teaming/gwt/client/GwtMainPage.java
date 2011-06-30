@@ -56,6 +56,11 @@ import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -853,7 +858,7 @@ public class GwtMainPage extends Composite
 		{
 			m_editBrandingSuccessHandler = new EditSuccessfulHandler()
 			{
-				private AsyncCallback<Boolean> rpcSaveCallback = null;
+				private AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
 				private String binderId = m_mastHead.getBinderId();
 				private GwtBrandingData savedBrandingData = null;
 				
@@ -865,7 +870,7 @@ public class GwtMainPage extends Composite
 					// Create the callback that will be used when we issue an ajax request to save the branding data.
 					if ( rpcSaveCallback == null )
 					{
-						rpcSaveCallback = new AsyncCallback<Boolean>()
+						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
 						{
 							/**
 							 * 
@@ -882,7 +887,7 @@ public class GwtMainPage extends Composite
 							 * 
 							 * @param result
 							 */
-							public void onSuccess( Boolean result )
+							public void onSuccess( VibeRpcResponse response )
 							{
 								// Did we just save site branding?
 								if ( savedBrandingData.isSiteBranding() )
@@ -897,20 +902,19 @@ public class GwtMainPage extends Composite
 									// Tell the masthead to go get the new binder branding.
 									m_mastHead.refreshBinderBranding();
 								}
-							}// end onSuccess()
+							}
 						};
 					}
 			
 					// Issue an ajax request to save the branding data.
 					{
-						GwtRpcServiceAsync rpcService;
-						
-						rpcService = GwtTeaming.getRpcService();
+						SaveBrandingCmd cmd;
 						
 						// Issue an ajax request to save the branding data to the db.  rpcSaveCallback will
 						// be called when we get the response back.
 						savedBrandingData = (GwtBrandingData) obj;
-						rpcService.saveBrandingData( HttpRequestInfo.createHttpRequestInfo(), savedBrandingData.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
+						cmd = new SaveBrandingCmd( savedBrandingData.getBinderId(), savedBrandingData );
+						GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 					}
 
 					return true;
@@ -981,10 +985,10 @@ public class GwtMainPage extends Composite
 	 */
 	private void editPersonalPreferences()
 	{
-		AsyncCallback<GwtPersonalPreferences> rpcReadCallback;
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
 		
 		// Create a callback that will be called when we get the personal preferences.
-		rpcReadCallback = new AsyncCallback<GwtPersonalPreferences>()
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -999,11 +1003,14 @@ public class GwtMainPage extends Composite
 			/**
 			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
 			 */
-			public void onSuccess( GwtPersonalPreferences personalPrefs )
+			public void onSuccess( VibeRpcResponse response )
 			{
 				int x;
 				int y;
+				GwtPersonalPreferences personalPrefs;
 
+				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
+				
 				// Get the position of the content control.
 				x = m_contentCtrl.getAbsoluteLeft();
 				y = m_contentCtrl.getAbsoluteTop();
@@ -1013,7 +1020,7 @@ public class GwtMainPage extends Composite
 				{
 					m_editPersonalPrefsSuccessHandler = new EditSuccessfulHandler()
 					{
-						private AsyncCallback<Boolean> rpcSaveCallback = null;
+						private AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
 						private GwtPersonalPreferences personalPrefs = null;
 						
 						/**
@@ -1026,7 +1033,7 @@ public class GwtMainPage extends Composite
 							// Create the callback that will be used when we issue an ajax request to save the personal preferences.
 							if ( rpcSaveCallback == null )
 							{
-								rpcSaveCallback = new AsyncCallback<Boolean>()
+								rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
 								{
 									/**
 									 * 
@@ -1042,8 +1049,12 @@ public class GwtMainPage extends Composite
 									 * 
 									 * @param result
 									 */
-									public void onSuccess( Boolean result )
+									public void onSuccess( VibeRpcResponse response )
 									{
+										Boolean result;
+										
+										result = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+										
 										// The personal preferences affect how things are displayed in the content frame.
 										// So we need to reload the page in the content frame.
 										reloadContentPanel();
@@ -1060,13 +1071,12 @@ public class GwtMainPage extends Composite
 					
 							// Issue an ajax request to save the personal preferences.
 							{
-								GwtRpcServiceAsync rpcService;
-								
-								rpcService = GwtTeaming.getRpcService();
+								SavePersonalPrefsCmd cmd;
 								
 								// Issue an ajax request to save the personal preferences to the db.  rpcSaveCallback will
 								// be called when we get the response back.
-								rpcService.savePersonalPreferences( HttpRequestInfo.createHttpRequestInfo(), personalPrefs, rpcSaveCallback );
+								cmd = new SavePersonalPrefsCmd( personalPrefs );
+								GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 							}
 							
 							return true;
@@ -1091,12 +1101,11 @@ public class GwtMainPage extends Composite
 		// Issue an ajax request to get the personal preferences.  When we get the personal preferences
 		// we will invoke the "personal preferences" dialog.
 		{
-			GwtRpcServiceAsync rpcService;
-			
-			rpcService = GwtTeaming.getRpcService();
+			GetPersonalPrefsCmd cmd;
 			
 			// Issue an ajax request to get the personal preferences from the db.
-			rpcService.getPersonalPreferences( HttpRequestInfo.createHttpRequestInfo(), rpcReadCallback );
+			cmd = new GetPersonalPrefsCmd();
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
 	}// end editPersonalPreferences()
 
