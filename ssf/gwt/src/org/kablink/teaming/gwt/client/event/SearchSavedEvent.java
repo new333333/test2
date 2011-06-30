@@ -33,36 +33,45 @@
 
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ContextChangingEvent event tells the UI That a context switch is
- * about to take place.
+ * The SearchSavedEvent tells the UI perform a saved search.
  * 
  * @author drfoster@novell.com
  */
-public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler> {
+public class SearchSavedEvent extends GwtEvent<SearchSavedEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
+
+	private String m_savedSearchName;
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onContextChanging(ContextChangingEvent event);
+		void onSearchSaved(SearchSavedEvent event);
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor methods.
+	 * 
+	 * @param searchTabId
 	 */
-	public ContextChangingEvent() {
+	public SearchSavedEvent(String savedSearchName) {
 		super();
+		m_savedSearchName = savedSearchName;
 	}
 	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String getSavedSearchName() {return m_savedSearchName;}
+
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 * 
@@ -80,7 +89,7 @@ public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler>
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onContextChanging(this);
+		handler.onSearchSaved(this);
 	}
 	
 	/**
@@ -94,12 +103,5 @@ public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler>
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new ContextChangingEvent());
 	}
 }

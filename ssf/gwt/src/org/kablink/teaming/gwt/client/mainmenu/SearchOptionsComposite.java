@@ -36,7 +36,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchAdvancedEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -143,7 +145,7 @@ public class SearchOptionsComposite extends Composite
 				
 				// ...and perform the search.
 				String searchName = ssiList.getItemText(ssi);
-				m_actionTrigger.triggerAction(TeamingAction.SAVED_SEARCH, searchName);
+				GwtTeaming.fireEvent(new SearchSavedEvent(searchName));
 			}
 		}
 	}
@@ -198,7 +200,7 @@ public class SearchOptionsComposite extends Composite
 				// Hide the search options popup and run the advanced
 				// search dialog.
 				m_searchOptionsPopup.hide();
-				m_actionTrigger.triggerAction(TeamingAction.ADVANCED_SEARCH);
+				SearchAdvancedEvent.fireOne();
 			}
 		});
 

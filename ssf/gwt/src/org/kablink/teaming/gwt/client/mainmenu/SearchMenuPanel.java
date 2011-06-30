@@ -35,8 +35,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -55,7 +54,6 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author drfoster@novell.com
  */
 public class SearchMenuPanel extends FlowPanel {
-	private ActionTrigger m_actionTrigger;
 	private GwtTeamingMainMenuImageBundle m_images;
 	private GwtTeamingMessages m_messages;
 	private TextBox m_searchInput;
@@ -65,12 +63,11 @@ public class SearchMenuPanel extends FlowPanel {
 	 * 
 	 * @param actionTrigger
 	 */
-	public SearchMenuPanel(ActionTrigger actionTrigger) {
+	public SearchMenuPanel() {
 		// Initialize the super class...
 		super();
 		
 		// ...and initialize everything else.
-		m_actionTrigger = actionTrigger;
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
 		addStyleName("mainMenuBar_BoxPanel mainMenuSearch_Panel");
@@ -143,6 +140,6 @@ public class SearchMenuPanel extends FlowPanel {
 	private void doSearch() {
 		String searchFor = m_searchInput.getValue();
 		m_searchInput.setValue("");
-		m_actionTrigger.triggerAction(TeamingAction.SIMPLE_SEARCH, searchFor);
+		GwtTeaming.fireEvent(new SearchSimpleEvent(searchFor));
 	}
 }

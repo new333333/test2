@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 
@@ -89,7 +88,7 @@ public class MenuBarToggle extends Anchor {
 			     event = m_baseEvent;
 			else event = m_altEvent;
 			
-			GwtTeaming.fireEvent(EventHelper.createSimpleEvent(event));
+			EventHelper.fireSimpleEvent(event);
 			
 			// ...and toggle the state of the MenuBarToggle.
 			if (event == m_baseEvent)

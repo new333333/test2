@@ -406,7 +406,7 @@ public class MastHead extends Composite
 								// Since the user has administration rights, show them a list of
 								// upgrade tasks that still need to be performed.
 								// Sent event to check for tasks
-								GwtTeaming.fireEvent( new AdministrationUpgradeCheckEvent() );
+								AdministrationUpgradeCheckEvent.fireOne();
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -776,7 +776,7 @@ public class MastHead extends Composite
 		// Send Appropriate event
 		if ( eventSource == m_adminLink )
 		{
-			GwtTeaming.fireEvent(new AdministrationEvent() );
+			AdministrationEvent.fireOne();
 		}
 		else if ( eventSource == m_personalPrefsLink )
 		{
@@ -788,11 +788,11 @@ public class MastHead extends Composite
 		}
 		else if ( eventSource == m_logoutLink )
 		{
-			GwtTeaming.fireEvent( new LogoutEvent() );
+			LogoutEvent.fireOne();
 		}
 		else if ( eventSource == m_loginLink )
 		{
-			GwtTeaming.fireEvent( new LoginEvent() );
+			LoginEvent.fireOne();
 		}
 		else if ( eventSource == m_helpLink )
 		{

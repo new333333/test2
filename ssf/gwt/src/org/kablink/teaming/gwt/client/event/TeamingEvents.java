@@ -70,8 +70,11 @@ public enum TeamingEvents implements IsSerializable {
 	MASTHEAD_HIDE,					// Hides the masthead.
 	MASTHEAD_SHOW,					// Shows the masthead.
 	
+	SEARCH_ADVANCED,				// Runs the advanced Search in the content area.
 	SEARCH_FIND_RESULTS,			// Fired when the FindCtrl is returning its results.
 	SEARCH_RECENT_PLACE,			// Executes a recent place search.
+	SEARCH_SAVED,					// Executes a saved search using a string as the name.
+	SEARCH_SIMPLE,					// Performs a simple search on a string.
 	
 	SIDEBAR_HIDE,					// Hides the Left Navigation Panel.
 	SIDEBAR_SHOW,					// Shows the Left Navigation Panel.

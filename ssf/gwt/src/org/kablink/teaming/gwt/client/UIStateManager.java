@@ -72,13 +72,13 @@ public class UIStateManager
 			
 			// Set the visibility of the masthead.
 			if ( uiState.getMastheadVisibility() == true )
-			     GwtTeaming.fireEvent( new MastheadShowEvent() );
-			else GwtTeaming.fireEvent( new MastheadHideEvent() );
+			     MastheadShowEvent.fireOne();
+			else MastheadHideEvent.fireOne();
 			
 			// Set the visibility of the sidebar.
 			if ( uiState.getSidebarVisibility() == true )
-			     GwtTeaming.fireEvent( new SidebarShowEvent() );
-			else GwtTeaming.fireEvent( new SidebarHideEvent() );
+			     SidebarShowEvent.fireOne();
+			else SidebarHideEvent.fireOne();
 		}
 	}
 	

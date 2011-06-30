@@ -49,7 +49,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.InlineLabel;
 
 public class ProfileSidePanel extends Composite {
 
@@ -145,7 +144,7 @@ public class ProfileSidePanel extends Composite {
 		if (attrExist(cat, "profileSavedSearches")) {
 			if (profileRequestInfo.isOwner()) {
 				savedSearches = new ProfileSearchesSectionPanel(
-						profileRequestInfo, GwtTeaming.getMessages().profileSavedSearches(), actionTrigger);
+						profileRequestInfo, GwtTeaming.getMessages().profileSavedSearches());
 				content.add(savedSearches);
 			}
 		}

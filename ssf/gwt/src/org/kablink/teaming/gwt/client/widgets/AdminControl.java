@@ -37,7 +37,6 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
-import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -92,7 +91,6 @@ public class AdminControl extends Composite
 	implements ActionTrigger, 
 	// EventBus handlers implemented by this class.
 		AdministrationExitEvent.Handler,
-		AdministrationUpgradeCheckEvent.Handler,
 		LogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -433,7 +431,6 @@ public class AdminControl extends Composite
 				 * 
 				 * @param result
 				 */
-				@SuppressWarnings("unchecked")
 				public void onSuccess( VibeRpcResponse response )
 				{
 					ArrayList<GwtAdminCategory> adminCategories;
@@ -926,19 +923,6 @@ public class AdminControl extends Composite
 	{
 		hideControl();
 	}// end onAdministrationExit()
-	
-	/**
-	 * Handles AdministrationUpgradeCheckEvent's received by this class.
-	 * 
-	 * Implements the AdministrationUpgradeCheckEvent.Handler.onAdministrationUpgradeCheck() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onAdministrationUpgradeCheck( AdministrationUpgradeCheckEvent event )
-	{
-		showUpgradeTasks();
-	}// end onAdministrationUpgradeCheck()
 	
 	/**
 	 * Handles LogoutEvent's received by this class.

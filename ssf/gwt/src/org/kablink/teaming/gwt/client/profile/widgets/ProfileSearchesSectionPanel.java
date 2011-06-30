@@ -36,12 +36,11 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -60,8 +59,8 @@ public class ProfileSearchesSectionPanel extends ProfileSectionPanel {
 	 * @param title
 	 * @param trigger
 	 */
-	public ProfileSearchesSectionPanel(ProfileRequestInfo profileRequestInfo, String title, ActionTrigger trigger) {
-		super(profileRequestInfo, title, trigger);
+	public ProfileSearchesSectionPanel(ProfileRequestInfo profileRequestInfo, String title) {
+		super(profileRequestInfo, title);
 		setStyleName("tracking-subhead");
 		//populate the saved searches list
 		populateSavedSearchList();
@@ -155,7 +154,7 @@ public class ProfileSearchesSectionPanel extends ProfileSectionPanel {
 	
 			if(savedSearch.getName() != "") {
 				String name = savedSearch.getName();
-				actionTrigger.triggerAction(TeamingAction.SAVED_SEARCH, name);
+				GwtTeaming.fireEvent(new SearchSavedEvent(name));
 			} 
 		}
 	}

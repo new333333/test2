@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -91,5 +93,12 @@ public class ActivityStreamExitEvent extends GwtEvent<ActivityStreamExitEvent.Ha
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
+	}
+
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new ActivityStreamExitEvent());
 	}
 }
