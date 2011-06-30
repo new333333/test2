@@ -47,8 +47,6 @@ public enum TeamingAction implements IsSerializable
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
 	EDIT_SITE_BRANDING ("Edit Site Branding" ),
-	HELP( "Help" ),
-	INVOKE_SIMPLE_PROFILE( "Invoke the Simple Profile dialog" ),
 	MARK_ENTRY_READ( "Mark the entry as read" ),
 	MARK_ENTRY_UNREAD( "Mark the entry as unread" ),
 	REPLY( "Invoke the 'reply to entry' ui" ),

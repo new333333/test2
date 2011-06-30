@@ -30,55 +30,74 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.event;
 
-package org.kablink.teaming.gwt.client.util;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 
-import com.google.gwt.user.client.Element;
-
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class is used to pass the required parameters needed by the
- * InvokeSimpleProfileEvent.
- *
- * @author nbjensen@novell.com
+ * The InvokeHelpEvent used to invoke Vibe OnPrem's online help.
+ * 
+ * @author drfoster@novell.com
  */
-public class SimpleProfileParams
-{
-	private Element m_element;
-	private String m_binderId;
-	private String m_userName;
-	
+public class InvokeHelpEvent extends GwtEvent<InvokeHelpEvent.Handler> {
+    public static Type<Handler> TYPE = new Type<Handler>();
+
 	/**
-	 * 
+	 * Handler interface for this event.
 	 */
-	public SimpleProfileParams( Element element, String binderId, String userName )
-	{
-		m_element = element;
-		m_binderId = binderId;
-		m_userName = userName;
+	public interface Handler extends EventHandler {
+		void onInvokeHelp(InvokeHelpEvent event);
 	}
 	
 	/**
-	 * 
+	 * Class constructor.
 	 */
-	public String getBinderId()
-	{
-		return m_binderId;
+	public InvokeHelpEvent() {
+		super();
 	}
 	
 	/**
+	 * Returns the GwtEvent.Type of this event.
 	 * 
+	 * @return
 	 */
-	public Element getElement()
-	{
-		return m_element;
+    @Override
+    public Type<Handler> getAssociatedType() {
+        return TYPE;
+    }
+    
+	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onInvokeHelp(this);
+    }
+    
+	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
+	 * 
+	 * @param eventBus
+	 * @param handler
+	 * 
+	 * @return
+	 */
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 	
 	/**
-	 * 
+	 * Fires a new one of these events.
 	 */
-	public String getUserName()
-	{
-		return m_userName;
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new InvokeHelpEvent());
 	}
 }

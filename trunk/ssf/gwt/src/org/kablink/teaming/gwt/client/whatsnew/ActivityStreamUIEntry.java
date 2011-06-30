@@ -38,6 +38,7 @@ import java.util.HashMap;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -629,7 +630,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		
 		// Invoke the Simple Profile dialog.
 		params = new SimpleProfileParams( element, m_authorWSId, m_author.getText() );
-		m_actionHandler.handleAction( TeamingAction.INVOKE_SIMPLE_PROFILE, params );
+		GwtTeaming.fireEvent(new InvokeSimpleProfileEvent( params ));
 	}
 	
 	

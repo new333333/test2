@@ -67,6 +67,9 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_CONTENT_URL,				// Changes the current context to a non-permalink URL.
 	GOTO_MY_WORKSPACE,				// Changes the current context to the user's workspace.
 	GOTO_PERMALINK_URL,				// Changes the current context to a permalink URL.
+
+	INVOKE_HELP,					// Invokes the Vibe OnPrem online help.
+	INVOKE_SIMPLE_PROFILE,			// Invokes the simple profile dialog.
 	
 	LOGIN,							// logs into   Vibe OnPrem.
 	LOGOUT,							// logs out of Vibe OnPrem.

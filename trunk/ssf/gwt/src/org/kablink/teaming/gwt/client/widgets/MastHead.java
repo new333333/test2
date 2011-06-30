@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
+import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
@@ -796,7 +797,7 @@ public class MastHead extends Composite
 		}
 		else if ( eventSource == m_helpLink )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.HELP, null ));
+			InvokeHelpEvent.fireOne();
 		}
 		else if ( eventSource == m_resourceLibLink )
 		{
