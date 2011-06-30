@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,11 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ClientActionParameter;
+import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -61,6 +65,7 @@ public class ContextMenuItem {
 	
 	private enum ClickHandlerType {
 		TEAMING_ACTION,
+		TEAMING_EVENT,
 		JAVASCRIPT_STRING,
 		URL_IN_POPUP_NO_FORM,
 		URL_IN_POPUP_WITH_FORM,
@@ -80,8 +85,11 @@ public class ContextMenuItem {
 		private String m_id;
 		private String m_onClickJS;
 		private String m_url;
+		private TeamingEvents m_teamingEvent;
 		private TeamingAction m_teamingAction;
 		private ClientActionParameter m_clientActionParameter;
+		@SuppressWarnings("unused")
+		private ClientEventParameter m_clientEventParameter;
 		
 		/**
 		 * Class constructor.
@@ -177,12 +185,44 @@ public class ContextMenuItem {
 		 *
 		 * @param id
 		 * @param url
+		 * @param teamingEvent
+		 * @param clientEventParameter
+		 */
+		ContextItemClickHandler(String id, String url, TeamingEvents teamingEvent, ClientEventParameter clientEventParameter) {
+			// Store the type of click handler...
+			m_type = ClickHandlerType.TEAMING_EVENT;
+			
+			// ...and the parameters.
+			m_id                   = id;
+			m_url                  = url;
+			m_teamingEvent         = teamingEvent;
+			m_clientEventParameter = clientEventParameter;
+		}
+		
+		/**
+		 * Class constructor.
+		 *
+		 * @param id
+		 * @param url
 		 * @param teamingAction
 		 */
 		@SuppressWarnings("unused")
 		ContextItemClickHandler(String id, String url, TeamingAction teamingAction) {
 			// Always use the initial form of the constructor.
 			this(id, url, teamingAction, null);
+		}
+		
+		/**
+		 * Class constructor.
+		 *
+		 * @param id
+		 * @param url
+		 * @param teamingEvent
+		 */
+		@SuppressWarnings("unused")
+		ContextItemClickHandler(String id, String url, TeamingEvents teamingEvent) {
+			// Always use the initial form of the constructor.
+			this(id, url, teamingEvent, null);
 		}
 		
 		/**
@@ -218,9 +258,23 @@ public class ContextMenuItem {
 						m_url                          :
 						m_clientActionParameter));
 				break;
+				
+			case TEAMING_EVENT:
+				switch (m_teamingEvent) {
+				case GOTO_PERMALINK_URL:
+					GwtTeaming.fireEvent(new GotoPermalinkUrlEvent(m_url));
+					break;
+					
+				default:
+					Window.alert(
+						GwtTeaming.getMessages().eventHandling_NoContextMenuEventHandler(
+							m_teamingEvent.name()));
+					break;
+				}				
+				break;
 
 			case URL_IN_CONTENT_FRAME:
-				GwtTeaming.getMainPage().handleAction(TeamingAction.GOTO_CONTENT_URL, m_url);
+				GwtTeaming.fireEvent(new GotoContentUrlEvent(m_url));
 				break;
 				
 			case URL_IN_POPUP_NO_FORM:
@@ -283,16 +337,16 @@ public class ContextMenuItem {
 		ContextItemClickHandler reply;
 		String url = tbi.getUrl();
 		TeamingAction ta = tbi.getTeamingAction();
+		TeamingEvents te = tbi.getTeamingEvent();
 		ClientActionParameter cap = tbi.getClientActionParameter();
-		switch (ta) {
-		case UNDEFINED:
+		ClientEventParameter cep = tbi.getClientEventParameter();
+		if (TeamingAction.UNDEFINED.equals(ta) && TeamingEvents.UNDEFINED.equals(te)) {
 			// It's not based on a teaming action!  Is it based on an
 			// onClick JavaScript string?
 			String jsString = tbi.getQualifierValue("onclick");
 			if (GwtClientHelper.hasString(jsString)) {
 				// Yes!  Generate the appropriate click handler for it.
 				reply = new ContextItemClickHandler(id, url, jsString);
-				break;
 			}
 			
 			// No, it isn't based on a JavaScript string!  Is is to
@@ -300,19 +354,24 @@ public class ContextMenuItem {
 			if (GwtClientHelper.bFromS(tbi.getQualifierValue("popup"))) {
 				// Yes!  Generate the appropriate click handler for it.
 				reply = createPopupClickHandler(id, url, tbi);
-				break;
 			}
 			
 			// No, it isn't to open a URL in a popup window either!
 			// The only option left is to launch the URL in the content
 			// pane.  Generate the appropriate click handler for it.
 			reply = new ContextItemClickHandler(id, url);
-			break;
-			
-		default:
+		}
+		
+		else if (!(TeamingAction.UNDEFINED.equals(ta))) {
 			// It's based on a teaming action!  Generate the
 			// appropriate click handler for it.
 			reply = new ContextItemClickHandler(id, url, ta, cap);
+		}
+
+		else {
+			// It's based on a teaming event!  Generate the
+			// appropriate click handler for it.
+			reply = new ContextItemClickHandler(id, url, te, cep);
 		}
 
 		// If we get here, reply refers to the appropriate click

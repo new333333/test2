@@ -40,8 +40,8 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -288,9 +288,9 @@ public class TopRankedDlg extends DlgBox implements EditSuccessfulHandler, EditC
 				// Hide the dialog and go to the top ranked item's
 				// permalink.
 				hide();
-				GwtTeaming.getMainPage().handleAction(
-					TeamingAction.GOTO_PERMALINK_URL,
-					tri.getTopRankedPermalinkUrl());
+				GwtTeaming.fireEvent(
+					new GotoPermalinkUrlEvent(
+						tri.getTopRankedPermalinkUrl()));
 			}
 		});
 		grid.setWidget(row, 1, triAnchor);

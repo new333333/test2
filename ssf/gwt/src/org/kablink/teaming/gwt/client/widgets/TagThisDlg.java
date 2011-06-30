@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTag;
@@ -52,7 +53,6 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TagType;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.core.client.GWT;
@@ -1022,7 +1022,7 @@ public class TagThisDlg extends DlgBox
 		}
 		
 		// Execute a tag search using the given tag name.
-		GwtTeaming.getMainPage().handleAction( TeamingAction.TAG_SEARCH, tagName );
+		GwtTeaming.fireEvent(new SearchTagEvent( tagName ));
 		
 		// Close this dialog.
 		hide();

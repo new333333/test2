@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -216,7 +217,6 @@ public class MainMenuControl extends Composite
 				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
 				SearchOptionsComposite.createAsync(
 						soPopup,
-						mainMenu,
 						new SearchOptionsCompositeClient() {					
 					@Override
 					public void onUnavailable() {
@@ -420,7 +420,7 @@ public class MainMenuControl extends Composite
 		m_myWorkspaceBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					GwtTeaming.fireEvent(new TeamingActionEvent(TeamingAction.MY_WORKSPACE));
+					GotoMyWorkspaceEvent.fireOne();
 				}
 			});
 		menuPanel.add(m_myWorkspaceBox);

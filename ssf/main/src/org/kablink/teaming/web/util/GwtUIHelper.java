@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -126,8 +126,9 @@ public class GwtUIHelper {
 	public final static int VIBE_PRODUCT_NOVELL		= 3;	// Novell  Vibe (outside of GroupWise integration.)
 
 	// Used as a qualifier in a toolbar to indicate the value maps to a
-	// GWT UI TeamingAction.
+	// GWT UI TeamingAction or TeamingEvent.
 	public final static String GWTUI_TEAMING_ACTION = "GwtUI.TeamingAction";
+	public final static String GWTUI_TEAMING_EVENT  = "GwtUI.TeamingEvent";
 	
 	// When caching a toolbar containing an AdaptedPortletURL, we
 	// must also store the URL in string form for the GWT UI to use.
@@ -138,12 +139,14 @@ public class GwtUIHelper {
 	// assist in building the toolbar items to support tracking.
 	private static class TrackInfo {
 		String m_action;
+		String m_event;
 		String m_resourceKey;
 		String m_tbName;
 		
-		TrackInfo(String tbName, String action, String resourceKey) {
+		TrackInfo(String tbName, String action, String event, String resourceKey) {
 			m_tbName = tbName;
 			m_action = action;
+			m_event = event;
 			m_resourceKey = resourceKey;
 		}
 	}
@@ -186,6 +189,7 @@ public class GwtUIHelper {
 				tb,
 				"branding",
 				"EDIT_BRANDING",
+				null,	//! It's not an event yet.
 				NLT.get(menuKey),
 				"#",
 				null);
@@ -346,17 +350,20 @@ public class GwtUIHelper {
 	 * @param tb
 	 * @param menuName
 	 * @param teamingAction
+	 * @param teamingEvent
 	 * @param title
 	 * @param url
 	 * @param qualifiers
 	 */
 	@SuppressWarnings("unchecked")
-	public static void addTeamingActionToToolbar(Toolbar tb, String menuName, String teamingAction, String title, String url, Map qualifiers) {
+	public static void addTeamingActionToToolbar(Toolbar tb, String menuName, String teamingAction, String teamingEvent, String title, String url, Map qualifiers) {
 		// Add the teaming action to the qualifiers...
 		if (null == qualifiers) {
 			qualifiers = new HashMap();
 		}
-		qualifiers.put(GWTUI_TEAMING_ACTION, teamingAction);
+		
+		if (MiscUtil.hasString(teamingAction)) qualifiers.put(GWTUI_TEAMING_ACTION, teamingAction);
+		if (MiscUtil.hasString(teamingEvent))  qualifiers.put(GWTUI_TEAMING_EVENT,  teamingEvent );
 		
 		// ...and add it as a toolbar menu item.
 		tb.addToolbarMenu(
@@ -366,8 +373,8 @@ public class GwtUIHelper {
 			qualifiers);
 	}
 	
-	public static void addTeamingActionToToolbar(Toolbar tb, String menuName, String teamingAction, String title) {
-		addTeamingActionToToolbar(tb, menuName, teamingAction, title, null, null);
+	public static void addTeamingActionToToolbar(Toolbar tb, String menuName, String teamingAction, String teamingEvent, String title) {
+		addTeamingActionToToolbar(tb, menuName, teamingAction, teamingEvent, title, null, null);
 	}
 	
 	/*
@@ -405,50 +412,50 @@ public class GwtUIHelper {
 		if (binderTracked) {
 			if (personTracked) {
 				// User workspace:  Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisWorkspaceNot"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", "relevance.trackThisPersonNot"));				
+				tiList.add(    new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisWorkspaceNot"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", null, "relevance.trackThisPersonNot"));				
 			}
 			else {
 				if (binderIsUserWorkspace) {
 					// User workspace:  Tracked / Person:  Not Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisWorkspaceNot"));				
-					tiList.add(new TrackInfo("trackPerson", "TRACK_BINDER",   "relevance.trackThisPerson"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("trackPerson", "TRACK_BINDER",   null, "relevance.trackThisPerson"));				
 				}
 				else if (binderIsWorkspace) {
 					// Workspace:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisWorkspaceNot"));				
 				}
 				else if (binderIsCalendar) {
 					// Calendar:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisCalendarNot"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisCalendarNot"));				
 				}
 				else {
 					// Folder:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisFolderNot"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisFolderNot"));				
 				}
 			}
 		}
 		else {
 			if (personTracked) {
 				// User workspace:  Not Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisWorkspace"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", "relevance.trackThisPersonNot"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", null, "relevance.trackThisPersonNot"));				
 			}
 			else if (binderIsUserWorkspace) {
 				// User workspace:  Not Tracked / Person:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisPerson"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisPerson"));				
 			}
 			else if (binderIsWorkspace) {
 				// Workspace:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisWorkspace"));				
 			}
 			else if (binderIsCalendar) {
 				// Calendar:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisCalendar"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisCalendar"));				
 			}
 			else {
 				// Folder:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisFolder"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisFolder"));				
 			}
 		}
 
@@ -456,7 +463,7 @@ public class GwtUIHelper {
 		for (Iterator<TrackInfo> tiIT = tiList.iterator(); tiIT.hasNext(); ) {
 			// ...adding a toolbar item for each.
 			TrackInfo ti = tiIT.next();
-			addTeamingActionToToolbar(tb, ti.m_tbName, ti.m_action, NLT.get(ti.m_resourceKey));
+			addTeamingActionToToolbar(tb, ti.m_tbName, ti.m_action, ti.m_event, NLT.get(ti.m_resourceKey));
 		}
 	}
 
@@ -473,6 +480,7 @@ public class GwtUIHelper {
 		addTeamingActionToToolbar(
 			tb,
 			"trash",
+			null,	//! This is now an event.
 			"GOTO_PERMALINK_URL",
 			NLT.get("toolbar.menu.trash"),
 			trashPermalink,
@@ -496,6 +504,7 @@ public class GwtUIHelper {
 			addTeamingActionToToolbar(
 				tb,
 				"mobileUI",
+				null,	//! This is now an event.
 				"GOTO_PERMALINK_URL",
 				NLT.get("toolbar.menu.mobileUI"),
 				url.toString(),

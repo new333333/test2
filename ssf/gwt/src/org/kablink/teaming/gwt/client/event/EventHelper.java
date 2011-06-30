@@ -82,12 +82,14 @@ public class EventHelper {
 		case BROWSE_HIERARCHY_EXIT:         BrowseHierarchyExitEvent.fireOne();        break;
 		case CONTEXT_CHANGING:              ContextChangingEvent.fireOne();            break;
 		case FULL_UI_RELOAD:                FullUIReloadEvent.fireOne();               break;
+		case GOTO_MY_WORKSPACE:             GotoMyWorkspaceEvent.fireOne();            break;
 		case LOGIN:                         LoginEvent.fireOne();                      break;
 		case LOGOUT:                        LogoutEvent.fireOne();                     break;
 		case MASTHEAD_HIDE:                 MastheadHideEvent.fireOne();               break;
 		case MASTHEAD_SHOW:                 MastheadShowEvent.fireOne();               break;
 		case SEARCH_ADVANCED:               SearchAdvancedEvent.fireOne();             break;
 		case SIDEBAR_HIDE:                  SidebarHideEvent.fireOne();                break;
+		case SIDEBAR_RELOAD:                SidebarReloadEvent.fireOne();              break;
 		case SIDEBAR_SHOW:                  SidebarShowEvent.fireOne();                break;
 			
 		default:
@@ -244,6 +246,33 @@ public class EventHelper {
 				}
 				break;
 				
+			case GOTO_CONTENT_URL:
+				// An GotoContentUrlEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof GotoContentUrlEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = GotoContentUrlEvent.registerEvent(eventBus, ((GotoContentUrlEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case GOTO_MY_WORKSPACE:
+				// An GotoMyWorkspaceEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof GotoMyWorkspaceEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = GotoMyWorkspaceEvent.registerEvent(eventBus, ((GotoMyWorkspaceEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case GOTO_PERMALINK_URL:
+				// An GotoPermalinkUrlEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof GotoPermalinkUrlEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = GotoPermalinkUrlEvent.registerEvent(eventBus, ((GotoPermalinkUrlEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case LOGIN:
 				// An LoginEvent!  Can the event handler we
 				// were given handle that?
@@ -325,12 +354,30 @@ public class EventHelper {
 				}
 				break;
 			
+			case SEARCH_TAG:
+				// A SearchTagEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SearchTagEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SearchTagEvent.registerEvent(eventBus, ((SearchTagEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SIDEBAR_HIDE:
 				// A SidebarHideEvent!  Can the event handler we were
 				// given handle that?
 				if (eventHandler instanceof SidebarHideEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = SidebarHideEvent.registerEvent(eventBus, ((SidebarHideEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SIDEBAR_RELOAD:
+				// A SidebarReloadEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SidebarReloadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SidebarReloadEvent.registerEvent(eventBus, ((SidebarReloadEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -451,6 +498,10 @@ public class EventHelper {
 			
 			case FULL_UI_RELOAD:                hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);               break;
 			
+			case GOTO_CONTENT_URL:              hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);             break;
+			case GOTO_MY_WORKSPACE:             hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);            break;
+			case GOTO_PERMALINK_URL:            hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);           break;
+			
 			case LOGIN:                         hasHandler = (eventHandler instanceof LoginEvent.Handler);                      break;
 			case LOGOUT:                        hasHandler = (eventHandler instanceof LogoutEvent.Handler);                     break;
 			
@@ -459,8 +510,10 @@ public class EventHelper {
 			case SEARCH_RECENT_PLACE:           hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);          break;
 			case SEARCH_SAVED:                  hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                break;
 			case SEARCH_SIMPLE:                 hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);               break;
+			case SEARCH_TAG:                    hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                  break;
 			
 			case SIDEBAR_HIDE:                  hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                break;
+			case SIDEBAR_RELOAD:                hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);              break;
 			case SIDEBAR_SHOW:                  hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                break;
 			
 			case UNDEFINED:

@@ -84,6 +84,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -3474,6 +3475,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 								m_logger.debug(traceStart + "...:name:value:TEAMING_ACTION=" + name + ":" + sValue);
 								TeamingAction ta = TeamingAction.valueOf(sValue);
 								toolbarItem.setTeamingAction(ta);
+							}
+							else if (name.equalsIgnoreCase(GwtUIHelper.GWTUI_TEAMING_EVENT)) {
+								m_logger.debug(traceStart + "...:name:value:TEAMING_EVENT=" + name + ":" + sValue);
+								TeamingEvents te = TeamingEvents.valueOf(sValue);
+								toolbarItem.setTeamingEvent(te);
 							}
 							else {
 								m_logger.debug(traceStart + "...:name:value:QUALIFIER=" + name + ":" + sValue);
