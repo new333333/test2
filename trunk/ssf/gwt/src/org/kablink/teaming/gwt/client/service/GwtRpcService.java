@@ -38,7 +38,6 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
-import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -66,7 +65,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
@@ -152,7 +150,6 @@ public interface GwtRpcService extends RemoteService
 	public Boolean               addFavorite(                  HttpRequestInfo ri, String binderId                                   ) throws GwtTeamingException;
 	public Boolean               removeFavorite(               HttpRequestInfo ri, String favoriteId                                 );
 	public Boolean               updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList );
-	public BinderInfo            getBinderInfo(                HttpRequestInfo ri, String binderId                                   );
 	public String                getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId                                   );
 	public List<FavoriteInfo>    getFavorites(                 HttpRequestInfo ri                                                    );
 	public List<TeamInfo>        getMyTeams(                   HttpRequestInfo ri                                                    );
@@ -206,9 +203,6 @@ public interface GwtRpcService extends RemoteService
 	public Boolean saveUserStatus(HttpRequestInfo ri, String status) throws GwtTeamingException;
 	public UserStatus getUserStatus(HttpRequestInfo ri, String binderId) throws GwtTeamingException; 
 	
-	// Return login information such as self registration and auto complete.
-	public GwtLoginInfo getLoginInfo( HttpRequestInfo ri ) throws GwtTeamingException;
-	
 	// Get DiskUsageInfo.
 	public  DiskUsageInfo getDiskUsageInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 
@@ -217,10 +211,6 @@ public interface GwtRpcService extends RemoteService
 	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt );
 	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi                                             );
 	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt );
-	public ActivityStreamParams getActivityStreamParams(        HttpRequestInfo ri                                                                                               );
-	public ActivityStreamInfo   getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId                                                                       );
-	public Boolean              hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi                                             );
-	public Boolean              persistActivityStreamSelection( HttpRequestInfo ri, ActivityStreamInfo asi                                                                       );
 	public Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting );
 
 	// Validate the given TeamingActions for the given entry id.

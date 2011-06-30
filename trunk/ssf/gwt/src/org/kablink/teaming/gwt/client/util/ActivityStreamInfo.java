@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -51,7 +53,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamInfo implements ClientActionParameter, IsSerializable {
+public class ActivityStreamInfo implements ClientActionParameter, IsSerializable, VibeRpcResponseData {
 	/**
 	 * Enumeration describing the type of an activity stream.
 	 */

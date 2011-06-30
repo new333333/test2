@@ -30,55 +30,31 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
- * 
+ * This class holds all of the information necessary to execute the "Get Login Info" command.
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class GetLoginInfoCmd extends VibeRpcCmd
 {
 	/**
-	 * This class defines all the possible commands
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public enum VibeRpcCmdType implements IsSerializable
+	public GetLoginInfoCmd()
 	{
-		EXECUTE_SEARCH,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_LOGIN_INFO,
-		GET_PERSONAL_PREFERENCES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
-	
-	/**
-	 * 
-	 */
-	public VibeRpcCmd()
-	{
+		super();
+		
+		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	private void init()
 	{
-		return m_cmdType;
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_LOGIN_INFO;
 	}
+
 }

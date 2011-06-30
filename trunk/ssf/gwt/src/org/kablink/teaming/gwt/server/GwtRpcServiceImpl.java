@@ -102,7 +102,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -215,6 +219,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ACTIVITY_STREAM_PARAMS:
+		{
+			ActivityStreamParams asParams;
+			
+			asParams = getActivityStreamParams( ri );
+			response = new VibeRpcResponse( asParams );
+			return response;
+		}
+		
 		case GET_ADMIN_ACTIONS:
 		{
 			ArrayList<GwtAdminCategory> adminActions;
@@ -236,6 +249,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			brandingData = GwtServerHelper.getBinderBrandingData( this, ((GetBinderBrandingCmd) cmd).getBinderId(), req );
 
 			response = new VibeRpcResponse( brandingData );
+			return response;
+		}
+		
+		case GET_BINDER_INFO:
+		{
+			BinderInfo binderInfo;
+			String binderId;
+			
+			binderId = ((GetBinderInfoCmd) cmd).getBinderId();
+			binderInfo = getBinderInfo( ri, binderId );
+			response = new VibeRpcResponse( binderInfo );
+			return response;
+		}
+		
+		case GET_DEFAULT_ACTIVITY_STREAM:
+		{
+			ActivityStreamInfo asi;
+			String binderId;
+			
+			binderId = ((GetDefaultActivityStreamCmd) cmd).getBinderId();
+			asi = getDefaultActivityStream( ri, binderId );
+			response = new VibeRpcResponse( asi );
+			return response;
+		}
+		
+		case GET_LOGIN_INFO:
+		{
+			GwtLoginInfo loginInfo;
+			
+			loginInfo = getLoginInfo( ri );
+			response = new VibeRpcResponse( loginInfo );
 			return response;
 		}
 		
@@ -276,6 +320,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			upgradeInfo = getUpgradeInfo( ri );
 			response = new VibeRpcResponse( upgradeInfo );
+			return response;
+		}
+		
+		case HAS_ACTIVITY_STREAM_CHANGED:
+		{
+			ActivityStreamInfo asi;
+			Boolean result;
+			
+			asi = ((HasActivityStreamChangedCmd) cmd).getActivityStreamInfo();
+			result = hasActivityStreamChanged( ri, asi );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case PERSIST_ACTIVITY_STREAM_SELECTION:
+		{
+			ActivityStreamInfo asi;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			asi = ((PersistActivityStreamSelectionCmd) cmd).getActivityStreamInfo();
+			result = persistActivityStreamSelection( ri, asi );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 
@@ -1023,7 +1091,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public ActivityStreamParams getActivityStreamParams( HttpRequestInfo ri )
+	private ActivityStreamParams getActivityStreamParams( HttpRequestInfo ri )
 	{
 		return GwtActivityStreamHelper.getActivityStreamParams(this);
 	}// end getActivityStreamParams()
@@ -1037,7 +1105,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public ActivityStreamInfo getDefaultActivityStream( HttpRequestInfo ri, String currentBinderId )
+	private ActivityStreamInfo getDefaultActivityStream( HttpRequestInfo ri, String currentBinderId )
 	{
 		return GwtActivityStreamHelper.getDefaultActivityStream( getRequest( ri ), this, currentBinderId );
 	}// end getDefaultActivityStream()
@@ -2854,7 +2922,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public BinderInfo getBinderInfo( HttpRequestInfo ri, String binderId )
+	private BinderInfo getBinderInfo( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.getBinderInfo( this, binderId );
 	}//end getBinderInfo()
@@ -3158,7 +3226,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public GwtLoginInfo getLoginInfo( HttpRequestInfo ri )
+	private GwtLoginInfo getLoginInfo( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getLoginInfo( getRequest( ri ), this );
 	}// end getSelfRegistrationInfo()

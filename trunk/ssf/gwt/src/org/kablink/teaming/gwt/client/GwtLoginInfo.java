@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client;
 
 
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -41,7 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * This class holds Login information
  */
 public class GwtLoginInfo
-	implements IsSerializable
+	implements IsSerializable, VibeRpcResponseData
 {
 	private GwtSelfRegistrationInfo m_selfRegInfo;;
 	private boolean m_allowAutoComplete;

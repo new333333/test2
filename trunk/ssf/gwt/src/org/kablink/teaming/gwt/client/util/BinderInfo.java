@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -43,7 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  *
  */
-public class BinderInfo implements IsSerializable {
+public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private BinderType    m_binderType  = BinderType.OTHER;					//
 	private FolderType    m_folderType  = FolderType.NOT_A_FOLDER;			//
 	private String        m_binderId    = "";								//

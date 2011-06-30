@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -1805,6 +1806,8 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onActivityStream( ActivityStreamEvent event )
 	{
+		PersistActivityStreamSelectionCmd cmd;
+		
 		// Restore the UI state (i.e., sidebar, ...)
 		restoreUIState();
 
@@ -1813,7 +1816,8 @@ public class GwtMainPage extends Composite
 		GwtClientHelper.jsSetMainTitle( GwtTeaming.getMessages().whatsNewWithName( asi.getTitle() ) );
 		
 		// ...and persist this activity stream in the user's profile.
-		GwtTeaming.getRpcService().persistActivityStreamSelection( HttpRequestInfo.createHttpRequestInfo(), asi, new AsyncCallback<Boolean>()
+		cmd = new PersistActivityStreamSelectionCmd( asi );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<BooleanRpcResponseData>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -1822,7 +1826,7 @@ public class GwtMainPage extends Composite
 					GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
 			}// end onFailure()
 			
-			public void onSuccess( Boolean   result )
+			public void onSuccess( BooleanRpcResponseData  result )
 			{
 				// Note that we're not doing anything with the results
 				// good or bad.  If it fails, so what?  The activity

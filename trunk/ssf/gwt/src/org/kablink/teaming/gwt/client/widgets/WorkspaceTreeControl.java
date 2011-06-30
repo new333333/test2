@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -476,13 +478,16 @@ public class WorkspaceTreeControl extends Composite
 		
 		// Are we starting up showing what's new?
 		if (m_mainPage.getRequestInfo().isShowWhatsNewOnLogin()) {
+			GetDefaultActivityStreamCmd cmd;
+			
 			// Yes!  Then we enter activity stream mode by
 			// default.  Tell the menu about the context...
 			m_mainPage.setMenuContext(selectedBinderId, false, "");
 			
 			// ...and enter activity stream mode.
 			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
-			GwtTeaming.getRpcService().getDefaultActivityStream(HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
+			cmd = new GetDefaultActivityStreamCmd( selectedBinderId );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					// If we couldn't get it, handle the
 					// failure...
@@ -497,7 +502,11 @@ public class WorkspaceTreeControl extends Composite
 					m_treeDisplay.enterActivityStreamMode(asi);
 				}
 				
-				public void onSuccess(ActivityStreamInfo asi) {
+				public void onSuccess(VibeRpcResponse response) {
+					ActivityStreamInfo asi;
+					
+					asi = (ActivityStreamInfo) response.getResponseData();
+					
 					// If the user doesn't have a default
 					// saved or the default saved is
 					// current binder...

@@ -38,7 +38,6 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
-import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
@@ -66,7 +65,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
@@ -90,7 +88,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface GwtRpcServiceAsync
 {
 	// Execute the given command.
-	@SuppressWarnings("rawtypes")
 	public void executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback );
 	
 	
@@ -148,7 +145,6 @@ public interface GwtRpcServiceAsync
 	public void addFavorite(                  HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
 	public void removeFavorite(               HttpRequestInfo ri, String favoriteId,                                 AsyncCallback<Boolean>               callback );
 	public void updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
-	public void getBinderInfo(                HttpRequestInfo ri, String binderId,                                   AsyncCallback<BinderInfo>            callback );
 	public void getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId,                                   AsyncCallback<String>                callback );
 	public void getFavorites(                 HttpRequestInfo ri,                                                    AsyncCallback<List<FavoriteInfo>>    callback );
 	public void getMyTeams(                   HttpRequestInfo ri,                                                    AsyncCallback<List<TeamInfo>>        callback );
@@ -200,9 +196,6 @@ public interface GwtRpcServiceAsync
 	public void saveUserStatus( HttpRequestInfo ri, String status, 	 AsyncCallback<Boolean>    callback );
 	public void getUserStatus(  HttpRequestInfo ri, String binderId, AsyncCallback<UserStatus> callback ); 
 	
-	// Return login information such as self registration and auto complete.
-	public void getLoginInfo( HttpRequestInfo ri, AsyncCallback<GwtLoginInfo> callback );
-	
 	// Get DiskUsage Info.
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
 
@@ -211,10 +204,6 @@ public interface GwtRpcServiceAsync
 	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
 	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                                             AsyncCallback<ActivityStreamData>   callback );
 	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamParams(        HttpRequestInfo ri,                                                                                               AsyncCallback<ActivityStreamParams> callback );
-	public void getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId,                                                                       AsyncCallback<ActivityStreamInfo>   callback );
-	public void hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi,                                             AsyncCallback<Boolean>              callback );	
-	public void persistActivityStreamSelection( HttpRequestInfo ri,                           ActivityStreamInfo asi,                                             AsyncCallback<Boolean>              callback );
 	public void saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting, AsyncCallback<Boolean> callback );
 	
 	// Validate the given TeamingActions for the given entry id.
