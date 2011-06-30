@@ -180,60 +180,6 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		return doc.getRootElement().asXML();
 	}
 	
-	public String search_getHotContent(String accessToken, String limitType, Long binderId)
-	{
-		Document doc = DocumentHelper.createDocument();
-		Element entries = doc.addElement("entries");
-
-		AuditType type = null;
-		if(limitType != null && !limitType.equals("activity")) {
-			type = AuditType.valueOf(limitType);
-			if(!(type.equals(AuditType.view) || type.equals(AuditType.modify) || type.equals(AuditType.download))) {
-				type = null;
-			}
-		}
-		if(type == null) {
-			limitType = "activity";
-		}
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		GregorianCalendar start = new GregorianCalendar();
-		//get users over last 2 weeks
-		start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-		Binder binder = null;
-		if(binderId != null) {
-			binder = getBinderModule().getBinder(new Long(binderId));
-		}
-		Collection<ActivityInfo> results = getReportModule().getActivity(type, start.getTime(), new java.util.Date(), binder);
-		for(ActivityInfo info : results) {
-			Element resultElem = null;
-			if(info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {
-				resultElem = entries.addElement("entry");
-				FolderEntry entry = (FolderEntry) info.getWhoOrWhat();
-				addEntryAttributes(resultElem, entry);
-				Element child = resultElem.addElement("creation");
-				addPrincipalToDocument(child, entry.getCreation().getPrincipal());
-				child.addElement("date").addText(sdf.format(entry.getCreation().getDate()));
-				child = resultElem.addElement("modification");
-				addPrincipalToDocument(child, entry.getModification().getPrincipal());
-				child.addElement("date").addText(sdf.format(entry.getModification().getDate()));
-			} else if(info.getWhoOrWhat().getEntityType().equals(EntityType.folder)) {
-				resultElem = entries.addElement("folder");
-				resultElem.addAttribute("id", info.getWhoOrWhat().getId().toString());
-				resultElem.addAttribute("title", info.getWhoOrWhat().getTitle());
-				addRating(resultElem, info.getWhoOrWhat());
-			} else if(info.getWhoOrWhat().getEntityType().equals(EntityType.workspace)) {
-				resultElem = entries.addElement("workspace");
-				resultElem.addAttribute("id", info.getWhoOrWhat().getId().toString());
-				resultElem.addAttribute("title", info.getWhoOrWhat().getTitle());
-				addRating(resultElem, info.getWhoOrWhat());
-			}
-			resultElem.addAttribute(limitType + "Count", "" + info.getCount());
-			resultElem.addAttribute("last" + limitType.substring(0, 1).toUpperCase() + limitType.substring(1), sdf.format(info.getLast()));
-		}
-
-		return doc.getRootElement().asXML();
-	}
-
 	public TeamCollection search_getUserTeams(String accessToken, long userId) {
 		Principal entry = 
 			getProfileModule().getEntry(Long.valueOf(userId));

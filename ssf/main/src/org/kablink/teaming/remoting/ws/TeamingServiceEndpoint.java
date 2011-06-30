@@ -583,9 +583,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	// Search Service
 	
-	public String search_getHotContent(String accessToken, String limitType, Long binderId) {
-		return getSearchService().search_getHotContent(accessToken, limitType, binderId);
-	}
 	/*
 	public String search_getTeamsAsXML(String accessToken) {
 		return getSearchService().search_getTeamsAsXML(accessToken);
