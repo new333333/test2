@@ -406,8 +406,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		closePBAnchor.addStyleName("workspaceTreeControlHeader_closeA");
 		closePBAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				GwtTeaming.fireEvent(
-					new ActivityStreamExitEvent());
+				ActivityStreamExitEvent.fireOne();
 			}
 		});
 		

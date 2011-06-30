@@ -40,9 +40,9 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -440,9 +440,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 			public void onClick(ClickEvent event) {
 				// Hide the dialog and perform the saved search.
 				hide();
-				GwtTeaming.getMainPage().handleAction(
-					TeamingAction.SAVED_SEARCH,
-					ssi.getName());
+				GwtTeaming.fireEvent(new SearchSavedEvent(ssi.getName()));
 			}
 		});
 		searchLinksPanel.add(searchAnchor);

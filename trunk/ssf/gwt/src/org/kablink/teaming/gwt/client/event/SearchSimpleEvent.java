@@ -33,36 +33,45 @@
 
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ContextChangingEvent event tells the UI That a context switch is
- * about to take place.
+ * The SearchSimpleEvent tells the UI perform a simple search.
  * 
  * @author drfoster@novell.com
  */
-public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler> {
+public class SearchSimpleEvent extends GwtEvent<SearchSimpleEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
+
+	private String m_simpleSearchString;
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onContextChanging(ContextChangingEvent event);
+		void onSearchSimple(SearchSimpleEvent event);
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor methods.
+	 * 
+	 * @param searchTabId
 	 */
-	public ContextChangingEvent() {
+	public SearchSimpleEvent(String simpleSearchString) {
 		super();
+		m_simpleSearchString = simpleSearchString;
 	}
 	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String getSimpleSearchString() {return m_simpleSearchString;}
+
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 * 
@@ -80,7 +89,7 @@ public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler>
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onContextChanging(this);
+		handler.onSearchSimple(this);
 	}
 	
 	/**
@@ -94,12 +103,5 @@ public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler>
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new ContextChangingEvent());
 	}
 }

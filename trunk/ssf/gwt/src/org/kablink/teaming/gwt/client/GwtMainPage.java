@@ -38,8 +38,10 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
@@ -49,7 +51,10 @@ import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.SearchAdvancedEvent;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
+import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
+import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
@@ -123,6 +128,7 @@ public class GwtMainPage extends Composite
 		ActivityStreamEnterEvent.Handler,
 		AdministrationEvent.Handler,
 		AdministrationExitEvent.Handler,
+		AdministrationUpgradeCheckEvent.Handler,
 		BrowseHierarchyEvent.Handler,
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
@@ -131,7 +137,10 @@ public class GwtMainPage extends Composite
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
+		SearchAdvancedEvent.Handler,
 		SearchRecentPlaceEvent.Handler,
+		SearchSavedEvent.Handler,
+		SearchSimpleEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
@@ -176,6 +185,7 @@ public class GwtMainPage extends Composite
 		// Administration events.
 		TeamingEvents.ADMINISTRATION,
 		TeamingEvents.ADMINISTRATION_EXIT,
+		TeamingEvents.ADMINISTRATION_UPGRADE_CHECK,
 		
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY,
@@ -194,7 +204,10 @@ public class GwtMainPage extends Composite
 		TeamingEvents.MASTHEAD_SHOW,
 
 		// Search events.
+		TeamingEvents.SEARCH_ADVANCED,
 		TeamingEvents.SEARCH_RECENT_PLACE,
+		TeamingEvents.SEARCH_SAVED,
+		TeamingEvents.SEARCH_SIMPLE,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -1170,12 +1183,12 @@ public class GwtMainPage extends Composite
 			if ( isAdminActive() )
 			{
 				// ...close it first.
-				GwtTeaming.fireEvent( new AdministrationExitEvent() );
+				AdministrationExitEvent.fireOne();
 			}
 			
 			// Change the browser's URL.
-			EventHelper.fireActivityStreamExit();
-			EventHelper.fireContextChanging();
+			ActivityStreamExitEvent.fireOne();
+			ContextChangingEvent.fireOne();
 			gotoUrl( m_requestInfo.getMyWorkspaceUrl() );
 			break;
 			
@@ -1188,12 +1201,12 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case GOTO_CONTENT_URL:
-			EventHelper.fireContextChanging();
+			ContextChangingEvent.fireOne();
 			gotoUrl( obj );
 			break;
 
 		case GOTO_PERMALINK_URL:
-			EventHelper.fireContextChanging();
+			ContextChangingEvent.fireOne();
 			gotoUrl( obj, false );
 			break;
 
@@ -1209,30 +1222,12 @@ public class GwtMainPage extends Composite
 			untrackCurrentPerson();
 			break;
 			
-		case SIMPLE_SEARCH:
-			EventHelper.fireActivityStreamExit();
-			EventHelper.fireContextChanging();
-			simpleSearch( obj );
-			break;
-			
-		case ADVANCED_SEARCH:
-			EventHelper.fireActivityStreamExit();
-			EventHelper.fireContextChanging();
-			advancedSearch();
-			break;
-			
-		case SAVED_SEARCH:
-			EventHelper.fireActivityStreamExit();
-			EventHelper.fireContextChanging();
-			savedSearch( obj );
-			break;
-			
 		case RELOAD_LEFT_NAVIGATION:
 			reloadLeftNavigation();
 			break;
 			
 		case TAG_SEARCH:
-			EventHelper.fireContextChanging();
+			ContextChangingEvent.fireOne();
 			tagSearch( obj );
 			break;
 			
@@ -1323,8 +1318,8 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )
-			     GwtTeaming.fireEvent( new SidebarHideEvent() );
-			else GwtTeaming.fireEvent( new SidebarShowEvent() );
+			     SidebarHideEvent.fireOne();
+			else SidebarShowEvent.fireOne();
 			
 			// Figure out if we should show the masthead.
 			if ( hideMasthead == false || showBranding == true )
@@ -1333,8 +1328,8 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the masthead.
 			if ( showMasthead )
-			     GwtTeaming.fireEvent( new MastheadShowEvent() );
-			else GwtTeaming.fireEvent( new MastheadHideEvent() );
+			     MastheadShowEvent.fireOne();
+			else MastheadHideEvent.fireOne();
 		}
 	}// end handleLandingPageOptions()
 	
@@ -1348,7 +1343,7 @@ public class GwtMainPage extends Composite
 		if ( pageName != null && pageName.length() > 0 )
 		{
 			if ( pageName.equalsIgnoreCase( "login-page" ) )
-				GwtTeaming.fireEvent( new LoginEvent() );
+				LoginEvent.fireOne();
 			else
 			{
 				Window.alert( "In handlePageWithGWT(), unknown page: " + pageName );
@@ -1372,7 +1367,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void invokeAdminPage()
 	{
-		GwtTeaming.fireEvent( new AdministrationEvent() );
+		AdministrationEvent.fireOne();
 	}
 	
 	
@@ -1639,8 +1634,8 @@ public class GwtMainPage extends Composite
 	 */
 	private void gotoContentUrl( String url )
 	{
-		EventHelper.fireActivityStreamExit();
-		EventHelper.fireContextChanging();
+		ActivityStreamExitEvent.fireOne();
+		ContextChangingEvent.fireOne();
 		gotoUrl( url, true );
 	}
 	
@@ -1695,7 +1690,7 @@ public class GwtMainPage extends Composite
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				EventHelper.fireFullUIReload();
+				FullUIReloadEvent.fireOne();
 			}// end onSuccess()
 		});
 	}
@@ -1723,7 +1718,7 @@ public class GwtMainPage extends Composite
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				EventHelper.fireFullUIReload();
+				FullUIReloadEvent.fireOne();
 			}// end onSuccess()
 		});
 	}
@@ -1751,69 +1746,11 @@ public class GwtMainPage extends Composite
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				EventHelper.fireFullUIReload();
+				FullUIReloadEvent.fireOne();
 			}// end onSuccess()
 		});
 	}
 	
-	/*
-	 * This method will be called to perform a simple search on a
-	 * string received as a parameter.
-	 * 
-	 * Implements the SIMPLE_SEARCH teaming action.
-	 */
-	private void simpleSearch( Object obj )
-	{
-		if ( ( null == obj ) || ( obj instanceof String ))
-		{
-			// What are we searching for?
-			String searchFor = ((null == obj ) ? "" : ((String) obj));
-			if (GwtClientHelper.jsHasSimpleSearchForm()) {
-				GwtClientHelper.jsInvokeSimpleSearch( searchFor );
-			}
-			
-			else {
-				String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
-				GwtClientHelper.loadUrlInContentFrame( searchUrl );
-			}
-		}
-		else
-			Window.alert( "in simpleSearch() and obj is not a String object" );
-	}//end simpleSearch()
-
-	/*
-	 * This method will be called to run advanced search in the content
-	 * panel.
-	 * 
-	 * Implements the ADVANCED_SEARCH teaming action.
-	 */
-	private void advancedSearch()
-	{
-		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
-		GwtClientHelper.loadUrlInContentFrame(searchUrl);
-	}//end advancedSearch()
-	
-	/*
-	 * This method will be called to perform a saved search on a
-	 * string received as a parameter.
-	 * 
-	 * Implements the SAVED_SEARCH teaming action.
-	 */
-	private void savedSearch( Object obj )
-	{
-		if ( ( null == obj ) || ( obj instanceof String ))
-		{
-			String searchFor;
-
-			// What's the name of the saved search?
-			searchFor = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
-			String searchUrl = (m_requestInfo.getSavedSearchUrl() + "&ss_queryName=" + searchFor);
-			GwtClientHelper.loadUrlInContentFrame(searchUrl);
-		}
-		else
-			Window.alert( "in savedSearch() and obj is not a String object" );
-	}//end savedSearch()
-
 	/**
 	 * Save the current ui state.
 	 */
@@ -1952,6 +1889,21 @@ public class GwtMainPage extends Composite
 	}
 	
 	/**
+	 * Handles AdministrationUpgradeCheckEvent's received by this class.
+	 * 
+	 * Implements the AdministrationUpgradeCheckEvent.Handler.onAdministrationUpgradeCheck() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationUpgradeCheck( AdministrationUpgradeCheckEvent event )
+	{
+		// Show a list of upgrade tasks that still need to be
+		// performed.
+		AdminControl.showUpgradeTasks();
+	}// end onAdministrationUpgradeCheck()
+	
+	/**
 	 * Handles BrowseHierarchyEvent's received by this class.
 	 * 
 	 * Implements the BrowseHierarchyEvent.Handler.onBrowseHierarchy() method.
@@ -2024,8 +1976,8 @@ public class GwtMainPage extends Composite
 			// ...put it into effect.
 			m_selectedBinderId = osbInfo.getBinderId().toString();
 			
-			EventHelper.fireActivityStreamExit();
-			EventHelper.fireContextChanging();
+			ActivityStreamExitEvent.fireOne();
+			ContextChangingEvent.fireOne();
 		}
 	}// end onContextChanged()
 	
@@ -2053,7 +2005,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onFullUIReload( FullUIReloadEvent event )
 	{
-		EventHelper.fireFullUIReload();
+		FullUIReloadEvent.fireOne();
 	}// end onFullUIReload()
 	
 	/**
@@ -2112,6 +2064,22 @@ public class GwtMainPage extends Composite
 	}// end onMastheadShow()
 	
 	/**
+	 * Handles SearchAdvancedEvent's received by this class.
+	 * 
+	 * Implements the SearchAdvancedEvent.Handler.onSearchAdvanced() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchAdvanced( SearchAdvancedEvent event )
+	{
+		ActivityStreamExitEvent.fireOne();
+		ContextChangingEvent.fireOne();
+		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
+		GwtClientHelper.loadUrlInContentFrame(searchUrl);
+	}// end onSearchAdvanced()
+	
+	/**
 	 * Handles SearchRecentPlaceEvent's received by this class.
 	 * 
 	 * Implements the SearchRecentPlaceEvent.Handler.onSearchRecentPlace() method.
@@ -2122,13 +2090,62 @@ public class GwtMainPage extends Composite
 	public void onSearchRecentPlace( SearchRecentPlaceEvent event )
 	{
 		// Tell everybody that a context switch is about to happen...
-		EventHelper.fireContextChanging();
+		ContextChangingEvent.fireOne();
 
 		// ...and perform the search.
 		Integer searchFor = event.getSearchTabId();
 		String searchUrl = (m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf(searchFor.intValue()));
 		GwtClientHelper.loadUrlInContentFrame(searchUrl);
 	}// end onSearchRecentPlace()
+	
+	/**
+	 * Handles SearchSavedEvent's received by this class.
+	 * 
+	 * Implements the SearchSavedEvent.Handler.onSearchSaved() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchSaved( SearchSavedEvent event )
+	{
+		ActivityStreamExitEvent.fireOne();
+		ContextChangingEvent.fireOne();
+
+		// What's the name of the saved search?
+		String searchFor = event.getSavedSearchName();
+		searchFor = ( ( null == searchFor ) ? "" : GwtClientHelper.jsEncodeURIComponent( searchFor ) );
+		String searchUrl = ( m_requestInfo.getSavedSearchUrl() + "&ss_queryName=" + searchFor );
+		GwtClientHelper.loadUrlInContentFrame( searchUrl );
+	}// end onSearchSaved()
+	
+	/**
+	 * Handles SearchSimpleEvent's received by this class.
+	 * 
+	 * Implements the SearchSimpleEvent.Handler.onSearchSimple() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchSimple( SearchSimpleEvent event )
+	{
+		ActivityStreamExitEvent.fireOne();
+		ContextChangingEvent.fireOne();
+		
+		// What are we searching for?
+		String searchFor = event.getSimpleSearchString();
+		if ( null == searchFor )
+		{
+			searchFor = "";
+		}
+		if (GwtClientHelper.jsHasSimpleSearchForm()) {
+			GwtClientHelper.jsInvokeSimpleSearch( searchFor );
+		}
+		
+		else {
+			String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
+			GwtClientHelper.loadUrlInContentFrame( searchUrl );
+		}
+	}// end onSearchSimple()
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.
@@ -2399,7 +2416,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void fireContextChanging()
 	{
-		EventHelper.fireContextChanging();
+		ContextChangingEvent.fireOne();
 	}// end fireContextChanging()
 	
 	/*

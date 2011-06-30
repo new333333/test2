@@ -41,25 +41,25 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ContextChangingEvent event tells the UI That a context switch is
- * about to take place.
+ * The SearchAdvancedEvent is used to the advanced search in the
+ * content area.
  * 
  * @author drfoster@novell.com
  */
-public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler> {
+public class SearchAdvancedEvent extends GwtEvent<SearchAdvancedEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onContextChanging(ContextChangingEvent event);
+		void onSearchAdvanced(SearchAdvancedEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public ContextChangingEvent() {
+	public SearchAdvancedEvent() {
 		super();
 	}
 	
@@ -80,7 +80,7 @@ public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler>
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onContextChanging(this);
+		handler.onSearchAdvanced(this);
 	}
 	
 	/**
@@ -100,6 +100,6 @@ public class ContextChangingEvent extends GwtEvent<ContextChangingEvent.Handler>
 	 * Fires a new one of these events.
 	 */
 	public static void fireOne() {
-		GwtTeaming.fireEvent(new ContextChangingEvent());
+		GwtTeaming.fireEvent(new SearchAdvancedEvent());
 	}
 }

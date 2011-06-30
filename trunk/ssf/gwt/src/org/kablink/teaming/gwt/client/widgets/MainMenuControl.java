@@ -203,7 +203,7 @@ public class MainMenuControl extends Composite
 		menuPanel.add(m_contextPanel);
 		
 		// ...add the search widgets to the right end of the menu...
-		m_searchPanel = new SearchMenuPanel(this);
+		m_searchPanel = new SearchMenuPanel();
 		menuPanel.add(m_searchPanel);
 		final MainMenuControl mainMenu = this;
 		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new ClickHandler() {
@@ -271,7 +271,7 @@ public class MainMenuControl extends Composite
 		m_closeAdminBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					GwtTeaming.fireEvent(new AdministrationExitEvent());
+					AdministrationExitEvent.fireOne();
 				}
 			});
 		menuPanel.add(m_closeAdminBox);

@@ -44,7 +44,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public enum TeamingAction implements IsSerializable
 {
-	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
 	EDIT_SITE_BRANDING ("Edit Site Branding" ),
@@ -57,12 +56,10 @@ public enum TeamingAction implements IsSerializable
 	MY_WORKSPACE( "My Workspace" ),
 	RELOAD_LEFT_NAVIGATION( "Tells the Left Navigation Panel To Reload Itself"),
 	REPLY( "Invoke the 'reply to entry' ui" ),
-	SAVED_SEARCH( "Executes a Saved Search Using a String as the Name" ),
 	SHARE( "Invoke the 'share this entry' ui" ),
 	SHOW_ALL_ENTRIES( "Show all entries" ),
 	SHOW_RESOURCE_LIBRARY( "Show the Resource Library page" ),
 	SHOW_UNREAD_ENTRIES( "Show unread entries" ),
-	SIMPLE_SEARCH( "Performs a Simple Search on a String" ),
 	SIZE_CHANGED( "The Size of Something Changed" ),
 	SUBSCRIBE( "Invoke the 'subscribe to this entry' ui" ),
 	TAG( "Invoke the 'tag this entry' ui" ),

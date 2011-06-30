@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -54,21 +53,20 @@ public abstract class ProfileSectionPanel extends FlowPanel {
 	protected ProfileRequestInfo 		profileRequestInfo; // Initial values passed 
 	protected GwtRpcServiceAsync	rpcService;			//
 	protected GwtTeamingMessages	messages; 			// The menu's messages.
-	protected ActionTrigger 		actionTrigger;
 	protected Label 				headingLabel;
 	protected String 				sectionTitle;
 	protected boolean               selectedMore;
 	private Image 					expandImage;
 	private Image					collapseImage;
 	private FlowPanel 				titlePanel;
+	@SuppressWarnings("unused")
 	private SideBarAnchor 			sbA;
 	
-	public ProfileSectionPanel(ProfileRequestInfo requestInfo, String title, ActionTrigger trigger) {
+	public ProfileSectionPanel(ProfileRequestInfo requestInfo, String title) {
 
 		rpcService			= GwtTeaming.getRpcService();
 		messages			= GwtTeaming.getMessages();
 		profileRequestInfo 	= requestInfo;
-		actionTrigger 		= trigger;
 		sectionTitle        = title;
 		
 		createTitleAreaWidget();

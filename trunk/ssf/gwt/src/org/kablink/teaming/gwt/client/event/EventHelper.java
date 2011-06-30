@@ -37,7 +37,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -70,36 +69,33 @@ public class EventHelper {
 	}
 	
 	/**
-	 * Given an event that requires no parameters, generates the
-	 * corresponding GwtEvent object for it.
+	 * Given an event that requires no parameters, fires one.
 	 * 
 	 * @param event
-	 * 
-	 * @return
 	 */
-	public static GwtEvent<?> createSimpleEvent(TeamingEvents event) {
-		GwtEvent<?> reply;
+	public static void fireSimpleEvent(TeamingEvents event) {
 		switch (event) {
-		case MASTHEAD_HIDE:  reply = new MastheadHideEvent(); break;
-		case MASTHEAD_SHOW:  reply = new MastheadShowEvent(); break;
-		case SIDEBAR_HIDE:   reply = new SidebarHideEvent();  break;
-		case SIDEBAR_SHOW:   reply = new SidebarShowEvent();  break;
+		case ACTIVITY_STREAM_EXIT:          ActivityStreamExitEvent.fireOne();         break;
+		case ADMINISTRATION:                AdministrationEvent.fireOne();             break;
+		case ADMINISTRATION_EXIT:           AdministrationExitEvent.fireOne();         break;
+		case ADMINISTRATION_UPGRADE_CHECK:  AdministrationUpgradeCheckEvent.fireOne(); break;
+		case BROWSE_HIERARCHY_EXIT:         BrowseHierarchyExitEvent.fireOne();        break;
+		case CONTEXT_CHANGING:              ContextChangingEvent.fireOne();            break;
+		case FULL_UI_RELOAD:                FullUIReloadEvent.fireOne();               break;
+		case LOGIN:                         LoginEvent.fireOne();                      break;
+		case LOGOUT:                        LogoutEvent.fireOne();                     break;
+		case MASTHEAD_HIDE:                 MastheadHideEvent.fireOne();               break;
+		case MASTHEAD_SHOW:                 MastheadShowEvent.fireOne();               break;
+		case SEARCH_ADVANCED:               SearchAdvancedEvent.fireOne();             break;
+		case SIDEBAR_HIDE:                  SidebarHideEvent.fireOne();                break;
+		case SIDEBAR_SHOW:                  SidebarShowEvent.fireOne();                break;
 			
 		default:
 		case UNDEFINED:
 			Window.alert(GwtTeaming.getMessages().eventHandling_NonSimpleEvent(event.name(), EventHelper.class.getName()));
-			reply = null;
 			break;
 		}
-		return reply;
 	}
-	
-	/**
-	 * Simple event firing methods.
-	 */
-	public static void fireActivityStreamExit() {GwtTeaming.fireEvent(new ActivityStreamExitEvent());}
-	public static void fireContextChanging()    {GwtTeaming.fireEvent(new ContextChangingEvent());   }
-	public static void fireFullUIReload()       {GwtTeaming.fireEvent(new FullUIReloadEvent());      }
 	
 	/*
 	 * Returns true of an event is an an array of events and false
@@ -284,6 +280,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SEARCH_ADVANCED:
+				// A SearchAdvancedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof SearchAdvancedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SearchAdvancedEvent.registerEvent(eventBus, ((SearchAdvancedEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SEARCH_FIND_RESULTS:
 				// A SearchFindResultsEvent!  Can the event handler we were
 				// given handle that?
@@ -294,11 +299,29 @@ public class EventHelper {
 				break;
 			
 			case SEARCH_RECENT_PLACE:
-				// A SearchRecentPlaceEvent!  Can the event handler we were
-				// given handle that?
+				// A SearchRecentPlaceEvent!  Can the event handler we
+				// were given handle that?
 				if (eventHandler instanceof SearchRecentPlaceEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = SearchRecentPlaceEvent.registerEvent(eventBus, ((SearchRecentPlaceEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SEARCH_SAVED:
+				// A SearchSavedEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SearchSavedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SearchSavedEvent.registerEvent(eventBus, ((SearchSavedEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SEARCH_SIMPLE:
+				// A SearchSimpleEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SearchSimpleEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SearchSimpleEvent.registerEvent(eventBus, ((SearchSimpleEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -431,8 +454,11 @@ public class EventHelper {
 			case LOGIN:                         hasHandler = (eventHandler instanceof LoginEvent.Handler);                      break;
 			case LOGOUT:                        hasHandler = (eventHandler instanceof LogoutEvent.Handler);                     break;
 			
+			case SEARCH_ADVANCED:               hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);             break;
 			case SEARCH_FIND_RESULTS:           hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);          break;
 			case SEARCH_RECENT_PLACE:           hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);          break;
+			case SEARCH_SAVED:                  hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                break;
+			case SEARCH_SIMPLE:                 hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);               break;
 			
 			case SIDEBAR_HIDE:                  hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                break;
 			case SIDEBAR_SHOW:                  hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                break;
