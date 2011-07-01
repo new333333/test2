@@ -283,12 +283,48 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_REPLY:
+				// An InvokeReplyEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof InvokeReplyEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeReplyEvent.registerEvent(eventBus, ((InvokeReplyEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case INVOKE_SHARE:
+				// An InvokeShareEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof InvokeShareEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeShareEvent.registerEvent(eventBus, ((InvokeShareEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_SIMPLE_PROFILE:
 				// An InvokeSimpleProfileEvent!  Can the event handler
 				// we were given handle that?
 				if (eventHandler instanceof InvokeSimpleProfileEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeSimpleProfileEvent.registerEvent(eventBus, ((InvokeSimpleProfileEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case INVOKE_SUBSCRIBE:
+				// An InvokeSubscribeEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof InvokeSubscribeEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeSubscribeEvent.registerEvent(eventBus, ((InvokeSubscribeEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case INVOKE_TAG:
+				// An InvokeTagEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof InvokeTagEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeTagEvent.registerEvent(eventBus, ((InvokeTagEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -307,6 +343,24 @@ public class EventHelper {
 				if (eventHandler instanceof LogoutEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = LogoutEvent.registerEvent(eventBus, ((LogoutEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case MARK_ENTRY_READ:
+				// An MarkEntryReadEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof MarkEntryReadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MarkEntryReadEvent.registerEvent(eventBus, ((MarkEntryReadEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case MARK_ENTRY_UNREAD:
+				// An MarkEntryUnreadEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof MarkEntryUnreadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MarkEntryUnreadEvent.registerEvent(eventBus, ((MarkEntryUnreadEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -522,10 +576,17 @@ public class EventHelper {
 			case GOTO_PERMALINK_URL:            hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);           break;
 			
 			case INVOKE_HELP:                   hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                 break;
+			case INVOKE_REPLY:                  hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                break;
+			case INVOKE_SHARE:                  hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                break;
 			case INVOKE_SIMPLE_PROFILE:         hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);        break;
+			case INVOKE_SUBSCRIBE:              hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);            break;
+			case INVOKE_TAG:                    hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                  break;
 			
 			case LOGIN:                         hasHandler = (eventHandler instanceof LoginEvent.Handler);                      break;
 			case LOGOUT:                        hasHandler = (eventHandler instanceof LogoutEvent.Handler);                     break;
+			
+			case MARK_ENTRY_READ:               hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);              break;
+			case MARK_ENTRY_UNREAD:             hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);            break;
 			
 			case SEARCH_ADVANCED:               hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);             break;
 			case SEARCH_FIND_RESULTS:           hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);          break;

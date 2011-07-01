@@ -44,6 +44,12 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
+import org.kablink.teaming.gwt.client.event.InvokeShareEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSubscribeEvent;
+import org.kablink.teaming.gwt.client.event.InvokeTagEvent;
+import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
+import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -108,6 +114,12 @@ public class ActivityStreamCtrl extends Composite
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
 		AdministrationExitEvent.Handler,
+		InvokeReplyEvent.Handler,
+		InvokeShareEvent.Handler,
+		InvokeSubscribeEvent.Handler,
+		InvokeTagEvent.Handler,
+		MarkEntryReadEvent.Handler,
+		MarkEntryUnreadEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
@@ -167,6 +179,16 @@ public class ActivityStreamCtrl extends Composite
 		
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
+
+		// Invoke events.
+		TeamingEvents.INVOKE_REPLY,
+		TeamingEvents.INVOKE_SHARE,
+		TeamingEvents.INVOKE_SUBSCRIBE,
+		TeamingEvents.INVOKE_TAG,
+
+		// Marker events.
+		TeamingEvents.MARK_ENTRY_READ,
+		TeamingEvents.MARK_ENTRY_UNREAD,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -885,7 +907,7 @@ public class ActivityStreamCtrl extends Composite
 		if ( m_actionsPopupMenu == null )
 		{
 			// No, create one.
-			m_actionsPopupMenu = new ActionsPopupMenu( true, true, this );
+			m_actionsPopupMenu = new ActionsPopupMenu( true, true );
 		}
 	}
 	
@@ -1013,61 +1035,6 @@ public class ActivityStreamCtrl extends Composite
 			{
 				switch ( action )
 				{
-				case REPLY:
-					if ( actionData instanceof ActivityStreamUIEntry )
-					{
-						// Tell the entry to display the reply ui.
-						((ActivityStreamUIEntry) actionData ).invokeReplyUI();
-					}
-					break;
-					
-				case SHARE:
-					if ( actionData instanceof ActivityStreamUIEntry )
-					{
-						// Invoke the Share This dialog
-						invokeShareThisDlg( (ActivityStreamUIEntry) actionData );
-					}
-					break;
-				
-				case MARK_ENTRY_READ:
-					if ( actionData instanceof ActivityStreamUIEntry )
-					{
-						boolean hide;
-						
-						// If we are displaying "show unread" we need to hide this entry.
-						hide = false;
-						if ( m_showSetting == ShowSetting.SHOW_UNREAD )
-							hide = true;
-						
-						// Mark the given entry as read.
-						((ActivityStreamUIEntry) actionData ).markEntryAsRead( hide );
-					}
-					break;
-					
-				case MARK_ENTRY_UNREAD:
-					if ( actionData instanceof ActivityStreamUIEntry )
-					{
-						// Mark the given entry as unread.
-						((ActivityStreamUIEntry) actionData ).markEntryAsUnread();
-					}
-					break;
-					
-				case TAG:
-					if ( actionData instanceof ActivityStreamUIEntry )
-					{
-						// Invoke the Tag This dialog.
-						invokeTagThisDlg( (ActivityStreamUIEntry) actionData );
-					}
-					break;
-					
-				case SUBSCRIBE:
-					if ( actionData instanceof ActivityStreamUIEntry )
-					{
-						// Invoke the Subscribe to Entry dialog.
-						invokeSubscribeToEntryDlg( (ActivityStreamUIEntry) actionData );
-					}
-					break;
-					
 				case SHOW_ALL_ENTRIES:
 					handleNewShowSetting( ShowSetting.SHOW_ALL );
 					break;
@@ -1869,6 +1836,121 @@ public class ActivityStreamCtrl extends Composite
 			show();
 		}
 	}// end onAdministrationExit()
+	
+	/**
+	 * Handles InvokeReplyEvent's received by this class.
+	 * 
+	 * Implements the InvokeReplyEvent.Handler.onInvokeReply() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeReply( InvokeReplyEvent event )
+	{
+		ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			// Tell the entry to display the reply ui.
+			uiEntry.invokeReplyUI();
+		}
+	}// end onInvokeReply()
+	
+	/**
+	 * Handles InvokeShareEvent's received by this class.
+	 * 
+	 * Implements the InvokeShareEvent.Handler.onInvokeShare() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeShare( InvokeShareEvent event )
+	{
+		ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			// Invoke the Share this Entry dialog.
+			invokeShareThisDlg( uiEntry );
+		}
+	}// end onInvokeShare()
+	
+	/**
+	 * Handles InvokeSubscribeEvent's received by this class.
+	 * 
+	 * Implements the InvokeSubscribeEvent.Handler.onInvokeSubscribe() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeSubscribe( InvokeSubscribeEvent event )
+	{
+		ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			// Invoke the Subscribe to Entry dialog.
+			invokeSubscribeToEntryDlg( uiEntry );
+		}
+	}// end onInvokeSubscribe()
+	
+	/**
+	 * Handles InvokeTagEvent's received by this class.
+	 * 
+	 * Implements the InvokeTagEvent.Handler.onInvokeTag() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeTag( InvokeTagEvent event )
+	{
+		ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			// Invoke the Tag this Entry dialog.
+			invokeTagThisDlg( uiEntry );
+		}
+	}// end onInvokeTag()
+	
+	/**
+	 * Handles MarkEntryReadEvent's received by this class.
+	 * 
+	 * Implements the MarkEntryReadEvent.Handler.onMarkEntryRead() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkEntryRead( MarkEntryReadEvent event )
+	{
+		ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			boolean hide;
+			
+			// If we are displaying "show unread" we need to hide this entry.
+			hide = false;
+			if ( m_showSetting == ShowSetting.SHOW_UNREAD )
+				hide = true;
+			
+			// Mark the given entry as read.
+			uiEntry.markEntryAsRead( hide );
+		}
+	}// end onMarkEntryRead()
+	
+	/**
+	 * Handles MarkEntryUnreadEvent's received by this class.
+	 * 
+	 * Implements the MarkEntryUnreadEvent.Handler.onMarkEntryUnread() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkEntryUnread( MarkEntryUnreadEvent event )
+	{
+		ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			// Mark the given entry as unread.
+			uiEntry.markEntryAsUnread();
+		}
+	}// end onMarkEntryUnread()
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.

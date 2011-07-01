@@ -77,7 +77,7 @@ import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
+import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -206,8 +206,8 @@ public interface GwtRpcServiceAsync
 	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
 	public void saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting, AsyncCallback<Boolean> callback );
 	
-	// Validate the given TeamingActions for the given entry id.
-	public void validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId, AsyncCallback<ArrayList<ActionValidation>> callback );
+	// Validate the given TeamingEvents for the given entry id.
+	public void validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId, AsyncCallback<ArrayList<EventValidation>> callback );
 
 	// Get subscription information for the given entry id.
 	public void getSubscriptionData( HttpRequestInfo ri, String entryId, AsyncCallback<SubscriptionData> callback );

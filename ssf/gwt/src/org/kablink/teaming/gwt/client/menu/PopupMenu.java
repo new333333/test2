@@ -46,6 +46,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -76,6 +77,7 @@ public class PopupMenu extends TeamingPopupPanel
 	{
 		private ActionHandler m_actionHandler;
 		private TeamingAction m_action;
+		private GwtEvent<?> m_event;
 		private Object m_actionData;
 		private FlowPanel m_mainPanel;
 		private Image m_checkedImg;				// Image used to put a checkmark next to the menu item.
@@ -83,10 +85,9 @@ public class PopupMenu extends TeamingPopupPanel
 		private Image m_img;					// Image used with this menu item.
 		private Image m_spacerImg;				// Image used as a spacer if this menu item does not use an image
 		
-		/**
-		 * 
+		/*
 		 */
-		public PopupMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, Image img, String text )
+		private PopupMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, GwtEvent<?> event, Image img, String text )
 		{
 			InlineLabel label;
 			ImageResource imageResource;
@@ -94,6 +95,8 @@ public class PopupMenu extends TeamingPopupPanel
 			m_actionHandler = actionHandler;
 			m_action = action;
 			m_actionData = actionData;
+			
+			m_event = event;
 			
 			m_mainPanel = new FlowPanel();
 			m_mainPanel.addStyleName( "popupMenuItem" );
@@ -134,6 +137,16 @@ public class PopupMenu extends TeamingPopupPanel
 			addDomHandler( this, MouseOutEvent.getType() );
 			
 			initWidget( m_mainPanel );
+		}
+		
+		public PopupMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, Image img, String text )
+		{
+			this( actionHandler, action, actionData, null, img, text );
+		}
+		
+		public PopupMenuItem( GwtEvent<?> event, Image img, String text )
+		{
+			this( null, null, null, event, img, text );
 		}
 		
 		/**
@@ -187,6 +200,15 @@ public class PopupMenu extends TeamingPopupPanel
 		
 		
 		/**
+		 * 
+		 */
+		public GwtEvent<?> getEvent()
+		{
+			return m_event;
+		}
+		
+		
+		/**
 		 * This method gets called when this menu item is selected.
 		 */
 		private void handleMenuItemSelected()
@@ -197,11 +219,11 @@ public class PopupMenu extends TeamingPopupPanel
 			menuItemSelected( this );
 			
 			invokeActionHandler();
+			fireEvent();
 		}
 		
 		
-		/**
-		 * 
+		/*
 		 */
 		private void invokeActionHandler()
 		{
@@ -209,6 +231,16 @@ public class PopupMenu extends TeamingPopupPanel
 			if ( m_actionHandler != null )
 			{
 				m_actionHandler.handleAction( m_action, m_actionData );
+			}
+		}
+		
+		/*
+		 */
+		private void fireEvent()
+		{
+			if ( m_event != null )
+			{
+				GwtTeaming.fireEvent( m_event );
 			}
 		}
 		
@@ -325,15 +357,17 @@ public class PopupMenu extends TeamingPopupPanel
 	}
 	
 	
-	/**
+	/*
 	 * Add a menu item to this popup menu
 	 */
-	public PopupMenuItem addMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, Image img, String text )
+	private PopupMenuItem addMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, GwtEvent<?> event, Image img, String text )
 	{
 		PopupMenuItem menuItem;
 		int row;
-		
-		menuItem = new PopupMenuItem( actionHandler, action, actionData, img, text );
+
+		if ( null != event )
+		     menuItem = new PopupMenuItem(                event,              img, text );
+		else menuItem = new PopupMenuItem( actionHandler, action, actionData, img, text );
 		
 		// Add the menu item.
 		row = m_menuItemsTable.getRowCount();
@@ -361,6 +395,36 @@ public class PopupMenu extends TeamingPopupPanel
 		}
 		
 		return menuItem;
+	}
+
+	/**
+	 * Add a menu item to this popup menu
+	 * 
+	 * @param actionHandler
+	 * @param action
+	 * @param actionData
+	 * @param img
+	 * @param text
+	 * 
+	 * @return
+	 */
+	public PopupMenuItem addMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, Image img, String text )
+	{
+		return addMenuItem( actionHandler, action, actionData, null, img, text );
+	}
+	
+	/**
+	 * Add a menu item to this popup menu
+	 * 
+	 * @param event
+	 * @param img
+	 * @param text
+	 * 
+	 * @return
+	 */
+	public PopupMenuItem addMenuItem( GwtEvent<?> event, Image img, String text )
+	{
+		return addMenuItem( null, null, null, event, img, text );
 	}
 	
 	/**

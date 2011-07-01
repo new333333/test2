@@ -102,7 +102,6 @@ import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
@@ -110,6 +109,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -118,7 +118,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
+import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -4049,14 +4049,14 @@ public class GwtServerHelper {
 	
 
 	/**
-	 * Validate the list of TeamingActions to see if the user has rights to perform the actions
+	 * Validate the list of TeamingEvents to see if the user has rights to perform the events
 	 */
-	public static void validateEntryActions( AllModulesInjected bs, HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId )
+	public static void validateEntryEvents( AllModulesInjected bs, HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId )
 	{
-		// Initialize all actions as invalid.
-		for ( ActionValidation nextValidation : actionValidations )
+		// Initialize all events as invalid.
+		for ( EventValidation nextValidation : eventValidations )
 		{
-			// Validate this action.
+			// Validate this event.
 			nextValidation.setIsValid( false );
 		}
 
@@ -4071,18 +4071,18 @@ public class GwtServerHelper {
 
 			folderEntry = folderModule.getEntry( null, entryIdL );
 	        
-			for ( ActionValidation nextValidation : actionValidations )
+			for ( EventValidation nextValidation : eventValidations )
 			{
-				int teamingAction;
+				TeamingEvents teamingEvent;
 				
-				// Validate the next action.
+				// Validate the next event.
 				try
 				{
-					teamingAction = nextValidation.getAction();
+					teamingEvent = nextValidation.getEvent();
 					
-					if ( teamingAction == TeamingAction.REPLY.ordinal() )
+					if ( teamingEvent.equals( TeamingEvents.INVOKE_REPLY ))
 						folderModule.checkAccess( folderEntry, FolderOperation.addReply );
-					else if ( teamingAction == TeamingAction.TAG.ordinal() )
+					else if ( teamingEvent.equals( TeamingEvents.INVOKE_TAG ))
 					{
 						// Tag is valid if the user can manage public tags or can modify the entry.
 						if ( canManagePublicEntryTags( bs, entryId ) == true )
@@ -4094,9 +4094,9 @@ public class GwtServerHelper {
 							folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
 						}
 					}
-					else if ( teamingAction == TeamingAction.SHARE.ordinal() )
+					else if ( teamingEvent.equals( TeamingEvents.INVOKE_SHARE ))
 						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
-					else if ( teamingAction == TeamingAction.SUBSCRIBE.ordinal() )
+					else if ( teamingEvent.equals( TeamingEvents.INVOKE_SUBSCRIBE ))
 						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
 
 					// If we get here the action is valid.

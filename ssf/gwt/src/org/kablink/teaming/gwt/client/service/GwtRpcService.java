@@ -79,7 +79,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
+import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -213,8 +213,8 @@ public interface GwtRpcService extends RemoteService
 	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt );
 	public Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting );
 
-	// Validate the given TeamingActions for the given entry id.
-	public ArrayList<ActionValidation> validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId );
+	// Validate the given TeamingEvents for the given entry id.
+	public ArrayList<EventValidation> validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId );
 
 	// Get subscription information for the given entry id.
 	public SubscriptionData getSubscriptionData( HttpRequestInfo ri, String entryId );
