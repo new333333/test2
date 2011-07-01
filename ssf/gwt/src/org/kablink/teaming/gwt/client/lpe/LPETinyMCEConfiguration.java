@@ -35,9 +35,10 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDocBaseUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -63,7 +64,7 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 
 		// Create the callback that will be used when we issue an ajax call to get
 		// the base url for the given binder.
-		m_rpcCallback = new AsyncCallback<String>()
+		m_rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -81,8 +82,14 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( String documentBaseUrl )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				String documentBaseUrl;
+				StringRpcResponseData responseData;
+				
+				responseData = (StringRpcResponseData) response.getResponseData();
+				documentBaseUrl = responseData.getStringValue();
+				
 				// Update the url that is used for the document base url when initializing the tinyMCE editor.
 				setDocumentBaseUrl( documentBaseUrl );
 				m_rpcInProgress = false;
@@ -226,13 +233,12 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	{
 		if ( m_binderId != null )
 		{
-			GwtRpcServiceAsync rpcService;
+			GetDocBaseUrlCmd cmd;
 	
-			rpcService = GwtTeaming.getRpcService();
-			
 			// Issue an ajax request to get the base url for the binder.
 			m_rpcInProgress = true;
-			rpcService.getDocumentBaseUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
+			cmd = new GetDocBaseUrlCmd( m_binderId );
+			GwtClientHelper.executeCommand( cmd, m_rpcCallback );
 		}
 	}
 	

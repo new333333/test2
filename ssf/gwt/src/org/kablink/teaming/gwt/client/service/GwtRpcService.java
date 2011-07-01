@@ -67,7 +67,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
@@ -99,18 +98,10 @@ public interface GwtRpcService extends RemoteService
 	
 	
 	
-	// Return the "document base url" that is used in tinyMCE configuration
-	public String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return an Entry object for the given entry id.
 	public GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException;
 	
-	// Return a permalink that can be used to view the given entry.
-	public String getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID );
-	
-	// Return a base view folder entry URL that can be used directly in
-	// the content panel.
-	public String getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException;
 	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public ArrayList<String> getFileAttachments( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
@@ -211,7 +202,6 @@ public interface GwtRpcService extends RemoteService
 	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt );
 	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi                                             );
 	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt );
-	public Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting );
 
 	// Validate the given TeamingEvents for the given entry id.
 	public ArrayList<EventValidation> validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId );

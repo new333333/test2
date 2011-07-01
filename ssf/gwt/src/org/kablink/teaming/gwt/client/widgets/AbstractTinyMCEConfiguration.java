@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -45,7 +47,7 @@ public abstract class AbstractTinyMCEConfiguration
 {
 	protected boolean m_rpcInProgress;
 	protected String m_binderId = null;	// Id of the binder we are dealing with.
-	protected AsyncCallback<String> m_rpcCallback = null;
+	protected AsyncCallback<VibeRpcResponse> m_rpcCallback = null;
 	protected ArrayList<String> m_listOfFileAttachments = null;
 	
 	private String mode = "none";

@@ -92,19 +92,9 @@ public interface GwtRpcServiceAsync
 	
 	
 	
-	// Return the "document base url" that is used in tinyMCE configuration
-	public void getDocumentBaseUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
-	
 	// Return an Entry object for the given entry id.
 	public void getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
 
-	// Return a permalink that can be used to view the given entry.
-	public void getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID, AsyncCallback<String> callback );
-	
-	// Return a base view folder entry URL that can be used directly in
-	// the content panel.
-	public void getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId, AsyncCallback<String> callback );
-	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public void getFileAttachments( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<String>> callback );
 
@@ -204,7 +194,6 @@ public interface GwtRpcServiceAsync
 	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
 	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                                             AsyncCallback<ActivityStreamData>   callback );
 	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
-	public void saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting, AsyncCallback<Boolean> callback );
 	
 	// Validate the given TeamingEvents for the given entry id.
 	public void validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId, AsyncCallback<ArrayList<EventValidation>> callback );

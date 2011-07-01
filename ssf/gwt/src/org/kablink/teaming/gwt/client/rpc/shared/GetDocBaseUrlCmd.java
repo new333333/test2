@@ -33,56 +33,50 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class holds all of the information necessary to execute the "get document base url" command.
  * 
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class GetDocBaseUrlCmd extends VibeRpcCmd
 {
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_DOCUMENT_BASE_URL,
-		GET_LOGIN_INFO,
-		GET_PERSONAL_PREFERENCES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		GET_VIEW_FOLDER_ENTRY_URL,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES,
-		SAVE_WHATS_NEW_SETTINGS,
-		VALIDATE_ENTRY_ACTIONS;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+	private String m_binderId;
 	
 	/**
-	 * 
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public VibeRpcCmd()
+	public GetDocBaseUrlCmd()
 	{
+		super();
+		
+		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	public GetDocBaseUrlCmd( String binderId )
 	{
-		return m_cmdType;
+		m_binderId = binderId;
+		
+		init();
+	}
+	
+	/**
+	 * 
+	 */
+	public String getBinderId()
+	{
+		return m_binderId;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_DOCUMENT_BASE_URL;
 	}
 }

@@ -33,56 +33,60 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class holds all of the information necessary to execute the "get view folder entry url" command.
  * 
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class GetViewFolderEntryUrlCmd extends VibeRpcCmd
 {
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_DOCUMENT_BASE_URL,
-		GET_LOGIN_INFO,
-		GET_PERSONAL_PREFERENCES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		GET_VIEW_FOLDER_ENTRY_URL,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES,
-		SAVE_WHATS_NEW_SETTINGS,
-		VALIDATE_ENTRY_ACTIONS;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+	private Long m_binderId;
+	private Long m_entryId;
 	
 	/**
-	 * 
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public VibeRpcCmd()
+	public GetViewFolderEntryUrlCmd()
 	{
+		super();
+		
+		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	public GetViewFolderEntryUrlCmd( Long binderId, Long entryId )
 	{
-		return m_cmdType;
+		m_binderId = binderId;
+		m_entryId = entryId;
+		
+		init();
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getBinderId()
+	{
+		return m_binderId;
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getEntryId()
+	{
+		return m_entryId;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_VIEW_FOLDER_ENTRY_URL;
 	}
 }

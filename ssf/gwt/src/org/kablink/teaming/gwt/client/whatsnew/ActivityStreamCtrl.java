@@ -76,6 +76,7 @@ import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamParamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -1401,9 +1402,10 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	private void saveShowSetting()
 	{
-		AsyncCallback<Boolean> callback;
+		AsyncCallback<VibeRpcResponse> callback;
+		SaveWhatsNewSettingsCmd cmd;
 		
-		callback = new AsyncCallback<Boolean>()
+		callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -1416,14 +1418,15 @@ public class ActivityStreamCtrl extends Composite
 			/**
 			 * 
 			 */
-			public void onSuccess( Boolean success )
+			public void onSuccess( VibeRpcResponse response )
 			{
 				// Nothing to do.
 			}
 		};
 		
 		// Issue an ajax request to get the permalink of the source of the activity stream.
-		m_rpcService.saveWhatsNewShowSetting( HttpRequestInfo.createHttpRequestInfo(), m_showSetting, callback );
+		cmd = new SaveWhatsNewSettingsCmd( m_showSetting );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 	
