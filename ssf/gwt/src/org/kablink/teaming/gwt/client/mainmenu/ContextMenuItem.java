@@ -359,15 +359,17 @@ public class ContextMenuItem {
 			
 			// No, it isn't based on a JavaScript string!  Is is to
 			// open a URL in a popup window?
-			if (GwtClientHelper.bFromS(tbi.getQualifierValue("popup"))) {
+			else if (GwtClientHelper.bFromS(tbi.getQualifierValue("popup"))) {
 				// Yes!  Generate the appropriate click handler for it.
 				reply = createPopupClickHandler(id, url, tbi);
 			}
 			
-			// No, it isn't to open a URL in a popup window either!
-			// The only option left is to launch the URL in the content
-			// pane.  Generate the appropriate click handler for it.
-			reply = new ContextItemClickHandler(id, url);
+			else {
+				// No, it isn't to open a URL in a popup window either!
+				// The only option left is to launch the URL in the content
+				// pane.  Generate the appropriate click handler for it.
+				reply = new ContextItemClickHandler(id, url);
+			}
 		}
 		
 		else if (!(TeamingAction.UNDEFINED.equals(ta))) {
