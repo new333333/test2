@@ -35,9 +35,9 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -56,7 +56,7 @@ public class LinkToFolderProperties
 	private String m_folderId;
 	private String m_folderName;
 	private String m_zoneUUID;
-	private AsyncCallback<GwtFolder> m_folderCallback;
+	private AsyncCallback<VibeRpcResponse> m_folderCallback;
 	private boolean m_rpcInProgress;
 	
 	/**
@@ -72,7 +72,7 @@ public class LinkToFolderProperties
 		m_rpcInProgress = false;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
-		m_folderCallback = new AsyncCallback<GwtFolder>()
+		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -91,8 +91,12 @@ public class LinkToFolderProperties
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolder gwtFolder )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolder gwtFolder;
+				
+				gwtFolder = (GwtFolder) response.getResponseData();
+				
 				if ( gwtFolder != null )
 					m_folderName = gwtFolder.getFolderName();
 				
@@ -164,17 +168,17 @@ public class LinkToFolderProperties
 	 */
 	public void getDataFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-		
 		// Do we have a folder id?
 		if ( m_folderId != null )
 		{
+			GetFolderCmd cmd;
+			
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
 			m_rpcInProgress = true;
-			rpcService = GwtTeaming.getRpcService();
-			rpcService.getFolder( HttpRequestInfo.createHttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
+			cmd = new GetFolderCmd( m_zoneUUID, m_folderId );
+			GwtClientHelper.executeCommand( cmd, m_folderCallback );
 		}
-	}// end getDataFromServer()
+	}
 	
 	
 	/**

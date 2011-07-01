@@ -42,8 +42,10 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -590,9 +592,10 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	 */
 	private void getEntry( final String entryId )
 	{
-		AsyncCallback<GwtFolderEntry> callback;
+		GetEntryCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
 		
-		callback = new AsyncCallback<GwtFolderEntry>()
+		callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -609,8 +612,12 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolderEntry gwtFolderEntry )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolderEntry gwtFolderEntry;
+				
+				gwtFolderEntry = (GwtFolderEntry) response.getResponseData();
+				
 				if ( gwtFolderEntry != null )
 				{
 					// Update the name of the selected entry.
@@ -621,7 +628,8 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			}
 		};
 
-		GwtTeaming.getRpcService().getEntry( HttpRequestInfo.createHttpRequestInfo(), null, entryId, callback );
+		cmd = new GetEntryCmd( null, entryId );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 
@@ -640,9 +648,10 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	 */
 	private void getFolder( final String folderId )
 	{
-		AsyncCallback<GwtFolder> callback;
+		GetFolderCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
 		
-		callback = new AsyncCallback<GwtFolder>()
+		callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -659,8 +668,12 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolder gwtFolder )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolder gwtFolder;
+				
+				gwtFolder = (GwtFolder) response.getResponseData();
+				
 				if ( gwtFolder != null )
 				{
 					// Update the name of the selected folder.
@@ -671,7 +684,8 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			}
 		};
 
-		GwtTeaming.getRpcService().getFolder( HttpRequestInfo.createHttpRequestInfo(), null, folderId, callback );
+		cmd = new GetFolderCmd( null, folderId );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 

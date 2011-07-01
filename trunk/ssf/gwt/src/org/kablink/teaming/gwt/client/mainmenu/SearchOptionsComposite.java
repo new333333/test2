@@ -51,6 +51,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -320,7 +323,10 @@ public class SearchOptionsComposite extends Composite
 	 * Loads a binder into the context pane.
 	 */
 	private void loadBinder(final String binderId) {
-		GwtTeaming.getRpcService().getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>() {
+		GetBinderPermalinkCmd cmd;
+		
+		cmd = new GetBinderPermalinkCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -328,7 +334,13 @@ public class SearchOptionsComposite extends Composite
 					binderId);
 			}
 			
-			public void onSuccess(final String binderPermalink) {
+			public void onSuccess(final VibeRpcResponse response ) {
+				String binderPermalink;
+				StringRpcResponseData responseData;
+				
+				responseData = (StringRpcResponseData) response.getResponseData();
+				binderPermalink = responseData.getStringValue();
+				
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.SEARCH_SELECT);
 				GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
 			}// end onSuccess()

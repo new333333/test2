@@ -43,6 +43,9 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileClientUtil;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -503,8 +506,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		}
 		
 		public void onClick(ClickEvent event) {
-			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-			rpcService.getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>()
+			GetBinderPermalinkCmd cmd;
+			
+			cmd = new GetBinderPermalinkCmd( binderId );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				public void onFailure( Throwable t ) {
 					GwtClientHelper.handleGwtRPCFailure(
@@ -513,9 +518,14 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 						binderId);
 				}//end onFailure()
 				
-				public void onSuccess( String binderUrl )
+				public void onSuccess( VibeRpcResponse response )
 				{
+					String binderUrl;
 					OnSelectBinderInfo osbInfo;
+					StringRpcResponseData responseData;
+
+					responseData = (StringRpcResponseData) response.getResponseData();
+					binderUrl = responseData.getStringValue();
 					
 					if ( binderUrl == null || binderUrl.length() == 0 )
 					{

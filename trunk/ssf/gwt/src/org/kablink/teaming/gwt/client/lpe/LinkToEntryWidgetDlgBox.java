@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -337,9 +339,10 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	 */
 	private void getEntry( final String entryId )
 	{
-		AsyncCallback<GwtFolderEntry> callback;
+		GetEntryCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
 		
-		callback = new AsyncCallback<GwtFolderEntry>()
+		callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -356,8 +359,12 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolderEntry gwtFolderEntry )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolderEntry gwtFolderEntry;
+				
+				gwtFolderEntry = (GwtFolderEntry) response.getResponseData();
+				
 				if ( gwtFolderEntry != null )
 				{
 					// Update the name of the selected entry.
@@ -368,7 +375,8 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 			}
 		};
 
-		GwtTeaming.getRpcService().getEntry( HttpRequestInfo.createHttpRequestInfo(), null, entryId, callback );
+		cmd = new GetEntryCmd( null, entryId );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 

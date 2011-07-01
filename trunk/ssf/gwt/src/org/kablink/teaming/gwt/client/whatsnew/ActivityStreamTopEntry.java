@@ -38,6 +38,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -374,10 +377,10 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		}
 		else
 		{
-			HttpRequestInfo ri;
-			AsyncCallback<String> callback;
+			GetBinderPermalinkCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
 			
-			callback = new AsyncCallback<String>()
+			callback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -393,16 +396,19 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
-				public void onSuccess( final String binderPermalink )
+				public void onSuccess(  VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
+					StringRpcResponseData responseData;
+
+					responseData = (StringRpcResponseData) response.getResponseData();
+					m_parentBinderPermalink = responseData.getStringValue();
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
 						public void execute()
 						{
 							// Take the user to the parent binder.
-							m_parentBinderPermalink = binderPermalink;
 							gotoParentBinder();
 						}
 					};
@@ -411,8 +417,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			};
 			
 			// Issue an ajax request to get the permalink of the binder that is the source of the activity stream.
-			ri = HttpRequestInfo.createHttpRequestInfo();
-			GwtTeaming.getRpcService().getBinderPermalink( ri, m_parentBinderId, callback );
+			cmd = new GetBinderPermalinkCmd( m_parentBinderId );
+			GwtClientHelper.executeCommand( cmd, callback );
 		}
 	}
 

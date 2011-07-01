@@ -36,9 +36,10 @@ package org.kablink.teaming.gwt.client.lpe;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -59,13 +60,13 @@ public class CustomJspProperties
 	private int m_numEntriesToBeShown;
 	private String m_folderId;
 	private String m_folderName;
-	private AsyncCallback<GwtFolder> m_folderCallback;
+	private AsyncCallback<VibeRpcResponse> m_folderCallback;
 
 	// The following data members are relevant when the user has opted to associate an entry with the custom jsp.
 	private String m_entryId;
 	private String m_entryName;
 	private String m_parentBinderName;	// Name of the binder the folder or entry is found in.
-	private AsyncCallback<GwtFolderEntry> m_folderEntryCallback;
+	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
 	
 	// The following data members are relevant when the user has opted to associate either an entry or a folder with the custom jsp.
 	private String m_zoneUUID;
@@ -88,7 +89,7 @@ public class CustomJspProperties
 		m_rpcInProgress = false;
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
-		m_folderCallback = new AsyncCallback<GwtFolder>()
+		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -107,8 +108,12 @@ public class CustomJspProperties
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolder gwtFolder )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolder gwtFolder;
+				
+				gwtFolder = (GwtFolder) response.getResponseData();
+				
 				if ( gwtFolder != null )
 				{
 					setFolderName( gwtFolder.getFolderName() );
@@ -120,7 +125,7 @@ public class CustomJspProperties
 		};
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
-		m_folderEntryCallback = new AsyncCallback<GwtFolderEntry>()
+		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -139,8 +144,12 @@ public class CustomJspProperties
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolderEntry gwtFolderEntry )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolderEntry gwtFolderEntry;
+				
+				gwtFolderEntry = (GwtFolderEntry) response.getResponseData();
+				
 				if ( gwtFolderEntry != null )
 				{
 					m_entryName = gwtFolderEntry.getEntryName();
@@ -241,23 +250,25 @@ public class CustomJspProperties
 	 */
 	public void getDataFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-		
 		// Do we have a folder id?
 		if ( m_folderId != null )
 		{
+			GetFolderCmd cmd;
+			
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
 			m_rpcInProgress = true;
-			rpcService = GwtTeaming.getRpcService();
-			rpcService.getFolder( HttpRequestInfo.createHttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
+			cmd = new GetFolderCmd( m_zoneUUID, m_folderId );
+			GwtClientHelper.executeCommand( cmd, m_folderCallback );
 		}
 		// Do we have an entry id?
 		else if ( m_entryId != null )
 		{
+			GetEntryCmd cmd;
+			
 			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
 			m_rpcInProgress = true;
-			rpcService = GwtTeaming.getRpcService();
-			rpcService.getEntry( HttpRequestInfo.createHttpRequestInfo(), m_zoneUUID, m_entryId, m_folderEntryCallback );
+			cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
+			GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
 		}
 	}// end getDataFromServer()
 	

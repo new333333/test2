@@ -75,8 +75,11 @@ import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamParamsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -1438,8 +1441,6 @@ public class ActivityStreamCtrl extends Composite
 		ActivityStream src;
 		
 		// No, issue an rpc request to get the ActivityStreamParams.
-		HttpRequestInfo ri;
-		
 		m_activityStreamInfo = activityStreamInfo;
 		
 		// Change our title to reflect the new activity stream source.
@@ -1560,9 +1561,9 @@ public class ActivityStreamCtrl extends Composite
 			asSourceId = getActivityStreamSourceBinderId();
 			if ( asSourceId != null )
 			{
-				AsyncCallback<String> callback;
+				AsyncCallback<VibeRpcResponse> callback;
 				
-				callback = new AsyncCallback<String>()
+				callback = new AsyncCallback<VibeRpcResponse>()
 				{
 					/**
 					 * 
@@ -1581,17 +1582,28 @@ public class ActivityStreamCtrl extends Composite
 					/**
 					 * 
 					 */
-					public void onSuccess( String permalink )
+					public void onSuccess( VibeRpcResponse response )
 					{
-						m_asSourcePermalink = permalink;
+						StringRpcResponseData responseData;
+
+						responseData = (StringRpcResponseData) response.getResponseData();
+						m_asSourcePermalink = responseData.getStringValue();
 					}
 				};
 				
 				// Issue an ajax request to get the permalink of the source of the activity stream.
-				ri = HttpRequestInfo.createHttpRequestInfo();
-				if ( isActivityStreamSourceAPerson() )
-				     m_rpcService.getUserPermalink(   ri, asSourceId, callback );
-				else m_rpcService.getBinderPermalink( ri, asSourceId, callback );
+				if ( isActivityStreamSourceAPerson() ) {
+					GetUserPermalinkCmd cmd;
+					
+					cmd = new GetUserPermalinkCmd( asSourceId );
+					GwtClientHelper.executeCommand( cmd, callback );
+				}
+				else {
+					GetBinderPermalinkCmd cmd;
+
+					cmd = new GetBinderPermalinkCmd( asSourceId );
+					GwtClientHelper.executeCommand( cmd, callback );
+				}
 			}
 		}
 	}

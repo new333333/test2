@@ -73,12 +73,13 @@ import org.kablink.teaming.gwt.client.event.UntrackCurrentPersonEvent;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -768,6 +769,8 @@ public class GwtMainPage extends Composite
 	
 	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch, String searchTabId )
 	{
+		GetBinderPermalinkCmd cmd;
+		
 		// If the administration control is NOT active...
 		if ( !isAdminActive() )
 		{
@@ -822,7 +825,8 @@ public class GwtMainPage extends Composite
 		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
 		else                                              contextBinderId = m_selectedBinderId;
 		
-		GwtTeaming.getRpcService().getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), contextBinderId, new AsyncCallback<String>()
+		cmd = new GetBinderPermalinkCmd( contextBinderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -832,9 +836,15 @@ public class GwtMainPage extends Composite
 					contextBinderId );
 			}//end onFailure()
 			
-			public void onSuccess( String binderPermalink )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				String binderPermalink;
 				OnSelectBinderInfo osbInfo;
+				StringRpcResponseData responseData;
+
+				responseData = (StringRpcResponseData) response.getResponseData();
+				binderPermalink = responseData.getStringValue();
+				
 				osbInfo = new OnSelectBinderInfo(
 					contextBinderId,
 					binderPermalink,
@@ -1561,8 +1571,10 @@ public class GwtMainPage extends Composite
 	 */
 	private void viewTeamMembers()
 	{
-		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<String>()
+		GetBinderPermalinkCmd cmd;
+		
+		cmd = new GetBinderPermalinkCmd( m_selectedBinderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			public void onFailure( Throwable t ) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1571,9 +1583,14 @@ public class GwtMainPage extends Composite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			public void onSuccess( String binderUrl )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				String binderUrl;
 				OnSelectBinderInfo osbInfo;
+				StringRpcResponseData responseData;
+
+				responseData = (StringRpcResponseData) response.getResponseData();
+				binderUrl = responseData.getStringValue();
 				
 				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
 				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.VIEW_TEAM_MEMBERS );

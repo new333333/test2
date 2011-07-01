@@ -98,19 +98,7 @@ public interface GwtRpcService extends RemoteService
 	
 	
 	
-	
-	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException;
-	
-	
-	// Return a list of the names of the files that are attachments of the given binder.
-	public ArrayList<String> getFileAttachments( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-	
-	// Return a Folder object for the given folder id.
-	public GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException;
-	
 	// Returns various binder URLs.
-	public String getBinderPermalink( HttpRequestInfo ri, String binderId );
 	public String getModifyBinderUrl( HttpRequestInfo ri, String binderId );
 	
 	public String getTutorialPanelState( HttpRequestInfo ri );
@@ -118,8 +106,6 @@ public interface GwtRpcService extends RemoteService
 	public ExtensionInfoClient[] removeExtension( HttpRequestInfo ri, String id ) throws ExtensionDefinitionInUseException;
 	public ExtensionFiles getExtensionFiles( HttpRequestInfo ri, String id, String zoneName );
 	
-	// Returns a permalink for the given userId
-	public String getUserPermalink( HttpRequestInfo ri, String userId );
 	// Returns a permalink to the currently logged in user's workspace.
 	public String getUserWorkspacePermalink( HttpRequestInfo ri );
 	

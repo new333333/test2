@@ -41,9 +41,10 @@ import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg.TinyMCEDlgClient;
 
@@ -95,7 +96,7 @@ public class EditBrandingDlg extends DlgBox
 	private TextBox m_backgroundColorTextbox;
 	private TextBox m_textColorTextbox;
 	private InlineLabel m_sampleText;
-	private AsyncCallback<ArrayList<String>> m_rpcReadCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_rpcReadCallback = null;
 	private GwtBrandingData m_origBrandingData;		// The original branding data we started with.
 	private TinyMCEDlg m_editAdvancedBrandingDlg = null;
 	private ArrayList<String> m_listOfFileAttachments = null;
@@ -127,7 +128,7 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Create the callback that will be used when we issue an ajax call to get
 		// the list of files attached to the given binder.
-		m_rpcReadCallback = new AsyncCallback<ArrayList<String>>()
+		m_rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -147,8 +148,14 @@ public class EditBrandingDlg extends DlgBox
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( ArrayList<String> listOfFileAttachments )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				ArrayList<String> listOfFileAttachments;
+				GetFileAttachmentsRpcResponseData responseData;
+				
+				responseData = (GetFileAttachmentsRpcResponseData) response.getResponseData();
+				listOfFileAttachments = responseData.getFileNames();
+				
 				// Update the list of files the user can select from for the branding image and background image.
 				updateListOfFileAttachments( listOfFileAttachments );
 			}// end onSuccess()
@@ -865,12 +872,11 @@ public class EditBrandingDlg extends DlgBox
 	 */
 	private void getListOfFileAttachmentsFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-
-		rpcService = GwtTeaming.getRpcService();
+		GetFileAttachmentsCmd cmd;
 		
 		// Issue an ajax request to get the list of file attachments for this binder.
-		rpcService.getFileAttachments( HttpRequestInfo.createHttpRequestInfo(), m_origBrandingData.getBinderId(), m_rpcReadCallback );
+		cmd = new GetFileAttachmentsCmd( m_origBrandingData.getBinderId() );
+		GwtClientHelper.executeCommand( cmd, m_rpcReadCallback );
 	}// end getListOfFileAttachmentsFromServer()
 	
 	

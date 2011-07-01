@@ -67,7 +67,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
@@ -92,17 +91,7 @@ public interface GwtRpcServiceAsync
 	
 	
 	
-	// Return an Entry object for the given entry id.
-	public void getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
-
-	// Return a list of the names of the files that are attachments of the given binder.
-	public void getFileAttachments( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<String>> callback );
-
-	// Return a Folder object for the given folder id.
-	public void getFolder( HttpRequestInfo ri, String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
-	
 	// Returns various binder URLs.
-	public void getBinderPermalink( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 	public void getModifyBinderUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 	
     public void getTutorialPanelState( HttpRequestInfo ri, AsyncCallback<String> callback );
@@ -111,9 +100,6 @@ public interface GwtRpcServiceAsync
 	public void removeExtension(HttpRequestInfo ri, String id, AsyncCallback<ExtensionInfoClient[]> callback);
 	public void getExtensionFiles(HttpRequestInfo ri, String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
 	
-	// Returns a permalink for the given userId
-	public void getUserPermalink(HttpRequestInfo ri, String userId, AsyncCallback<String> callback);
-
 	// Returns a permalink to the currently logged in user's workspace.
 	public void getUserWorkspacePermalink( HttpRequestInfo ri, AsyncCallback<String> callback );
 	
