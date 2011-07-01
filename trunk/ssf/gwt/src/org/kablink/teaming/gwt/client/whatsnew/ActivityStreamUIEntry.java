@@ -41,6 +41,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -644,12 +647,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Do we have a url that we can use to view the entry?
 		if ( m_viewEntryUrl == null )
 		{
-			HttpRequestInfo ri;
-			AsyncCallback<String> callback;
+			GetViewFolderEntryUrlCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
 			Long entryId;
 			
 			// No, issue an ajax request to get it.
-			callback = new AsyncCallback<String>()
+			callback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -665,16 +668,18 @@ public abstract class ActivityStreamUIEntry extends Composite
 				/**
 				 * 
 				 */
-				public void onSuccess( final String viewEntryUrl )
+				public void onSuccess( VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
+					
+					m_viewEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
 						public void execute()
 						{
+							
 							// Open the entry using the view entry url.
-							m_viewEntryUrl = viewEntryUrl;
 							viewEntry();
 						}
 					};
@@ -683,9 +688,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 			};
 			
 			// Issue an ajax request to get the url needed to view this entry.
-			ri = HttpRequestInfo.createHttpRequestInfo();
 			entryId = Long.parseLong( m_entryId );
-			GwtTeaming.getRpcService().getViewFolderEntryUrl( ri, null, entryId, callback );
+			cmd = new GetViewFolderEntryUrlCmd( null, entryId );
+			GwtClientHelper.executeCommand( cmd, callback );
 		}
 		else
 			viewEntry();

@@ -43,6 +43,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -2104,7 +2107,10 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void handleTaskView(TaskListItem task) {
 		final TaskInfo ti = task.getTask();
-		m_rpcService.getViewFolderEntryUrl(HttpRequestInfo.createHttpRequestInfo(), ti.getTaskId().getBinderId(), ti.getTaskId().getEntryId(), new AsyncCallback<String>() {
+		GetViewFolderEntryUrlCmd cmd;
+		
+		cmd = new GetViewFolderEntryUrlCmd( ti.getTaskId().getBinderId(), ti.getTaskId().getEntryId() );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2114,7 +2120,10 @@ public class TaskTable extends Composite implements ActionHandler {
 			}
 			
 			@Override
-			public void onSuccess(String viewFolderEntryUrl) {
+			public void onSuccess(VibeRpcResponse response) {
+				String viewFolderEntryUrl;
+				
+				viewFolderEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
 				GwtClientHelper.jsShowForumEntry(viewFolderEntryUrl);
 			}
 		});

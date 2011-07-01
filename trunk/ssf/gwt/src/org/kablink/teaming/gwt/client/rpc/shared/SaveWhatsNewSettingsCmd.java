@@ -30,59 +30,55 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
+
+
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class holds all of the information necessary to execute the "Save Whats New settings" command.
  * 
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class SaveWhatsNewSettingsCmd extends VibeRpcCmd
 {
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_DOCUMENT_BASE_URL,
-		GET_LOGIN_INFO,
-		GET_PERSONAL_PREFERENCES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		GET_VIEW_FOLDER_ENTRY_URL,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES,
-		SAVE_WHATS_NEW_SETTINGS,
-		VALIDATE_ENTRY_ACTIONS;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+	private ShowSetting m_showSetting;
 	
 	/**
-	 * 
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public VibeRpcCmd()
+	public SaveWhatsNewSettingsCmd()
 	{
+		super();
+		
+		init();
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	public SaveWhatsNewSettingsCmd( ShowSetting showSetting )
 	{
-		return m_cmdType;
+		m_showSetting = showSetting;
+		
+		init();
+	}
+	
+	/**
+	 * 
+	 */
+	public ShowSetting getSettings()
+	{
+		return m_showSetting;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_WHATS_NEW_SETTINGS;
 	}
 }

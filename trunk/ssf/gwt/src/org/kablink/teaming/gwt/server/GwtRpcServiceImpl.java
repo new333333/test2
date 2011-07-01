@@ -105,11 +105,14 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDocBaseUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -275,6 +278,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_DOCUMENT_BASE_URL:
+		{
+			String binderId;
+			String result;
+			
+			binderId = ((GetDocBaseUrlCmd) cmd).getBinderId();
+			result = getDocumentBaseUrl( ri, binderId );
+			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
+			return response;
+		}
+		
 		case GET_LOGIN_INFO:
 		{
 			GwtLoginInfo loginInfo;
@@ -324,6 +338,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_VIEW_FOLDER_ENTRY_URL:
+		{
+			Long binderId;
+			Long entryId;
+			String result;
+			StringRpcResponseData responseData;
+			
+			binderId = ((GetViewFolderEntryUrlCmd) cmd).getBinderId();
+			entryId = ((GetViewFolderEntryUrlCmd) cmd).getEntryId();
+			result = getViewFolderEntryUrl( ri, binderId, entryId );
+			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case HAS_ACTIVITY_STREAM_CHANGED:
 		{
 			ActivityStreamInfo asi;
@@ -370,6 +399,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
+		}
+		
+		case SAVE_WHATS_NEW_SETTINGS:
+		{
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			result = saveWhatsNewShowSetting( ri, ((SaveWhatsNewSettingsCmd) cmd).getSettings() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case VALIDATE_ENTRY_ACTIONS:
+		{
+			/*!!!
+			ArrayList<ActionValidation> actionValidations;
+			String entryId;
+			ValidateEntryActionsCmd veaCmd;
+			ArrayList<ActionValidation> results;
+			ValidateEntryActionsRpcResponseData responseData;
+			
+			veaCmd = (ValidateEntryActionsCmd) cmd;
+			actionValidations = veaCmd.getActionsToBeValidated();
+			entryId = veaCmd.getEntryId();
+			results = validateEntryActions( ri, actionValidations, entryId );
+			responseData = new ValidateEntryActionsRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+			*/
+			return null;
 		}
 		
 		}
@@ -1258,60 +1318,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return folderEntry;
 	}// end getEntry()
 	
-	
-	/**
-	 * Get a permalink that can be used to view the given entry.
-	 * 
-	 * @param ri
-	 * @param entryId
-	 * @param zoneUUID
-	 * 
-	 * @return
-	 */
-	public String getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID )
-	{
-		String reply = "";
-		
-		if ( entryId != null && entryId.length() > 0 )
-		{
-			FolderModule folderModule;
-			Long entryIdL;
-			ZoneInfo zoneInfo;
-			String zoneInfoId;
-			FolderEntry entry = null;
-
-			// Get the id of the zone we are running in.
-			zoneInfo = MiscUtil.getCurrentZone();
-			zoneInfoId = zoneInfo.getId();
-			if ( zoneInfoId == null )
-				zoneInfoId = "";
-			
-			folderModule = getFolderModule();
-			
-			entryIdL = new Long( entryId );
-			
-			try {
-				// Are we looking for an entry that was imported from another zone?
-				if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
-				{
-					// Yes, get the entry id for the entry in this zone.
-					entryIdL = folderModule.getZoneEntryId( entryIdL, zoneUUID );
-				}
-	
-				// Get the entry object.
-				if ( entryIdL != null )
-					entry = folderModule.getEntry( null, entryIdL );
-				
-				reply = PermaLinkUtil.getPermalink( getRequest( ri ), entry );
-			}
-			catch (Exception e) {
-				m_logger.debug( "GwtRpcServiceImpl.getEntryPermalink( FolderEntry could not be accessed - EXCEPTION:  " + e.getMessage() + " )" );
-				reply = "";
-			}
-		}
-		
-		return reply;
-	}
 	
 	/**
 	 * Return a base view folder entry URL that can be used directly in the
@@ -4109,7 +4115,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Save the given show setting (show all, show unread) for the What's New page
 	 * to the user's properties.
 	 */
-	public Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting )
+	private Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting )
 	{
 		return GwtServerHelper.saveWhatsNewShowSetting( this, showSetting );
 	}
