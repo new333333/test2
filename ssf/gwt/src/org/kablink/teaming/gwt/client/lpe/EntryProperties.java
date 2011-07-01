@@ -35,9 +35,9 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -57,7 +57,7 @@ public class EntryProperties
 	private String m_parentBinderName;	// Name of the binder the entry is found in.
 	private String m_zoneUUID;
 	private String m_viewEntryUrl;
-	private AsyncCallback<GwtFolderEntry> m_folderEntryCallback;
+	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
 	private boolean m_rpcInProgress;
 	
 	/**
@@ -73,7 +73,7 @@ public class EntryProperties
 		m_viewEntryUrl = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
-		m_folderEntryCallback = new AsyncCallback<GwtFolderEntry>()
+		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -92,8 +92,12 @@ public class EntryProperties
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolderEntry gwtFolderEntry )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolderEntry gwtFolderEntry;
+				
+				gwtFolderEntry = (GwtFolderEntry) response.getResponseData();
+				
 				if ( gwtFolderEntry != null )
 				{
 					m_entryName = gwtFolderEntry.getEntryName();
@@ -177,15 +181,15 @@ public class EntryProperties
 	 */
 	public void getDataFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-		
 		// Do we have an entry id?
 		if ( m_entryId != null )
 		{
+			GetEntryCmd cmd;
+			
 			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
 			m_rpcInProgress = true;
-			rpcService = GwtTeaming.getRpcService();
-			rpcService.getEntry( HttpRequestInfo.createHttpRequestInfo(), m_zoneUUID, m_entryId, m_folderEntryCallback );
+			cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
+			GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
 		}
 	}// end getDataFromServer()
 	

@@ -37,6 +37,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -94,11 +97,14 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
+			GetBinderPermalinkCmd cmd;
+			
 			// Hide the menu...
 			hide();
 
 			// ...and fire a selection changed event.
-			m_rpcService.getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), m_favorite.getValue(), new AsyncCallback<String>()
+			cmd = new GetBinderPermalinkCmd( m_favorite.getValue() );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
@@ -107,7 +113,13 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 						m_favorite.getValue());
 				}
 				
-				public void onSuccess(String binderPermalink) {
+				public void onSuccess( VibeRpcResponse response ) {
+					String binderPermalink;
+					StringRpcResponseData responseData;
+
+					responseData = (StringRpcResponseData) response.getResponseData();
+					binderPermalink = responseData.getStringValue();
+					
 					// Fire the selection changed event
 					// asynchronously so that we can release the AJAX
 					// request ASAP.

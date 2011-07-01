@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -374,9 +376,10 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	private void getFolder( final String folderId )
 	{
-		AsyncCallback<GwtFolder> callback;
+		GetFolderCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
 		
-		callback = new AsyncCallback<GwtFolder>()
+		callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -393,8 +396,12 @@ public class FolderWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolder gwtFolder )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				GwtFolder gwtFolder;
+				
+				gwtFolder = (GwtFolder) response.getResponseData();
+				
 				if ( gwtFolder != null )
 				{
 					// Update the name of the selected folder.
@@ -405,7 +412,8 @@ public class FolderWidgetDlgBox extends DlgBox
 			}
 		};
 
-		GwtTeaming.getRpcService().getFolder( HttpRequestInfo.createHttpRequestInfo(), null, folderId, callback );
+		cmd = new GetFolderCmd( null, folderId );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 

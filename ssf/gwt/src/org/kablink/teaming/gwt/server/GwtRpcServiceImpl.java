@@ -104,9 +104,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDocBaseUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
@@ -266,6 +272,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_BINDER_PERMALINK:
+		{
+			GetBinderPermalinkCmd gbpCmd;
+			String permalink;
+			StringRpcResponseData responseData;
+			
+			gbpCmd = (GetBinderPermalinkCmd) cmd;
+			permalink = getBinderPermalink( ri, gbpCmd.getBinderId() );
+			responseData = new StringRpcResponseData( permalink );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
 			ActivityStreamInfo asi;
@@ -285,6 +304,41 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			binderId = ((GetDocBaseUrlCmd) cmd).getBinderId();
 			result = getDocumentBaseUrl( ri, binderId );
 			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
+			return response;
+		}
+		
+		case GET_ENTRY:
+		{
+			GetEntryCmd geCmd;
+			GwtFolderEntry result;
+			
+			geCmd = (GetEntryCmd) cmd;
+			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_FILE_ATTACHMENTS:
+		{
+			GetFileAttachmentsRpcResponseData responseData;
+			GetFileAttachmentsCmd gfaCmd;
+			ArrayList<String> result;
+			
+			gfaCmd = (GetFileAttachmentsCmd) cmd;
+			result = getFileAttachments( ri, gfaCmd.getBinderId() );
+			responseData = new GetFileAttachmentsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_FOLDER:
+		{
+			GetFolderCmd gfCmd;
+			GwtFolder result;
+			
+			gfCmd = (GetFolderCmd) cmd;
+			result = getFolder( ri, gfCmd.getZoneUUId(), gfCmd.getFolderId() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -334,6 +388,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			upgradeInfo = getUpgradeInfo( ri );
 			response = new VibeRpcResponse( upgradeInfo );
+			return response;
+		}
+		
+		case GET_USER_PERMALINK:
+		{
+			GetUserPermalinkCmd gupCmd;
+			String permalink;
+			StringRpcResponseData responseData;
+			
+			gupCmd = (GetUserPermalinkCmd) cmd;
+			permalink = getUserPermalink( ri, gupCmd.getUserId() );
+			responseData = new StringRpcResponseData( permalink );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -1208,7 +1275,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		String baseUrl = null;
 		BinderModule binderModule;
@@ -1250,7 +1317,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException
+	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
 		FolderEntry entry = null;
@@ -1330,7 +1397,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public String getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+	private String getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
 		try {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
 			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY );
@@ -1370,7 +1437,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public ArrayList<String> getFileAttachments( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private ArrayList<String> getFileAttachments( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		ArrayList<String> fileNames;
 		
@@ -1420,7 +1487,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException
+	private GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException
 	{
 		return getFolderImpl( getRequest( ri ), zoneUUID, folderId, null );
 	}
@@ -1595,7 +1662,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public String getBinderPermalink( HttpRequestInfo ri, String binderId )
+	private String getBinderPermalink( HttpRequestInfo ri, String binderId )
 	{
 		String reply = "";
 		
@@ -3942,7 +4009,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public String getUserPermalink( HttpRequestInfo ri, String userId )
+	private String getUserPermalink( HttpRequestInfo ri, String userId )
 	{
 		if ( userId != null && userId.length() > 0 )
 		{

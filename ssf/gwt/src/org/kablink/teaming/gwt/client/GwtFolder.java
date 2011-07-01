@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -41,7 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class GwtFolder extends GwtTeamingItem
-	implements IsSerializable
+	implements IsSerializable, VibeRpcResponseData
 {
 	private String m_folderId;
 	private String m_folderName;
