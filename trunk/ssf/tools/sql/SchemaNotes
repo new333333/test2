@@ -92,7 +92,11 @@ Version 20:
   
 Version 21:
   Add SS_Forums columns for file version management
-  versionsEnabled, versionsToKeep, maxVersionAge, maxFileSize, and fileEncryptionEnabled
+  versionsEnabled, versionsToKeep, maxFileSize, and fileEncryptionEnabled
 
 Version 22:
-  Add SS_Attachments column for the version aging date (fileAgingDate)
+  Add SS_Attachments column for the version aging enabled (agingEnabled)
+
+Version 23:
+  Add SS_ZoneConfig column for the version aging date (fileVersionsMaxAge)
+  
