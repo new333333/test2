@@ -69,10 +69,17 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_PERMALINK_URL,				// Changes the current context to a permalink URL.
 
 	INVOKE_HELP,					// Invokes the Vibe OnPrem online help.
+	INVOKE_REPLY,					// Invoke the 'reply to entry' UI.
+	INVOKE_SHARE,					// Invoke the 'share this entry' UI.
 	INVOKE_SIMPLE_PROFILE,			// Invokes the simple profile dialog.
+	INVOKE_SUBSCRIBE,				// Invoke the 'subscribe to this entry' UI.  (SUBSCRIBE)
+	INVOKE_TAG,						// Invoke the 'tag this entry' UI.  (TAG)
 	
 	LOGIN,							// logs into   Vibe OnPrem.
 	LOGOUT,							// logs out of Vibe OnPrem.
+
+	MARK_ENTRY_READ,				// Mark the entry as read.
+	MARK_ENTRY_UNREAD,				// Mark the entry as unread.
 	
 	MASTHEAD_HIDE,					// Hides the masthead.
 	MASTHEAD_SHOW,					// Shows the masthead.

@@ -137,7 +137,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
-import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
+import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -4065,18 +4065,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 
 	/**
-	 * Validate the list of TeamingActions to see if the user has rights to perform the actions
-	 * for the given entry id. 
+	 * Validates the list of TeamingEvents to see if the user has rights to perform the events
+	 * for the given entry id.
+	 *  
 	 * @param ri
-	 * @param teamingActions
+	 * @param teamingEvents
 	 * @param entryId
+	 * 
+	 * @return
 	 */
-	public ArrayList<ActionValidation> validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId )
+	public ArrayList<EventValidation> validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId )
 	{
-		// Validate the given actions.
-		GwtServerHelper.validateEntryActions( this, ri, actionValidations, entryId );
+		// Validate the given events.
+		GwtServerHelper.validateEntryEvents( this, ri, eventValidations, entryId );
 		
-		return actionValidations;
+		return eventValidations;
 	}
 
 	/**

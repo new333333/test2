@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
+import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -388,7 +389,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 						public void execute()
 						{
 							// Mark this entry as read.
-							m_activityStreamCtrl.handleAction( TeamingAction.MARK_ENTRY_READ, getThis() );
+							GwtTeaming.fireEvent(new MarkEntryReadEvent( getThis() ));
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1065,7 +1066,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( GwtClientHelper.hasString( m_viewEntryUrl ) )
 		{
 			// Tell the activity stream to mark this entry as read.
-			m_activityStreamCtrl.handleAction( TeamingAction.MARK_ENTRY_READ, this );
+			GwtTeaming.fireEvent(new MarkEntryReadEvent( this ) );
 			
 			m_actionHandler.handleAction( TeamingAction.SHOW_FORUM_ENTRY, m_viewEntryUrl );
 		}

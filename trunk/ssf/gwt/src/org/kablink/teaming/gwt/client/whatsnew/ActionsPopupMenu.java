@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,11 +37,17 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
+import org.kablink.teaming.gwt.client.event.InvokeShareEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSubscribeEvent;
+import org.kablink.teaming.gwt.client.event.InvokeTagEvent;
+import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
+import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
@@ -60,8 +66,8 @@ public class ActionsPopupMenu extends PopupMenu
 	private PopupMenuItem m_tagMenuItem;
 	private PopupMenuItem m_markReadMenuItem;
 	private PopupMenuItem m_markUnreadMenuItem;
-	private AsyncCallback<ArrayList<ActionValidation>> m_checkRightsCallback = null;
-	private ArrayList<ActionValidation> m_actionValidations;
+	private AsyncCallback<ArrayList<EventValidation>> m_checkRightsCallback = null;
+	private ArrayList<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
 	private int m_x;
 	private int m_y;
@@ -69,7 +75,7 @@ public class ActionsPopupMenu extends PopupMenu
 	/**
 	 * 
 	 */
-	public ActionsPopupMenu( boolean autoHide, boolean modal, ActionHandler actionHandler )
+	public ActionsPopupMenu( boolean autoHide, boolean modal )
 	{
 		super( autoHide, modal );
 		
@@ -79,46 +85,51 @@ public class ActionsPopupMenu extends PopupMenu
 			
 			messages = GwtTeaming.getMessages();
 			
-			m_actionValidations = new ArrayList<ActionValidation>();
+			m_eventValidations = new ArrayList<EventValidation>();
 			
 			// Create the "Reply" menu item.
-			m_replyMenuItem = addMenuItem( actionHandler, TeamingAction.REPLY, null, null, messages.reply() );
+			m_replyMenuItem = addMenuItem( TeamingEvents.INVOKE_REPLY, new InvokeReplyEvent(), null, messages.reply() );
 			
 			// Create the "Share" menu item.
-			m_shareMenuItem = addMenuItem( actionHandler, TeamingAction.SHARE, null, null, messages.share() );
+			m_shareMenuItem = addMenuItem( TeamingEvents.INVOKE_SHARE, new InvokeShareEvent(), null, messages.share() );
 			
 			// Create the "Subscribe" menu item.
-			m_subscribeMenuItem = addMenuItem( actionHandler, TeamingAction.SUBSCRIBE, null, null, messages.subscribe() );
+			m_subscribeMenuItem = addMenuItem( TeamingEvents.INVOKE_SUBSCRIBE, new InvokeSubscribeEvent(), null, messages.subscribe() );
 			
 			// Create the "Tag" menu item.
-			m_tagMenuItem = addMenuItem( actionHandler, TeamingAction.TAG, null, null, messages.tag() );
+			m_tagMenuItem = addMenuItem( TeamingEvents.INVOKE_TAG, new InvokeTagEvent(), null, messages.tag() );
 			
 			// Add a separator
 			addSeparator();
 			
 			// Create the "Mark read" menu item.
-			m_markReadMenuItem = addMenuItem( actionHandler, TeamingAction.MARK_ENTRY_READ, null, null, messages.markRead() );
+			m_markReadMenuItem = addMenuItem( TeamingEvents.MARK_ENTRY_READ, new MarkEntryReadEvent(), null, messages.markRead() );
 
 			// Create the "Mark unread" menu item.
-			m_markUnreadMenuItem = addMenuItem( actionHandler, TeamingAction.MARK_ENTRY_UNREAD, null, null, messages.markUnread() );
+			m_markUnreadMenuItem = addMenuItem( TeamingEvents.MARK_ENTRY_UNREAD, new MarkEntryUnreadEvent(), null, messages.markUnread() );
 		}
 	}
 	
 	
 	/**
 	 * 
+	 * @param event
+	 * @param img
+	 * @param text
+	 * 
+	 * @return
 	 */
-	public PopupMenuItem addMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, Image img, String text )
+	public PopupMenuItem addMenuItem( TeamingEvents eventEnum, GwtEvent<?> event, Image img, String text )
 	{
-		ActionValidation actionValidation;
+		EventValidation eventValidation;
 		PopupMenuItem menuItem;
-		
-		menuItem = super.addMenuItem( actionHandler, action, actionData, img, text );
 
-		actionValidation = new ActionValidation();
-		actionValidation.setAction( action.ordinal() );
+	    menuItem = super.addMenuItem( event, img, text );
+
+		eventValidation = new EventValidation();
+		eventValidation.setEvent( eventEnum );
 		
-		m_actionValidations.add( actionValidation );
+		m_eventValidations.add( eventValidation );
 		
 		return menuItem;
 	}
@@ -138,7 +149,7 @@ public class ActionsPopupMenu extends PopupMenu
 		
 		if ( m_checkRightsCallback == null )
 		{
-			m_checkRightsCallback = new AsyncCallback<ArrayList<ActionValidation>>()
+			m_checkRightsCallback = new AsyncCallback<ArrayList<EventValidation>>()
 			{
 				/**
 				 * 
@@ -156,28 +167,28 @@ public class ActionsPopupMenu extends PopupMenu
 				/**
 				 * 
 				 */
-				public void onSuccess( ArrayList<ActionValidation> actionValidations )
+				public void onSuccess( ArrayList<EventValidation> eventValidations )
 				{
-					for( ActionValidation nextValidation : actionValidations )
+					for( EventValidation nextValidation : eventValidations )
 					{
 						if ( nextValidation.isValid() == false )
 						{
-							int action;
+							TeamingEvents event;
 							
-							action = nextValidation.getAction();
+							event = nextValidation.getEvent();
 							
-							if ( action == TeamingAction.REPLY.ordinal() )
+							if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
 								setMenuItemVisibility( m_replyMenuItem, false );
-							else if ( action == TeamingAction.SUBSCRIBE.ordinal() )
+							else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
 								setMenuItemVisibility( m_subscribeMenuItem, false );
-							else if ( action == TeamingAction.SHARE.ordinal() )
+							else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
 								setMenuItemVisibility( m_shareMenuItem, false );
-							else if ( action == TeamingAction.TAG.ordinal() )
+							else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
 								setMenuItemVisibility( m_tagMenuItem, false );
 						}
 					}
 					
-					// Now that we have validated all the actions, show this menu.
+					// Now that we have validated all the events, show this menu.
 					showMenu();
 				}
 			};
@@ -185,7 +196,7 @@ public class ActionsPopupMenu extends PopupMenu
 		
 		// Issue an ajax request to check the rights the user has for the given entry.
 		ri = HttpRequestInfo.createHttpRequestInfo();
-		GwtTeaming.getRpcService().validateEntryActions( ri, m_actionValidations, m_entry.getEntryId(), m_checkRightsCallback );
+		GwtTeaming.getRpcService().validateEntryEvents( ri, m_eventValidations, m_entry.getEntryId(), m_checkRightsCallback );
 	}
 
 	
@@ -203,12 +214,23 @@ public class ActionsPopupMenu extends PopupMenu
 		m_y = y;
 		
 		// Associate the given entry with each menu item.
-		m_replyMenuItem.setActionData( entry );
-		m_shareMenuItem.setActionData( entry );
-		m_subscribeMenuItem.setActionData( entry );
-		m_tagMenuItem.setActionData( entry );
-		m_markReadMenuItem.setActionData( entry );
-		m_markUnreadMenuItem.setActionData( entry );
+		InvokeReplyEvent reply = ((InvokeReplyEvent) m_replyMenuItem.getEvent());
+		reply.setUIEntry( entry );
+		
+		InvokeShareEvent share = ((InvokeShareEvent) m_shareMenuItem.getEvent());
+		share.setUIEntry( entry );
+		
+		InvokeSubscribeEvent subscribe = ((InvokeSubscribeEvent) m_subscribeMenuItem.getEvent());
+		subscribe.setUIEntry( entry );
+		
+		InvokeTagEvent tag = ((InvokeTagEvent) m_tagMenuItem.getEvent());
+		tag.setUIEntry( entry );
+		
+		MarkEntryReadEvent markRead = ((MarkEntryReadEvent) m_markReadMenuItem.getEvent());
+		markRead.setUIEntry( entry );
+		
+		MarkEntryUnreadEvent markUnread = ((MarkEntryUnreadEvent) m_markUnreadMenuItem.getEvent());
+		markUnread.setUIEntry( entry );
 		
 		// Make sure all the menu items are visible.
 		setMenuItemVisibility( m_replyMenuItem, true );
