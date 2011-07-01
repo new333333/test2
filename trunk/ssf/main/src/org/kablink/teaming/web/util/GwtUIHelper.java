@@ -126,9 +126,8 @@ public class GwtUIHelper {
 	public final static int VIBE_PRODUCT_NOVELL		= 3;	// Novell  Vibe (outside of GroupWise integration.)
 
 	// Used as a qualifier in a toolbar to indicate the value maps to a
-	// GWT UI TeamingAction or TeamingEvent.
-	public final static String GWTUI_TEAMING_ACTION = "GwtUI.TeamingAction";
-	public final static String GWTUI_TEAMING_EVENT  = "GwtUI.TeamingEvent";
+	// GWT UI TeamingEvents value.
+	public final static String GWTUI_TEAMING_EVENT = "GwtUI.TeamingEvent";
 	
 	// When caching a toolbar containing an AdaptedPortletURL, we
 	// must also store the URL in string form for the GWT UI to use.
@@ -138,15 +137,13 @@ public class GwtUIHelper {
 	// Inner class used exclusively by addTrackBinderToToolbar() to
 	// assist in building the toolbar items to support tracking.
 	private static class TrackInfo {
-		String m_action;
 		String m_event;
 		String m_resourceKey;
 		String m_tbName;
 		
-		TrackInfo(String tbName, String action, String event, String resourceKey) {
+		TrackInfo(String tbName, String event, String resourceKey) {
 			m_tbName = tbName;
-			m_action = action;
-			m_event = event;
+			m_event  = event;
 			m_resourceKey = resourceKey;
 		}
 	}
@@ -185,11 +182,10 @@ public class GwtUIHelper {
 			else if (binder instanceof Folder)    menuKey += "folder";
 			else                                  return;
 			
-			addTeamingActionToToolbar(
+			addEventToToolbar(
 				tb,
 				"branding",
-				"EDIT_BRANDING",
-				null,	//! It's not an event yet.
+				"EDIT_CURRENT_BINDER_BRANDING",
 				NLT.get(menuKey),
 				"#",
 				null);
@@ -344,26 +340,19 @@ public class GwtUIHelper {
 			qualifiers);
 	}
 	
-	/**
+	/*
 	 * Adds a teaming action a toolbar.
-	 * 
-	 * @param tb
-	 * @param menuName
-	 * @param teamingAction
-	 * @param teamingEvent
-	 * @param title
-	 * @param url
-	 * @param qualifiers
 	 */
 	@SuppressWarnings("unchecked")
-	public static void addTeamingActionToToolbar(Toolbar tb, String menuName, String teamingAction, String teamingEvent, String title, String url, Map qualifiers) {
+	private static void addEventToToolbar(Toolbar tb, String menuName, String teamingEvent, String title, String url, Map qualifiers) {
 		// Add the teaming action to the qualifiers...
 		if (null == qualifiers) {
 			qualifiers = new HashMap();
 		}
 		
-		if (MiscUtil.hasString(teamingAction)) qualifiers.put(GWTUI_TEAMING_ACTION, teamingAction);
-		if (MiscUtil.hasString(teamingEvent))  qualifiers.put(GWTUI_TEAMING_EVENT,  teamingEvent );
+		if (MiscUtil.hasString(teamingEvent)) {
+			qualifiers.put(GWTUI_TEAMING_EVENT, teamingEvent);
+		}
 		
 		// ...and add it as a toolbar menu item.
 		tb.addToolbarMenu(
@@ -373,8 +362,8 @@ public class GwtUIHelper {
 			qualifiers);
 	}
 	
-	public static void addTeamingActionToToolbar(Toolbar tb, String menuName, String teamingAction, String teamingEvent, String title) {
-		addTeamingActionToToolbar(tb, menuName, teamingAction, teamingEvent, title, null, null);
+	private static void addEventToToolbar(Toolbar tb, String menuName, String teamingEvent, String title) {
+		addEventToToolbar(tb, menuName, teamingEvent, title, null, null);
 	}
 	
 	/*
@@ -412,50 +401,50 @@ public class GwtUIHelper {
 		if (binderTracked) {
 			if (personTracked) {
 				// User workspace:  Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisWorkspaceNot"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", null, "relevance.trackThisPersonNot"));				
+				tiList.add(    new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
 			}
 			else {
 				if (binderIsUserWorkspace) {
 					// User workspace:  Tracked / Person:  Not Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisWorkspaceNot"));				
-					tiList.add(new TrackInfo("trackPerson", "TRACK_BINDER",   null, "relevance.trackThisPerson"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("trackPerson", "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
 				}
 				else if (binderIsWorkspace) {
 					// Workspace:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
 				}
 				else if (binderIsCalendar) {
 					// Calendar:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisCalendarNot"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisCalendarNot"));				
 				}
 				else {
 					// Folder:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", null, "relevance.trackThisFolderNot"));				
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisFolderNot"));				
 				}
 			}
 		}
 		else {
 			if (personTracked) {
 				// User workspace:  Not Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisWorkspace"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", null, "relevance.trackThisPersonNot"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
 			}
 			else if (binderIsUserWorkspace) {
 				// User workspace:  Not Tracked / Person:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisPerson"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
 			}
 			else if (binderIsWorkspace) {
 				// Workspace:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
 			}
 			else if (binderIsCalendar) {
 				// Calendar:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisCalendar"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisCalendar"));				
 			}
 			else {
 				// Folder:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   null, "relevance.trackThisFolder"));				
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisFolder"));				
 			}
 		}
 
@@ -463,7 +452,7 @@ public class GwtUIHelper {
 		for (Iterator<TrackInfo> tiIT = tiList.iterator(); tiIT.hasNext(); ) {
 			// ...adding a toolbar item for each.
 			TrackInfo ti = tiIT.next();
-			addTeamingActionToToolbar(tb, ti.m_tbName, ti.m_action, ti.m_event, NLT.get(ti.m_resourceKey));
+			addEventToToolbar(tb, ti.m_tbName, ti.m_event, NLT.get(ti.m_resourceKey));
 		}
 	}
 
@@ -477,10 +466,9 @@ public class GwtUIHelper {
 		String trashPermalink = getTrashPermalink(binderPermalink);
 		
 		// ...and add t to the toolbar.
-		addTeamingActionToToolbar(
+		addEventToToolbar(
 			tb,
 			"trash",
-			null,	//! This is now an event.
 			"GOTO_PERMALINK_URL",
 			NLT.get("toolbar.menu.trash"),
 			trashPermalink,
@@ -501,10 +489,9 @@ public class GwtUIHelper {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
 			// ...and add t to the toolbar.
-			addTeamingActionToToolbar(
+			addEventToToolbar(
 				tb,
 				"mobileUI",
-				null,	//! This is now an event.
 				"GOTO_PERMALINK_URL",
 				NLT.get("toolbar.menu.mobileUI"),
 				url.toString(),

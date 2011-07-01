@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -263,6 +264,13 @@ public class ContextMenuItem {
 				switch (m_teamingEvent) {
 				case GOTO_PERMALINK_URL:
 					GwtTeaming.fireEvent(new GotoPermalinkUrlEvent(m_url));
+					break;
+
+				case EDIT_CURRENT_BINDER_BRANDING:
+				case TRACK_CURRENT_BINDER:
+				case UNTRACK_CURRENT_BINDER:
+				case UNTRACK_CURRENT_PERSON:
+					EventHelper.fireSimpleEvent(m_teamingEvent);
 					break;
 					
 				default:

@@ -62,6 +62,8 @@ public enum TeamingEvents implements IsSerializable {
 	CONTEXT_CHANGED,				// The user changed a selection somewhere.
 	CONTEXT_CHANGING,				// Tells the UI That a context switch is about to take place.
 
+	EDIT_CURRENT_BINDER_BRANDING,	// Edits the branding on the current binder.
+	
 	FULL_UI_RELOAD,					// Forces the full Vibe OnPrem UI to be reloaded.
 	
 	GOTO_CONTENT_URL,				// Changes the current context to a non-permalink URL.
@@ -72,8 +74,8 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_REPLY,					// Invoke the 'reply to entry' UI.
 	INVOKE_SHARE,					// Invoke the 'share this entry' UI.
 	INVOKE_SIMPLE_PROFILE,			// Invokes the simple profile dialog.
-	INVOKE_SUBSCRIBE,				// Invoke the 'subscribe to this entry' UI.  (SUBSCRIBE)
-	INVOKE_TAG,						// Invoke the 'tag this entry' UI.  (TAG)
+	INVOKE_SUBSCRIBE,				// Invoke the 'subscribe to this entry' UI.
+	INVOKE_TAG,						// Invoke the 'tag this entry' UI.
 	
 	LOGIN,							// logs into   Vibe OnPrem.
 	LOGOUT,							// logs out of Vibe OnPrem.
@@ -94,6 +96,10 @@ public enum TeamingEvents implements IsSerializable {
 	SIDEBAR_HIDE,					// Hides the left navigation panel.
 	SIDEBAR_RELOAD,					// Tells the left navigation panel to reload itself.
 	SIDEBAR_SHOW,					// Shows the left navigation panel.
+	
+	TRACK_CURRENT_BINDER,			// Tracks the current binder.
+	UNTRACK_CURRENT_BINDER,			// Removes tracking from the current binder.
+	UNTRACK_CURRENT_PERSON,			// Removes tracking from the current person.
 	
 	UNDEFINED;						// Undefined event - Should never be fired !!!
 }

@@ -44,7 +44,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public enum TeamingAction implements IsSerializable
 {
-	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
 	EDIT_SITE_BRANDING ("Edit Site Branding" ),
 	SHOW_ALL_ENTRIES( "Show all entries" ),
@@ -52,9 +51,6 @@ public enum TeamingAction implements IsSerializable
 	SHOW_UNREAD_ENTRIES( "Show unread entries" ),
 	SIZE_CHANGED( "The Size of Something Changed" ),
 	TEAMING_FEED( "Open the Teaming Feed window" ),
-	TRACK_BINDER( "Tracks the Current Binder" ),
-	UNTRACK_BINDER( "Untracks the Current Binder" ),
-	UNTRACK_PERSON( "Untracks the Current Person" ),
 	VIEW_FOLDER_ENTRY( "Open an entry for viewing" ),
 	VIEW_TEAM_MEMBERS( "View Team Membership of Current Binder" ),
 	SHOW_FORUM_ENTRY( "Open an entry for viewing" ),
