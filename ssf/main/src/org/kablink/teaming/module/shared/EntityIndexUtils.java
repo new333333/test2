@@ -955,6 +955,8 @@ public class EntityIndexUtils {
         	doc.add(new Field(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
         	doc.add(new Field(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileNameField.stringValue(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
         }
+        //While we are here, make sure the version agingEnabled flags are set properly
+        FileUtils.setFileVersionAging(entry);
     }    
     //Used to index the file.  Only want info about this file, so remove extraneous stuff
     public static void addFileAttachment(Document doc, FileAttachment fa, boolean fieldsOnly) {

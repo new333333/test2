@@ -436,6 +436,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		return zoneConfig.isBinderQuotaAllowBinderOwnerEnabled(); 		
     }
 
+  	public void setFileVersionsMaxAge(Integer fileVersionsMaxAge) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		if (zoneConfig.getFileVersionsMaxAge() == fileVersionsMaxAge) return; // if no change, do nothing
+  		zoneConfig.setFileVersionsMaxAge(fileVersionsMaxAge);
+  	}
+
   	public boolean isMobileAccessEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isMobileAccessEnabled(); 		

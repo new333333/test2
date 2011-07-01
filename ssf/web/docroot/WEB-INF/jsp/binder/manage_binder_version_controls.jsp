@@ -138,27 +138,6 @@ function ss_checkIfNumberValid(s) {
        </div>
       
        <div style="padding:10px 10px 0px 10px;">
-          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsMaxAge"/></span>
-          <input type="text" name="maxVersionAge" 
-            value="${ss_binder_versions_max_age}"
-            style="width:80px; text-align:right;"
-            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-		    <c:if test="${ss_binder_versions_inherited || !ss_binder_versions_enabled}">disabled=disabled</c:if>
-          >
-        <c:if test="${ss_binder_versions_inherited}">
-		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
-		</c:if>
-		<br/>
-		<span class="ss_smallprint" style="padding-left:16px;">
-		  <ssf:nlt tag="binder.versions.leaveBlankForNoLimit"/>
-		</span>
- 		<br/>
-		<span class="ss_smallprint" style="padding-left:16px;">
-		  <ssf:nlt tag="binder.versions.versionsMaxAgeHint1"/>
-		</span>
-       </div>
-            
-       <div style="padding:10px 10px 0px 10px;">
 		<c:if test="${ss_binder_versions_inherited}">
 		  <input type="submit" name="stopInheritBtn" 
 		    value="<ssf:nlt tag='binder.versions.inheritVersionControlsStop'/>"

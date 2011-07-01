@@ -107,24 +107,6 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					} catch (Exception ex) {
 						// The value entered by the user must not be valid, don't set it.
 					}
-					
-					// Get the maximum age of versions.
-					String s_maxVersionAge;
-					Integer maxVersionAge = null;
-					try {
-						s_maxVersionAge = PortletRequestUtils.getStringParameter(request, "maxVersionAge", "");
-						if (!enableBinderVersions) {
-							//If versions are disabled, then turn the version aging off
-							s_maxVersionAge = "";
-						}
-						if (!s_maxVersionAge.equals("")) {
-							maxVersionAge = Integer.valueOf(s_maxVersionAge);
-						}
-						getBinderModule().setBinderMaxVersionAge(binderId, maxVersionAge);
-					} catch (Exception ex) {
-						// The value entered by the user must not be valid, don't set it.
-					}
-					
 				}
 				
 				// Get the maximum file size.
@@ -181,7 +163,6 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		}
 		model.put(WebKeys.BINDER_VERSIONS_ENABLED, getBinderModule().getBinderVersionsEnabled(binder));
 		model.put(WebKeys.BINDER_VERSIONS_TO_KEEP, getBinderModule().getBinderVersionsToKeep(binder));
-		model.put(WebKeys.BINDER_VERSIONS_MAX_AGE, getBinderModule().getBinderMaxVersionAge(binder));
 		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, getBinderModule().getBinderMaxFileSize(binder));
 		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.isFileEncryptionEnabled());
 

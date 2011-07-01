@@ -67,8 +67,8 @@ public class FileAttachment extends Attachment {
     private FileLock fileLock;
     private Integer majorVersion;
     private Integer minorVersion;
+    private Boolean agingEnabled = Boolean.FALSE;
     private Integer fileStatus = FileStatus.valueOf(FileStatus.not_set);
-    private Date fileAgingDate;
     private boolean fileExists = true;
    
     public FileAttachment() {
@@ -116,6 +116,22 @@ public class FileAttachment extends Attachment {
 
 	public void setFileExists(boolean fileExists) {
 		this.fileExists = fileExists;
+	}
+
+	public Boolean getAgingEnabled() {
+		return this.agingEnabled;	//This can be null if it has never been initialized
+	}
+
+	public void setAgingEnabled(Boolean agingEnabled) {
+		this.agingEnabled = agingEnabled;
+	}
+
+	public boolean isAgingEnabled() {
+		if (this.agingEnabled == null || !this.agingEnabled) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
     /**
@@ -223,17 +239,6 @@ public class FileAttachment extends Attachment {
     }
     public String getFileStatusText() {
     	return NLT.get("file.status" + String.valueOf(this.getFileStatus()));
-    }
-
-    /**
-     * @hibernate.property type="timestamp" column="fileAgingDate"
-     * @return
-     */
-    public Date getFileAgingDate() {
-        return fileAgingDate;
-    }
-    public void setFileAgingDate(Date fileAgingDate) {
-        this.fileAgingDate = fileAgingDate;
     }
 
     /**

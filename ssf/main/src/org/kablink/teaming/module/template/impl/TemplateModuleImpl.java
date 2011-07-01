@@ -453,7 +453,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 //Version controls are not inherited, so copy them
 			 destination.setVersionsEnabled(source.getVersionsEnabled());
 			 destination.setVersionsToKeep(source.getVersionsToKeep());
-			 destination.setMaxVersionAge(source.getMaxVersionAge());
 			 destination.setMaxFileSize(source.getMaxFileSize());
 		 }
 		 destination.setFileEncryptionEnabled(source.isFileEncryptionEnabled());

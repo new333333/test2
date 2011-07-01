@@ -578,16 +578,6 @@ public interface BinderModule {
     //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
     public Integer getBinderVersionsToKeep(Binder binder);
 	/**
-     * Set maxVersionAge.
-     * 
-     * @param maxVersionAge
-     * @throws AccessControlException
-     */
-    public void setBinderMaxVersionAge(Long binderId, final Integer maxVersionAge)
-		throws AccessControlException;
-	//Get the maxVersionAge setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderMaxVersionAge(Binder binder);
-	/**
      * Set maxFileSize.
      * 
      * @param maxFileSize

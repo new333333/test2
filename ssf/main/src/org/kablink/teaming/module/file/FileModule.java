@@ -412,7 +412,14 @@ public interface FileModule {
 	public void revertFileVersion(DefinableEntity entity, VersionAttachment va, Boolean prune) 
 			throws UncheckedIOException, RepositoryServiceException;
 
-	
+	/**
+	 * Prune extra versions. 
+	 * 
+	 * @param binder
+	 * @param entity
+	 */
+	public void pruneFileVersions(Binder binder, DefinableEntity entry);
+
 	/**
 	 * Delete the specified version. 
 	 * If it is the only remaining version for the file, the request fails and 
