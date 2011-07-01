@@ -105,7 +105,6 @@
     </component>
     <property name="versionsEnabled" access="field"/>
     <property name="versionsToKeep" access="field"/>
-    <property name="maxVersionAge" access="field"/>
     <property name="maxFileSize" access="field"/>
     <property name="fileEncryptionEnabled" access="field"/>
     
