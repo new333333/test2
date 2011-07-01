@@ -103,6 +103,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
@@ -467,6 +468,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		//Go prune the minor versions
     		pruneFileVersions(binder, entry);
     	}
+    	//Set the agingEnabled flag on all versions subject to aging
+    	FileUtils.setFileVersionAging(entry);
     	
     	// Because writeFileTransactional itself is transactional, we do not trigger
     	// another transaction here. 
@@ -817,10 +820,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fileAtt = fileAtt.getHighestVersion().getParentAttachment();
 		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
 		fileAtt.setMinorVersion(0);
+		fileAtt.setAgingEnabled(Boolean.FALSE);
 		VersionAttachment hVer = fileAtt.getHighestVersion();
 		if (hVer != null && hVer.getParentAttachment() == fileAtt) {
 			hVer.setMajorVersion(fileAtt.getMajorVersion());
 			hVer.setMinorVersion(fileAtt.getMinorVersion());
+			hVer.setAgingEnabled(fileAtt.getAgingEnabled());
 		}
     	Binder binder;
     	if (entity instanceof Entry) {
@@ -829,6 +834,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		binder = (Binder) entity;
     	}
 		pruneFileVersions(binder, entity);	//After all the work is finished, make sure to prune the versions
+		FileUtils.setFileVersionAging(entity);	//Set the agingEnabled flag appropriately for all file attachments
 		setEntityModification(entity);
 		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION);
@@ -847,7 +853,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void renameFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, String newName) 
-	throws UncheckedIOException, RepositoryServiceException {
+			throws UncheckedIOException, RepositoryServiceException {
 		if(fileExistsInRepository(fa)) {
 			// Rename the file in the repository
 			RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
@@ -1069,6 +1075,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		// Get the highest previous version
 		VersionAttachment highestVa = (VersionAttachment) fa.getFileVersions().iterator().next();
+		highestVa.setAgingEnabled(Boolean.FALSE);
 		
 		// Copy the last-modified date
 		fa.setModification(highestVa.getModification());
@@ -1076,6 +1083,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fa.setFileItem(highestVa.getFileItem());
 		fa.setMajorVersion(highestVa.getMajorVersion());
 		fa.setMinorVersion(highestVa.getMinorVersion());
+		fa.setAgingEnabled(highestVa.getAgingEnabled());
 		fa.setFileStatus(highestVa.getFileStatus());
 		getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
 		getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
@@ -1089,6 +1097,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		saveChangeLogTransactional(changes);
 		//Mark that this entity was modified
 		setEntityModification(entity); 
+		FileUtils.setFileVersionAging(entity);
 	}
 
 	public Map<String,Long> getChildrenFileNames(Binder binder) {
@@ -1781,7 +1790,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
 		fAtt.setModification(mod);
 		fAtt.setFileStatus(FileStatus.not_set.ordinal());
-		
 		FileItem fItem = fAtt.getFileItem();
 
 		if(contentLength != null)
@@ -1807,6 +1815,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			vAtt.setRepositoryName(fAtt.getRepositoryName());
 			fAtt.addFileVersion(vAtt);
 		}
+		FileUtils.setFileVersionAging(fAtt.getOwner().getEntity());
 	}
     
     private class UpdateInfo {
@@ -2076,6 +2085,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fAtt.setLastVersion(1);
 		fAtt.setMajorVersion(1);
 		fAtt.setMinorVersion(0);
+		fAtt.setAgingEnabled(Boolean.FALSE);
     	fAtt.setRepositoryName(fui.getRepositoryName());
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());
@@ -2113,6 +2123,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		vAtt.setVersionNumber(1);
 		vAtt.setMajorVersion(1);
 		vAtt.setMinorVersion(0);
+		vAtt.setAgingEnabled(Boolean.FALSE);
 		vAtt.setVersionName(versionName);
 		vAtt.setRepositoryName(fAtt.getRepositoryName());
 		fAtt.addFileVersion(vAtt);
@@ -2470,7 +2481,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Calendar now = Calendar.getInstance();
     	now.setTime(new Date());
 		fa.setModification(new HistoryStamp(user, now.getTime()));
-
     }
     
     private boolean fileExistsInRepository(FileAttachment fa) {

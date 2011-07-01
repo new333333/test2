@@ -2434,38 +2434,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		});
 	}
 
-	//Get the maxVersionAge setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderMaxVersionAge(Binder binder) {
-    	Boolean versionsEnabled = binder.getVersionsEnabled();
-    	if (versionsEnabled != null && !versionsEnabled) {
-    		//Versions have been explicitly turned off. Return null to indicate no age
-    		return null;
-    	} else if (versionsEnabled != null && versionsEnabled) {
-    		//Versions have been explicitly turned on, so don't inherit anything
-    		return binder.getMaxVersionAge();
-    	}
-    	Integer result = binder.getMaxVersionAge();
-		Binder parent = binder;
-		while (parent.getParentBinder() != null) {
-			if (result != null) break;
-			result = parent.getMaxVersionAge();
-			parent = parent.getParentBinder();
-		}
-		return result;
-    }
-
-    public void setBinderMaxVersionAge(Long binderId, final Integer maxVersionAge)
-			throws AccessControlException {
-		final Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.manageConfiguration);
-		getTransactionTemplate().execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				binder.setMaxVersionAge(maxVersionAge);
-				return maxVersionAge;
-			}
-		});
-	}
-    
 	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
     public Integer getBinderMaxFileSize(Binder binder) {
     	Integer result = binder.getMaxFileSize();
