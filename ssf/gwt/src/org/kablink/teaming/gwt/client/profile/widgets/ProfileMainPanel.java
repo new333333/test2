@@ -37,6 +37,8 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
+import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -49,7 +51,6 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -518,21 +519,17 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 	/*
 	 * This method will be called to track the current binder.
-	 * 
-	 * Implements the TRACK_BINDER teaming action.
 	 */
 	private void followPerson() {
-		actionTrigger.triggerAction(TeamingAction.TRACK_BINDER);
+		TrackCurrentBinderEvent.fireOne();
 	}
 	
 	/*
 	 * This method will be called to remove the tracking on the person
 	 * whose workspace is the current binder.
-	 * 
-	 * Implements the UNTRACK_PERSON teaming action.
 	 */
 	private void unfollowPerson() {
-		actionTrigger.triggerAction(TeamingAction.UNTRACK_PERSON);
+		UntrackCurrentBinderEvent.fireOne();
 	}
 	
 	/**

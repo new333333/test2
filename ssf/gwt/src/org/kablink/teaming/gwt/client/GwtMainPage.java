@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
+import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
@@ -66,6 +67,9 @@ import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
+import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
+import org.kablink.teaming.gwt.client.event.UntrackCurrentPersonEvent;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -140,6 +144,7 @@ public class GwtMainPage extends Composite
 		BrowseHierarchyEvent.Handler,
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
+		EditCurrentBinderBrandingEvent.Handler,
 		FullUIReloadEvent.Handler,
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
@@ -157,7 +162,10 @@ public class GwtMainPage extends Composite
 		SearchTagEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarReloadEvent.Handler,
-		SidebarShowEvent.Handler
+		SidebarShowEvent.Handler,
+		TrackCurrentBinderEvent.Handler,
+		UntrackCurrentBinderEvent.Handler,
+		UntrackCurrentPersonEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
@@ -215,6 +223,9 @@ public class GwtMainPage extends Composite
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGING,
 
+		// Edit events.
+		TeamingEvents.EDIT_CURRENT_BINDER_BRANDING,
+		
 		// Invoke events.
 		TeamingEvents.INVOKE_HELP,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
@@ -238,6 +249,11 @@ public class GwtMainPage extends Composite
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_RELOAD,
 		TeamingEvents.SIDEBAR_SHOW,
+		
+		// Tracking events.
+		TeamingEvents.TRACK_CURRENT_BINDER,
+		TeamingEvents.UNTRACK_CURRENT_BINDER,
+		TeamingEvents.UNTRACK_CURRENT_PERSON,
 	};
 	
 	/*
@@ -1178,15 +1194,6 @@ public class GwtMainPage extends Composite
 	{
 		switch (action)
 		{
-		case EDIT_BRANDING:
-			GwtBrandingData brandingData;
-			
-			// Get the branding data the masthead is currently working with.
-			brandingData = m_mastHead.getBrandingData();
-			
-			editBranding( brandingData );
-			break;
-			
 		case EDIT_PERSONAL_PREFERENCES:
 			editPersonalPreferences();
 			break;
@@ -1204,18 +1211,6 @@ public class GwtMainPage extends Composite
 			
 		case VIEW_TEAM_MEMBERS:
 			viewTeamMembers();
-			break;
-			
-		case TRACK_BINDER:
-			trackCurrentBinder();
-			break;
-			
-		case UNTRACK_BINDER:
-			untrackCurrentBinder();
-			break;
-			
-		case UNTRACK_PERSON:
-			untrackCurrentPerson();
 			break;
 			
 		case TEAMING_FEED:
@@ -1640,89 +1635,6 @@ public class GwtMainPage extends Composite
 		gotoUrlNow( url, true );
 	}// end gotoUrlNow()
 
-	/*
-	 * This method will be called to track the current binder.
-	 * 
-	 * Implements the TRACK_BINDER teaming action.
-	 */
-	private void trackCurrentBinder() {
-		GwtTeaming.getRpcService().trackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
-		{
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
-					m_selectedBinderId );
-			}//end onFailure()
-			
-			public void onSuccess( Boolean success )
-			{
-				// It's overkill to force a full context reload, which
-				// this does, but it's the only way right now to ensure
-				// the What's New tab and other information gets fully
-				// refreshed.
-				FullUIReloadEvent.fireOne();
-			}// end onSuccess()
-		});
-	}
-	
-	/*
-	 * This method will be called to remove the tracking on the current
-	 * binder.
-	 * 
-	 * Implements the UNTRACK_BINDER teaming action.
-	 */
-	private void untrackCurrentBinder() {
-		GwtTeaming.getRpcService().untrackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
-		{
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_UntrackingBinder(),
-					m_selectedBinderId );
-			}//end onFailure()
-			
-			public void onSuccess( Boolean success )
-			{
-				// It's overkill to force a full context reload, which
-				// this does, but it's the only way right now to ensure
-				// the What's New tab and other information gets fully
-				// refreshed.
-				FullUIReloadEvent.fireOne();
-			}// end onSuccess()
-		});
-	}
-	
-	/*
-	 * This method will be called to remove the tracking on the person
-	 * whose workspace is the current binder.
-	 * 
-	 * Implements the UNTRACK_PERSON teaming action.
-	 */
-	private void untrackCurrentPerson() {
-		GwtTeaming.getRpcService().untrackPerson( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
-		{
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_TrackingPerson(),
-					m_selectedBinderId );
-			}//end onFailure()
-			
-			public void onSuccess( Boolean success )
-			{
-				// It's overkill to force a full context reload, which
-				// this does, but it's the only way right now to ensure
-				// the What's New tab and other information gets fully
-				// refreshed.
-				FullUIReloadEvent.fireOne();
-			}// end onSuccess()
-		});
-	}
-	
 	/**
 	 * Save the current ui state.
 	 */
@@ -1936,6 +1848,24 @@ public class GwtMainPage extends Composite
 		// Restore any ui state that may be saved.
 		restoreUIState();
 	}// end onContextChanging()
+	
+	/**
+	 * Handles EditCurrentBinderBrandingEvent's received by this class.
+	 * 
+	 * Implements the EditCurrentBinderBrandingEvent.Handler.onEditCurrentBinderBranding() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditCurrentBinderBranding( EditCurrentBinderBrandingEvent event )
+	{
+		GwtBrandingData brandingData;
+		
+		// Get the branding data the masthead is currently working with.
+		brandingData = m_mastHead.getBrandingData();
+
+		editBranding( brandingData );
+	}// end onEditCurrentBinderBranding()
 	
 	/**
 	 * Handles FullUIReloadEvent's received by this class.
@@ -2274,6 +2204,99 @@ public class GwtMainPage extends Composite
 	{
 		relayoutPage( true );
 	}// end onSidebarShow()
+	
+	/**
+	 * Handles TrackCurrentBinderEvent's received by this class.
+	 * 
+	 * Implements the TrackCurrentBinderEvent.Handler.onTrackCurrentBinder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTrackCurrentBinder( TrackCurrentBinderEvent event )
+	{
+		GwtTeaming.getRpcService().trackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
+		{
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
+					m_selectedBinderId );
+			}//end onFailure()
+			
+			public void onSuccess( Boolean success )
+			{
+				// It's overkill to force a full context reload, which
+				// this does, but it's the only way right now to ensure
+				// the What's New tab and other information gets fully
+				// refreshed.
+				FullUIReloadEvent.fireOne();
+			}// end onSuccess()
+		});
+	}// end onTrackCurrentBinder()
+	
+	/**
+	 * Handles UntrackCurrentBinderEvent's received by this class.
+	 * 
+	 * Implements the UntrackCurrentBinderEvent.Handler.onUntrackCurrentBinder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onUntrackCurrentBinder( UntrackCurrentBinderEvent event )
+	{
+		GwtTeaming.getRpcService().untrackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
+		{
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_UntrackingBinder(),
+					m_selectedBinderId );
+			}//end onFailure()
+			
+			public void onSuccess( Boolean success )
+			{
+				// It's overkill to force a full context reload, which
+				// this does, but it's the only way right now to ensure
+				// the What's New tab and other information gets fully
+				// refreshed.
+				FullUIReloadEvent.fireOne();
+			}// end onSuccess()
+		});
+	}// end onUntrackCurrentBinder()
+	
+	/**
+	 * Handles UntrackCurrentPersonEvent's received by this class.
+	 * 
+	 * Implements the UntrackCurrentPersonEvent.Handler.onUntrackCurrentPerson() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onUntrackCurrentPerson( UntrackCurrentPersonEvent event )
+	{
+		GwtTeaming.getRpcService().untrackPerson( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
+		{
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_TrackingPerson(),
+					m_selectedBinderId );
+			}//end onFailure()
+			
+			public void onSuccess( Boolean success )
+			{
+				// It's overkill to force a full context reload, which
+				// this does, but it's the only way right now to ensure
+				// the What's New tab and other information gets fully
+				// refreshed.
+				FullUIReloadEvent.fireOne();
+			}// end onSuccess()
+		});
+	}// end onUntrackCurrentPerson()
 	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only

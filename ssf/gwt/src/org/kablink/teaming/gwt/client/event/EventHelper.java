@@ -81,6 +81,7 @@ public class EventHelper {
 		case ADMINISTRATION_UPGRADE_CHECK:  AdministrationUpgradeCheckEvent.fireOne(); break;
 		case BROWSE_HIERARCHY_EXIT:         BrowseHierarchyExitEvent.fireOne();        break;
 		case CONTEXT_CHANGING:              ContextChangingEvent.fireOne();            break;
+		case EDIT_CURRENT_BINDER_BRANDING:  EditCurrentBinderBrandingEvent.fireOne();  break;
 		case FULL_UI_RELOAD:                FullUIReloadEvent.fireOne();               break;
 		case GOTO_MY_WORKSPACE:             GotoMyWorkspaceEvent.fireOne();            break;
 		case INVOKE_HELP:                   InvokeHelpEvent.fireOne();                 break;
@@ -92,6 +93,9 @@ public class EventHelper {
 		case SIDEBAR_HIDE:                  SidebarHideEvent.fireOne();                break;
 		case SIDEBAR_RELOAD:                SidebarReloadEvent.fireOne();              break;
 		case SIDEBAR_SHOW:                  SidebarShowEvent.fireOne();                break;
+		case TRACK_CURRENT_BINDER:          TrackCurrentBinderEvent.fireOne();         break;
+		case UNTRACK_CURRENT_BINDER:        UntrackCurrentBinderEvent.fireOne();       break;
+		case UNTRACK_CURRENT_PERSON:        UntrackCurrentPersonEvent.fireOne();       break;
 			
 		default:
 		case UNDEFINED:
@@ -235,6 +239,15 @@ public class EventHelper {
 				if (eventHandler instanceof ContextChangingEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ContextChangingEvent.registerEvent(eventBus, ((ContextChangingEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case EDIT_CURRENT_BINDER_BRANDING:
+				// A EditCurrentBinderBrandingEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EditCurrentBinderBrandingEvent.registerEvent(eventBus, ((EditCurrentBinderBrandingEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -463,6 +476,33 @@ public class EventHelper {
 				}
 				break;
 			
+			case TRACK_CURRENT_BINDER:
+				// A TrackCurrentBinderEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TrackCurrentBinderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TrackCurrentBinderEvent.registerEvent(eventBus, ((TrackCurrentBinderEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case UNTRACK_CURRENT_BINDER:
+				// A UntrackCurrentBinderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof UntrackCurrentBinderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = UntrackCurrentBinderEvent.registerEvent(eventBus, ((UntrackCurrentBinderEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case UNTRACK_CURRENT_PERSON:
+				// A UntrackCurrentPersonEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof UntrackCurrentPersonEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = UntrackCurrentPersonEvent.registerEvent(eventBus, ((UntrackCurrentPersonEvent.Handler) eventHandler));
+				}
+				break;
+			
 			default:
 			case UNDEFINED:
 				// Whatever it is, we can't handle it!  Tell the user
@@ -566,6 +606,8 @@ public class EventHelper {
 			case CONTEXT_CHANGED:               hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);             break;
 			case CONTEXT_CHANGING:              hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);            break;
 			
+			case EDIT_CURRENT_BINDER_BRANDING:  hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);  break;
+			
 			case MASTHEAD_HIDE:                 hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);               break;
 			case MASTHEAD_SHOW:                 hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);               break;
 			
@@ -598,6 +640,10 @@ public class EventHelper {
 			case SIDEBAR_HIDE:                  hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                break;
 			case SIDEBAR_RELOAD:                hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);              break;
 			case SIDEBAR_SHOW:                  hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                break;
+			
+			case TRACK_CURRENT_BINDER:          hasHandler = (eventHandler instanceof TrackCurrentBinderEvent.Handler);         break;
+			case UNTRACK_CURRENT_BINDER:        hasHandler = (eventHandler instanceof UntrackCurrentBinderEvent.Handler);       break;
+			case UNTRACK_CURRENT_PERSON:        hasHandler = (eventHandler instanceof UntrackCurrentPersonEvent.Handler);       break;
 			
 			case UNDEFINED:
 				// Ignore.

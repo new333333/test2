@@ -136,7 +136,6 @@ import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -3477,12 +3476,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							m_logger.debug(traceStart + "...:name:<unknown>:IGNORED QUALIFIER=" + name + ":" + ((null == value) ? "null" : value.getClass()));
 						}
 						else {
-							if (name.equalsIgnoreCase(GwtUIHelper.GWTUI_TEAMING_ACTION)) {
-								m_logger.debug(traceStart + "...:name:value:TEAMING_ACTION=" + name + ":" + sValue);
-								TeamingAction ta = TeamingAction.valueOf(sValue);
-								toolbarItem.setTeamingAction(ta);
-							}
-							else if (name.equalsIgnoreCase(GwtUIHelper.GWTUI_TEAMING_EVENT)) {
+							if (name.equalsIgnoreCase(GwtUIHelper.GWTUI_TEAMING_EVENT)) {
 								m_logger.debug(traceStart + "...:name:value:TEAMING_EVENT=" + name + ":" + sValue);
 								TeamingEvents te = TeamingEvents.valueOf(sValue);
 								toolbarItem.setTeamingEvent(te);
