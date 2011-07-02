@@ -16,6 +16,7 @@
 	<extend-property name="locale" values="nl"    />			<!-- Dutch                 -->
 	<extend-property name="locale" values="pl"    />			<!-- Polish                -->
 	<extend-property name="locale" values="pt_BR" />			<!-- Portuguese            -->
+	<extend-property name="locale" values="tr_TR" />			<!-- Turkish (not officially supported) -->
 	<extend-property name="locale" values="ru_RU" />			<!-- Russian               -->
 	<extend-property name="locale" values="sv"    />			<!-- Sweedish              -->
 	<extend-property name="locale" values="uk_UA" />			<!-- Ukrainian             -->
