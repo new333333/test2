@@ -46,60 +46,83 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum TeamingEvents implements IsSerializable {
-	TEAMING_ACTION,					// Event whose pay load is one of our original TeamingActions.
+	TEAMING_ACTION,						// Event whose pay load is one of our original TeamingActions.
 	
-	ACTIVITY_STREAM,				// Changes the selected an activity stream.
-	ACTIVITY_STREAM_ENTER,			// Enters activity stream mode.
-	ACTIVITY_STREAM_EXIT,			// Exits  activity stream mode.
+	ACTIVITY_STREAM,					// Changes the selected an activity stream.
+	ACTIVITY_STREAM_ENTER,				// Enters activity stream mode.
+	ACTIVITY_STREAM_EXIT,				// Exits  activity stream mode.
 	
-	ADMINISTRATION,					// Enters administration mode.
-	ADMINISTRATION_EXIT,			// Exits  administration mode.
-	ADMINISTRATION_UPGRADE_CHECK,	// Tell the administration control to check for upgrade tasks that need to be performed.
+	ADMINISTRATION,						// Enters administration mode.
+	ADMINISTRATION_EXIT,				// Exits  administration mode.
+	ADMINISTRATION_UPGRADE_CHECK,		// Tell the administration control to check for upgrade tasks that need to be performed.
 	
-	BROWSE_HIERARCHY,				// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 
-	BROWSE_HIERARCHY_EXIT,			// Exits the bread crumb browser, if open.
+	BROWSE_HIERARCHY,					// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 
+	BROWSE_HIERARCHY_EXIT,				// Exits the bread crumb browser, if open.
 	
-	CONTEXT_CHANGED,				// The user changed a selection somewhere.
-	CONTEXT_CHANGING,				// Tells the UI That a context switch is about to take place.
+	CONTEXT_CHANGED,					// The user changed a selection somewhere.
+	CONTEXT_CHANGING,					// Tells the UI That a context switch is about to take place.
 
-	EDIT_CURRENT_BINDER_BRANDING,	// Edits the branding on the current binder.
+	EDIT_CURRENT_BINDER_BRANDING,		// Edits the branding on the current binder.
+	EDIT_PERSONAL_PREFERENCES,			// Edits the user's personal preferences.
+	EDIT_SITE_BRANDING,					// Edits the site branding.
 	
-	FULL_UI_RELOAD,					// Forces the full Vibe OnPrem UI to be reloaded.
+	FULL_UI_RELOAD,						// Forces the full Vibe OnPrem UI to be reloaded.
 	
-	GOTO_CONTENT_URL,				// Changes the current context to a non-permalink URL.
-	GOTO_MY_WORKSPACE,				// Changes the current context to the user's workspace.
-	GOTO_PERMALINK_URL,				// Changes the current context to a permalink URL.
+	GOTO_CONTENT_URL,					// Changes the current context to a non-permalink URL.
+	GOTO_MY_WORKSPACE,					// Changes the current context to the user's workspace.
+	GOTO_PERMALINK_URL,					// Changes the current context to a permalink URL.
 
-	INVOKE_HELP,					// Invokes the Vibe OnPrem online help.
-	INVOKE_REPLY,					// Invoke the 'reply to entry' UI.
-	INVOKE_SHARE,					// Invoke the 'share this entry' UI.
-	INVOKE_SIMPLE_PROFILE,			// Invokes the simple profile dialog.
-	INVOKE_SUBSCRIBE,				// Invoke the 'subscribe to this entry' UI.
-	INVOKE_TAG,						// Invoke the 'tag this entry' UI.
+	INVOKE_HELP,						// Invokes the Vibe OnPrem online help.
+	INVOKE_REPLY,						// Invoke the 'reply to entry' UI.
+	INVOKE_SHARE,						// Invoke the 'share this entry' UI.
+	INVOKE_SIMPLE_PROFILE,				// Invokes the simple profile dialog.
+	INVOKE_SUBSCRIBE,					// Invoke the 'subscribe to this entry' UI.
+	INVOKE_TAG,							// Invoke the 'tag this entry' UI.
 	
-	LOGIN,							// logs into   Vibe OnPrem.
-	LOGOUT,							// logs out of Vibe OnPrem.
+	LOGIN,								// logs into   Vibe OnPrem.
+	LOGOUT,								// logs out of Vibe OnPrem.
 
-	MARK_ENTRY_READ,				// Mark the entry as read.
-	MARK_ENTRY_UNREAD,				// Mark the entry as unread.
+	MARK_ENTRY_READ,					// Mark the entry as read.
+	MARK_ENTRY_UNREAD,					// Mark the entry as unread.
 	
-	MASTHEAD_HIDE,					// Hides the masthead.
-	MASTHEAD_SHOW,					// Shows the masthead.
+	MASTHEAD_HIDE,						// Hides the masthead.
+	MASTHEAD_SHOW,						// Shows the masthead.
 	
-	SEARCH_ADVANCED,				// Runs the advanced Search in the content area.
-	SEARCH_FIND_RESULTS,			// Fired when the FindCtrl is returning its results.
-	SEARCH_RECENT_PLACE,			// Executes a recent place search.
-	SEARCH_SAVED,					// Executes a saved search using a string as the name.
-	SEARCH_SIMPLE,					// Performs a simple search on a string.
-	SEARCH_TAG,						// Executes a search using a string as a tag Name.
+	SEARCH_ADVANCED,					// Runs the advanced Search in the content area.
+	SEARCH_FIND_RESULTS,				// Fired when the FindCtrl is returning its results.
+	SEARCH_RECENT_PLACE,				// Executes a recent place search.
+	SEARCH_SAVED,						// Executes a saved search using a string as the name.
+	SEARCH_SIMPLE,						// Performs a simple search on a string.
+	SEARCH_TAG,							// Executes a search using a string as a tag Name.
 	
-	SIDEBAR_HIDE,					// Hides the left navigation panel.
-	SIDEBAR_RELOAD,					// Tells the left navigation panel to reload itself.
-	SIDEBAR_SHOW,					// Shows the left navigation panel.
+	SIDEBAR_HIDE,						// Hides the left navigation panel.
+	SIDEBAR_RELOAD,						// Tells the left navigation panel to reload itself.
+	SIDEBAR_SHOW,						// Shows the left navigation panel.
 	
-	TRACK_CURRENT_BINDER,			// Tracks the current binder.
-	UNTRACK_CURRENT_BINDER,			// Removes tracking from the current binder.
-	UNTRACK_CURRENT_PERSON,			// Removes tracking from the current person.
+	TASK_DELETE,						// Delete the Selected Tasks.
+	TASK_MOVE_DOWN,						// Move the Selected Task Down in the Ordering.
+	TASK_MOVE_LEFT,						// Move the Selected Task Left (i.e., Decrease its Subtask Level.)
+	TASK_MOVE_RIGHT,					// Move the Selected Task Right (i.e., Increase its Subtask Level.)
+	TASK_MOVE_UP,						// Move the Selected Task Up in the Ordering.
+	TASK_NEW_TASK,						// Creates a New Task Relative to an Existing One.
+	TASK_PURGE,							// Delete and Immediately Purge the Selected Tasks.
+	TASK_QUICK_FILTER,					// Creates or Clears a Quick Filter on the Task Folder.
+	TASK_SET_PERCENT_DONE,				// Sets a Task's Percentage Done.
+	TASK_SET_PRIORITY,					// Sets a Task's Priority.
+	TASK_SET_STATUS,					// Sets a Task's Status.
+	TASK_VIEW,							// Sets a Task's View.
 	
-	UNDEFINED;						// Undefined event - Should never be fired !!!
+	TRACK_CURRENT_BINDER,				// Tracks the current binder.
+	UNTRACK_CURRENT_BINDER,				// Removes tracking from the current binder.
+	UNTRACK_CURRENT_PERSON,				// Removes tracking from the current person.
+	
+	VIEW_ALL_ENTRIES,					// Shows all entries.
+	VIEW_CURRENT_BINDER_TEAM_MEMBERS,	// Views the Team Membership of the current binder.
+	VIEW_FOLDER_ENTRY,					// Open an entry for viewing.
+	VIEW_FORUM_ENTRY,					// Opens an entry for viewing.
+	VIEW_RESOURCE_LIBRARY,				// Shows the resource library page.
+	VIEW_TEAMING_FEED,					// Opens the Teaming Feed window.
+	VIEW_UNREAD_ENTRIES,				// Show unread entries.
+		
+	UNDEFINED;							// Undefined event - Should never be fired !!!
 }

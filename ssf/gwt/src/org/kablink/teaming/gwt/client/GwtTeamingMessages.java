@@ -971,7 +971,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskDebug_times(String taskCount, String readTime, String showTime, String totalTime);
 	String taskFilter_empty();
 	String taskInternalError_FilteredOrVirtual(String operation);
-	String taskInternalError_UnexpectedAction(String action);
+	String taskInternalError_UnexpectedEvent(String event);
 	String taskInternalError_UnexpectedViewOption(String viewOption);
 	String taskLabelDelete();
 	String taskLabelOrder();

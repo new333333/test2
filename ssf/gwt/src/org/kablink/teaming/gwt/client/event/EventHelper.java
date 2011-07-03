@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -71,37 +72,75 @@ public class EventHelper {
 	/**
 	 * Given an event that requires no parameters, fires one.
 	 * 
-	 * @param event
+	 * @param eventEnum
 	 */
-	public static void fireSimpleEvent(TeamingEvents event) {
-		switch (event) {
-		case ACTIVITY_STREAM_EXIT:          ActivityStreamExitEvent.fireOne();         break;
-		case ADMINISTRATION:                AdministrationEvent.fireOne();             break;
-		case ADMINISTRATION_EXIT:           AdministrationExitEvent.fireOne();         break;
-		case ADMINISTRATION_UPGRADE_CHECK:  AdministrationUpgradeCheckEvent.fireOne(); break;
-		case BROWSE_HIERARCHY_EXIT:         BrowseHierarchyExitEvent.fireOne();        break;
-		case CONTEXT_CHANGING:              ContextChangingEvent.fireOne();            break;
-		case EDIT_CURRENT_BINDER_BRANDING:  EditCurrentBinderBrandingEvent.fireOne();  break;
-		case FULL_UI_RELOAD:                FullUIReloadEvent.fireOne();               break;
-		case GOTO_MY_WORKSPACE:             GotoMyWorkspaceEvent.fireOne();            break;
-		case INVOKE_HELP:                   InvokeHelpEvent.fireOne();                 break;
-		case LOGIN:                         LoginEvent.fireOne();                      break;
-		case LOGOUT:                        LogoutEvent.fireOne();                     break;
-		case MASTHEAD_HIDE:                 MastheadHideEvent.fireOne();               break;
-		case MASTHEAD_SHOW:                 MastheadShowEvent.fireOne();               break;
-		case SEARCH_ADVANCED:               SearchAdvancedEvent.fireOne();             break;
-		case SIDEBAR_HIDE:                  SidebarHideEvent.fireOne();                break;
-		case SIDEBAR_RELOAD:                SidebarReloadEvent.fireOne();              break;
-		case SIDEBAR_SHOW:                  SidebarShowEvent.fireOne();                break;
-		case TRACK_CURRENT_BINDER:          TrackCurrentBinderEvent.fireOne();         break;
-		case UNTRACK_CURRENT_BINDER:        UntrackCurrentBinderEvent.fireOne();       break;
-		case UNTRACK_CURRENT_PERSON:        UntrackCurrentPersonEvent.fireOne();       break;
+	public static void fireSimpleEvent(TeamingEvents eventEnum) {
+		GwtEvent<?> event = createSimpleEvent(eventEnum);
+		if (null != event) {
+			GwtTeaming.fireEvent(event);
+		}
+	}
+	
+	/**
+	 * Given an event that requires no parameters, returns a
+	 * GwtEvent<?> of it.
+	 * 
+	 * @param eventEnum
+	 * 
+	 * @return
+	 */
+	public static GwtEvent<?> createSimpleEvent(TeamingEvents eventEnum) {
+		GwtEvent<?> reply;
+		
+		switch (eventEnum) {
+		case ACTIVITY_STREAM_EXIT:              reply = new ActivityStreamExitEvent();           break;
+		case ADMINISTRATION:                    reply = new AdministrationEvent();               break;
+		case ADMINISTRATION_EXIT:               reply = new AdministrationExitEvent();           break;
+		case ADMINISTRATION_UPGRADE_CHECK:      reply = new AdministrationUpgradeCheckEvent();   break;
+		case BROWSE_HIERARCHY_EXIT:             reply = new BrowseHierarchyExitEvent();          break;
+		case CONTEXT_CHANGING:                  reply = new ContextChangingEvent();              break;
+		case EDIT_CURRENT_BINDER_BRANDING:      reply = new EditCurrentBinderBrandingEvent();    break;
+		case EDIT_PERSONAL_PREFERENCES:         reply = new EditPersonalPreferencesEvent();      break;
+		case EDIT_SITE_BRANDING:                reply = new EditSiteBrandingEvent();             break;
+		case FULL_UI_RELOAD:                    reply = new FullUIReloadEvent();                 break;
+		case GOTO_MY_WORKSPACE:                 reply = new GotoMyWorkspaceEvent();              break;
+		case INVOKE_HELP:                       reply = new InvokeHelpEvent();                   break;
+		case LOGIN:                             reply = new LoginEvent();                        break;
+		case LOGOUT:                            reply = new LogoutEvent();                       break;
+		case MASTHEAD_HIDE:                     reply = new MastheadHideEvent();                 break;
+		case MASTHEAD_SHOW:                     reply = new MastheadShowEvent();                 break;
+		case SEARCH_ADVANCED:                   reply = new SearchAdvancedEvent();               break;
+		case SIDEBAR_HIDE:                      reply = new SidebarHideEvent();                  break;
+		case SIDEBAR_RELOAD:                    reply = new SidebarReloadEvent();                break;
+		case SIDEBAR_SHOW:                      reply = new SidebarShowEvent();                  break;
+		case TASK_DELETE:                       reply = new TaskDeleteEvent();                   break;
+		case TASK_MOVE_DOWN:                    reply = new TaskMoveDownEvent();                 break;
+		case TASK_MOVE_LEFT:                    reply = new TaskMoveLeftEvent();                 break;
+		case TASK_MOVE_RIGHT:                   reply = new TaskMoveRightEvent();                break;
+		case TASK_MOVE_UP:                      reply = new TaskMoveUpEvent();                   break;
+		case TASK_NEW_TASK:                     reply = new TaskNewTaskEvent();                  break;
+		case TASK_PURGE:                        reply = new TaskPurgeEvent();                    break;
+		case TASK_SET_PERCENT_DONE:             reply = new TaskSetPercentDoneEvent();           break;
+		case TASK_SET_PRIORITY:                 reply = new TaskSetPriorityEvent();              break;
+		case TASK_SET_STATUS:                   reply = new TaskSetStatusEvent();                break;
+		case TASK_VIEW:                         reply = new TaskViewEvent();                     break;
+		case TRACK_CURRENT_BINDER:              reply = new TrackCurrentBinderEvent();           break;
+		case UNTRACK_CURRENT_BINDER:            reply = new UntrackCurrentBinderEvent();         break;
+		case UNTRACK_CURRENT_PERSON:            reply = new UntrackCurrentPersonEvent();         break;
+		case VIEW_ALL_ENTRIES:                  reply = new ViewAllEntriesEvent();               break;
+		case VIEW_CURRENT_BINDER_TEAM_MEMBERS:  reply = new ViewCurrentBinderTeamMembersEvent(); break;
+		case VIEW_RESOURCE_LIBRARY:             reply = new ViewResourceLibraryEvent();          break;
+		case VIEW_TEAMING_FEED:                 reply = new ViewTeamingFeedEvent();              break;
+		case VIEW_UNREAD_ENTRIES:               reply = new ViewUnreadEntriesEvent();            break;
 			
 		default:
 		case UNDEFINED:
-			Window.alert(GwtTeaming.getMessages().eventHandling_NonSimpleEvent(event.name(), EventHelper.class.getName()));
+			Window.alert(GwtTeaming.getMessages().eventHandling_NonSimpleEvent(eventEnum.name(), EventHelper.class.getName()));
+			reply = null;
 			break;
 		}
+		
+		return reply;
 	}
 	
 	/*
@@ -248,6 +287,24 @@ public class EventHelper {
 				if (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = EditCurrentBinderBrandingEvent.registerEvent(eventBus, ((EditCurrentBinderBrandingEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case EDIT_PERSONAL_PREFERENCES:
+				// A EditPersonalPreferencesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof EditPersonalPreferencesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EditPersonalPreferencesEvent.registerEvent(eventBus, ((EditPersonalPreferencesEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case EDIT_SITE_BRANDING:
+				// A EditSiteBrandingEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof EditSiteBrandingEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EditSiteBrandingEvent.registerEvent(eventBus, ((EditSiteBrandingEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -476,6 +533,114 @@ public class EventHelper {
 				}
 				break;
 			
+			case TASK_DELETE:
+				// A TaskDeleteEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskDeleteEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskDeleteEvent.registerEvent(eventBus, ((TaskDeleteEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_MOVE_DOWN:
+				// A TaskMoveDownEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskMoveDownEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskMoveDownEvent.registerEvent(eventBus, ((TaskMoveDownEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_MOVE_LEFT:
+				// A TaskMoveLeftEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskMoveLeftEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskMoveLeftEvent.registerEvent(eventBus, ((TaskMoveLeftEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_MOVE_RIGHT:
+				// A TaskMoveRightEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskMoveRightEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskMoveRightEvent.registerEvent(eventBus, ((TaskMoveRightEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_MOVE_UP:
+				// A TaskMoveUpEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskMoveUpEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskMoveUpEvent.registerEvent(eventBus, ((TaskMoveUpEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_NEW_TASK:
+				// A TaskNewTaskEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskNewTaskEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskNewTaskEvent.registerEvent(eventBus, ((TaskNewTaskEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_PURGE:
+				// A TaskPurgeEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskPurgeEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskPurgeEvent.registerEvent(eventBus, ((TaskPurgeEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_QUICK_FILTER:
+				// A TaskQuickFilterEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskQuickFilterEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskQuickFilterEvent.registerEvent(eventBus, ((TaskQuickFilterEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_SET_PERCENT_DONE:
+				// A TaskSetPercentDoneEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TaskSetPercentDoneEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskSetPercentDoneEvent.registerEvent(eventBus, ((TaskSetPercentDoneEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_SET_PRIORITY:
+				// A TaskSetPriorityEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TaskSetPriorityEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskSetPriorityEvent.registerEvent(eventBus, ((TaskSetPriorityEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_SET_STATUS:
+				// A TaskSetStatusEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TaskSetStatusEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskSetStatusEvent.registerEvent(eventBus, ((TaskSetStatusEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TASK_VIEW:
+				// A TaskViewEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskViewEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskViewEvent.registerEvent(eventBus, ((TaskViewEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case TRACK_CURRENT_BINDER:
 				// A TrackCurrentBinderEvent!  Can the event handler we
 				// were given handle that?
@@ -500,6 +665,69 @@ public class EventHelper {
 				if (eventHandler instanceof UntrackCurrentPersonEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = UntrackCurrentPersonEvent.registerEvent(eventBus, ((UntrackCurrentPersonEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case VIEW_ALL_ENTRIES:
+				// A ViewAllEntriesEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ViewAllEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewAllEntriesEvent.registerEvent(eventBus, ((ViewAllEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case VIEW_CURRENT_BINDER_TEAM_MEMBERS:
+				// A ViewCurrentBinderTeamMembersEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ViewCurrentBinderTeamMembersEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewCurrentBinderTeamMembersEvent.registerEvent(eventBus, ((ViewCurrentBinderTeamMembersEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case VIEW_FOLDER_ENTRY:
+				// A ViewFolderEntryEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ViewFolderEntryEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewFolderEntryEvent.registerEvent(eventBus, ((ViewFolderEntryEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case VIEW_FORUM_ENTRY:
+				// A ViewForumEntryEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ViewForumEntryEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewForumEntryEvent.registerEvent(eventBus, ((ViewForumEntryEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case VIEW_RESOURCE_LIBRARY:
+				// A ViewResourceLibraryEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ViewResourceLibraryEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewResourceLibraryEvent.registerEvent(eventBus, ((ViewResourceLibraryEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case VIEW_TEAMING_FEED:
+				// A ViewTeamingFeedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ViewTeamingFeedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewTeamingFeedEvent.registerEvent(eventBus, ((ViewTeamingFeedEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case VIEW_UNREAD_ENTRIES:
+				// A ViewUnreadEntriesEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ViewUnreadEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewUnreadEntriesEvent.registerEvent(eventBus, ((ViewUnreadEntriesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -590,60 +818,83 @@ public class EventHelper {
 			boolean needsHandler = isTEInA(te, eventsToCheck);
 			boolean hasHandler   = false;
 			switch (te) {
-			case TEAMING_ACTION:                hasHandler = (eventHandler instanceof TeamingActionEvent.Handler);              break;
+			case TEAMING_ACTION:                    hasHandler = (eventHandler instanceof TeamingActionEvent.Handler);                break;
 			
-			case ACTIVITY_STREAM:               hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);             break;
-			case ACTIVITY_STREAM_ENTER:         hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);        break;
-			case ACTIVITY_STREAM_EXIT:          hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);         break;
+			case ACTIVITY_STREAM:                   hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);               break;
+			case ACTIVITY_STREAM_ENTER:             hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);          break;
+			case ACTIVITY_STREAM_EXIT:              hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);           break;
 			
-			case ADMINISTRATION:                hasHandler = (eventHandler instanceof AdministrationEvent.Handler);             break;
-			case ADMINISTRATION_EXIT:           hasHandler = (eventHandler instanceof AdministrationExitEvent.Handler);         break;
-			case ADMINISTRATION_UPGRADE_CHECK:  hasHandler = (eventHandler instanceof AdministrationUpgradeCheckEvent.Handler); break;
+			case ADMINISTRATION:                    hasHandler = (eventHandler instanceof AdministrationEvent.Handler);               break;
+			case ADMINISTRATION_EXIT:               hasHandler = (eventHandler instanceof AdministrationExitEvent.Handler);           break;
+			case ADMINISTRATION_UPGRADE_CHECK:      hasHandler = (eventHandler instanceof AdministrationUpgradeCheckEvent.Handler);   break;
 			
-			case BROWSE_HIERARCHY:              hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);            break;
-			case BROWSE_HIERARCHY_EXIT:         hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);        break;
+			case BROWSE_HIERARCHY:                  hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);              break;
+			case BROWSE_HIERARCHY_EXIT:             hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);          break;
 			
-			case CONTEXT_CHANGED:               hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);             break;
-			case CONTEXT_CHANGING:              hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);            break;
+			case CONTEXT_CHANGED:                   hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);               break;
+			case CONTEXT_CHANGING:                  hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);              break;
 			
-			case EDIT_CURRENT_BINDER_BRANDING:  hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);  break;
+			case EDIT_CURRENT_BINDER_BRANDING:      hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);    break;
+			case EDIT_PERSONAL_PREFERENCES:         hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);      break;
+			case EDIT_SITE_BRANDING:                hasHandler = (eventHandler instanceof EditSiteBrandingEvent.Handler);             break;
 			
-			case MASTHEAD_HIDE:                 hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);               break;
-			case MASTHEAD_SHOW:                 hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);               break;
+			case MASTHEAD_HIDE:                     hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);                 break;
+			case MASTHEAD_SHOW:                     hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);                 break;
 			
-			case FULL_UI_RELOAD:                hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);               break;
+			case FULL_UI_RELOAD:                    hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);                 break;
 			
-			case GOTO_CONTENT_URL:              hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);             break;
-			case GOTO_MY_WORKSPACE:             hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);            break;
-			case GOTO_PERMALINK_URL:            hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);           break;
+			case GOTO_CONTENT_URL:                  hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);               break;
+			case GOTO_MY_WORKSPACE:                 hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);              break;
+			case GOTO_PERMALINK_URL:                hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);             break;
 			
-			case INVOKE_HELP:                   hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                 break;
-			case INVOKE_REPLY:                  hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                break;
-			case INVOKE_SHARE:                  hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                break;
-			case INVOKE_SIMPLE_PROFILE:         hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);        break;
-			case INVOKE_SUBSCRIBE:              hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);            break;
-			case INVOKE_TAG:                    hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                  break;
+			case INVOKE_HELP:                       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                   break;
+			case INVOKE_REPLY:                      hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                  break;
+			case INVOKE_SHARE:                      hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                  break;
+			case INVOKE_SIMPLE_PROFILE:             hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);          break;
+			case INVOKE_SUBSCRIBE:                  hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);              break;
+			case INVOKE_TAG:                        hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                    break;
 			
-			case LOGIN:                         hasHandler = (eventHandler instanceof LoginEvent.Handler);                      break;
-			case LOGOUT:                        hasHandler = (eventHandler instanceof LogoutEvent.Handler);                     break;
+			case LOGIN:                             hasHandler = (eventHandler instanceof LoginEvent.Handler);                        break;
+			case LOGOUT:                            hasHandler = (eventHandler instanceof LogoutEvent.Handler);                       break;
 			
-			case MARK_ENTRY_READ:               hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);              break;
-			case MARK_ENTRY_UNREAD:             hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);            break;
+			case MARK_ENTRY_READ:                   hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                break;
+			case MARK_ENTRY_UNREAD:                 hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);              break;
 			
-			case SEARCH_ADVANCED:               hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);             break;
-			case SEARCH_FIND_RESULTS:           hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);          break;
-			case SEARCH_RECENT_PLACE:           hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);          break;
-			case SEARCH_SAVED:                  hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                break;
-			case SEARCH_SIMPLE:                 hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);               break;
-			case SEARCH_TAG:                    hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                  break;
+			case SEARCH_ADVANCED:                   hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);               break;
+			case SEARCH_FIND_RESULTS:               hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);            break;
+			case SEARCH_RECENT_PLACE:               hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);            break;
+			case SEARCH_SAVED:                      hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                  break;
+			case SEARCH_SIMPLE:                     hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);                 break;
+			case SEARCH_TAG:                        hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                    break;
 			
-			case SIDEBAR_HIDE:                  hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                break;
-			case SIDEBAR_RELOAD:                hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);              break;
-			case SIDEBAR_SHOW:                  hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                break;
+			case SIDEBAR_HIDE:                      hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                  break;
+			case SIDEBAR_RELOAD:                    hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);                break;
+			case SIDEBAR_SHOW:                      hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                  break;
 			
-			case TRACK_CURRENT_BINDER:          hasHandler = (eventHandler instanceof TrackCurrentBinderEvent.Handler);         break;
-			case UNTRACK_CURRENT_BINDER:        hasHandler = (eventHandler instanceof UntrackCurrentBinderEvent.Handler);       break;
-			case UNTRACK_CURRENT_PERSON:        hasHandler = (eventHandler instanceof UntrackCurrentPersonEvent.Handler);       break;
+			case TASK_DELETE:                       hasHandler = (eventHandler instanceof TaskDeleteEvent.Handler);                   break;
+			case TASK_MOVE_DOWN:                    hasHandler = (eventHandler instanceof TaskMoveDownEvent.Handler);                 break;
+			case TASK_MOVE_LEFT:                    hasHandler = (eventHandler instanceof TaskMoveLeftEvent.Handler);                 break;
+			case TASK_MOVE_RIGHT:                   hasHandler = (eventHandler instanceof TaskMoveRightEvent.Handler);                break;
+			case TASK_MOVE_UP:                      hasHandler = (eventHandler instanceof TaskMoveUpEvent.Handler);                   break;
+			case TASK_NEW_TASK:                     hasHandler = (eventHandler instanceof TaskNewTaskEvent.Handler);                  break;
+			case TASK_PURGE:                        hasHandler = (eventHandler instanceof TaskPurgeEvent.Handler);                    break;
+			case TASK_QUICK_FILTER:                 hasHandler = (eventHandler instanceof TaskQuickFilterEvent.Handler);              break;
+			case TASK_SET_PERCENT_DONE:             hasHandler = (eventHandler instanceof TaskSetPercentDoneEvent.Handler);           break;
+			case TASK_SET_PRIORITY:                 hasHandler = (eventHandler instanceof TaskSetPriorityEvent.Handler);              break;
+			case TASK_SET_STATUS:                   hasHandler = (eventHandler instanceof TaskSetStatusEvent.Handler);                break;
+			case TASK_VIEW:                         hasHandler = (eventHandler instanceof TaskViewEvent.Handler);                     break;
+			
+			case TRACK_CURRENT_BINDER:              hasHandler = (eventHandler instanceof TrackCurrentBinderEvent.Handler);           break;
+			case UNTRACK_CURRENT_BINDER:            hasHandler = (eventHandler instanceof UntrackCurrentBinderEvent.Handler);         break;
+			case UNTRACK_CURRENT_PERSON:            hasHandler = (eventHandler instanceof UntrackCurrentPersonEvent.Handler);         break;
+			
+			case VIEW_ALL_ENTRIES:                  hasHandler = (eventHandler instanceof ViewAllEntriesEvent.Handler);               break;
+			case VIEW_CURRENT_BINDER_TEAM_MEMBERS:  hasHandler = (eventHandler instanceof ViewCurrentBinderTeamMembersEvent.Handler); break;
+			case VIEW_FOLDER_ENTRY:                 hasHandler = (eventHandler instanceof ViewFolderEntryEvent.Handler);              break;
+			case VIEW_FORUM_ENTRY:                  hasHandler = (eventHandler instanceof ViewForumEntryEvent.Handler);               break;
+			case VIEW_RESOURCE_LIBRARY:             hasHandler = (eventHandler instanceof ViewResourceLibraryEvent.Handler);          break;
+			case VIEW_TEAMING_FEED:                 hasHandler = (eventHandler instanceof ViewTeamingFeedEvent.Handler);              break;
+			case VIEW_UNREAD_ENTRIES:               hasHandler = (eventHandler instanceof ViewUnreadEntriesEvent.Handler);            break;
 			
 			case UNDEFINED:
 				// Ignore.

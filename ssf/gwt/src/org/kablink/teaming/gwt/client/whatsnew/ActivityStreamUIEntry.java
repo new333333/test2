@@ -40,16 +40,15 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
+import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -81,7 +80,6 @@ public abstract class ActivityStreamUIEntry extends Composite
     public static final int FORMAT_NONE = 2;
 
     private ActivityStreamCtrl m_activityStreamCtrl;
-	protected ActionHandler m_actionHandler;
 	private Image m_avatarImg;
 	private Image m_actionsImg1;
 	private Image m_actionsImg2;
@@ -106,8 +104,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 * 
 	 */
 	public ActivityStreamUIEntry(
-		ActivityStreamCtrl activityStreamCtrl,
-		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
+		ActivityStreamCtrl activityStreamCtrl )
 	{
 		FlowPanel mainPanel;
 		FlowPanel panel;
@@ -122,9 +119,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		mainPanel.addDomHandler( this, MouseOverEvent.getType() );
 		mainPanel.addDomHandler( this, MouseOutEvent.getType() );
 
-		// Remember the handler we should call when the user selects an item from the search results.
-		m_actionHandler = actionHandler;
-		
 		// Add a place to show the avatar
 		m_avatarImg = new Image();
 		m_avatarImg.addStyleName( getAvatarImageStyleName() );
@@ -1071,9 +1065,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( GwtClientHelper.hasString( m_viewEntryUrl ) )
 		{
 			// Tell the activity stream to mark this entry as read.
-			GwtTeaming.fireEvent(new MarkEntryReadEvent( this ) );
-			
-			m_actionHandler.handleAction( TeamingAction.SHOW_FORUM_ENTRY, m_viewEntryUrl );
+			GwtTeaming.fireEvent(new MarkEntryReadEvent( this            ) );			
+			GwtTeaming.fireEvent(new ViewForumEntryEvent( m_viewEntryUrl ) );
 		}
 		else
 			Window.alert( GwtTeaming.getMessages().cantAccessEntry() );

@@ -41,10 +41,8 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
@@ -81,9 +79,9 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	public ActivityStreamTopEntry( ActivityStreamCtrl activityStreamCtrl, ActionHandler actionHandler )
+	public ActivityStreamTopEntry( ActivityStreamCtrl activityStreamCtrl )
 	{
-		super( activityStreamCtrl, actionHandler );
+		super( activityStreamCtrl );
 		
 		m_parentBinderId = null;
 		m_parentBinderPermalink = null;
@@ -284,7 +282,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		if ( commentUI == null )
 		{
 			// Create a new one.
-			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), m_actionHandler, this );
+			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), this );
 			m_comments.add( commentUI );
 		}
 		

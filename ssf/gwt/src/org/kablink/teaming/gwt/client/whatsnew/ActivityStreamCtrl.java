@@ -52,10 +52,11 @@ import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
+import org.kablink.teaming.gwt.client.event.ViewAllEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ViewUnreadEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -65,7 +66,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -113,7 +113,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ActivityStreamCtrl extends Composite
-	implements ActionHandler, ClickHandler,
+	implements ClickHandler,
 	// EventBus handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
@@ -125,7 +125,9 @@ public class ActivityStreamCtrl extends Composite
 		MarkEntryReadEvent.Handler,
 		MarkEntryUnreadEvent.Handler,
 		SidebarHideEvent.Handler,
-		SidebarShowEvent.Handler
+		SidebarShowEvent.Handler,
+		ViewAllEntriesEvent.Handler,
+		ViewUnreadEntriesEvent.Handler
 {
 	private int m_width;
 	private int m_height;
@@ -136,7 +138,6 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_showSettingPanel;
 	private GwtMainPage m_mainPage;
 	private Object m_selectedObj = null;
-	private ActionHandler m_actionHandler;
 	private AsyncCallback<ActivityStreamData> m_searchResultsCallback;
 	private AsyncCallback<VibeRpcResponse> m_checkForChangesCallback = null;
 	private AsyncCallback<VibeRpcResponse> m_getActivityStreamParamsCallback = null;
@@ -197,6 +198,10 @@ public class ActivityStreamCtrl extends Composite
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_SHOW,
+		
+		// View events.
+		TeamingEvents.VIEW_ALL_ENTRIES,
+		TeamingEvents.VIEW_UNREAD_ENTRIES,
 	};
 	
 	
@@ -222,9 +227,6 @@ public class ActivityStreamCtrl extends Composite
 		
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "activityStreamCtrl" );
-		
-		// Remember the handler we should call when the user selects an item from the search results.
-		m_actionHandler = mainPage;
 		
 		// Create the list that will hold the ui widgets, one for each entry returned by the search.
 		m_searchResultsUIWidgets = new ArrayList<ActivityStreamTopEntry>();
@@ -311,7 +313,7 @@ public class ActivityStreamCtrl extends Composite
 		createActionsPopupMenu();
 		
 		// Create the popup menu used to set "show all" or "show unread"
-		m_showSettingPopupMenu  = new ShowSettingPopupMenu( true, true, this );
+		m_showSettingPopupMenu  = new ShowSettingPopupMenu( true, true );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -359,7 +361,7 @@ public class ActivityStreamCtrl extends Composite
 				if ( topEntry == null )
 				{
 					// No, create a new one.
-					topEntry = new ActivityStreamTopEntry( this, m_actionHandler );
+					topEntry = new ActivityStreamTopEntry( this );
 					m_searchResultsUIWidgets.add( topEntry );
 				}
 				
@@ -1024,36 +1026,6 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
-	 * This method gets called when the user selects a menu item from the Actions popup menu.
-	 */
-	public void handleAction( final TeamingAction action, final Object actionData )
-	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			/**
-			 * 
-			 */
-			public void execute()
-			{
-				switch ( action )
-				{
-				case SHOW_ALL_ENTRIES:
-					handleNewShowSetting( ShowSetting.SHOW_ALL );
-					break;
-					
-				case SHOW_UNREAD_ENTRIES:
-					handleNewShowSetting( ShowSetting.SHOW_UNREAD );
-					break;
-				}
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}
-	
-	
-	/**
 	 * Take all the actions necessary to handle the changing of the show setting.
 	 * 
 	 */
@@ -1158,7 +1130,6 @@ public class ActivityStreamCtrl extends Composite
 	{
 		if ( m_tagThisDlg == null )
 		{
-			//!!! Pass in an ActionTrigger
 			TagThisDlg.createAsync(
 					false,
 					true,
@@ -1998,6 +1969,32 @@ public class ActivityStreamCtrl extends Composite
 			removeStyleName( "mainWorkspaceTreeControl" );
 		}
 	}// end onSidebarShow()
+	
+	/**
+	 * Handles ViewAllEntriesEvent's received by this class.
+	 * 
+	 * Implements the ViewAllEntriesEvent.Handler.onViewAllEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewAllEntries( ViewAllEntriesEvent event )
+	{
+		handleNewShowSetting( ShowSetting.SHOW_ALL );
+	}// end onViewAllEntries()
+	
+	/**
+	 * Handles ViewUnreadEntriesEvent's received by this class.
+	 * 
+	 * Implements the ViewUnreadEntriesEvent.Handler.onViewUnreadEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewUnreadEntries( ViewUnreadEntriesEvent event )
+	{
+		handleNewShowSetting( ShowSetting.SHOW_UNREAD );
+	}// end onViewUnreadEntries()
 	
 	/**
 	 * Callback interface to interact with the content control

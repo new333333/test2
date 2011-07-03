@@ -30,100 +30,81 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.event;
 
-package org.kablink.teaming.gwt.client.whatsnew;
-
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
-
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
+ * The TaskNewTaskEvent is to run the new task creation dialog.
  * 
+ * @author drfoster@novell.com
  */
-public class ActivityStreamComment extends ActivityStreamUIEntry
-{
-	private ActivityStreamTopEntry m_topEntry;	// The entry this comment belongs to.
+public class TaskNewTaskEvent extends GwtEvent<TaskNewTaskEvent.Handler> {
+    public static Type<Handler> TYPE = new Type<Handler>();
+    
+    private String m_eventOption;
+
+	/**
+	 * Handler interface for this event.
+	 */
+	public interface Handler extends EventHandler {
+		void onTaskNewTask(TaskNewTaskEvent event);
+	}
 	
 	/**
+	 * Class constructor.
+	 */
+	public TaskNewTaskEvent(String eventOption) {
+		super();
+		m_eventOption = eventOption;
+	}
+	
+	public TaskNewTaskEvent() {
+		this(null);
+	}
+	
+	/**
+	 * Get'er / Set'er methods.
 	 * 
+	 * @return
 	 */
-	public ActivityStreamComment( ActivityStreamCtrl activityStreamCtrl, ActivityStreamTopEntry topEntry )
-	{
-		super( activityStreamCtrl );
-		
-		m_topEntry = topEntry;
-	}
-
-
-	/**
-	 * Nothing to do.
-	 */
-	public void addAdditionalHeaderUI( FlowPanel headerPanel )
-	{
-		// Nothing to do.
-	}
-
+	public TeamingEvents getEventEnum()                     {return TeamingEvents.TASK_NEW_TASK;}
+	public String        getEventOption()                   {return m_eventOption;              }
+	public void          setEventOption(String eventOption) {m_eventOption = eventOption;       }
 	
 	/**
+	 * Returns the GwtEvent.Type of this event.
 	 * 
+	 * @return
 	 */
-	public String getAvatarImageStyleName()
-	{
-		return "activityStreamCommentAvatarImg";
-	}
-
-	
+    @Override
+    public Type<Handler> getAssociatedType() {
+        return TYPE;
+    }
+    
 	/**
-	 * Return the name of the style used with the content panel.
-	 */
-	public String getContentPanelStyleName()
-	{
-		return "activityStreamCommentContentPanel";
-	}
-
-	
-	/**
+	 * Dispatches this event when one is triggered.
 	 * 
+	 * @param handler
 	 */
-	public String getEntryHeaderStyleName()
-	{
-		return "activityStreamCommentHeader";
-	}
-
-
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onTaskNewTask(this);
+    }
+    
 	/**
-	 * Return the name of the style used with the div that holds the entry.
-	 */
-	public String getMainPanelStyleName()
-	{
-		return "activityStreamCommentMainPanel";
-	}
-	
-	
-	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
 	 * 
-	 */
-	public String getTitlePanelStyleName()
-	{
-		return "activityStreamCommentTitlePanel";
-	}
-
-	
-	/**
+	 * @param eventBus
+	 * @param handler
 	 * 
+	 * @return
 	 */
-	public String getTitleStyleName()
-	{
-		return "activityStreamCommentTitle";
-	}
-	
-	/**
-	 * Insert the given reply into the top entry's list of replies
-	 */
-	public void insertReply( ActivityStreamEntry reply )
-	{
-		// Add this reply to the top entry.
-		if ( m_topEntry != null )
-			m_topEntry.insertReply( reply );
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 }
