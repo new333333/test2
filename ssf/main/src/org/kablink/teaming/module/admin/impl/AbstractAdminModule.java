@@ -325,6 +325,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			case manageFunction:
 			case manageFunctionCondition:
 			case manageMail:
+			case manageFileVersionAging:
 			case manageTemplate:
 			case manageErrorLogs:
   			case manageFunctionMembership:
@@ -465,6 +466,15 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setWeekendsAndHolidaysConfig(weekendsAndHolidaysConfig); 		
+  	}
+  	public Integer getFileVersionsMaxAge() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.getFileVersionsMaxAge();
+  	}
+  	public void setFileVersionAgingDays(Integer fileVersionAge) {
+  	   	checkAccess(AdminOperation.manageFileVersionAging);
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setFileVersionsMaxAge(fileVersionAge);
   	}
   	public MailConfig getMailConfig() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());

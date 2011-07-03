@@ -1757,6 +1757,23 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 
+			// Does the user have rights to "Configure File Version Aging"?
+			if ( adminModule.testAccess( AdminOperation.manageFileVersionAging ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_file_version_aging" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FILE_VERSION_AGING_JOB_CONFIGURE);
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_FILE_VERSION_AGING );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
 			// Does the user have rights to "Access Control for Zone Administration functions"?
 			if ( adminModule.testAccess( AdminOperation.manageFunctionMembership ) )
 			{

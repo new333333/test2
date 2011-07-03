@@ -70,6 +70,7 @@ public interface AdminModule {
 	public enum AdminOperation {
 		manageFunction,
 		manageMail,
+		manageFileVersionAging,
 		manageTemplate,
 		report,
 		manageFunctionMembership,
@@ -157,6 +158,8 @@ public interface AdminModule {
     public void setHomePageConfig(HomePageConfig homePageConfig);
     public WeekendsAndHolidaysConfig getWeekendsAndHolidaysConfig();
     public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig);
+    public Integer getFileVersionsMaxAge();
+    public void setFileVersionsMaxAge(Integer fileVersionAge);
     public MailConfig getMailConfig();
     public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier);
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
