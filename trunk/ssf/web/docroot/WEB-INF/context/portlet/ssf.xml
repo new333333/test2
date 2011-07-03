@@ -90,6 +90,7 @@
 	<bean id="adminConfigureUserAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureUserAccessController" />
 	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
 	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
+	<bean id="adminConfigureFileVersionAgingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureFileVersionAgingJobController" />
 	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
 	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
 	<bean id="adminConfigureScheduleController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureScheduleController" />
@@ -201,6 +202,7 @@
 						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
 						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
+						<entry key="configure_file_version_aging_job"><ref bean="adminConfigureFileVersionAgingJobController"/></entry>
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
 						<entry key="configure_mobile_access"><ref bean="adminConfigureMobileAccessController"/></entry>

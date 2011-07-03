@@ -355,6 +355,7 @@ public class WebKeys {
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
 	public static final String ACTION_LICENSE_REPORT="license_report";
 	public static final String ACTION_LOGIN_REPORT="login_report";
+	public static final String ACTION_FILE_VERSION_AGING_JOB_CONFIGURE="configure_file_version_aging_job";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
 	public static final String ACTION_READ_FILE="readFile";
 	public static final String ACTION_READ_SCALED="readScaledFile";
@@ -908,6 +909,7 @@ public class WebKeys {
     public static final String FILE_ATTACHMENT = "ss_fileAttachment";
     public static final String FILE_HANDLE = "ss_fileHandle";
     public static final String FILE_QUOTA_WOULD_BE_EXCEEDED = "ss_fileQuotaWouldBeExceeded";
+    public static final String FILE_VERSION_MAXIMUM_AGE = "ss_fileVersionMaximumAge";
     public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
@@ -1483,6 +1485,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_MOBILE_ACCESS="administration/configureMobileAccess";
     public static final String VIEW_ADMIN_CONFIGURE_USER_ACCESS="administration/configureUserAccess";
+    public static final String VIEW_ADMIN_CONFIGURE_FILE_VERSION_AGING_JOB="administration/configureFileVersionAgingJob";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_NODES="administration/configureSearchNodes";
