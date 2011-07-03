@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
@@ -92,7 +91,6 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private ProfileFollowingWidget followingAnchor;
 	private boolean isEditable = false;
 	private Anchor edit;
-	private ActionTrigger actionTrigger;
 	private ProfileAvatarArea profileAvatarArea;
 	private EditSuccessfulHandler editAvatarSuccessHandler;
 
@@ -100,6 +98,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private Anchor uploadBtn;
 	private Anchor delete;
 	private FormPanel formPanel;
+	private GwtProfilePage m_profilePage;
 
 	private InlineLabel quotaMsgLabel;
 
@@ -108,9 +107,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * 
 	 * @param profileRequestInfo
 	 */
-	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo, ActionTrigger trigger) {
+	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo, final GwtProfilePage profilePage) {
 		this.profileRequestInfo = profileRequestInfo;
-		this.actionTrigger = trigger;
+		this.m_profilePage = profilePage;
 		
 		// create the main panel
 		mainPanel = new FlowPanel();
@@ -823,7 +822,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					}
 					
 					if(info.getUsedQuota() != null) {
-						((GwtProfilePage)actionTrigger).updateQuota(info.getUsedQuota());
+						m_profilePage.updateQuota(info.getUsedQuota());
 					}
 				}
 			}

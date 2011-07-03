@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,7 +40,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
@@ -60,14 +59,12 @@ public class ProfileSidePanel extends Composite {
 	private ProfileSectionPanel savedSearches;
 	private FlowPanel content;
 	private ProfileStatsPanel statsPanel;
-	private ActionTrigger actionTrigger;
 	private ProfileStats profileStats;
 	private FlowPanel topContent;
 
-	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo, ActionTrigger trigger) {
+	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo) {
 
 		this.profileRequestInfo = profileRequestInfo;
-		actionTrigger = trigger;
 
 		final FlowPanel columnr = new FlowPanel();
 		columnr.setStyleName("column-r");
@@ -104,7 +101,7 @@ public class ProfileSidePanel extends Composite {
 		
 		ProfileAttribute aboutMeAttr = findAttrByDataName(cat, "aboutMe");
 		if (aboutMeAttr != null) {
-			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, GwtTeaming.getMessages().profileAboutMe(), actionTrigger);
+			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, GwtTeaming.getMessages().profileAboutMe());
 			aboutMeSection.setStyleName("aboutHeading");
 			aboutMeSection.addStyleName("smalltext");
 			aboutMeSection.getHeadingLabel().setStyleName("aboutLabel");
@@ -120,24 +117,24 @@ public class ProfileSidePanel extends Composite {
 		}
 
 		if (attrExist(cat, "profileTeams")) {
-			teamsSection = new ProfileTeamsPanel(profileRequestInfo, GwtTeaming.getMessages().profileTeams(), actionTrigger);
+			teamsSection = new ProfileTeamsPanel(profileRequestInfo, GwtTeaming.getMessages().profileTeams());
 			content.add(teamsSection);
 		}
 
 		if (attrExist(cat, "profileGroups")) {
-			groupsSection = new ProfileGroupsPanel(profileRequestInfo, GwtTeaming.getMessages().profileGroups(), actionTrigger);
+			groupsSection = new ProfileGroupsPanel(profileRequestInfo, GwtTeaming.getMessages().profileGroups());
 			content.add(groupsSection);
 		}
 
 		if (attrExist(cat, "profileFollowing")) {
 			followingSection = new ProfileFollowSectionPanel(profileRequestInfo,
-					GwtTeaming.getMessages().profileFollowing(), actionTrigger);
+					GwtTeaming.getMessages().profileFollowing());
 			content.add(followingSection);
 		}
 
 //		if (attrExist(cat, "profileFollowers")) {
 //			trackedBy = new ProfileTrackSectionPanel(profileRequestInfo,
-//					"Followers", actionTrigger);
+//					"Followers");
 //			rightColumn.add(trackedBy);
 //		}
 

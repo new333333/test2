@@ -67,7 +67,7 @@ import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
@@ -87,7 +87,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -96,7 +95,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
@@ -141,9 +139,8 @@ import com.google.web.bindery.event.shared.Event;
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
-	implements ActionHandler, ResizeHandler,
+	implements ResizeHandler,
 	// EventBus handlers implemented by this class.
-		TeamingActionEvent.Handler,
 		ActivityStreamEvent.Handler,
 		ActivityStreamEnterEvent.Handler,
 		AdministrationEvent.Handler,
@@ -173,6 +170,7 @@ public class GwtMainPage extends Composite
 		SidebarHideEvent.Handler,
 		SidebarReloadEvent.Handler,
 		SidebarShowEvent.Handler,
+		SizeChangedEvent.Handler,
 		TrackCurrentBinderEvent.Handler,
 		UntrackCurrentBinderEvent.Handler,
 		UntrackCurrentPersonEvent.Handler,
@@ -213,9 +211,6 @@ public class GwtMainPage extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		// Event whose pay load is one of our original TeamingActions.
-		TeamingEvents.TEAMING_ACTION,
-		
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
@@ -266,6 +261,9 @@ public class GwtMainPage extends Composite
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_RELOAD,
 		TeamingEvents.SIDEBAR_SHOW,
+		
+		// Sizing events.
+		TeamingEvents.SIZE_CHANGED,
 		
 		// Tracking events.
 		TeamingEvents.TRACK_CURRENT_BINDER,
@@ -1068,39 +1066,6 @@ public class GwtMainPage extends Composite
 	}-*/;
 	
 	/**
-	 * Handle the action that was requested by the user somewhere in the main page.
-	 * For example, the user clicked on "My Workspace" in the masthead.
-	 * 
-	 * Implements ActionHandler.handleActionImpl()
-	 * 
-	 * @param action
-	 * @param obj
-	 */
-	public void handleAction( TeamingAction action, Object obj )
-	{
-		handleAction( this, action, obj );
-	}// end handleAction()
-	
-	/*
-	 * Handles actions requested by the user somewhere.
-	 */
-	private void handleActionImpl( TeamingAction action, Object obj )
-	{
-		switch (action)
-		{
-		case SIZE_CHANGED:
-			sizeChanged( obj );
-			break;
-			
-		case UNDEFINED:
-		default:
-			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
-			break;
-		}
-	}// end handleActionImpl()
-	
-	
-	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
 	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding )
@@ -1376,15 +1341,6 @@ public class GwtMainPage extends Composite
 	}// end onResize()
 	
 	
-	/**
-	 * This method will be called when one of the controls on this page changes size.
-	 */
-	private void sizeChanged( Object obj )
-	{
-		// Adjust the height and width of the controls on this page.
-		relayoutPage( false );
-	}// end sizeChanged()
-
 	/**
 	 * 
 	 */
@@ -2187,6 +2143,20 @@ public class GwtMainPage extends Composite
 	}// end onTrackCurrentBinder()
 	
 	/**
+	 * Handles SizeChangedEvent's received by this class.
+	 * 
+	 * Implements the SizeChangedEvent.Handler.onSizeChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSizeChanged( SizeChangedEvent event )
+	{
+		// Adjust the height and width of the controls on this page.
+		relayoutPage( false );
+	}// end onSizeChanged()
+	
+	/**
 	 * Handles UntrackCurrentBinderEvent's received by this class.
 	 * 
 	 * Implements the UntrackCurrentBinderEvent.Handler.onUntrackCurrentBinder() method.
@@ -2435,19 +2405,6 @@ public class GwtMainPage extends Composite
 		m_uiStateManager.restoreUIState();
 	}
 	
-	/*
-	 * Returns defaultValue if actionParam is null or not a Boolean.
-	 * Otherwise, returns the boolean value.
-	 */
-	private static boolean getBooleanActionParam( Object actionParam, boolean defaultValue )
-	{
-		boolean reply;
-		if ( ( null != actionParam ) && ( actionParam instanceof Boolean ))
-		     reply = ((Boolean) actionParam).booleanValue();
-		else reply = defaultValue;
-		return reply;
-	}// end getBooleanActionParam()
-	
 	/**
 	 * Returns true if the administration control is active and visible
 	 * and false otherwise.
@@ -2524,14 +2481,6 @@ public class GwtMainPage extends Composite
 		relayoutPage( false );
 	}// end showAdminControlImpl()
 	
-	@Override
-	public void onTeamingAction(TeamingActionEvent event) {
-		if(event != null) {
-			//call the old action handler
-			handleActionImpl(event.getAction(), event.getActionData());
-		}
-	}
-
 	/*
 	 * Fires a ContextChangingEvent from the JSP based UI.
 	 */
@@ -2602,26 +2551,12 @@ public class GwtMainPage extends Composite
 	private static void doAsyncOperation(
 		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
 		final GwtMainPageClient mainPageClient,
-		final boolean prefetch,
-		
-		// Creation parameters (there aren't any.)
-		
-		// Teaming action parameters.
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
+		final boolean prefetch )
 	{		
 		loadControl1(
 			// Prefetch parameters.
 			mainPageClient,
-			prefetch,
-				
-			// Creation parameters (there aren't any.)
-				
-			// Teaming action parameters.
-			mainPage,
-			action,
-			actionParam );
+			prefetch );
 	}// end doAsyncOperation()
 	
 	/*
@@ -2633,14 +2568,7 @@ public class GwtMainPage extends Composite
 	private static void loadControl1(
 		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
 		final GwtMainPageClient mainPageClient,
-		final boolean prefetch,
-		
-		// Creation parameters (there aren't any.)
-		
-		// Teaming action parameters.
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
+		final boolean prefetch )
 	{		
 		GWT.runAsync( GwtMainPage.class, new RunAsyncCallback()
 		{			
@@ -2650,14 +2578,7 @@ public class GwtMainPage extends Composite
 				initMainPage_Finish(
 					// Prefetch parameters.
 					mainPageClient,
-					prefetch,
-						
-					// Creation parameters (there aren't any.)
-						
-					// Teaming action parameters.
-					mainPage,
-					action,
-					actionParam );
+					prefetch );
 			}// end onSuccess()
 			
 			@Override
@@ -2675,30 +2596,17 @@ public class GwtMainPage extends Composite
 	private static void initMainPage_Finish(
 		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
 		final GwtMainPageClient mainPageClient,
-		final boolean prefetch,
-		
-		// Creation parameters (there aren't any.)
-		
-		// Teaming action parameters.
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
+		final boolean prefetch )
 	{		
 		if (prefetch)
 		{
 			mainPageClient.onSuccess( null );
 		}
 		
-		else if ( null == mainPage )
+		else
 		{
 			GwtMainPage newMainPage = new GwtMainPage();
 			mainPageClient.onSuccess( newMainPage );
-		}
-		
-		else
-		{
-			mainPage.handleActionImpl( action, actionParam );
-			mainPageClient.onSuccess( mainPage );
 		}
 	}// end initMainPage_Finish()
 			
@@ -2713,72 +2621,9 @@ public class GwtMainPage extends Composite
 		doAsyncOperation(
 			// Prefetch parameters.  false -> Not a prefetch.  
 			mainPageClient,
-			false,
-			
-			// Creation parameters (there aren't any.)
-			
-			// Teaming action parameters ignored.
-			null,
-			null,
-			null );
+			false );
 	}// end createAsync()	
 
-	/**
-	 * Handle the action that was requested by the user somewhere in
-	 * the main page.  For example, the user clicked on "My Workspace"
-	 * in the masthead.
-	 * 
-	 * @param mainPageClient
-	 * @param mainPage
-	 * @param action
-	 * @param actionParam
-	 */
-	public static void handleAction(
-		GwtMainPageClient mainPageClient,
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
-	{
-		if ( null == mainPageClient )
-		{
-			mainPageClient = new GwtMainPageClient()
-			{				
-				@Override
-				public void onUnavailable()
-				{
-					// Unused.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( GwtMainPage mainPage )
-				{
-					// Unused.
-				}// end onSuccess()
-			};
-		}
-		
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.  
-			mainPageClient,
-			false,
-			
-			// Creation parameters (there aren't any.)
-			
-			// Teaming action parameters.
-			mainPage,
-			action,
-			actionParam);
-	}// end handleAction()
-
-	public static void handleAction(
-		final GwtMainPage mainPage,
-		final TeamingAction action,
-		final Object actionParam )
-	{
-		// Always use the initial form of the method.
-		handleAction( null, mainPage, action, actionParam );
-	}// end handleAction()
-	
 	/**
 	 * Causes the split point for the GwtMainPage to be fetched.
 	 * 
@@ -2809,14 +2654,7 @@ public class GwtMainPage extends Composite
 		doAsyncOperation(
 			// Prefetch parameters.  true -> Prefetch only.  
 			mainPageClient,
-			true,
-			
-			// Creation parameters (there aren't any.)
-			
-			// Teaming action parameters ignored.
-			null,
-			null,
-			null );
+			true );
 	}// end prefetch()
 	
 	public static void prefetch()

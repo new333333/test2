@@ -39,7 +39,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Class used to communicate information about an activity stream
- * between the MainMenuControl and its registered ActionHandler's.
+ * between the MainMenuControl and its event handlers.
  * 
  * Notes:
  * 1. The string representation of an ActivityStreamInfo object as

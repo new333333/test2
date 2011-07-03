@@ -69,7 +69,6 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param actionTrigger
 	 * @param title
 	 */
 	public MenuBarPopupBase(String title) {

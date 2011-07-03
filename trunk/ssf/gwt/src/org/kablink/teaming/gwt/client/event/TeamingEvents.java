@@ -46,8 +46,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum TeamingEvents implements IsSerializable {
-	TEAMING_ACTION,						// Event whose pay load is one of our original TeamingActions.
-	
 	ACTIVITY_STREAM,					// Changes the selected an activity stream.
 	ACTIVITY_STREAM_ENTER,				// Enters activity stream mode.
 	ACTIVITY_STREAM_EXIT,				// Exits  activity stream mode.
@@ -98,6 +96,8 @@ public enum TeamingEvents implements IsSerializable {
 	SIDEBAR_HIDE,						// Hides the left navigation panel.
 	SIDEBAR_RELOAD,						// Tells the left navigation panel to reload itself.
 	SIDEBAR_SHOW,						// Shows the left navigation panel.
+	
+	SIZE_CHANGED,						// The size of something changed.
 	
 	TASK_DELETE,						// Delete the Selected Tasks.
 	TASK_MOVE_DOWN,						// Move the Selected Task Down in the Ordering.

@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -69,7 +68,6 @@ import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup.ViewsMenuPopupClient;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -78,7 +76,6 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -102,7 +99,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * @author drfoster@novell.com
  */
 public class MainMenuControl extends Composite
-	implements ActionTrigger,
+	implements
 	// EventBus handlers implemented by this class.
 		AdministrationExitEvent.Handler,
 		ContextChangedEvent.Handler,
@@ -840,23 +837,6 @@ public class MainMenuControl extends Composite
 		}
 	}
 
-	/**
-	 * Fires a TeamingAction at the registered ActionHandler's.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 *
-	 * @param action
-	 * @param obj
-	 */
-	public void triggerAction(TeamingAction action, Object obj) {
-		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
-	}
-	
-	public void triggerAction(TeamingAction action) {
-		// Always use the initial form of the method.
-		triggerAction(action, null);
-	}
-	
 	/**
 	 * Callback interface to interact with the menu asynchronously
 	 * after it loads. 

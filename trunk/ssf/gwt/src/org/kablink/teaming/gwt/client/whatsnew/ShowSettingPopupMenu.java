@@ -34,13 +34,10 @@
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ViewAllEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewUnreadEntriesEvent;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.user.client.ui.PopupPanel;
 
