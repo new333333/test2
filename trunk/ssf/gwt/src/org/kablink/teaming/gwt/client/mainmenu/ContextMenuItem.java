@@ -37,10 +37,8 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.util.ClientActionParameter;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -65,7 +63,6 @@ public class ContextMenuItem {
 	private MenuPopupAnchor m_contextMenuAnchor;	// The anchor created for this context based menu item.
 	
 	private enum ClickHandlerType {
-		TEAMING_ACTION,
 		TEAMING_EVENT,
 		JAVASCRIPT_STRING,
 		URL_IN_POPUP_NO_FORM,
@@ -87,8 +84,6 @@ public class ContextMenuItem {
 		private String m_onClickJS;
 		private String m_url;
 		private TeamingEvents m_teamingEvent;
-		private TeamingAction m_teamingAction;
-		private ClientActionParameter m_clientActionParameter;
 		@SuppressWarnings("unused")
 		private ClientEventParameter m_clientEventParameter;
 		
@@ -167,25 +162,6 @@ public class ContextMenuItem {
 		 *
 		 * @param id
 		 * @param url
-		 * @param teamingAction
-		 * @param clientActionParameter
-		 */
-		ContextItemClickHandler(String id, String url, TeamingAction teamingAction, ClientActionParameter clientActionParameter) {
-			// Store the type of click handler...
-			m_type = ClickHandlerType.TEAMING_ACTION;
-			
-			// ...and the parameters.
-			m_id                    = id;
-			m_url                   = url;
-			m_teamingAction         = teamingAction;
-			m_clientActionParameter = clientActionParameter;
-		}
-		
-		/**
-		 * Class constructor.
-		 *
-		 * @param id
-		 * @param url
 		 * @param teamingEvent
 		 * @param clientEventParameter
 		 */
@@ -198,19 +174,6 @@ public class ContextMenuItem {
 			m_url                  = url;
 			m_teamingEvent         = teamingEvent;
 			m_clientEventParameter = clientEventParameter;
-		}
-		
-		/**
-		 * Class constructor.
-		 *
-		 * @param id
-		 * @param url
-		 * @param teamingAction
-		 */
-		@SuppressWarnings("unused")
-		ContextItemClickHandler(String id, String url, TeamingAction teamingAction) {
-			// Always use the initial form of the constructor.
-			this(id, url, teamingAction, null);
 		}
 		
 		/**
@@ -252,14 +215,6 @@ public class ContextMenuItem {
 				GwtClientHelper.jsEvalString(m_url, m_onClickJS);
 				break;
 				
-			case TEAMING_ACTION:
-				GwtTeaming.getMainPage().handleAction(
-					m_teamingAction,
-					((null == m_clientActionParameter) ?
-						m_url                          :
-						m_clientActionParameter));
-				break;
-				
 			case TEAMING_EVENT:
 				switch (m_teamingEvent) {
 				case GOTO_PERMALINK_URL:
@@ -270,6 +225,7 @@ public class ContextMenuItem {
 				case TRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_PERSON:
+				case VIEW_CURRENT_BINDER_TEAM_MEMBERS:
 					EventHelper.fireSimpleEvent(m_teamingEvent);
 					break;
 					
@@ -344,13 +300,11 @@ public class ContextMenuItem {
 	private ContextItemClickHandler createClickHandler(String id, ToolbarItem tbi) {
 		ContextItemClickHandler reply;
 		String url = tbi.getUrl();
-		TeamingAction ta = tbi.getTeamingAction();
 		TeamingEvents te = tbi.getTeamingEvent();
-		ClientActionParameter cap = tbi.getClientActionParameter();
 		ClientEventParameter cep = tbi.getClientEventParameter();
-		if (TeamingAction.UNDEFINED.equals(ta) && TeamingEvents.UNDEFINED.equals(te)) {
-			// It's not based on a teaming action!  Is it based on an
-			// onClick JavaScript string?
+		if (TeamingEvents.UNDEFINED.equals(te)) {
+			// It's not based on an event!  Is it based on an onClick
+			// JavaScript string?
 			String jsString = tbi.getQualifierValue("onclick");
 			if (GwtClientHelper.hasString(jsString)) {
 				// Yes!  Generate the appropriate click handler for it.
@@ -372,15 +326,9 @@ public class ContextMenuItem {
 			}
 		}
 		
-		else if (!(TeamingAction.UNDEFINED.equals(ta))) {
-			// It's based on a teaming action!  Generate the
-			// appropriate click handler for it.
-			reply = new ContextItemClickHandler(id, url, ta, cap);
-		}
-
 		else {
-			// It's based on a teaming event!  Generate the
-			// appropriate click handler for it.
+			// It's based on an event!  Generate the appropriate click
+			// handler for it.
 			reply = new ContextItemClickHandler(id, url, te, cep);
 		}
 

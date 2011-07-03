@@ -37,6 +37,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -48,14 +49,11 @@ import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 
@@ -88,7 +86,7 @@ import com.google.gwt.user.client.ui.Label;
  * that displays the page for the selected administration action.
  */
 public class AdminControl extends Composite
-	implements ActionTrigger, 
+	implements 
 	// EventBus handlers implemented by this class.
 		AdministrationExitEvent.Handler,
 		LogoutEvent.Handler,
@@ -584,7 +582,7 @@ public class AdminControl extends Composite
 		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
 		{
 			// Yes, inform all registered action handlers that the user wants to edit the site branding.
-			triggerAction( TeamingAction.EDIT_SITE_BRANDING );
+			EditSiteBrandingEvent.fireOne();
 		}
 		else
 		{
@@ -886,30 +884,7 @@ public class AdminControl extends Composite
 	{
 		m_adminActionsTreeControl.setVisible( true );	
 	}// end showTreeControl()
-	
-	
-	/**
-	 * Fires a TeamingAction at the registered ActionHandler's.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 *
-	 * @param action
-	 * @param obj
-	 */
-	public void triggerAction( TeamingAction action, Object obj )
-	{
-		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
-	}// end triggerAction()
-	
-	/**
-	 * 
-	 */
-	public void triggerAction( TeamingAction action )
-	{
-		// Always use the initial form of the method.
-		triggerAction( action, null );
-	}// end triggerAction()
-
+		
 	/**
 	 * Handles AdministrationExitEvent's received by this class.
 	 * 

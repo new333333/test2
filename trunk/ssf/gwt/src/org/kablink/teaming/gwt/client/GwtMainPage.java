@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
+import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
+import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
@@ -70,6 +72,11 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentPersonEvent;
+import org.kablink.teaming.gwt.client.event.ViewCurrentBinderTeamMembersEvent;
+import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
+import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
+import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
+import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -146,6 +153,8 @@ public class GwtMainPage extends Composite
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
 		EditCurrentBinderBrandingEvent.Handler,
+		EditPersonalPreferencesEvent.Handler,
+		EditSiteBrandingEvent.Handler,
 		FullUIReloadEvent.Handler,
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
@@ -166,7 +175,12 @@ public class GwtMainPage extends Composite
 		SidebarShowEvent.Handler,
 		TrackCurrentBinderEvent.Handler,
 		UntrackCurrentBinderEvent.Handler,
-		UntrackCurrentPersonEvent.Handler
+		UntrackCurrentPersonEvent.Handler,
+		ViewCurrentBinderTeamMembersEvent.Handler,
+		ViewFolderEntryEvent.Handler,
+		ViewForumEntryEvent.Handler,
+		ViewResourceLibraryEvent.Handler,
+		ViewTeamingFeedEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
@@ -226,6 +240,8 @@ public class GwtMainPage extends Composite
 
 		// Edit events.
 		TeamingEvents.EDIT_CURRENT_BINDER_BRANDING,
+		TeamingEvents.EDIT_PERSONAL_PREFERENCES,
+		TeamingEvents.EDIT_SITE_BRANDING,
 		
 		// Invoke events.
 		TeamingEvents.INVOKE_HELP,
@@ -255,6 +271,13 @@ public class GwtMainPage extends Composite
 		TeamingEvents.TRACK_CURRENT_BINDER,
 		TeamingEvents.UNTRACK_CURRENT_BINDER,
 		TeamingEvents.UNTRACK_CURRENT_PERSON,
+		
+		// View events.
+		TeamingEvents.VIEW_CURRENT_BINDER_TEAM_MEMBERS,
+		TeamingEvents.VIEW_FOLDER_ENTRY,
+		TeamingEvents.VIEW_FORUM_ENTRY,
+		TeamingEvents.VIEW_RESOURCE_LIBRARY,
+		TeamingEvents.VIEW_TEAMING_FEED,
 	};
 	
 	/*
@@ -862,15 +885,6 @@ public class GwtMainPage extends Composite
 	}// end contextLoaded()
 
 	/*
-	 * Called to handle TeamingAction's directed to the GWT task folder
-	 * listing.
-	 */
-	private void handleTaskAction( TeamingAction taskAction, Object obj )
-	{
-		Window.alert(GwtTeaming.getMessages().taskInternalError_UnexpectedAction(taskAction.toString()));
-	}// end handleTaskAction()
-	
-	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
 	private void editBranding( GwtBrandingData brandingDataIn )
@@ -1046,136 +1060,6 @@ public class GwtMainPage extends Composite
 
 	
 	/**
-	 * Invoke the "Edit Personal Preferences" dialog.
-	 */
-	private void editPersonalPreferences()
-	{
-		AsyncCallback<VibeRpcResponse> rpcReadCallback;
-		
-		// Create a callback that will be called when we get the personal preferences.
-		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences() );
-			}// end onFailure()
-	
-			/**
-			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
-			 */
-			public void onSuccess( VibeRpcResponse response )
-			{
-				int x;
-				int y;
-				GwtPersonalPreferences personalPrefs;
-
-				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
-				
-				// Get the position of the content control.
-				x = m_contentCtrl.getAbsoluteLeft();
-				y = m_contentCtrl.getAbsoluteTop();
-				
-				// Create a handler that will be called when the user presses the ok button in the dialog.
-				if ( m_editPersonalPrefsSuccessHandler == null )
-				{
-					m_editPersonalPrefsSuccessHandler = new EditSuccessfulHandler()
-					{
-						private AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-						private GwtPersonalPreferences personalPrefs = null;
-						
-						/**
-						 * This method gets called when user user presses ok in the "Personal Preferences" dialog.
-						 */
-						public boolean editSuccessful( Object obj )
-						{
-							personalPrefs = (GwtPersonalPreferences) obj;
-							
-							// Create the callback that will be used when we issue an ajax request to save the personal preferences.
-							if ( rpcSaveCallback == null )
-							{
-								rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
-								{
-									/**
-									 * 
-									 */
-									public void onFailure( Throwable t )
-									{
-										GwtClientHelper.handleGwtRPCFailure(
-											t,
-											GwtTeaming.getMessages().rpcFailure_SavePersonalPreferences() );
-									}// end onFailure()
-							
-									/**
-									 * 
-									 * @param result
-									 */
-									public void onSuccess( VibeRpcResponse response )
-									{
-										@SuppressWarnings("unused")
-										Boolean result;
-										
-										result = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
-										
-										// The personal preferences affect how things are displayed in the content frame.
-										// So we need to reload the page in the content frame.
-										reloadContentPanel();
-										
-										// The main page has a javascript variable, ss_userDisplayStyle, that needs to
-										// be updated with the current entry display style.
-										if ( personalPrefs != null )
-										{
-											GwtClientHelper.jsSetEntryDisplayStyle( personalPrefs.getDisplayStyle() );
-										}
-									}// end onSuccess()
-								};
-							}
-					
-							// Issue an ajax request to save the personal preferences.
-							{
-								SavePersonalPrefsCmd cmd;
-								
-								// Issue an ajax request to save the personal preferences to the db.  rpcSaveCallback will
-								// be called when we get the response back.
-								cmd = new SavePersonalPrefsCmd( personalPrefs );
-								GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
-							}
-							
-							return true;
-						}// end editSuccessful()
-					};
-				}
-				
-				// Have we already created a "Personal Preferences" dialog?
-				if ( m_personalPrefsDlg == null )
-				{
-					// No, create one.
-					m_personalPrefsDlg = new PersonalPreferencesDlg( m_editPersonalPrefsSuccessHandler, null, false, true, x, y );
-				}
-				
-				m_personalPrefsDlg.init( personalPrefs );
-				m_personalPrefsDlg.setPopupPosition( x, y );
-				m_personalPrefsDlg.show();
-				
-			}// end onSuccess()
-		};
-
-		// Issue an ajax request to get the personal preferences.  When we get the personal preferences
-		// we will invoke the "personal preferences" dialog.
-		{
-			GetPersonalPrefsCmd cmd;
-			
-			// Issue an ajax request to get the personal preferences from the db.
-			cmd = new GetPersonalPrefsCmd();
-			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
-		}
-	}// end editPersonalPreferences()
-
-	/**
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
 	 */
 	public native RequestInfo getRequestInfo() /*-{
@@ -1204,73 +1088,10 @@ public class GwtMainPage extends Composite
 	{
 		switch (action)
 		{
-		case EDIT_PERSONAL_PREFERENCES:
-			editPersonalPreferences();
-			break;
-			
-		case EDIT_SITE_BRANDING:
-			GwtBrandingData siteBrandingData;
-			
-			siteBrandingData = m_mastHead.getSiteBrandingData();
-			editBranding( siteBrandingData );
-			break;
-			
 		case SIZE_CHANGED:
 			sizeChanged( obj );
 			break;
 			
-		case VIEW_TEAM_MEMBERS:
-			viewTeamMembers();
-			break;
-			
-		case TEAMING_FEED:
-			String teamingFeedUrl;
-			
-			teamingFeedUrl = m_requestInfo.getTeamingFeedUrl();
-			Window.open( teamingFeedUrl, "_teaming_feed", "width=500,height=700,resizable,scrollbars" );
-			break;
-			
-		case VIEW_FOLDER_ENTRY:
-			if ( obj instanceof String )
-			{
-				viewFolderEntry( (String) obj );
-			}
-			else
-			{
-				Window.alert( "In handleActionImpl( VIEW_FOLDER_ENTRY, obj ) obj is not a String object" );
-			}
-			break;
-			
-		case SHOW_FORUM_ENTRY:
-			if ( obj instanceof String )
-			{
-				GwtClientHelper.jsShowForumEntry( (String) obj );
-			}
-			else
-			{
-				Window.alert( "In handleActionImpl( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
-			}
-			break;
-			
-		case SHOW_RESOURCE_LIBRARY:
-			Window.open( "http://www.novell.com/products/vibe-onprem/resource-library/", "teaming_resource_library_window", "resizeable,scrollbars" );
-			break;
-
-		case TASK_DELETE:
-		case TASK_MOVE_DOWN:
-		case TASK_MOVE_LEFT:
-		case TASK_MOVE_RIGHT:
-		case TASK_MOVE_UP:
-		case TASK_NEW_TASK:
-		case TASK_PURGE:
-		case TASK_QUICK_FILTER:
-		case TASK_SET_PERCENT_DONE:
-		case TASK_SET_PRIORITY:
-		case TASK_SET_STATUS:
-		case TASK_VIEW:
-			handleTaskAction( action, obj );
-			break;
-
 		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
@@ -1564,45 +1385,6 @@ public class GwtMainPage extends Composite
 		relayoutPage( false );
 	}// end sizeChanged()
 
-	/*
-	 * Called to view the membership of the currently selected binder.
-	 * 
-	 * Implements the VIEW_TEAM_MEMBERS teaming action.
-	 */
-	private void viewTeamMembers()
-	{
-		GetBinderPermalinkCmd cmd;
-		
-		cmd = new GetBinderPermalinkCmd( m_selectedBinderId );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			public void onFailure( Throwable t ) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					m_selectedBinderId );
-			}//end onFailure()
-			
-			public void onSuccess( VibeRpcResponse response )
-			{
-				String binderUrl;
-				OnSelectBinderInfo osbInfo;
-				StringRpcResponseData responseData;
-
-				responseData = (StringRpcResponseData) response.getResponseData();
-				binderUrl = responseData.getStringValue();
-				
-				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
-				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.VIEW_TEAM_MEMBERS );
-				if (GwtClientHelper.validateOSBI( osbInfo ))
-				{
-					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
-				}
-			}// end onSuccess()
-		});// end AsyncCallback()
-	}// end viewTeamMembers()
-	
-	
 	/**
 	 * 
 	 */
@@ -1883,6 +1665,157 @@ public class GwtMainPage extends Composite
 
 		editBranding( brandingData );
 	}// end onEditCurrentBinderBranding()
+	
+	/**
+	 * Handles EditPersonalPreferencesEvent's received by this class.
+	 * 
+	 * Implements the EditPersonalPreferencesEvent.Handler.onEditPersonalPreferences() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditPersonalPreferences( EditPersonalPreferencesEvent event )
+	{
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		
+		// Create a callback that will be called when we get the personal preferences.
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences() );
+			}// end onFailure()
+	
+			/**
+			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
+			 */
+			public void onSuccess( VibeRpcResponse response )
+			{
+				int x;
+				int y;
+				GwtPersonalPreferences personalPrefs;
+
+				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
+				
+				// Get the position of the content control.
+				x = m_contentCtrl.getAbsoluteLeft();
+				y = m_contentCtrl.getAbsoluteTop();
+				
+				// Create a handler that will be called when the user presses the ok button in the dialog.
+				if ( m_editPersonalPrefsSuccessHandler == null )
+				{
+					m_editPersonalPrefsSuccessHandler = new EditSuccessfulHandler()
+					{
+						private AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
+						private GwtPersonalPreferences personalPrefs = null;
+						
+						/**
+						 * This method gets called when user user presses ok in the "Personal Preferences" dialog.
+						 */
+						public boolean editSuccessful( Object obj )
+						{
+							personalPrefs = (GwtPersonalPreferences) obj;
+							
+							// Create the callback that will be used when we issue an ajax request to save the personal preferences.
+							if ( rpcSaveCallback == null )
+							{
+								rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
+								{
+									/**
+									 * 
+									 */
+									public void onFailure( Throwable t )
+									{
+										GwtClientHelper.handleGwtRPCFailure(
+											t,
+											GwtTeaming.getMessages().rpcFailure_SavePersonalPreferences() );
+									}// end onFailure()
+							
+									/**
+									 * 
+									 * @param result
+									 */
+									public void onSuccess( VibeRpcResponse response )
+									{
+										@SuppressWarnings("unused")
+										Boolean result;
+										
+										result = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+										
+										// The personal preferences affect how things are displayed in the content frame.
+										// So we need to reload the page in the content frame.
+										reloadContentPanel();
+										
+										// The main page has a javascript variable, ss_userDisplayStyle, that needs to
+										// be updated with the current entry display style.
+										if ( personalPrefs != null )
+										{
+											GwtClientHelper.jsSetEntryDisplayStyle( personalPrefs.getDisplayStyle() );
+										}
+									}// end onSuccess()
+								};
+							}
+					
+							// Issue an ajax request to save the personal preferences.
+							{
+								SavePersonalPrefsCmd cmd;
+								
+								// Issue an ajax request to save the personal preferences to the db.  rpcSaveCallback will
+								// be called when we get the response back.
+								cmd = new SavePersonalPrefsCmd( personalPrefs );
+								GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+							}
+							
+							return true;
+						}// end editSuccessful()
+					};
+				}
+				
+				// Have we already created a "Personal Preferences" dialog?
+				if ( m_personalPrefsDlg == null )
+				{
+					// No, create one.
+					m_personalPrefsDlg = new PersonalPreferencesDlg( m_editPersonalPrefsSuccessHandler, null, false, true, x, y );
+				}
+				
+				m_personalPrefsDlg.init( personalPrefs );
+				m_personalPrefsDlg.setPopupPosition( x, y );
+				m_personalPrefsDlg.show();
+				
+			}// end onSuccess()
+		};
+
+		// Issue an ajax request to get the personal preferences.  When we get the personal preferences
+		// we will invoke the "personal preferences" dialog.
+		{
+			GetPersonalPrefsCmd cmd;
+			
+			// Issue an ajax request to get the personal preferences from the db.
+			cmd = new GetPersonalPrefsCmd();
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
+	}// end onEditPersonalPreferences()
+	
+	/**
+	 * Handles EditSiteBrandingEvent's received by this class.
+	 * 
+	 * Implements the EditSiteBrandingEvent.Handler.onEditSiteBranding() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditSiteBranding( EditSiteBrandingEvent event )
+	{
+		GwtBrandingData siteBrandingData;
+		
+		siteBrandingData = m_mastHead.getSiteBrandingData();
+		editBranding( siteBrandingData );
+	}// end onEditSiteBranding()
 	
 	/**
 	 * Handles FullUIReloadEvent's received by this class.
@@ -2283,6 +2216,102 @@ public class GwtMainPage extends Composite
 			}// end onSuccess()
 		});
 	}// end onUntrackCurrentBinder()
+	
+	/**
+	 * Handles ViewCurrentBinderTeamMembersEvent's received by this class.
+	 * 
+	 * Implements the ViewCurrentBinderTeamMembersEvent.Handler.onViewCurrentBinderTeamMembers() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewCurrentBinderTeamMembers( ViewCurrentBinderTeamMembersEvent event )
+	{
+		GetBinderPermalinkCmd cmd;
+		
+		cmd = new GetBinderPermalinkCmd( m_selectedBinderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			public void onFailure( Throwable t ) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+					m_selectedBinderId );
+			}//end onFailure()
+			
+			public void onSuccess( VibeRpcResponse response )
+			{
+				String binderUrl;
+				OnSelectBinderInfo osbInfo;
+				StringRpcResponseData responseData;
+
+				responseData = (StringRpcResponseData) response.getResponseData();
+				binderUrl = responseData.getStringValue();
+				
+				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
+				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.VIEW_TEAM_MEMBERS );
+				if (GwtClientHelper.validateOSBI( osbInfo ))
+				{
+					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
+				}
+			}// end onSuccess()
+		});// end AsyncCallback()
+	}// end onViewCurrentBinderTeamMembers()
+	
+	/**
+	 * Handles ViewFolderEntryEvent's received by this class.
+	 * 
+	 * Implements the ViewFolderEntryEvent.Handler.onViewFolderEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewFolderEntry( ViewFolderEntryEvent event )
+	{
+		viewFolderEntry( event.getViewFolderEntryUrl() );
+	}// end onViewFolderEntry()
+	
+	/**
+	 * Handles ViewForumEntryEvent's received by this class.
+	 * 
+	 * Implements the ViewForumEntryEvent.Handler.onViewForumEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewForumEntry( ViewForumEntryEvent event )
+	{
+		GwtClientHelper.jsShowForumEntry( event.getViewForumEntryUrl() );
+	}// end onViewForumEntry()
+	
+	/**
+	 * Handles ViewResourceLibraryEvent's received by this class.
+	 * 
+	 * Implements the ViewResourceLibraryEvent.Handler.onViewResourceLibrary() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewResourceLibrary( ViewResourceLibraryEvent event )
+	{
+		Window.open( "http://www.novell.com/products/vibe-onprem/resource-library/", "teaming_resource_library_window", "resizeable,scrollbars" );
+	}// end onViewResourceLibrary()
+	
+	/**
+	 * Handles ViewTeamingFeedEvent's received by this class.
+	 * 
+	 * Implements the ViewTeamingFeedEvent.Handler.onViewTeamingFeed() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewTeamingFeed( ViewTeamingFeedEvent event )
+	{
+		String teamingFeedUrl;
+		
+		teamingFeedUrl = m_requestInfo.getTeamingFeedUrl();
+		Window.open( teamingFeedUrl, "_teaming_feed", "width=500,height=700,resizable,scrollbars" );
+	}// end onViewTeamingFeed()
 	
 	/**
 	 * Handles UntrackCurrentPersonEvent's received by this class.

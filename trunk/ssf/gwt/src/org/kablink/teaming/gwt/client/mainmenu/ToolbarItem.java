@@ -37,9 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.util.ClientActionParameter;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -58,12 +56,10 @@ public class ToolbarItem implements IsSerializable {
 	private String m_name;															// The name of this toolbar item.
 	private String m_title;															// The display name for this toolbar item.
 	private String m_url;															// The URL to launch for this toolbar item.
-	private TeamingAction m_teamingAction = TeamingAction.UNDEFINED;				// If the toolbar item is to trigger a teaming action.
-	private TeamingEvents m_teamingEvent  = TeamingEvents.UNDEFINED;				// If the toolbar item is to fire    a teaming event.
+	private TeamingEvents m_teamingEvent  = TeamingEvents.UNDEFINED;				// If the toolbar item is to fire is an event.
 	
 	// The Client*Parameter's can only be specified and used
 	// on the client side.
-	private transient ClientActionParameter m_clientActionParameter;				// Optional parameter for the TeamingAction.
 	private transient ClientEventParameter  m_clientEventParameter;					// Optional parameter for the TeamingEvents.
 
 	/**
@@ -216,30 +212,12 @@ public class ToolbarItem implements IsSerializable {
 	}
 	
 	/**
-	 * Returns the teaming action from a toolbar item.
-	 * 
-	 * @return
-	 */
-	public TeamingAction getTeamingAction() {
-		return m_teamingAction;
-	}
-	
-	/**
 	 * Returns the teaming event from a toolbar item.
 	 * 
 	 * @return
 	 */
 	public TeamingEvents getTeamingEvent() {
 		return m_teamingEvent;
-	}
-	
-	/**
-	 * Returns the client action parameter from a toolbar item.
-	 * 
-	 * @return
-	 */
-	public ClientActionParameter getClientActionParameter() {
-		return m_clientActionParameter;
 	}
 	
 	/**
@@ -296,30 +274,12 @@ public class ToolbarItem implements IsSerializable {
 	}
 	
 	/**
-	 * Stores a teaming action in the toolbar item.
-	 * 
-	 * @param teamingAction
-	 */
-	public void setTeamingAction(TeamingAction teamingAction) {
-		m_teamingAction = teamingAction;
-	}
-	
-	/**
 	 * Stores a teaming event in the toolbar item.
 	 * 
 	 * @param teamingEvent
 	 */
 	public void setTeamingEvent(TeamingEvents teamingEvent) {
 		m_teamingEvent = teamingEvent;
-	}
-	
-	/**
-	 * Stores a client action parameter in the toolbar item.
-	 * 
-	 * @param clientActionParameter
-	 */
-	public void setClientActionParameter(ClientActionParameter clientActionParameter) {
-		m_clientActionParameter = clientActionParameter;
 	}
 	
 	/**

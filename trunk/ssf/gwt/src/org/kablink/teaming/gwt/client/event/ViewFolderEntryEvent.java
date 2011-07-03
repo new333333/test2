@@ -31,39 +31,78 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.event;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class defines all the possible types of actions that a user can
- * request from the GWT main page.
+ * The ViewFolderEntryEvent tells the UI view a folder entry based on a
+ * URL.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
-public enum TeamingAction implements IsSerializable
-{
-	SIZE_CHANGED( "The Size of Something Changed" ),
+public class ViewFolderEntryEvent extends GwtEvent<ViewFolderEntryEvent.Handler> {
+	public static Type<Handler> TYPE = new Type<Handler>();
 
-	// This is used as a default case to store a TeamingAction when
-	// there isn't a real value to store.
-	UNDEFINED( "Undefined Action - Should Never Be Triggered" );
+	private String m_viewFolderEntryUrl;
 
-	private final String m_unlocalizedDesc;
+	/**
+	 * Handler interface for this event.
+	 */
+	public interface Handler extends EventHandler {
+		void onViewFolderEntry(ViewFolderEntryEvent event);
+	}
 	
 	/**
+	 * Constructor methods.
+	 * 
+	 * @param viewFolderEntryUrl
 	 */
-	private TeamingAction( String unlocalizedDesc )
-	{
-		m_unlocalizedDesc = unlocalizedDesc;
-	}// end TeamingAction()
-	
+	public ViewFolderEntryEvent(String viewFolderEntryUrl) {
+		super();
+		m_viewFolderEntryUrl = viewFolderEntryUrl;
+	}
 	
 	/**
+	 * Get'er methods.
+	 * 
+	 * @return
 	 */
-	public String getUnlocalizedDesc()
-	{
-		return m_unlocalizedDesc;
-	}// end getUnlocalizedDesc()
-}// end TeamingAction
+	public String getViewFolderEntryUrl() {return m_viewFolderEntryUrl;}
+
+	/**
+	 * Returns the GwtEvent.Type of this event.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type<Handler> getAssociatedType() {
+		return TYPE;
+	}
+
+	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onViewFolderEntry(this);
+	}
+	
+	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
+	 * 
+	 * @param eventBus
+	 * @param handler
+	 * 
+	 * @return
+	 */
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
+	}
+}

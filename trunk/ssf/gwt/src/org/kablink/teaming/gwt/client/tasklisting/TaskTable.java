@@ -38,6 +38,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
+import org.kablink.teaming.gwt.client.event.TaskMoveDownEvent;
+import org.kablink.teaming.gwt.client.event.TaskMoveLeftEvent;
+import org.kablink.teaming.gwt.client.event.TaskMoveRightEvent;
+import org.kablink.teaming.gwt.client.event.TaskMoveUpEvent;
+import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
+import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -48,7 +57,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -61,7 +69,6 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -99,7 +106,17 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public class TaskTable extends Composite implements ActionHandler {
+public class TaskTable extends Composite
+	implements
+	// EventBus handlers implemented by this class.
+		TaskDeleteEvent.Handler,
+		TaskMoveDownEvent.Handler,
+		TaskMoveLeftEvent.Handler,
+		TaskMoveRightEvent.Handler,
+		TaskMoveUpEvent.Handler,
+		TaskPurgeEvent.Handler,
+		TaskQuickFilterEvent.Handler
+{
 	private boolean					m_sortAscending;			//
 	private Column					m_sortColumn;				//
 	private EventHandler			m_assigneeMouseOutEvent;	//
@@ -149,6 +166,19 @@ public class TaskTable extends Composite implements ActionHandler {
 	// initial rendering of the tasks in the task table before we'll
 	// display process active messages.
 	private final static long PROCESS_ACTIVE_RENDER_TIME = 500l; 
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.TASK_DELETE,
+		TeamingEvents.TASK_MOVE_DOWN,
+		TeamingEvents.TASK_MOVE_LEFT,
+		TeamingEvents.TASK_MOVE_RIGHT,
+		TeamingEvents.TASK_MOVE_UP,
+		TeamingEvents.TASK_PURGE,
+		TeamingEvents.TASK_QUICK_FILTER,
+	};
 	
 	/*
 	 * Enumeration used to represent the type of an AssignmentInfo.
@@ -491,6 +521,12 @@ public class TaskTable extends Composite implements ActionHandler {
 		// ...store the parameters...
 		m_taskListing = taskListing;
 		
+		// ..register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
 		// ...initialize the JSNI mouse event handlers...
 		jsInitTaskMouseEventHandlers(this);
 		
@@ -501,14 +537,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_MEDIUM,   m_images.p3(), m_messages.taskPriority_p3()));
 		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_LOW,      m_images.p4(), m_messages.taskPriority_p4()));
 		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_LEAST,    m_images.p5(), m_messages.taskPriority_p5()));
-		m_priorityMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_PRIORITY, pOpts);
+		m_priorityMenu = new TaskPopupMenu(this, TeamingEvents.TASK_SET_PRIORITY, pOpts);
 
 		List<TaskMenuOption> sOpts = new ArrayList<TaskMenuOption>();
 		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_COMPLETED,    m_images.completed(),   m_messages.taskStatus_completed()));
 		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_IN_PROCESS,   m_images.inProcess(),   m_messages.taskStatus_inProcess()));
 		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_NEEDS_ACTION, m_images.needsAction(), m_messages.taskStatus_needsAction()));
 		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_CANCELED,     m_images.cancelled(),   m_messages.taskStatus_cancelled()));
-		m_statusMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_STATUS, sOpts);
+		m_statusMenu = new TaskPopupMenu(this, TeamingEvents.TASK_SET_STATUS, sOpts);
 
 		List<TaskMenuOption> pdOpts = new ArrayList<TaskMenuOption>();
 		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_0,   m_images.c0(),   m_messages.taskCompleted_c0()));
@@ -522,13 +558,13 @@ public class TaskTable extends Composite implements ActionHandler {
 		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_80,  m_images.c80(),  m_messages.taskCompleted_c80()));
 		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_90,  m_images.c90(),  m_messages.taskCompleted_c90()));
 		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_100, m_images.c100(), m_messages.taskCompleted_c100()));
-		m_percentDoneMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_PERCENT_DONE, pdOpts);
+		m_percentDoneMenu = new TaskPopupMenu(this, TeamingEvents.TASK_SET_PERCENT_DONE, pdOpts);
 		
 		List<TaskMenuOption> ntOpts = new ArrayList<TaskMenuOption>();
 		ntOpts.add(new TaskMenuOption(TaskDisposition.BEFORE.toString(),  m_messages.taskNewAbove()));
 		ntOpts.add(new TaskMenuOption(TaskDisposition.AFTER.toString(),   m_messages.taskNewBelow()));
 		ntOpts.add(new TaskMenuOption(TaskDisposition.SUBTASK.toString(), m_messages.TaskNewSubtask()));
-		m_newTaskMenu = new TaskPopupMenu(this, TeamingAction.TASK_NEW_TASK, ntOpts);
+		m_newTaskMenu = new TaskPopupMenu(this, TeamingEvents.TASK_NEW_TASK, ntOpts);
 
 		// ...create the FlexTable that's to hold everything...
 		m_flexTable   = new FlexTable();
@@ -859,7 +895,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			aE.appendChild(imgElement);
 			aE.appendChild(buildImage(m_images.menu()).getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntryId()));
-			aE.setAttribute(ATTR_OPTION_MENU, taskMenu.getTaskAction().toString());
+			aE.setAttribute(ATTR_OPTION_MENU, taskMenu.getTaskEventEnum().toString());
 			EventWrapper.addHandler(a, m_taskOptionClickHandler);
 			reply = a;
 		}
@@ -1023,11 +1059,11 @@ public class TaskTable extends Composite implements ActionHandler {
 				// ...decide on the appropriate menu for the event...
 				TaskPopupMenu taskMenu;
 				Image taskMenuImg;
-				String optionAction = w.getElement().getAttribute(ATTR_OPTION_MENU);
-				if      (optionAction.equals(TeamingAction.TASK_SET_PRIORITY.toString()))     {taskMenu = m_priorityMenu;    taskMenuImg = uid.getTaskPriorityImage();   }
-				else if (optionAction.equals(TeamingAction.TASK_SET_PERCENT_DONE.toString())) {taskMenu = m_percentDoneMenu; taskMenuImg = uid.getTaskPercentDoneImage();}
-				else if (optionAction.equals(TeamingAction.TASK_SET_STATUS.toString()))       {taskMenu = m_statusMenu;      taskMenuImg = uid.getTaskStatusImage();     }
-				else                                                                          {return;}
+				String optionEvent = w.getElement().getAttribute(ATTR_OPTION_MENU);
+				if      (optionEvent.equals(TeamingEvents.TASK_SET_PRIORITY.toString()))     {taskMenu = m_priorityMenu;    taskMenuImg = uid.getTaskPriorityImage();   }
+				else if (optionEvent.equals(TeamingEvents.TASK_SET_PERCENT_DONE.toString())) {taskMenu = m_percentDoneMenu; taskMenuImg = uid.getTaskPercentDoneImage();}
+				else if (optionEvent.equals(TeamingEvents.TASK_SET_STATUS.toString()))       {taskMenu = m_statusMenu;      taskMenuImg = uid.getTaskStatusImage();     }
+				else                                                                         {return;}
 				
 				// ...and run the menu.
 				taskMenu.showTaskPopupMenu(task, taskMenuImg.getElement());
@@ -1223,43 +1259,18 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * the task's option menus.
 	 * 
 	 * @param task
-	 * @param action
+	 * @param event
 	 * @param optionValue
 	 */
-	public void setTaskOption(TaskListItem task, TeamingAction action, String optionValue) {
-		switch (action) {
+	public void setTaskOption(TaskListItem task, TeamingEvents event, String optionValue) {
+		switch (event) {
 		case TASK_NEW_TASK:          handleTaskNewTask(       task, optionValue); break;
 		case TASK_SET_PERCENT_DONE:  handleTaskSetPercentDone(task, optionValue); break;
 		case TASK_SET_PRIORITY:      handleTaskSetPriority(   task, optionValue); break;
 		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
 			
 		default:
-			Window.alert(m_messages.taskInternalError_UnexpectedAction(action.toString()));
-			break;
-		}
-	}
-
-	/**
-	 * Called handle one of the task TeamingActions.
-	 * 
-	 * Implements the ActionHandler.handleAction() method.
-	 * 
-	 * @param action
-	 * @param obj
-	 */
-	@Override
-	public void handleAction(TeamingAction action, Object obj) {
-		switch (action) {
-		case TASK_DELETE:        handleTaskDelete();                  break;
-		case TASK_MOVE_DOWN:     handleTaskMoveDown();                break;
-		case TASK_MOVE_LEFT:     handleTaskMoveLeft();                break;
-		case TASK_MOVE_RIGHT:    handleTaskMoveRight();               break;
-		case TASK_MOVE_UP:       handleTaskMoveUp();                  break;
-		case TASK_PURGE:         handleTaskPurge();                   break;
-		case TASK_QUICK_FILTER:  handleTaskQuickFilter((String) obj); break;
-
-		default:
-			Window.alert(m_messages.taskInternalError_UnexpectedAction(action.toString()));
+			Window.alert(m_messages.taskInternalError_UnexpectedEvent(event.toString()));
 			break;
 		}
 	}
@@ -2195,6 +2206,90 @@ public class TaskTable extends Composite implements ActionHandler {
 			// ...and style to the <TD>.
 			m_flexTableCF.addStyleName(0, getColumnIndex(col), "sortedcol");
 		}
+	}
+
+	/**
+	 * Handles TaskDeleteEvent's received by this class.
+	 * 
+	 * Implements the TaskDeleteEvent.Handler.onTaskDelete() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskDelete(TaskDeleteEvent event) {
+		handleTaskDelete();
+	}
+
+	/**
+	 * Handles TaskMoveDownEvent's received by this class.
+	 * 
+	 * Implements the TaskMoveDownEvent.Handler.onTaskMoveDown() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskMoveDown(TaskMoveDownEvent event) {
+		handleTaskMoveDown();
+	}
+
+	/**
+	 * Handles TaskMoveLeftEvent's received by this class.
+	 * 
+	 * Implements the TaskMoveLeftEvent.Handler.onTaskMoveLeft() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskMoveLeft(TaskMoveLeftEvent event) {
+		handleTaskMoveLeft();
+	}
+
+	/**
+	 * Handles TaskMoveRightEvent's received by this class.
+	 * 
+	 * Implements the TaskMoveRightEvent.Handler.onTaskMoveRight() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskMoveRight(TaskMoveRightEvent event) {
+		handleTaskMoveRight();
+	}
+
+	/**
+	 * Handles TaskMoveUpEvent's received by this class.
+	 * 
+	 * Implements the TaskMoveUpEvent.Handler.onTaskMoveUp() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskMoveUp(TaskMoveUpEvent event) {
+		handleTaskMoveUp();
+	}
+
+	/**
+	 * Handles TaskPurgeEvent's received by this class.
+	 * 
+	 * Implements the TaskPurgeEvent.Handler.onTaskPurge() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskPurge(TaskPurgeEvent event) {
+		handleTaskPurge();
+	}
+
+	/**
+	 * Handles TaskQuickFilterEvent's received by this class.
+	 * 
+	 * Implements the TaskQuickFilterEvent.Handler.onTaskQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskQuickFilter(TaskQuickFilterEvent event) {
+		handleTaskQuickFilter(event.getQuickFilter());
 	}
 
 	/*

@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
@@ -43,8 +44,9 @@ import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
+import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
@@ -54,10 +56,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -308,17 +308,6 @@ public class MastHead extends Composite
 		Scheduler.get().scheduleDeferred( cmd );
 	}// end MastHead()
 
-
-	/**
-	 * Called to add an ActionHandler to this masthead
-	 * @param actionHandler
-	 */
-	public void addActionHandler( ActionHandler actionHandler )
-	{
-		//m_siteBrandingPanel.addActionHandler( actionHandler );
-		//m_binderBrandingPanel.addActionHandler( actionHandler );
-	}// end addActionHandler()
-	
 
 	/**
 	 * Add the "administration" action to the global actions part of the masthead.
@@ -781,11 +770,11 @@ public class MastHead extends Composite
 		}
 		else if ( eventSource == m_personalPrefsLink )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.EDIT_PERSONAL_PREFERENCES, null ));
+			EditPersonalPreferencesEvent.fireOne();
 		}
 		else if ( eventSource == m_teamingFeedLink )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.TEAMING_FEED, null ));
+			ViewTeamingFeedEvent.fireOne();
 		}
 		else if ( eventSource == m_logoutLink )
 		{
@@ -801,7 +790,7 @@ public class MastHead extends Composite
 		}
 		else if ( eventSource == m_resourceLibLink )
 		{
-			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.SHOW_RESOURCE_LIBRARY, null ));
+			ViewResourceLibraryEvent.fireOne();
 		}
 		else if ( eventSource == m_userName )
 		{

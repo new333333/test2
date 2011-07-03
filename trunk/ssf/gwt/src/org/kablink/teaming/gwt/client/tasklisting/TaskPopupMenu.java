@@ -36,14 +36,22 @@ package org.kablink.teaming.gwt.client.tasklisting;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.TaskNewTaskEvent;
+import org.kablink.teaming.gwt.client.event.TaskSetPercentDoneEvent;
+import org.kablink.teaming.gwt.client.event.TaskSetPriorityEvent;
+import org.kablink.teaming.gwt.client.event.TaskSetStatusEvent;
+import org.kablink.teaming.gwt.client.event.TaskViewEvent;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
@@ -52,27 +60,52 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * 
  * @author drfoster@novell.com
  */
-public class TaskPopupMenu extends PopupMenu implements ActionHandler {
-	private Element					m_menuPartner;	//
-	private List<PopupMenuItem>		m_menuItems;	//
-	private List<TaskMenuOption>	m_menuOptions;	//
-	private TaskListItem			m_task;			//
-	private TaskListing				m_taskListing;	//
-	private TaskTable				m_taskTable;	//
-	private TeamingAction			m_taskAction;	//
+public class TaskPopupMenu extends PopupMenu
+	implements
+	// EventBus handlers implemented by this class.
+		TaskNewTaskEvent.Handler,
+		TaskSetPercentDoneEvent.Handler,
+		TaskSetPriorityEvent.Handler,
+		TaskSetStatusEvent.Handler,
+		TaskViewEvent.Handler
+{
+	private Element					m_menuPartner;		//
+	private List<PopupMenuItem>		m_menuItems;		//
+	private List<TaskMenuOption>	m_menuOptions;		//
+	private TaskListItem			m_task;				//
+	private TaskListing				m_taskListing;		//
+	private TaskTable				m_taskTable;		//
+	private TeamingEvents			m_taskEventEnum;	//
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.TASK_NEW_TASK,
+		TeamingEvents.TASK_SET_PERCENT_DONE,
+		TeamingEvents.TASK_SET_PRIORITY,
+		TeamingEvents.TASK_SET_STATUS,
+		TeamingEvents.TASK_VIEW,
+	};
 	
 	/*
 	 * Constructor method.
 	 */
-	private TaskPopupMenu(TaskTable taskTable, TaskListing taskListing, TeamingAction taskAction, List<TaskMenuOption> menuOptions) {
+	private TaskPopupMenu(TaskTable taskTable, TaskListing taskListing, TeamingEvents taskEventEnum, List<TaskMenuOption> menuOptions) {
 		// Initialize the super class...
 		super(true, true);
 		
+		// ..register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
 		// ...store the parameters...
-		m_taskTable   = taskTable;
-		m_taskListing = taskListing;
-		m_taskAction  = taskAction;
-		m_menuOptions = menuOptions;
+		m_taskTable     = taskTable;
+		m_taskListing   = taskListing;
+		m_taskEventEnum = taskEventEnum;
+		m_menuOptions   = menuOptions;
 		
 		// ...finish initializing the popup...
 		setGlassEnabled(true);
@@ -93,11 +126,21 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 				addSeparator();
 			}
 			else {
+				String eventOption = po.getMenu();
+				GwtEvent<?> taskEvent = EventHelper.createSimpleEvent(m_taskEventEnum);
+				switch (m_taskEventEnum) {
+				case TASK_NEW_TASK:          ((TaskNewTaskEvent)        taskEvent).setEventOption(eventOption); break;
+				case TASK_SET_PERCENT_DONE:  ((TaskSetPercentDoneEvent) taskEvent).setEventOption(eventOption); break;
+				case TASK_SET_PRIORITY:      ((TaskSetPriorityEvent)    taskEvent).setEventOption(eventOption); break; 
+				case TASK_SET_STATUS:        ((TaskSetStatusEvent)      taskEvent).setEventOption(eventOption); break;
+				case TASK_VIEW:              ((TaskViewEvent)           taskEvent).setEventOption(eventOption); break;
+				default:
+					Window.alert(GwtTeaming.getMessages().taskInternalError_UnexpectedEvent(m_taskEventEnum.toString()));
+					continue;
+				}
 				PopupMenuItem pmi =
 					addMenuItem(
-						this,
-						m_taskAction,
-						po.getMenu(),
+						taskEvent,
 						po.buildImage(),
 						po.getMenuAlt());
 				pmi.setCheckedState(po.isMenuChecked());
@@ -111,22 +154,22 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 	 * Constructor method.
 	 * 
 	 * @param taskListing
-	 * @param taskAction
+	 * @param taskEventEnum
 	 * @param menuOptions
 	 */
-	public TaskPopupMenu(TaskListing taskListing, TeamingAction taskAction, List<TaskMenuOption> menuOptions) {
-		this(null, taskListing, taskAction, menuOptions);
+	public TaskPopupMenu(TaskListing taskListing, TeamingEvents taskEventEnum, List<TaskMenuOption> menuOptions) {
+		this(null, taskListing, taskEventEnum, menuOptions);
 	}
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * @param taskTable
-	 * @param taskAction
+	 * @param taskEventEnum
 	 * @param menuOptions
 	 */
-	public TaskPopupMenu(TaskTable taskTable, TeamingAction taskAction, List<TaskMenuOption> menuOptions) {
-		this(taskTable, null, taskAction, menuOptions);
+	public TaskPopupMenu(TaskTable taskTable, TeamingEvents taskEventEnum, List<TaskMenuOption> menuOptions) {
+		this(taskTable, null, taskEventEnum, menuOptions);
 	}
 
 	/**
@@ -134,32 +177,67 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 	 * 
 	 * @return
 	 */
-	public List<TaskMenuOption> getMenuOptions() {return m_menuOptions;}
-	public TeamingAction        getTaskAction()  {return m_taskAction; }
+	public List<TaskMenuOption> getMenuOptions()   {return m_menuOptions;  }
+	public TeamingEvents        getTaskEventEnum() {return m_taskEventEnum;}
 
 	/**
-	 * Called by the PopupMenu when one of the menu items is selected.
+	 * Handles TaskNewTaskEvent's received by this class.
 	 * 
-	 * Implements the ActionHandler.handleAction() method.
+	 * Implements the TaskNewTaskEvent.Handler.onTaskNewTask() method.
 	 * 
-	 * @param action
-	 * @param obj
+	 * @param event
 	 */
 	@Override
-	public void handleAction(TeamingAction action, Object obj) {
-		if (null != m_taskTable) {
-			// The only action this will ever receive is the option given
-			// during the TaskPopupMenu's creation.  Simply tell the
-			// TaskTable to handle it.
-			m_taskTable.setTaskOption(m_task, m_taskAction, ((String) obj));
-		}
-		
-		else if (null != m_taskListing) {
-			// The only action this will ever receive is the option given
-			// during the TaskPopupMenu's creation.  Simply tell the
-			// TaskListing to handle it.
-			m_taskListing.setViewOption(m_taskAction, ((String) obj));
-		}
+	public void onTaskNewTask(TaskNewTaskEvent event) {
+		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+	}
+
+	/**
+	 * Handles TaskSetPercentDoneEvent's received by this class.
+	 * 
+	 * Implements the TaskSetPercentDoneEvent.Handler.onTaskSetPercentDone() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskSetPercentDone(TaskSetPercentDoneEvent event) {
+		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+	}
+
+	/**
+	 * Handles TaskSetPriorityEvent's received by this class.
+	 * 
+	 * Implements the TaskSetPriorityEvent.Handler.onTaskSetPriority() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskSetPriority(TaskSetPriorityEvent event) {
+		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+	}
+
+	/**
+	 * Handles TaskSetStatusEvent's received by this class.
+	 * 
+	 * Implements the TaskSetStatusEvent.Handler.onTaskSetStatus() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskSetStatus(TaskSetStatusEvent event) {
+		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+	}
+
+	/**
+	 * Handles TaskViewEvent's received by this class.
+	 * 
+	 * Implements the TaskViewEvent.Handler.onTaskView() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskView(TaskViewEvent event) {
+		m_taskListing.setViewOption(event.getEventEnum(), event.getEventOption());
 	}
 
 	/**

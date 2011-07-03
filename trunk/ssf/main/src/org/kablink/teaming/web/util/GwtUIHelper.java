@@ -341,11 +341,11 @@ public class GwtUIHelper {
 	}
 	
 	/*
-	 * Adds a teaming action a toolbar.
+	 * Adds a teaming event a toolbar.
 	 */
 	@SuppressWarnings("unchecked")
 	private static void addEventToToolbar(Toolbar tb, String menuName, String teamingEvent, String title, String url, Map qualifiers) {
-		// Add the teaming action to the qualifiers...
+		// Add the teaming event to the qualifiers...
 		if (null == qualifiers) {
 			qualifiers = new HashMap();
 		}

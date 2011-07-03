@@ -35,9 +35,9 @@ package org.kablink.teaming.gwt.client.tasklisting;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,7 +58,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class TaskButton extends Anchor {
-	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
 	private boolean			m_enabled;			// true -> The button is enabled.  false -> The button is disabled.
 	private Image			m_buttonImage;		// For image buttons, the Image widget that displays the button.
 	private ImageResource	m_baseImgRes;		// For image buttons, the base       image resource. 
@@ -66,7 +65,7 @@ public class TaskButton extends Anchor {
 	private ImageResource	m_overImgRes;		// For image buttons, the mouse over image resource.
 	private InlineLabel		m_buttonLabel;		// For text  buttons, the InlineLabel widget that displays the text.
 	private String			m_imgTitle;			// The default title text for the button.
-	private TeamingAction	m_action;			// The TeamingAction to trigger when the button is clicked.
+	private TeamingEvents	m_event;			// The event to fire when the button is clicked.
 	
 	/*
 	 * Inner class that handle mousing over the button.
@@ -127,8 +126,8 @@ public class TaskButton extends Anchor {
 		public void onClick(ClickEvent event) {
 			// If the button is enabled...
 			if (m_enabled) {
-				// ...fire the action.
-				m_actionTrigger.triggerAction(m_action, null);
+				// ...fire the event.
+				EventHelper.fireSimpleEvent(m_event);
 			}
 		}
 	}
@@ -136,21 +135,19 @@ public class TaskButton extends Anchor {
 	/**
 	 * Class constructor for image buttons.
 	 * 
-	 * @param actionTrigger
 	 * @param baseImgRes
 	 * @param disabledImgRes
 	 * @param overImgRes
 	 * @param enabled
 	 * @param imgTitle
-	 * @param action
+	 * @param event
 	 */
-	public TaskButton(ActionTrigger actionTrigger, ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingAction action) {
+	public TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents event) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_actionTrigger	 = actionTrigger;
-		m_action		 = action;
+		m_event          = event;
 		m_enabled        = enabled;
 		m_baseImgRes     = baseImgRes;
 		m_disabledImgRes = disabledImgRes;
@@ -180,20 +177,18 @@ public class TaskButton extends Anchor {
 	/**
 	 * Class constructor for text buttons.
 	 * 
-	 * @param actionTrigger
 	 * @param buttonText
 	 * @param buttonTitle
 	 * @param enabled
-	 * @param action
+	 * @param event
 	 */
-	public TaskButton(ActionTrigger actionTrigger, String buttonText, String buttonTitle, boolean enabled, TeamingAction action) {
+	public TaskButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents event) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_actionTrigger	 = actionTrigger;
-		m_action		 = action;
-		m_enabled        = enabled;
+		m_event   = event;
+		m_enabled = enabled;
 		
 		// ..initialize the Anchor...
 		addStyleName("gwtTaskToolsButton_WidgetAnchor");

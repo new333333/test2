@@ -37,10 +37,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlgClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 
@@ -204,7 +204,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI = new ToolbarItem();
 				localTBI.setName("viewTeam");
 				localTBI.setTitle(m_messages.mainMenuManageViewTeam());
-				localTBI.setTeamingAction(TeamingAction.VIEW_TEAM_MEMBERS);
+				localTBI.setTeamingEvent(TeamingEvents.VIEW_CURRENT_BINDER_TEAM_MEMBERS);
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isManageAllowed()) {
@@ -631,7 +631,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * Loads the ManageMenuPopup split point and returns an
 	 * instance of it via the callback.
 	 *
-	 * @param actionTrigger
 	 * @param name
 	 * @param mmpClient
 	 */

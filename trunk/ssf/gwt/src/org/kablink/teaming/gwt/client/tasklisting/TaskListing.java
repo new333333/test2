@@ -39,13 +39,13 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -79,7 +79,7 @@ import com.google.gwt.user.client.ui.TextBox;
  * 
  * @author drfoster@novell.com
  */
-public class TaskListing extends Composite implements ActionTrigger {
+public class TaskListing extends Composite {
 	public static RequestInfo m_requestInfo;			//
 	
 	private boolean			m_updateCalculatedDates;	// true -> Tell the task table to update the calculated dates upon loading.
@@ -232,9 +232,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 		 * Synchronously sets/clears a filter.
 		 */
 		private void filterListNow(String filter) {
-			m_taskTable.handleAction(
-				TeamingAction.TASK_QUICK_FILTER,
-				filter);
+			GwtTeaming.fireEvent(new TaskQuickFilterEvent(filter));
 		}
 
 		/*
@@ -533,8 +531,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 
 		// ...create the order span...
 		FlowPanel fp = new FlowPanel();
-		m_moveUpButton   = new TaskButton(this, m_images.arrowUp(),   m_images.arrowUpDisabled(),   m_images.arrowUpMouseOver(),   false, m_messages.taskAltMoveUp(),   TeamingAction.TASK_MOVE_UP);
-		m_moveDownButton = new TaskButton(this, m_images.arrowDown(), m_images.arrowDownDisabled(), m_images.arrowDownMouseOver(), false, m_messages.taskAltMoveDown(), TeamingAction.TASK_MOVE_DOWN);
+		m_moveUpButton   = new TaskButton(m_images.arrowUp(),   m_images.arrowUpDisabled(),   m_images.arrowUpMouseOver(),   false, m_messages.taskAltMoveUp(),   TeamingEvents.TASK_MOVE_UP);
+		m_moveDownButton = new TaskButton(m_images.arrowDown(), m_images.arrowDownDisabled(), m_images.arrowDownMouseOver(), false, m_messages.taskAltMoveDown(), TeamingEvents.TASK_MOVE_DOWN);
 		m_moveDownButton.addStyleName("gwtTaskTools_Span");
 		InlineLabel il   = new InlineLabel(m_messages.taskLabelOrder());
 		il.addStyleName("mediumtext");
@@ -543,8 +541,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 		fp.add(m_moveDownButton);
 
 		// ...create the subtask span...
-		m_moveLeftButton  = new TaskButton(this, m_images.arrowLeft(),  m_images.arrowLeftDisabled(),  m_images.arrowLeftMouseOver(),  false, m_messages.taskAltMoveLeft(),  TeamingAction.TASK_MOVE_LEFT);
-		m_moveRightButton = new TaskButton(this, m_images.arrowRight(), m_images.arrowRightDisabled(), m_images.arrowRightMouseOver(), false, m_messages.taskAltMoveRight(), TeamingAction.TASK_MOVE_RIGHT);
+		m_moveLeftButton  = new TaskButton(m_images.arrowLeft(),  m_images.arrowLeftDisabled(),  m_images.arrowLeftMouseOver(),  false, m_messages.taskAltMoveLeft(),  TeamingEvents.TASK_MOVE_LEFT);
+		m_moveRightButton = new TaskButton(m_images.arrowRight(), m_images.arrowRightDisabled(), m_images.arrowRightMouseOver(), false, m_messages.taskAltMoveRight(), TeamingEvents.TASK_MOVE_RIGHT);
 		m_moveRightButton.addStyleName("gwtTaskTools_Span");
 		il = new InlineLabel(m_messages.taskLabelSubtask());
 		il.addStyleName("mediumtext");
@@ -554,21 +552,19 @@ public class TaskListing extends Composite implements ActionTrigger {
 
 		// ...create the delete button...
 		m_deleteButton = new TaskButton(
-			this,
 			m_messages.taskLabelDelete(),
 			m_messages.taskAltDelete(),
 			false,
-			TeamingAction.TASK_DELETE);
+			TeamingEvents.TASK_DELETE);
 		m_deleteButton.addStyleName("marginright2px");
 		fp.add(m_deleteButton);
 
 		// ...create the purge button...
 		m_purgeButton = new TaskButton(
-			this,
 			m_messages.taskLabelPurge(),
 			m_messages.taskAltPurge(),
 			false,
-			TeamingAction.TASK_PURGE);
+			TeamingEvents.TASK_PURGE);
 		fp.add(m_purgeButton);
 		m_taskToolsDIV.add(fp);
 
@@ -585,7 +581,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 			vOpts.add(new TaskMenuOption("VIRTUAL",  m_messages.taskViewAssignedTasks(), m_mode.equals(      "VIRTUAL" )));
 			vOpts.add(new TaskMenuOption("PHYSICAL", m_messages.taskViewFromFolder(),    m_mode.equals(      "PHYSICAL")));
 		}
-		m_viewMenu = new TaskPopupMenu(this, TeamingAction.TASK_VIEW, vOpts);
+		m_viewMenu = new TaskPopupMenu(this, TeamingEvents.TASK_VIEW, vOpts);
 
 		// ...generate the string to display on the menu...
 		StringBuffer menuBuf = new StringBuffer(m_messages.taskView());
@@ -670,15 +666,15 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * Called by TaskPopupMenu when a selection has been made in the
 	 * task listing's view menu.
 	 * 
-	 * @param viewAction
+	 * @param viewEvent
 	 * @param viewOption
 	 */
-	public void setViewOption(TeamingAction viewAction, String viewOption) {
-		switch (viewAction) {
+	public void setViewOption(TeamingEvents viewEvent, String viewOption) {
+		switch (viewEvent) {
 		case TASK_VIEW:  handleViewOption(viewOption); break;
 			
 		default:
-			Window.alert(m_messages.taskInternalError_UnexpectedAction(viewAction.toString()));
+			Window.alert(m_messages.taskInternalError_UnexpectedEvent(viewEvent.toString()));
 			break;
 		}
 	}
@@ -717,23 +713,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 		}
 	}
 
-	/**
-	 * Fires a TeamingAction.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 *
-	 * @param action
-	 * @param obj
-	 */
-	@Override
-	public void triggerAction(TeamingAction action) {
-		m_taskTable.handleAction(action, null);
-	}
-	
-	public void triggerAction(TeamingAction action, Object obj) {
-		m_taskTable.handleAction(action, obj);
-	}	
-	
 	/**
 	 * Callback interface to interact with the task listing
 	 * asynchronously after it loads. 
