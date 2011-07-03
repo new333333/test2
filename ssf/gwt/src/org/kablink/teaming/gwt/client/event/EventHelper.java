@@ -113,6 +113,7 @@ public class EventHelper {
 		case SIDEBAR_HIDE:                      reply = new SidebarHideEvent();                  break;
 		case SIDEBAR_RELOAD:                    reply = new SidebarReloadEvent();                break;
 		case SIDEBAR_SHOW:                      reply = new SidebarShowEvent();                  break;
+		case SIZE_CHANGED:                      reply = new SizeChangedEvent();                  break;
 		case TASK_DELETE:                       reply = new TaskDeleteEvent();                   break;
 		case TASK_MOVE_DOWN:                    reply = new TaskMoveDownEvent();                 break;
 		case TASK_MOVE_LEFT:                    reply = new TaskMoveLeftEvent();                 break;
@@ -182,15 +183,6 @@ public class EventHelper {
 			HandlerRegistration registrationHandler = null;
 			TeamingEvents te = eventsToBeRegistered[i];
 			switch (te) {
-			case TEAMING_ACTION:
-				// A TeamingAction event!  Can the event handler we
-				// were given handle that?
-				if (eventHandler instanceof TeamingActionEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = TeamingActionEvent.registerEvent(eventBus, ((TeamingActionEvent.Handler) eventHandler));
-				}
-				break;
-				
 			case ACTIVITY_STREAM:
 				// An ActivityStreamEvent!  Can the event handler we
 				// were given handle that?
@@ -533,6 +525,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SIZE_CHANGED:
+				// A SizeChangedEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SizeChangedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SizeChangedEvent.registerEvent(eventBus, ((SizeChangedEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case TASK_DELETE:
 				// A TaskDeleteEvent!  Can the event handler we were
 				// given handle that?
@@ -818,8 +819,6 @@ public class EventHelper {
 			boolean needsHandler = isTEInA(te, eventsToCheck);
 			boolean hasHandler   = false;
 			switch (te) {
-			case TEAMING_ACTION:                    hasHandler = (eventHandler instanceof TeamingActionEvent.Handler);                break;
-			
 			case ACTIVITY_STREAM:                   hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);               break;
 			case ACTIVITY_STREAM_ENTER:             hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);          break;
 			case ACTIVITY_STREAM_EXIT:              hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);           break;
@@ -870,6 +869,8 @@ public class EventHelper {
 			case SIDEBAR_HIDE:                      hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                  break;
 			case SIDEBAR_RELOAD:                    hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);                break;
 			case SIDEBAR_SHOW:                      hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                  break;
+			
+			case SIZE_CHANGED:                      hasHandler = (eventHandler instanceof SizeChangedEvent.Handler);                  break;
 			
 			case TASK_DELETE:                       hasHandler = (eventHandler instanceof TaskDeleteEvent.Handler);                   break;
 			case TASK_MOVE_DOWN:                    hasHandler = (eventHandler instanceof TaskMoveDownEvent.Handler);                 break;

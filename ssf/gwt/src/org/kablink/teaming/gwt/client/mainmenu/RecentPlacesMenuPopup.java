@@ -113,8 +113,6 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	
 	/**
 	 * Class constructor.
-	 * 
-	 * @param actionTrigger
 	 */
 	public RecentPlacesMenuPopup() {
 		// Initialize the super class.

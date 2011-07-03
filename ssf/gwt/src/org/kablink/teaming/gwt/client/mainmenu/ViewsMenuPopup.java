@@ -390,7 +390,6 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 * Loads the ViewsMenuPopup split point and returns an
 	 * instance of it via the callback.
 	 *
-	 * @param actionTrigger
 	 * @param inSearch
 	 * @param searchTabId
 	 * @param vmpClient

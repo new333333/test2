@@ -60,8 +60,6 @@ public class SearchMenuPanel extends FlowPanel {
 
 	/**
 	 * Class constructor.
-	 * 
-	 * @param actionTrigger
 	 */
 	public SearchMenuPanel() {
 		// Initialize the super class...

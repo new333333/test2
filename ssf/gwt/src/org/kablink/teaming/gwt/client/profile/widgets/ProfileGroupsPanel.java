@@ -39,7 +39,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
@@ -55,7 +54,7 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 	private final String IDBASE = "myGroups_";
 	protected List<GroupInfo> groupList;
 
-	public ProfileGroupsPanel(ProfileRequestInfo profileRequestInfo, String title, ActionTrigger trigger) {
+	public ProfileGroupsPanel(ProfileRequestInfo profileRequestInfo, String title) {
 		
 		super(profileRequestInfo, title);
 		

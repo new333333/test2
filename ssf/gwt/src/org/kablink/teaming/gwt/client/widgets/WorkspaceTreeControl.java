@@ -45,18 +45,15 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
@@ -79,7 +76,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * @author drfoster@novell.com
  */
 public class WorkspaceTreeControl extends Composite
-	implements ActionTrigger,
+	implements
 	// EventBus handlers implemented by this class.
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamEvent.Handler,
@@ -544,23 +541,6 @@ public class WorkspaceTreeControl extends Composite
 		if (null != m_treeDisplay) {
 			m_treeDisplay.showBinderBusy(osbInfo);
 		}
-	}
-	
-	/**
-	 * Fires a TeamingAction at the registered ActionHandler's.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 * 
-	 * @param action
-	 * @param obj
-	 */
-	public void triggerAction(TeamingAction action, Object obj) {
-		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
-	}
-	
-	public void triggerAction(TeamingAction action) {
-		// Always use the initial form of the method.
-		triggerAction(action, null);
 	}
 	
 	/**

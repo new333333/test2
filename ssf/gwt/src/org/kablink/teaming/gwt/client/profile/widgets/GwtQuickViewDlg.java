@@ -221,12 +221,12 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		profileBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewProfile(),
 										GwtTeaming.getMessages().qViewProfileTitle(), 
 										"qView-a", "qView-action");
-		profileBtn.addClickHandler(new WorkSpaceActionHandler(true));
+		profileBtn.addClickHandler(new WorkspaceEventHandler(true));
 		
 		workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
 										 GwtTeaming.getMessages().qViewWorkspaceTitle(),
 										 "qView-a",	"qView-action");
-		workspaceBtn.addClickHandler(new WorkSpaceActionHandler(false));
+		workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
 		
 		conferenceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewConference(),
 										GwtTeaming.getMessages().qViewConferenceTitle(),
@@ -494,14 +494,14 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	
 	
 	/**
-	 * This workSpaceActionHandler handles the actions on the profile button or the workspace button.
+	 * This WorkspaceEventHandler handles the actions on the profile button or the workspace button.
 	 * 
 	 */
-	private class WorkSpaceActionHandler implements ClickHandler {
+	private class WorkspaceEventHandler implements ClickHandler {
 
 		boolean showProfile = false;
 
-		public WorkSpaceActionHandler(boolean profile){
+		public WorkspaceEventHandler(boolean profile){
 			this.showProfile = profile;
 		}
 		

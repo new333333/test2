@@ -556,8 +556,9 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Use to pass an Event to the EventBus on GwtMainPage
-	 * @param GWTEvent -  Example TeamingActionEvent extends GWTEvent
+	 * Used to pass an Event to the EventBus from JavaScript.
+	 * 
+	 * @param event
 	 */
 	public static native void jsFireEvent( Event<?> event ) /*-{
 		$wnd.top.ss_fireEvent( event );

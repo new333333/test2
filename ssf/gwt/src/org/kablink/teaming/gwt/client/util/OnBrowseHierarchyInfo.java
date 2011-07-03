@@ -37,8 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Class used to communicate information about a browse hierarchy
- * request between the MainMenuControl and its registered
- * ActionHandler's.
+ * request between the MainMenuControl and its event handlers.
  * 
  * @author drfoster@novell.com
  */

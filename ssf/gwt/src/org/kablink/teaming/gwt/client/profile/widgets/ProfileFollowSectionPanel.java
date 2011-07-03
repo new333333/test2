@@ -40,7 +40,6 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -55,7 +54,7 @@ public class ProfileFollowSectionPanel extends ProfileSectionPanel {
 	private List<GwtUser> trackedUsers;
 	private String IDBASE = "TrackedId";
 
-	public ProfileFollowSectionPanel(ProfileRequestInfo profileRequestInfo, String title, ActionTrigger trigger) {
+	public ProfileFollowSectionPanel(ProfileRequestInfo profileRequestInfo, String title) {
 		
 		super(profileRequestInfo, title);
 		

@@ -33,8 +33,6 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -52,10 +50,7 @@ import com.google.gwt.user.client.ui.Image;
  *
  */
 public class MenuBarButton extends Anchor {
-	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
-	private GwtEvent<?>		m_event;			// The event to fire when the button is clicked.
-	private Object			m_actionObject;		// The Object to send with the TeamingAction.
-	private TeamingAction	m_action;			// The TeamingAction to trigger when the button is clicked.
+	private GwtEvent<?>	m_event;	// The event to fire when the button is clicked.
 	
 	/*
 	 * Inner class that implements clicking on buttons on the menu.
@@ -67,38 +62,24 @@ public class MenuBarButton extends Anchor {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			// If we have an event...
-			if (null != m_event) {
-				// ...fire it...
-				GwtTeaming.fireEvent(m_event);
-			}
-			
-			else {
-				// ...otherwise, fire the action.
-				m_actionTrigger.triggerAction(m_action, m_actionObject);
-			}
+			GwtTeaming.fireEvent(m_event);
 		}
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param actionTrigger
 	 * @param imgRes
 	 * @param imgTitle
-	 * @param action
-	 * @param actionObject
+	 * @param event
 	 * @param clickHandler
 	 */
-	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject, GwtEvent<?> event, ClickHandler clickHandler) {
+	public MenuBarButton(ImageResource imgRes, String imgTitle, GwtEvent<?> event, ClickHandler clickHandler) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_actionTrigger	= actionTrigger;
-		m_action		= action;
-		m_actionObject	= actionObject;
-		m_event			= event;
+		m_event = event;
 		
 		// Create the Image...
 		Image img = new Image(imgRes);
@@ -121,33 +102,13 @@ public class MenuBarButton extends Anchor {
 		addMouseOutHandler( hover);
 	}
 	
-	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject) {
-		// Always use the initial form of the constructor.
-		this(actionTrigger, imgRes, imgTitle, action, actionObject, null, null);
-	}
-	
-	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action) {
-		// Always use the initial form of the constructor.
-		this(actionTrigger, imgRes, imgTitle, action, null, null, null);
-	}
-	
 	public MenuBarButton(ImageResource imgRes, String imgTitle, GwtEvent<?> event) {
 		// Always use the initial form of the constructor.
-		this(null, imgRes, imgTitle, null, null, event, null);
+		this(imgRes, imgTitle, event, null);
 	}
 	
 	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler) {
 		// Always use the initial form of the constructor.
-		this(null, imgRes, imgTitle, null, null, null, clickHandler);
-	}
-
-	/**
-	 * Sets an Object for the teaming action.
-	 * 
-	 * @param actionObject
-	 */
-	public void setActionObject(Object actionObject) {
-		// Simply store the parameter.
-		m_actionObject = actionObject;
+		this(imgRes, imgTitle, null, clickHandler);
 	}
 }

@@ -34,17 +34,15 @@
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -56,7 +54,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
-public class GwtProfilePage extends Composite implements ActionTrigger {
+public class GwtProfilePage extends Composite {
 	// profileRequestInfo is now public static to match the definition
 	// of the m_requestInfo in GwtMainPage.  This was necessary for the
 	// proper operation of HttpRequestInfo.createHttpRequestInfo() from
@@ -136,7 +134,7 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 	}
 
 	private void createProfileSidePanel(HorizontalPanel panel) {
-		profileSidePanel = new ProfileSidePanel(profileRequestInfo, this);
+		profileSidePanel = new ProfileSidePanel(profileRequestInfo);
 		panel.add(profileSidePanel);
 		panel.setCellHorizontalAlignment(profileSidePanel,
 				HasHorizontalAlignment.ALIGN_RIGHT);
@@ -205,7 +203,7 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 	}
 
 	private void relayoutPage() {
-		triggerAction(TeamingAction.SIZE_CHANGED);
+		SizeChangedEvent.fireOne();
 	}
 	
 	/**
@@ -217,27 +215,6 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 		return $wnd.m_requestInfo;
 	}-*/;
 	
-	/**
-	 * Fires a TeamingAction at the registered ActionHandler's.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 *
-	 * @param action
-	 * @param obj
-	 */
-	public void triggerAction(TeamingAction action, Object obj) {
-		GwtClientHelper.jsFireEvent(new TeamingActionEvent(action, obj));
-	}
-	
-	/**
-	 * Use to trigger an action to GwtMainPage
-	 * @param action
-	 */
-	public void triggerAction(TeamingAction action) {
-		// Always use the initial form of the method.
-		triggerAction(action, null);
-	}
-
 	public void updateQuota(String usedQuota) {
 		profileSidePanel.updateQuota(usedQuota);
 	}
