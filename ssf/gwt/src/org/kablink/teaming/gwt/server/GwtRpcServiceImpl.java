@@ -101,6 +101,8 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
@@ -113,12 +115,21 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoRpcResponseData
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetModifyBinderUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalNodeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -230,6 +241,28 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			
 			response = new VibeRpcResponse( searchResults );
+			return response;
+		}
+		
+		case EXPAND_HORIZONTAL_BUCKET:
+		{
+			ExpandHorizontalBucketCmd ehbCmd;
+			TreeInfo result;
+			
+			ehbCmd = (ExpandHorizontalBucketCmd) cmd;
+			result = expandHorizontalBucket( ri, ehbCmd.getBucketInfo() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case EXPAND_VERTICAL_BUCKET:
+		{
+			ExpandVerticalBucketCmd evbCmd;
+			TreeInfo result;
+			
+			evbCmd = (ExpandVerticalBucketCmd) cmd;
+			result = expandVerticalBucket( ri, evbCmd.getBucketInfo() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -369,6 +402,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_HORIZONTAL_NODE:
+		{
+			GetHorizontalNodeCmd ghnCmd;
+			TreeInfo result;
+			
+			ghnCmd = (GetHorizontalNodeCmd) cmd;
+			result = getHorizontalNode( ri, ghnCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_HORIZONTAL_TREE:
+		{
+			GetHorizontalTreeCmd ghtCmd;
+			List<TreeInfo> result;
+			GetHorizontalTreeRpcResponseData responseData;
+			
+			ghtCmd = (GetHorizontalTreeCmd) cmd;
+			result = getHorizontalTree( ri, ghtCmd.getBinderId() );
+			responseData = new GetHorizontalTreeRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_LOGIN_INFO:
 		{
 			GwtLoginInfo loginInfo;
@@ -397,6 +454,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			prefs = getPersonalPreferences( ri );
 			response = new VibeRpcResponse( prefs );
+			return response;
+		}
+		
+		case GET_ROOT_WORKSPACE_ID:
+		{
+			GetRootWorkspaceIdCmd grwiCmd;
+			String result;
+			StringRpcResponseData responseData;
+			
+			grwiCmd = (GetRootWorkspaceIdCmd) cmd;
+			result = getRootWorkspaceId( ri, grwiCmd.getBinderId() );
+			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 
@@ -444,6 +514,39 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_VERTICAL_ACTIVITY_STREAMS_TREE:
+		{
+			GetVerticalActivityStreamsTreeCmd gvastCmd;
+			TreeInfo result;
+			
+			gvastCmd = (GetVerticalActivityStreamsTreeCmd) cmd;
+			result = getVerticalActivityStreamsTree( ri, gvastCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_VERTICAL_NODE:
+		{
+			GetVerticalNodeCmd gvnCmd;
+			TreeInfo result;
+			
+			gvnCmd = (GetVerticalNodeCmd) cmd;
+			result = getVerticalNode( ri, gvnCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_VERTICAL_TREE:
+		{
+			GetVerticalTreeCmd gvtCmd;
+			TreeInfo result;
+			
+			gvtCmd = (GetVerticalTreeCmd) cmd;
+			result = getVerticalTree( ri, gvtCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_VIEW_FOLDER_ENTRY_URL:
 		{
 			Long binderId;
@@ -478,6 +581,32 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			asi = ((PersistActivityStreamSelectionCmd) cmd).getActivityStreamInfo();
 			result = persistActivityStreamSelection( ri, asi );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case PERSIST_NODE_COLLAPSE:
+		{
+			PersistNodeCollapseCmd pncCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			pncCmd = (PersistNodeCollapseCmd) cmd;
+			result = persistNodeCollapse( ri, pncCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case PERSIST_NODE_EXPAND:
+		{
+			PersistNodeExpandCmd pneCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			pneCmd = (PersistNodeExpandCmd) cmd;
+			result = persistNodeExpand( ri,pneCmd.getBinderId() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2509,7 +2638,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo expandHorizontalBucket( HttpRequestInfo ri, BucketInfo bucketInfo )
+	private TreeInfo expandHorizontalBucket( HttpRequestInfo ri, BucketInfo bucketInfo )
 	{
 		// Expand the bucket list without regard to persistent Binder
 		// expansions.
@@ -2528,7 +2657,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo expandVerticalBucket( HttpRequestInfo ri, BucketInfo bucketInfo ) {
+	private TreeInfo expandVerticalBucket( HttpRequestInfo ri, BucketInfo bucketInfo ) {
 		// Expand the bucket list taking any persistent Binder
 		// expansions into account.
 		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketInfo, new ArrayList<Long>() );
@@ -2547,7 +2676,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<TreeInfo> getHorizontalTree( HttpRequestInfo ri, String binderIdS ) {
+	private List<TreeInfo> getHorizontalTree( HttpRequestInfo ri, String binderIdS ) {
 		Binder binder;
 		List<TreeInfo> reply;
 		
@@ -2596,7 +2725,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getHorizontalNode( HttpRequestInfo ri, String binderIdS )
+	private TreeInfo getHorizontalNode( HttpRequestInfo ri, String binderIdS )
 	{
 		Binder binder;
 		TreeInfo reply;
@@ -2618,7 +2747,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public String getRootWorkspaceId( HttpRequestInfo ri, String binderId )
+	private String getRootWorkspaceId( HttpRequestInfo ri, String binderId )
 	{
 		String reply;
 		
@@ -2652,7 +2781,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getVerticalActivityStreamsTree( HttpRequestInfo ri, String binderIdS )
+	private TreeInfo getVerticalActivityStreamsTree( HttpRequestInfo ri, String binderIdS )
 	{
 		return GwtActivityStreamHelper.getVerticalActivityStreamsTree( getRequest( ri ), this, binderIdS );
 	}// end getVerticalActivityStreamsTree()
@@ -2672,7 +2801,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getVerticalTree( HttpRequestInfo ri, String binderIdS )
+	private TreeInfo getVerticalTree( HttpRequestInfo ri, String binderIdS )
 	{
 		Binder binder;
 		TreeInfo reply;
@@ -2745,7 +2874,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getVerticalNode( HttpRequestInfo ri, String binderIdS )
+	private TreeInfo getVerticalNode( HttpRequestInfo ri, String binderIdS )
 	{
 		Binder binder;
 		TreeInfo reply;
@@ -2818,7 +2947,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean persistNodeCollapse( HttpRequestInfo ri, String binderId )
+	private Boolean persistNodeCollapse( HttpRequestInfo ri, String binderId )
 	{
 		GwtServerHelper.persistNodeCollapse( this, Long.parseLong( binderId ) );
 		return Boolean.TRUE;
@@ -2833,7 +2962,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean persistNodeExpand( HttpRequestInfo ri, String binderId )
+	private Boolean persistNodeExpand( HttpRequestInfo ri, String binderId )
 	{
 		GwtServerHelper.persistNodeExpand( this, Long.parseLong( binderId ) );
 		return Boolean.TRUE;

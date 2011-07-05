@@ -37,6 +37,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -134,30 +137,39 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// No, we aren't collapsing the node!  We must be
 				// expanding it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
+					ExpandHorizontalBucketCmd cmd;
+					
 					// Yes!  Expand it.
-					getRpcService().expandHorizontalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketInfo(), new AsyncCallback<TreeInfo>() {
+					cmd = new ExpandHorizontalBucketCmd( m_ti.getBucketInfo() );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
 						}
 						
-						public void onSuccess(TreeInfo expandedTI) {
+						public void onSuccess(VibeRpcResponse response) {
+							TreeInfo expandedTI;
+							
 							// Yes!  Mark the node as being opened,
 							// save its new child Binder's list and
 							// re-render it.  We do this asynchronously
 							// so that we release the AJAX request
 							// ASAP.
+							expandedTI = (TreeInfo) response.getResponseData();
 							doExpandNodeAsync(expandedTI);
 						}
 					});
 				}
 				
 				else {
+					GetHorizontalNodeCmd cmd;
+					
 					// No, we aren't showing a collapsed bucket!  We
 					// must be showing a normal node.  Can we get a
 					// TreeInfo for the expansion?
-					getRpcService().getHorizontalNode( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+					cmd = new GetHorizontalNodeCmd( m_ti.getBinderInfo().getBinderId() );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -165,12 +177,15 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
-						public void onSuccess(TreeInfo expandedTI) {
+						public void onSuccess(VibeRpcResponse response) {
+							TreeInfo expandedTI;
+							
 							// Yes!  Mark the node as being opened,
 							// save its new child Binder's list and
 							// re-render it.  We do this asynchronously
 							// so that we release the AJAX request
 							// ASAP.
+							expandedTI = (TreeInfo) response.getResponseData();
 							doExpandNodeAsync(expandedTI);
 						}
 					});

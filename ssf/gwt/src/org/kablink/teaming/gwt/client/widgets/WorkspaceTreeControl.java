@@ -46,6 +46,9 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -142,8 +145,12 @@ public class WorkspaceTreeControl extends Composite
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
 		switch (m_tm) {
 		case HORIZONTAL:
+		{
+			GetHorizontalTreeCmd cmd;
+			
 			mainPanel.addStyleName("breadCrumb_Browser");
-			rpcService.getHorizontalTree(HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
+			cmd = new GetHorizontalTreeCmd( selectedBinderId );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -151,9 +158,14 @@ public class WorkspaceTreeControl extends Composite
 						selectedBinderId);
 				}
 				
-				public void onSuccess(List<TreeInfo> tiList)  {
+				public void onSuccess(VibeRpcResponse response)  {
+					List<TreeInfo> tiList;
+					GetHorizontalTreeRpcResponseData responseData;
+					
 					// Asynchronously render the horizontal tree so
 					// that we can release the AJAX request ASAP.
+					responseData = (GetHorizontalTreeRpcResponseData) response.getResponseData();
+					tiList = responseData.getTreeInfo();
 					renderHTreeAsync(
 						mainPanel,
 						wsTree,
@@ -163,19 +175,26 @@ public class WorkspaceTreeControl extends Composite
 			});
 			
 			break;
+		}
 			
 		case VERTICAL:
+			GetVerticalTreeCmd cmd;
+			
 			mainPanel.addStyleName("workspaceTreeControl");
-			rpcService.getVerticalTree(HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
+			cmd = new GetVerticalTreeCmd( selectedBinderId );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_GetTree(),
 						selectedBinderId);
 				}
-				public void onSuccess(TreeInfo ti)  {
+				public void onSuccess(VibeRpcResponse response)  {
+					TreeInfo ti;
+					
 					// Asynchronously render the vertical tree so that
 					// we can release the AJAX request ASAP.
+					ti = (TreeInfo) response.getResponseData();
 					renderVTreeAsync(
 						mainPanel,
 						wsTree,

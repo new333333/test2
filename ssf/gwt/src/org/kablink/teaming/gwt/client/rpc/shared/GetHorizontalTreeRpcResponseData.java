@@ -30,79 +30,45 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
+
+
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
- * 
+ * This class holds the response data for the "get horizontal tree" rpc command
  * @author jwootton
  *
  */
-public abstract class VibeRpcCmd implements IsSerializable
+public class GetHorizontalTreeRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		EXPAND_HORIZONTAL_BUCKET,
-		EXPAND_VERTICAL_BUCKET,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_BINDER_PERMALINK,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_DOCUMENT_BASE_URL,
-		GET_ENTRY,
-		GET_EXTENSION_FILES,
-		GET_EXTENSION_INFO,
-		GET_FILE_ATTACHMENTS,
-		GET_FOLDER,
-		GET_HORIZONTAL_NODE,
-		GET_HORIZONTAL_TREE,
-		GET_LOGGED_IN_USER_PERMALINK,
-		GET_LOGIN_INFO,
-		GET_MODIFY_BINDER_URL,
-		GET_PERSONAL_PREFERENCES,
-		GET_ROOT_WORKSPACE_ID,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		GET_USER_PERMALINK,
-		GET_VERTICAL_ACTIVITY_STREAMS_TREE,
-		GET_VERTICAL_NODE,
-		GET_VERTICAL_TREE,
-		GET_VIEW_FOLDER_ENTRY_URL,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		PERSIST_NODE_COLLAPSE,
-		PERSIST_NODE_EXPAND,
-		REMOVE_EXTENSION,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES,
-		SAVE_WHATS_NEW_SETTINGS,
-		VALIDATE_ENTRY_ACTIONS;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+	private List<TreeInfo> m_treeInfo;
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmd()
+	public GetHorizontalTreeRpcResponseData()
 	{
 	}
 	
 	/**
 	 * 
 	 */
-	public VibeRpcCmdType getCmdType()
+	public GetHorizontalTreeRpcResponseData( List<TreeInfo> treeInfo)
 	{
-		return m_cmdType;
+		m_treeInfo = treeInfo;
+	}
+	
+	/**
+	 * 
+	 */
+	public List<TreeInfo> getTreeInfo()
+	{
+		return m_treeInfo;
 	}
 }
