@@ -39,6 +39,15 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalNodeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -203,10 +212,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				}
 				
 				else {
+					PersistNodeCollapseCmd cmd;
+					
 					// No, we aren't showing an expanded bucket or
 					// activity stream!  We must be showing a normal
 					// row.  Can we mark the row as being closed?
-					rpcService.persistNodeCollapse(HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
+					cmd = new PersistNodeCollapseCmd( m_ti.getBinderInfo().getBinderId() );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -214,7 +226,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
-						public void onSuccess(Boolean success) {
+						public void onSuccess(VibeRpcResponse response) {
 							// Yes!  Update the TreeInfo, re-render the
 							// row and change the row's Anchor Image to a
 							// tree_opener.
@@ -228,19 +240,25 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// No, we aren't collapsing it!  We must be expanding
 				// it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
+					ExpandVerticalBucketCmd cmd;
+					
 					// Yes!  Expand it.
-					rpcService.expandVerticalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketInfo(), new AsyncCallback<TreeInfo>() {
+					cmd = new ExpandVerticalBucketCmd( m_ti.getBucketInfo() );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
 						}
 						
-						public void onSuccess(TreeInfo expandedTI) {
+						public void onSuccess(VibeRpcResponse response) {
+							TreeInfo expandedTI;
+							
 							// Yes!  Update the TreeInfo, and if
 							// there are any expanded rows, render
 							// them and change the row's Anchor
 							// Image to a tree_closer.
+							expandedTI = (TreeInfo) response.getResponseData();
 							doExpandRowAsync(expandedTI);
 						}
 					});
@@ -256,10 +274,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				}
 				
 				else {
+					PersistNodeExpandCmd cmd;
+					
 					// No, we aren't showing a collapsed activity
 					// stream either!  We must be showing a normal row.
 					// Can we mark the row as being opened?
-					rpcService.persistNodeExpand(HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
+					cmd = new PersistNodeExpandCmd( m_ti.getBinderInfo().getBinderId() );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -267,10 +288,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
-						public void onSuccess(Boolean success) {
+						public void onSuccess(VibeRpcResponse response) {
+							GetVerticalNodeCmd cmd;
+							
 							// Yes!  Can we get a TreeInfo for the
 							// expansion?
-							rpcService.getVerticalNode( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+							cmd = new GetVerticalNodeCmd( m_ti.getBinderInfo().getBinderId() );
+							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 								public void onFailure(Throwable t) {
 									GwtClientHelper.handleGwtRPCFailure(
 										t,
@@ -278,11 +302,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 										m_ti.getBinderInfo().getBinderId());
 								}
 								
-								public void onSuccess(TreeInfo expandedTI) {
+								public void onSuccess(VibeRpcResponse response) {
+									TreeInfo expandedTI;
+									
 									// Yes!  Update the TreeInfo, and if
 									// there are any expanded rows, render
 									// them and change the row's Anchor
 									// Image to a tree_closer.
+									expandedTI = (TreeInfo) response.getResponseData();
 									doExpandRowAsync(expandedTI);
 								}
 							});
@@ -488,13 +515,19 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// No, we aren't in activity stream mode!  Build a TreeInfo
 			// for the activity streams...
 			final String selectedBinderId = String.valueOf(m_selectedBinderId);
-			getRpcService().getVerticalActivityStreamsTree( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
+			GetVerticalActivityStreamsTreeCmd cmd;
+			
+			cmd = new GetVerticalActivityStreamsTreeCmd( selectedBinderId );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
 				}
 
-				public void onSuccess(TreeInfo ti) {
+				public void onSuccess(VibeRpcResponse response) {
+					TreeInfo ti;
+					
 					// ...and put it into effect.
+					ti = (TreeInfo) response.getResponseData();
 					enterActivityStreamModeAsync(ti, defaultASI);
 				}
 			});
@@ -1054,17 +1087,23 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * selects a binder.
 	 */
 	private void reRootTree(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode) {
+		GetVerticalTreeCmd cmd;
+		
 		// Read the TreeInfo for the selected Binder.
-		getRpcService().getVerticalTree( HttpRequestInfo.createHttpRequestInfo(), newRootBinderId, new AsyncCallback<TreeInfo>() {
+		cmd = new GetVerticalTreeCmd( newRootBinderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetTree(),
 					newRootBinderId);
 			}
-			public void onSuccess(TreeInfo rootTI)  {
+			public void onSuccess(VibeRpcResponse response)  {
+				TreeInfo rootTI;
+				
 				// Re-root the tree asynchronously so that we release
 				// the AJAX request ASAP.
+				rootTI = (TreeInfo) response.getResponseData();
 				reRootTreeAsync(
 					newRootBinderId,
 					selectedBinderId,
@@ -1205,11 +1244,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				break;
 
 			default:
+				GetRootWorkspaceIdCmd cmd;
+				
 				// Yes, the request should cause the tree to be
 				// re-rooted!  (It may be coming from the bread crumbs
 				// or some other unknown source.)  What's the ID if the
 				// selected Binder's root workspace?
-				getRpcService().getRootWorkspaceId(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>() {
+				cmd = new GetRootWorkspaceIdCmd( binderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
@@ -1217,9 +1259,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 							binderId);
 						selectBinder(targetTI);
 					}
-					public void onSuccess(String rootWorkspaceId)  {
+					public void onSuccess(VibeRpcResponse response)  {
+						String rootWorkspaceId;
+						StringRpcResponseData responseData;
+						
 						// Asynchronously perform the selection so that
 						// we release the AJAX request ASAP.
+						responseData = (StringRpcResponseData) response.getResponseData();
+						rootWorkspaceId = responseData.getStringValue();
 						selectRootWorkspaceIdAsync(
 							binderId,
 							forceReload,

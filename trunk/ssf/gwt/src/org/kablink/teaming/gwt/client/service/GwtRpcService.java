@@ -60,7 +60,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
-import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
@@ -72,7 +71,6 @@ import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -92,19 +90,6 @@ public interface GwtRpcService extends RemoteService
 	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException;
 	
 	
-	
-	// The following are used in the implementation of the various
-	// forms of the WorkspaceTreeControl.
-	public TreeInfo       expandHorizontalBucket(         HttpRequestInfo ri, BucketInfo bucketInfo );
-	public TreeInfo       expandVerticalBucket(           HttpRequestInfo ri, BucketInfo bucketInfo );
-	public List<TreeInfo> getHorizontalTree(              HttpRequestInfo ri, String     binderId   );
-	public TreeInfo       getHorizontalNode(              HttpRequestInfo ri, String     binderId   );
-	public String         getRootWorkspaceId(             HttpRequestInfo ri, String     binderId   );
-	public TreeInfo       getVerticalActivityStreamsTree( HttpRequestInfo ri, String     binderId   );
-	public TreeInfo       getVerticalTree(                HttpRequestInfo ri, String     binderId   );
-	public TreeInfo       getVerticalNode(                HttpRequestInfo ri, String     binderId   );
-	public Boolean        persistNodeCollapse(            HttpRequestInfo ri, String     binderId   );
-	public Boolean        persistNodeExpand(              HttpRequestInfo ri, String     binderId   );
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.
