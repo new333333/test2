@@ -69,6 +69,8 @@ import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
@@ -1109,18 +1111,51 @@ public class ActivityStreamCtrl extends Composite
 	}
 	
 	
-	/**
+	/*
 	 * Invoke the "Share This" dialog for the given entry.
 	 */
 	private void invokeShareThisDlg( final ActivityStreamUIEntry entry )
 	{
-		if ( m_shareThisDlg == null )
+		// If we've already created the dialog... 
+		if ( m_shareThisDlg != null )
 		{
-			m_shareThisDlg = new ShareThisDlg( false, true, 0, 0, GwtTeaming.getMessages().shareCaption() );
+			// ...simply show it against with the entry.
+			showShareThisDlg( entry );
 		}
 		
+		else
+		{
+			// Otherwise, we need to create it!  Note that the "Share
+			// This" dialog requires the FindCtrl be loaded before it
+			// loads in order to function.  Prefetch the FindControl...
+			FindCtrl.prefetch(new FindCtrlClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess(FindCtrl findCtrl)
+				{
+					// ...and create and show the dialog.
+					m_shareThisDlg = new ShareThisDlg( false, true, 0, 0, GwtTeaming.getMessages().shareCaption() );
+					showShareThisDlg( entry );
+				}// end onSuccess()
+			});
+		}
+	}// end invokeShareThisDlg()
+	
+	
+	/*
+	 * Shows an existing "Share This" dialog for the given entry.
+	 */
+	private void showShareThisDlg( final ActivityStreamUIEntry entry )
+	{
 		m_shareThisDlg.showDlg( entry.getEntryTitle(), entry.getEntryId(), Window.getClientWidth() - 75, entry.getAbsoluteTop() );
-	}
+	}// end showShareThisDlg()
 	
 	
 	/**
