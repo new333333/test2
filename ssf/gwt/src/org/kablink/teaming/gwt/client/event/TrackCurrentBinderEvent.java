@@ -35,16 +35,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The TrackCurrentBinderEvent used to TrackCurrentBinder to Vibe OnPrem.
+ * The TrackCurrentBinderEvent is used to follow the current binder.
  * 
  * @author drfoster@novell.com
  */
-public class TrackCurrentBinderEvent extends GwtEvent<TrackCurrentBinderEvent.Handler> {
+public class TrackCurrentBinderEvent extends VibeEventBase<TrackCurrentBinderEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -62,7 +61,28 @@ public class TrackCurrentBinderEvent extends GwtEvent<TrackCurrentBinderEvent.Ha
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.getAssociatedType()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onTrackCurrentBinder(this);
+    }
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new TrackCurrentBinderEvent());
+	}
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -72,15 +92,18 @@ public class TrackCurrentBinderEvent extends GwtEvent<TrackCurrentBinderEvent.Ha
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onTrackCurrentBinder(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.TRACK_CURRENT_BINDER;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -92,12 +115,5 @@ public class TrackCurrentBinderEvent extends GwtEvent<TrackCurrentBinderEvent.Ha
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new TrackCurrentBinderEvent());
 	}
 }

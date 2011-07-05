@@ -35,16 +35,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ViewAllEntriesEvent used that all entries be shown.
+ * The ViewAllEntriesEvent is used to show all entries in some view.
  * 
  * @author drfoster@novell.com
  */
-public class ViewAllEntriesEvent extends GwtEvent<ViewAllEntriesEvent.Handler> {
+public class ViewAllEntriesEvent extends VibeEventBase<ViewAllEntriesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -62,7 +61,28 @@ public class ViewAllEntriesEvent extends GwtEvent<ViewAllEntriesEvent.Handler> {
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onViewAllEntries(this);
+    }
+    	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new ViewAllEntriesEvent());
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -72,15 +92,18 @@ public class ViewAllEntriesEvent extends GwtEvent<ViewAllEntriesEvent.Handler> {
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onViewAllEntries(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.VIEW_ALL_ENTRIES;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -92,12 +115,5 @@ public class ViewAllEntriesEvent extends GwtEvent<ViewAllEntriesEvent.Handler> {
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new ViewAllEntriesEvent());
 	}
 }

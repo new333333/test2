@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -43,7 +42,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class TaskSetPercentDoneEvent extends GwtEvent<TaskSetPercentDoneEvent.Handler> {
+public class TaskSetPercentDoneEvent extends VibeEventBase<TaskSetPercentDoneEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
     private String m_eventOption;
@@ -64,6 +63,7 @@ public class TaskSetPercentDoneEvent extends GwtEvent<TaskSetPercentDoneEvent.Ha
 	}
 	
 	public TaskSetPercentDoneEvent() {
+		// Always use the initial form of the constructor.
 		this(null);
 	}
 	
@@ -72,12 +72,25 @@ public class TaskSetPercentDoneEvent extends GwtEvent<TaskSetPercentDoneEvent.Ha
 	 * 
 	 * @return
 	 */
-	public TeamingEvents getEventEnum()                     {return TeamingEvents.TASK_SET_PERCENT_DONE;}
-	public String        getEventOption()                   {return m_eventOption;                      }
-	public void          setEventOption(String eventOption) {m_eventOption = eventOption;               }
+	public String getEventOption()                   {return m_eventOption;       }
+	public void   setEventOption(String eventOption) {m_eventOption = eventOption;}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onTaskSetPercentDone(this);
+    }
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -87,15 +100,18 @@ public class TaskSetPercentDoneEvent extends GwtEvent<TaskSetPercentDoneEvent.Ha
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onTaskSetPercentDone(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.TASK_SET_PERCENT_DONE;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

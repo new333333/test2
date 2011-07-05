@@ -36,16 +36,16 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The BrowseHierarchyExitEvent used to exit the bread crumb browser.
+ * The BrowseHierarchyExitEvent is used to the bread crumb browser to
+ * close.
  * 
  * @author drfoster@novell.com
  */
-public class BrowseHierarchyExitEvent extends GwtEvent<BrowseHierarchyExitEvent.Handler> {
+public class BrowseHierarchyExitEvent extends VibeEventBase<BrowseHierarchyExitEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
 	/**
@@ -63,7 +63,28 @@ public class BrowseHierarchyExitEvent extends GwtEvent<BrowseHierarchyExitEvent.
 	}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onBrowseHierarchyExit(this);
+	}
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new BrowseHierarchyExitEvent());
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -73,15 +94,18 @@ public class BrowseHierarchyExitEvent extends GwtEvent<BrowseHierarchyExitEvent.
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onBrowseHierarchyExit(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.BROWSE_HIERARCHY_EXIT;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -93,12 +117,5 @@ public class BrowseHierarchyExitEvent extends GwtEvent<BrowseHierarchyExitEvent.
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new BrowseHierarchyExitEvent());
 	}
 }

@@ -36,16 +36,16 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeSimpleProfileEvent is used to the simple profile dialog.
+ * The InvokeSimpleProfileEvent is used to invoke the simple profile
+ * dialog.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeSimpleProfileEvent extends GwtEvent<InvokeSimpleProfileEvent.Handler> {
+public class InvokeSimpleProfileEvent extends VibeEventBase<InvokeSimpleProfileEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
 	public SimpleProfileParams m_simpleProfileParams;
@@ -73,7 +73,21 @@ public class InvokeSimpleProfileEvent extends GwtEvent<InvokeSimpleProfileEvent.
 	public SimpleProfileParams getSimpleProfileParams() {return m_simpleProfileParams;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onInvokeSimpleProfile(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -83,15 +97,18 @@ public class InvokeSimpleProfileEvent extends GwtEvent<InvokeSimpleProfileEvent.
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onInvokeSimpleProfile(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.INVOKE_SIMPLE_PROFILE;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

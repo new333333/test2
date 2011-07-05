@@ -33,10 +33,10 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
@@ -50,7 +50,7 @@ import com.google.gwt.user.client.ui.Image;
  *
  */
 public class MenuBarButton extends Anchor {
-	private GwtEvent<?>	m_event;	// The event to fire when the button is clicked.
+	private VibeEventBase<?>	m_event;	// The event to fire when the button is clicked.
 	
 	/*
 	 * Inner class that implements clicking on buttons on the menu.
@@ -74,7 +74,7 @@ public class MenuBarButton extends Anchor {
 	 * @param event
 	 * @param clickHandler
 	 */
-	public MenuBarButton(ImageResource imgRes, String imgTitle, GwtEvent<?> event, ClickHandler clickHandler) {
+	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, ClickHandler clickHandler) {
 		// Initialize the super class...
 		super();
 		
@@ -102,7 +102,7 @@ public class MenuBarButton extends Anchor {
 		addMouseOutHandler( hover);
 	}
 	
-	public MenuBarButton(ImageResource imgRes, String imgTitle, GwtEvent<?> event) {
+	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event) {
 		// Always use the initial form of the constructor.
 		this(imgRes, imgTitle, event, null);
 	}

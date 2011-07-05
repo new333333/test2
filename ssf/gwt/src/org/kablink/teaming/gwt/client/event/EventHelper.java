@@ -37,7 +37,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -75,7 +74,7 @@ public class EventHelper {
 	 * @param eventEnum
 	 */
 	public static void fireSimpleEvent(TeamingEvents eventEnum) {
-		GwtEvent<?> event = createSimpleEvent(eventEnum);
+		VibeEventBase<?> event = createSimpleEvent(eventEnum);
 		if (null != event) {
 			GwtTeaming.fireEvent(event);
 		}
@@ -83,14 +82,14 @@ public class EventHelper {
 	
 	/**
 	 * Given an event that requires no parameters, returns a
-	 * GwtEvent<?> of it.
+	 * VibeEventBase<?> of it.
 	 * 
 	 * @param eventEnum
 	 * 
 	 * @return
 	 */
-	public static GwtEvent<?> createSimpleEvent(TeamingEvents eventEnum) {
-		GwtEvent<?> reply;
+	public static VibeEventBase<?> createSimpleEvent(TeamingEvents eventEnum) {
+		VibeEventBase<?> reply;
 		
 		switch (eventEnum) {
 		case ACTIVITY_STREAM_EXIT:              reply = new ActivityStreamExitEvent();           break;
@@ -301,8 +300,8 @@ public class EventHelper {
 				break;
 			
 			case FULL_UI_RELOAD:
-				// An FullUIReloadEvent!  Can the event handler we
-				// were given handle that?
+				// An FullUIReloadEvent!  Can the event handler we were
+				// given handle that?
 				if (eventHandler instanceof FullUIReloadEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = FullUIReloadEvent.registerEvent(eventBus, ((FullUIReloadEvent.Handler) eventHandler));
@@ -337,8 +336,8 @@ public class EventHelper {
 				break;
 				
 			case INVOKE_HELP:
-				// An InvokeHelpEvent!  Can the event handler we
-				// were given handle that?
+				// An InvokeHelpEvent!  Can the event handler we were
+				// given handle that?
 				if (eventHandler instanceof InvokeHelpEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeHelpEvent.registerEvent(eventBus, ((InvokeHelpEvent.Handler) eventHandler));
@@ -346,8 +345,8 @@ public class EventHelper {
 				break;
 				
 			case INVOKE_REPLY:
-				// An InvokeReplyEvent!  Can the event handler we
-				// were given handle that?
+				// An InvokeReplyEvent!  Can the event handler we were
+				// given handle that?
 				if (eventHandler instanceof InvokeReplyEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeReplyEvent.registerEvent(eventBus, ((InvokeReplyEvent.Handler) eventHandler));
@@ -355,8 +354,8 @@ public class EventHelper {
 				break;
 				
 			case INVOKE_SHARE:
-				// An InvokeShareEvent!  Can the event handler we
-				// were given handle that?
+				// An InvokeShareEvent!  Can the event handler we were
+				// given handle that?
 				if (eventHandler instanceof InvokeShareEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeShareEvent.registerEvent(eventBus, ((InvokeShareEvent.Handler) eventHandler));
@@ -382,8 +381,8 @@ public class EventHelper {
 				break;
 				
 			case INVOKE_TAG:
-				// An InvokeTagEvent!  Can the event handler we
-				// were given handle that?
+				// An InvokeTagEvent!  Can the event handler we were
+				// given handle that?
 				if (eventHandler instanceof InvokeTagEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeTagEvent.registerEvent(eventBus, ((InvokeTagEvent.Handler) eventHandler));
@@ -391,8 +390,8 @@ public class EventHelper {
 				break;
 				
 			case LOGIN:
-				// An LoginEvent!  Can the event handler we
-				// were given handle that?
+				// An LoginEvent!  Can the event handler we were given
+				// handle that?
 				if (eventHandler instanceof LoginEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = LoginEvent.registerEvent(eventBus, ((LoginEvent.Handler) eventHandler));
@@ -400,8 +399,8 @@ public class EventHelper {
 				break;
 				
 			case LOGOUT:
-				// An LogoutEvent!  Can the event handler we
-				// were given handle that?
+				// An LogoutEvent!  Can the event handler we were given
+				// handle that?
 				if (eventHandler instanceof LogoutEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = LogoutEvent.registerEvent(eventBus, ((LogoutEvent.Handler) eventHandler));
@@ -454,8 +453,8 @@ public class EventHelper {
 				break;
 			
 			case SEARCH_FIND_RESULTS:
-				// A SearchFindResultsEvent!  Can the event handler we were
-				// given handle that?
+				// A SearchFindResultsEvent!  Can the event handler we
+				// were given handle that?
 				if (eventHandler instanceof SearchFindResultsEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = SearchFindResultsEvent.registerEvent(eventBus, ((SearchFindResultsEvent.Handler) eventHandler));
@@ -598,8 +597,8 @@ public class EventHelper {
 				break;
 			
 			case TASK_QUICK_FILTER:
-				// A TaskQuickFilterEvent!  Can the event handler we were
-				// given handle that?
+				// A TaskQuickFilterEvent!  Can the event handler we
+				// were given handle that?
 				if (eventHandler instanceof TaskQuickFilterEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = TaskQuickFilterEvent.registerEvent(eventBus, ((TaskQuickFilterEvent.Handler) eventHandler));
@@ -625,8 +624,8 @@ public class EventHelper {
 				break;
 			
 			case TASK_SET_STATUS:
-				// A TaskSetStatusEvent!  Can the event handler we
-				// were given handle that?
+				// A TaskSetStatusEvent!  Can the event handler we were
+				// given handle that?
 				if (eventHandler instanceof TaskSetStatusEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = TaskSetStatusEvent.registerEvent(eventBus, ((TaskSetStatusEvent.Handler) eventHandler));
@@ -746,15 +745,18 @@ public class EventHelper {
 			// event?
 			if (handlerNotDefined) {
 				// No!  Tell the user about the problem.
-				Window.alert(GwtTeaming.getMessages().eventHandling_UnhandledEvent(te.name(), eventHandler.getClass().getName()));
+				Window.alert(
+					GwtTeaming.getMessages().eventHandling_UnhandledEvent(
+						te.name(),
+						eventHandler.getClass().getName()));
 			}
 			
 			// Yes, the event handler we were given was able to handle
 			// this event!  We're we able to register it and is the
-			// wanting to keep track of them?
+			// caller wanting to keep track of them?
 			else if ((null != registrationHandler) && returnRegisteredEventHandlers) {
-				// Yes!  Add its HandlerRegistration to the list of
-				// them.
+				// Yes!  Add the HandlerRegistration to the caller's
+				// list of them.
 				final HandlerRegistration finalRegistrationHandler = registrationHandler;
 				registeredEventHandlers.add(new HandlerRegistration() {
 					@Override
@@ -776,7 +778,7 @@ public class EventHelper {
 	}
 
 	/**
-	 * Unregisters the HandlerRegistration objects from a list of them.
+	 * Unregisters the HandlerRegistration's from a list of them.
 	 * 
 	 * @param registeredEventHandlers
 	 */
@@ -795,8 +797,8 @@ public class EventHelper {
 	}
 
 	/*
-	 * Validate that the event handlers implemented by eventHandler are
-	 * include in the events array.
+	 * Validates that the event handlers implemented by eventHandler
+	 * are include in a TeamingEvents[].
 	 */
 	private static void validateEvents(TeamingEvents[] eventsToCheck, Object eventHandler) {
 		// If we're not validating things...
@@ -813,8 +815,8 @@ public class EventHelper {
 			return;
 		}
 
-		// Scan the defined events looking for what's defined and
-		// what should be defined.
+		// Scan the defined TeamingEvents looking for what's defined
+		// and what should be defined.
 		for (TeamingEvents te:  TeamingEvents.values() ) {
 			boolean needsHandler = isTEInA(te, eventsToCheck);
 			boolean hasHandler   = false;

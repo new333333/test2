@@ -34,16 +34,16 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The SearchSimpleEvent tells the UI perform a simple search.
+ * The SearchSimpleEvent tells the UI perform a simple search for the
+ * given string.
  * 
  * @author drfoster@novell.com
  */
-public class SearchSimpleEvent extends GwtEvent<SearchSimpleEvent.Handler> {
+public class SearchSimpleEvent extends VibeEventBase<SearchSimpleEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private String m_simpleSearchString;
@@ -73,7 +73,21 @@ public class SearchSimpleEvent extends GwtEvent<SearchSimpleEvent.Handler> {
 	public String getSimpleSearchString() {return m_simpleSearchString;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onSearchSimple(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -83,15 +97,18 @@ public class SearchSimpleEvent extends GwtEvent<SearchSimpleEvent.Handler> {
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onSearchSimple(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.SEARCH_SIMPLE;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

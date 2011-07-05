@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamUIEntry;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeShareEvent invoke the 'share this entry' UI.
+ * The InvokeShareEvent is used invoke the 'share this entry' UI.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeShareEvent extends GwtEvent<InvokeShareEvent.Handler> {
+public class InvokeShareEvent extends VibeEventBase<InvokeShareEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private ActivityStreamUIEntry m_uiEntry;
@@ -68,6 +67,7 @@ public class InvokeShareEvent extends GwtEvent<InvokeShareEvent.Handler> {
 	}
 	
 	public InvokeShareEvent() {
+		// Always use the initial form of the constructor.
 		this(null);
 	}
 	
@@ -80,7 +80,21 @@ public class InvokeShareEvent extends GwtEvent<InvokeShareEvent.Handler> {
 	public void                  setUIEntry(ActivityStreamUIEntry uiEntry) {m_uiEntry = uiEntry;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onInvokeShare(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -90,15 +104,18 @@ public class InvokeShareEvent extends GwtEvent<InvokeShareEvent.Handler> {
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onInvokeShare(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.INVOKE_SHARE;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

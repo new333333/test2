@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ActivityStreamEvent used to activate activity streams.
+ * The ActivityStreamEvent is used to activate an activity stream.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEvent extends GwtEvent<ActivityStreamEvent.Handler> {
+public class ActivityStreamEvent extends VibeEventBase<ActivityStreamEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
 	private ActivityStreamInfo m_asi;
@@ -75,7 +74,21 @@ public class ActivityStreamEvent extends GwtEvent<ActivityStreamEvent.Handler> {
 	public ActivityStreamInfo getActivityStreamInfo() {return m_asi;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onActivityStream(this);
+	}
+
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -85,15 +98,18 @@ public class ActivityStreamEvent extends GwtEvent<ActivityStreamEvent.Handler> {
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onActivityStream(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.ACTIVITY_STREAM;
 	}
-
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -42,7 +41,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class TaskSetPriorityEvent extends GwtEvent<TaskSetPriorityEvent.Handler> {
+public class TaskSetPriorityEvent extends VibeEventBase<TaskSetPriorityEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     private String m_eventOption;
@@ -63,6 +62,7 @@ public class TaskSetPriorityEvent extends GwtEvent<TaskSetPriorityEvent.Handler>
 	}
 	
 	public TaskSetPriorityEvent() {
+		// Always use the initial form of the constructor.
 		this(null);
 	}
 	
@@ -71,12 +71,25 @@ public class TaskSetPriorityEvent extends GwtEvent<TaskSetPriorityEvent.Handler>
 	 * 
 	 * @return
 	 */
-	public TeamingEvents getEventEnum()                     {return TeamingEvents.TASK_SET_PRIORITY;}
-	public String        getEventOption()                   {return m_eventOption;                  }
-	public void          setEventOption(String eventOption) {m_eventOption = eventOption;           }
+	public String getEventOption()                   {return m_eventOption;       }
+	public void   setEventOption(String eventOption) {m_eventOption = eventOption;}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onTaskSetPriority(this);
+    }
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -86,15 +99,18 @@ public class TaskSetPriorityEvent extends GwtEvent<TaskSetPriorityEvent.Handler>
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onTaskSetPriority(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.TASK_SET_PRIORITY;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

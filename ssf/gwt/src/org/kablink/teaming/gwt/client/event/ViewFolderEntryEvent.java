@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -44,7 +43,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class ViewFolderEntryEvent extends GwtEvent<ViewFolderEntryEvent.Handler> {
+public class ViewFolderEntryEvent extends VibeEventBase<ViewFolderEntryEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private String m_viewFolderEntryUrl;
@@ -67,14 +66,21 @@ public class ViewFolderEntryEvent extends GwtEvent<ViewFolderEntryEvent.Handler>
 	}
 	
 	/**
-	 * Get'er methods.
+	 * Dispatches this event when one is triggered.
+	 *
+	 * Implements GwtEvent.dispatch()
 	 * 
-	 * @return
+	 * @param handler
 	 */
-	public String getViewFolderEntryUrl() {return m_viewFolderEntryUrl;}
-
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onViewFolderEntry(this);
+	}
+	
 	/**
 	 * Returns the GwtEvent.Type of this event.
+	 * 
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -84,15 +90,28 @@ public class ViewFolderEntryEvent extends GwtEvent<ViewFolderEntryEvent.Handler>
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onViewFolderEntry(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.VIEW_FOLDER_ENTRY;
 	}
-	
+		
+	/**
+	 * Returns the URL to view the folder entry associated with this
+	 * event.
+	 * 
+	 * @return
+	 */
+	public String getViewFolderEntryUrl() {
+		return m_viewFolderEntryUrl;
+	}
+
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

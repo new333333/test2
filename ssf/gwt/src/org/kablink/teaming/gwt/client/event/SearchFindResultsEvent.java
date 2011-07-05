@@ -36,18 +36,17 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The SearchFindResultsEvent tells the UI perform a recent place
- * search.
+ * The SearchFindResultsEvent tells the UI perform a search for the
+ * given search results link.
  * 
  * @author drfoster@novell.com
  */
-public class SearchFindResultsEvent extends GwtEvent<SearchFindResultsEvent.Handler> {
+public class SearchFindResultsEvent extends VibeEventBase<SearchFindResultsEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private GwtTeamingItem m_searchResults;
@@ -78,7 +77,21 @@ public class SearchFindResultsEvent extends GwtEvent<SearchFindResultsEvent.Hand
 	public GwtTeamingItem getSearchResults() {return m_searchResults;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onSearchFindResults(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -88,15 +101,18 @@ public class SearchFindResultsEvent extends GwtEvent<SearchFindResultsEvent.Hand
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onSearchFindResults(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.SEARCH_FIND_RESULTS;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

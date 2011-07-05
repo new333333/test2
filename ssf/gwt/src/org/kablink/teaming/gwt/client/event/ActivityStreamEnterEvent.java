@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ActivityStreamEnterEvent used to Enter activity stream mode.
+ * The ActivityStreamEnterEvent is used to enter activity stream mode.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEnterEvent extends GwtEvent<ActivityStreamEnterEvent.Handler> {
+public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private ActivityStreamInfo m_asi;
@@ -68,6 +67,7 @@ public class ActivityStreamEnterEvent extends GwtEvent<ActivityStreamEnterEvent.
 	}
 	
 	public ActivityStreamEnterEvent() {
+		// Always use the initial form of the constructor.
 		this(null);
 	}
 	
@@ -79,7 +79,21 @@ public class ActivityStreamEnterEvent extends GwtEvent<ActivityStreamEnterEvent.
 	public ActivityStreamInfo getActivityStreamInfo() {return m_asi;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onActivityStreamEnter(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -89,15 +103,18 @@ public class ActivityStreamEnterEvent extends GwtEvent<ActivityStreamEnterEvent.
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onActivityStreamEnter(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.ACTIVITY_STREAM_ENTER;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

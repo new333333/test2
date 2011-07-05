@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The AdministrationEvent used to activate administration mode.
+ * The AdministrationEvent is used to activate administration mode.
  * 
  * @author drfoster@novell.com
  */
-public class AdministrationEvent extends GwtEvent<AdministrationEvent.Handler> {
+public class AdministrationEvent extends VibeEventBase<AdministrationEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
 	/**
@@ -65,7 +64,28 @@ public class AdministrationEvent extends GwtEvent<AdministrationEvent.Handler> {
 	}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onAdministration(this);
+	}
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new AdministrationEvent());
+	}
+
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -75,15 +95,18 @@ public class AdministrationEvent extends GwtEvent<AdministrationEvent.Handler> {
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onAdministration(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.ADMINISTRATION;
 	}
-
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -95,12 +118,5 @@ public class AdministrationEvent extends GwtEvent<AdministrationEvent.Handler> {
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new AdministrationEvent());
 	}
 }

@@ -32,89 +32,21 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
 import com.google.gwt.event.shared.EventHandler;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * The TaskPurgeEvent used to purge the currently selected tasks from
- * the task hierarchy.
+ * The VibeEventBase is used as the base class for all Vibe OnPrem GWT
+ * based events.
  * 
  * @author drfoster@novell.com
  */
-public class TaskPurgeEvent extends VibeEventBase<TaskPurgeEvent.Handler> {
-    public static Type<Handler> TYPE = new Type<Handler>();
-    
+public abstract class VibeEventBase<H extends EventHandler> extends GwtEvent<H> {
 	/**
-	 * Handler interface for this event.
-	 */
-	public interface Handler extends EventHandler {
-		void onTaskPurge(TaskPurgeEvent event);
-	}
-	
-	/**
-	 * Class constructor.
-	 */
-	public TaskPurgeEvent() {
-		super();
-	}
-	
-	/**
-	 * Dispatches this event when one is triggered.
-	 * 
-	 * Implements GwtEvent.dispatch()
-	 * 
-	 * @param handler
-	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onTaskPurge(this);
-    }    
-	
-	/**
-	 * Returns the GwtEvent.Type of this event.
-	 *
-	 * Implements GwtEvent.getAssociatedType()
+	 * Returns the TeamingEvents enumeration value corresponding to the
+	 * event.
 	 * 
 	 * @return
 	 */
-    @Override
-    public Type<Handler> getAssociatedType() {
-        return TYPE;
-    }
-    
-	/**
-	 * Returns the TeamingEvents enumeration value corresponding to
-	 * this event.
-	 * 
-	 * Implements VibeBaseEvent.getEventEnum()
-	 * 
-	 * @return
-	 */
-	@Override
-	public TeamingEvents getEventEnum() {
-		return TeamingEvents.TASK_PURGE;
-	}
-		
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new TaskPurgeEvent());
-	}
-	
-	/**
-	 * Registers this event on the given event bus and returns its
-	 * HandlerRegistration.
-	 * 
-	 * @param eventBus
-	 * @param handler
-	 * 
-	 * @return
-	 */
-	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
-		return eventBus.addHandler(TYPE, handler);
-	}
+	public abstract TeamingEvents getEventEnum();
 }

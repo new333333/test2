@@ -34,17 +34,16 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
  * The GotoContentUrlEvent tells the UI navigate to a non-permalink
- * URL.
+ * URL in the content frame.
  * 
  * @author drfoster@novell.com
  */
-public class GotoContentUrlEvent extends GwtEvent<GotoContentUrlEvent.Handler> {
+public class GotoContentUrlEvent extends VibeEventBase<GotoContentUrlEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private String m_contentUrl;
@@ -74,7 +73,21 @@ public class GotoContentUrlEvent extends GwtEvent<GotoContentUrlEvent.Handler> {
 	public String getContentUrl() {return m_contentUrl;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onGotoContentUrl(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -84,15 +97,18 @@ public class GotoContentUrlEvent extends GwtEvent<GotoContentUrlEvent.Handler> {
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onGotoContentUrl(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.GOTO_CONTENT_URL;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

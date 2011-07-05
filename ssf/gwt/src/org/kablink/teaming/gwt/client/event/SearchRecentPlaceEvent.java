@@ -34,17 +34,16 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
  * The SearchRecentPlaceEvent tells the UI perform a recent place
- * search.
+ * search for the give search tab ID.
  * 
  * @author drfoster@novell.com
  */
-public class SearchRecentPlaceEvent extends GwtEvent<SearchRecentPlaceEvent.Handler> {
+public class SearchRecentPlaceEvent extends VibeEventBase<SearchRecentPlaceEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private Integer m_searchTabId;
@@ -74,7 +73,21 @@ public class SearchRecentPlaceEvent extends GwtEvent<SearchRecentPlaceEvent.Hand
 	public Integer getSearchTabId() {return m_searchTabId;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onSearchRecentPlace(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -84,15 +97,18 @@ public class SearchRecentPlaceEvent extends GwtEvent<SearchRecentPlaceEvent.Hand
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onSearchRecentPlace(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.SEARCH_RECENT_PLACE;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
