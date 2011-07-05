@@ -77,7 +77,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class WorkspaceTreeControl extends Composite
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,

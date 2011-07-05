@@ -86,7 +86,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class FindCtrl extends Composite
 	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	// The following defines the TeamingEvents that are handled by

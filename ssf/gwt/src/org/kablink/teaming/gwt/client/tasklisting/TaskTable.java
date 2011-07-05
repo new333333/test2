@@ -108,7 +108,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class TaskTable extends Composite
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		TaskDeleteEvent.Handler,
 		TaskMoveDownEvent.Handler,
 		TaskMoveLeftEvent.Handler,

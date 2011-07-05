@@ -94,7 +94,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ShareThisDlg extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private TextBox m_titleTextBox;

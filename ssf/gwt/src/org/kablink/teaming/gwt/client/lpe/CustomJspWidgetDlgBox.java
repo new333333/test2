@@ -81,7 +81,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class CustomJspWidgetDlgBox extends DlgBox
 	implements KeyPressHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private TextBox m_jspNameTxtBox = null;

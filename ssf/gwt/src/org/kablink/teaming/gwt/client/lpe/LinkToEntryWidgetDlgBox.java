@@ -77,7 +77,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class LinkToEntryWidgetDlgBox extends DlgBox
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private FindCtrl m_findCtrl = null;

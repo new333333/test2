@@ -62,7 +62,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  */
 public class TaskPopupMenu extends PopupMenu
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		TaskNewTaskEvent.Handler,
 		TaskSetPercentDoneEvent.Handler,
 		TaskSetPriorityEvent.Handler,

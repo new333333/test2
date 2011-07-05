@@ -91,7 +91,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class TagThisDlg extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler, KeyUpHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private final static int	MAX_TAG_LENGTH		= 60;				// As per ObjectKeys.MAX_TAG_LENGTH.

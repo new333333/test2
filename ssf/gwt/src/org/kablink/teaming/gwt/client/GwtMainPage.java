@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentPersonEvent;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewCurrentBinderTeamMembersEvent;
 import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
@@ -132,7 +133,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.web.bindery.event.shared.Event;
 
 
 /**
@@ -140,7 +140,7 @@ import com.google.web.bindery.event.shared.Event;
  */
 public class GwtMainPage extends Composite
 	implements ResizeHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamEnterEvent.Handler,
 		AdministrationEvent.Handler,
@@ -477,9 +477,12 @@ public class GwtMainPage extends Composite
 		// administration content panel.
 		initCloseAdministrationContentPanelJS( this );
 		
-		// Initialize the native JavaScript to allow any content to fire an event on the main event bus for the application
-		// See GwtClientHelper:jsFireEvent
-		initFireEventOnEventBusJS( this );
+		// Initialize the JSNI method that will allow any content to
+		// fire a Vibe OnPrem event on the main event bus for the
+		// application.
+		//
+		// See GwtClientHelper:jsFireVibeEventOnMainEventBus()
+		initFireVibeEventOnMainEventBusJS( this );
 		
 		// Initialize JavaScript to perform Popup for User Profile
 		initSimpleUserProfileJS( this );
@@ -727,11 +730,11 @@ public class GwtMainPage extends Composite
 	 * 
 	 * com.google.web.bindery.event.shared.Event
 	 */
-	private native void initFireEventOnEventBusJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_fireEvent = function( event )
+	private native void initFireVibeEventOnMainEventBusJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_fireVibeEventOnMainEventBus = function( event )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireVibeEvent(Lcom/google/web/bindery/event/shared/Event;)( event );
-		}//end ss_fireEvent
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireVibeEvent(Lorg/kablink/teaming/gwt/client/event/VibeEventBase;)( event );
+		}//end ss_fireVibeEventOnMainEventBus
 	}-*/;
 
 	/*
@@ -2510,7 +2513,7 @@ public class GwtMainPage extends Composite
 	/*
 	 * Fires an arbitrary event from the JSP based UI.
 	 */
-	private void fireVibeEvent( Event<?> event )
+	private void fireVibeEvent( VibeEventBase<?> event )
 	{
 		GwtTeaming.fireEvent( event );
 	}// end fireVibeEvent()

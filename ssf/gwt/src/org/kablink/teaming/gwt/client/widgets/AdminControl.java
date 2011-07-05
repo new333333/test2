@@ -87,7 +87,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class AdminControl extends Composite
 	implements 
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
 		LogoutEvent.Handler,
 		SidebarHideEvent.Handler,

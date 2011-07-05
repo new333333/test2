@@ -787,7 +787,6 @@ public interface GwtTeamingMessages extends Messages
 	String presenceIdle();
 	String presenceOffline();
 	String presenceUnknown();
-	String IEUseCompatibilityMode();
 
 	// The following strings are used in the Administration Information dialog
 	String adminInfoDlgHeader();
