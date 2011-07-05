@@ -36,12 +36,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionFilesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -283,10 +281,10 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 
 	private void buildFileInfo(String id, String zoneName) {
 		
-		GwtRpcServiceAsync	gwtRpcService;
+		GetExtensionFilesCmd cmd;
 		
 		// create an async callback to handle the result of the request to get the state:
-		AsyncCallback<ExtensionFiles> callback = new AsyncCallback<ExtensionFiles>()
+		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -299,7 +297,11 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 				extensionPanelStateText.setText( msg );
 			}
 	
-			public void onSuccess(ExtensionFiles paths) {
+			public void onSuccess( VibeRpcResponse response ) {
+				ExtensionFiles paths;
+				
+				paths = (ExtensionFiles) response.getResponseData();
+				
 				// display the tutorial panel state in the label:
 				extensionPanelStateText.setText( "" );
 				updatePaths(paths);
@@ -307,8 +309,8 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		};
 	
 		extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-		gwtRpcService.getExtensionFiles(HttpRequestInfo.createHttpRequestInfo(), id, zoneName, callback);
+		cmd = new GetExtensionFilesCmd( id, zoneName );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 
 	protected void updatePaths(ExtensionFiles extFiles) {

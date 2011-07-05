@@ -30,63 +30,44 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-package org.kablink.teaming.gwt.client;
+import java.util.ArrayList;
+
+import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.rpc.SerializationException;
 
 /**
- * This can be used for all GWT Teaming exceptions.
+ * This class holds the response data for the "get extension info" rpc command
  * @author jwootton
  *
  */
-public class GwtTeamingException extends SerializationException
-	implements IsSerializable
+public class GetExtensionInfoRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	/**
-	 * This class defines all the possible types of exceptions that GwtTeamingException knows about.
-	 * @author jwootton
-	 *
-	 */
-	public enum ExceptionType implements IsSerializable
-	{
-		ACCESS_CONTROL_EXCEPTION,
-		EXTENSION_DEFINITION_IN_USE,
-		FAVORITES_LIMIT_EXCEEDED,
-		NO_BINDER_BY_THE_ID_EXCEPTION,
-		NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION,
-		USER_NOT_LOGGED_IN,
-		UNKNOWN;
-	}// end ExceptionType
-	
-
-	private static final long serialVersionUID = -5972316795230937529L;
-	private ExceptionType m_type = ExceptionType.UNKNOWN;
+	private ExtensionInfoClient[] m_extensionInfo;
 	
 	/**
 	 * 
 	 */
-	public GwtTeamingException()
+	public GetExtensionInfoRpcResponseData()
 	{
-		m_type = ExceptionType.UNKNOWN;
-	}// end GwtTeamingException()
+	}
 	
 	/**
-	 * Return the type of exception we are dealing with.
+	 * 
 	 */
-	public ExceptionType getExceptionType()
+	public GetExtensionInfoRpcResponseData( ExtensionInfoClient[] extensionInfo )
 	{
-		return m_type;
-	}// end getExceptionType()
-
+		m_extensionInfo = extensionInfo;
+	}
 	
 	/**
-	 * Set the type of exception we are dealing with.
+	 * 
 	 */
-	public void setExceptionType( ExceptionType type)
+	public ExtensionInfoClient[] getExtensionInfo()
 	{
-		m_type = type;
-	}// end setExceptionType()
-	
-}// end GwtTeamingException
+		return m_extensionInfo;
+	}
+}

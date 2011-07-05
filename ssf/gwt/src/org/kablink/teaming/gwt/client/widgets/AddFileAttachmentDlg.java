@@ -37,9 +37,10 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.rpc.shared.GetModifyBinderUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Element;
@@ -77,7 +78,7 @@ public class AddFileAttachmentDlg extends DlgBox
 	private FormPanel m_formPanel = null;
 	private String m_binderId = null;
 	private int m_uniqueId = 1;
-	private AsyncCallback<String> m_rpcCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_rpcCallback = null;
 	
 	/**
 	 * 
@@ -98,7 +99,7 @@ public class AddFileAttachmentDlg extends DlgBox
 		
 		// Create the callback that will be used when we issue an ajax call to get
 		// the "modify binder" url.
-		m_rpcCallback = new AsyncCallback<String>()
+		m_rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -115,8 +116,14 @@ public class AddFileAttachmentDlg extends DlgBox
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( String modifyBinderUrl )
+			public void onSuccess( VibeRpcResponse response )
 			{
+				String modifyBinderUrl;
+				StringRpcResponseData responseData;
+				
+				responseData = (StringRpcResponseData) response.getResponseData();
+				modifyBinderUrl = responseData.getStringValue();
+				
 				// Put the "modify binder" url in the form.
 				// First add &gwtAddFileAttachment=1 so ModifyBinderController.java will process the "modify binder" request.
 				m_formPanel.setAction( modifyBinderUrl + "&gwtAddFileAttachment=1" );
@@ -449,13 +456,12 @@ public class AddFileAttachmentDlg extends DlgBox
 	 */
 	private void getModifyBinderUrl()
 	{
-		GwtRpcServiceAsync rpcService;
-
-		rpcService = GwtTeaming.getRpcService();
+		GetModifyBinderUrlCmd cmd;
 		
 		// Issue an ajax request to get the "modify binder" url.
-		rpcService.getModifyBinderUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
-	}// end getModifyBinderUrl()
+		cmd = new GetModifyBinderUrlCmd( m_binderId );
+		GwtClientHelper.executeCommand( cmd, m_rpcCallback );
+	}
 
 	
 	/**

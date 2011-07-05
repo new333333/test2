@@ -31,62 +31,62 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.rpc.SerializationException;
 
 /**
- * This can be used for all GWT Teaming exceptions.
+ * This class holds all of the information necessary to execute the "get extension files" command.
+ * 
  * @author jwootton
  *
  */
-public class GwtTeamingException extends SerializationException
-	implements IsSerializable
+public class GetExtensionFilesCmd extends VibeRpcCmd
 {
-	/**
-	 * This class defines all the possible types of exceptions that GwtTeamingException knows about.
-	 * @author jwootton
-	 *
-	 */
-	public enum ExceptionType implements IsSerializable
-	{
-		ACCESS_CONTROL_EXCEPTION,
-		EXTENSION_DEFINITION_IN_USE,
-		FAVORITES_LIMIT_EXCEEDED,
-		NO_BINDER_BY_THE_ID_EXCEPTION,
-		NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION,
-		USER_NOT_LOGGED_IN,
-		UNKNOWN;
-	}// end ExceptionType
+	private String m_id;
+	private String m_zoneName;
 	
-
-	private static final long serialVersionUID = -5972316795230937529L;
-	private ExceptionType m_type = ExceptionType.UNKNOWN;
+	/**
+	 * For GWT serialization, must have a zero param contructor
+	 */
+	public GetExtensionFilesCmd()
+	{
+		super();
+		
+		init();
+	}
 	
 	/**
 	 * 
 	 */
-	public GwtTeamingException()
+	public GetExtensionFilesCmd( String id, String zoneName )
 	{
-		m_type = ExceptionType.UNKNOWN;
-	}// end GwtTeamingException()
+		m_id = id;
+		m_zoneName = zoneName;
+		
+		init();
+	}
 	
 	/**
-	 * Return the type of exception we are dealing with.
+	 * 
 	 */
-	public ExceptionType getExceptionType()
+	public String getId()
 	{
-		return m_type;
-	}// end getExceptionType()
-
+		return m_id;
+	}
 	
 	/**
-	 * Set the type of exception we are dealing with.
+	 * 
 	 */
-	public void setExceptionType( ExceptionType type)
+	public String getZoneName()
 	{
-		m_type = type;
-	}// end setExceptionType()
+		return m_zoneName;
+	}
 	
-}// end GwtTeamingException
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_EXTENSION_FILES;
+	}
+}

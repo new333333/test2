@@ -36,14 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
-import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
-import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
-import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -97,17 +92,6 @@ public interface GwtRpcService extends RemoteService
 	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException;
 	
 	
-	
-	// Returns various binder URLs.
-	public String getModifyBinderUrl( HttpRequestInfo ri, String binderId );
-	
-	public String getTutorialPanelState( HttpRequestInfo ri );
-	public ExtensionInfoClient[] getExtensionInfo( HttpRequestInfo ri );
-	public ExtensionInfoClient[] removeExtension( HttpRequestInfo ri, String id ) throws ExtensionDefinitionInUseException;
-	public ExtensionFiles getExtensionFiles( HttpRequestInfo ri, String id, String zoneName );
-	
-	// Returns a permalink to the currently logged in user's workspace.
-	public String getUserWorkspacePermalink( HttpRequestInfo ri );
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
