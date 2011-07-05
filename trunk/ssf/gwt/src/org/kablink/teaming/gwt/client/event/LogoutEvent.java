@@ -35,16 +35,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The LogoutEvent used to logout from Vibe OnPrem.
+ * The LogoutEvent is used to logout from Vibe OnPrem.
  * 
  * @author drfoster@novell.com
  */
-public class LogoutEvent extends GwtEvent<LogoutEvent.Handler> {
+public class LogoutEvent extends VibeEventBase<LogoutEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -62,7 +61,28 @@ public class LogoutEvent extends GwtEvent<LogoutEvent.Handler> {
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onLogout(this);
+    }
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new LogoutEvent());
+	}
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -72,15 +92,18 @@ public class LogoutEvent extends GwtEvent<LogoutEvent.Handler> {
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onLogout(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.LOGOUT;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -92,12 +115,5 @@ public class LogoutEvent extends GwtEvent<LogoutEvent.Handler> {
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new LogoutEvent());
 	}
 }

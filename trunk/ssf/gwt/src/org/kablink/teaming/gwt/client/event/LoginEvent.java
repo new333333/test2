@@ -35,16 +35,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The LoginEvent used to login to Vibe OnPrem.
+ * The LoginEvent is used to login to Vibe OnPrem.
  * 
  * @author drfoster@novell.com
  */
-public class LoginEvent extends GwtEvent<LoginEvent.Handler> {
+public class LoginEvent extends VibeEventBase<LoginEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -62,7 +61,28 @@ public class LoginEvent extends GwtEvent<LoginEvent.Handler> {
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onLogin(this);
+    }
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new LoginEvent());
+	}
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -72,15 +92,18 @@ public class LoginEvent extends GwtEvent<LoginEvent.Handler> {
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onLogin(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.LOGIN;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -92,12 +115,5 @@ public class LoginEvent extends GwtEvent<LoginEvent.Handler> {
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new LoginEvent());
 	}
 }

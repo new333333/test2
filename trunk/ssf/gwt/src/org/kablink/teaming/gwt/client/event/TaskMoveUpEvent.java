@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -45,11 +44,9 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class TaskMoveUpEvent extends GwtEvent<TaskMoveUpEvent.Handler> {
+public class TaskMoveUpEvent extends VibeEventBase<TaskMoveUpEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    private TeamingEvents m_eventEnum = TeamingEvents.TASK_MOVE_UP;
-
 	/**
 	 * Handler interface for this event.
 	 */
@@ -65,14 +62,28 @@ public class TaskMoveUpEvent extends GwtEvent<TaskMoveUpEvent.Handler> {
 	}
 	
 	/**
-	 * Get'er methods.
+	 * Dispatches this event when one is triggered.
 	 * 
-	 * @return
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
 	 */
-	public TeamingEvents getEventEnum() {return m_eventEnum;}
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onTaskMoveUp(this);
+    }
 	
 	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new TaskMoveUpEvent());
+	}
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -82,15 +93,18 @@ public class TaskMoveUpEvent extends GwtEvent<TaskMoveUpEvent.Handler> {
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onTaskMoveUp(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.TASK_MOVE_UP;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -102,12 +116,5 @@ public class TaskMoveUpEvent extends GwtEvent<TaskMoveUpEvent.Handler> {
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new TaskMoveUpEvent());
 	}
 }

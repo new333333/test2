@@ -35,17 +35,16 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ViewCurrentBinderTeamMembersEvent used to view the team members
- * assigned to the current binder.
+ * The ViewCurrentBinderTeamMembersEvent is used to view the team
+ * members assigned to the current binder.
  * 
  * @author drfoster@novell.com
  */
-public class ViewCurrentBinderTeamMembersEvent extends GwtEvent<ViewCurrentBinderTeamMembersEvent.Handler> {
+public class ViewCurrentBinderTeamMembersEvent extends VibeEventBase<ViewCurrentBinderTeamMembersEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -63,7 +62,28 @@ public class ViewCurrentBinderTeamMembersEvent extends GwtEvent<ViewCurrentBinde
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onViewCurrentBinderTeamMembers(this);
+    }
+    
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new ViewCurrentBinderTeamMembersEvent());
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 * 
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -73,15 +93,16 @@ public class ViewCurrentBinderTeamMembersEvent extends GwtEvent<ViewCurrentBinde
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onViewCurrentBinderTeamMembers(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {return TeamingEvents.VIEW_CURRENT_BINDER_TEAM_MEMBERS;}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -93,12 +114,5 @@ public class ViewCurrentBinderTeamMembersEvent extends GwtEvent<ViewCurrentBinde
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new ViewCurrentBinderTeamMembersEvent());
-	}
+	}	
 }

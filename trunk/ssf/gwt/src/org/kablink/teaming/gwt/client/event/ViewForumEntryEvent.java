@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -44,7 +43,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class ViewForumEntryEvent extends GwtEvent<ViewForumEntryEvent.Handler> {
+public class ViewForumEntryEvent extends VibeEventBase<ViewForumEntryEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private String m_viewForumEntryUrl;
@@ -67,14 +66,21 @@ public class ViewForumEntryEvent extends GwtEvent<ViewForumEntryEvent.Handler> {
 	}
 	
 	/**
-	 * Get'er methods.
+	 * Dispatches this event when one is triggered.
 	 * 
-	 * @return
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
 	 */
-	public String getViewForumEntryUrl() {return m_viewForumEntryUrl;}
-
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onViewForumEntry(this);
+	}
+	
 	/**
 	 * Returns the GwtEvent.Type of this event.
+	 * 
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -84,15 +90,28 @@ public class ViewForumEntryEvent extends GwtEvent<ViewForumEntryEvent.Handler> {
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onViewForumEntry(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.VIEW_FORUM_ENTRY;
 	}
-	
+		
+	/**
+	 * Returns the URL to view the forum entry associated with this
+	 * event.
+	 * 
+	 * @return
+	 */
+	public String getViewForumEntryUrl() {
+		return m_viewForumEntryUrl;
+	}
+
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

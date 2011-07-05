@@ -35,16 +35,16 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The EditCurrentBinderBrandingEvent used to EditCurrentBinderBranding to Vibe OnPrem.
+ * The EditCurrentBinderBrandingEvent is used to invoke branding
+ * editing dialog on the current binder.
  * 
  * @author drfoster@novell.com
  */
-public class EditCurrentBinderBrandingEvent extends GwtEvent<EditCurrentBinderBrandingEvent.Handler> {
+public class EditCurrentBinderBrandingEvent extends VibeEventBase<EditCurrentBinderBrandingEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -62,7 +62,28 @@ public class EditCurrentBinderBrandingEvent extends GwtEvent<EditCurrentBinderBr
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onEditCurrentBinderBranding(this);
+    }
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new EditCurrentBinderBrandingEvent());
+	}
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -72,15 +93,18 @@ public class EditCurrentBinderBrandingEvent extends GwtEvent<EditCurrentBinderBr
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onEditCurrentBinderBranding(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.EDIT_CURRENT_BINDER_BRANDING;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -92,12 +116,5 @@ public class EditCurrentBinderBrandingEvent extends GwtEvent<EditCurrentBinderBr
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new EditCurrentBinderBrandingEvent());
 	}
 }

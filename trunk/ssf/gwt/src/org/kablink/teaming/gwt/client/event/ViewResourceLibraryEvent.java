@@ -35,17 +35,16 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ViewResourceLibraryEvent runs brings up the resource library in
- * a popup window.
+ * The ViewResourceLibraryEvent is used to bring up the resource
+ * library in a new window.
  * 
  * @author drfoster@novell.com
  */
-public class ViewResourceLibraryEvent extends GwtEvent<ViewResourceLibraryEvent.Handler> {
+public class ViewResourceLibraryEvent extends VibeEventBase<ViewResourceLibraryEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -63,7 +62,28 @@ public class ViewResourceLibraryEvent extends GwtEvent<ViewResourceLibraryEvent.
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onViewResourceLibrary(this);
+    }
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new ViewResourceLibraryEvent());
+	}
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 * 
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -73,15 +93,18 @@ public class ViewResourceLibraryEvent extends GwtEvent<ViewResourceLibraryEvent.
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onViewResourceLibrary(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.VIEW_RESOURCE_LIBRARY;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -93,12 +116,5 @@ public class ViewResourceLibraryEvent extends GwtEvent<ViewResourceLibraryEvent.
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new ViewResourceLibraryEvent());
 	}
 }

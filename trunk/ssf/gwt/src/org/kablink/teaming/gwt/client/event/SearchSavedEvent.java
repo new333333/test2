@@ -34,16 +34,16 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The SearchSavedEvent tells the UI perform a saved search.
+ * The SearchSavedEvent tells the UI perform a saved search for the
+ * given search name.
  * 
  * @author drfoster@novell.com
  */
-public class SearchSavedEvent extends GwtEvent<SearchSavedEvent.Handler> {
+public class SearchSavedEvent extends VibeEventBase<SearchSavedEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private String m_savedSearchName;
@@ -73,7 +73,21 @@ public class SearchSavedEvent extends GwtEvent<SearchSavedEvent.Handler> {
 	public String getSavedSearchName() {return m_savedSearchName;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onSearchSaved(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -83,15 +97,18 @@ public class SearchSavedEvent extends GwtEvent<SearchSavedEvent.Handler> {
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onSearchSaved(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.SEARCH_SAVED;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

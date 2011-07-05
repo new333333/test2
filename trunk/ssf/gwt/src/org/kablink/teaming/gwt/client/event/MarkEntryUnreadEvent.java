@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamUIEntry;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The MarkEntryUnreadEvent marks an entry unread.
+ * The MarkEntryUnreadEvent is used to mark an entry unread.
  * 
  * @author drfoster@novell.com
  */
-public class MarkEntryUnreadEvent extends GwtEvent<MarkEntryUnreadEvent.Handler> {
+public class MarkEntryUnreadEvent extends VibeEventBase<MarkEntryUnreadEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private ActivityStreamUIEntry m_uiEntry;
@@ -68,6 +67,7 @@ public class MarkEntryUnreadEvent extends GwtEvent<MarkEntryUnreadEvent.Handler>
 	}
 	
 	public MarkEntryUnreadEvent() {
+		// Always use the initial form of the constructor.
 		this(null);
 	}
 	
@@ -80,7 +80,21 @@ public class MarkEntryUnreadEvent extends GwtEvent<MarkEntryUnreadEvent.Handler>
 	public void                  setUIEntry(ActivityStreamUIEntry uiEntry) {m_uiEntry = uiEntry;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onMarkEntryUnread(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -90,15 +104,18 @@ public class MarkEntryUnreadEvent extends GwtEvent<MarkEntryUnreadEvent.Handler>
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onMarkEntryUnread(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.MARK_ENTRY_UNREAD;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

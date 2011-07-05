@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -44,10 +43,9 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class TaskQuickFilterEvent extends GwtEvent<TaskQuickFilterEvent.Handler> {
+public class TaskQuickFilterEvent extends VibeEventBase<TaskQuickFilterEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
     
-    private TeamingEvents m_eventEnum = TeamingEvents.TASK_QUICK_FILTER;
 	private String m_quickFilter;
 
 	/**
@@ -72,11 +70,24 @@ public class TaskQuickFilterEvent extends GwtEvent<TaskQuickFilterEvent.Handler>
 	 * 
 	 * @return
 	 */
-	public TeamingEvents getEventEnum()   {return m_eventEnum;  }
-	public String        getQuickFilter() {return m_quickFilter;}
+	public String getQuickFilter() {return m_quickFilter;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onTaskQuickFilter(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -86,15 +97,18 @@ public class TaskQuickFilterEvent extends GwtEvent<TaskQuickFilterEvent.Handler>
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onTaskQuickFilter(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.TASK_QUICK_FILTER;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

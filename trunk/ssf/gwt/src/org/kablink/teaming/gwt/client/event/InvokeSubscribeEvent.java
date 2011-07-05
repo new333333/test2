@@ -36,16 +36,16 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamUIEntry;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeSubscribeEvent invoke the 'subscribe to entry' UI.
+ * The InvokeSubscribeEvent is used to invoke the 'subscribe to entry'
+ * UI.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeSubscribeEvent extends GwtEvent<InvokeSubscribeEvent.Handler> {
+public class InvokeSubscribeEvent extends VibeEventBase<InvokeSubscribeEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private ActivityStreamUIEntry m_uiEntry;
@@ -68,6 +68,7 @@ public class InvokeSubscribeEvent extends GwtEvent<InvokeSubscribeEvent.Handler>
 	}
 	
 	public InvokeSubscribeEvent() {
+		// Always use the initial form of the constructor.
 		this(null);
 	}
 	
@@ -80,7 +81,21 @@ public class InvokeSubscribeEvent extends GwtEvent<InvokeSubscribeEvent.Handler>
 	public void                  setUIEntry(ActivityStreamUIEntry uiEntry) {m_uiEntry = uiEntry;}
 
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onInvokeSubscribe(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -90,15 +105,18 @@ public class InvokeSubscribeEvent extends GwtEvent<InvokeSubscribeEvent.Handler>
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onInvokeSubscribe(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.INVOKE_SUBSCRIBE;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

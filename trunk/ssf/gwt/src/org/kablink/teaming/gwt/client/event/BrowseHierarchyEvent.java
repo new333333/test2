@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The BrowseHierarchyEvent used to run the bread crumb browser.
+ * The BrowseHierarchyEvent is used to run the bread crumb browser.
  * 
  * @author drfoster@novell.com
  */
-public class BrowseHierarchyEvent extends GwtEvent<BrowseHierarchyEvent.Handler> {
+public class BrowseHierarchyEvent extends VibeEventBase<BrowseHierarchyEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
 	private OnBrowseHierarchyInfo m_obhi;
@@ -81,7 +80,21 @@ public class BrowseHierarchyEvent extends GwtEvent<BrowseHierarchyEvent.Handler>
 	public void                  setOnBrowseHierarchyInfo(OnBrowseHierarchyInfo obhi) {m_obhi = obhi;}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onBrowseHierarchy(this);
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -91,15 +104,18 @@ public class BrowseHierarchyEvent extends GwtEvent<BrowseHierarchyEvent.Handler>
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onBrowseHierarchy(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.BROWSE_HIERARCHY;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

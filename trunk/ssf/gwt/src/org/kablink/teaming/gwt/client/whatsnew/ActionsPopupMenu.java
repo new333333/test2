@@ -44,10 +44,10 @@ import org.kablink.teaming.gwt.client.event.InvokeTagEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
@@ -119,7 +119,7 @@ public class ActionsPopupMenu extends PopupMenu
 	 * 
 	 * @return
 	 */
-	public PopupMenuItem addMenuItem( TeamingEvents eventEnum, GwtEvent<?> event, Image img, String text )
+	public PopupMenuItem addMenuItem( TeamingEvents eventEnum, VibeEventBase<?> event, Image img, String text )
 	{
 		EventValidation eventValidation;
 		PopupMenuItem menuItem;

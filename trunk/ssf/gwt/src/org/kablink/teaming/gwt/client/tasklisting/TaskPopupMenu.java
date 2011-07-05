@@ -43,13 +43,13 @@ import org.kablink.teaming.gwt.client.event.TaskSetPercentDoneEvent;
 import org.kablink.teaming.gwt.client.event.TaskSetPriorityEvent;
 import org.kablink.teaming.gwt.client.event.TaskSetStatusEvent;
 import org.kablink.teaming.gwt.client.event.TaskViewEvent;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -127,7 +127,7 @@ public class TaskPopupMenu extends PopupMenu
 			}
 			else {
 				String eventOption = po.getMenu();
-				GwtEvent<?> taskEvent = EventHelper.createSimpleEvent(m_taskEventEnum);
+				VibeEventBase<?> taskEvent = EventHelper.createSimpleEvent(m_taskEventEnum);
 				switch (m_taskEventEnum) {
 				case TASK_NEW_TASK:          ((TaskNewTaskEvent)        taskEvent).setEventOption(eventOption); break;
 				case TASK_SET_PERCENT_DONE:  ((TaskSetPercentDoneEvent) taskEvent).setEventOption(eventOption); break;

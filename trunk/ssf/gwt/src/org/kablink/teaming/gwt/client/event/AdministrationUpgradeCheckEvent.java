@@ -36,17 +36,16 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The AdministrationUpgradeCheckEvent used to check whether
- * administration mode need to display the upgrade tasks warning.
+ * The AdministrationUpgradeCheckEvent is used to check whether
+ * administration mode needs to display the upgrade tasks warning.
  * 
  * @author drfoster@novell.com
  */
-public class AdministrationUpgradeCheckEvent extends GwtEvent<AdministrationUpgradeCheckEvent.Handler> {
+public class AdministrationUpgradeCheckEvent extends VibeEventBase<AdministrationUpgradeCheckEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -64,7 +63,28 @@ public class AdministrationUpgradeCheckEvent extends GwtEvent<AdministrationUpgr
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onAdministrationUpgradeCheck(this);
+	}
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new AdministrationUpgradeCheckEvent());
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -74,15 +94,18 @@ public class AdministrationUpgradeCheckEvent extends GwtEvent<AdministrationUpgr
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onAdministrationUpgradeCheck(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.ADMINISTRATION_UPGRADE_CHECK;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -94,12 +117,5 @@ public class AdministrationUpgradeCheckEvent extends GwtEvent<AdministrationUpgr
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new AdministrationUpgradeCheckEvent());
 	}
 }

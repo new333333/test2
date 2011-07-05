@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The SidebarHideEvent used to hide the sidebar.
+ * The SidebarHideEvent is used to hide the sidebar.
  * 
  * @author drfoster@novell.com
  */
-public class SidebarHideEvent extends GwtEvent<SidebarHideEvent.Handler> {
+public class SidebarHideEvent extends VibeEventBase<SidebarHideEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
 	private boolean m_resizeContentImmediately;
@@ -73,7 +72,35 @@ public class SidebarHideEvent extends GwtEvent<SidebarHideEvent.Handler> {
 	}
 	
 	/**
+	 * Get'er method.
+	 * 
+	 * @return
+	 */
+	public boolean getResizeContentImmediately() {return m_resizeContentImmediately;}
+	
+	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onSidebarHide(this);
+	}
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new SidebarHideEvent());
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -83,24 +110,18 @@ public class SidebarHideEvent extends GwtEvent<SidebarHideEvent.Handler> {
 	}
 
 	/**
-	 * Get'er method.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
+	 * 
+	 * Implements VibeBaseEvent.getEventEnum()
 	 * 
 	 * @return
 	 */
-	public boolean getResizeContentImmediately() {
-		return m_resizeContentImmediately;
-	}
-	
-	/**
-	 * Dispatches this event when one is triggered.
-	 * 
-	 * @param handler
-	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onSidebarHide(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.SIDEBAR_HIDE;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -112,12 +133,5 @@ public class SidebarHideEvent extends GwtEvent<SidebarHideEvent.Handler> {
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new SidebarHideEvent());
 	}
 }

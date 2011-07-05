@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.menu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
@@ -44,7 +45,6 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -73,7 +73,7 @@ public class PopupMenu extends TeamingPopupPanel
 	public class PopupMenuItem extends Composite
 		implements MouseUpHandler, MouseOverHandler, MouseOutHandler
 	{
-		private GwtEvent<?> m_event;
+		private VibeEventBase<?> m_event;
 		private FlowPanel m_mainPanel;
 		private Image m_checkedImg;				// Image used to put a checkmark next to the menu item.
 		private Image m_checkedSpacerImg;		// Image used as a spacer if this menu item does not used the checkmark image
@@ -82,7 +82,7 @@ public class PopupMenu extends TeamingPopupPanel
 		
 		/**
 		 */
-		public PopupMenuItem( GwtEvent<?> event, Image img, String text )
+		public PopupMenuItem( VibeEventBase<?> event, Image img, String text )
 		{
 			InlineLabel label;
 			ImageResource imageResource;
@@ -174,7 +174,7 @@ public class PopupMenu extends TeamingPopupPanel
 		/**
 		 * 
 		 */
-		public GwtEvent<?> getEvent()
+		public VibeEventBase<?> getEvent()
 		{
 			return m_event;
 		}
@@ -316,7 +316,7 @@ public class PopupMenu extends TeamingPopupPanel
 	 * @param img
 	 * @param text
 	 */
-	public PopupMenuItem addMenuItem( GwtEvent<?> event, Image img, String text )
+	public PopupMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
 	{
 		PopupMenuItem menuItem;
 		int row;

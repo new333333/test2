@@ -33,17 +33,16 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The TaskViewEvent is used to run the entry viewer on the selected
- * task.
+ * The TaskViewEvent is used to view a task listing in one of several
+ * supported modes.
  * 
  * @author drfoster@novell.com
  */
-public class TaskViewEvent extends GwtEvent<TaskViewEvent.Handler> {
+public class TaskViewEvent extends VibeEventBase<TaskViewEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     private String m_eventOption;
@@ -64,6 +63,7 @@ public class TaskViewEvent extends GwtEvent<TaskViewEvent.Handler> {
 	}
 	
 	public TaskViewEvent() {
+		// Always use the initial form of the constructor.
 		this(null);
 	}
 
@@ -72,12 +72,25 @@ public class TaskViewEvent extends GwtEvent<TaskViewEvent.Handler> {
 	 * 
 	 * @return
 	 */
-	public TeamingEvents getEventEnum()                     {return TeamingEvents.TASK_VIEW;}
-	public String        getEventOption()                   {return m_eventOption;          }
-	public void          setEventOption(String eventOption) {m_eventOption = eventOption;   }
+	public String getEventOption()                   {return m_eventOption;       }
+	public void   setEventOption(String eventOption) {m_eventOption = eventOption;}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.getAssociatedType()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onTaskView(this);
+    }
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -87,15 +100,18 @@ public class TaskViewEvent extends GwtEvent<TaskViewEvent.Handler> {
     }
     
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onTaskView(this);
-    }
-    
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.TASK_VIEW;
+	}
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

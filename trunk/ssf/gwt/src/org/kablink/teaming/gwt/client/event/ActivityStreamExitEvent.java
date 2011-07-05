@@ -36,16 +36,15 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ActivityStreamExitEvent used to exit activity stream mode.
+ * The ActivityStreamExitEvent is used to exit activity stream mode.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamExitEvent extends GwtEvent<ActivityStreamExitEvent.Handler> {
+public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -63,7 +62,28 @@ public class ActivityStreamExitEvent extends GwtEvent<ActivityStreamExitEvent.Ha
 	}
 	
 	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onActivityStreamExit(this);
+	}
+
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new ActivityStreamExitEvent());
+	}
+	
+	/**
 	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
@@ -73,15 +93,18 @@ public class ActivityStreamExitEvent extends GwtEvent<ActivityStreamExitEvent.Ha
 	}
 
 	/**
-	 * Dispatches this event when one is triggered.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * @param handler
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
-		handler.onActivityStreamExit(this);
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.ACTIVITY_STREAM_EXIT;
 	}
-	
+		
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -93,12 +116,5 @@ public class ActivityStreamExitEvent extends GwtEvent<ActivityStreamExitEvent.Ha
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
-	}
-
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new ActivityStreamExitEvent());
 	}
 }
