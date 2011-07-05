@@ -108,14 +108,19 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDocBaseUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionFilesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetModifyBinderUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
@@ -318,6 +323,28 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_EXTENSION_FILES:
+		{
+			GetExtensionFilesCmd gefCmd;
+			ExtensionFiles result;
+			
+			gefCmd = (GetExtensionFilesCmd) cmd;
+			result = getExtensionFiles( ri, gefCmd.getId(), gefCmd.getZoneName() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_EXTENSION_INFO:
+		{
+			ExtensionInfoClient[] result;
+			GetExtensionInfoRpcResponseData responseData;
+			
+			result = getExtensionInfo( ri );
+			responseData = new GetExtensionInfoRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_FILE_ATTACHMENTS:
 		{
 			GetFileAttachmentsRpcResponseData responseData;
@@ -348,6 +375,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			loginInfo = getLoginInfo( ri );
 			response = new VibeRpcResponse( loginInfo );
+			return response;
+		}
+		
+		case GET_MODIFY_BINDER_URL:
+		{
+			GetModifyBinderUrlCmd gmbuCmd;
+			String url;
+			StringRpcResponseData responseData;
+			
+			gmbuCmd = (GetModifyBinderUrlCmd) cmd;
+			url = getModifyBinderUrl( ri, gmbuCmd.getBinderId() );
+			responseData = new StringRpcResponseData( url );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -439,6 +479,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			asi = ((PersistActivityStreamSelectionCmd) cmd).getActivityStreamInfo();
 			result = persistActivityStreamSelection( ri, asi );
 			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case REMOVE_EXTENSION:
+		{
+			RemoveExtensionCmd reCmd;
+			ExtensionInfoClient[] result;
+			RemoveExtensionRpcResponseData responseData;
+			
+			reCmd = (RemoveExtensionCmd) cmd;
+			try
+			{
+				result = removeExtension( ri, reCmd.getId() );
+			}
+			catch (Exception ex)
+			{
+				GwtTeamingException gtEx;
+				
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
+				throw gtEx;				
+			}
+
+			responseData = new RemoveExtensionRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1686,7 +1750,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public String getModifyBinderUrl( HttpRequestInfo ri, String binderId )
+	private String getModifyBinderUrl( HttpRequestInfo ri, String binderId )
 	{
 		AdaptedPortletURL adapterUrl;
 		Binder binder;
@@ -2195,7 +2259,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
      */
-    public String getTutorialPanelState( HttpRequestInfo ri )
+    private String getTutorialPanelState( HttpRequestInfo ri )
     {
     	UserProperties	userProperties;
     	ProfileModule	profileModule;
@@ -2338,7 +2402,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-    public ExtensionInfoClient[] getExtensionInfo( HttpRequestInfo ri )
+    private ExtensionInfoClient[] getExtensionInfo( HttpRequestInfo ri )
     {
     	List<ExtensionInfo> extList =  new ArrayList<ExtensionInfo>(); 
     	AdminModule adminModule;
@@ -2392,7 +2456,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws ExtensionDefinitionInUseException
      */
-    public ExtensionInfoClient[] removeExtension(HttpRequestInfo ri, String id) throws ExtensionDefinitionInUseException
+    private ExtensionInfoClient[] removeExtension(HttpRequestInfo ri, String id) throws ExtensionDefinitionInUseException
     {
     	AdminModule adminModule;
     	adminModule = getAdminModule();
@@ -2433,19 +2497,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 
-	/**
-	 * Returns a permalink to the currently logged in user's workspace.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	public String getUserWorkspacePermalink( HttpRequestInfo ri )
-	{
-		Binder userWS = getBinderModule().getBinder( GwtServerHelper.getCurrentUser().getWorkspaceId() );
-		return PermaLinkUtil.getPermalink( getRequest( ri ), userWS );
-	}// end getUserWorkspacePermalink()
-	
 	/**
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a BucketInfo

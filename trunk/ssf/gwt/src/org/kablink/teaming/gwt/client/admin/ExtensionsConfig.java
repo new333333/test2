@@ -35,10 +35,14 @@ package org.kablink.teaming.gwt.client.admin;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -189,11 +193,10 @@ public class ExtensionsConfig  extends Composite {
 	
 	
 	private void refreshTable() {
-		
-		GwtRpcServiceAsync	gwtRpcService;
+		GetExtensionInfoCmd cmd;
 		
 		// create an async callback to handle the result of the request to get the state:
-		AsyncCallback<ExtensionInfoClient[]> callback = new AsyncCallback<ExtensionInfoClient[]>()
+		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -206,7 +209,13 @@ public class ExtensionsConfig  extends Composite {
 				extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsRPCError() );
 			}
 	
-			public void onSuccess(ExtensionInfoClient[] info) {
+			public void onSuccess( VibeRpcResponse response ) {
+				ExtensionInfoClient[] info;
+				GetExtensionInfoRpcResponseData responseData;
+				
+				responseData = (GetExtensionInfoRpcResponseData) response.getResponseData();
+				info = responseData.getExtensionInfo();
+				
 				// display the tutorial panel state in the label:
 				extensionPanelStateText.setText( "" );
 				updateTable(info);
@@ -214,8 +223,8 @@ public class ExtensionsConfig  extends Composite {
 		};
 	
 		extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-		gwtRpcService.getExtensionInfo(HttpRequestInfo.createHttpRequestInfo(), callback);
+		cmd = new GetExtensionInfoCmd();
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 	private void updateTable(ExtensionInfoClient[] extensions){
@@ -271,12 +280,11 @@ public class ExtensionsConfig  extends Composite {
 	}
 	
 	private void removeExtension(final int row) {
-			
+			RemoveExtensionCmd cmd;
 			ExtensionInfoClient extInfo = extList.get(row-1);
-			GwtRpcServiceAsync	gwtRpcService;
 			
 			// create an async callback to handle the result of the request to get the state:
-			AsyncCallback<ExtensionInfoClient[]> callback = new AsyncCallback<ExtensionInfoClient[]>()
+			AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -291,13 +299,22 @@ public class ExtensionsConfig  extends Composite {
 					} catch (ExtensionDefinitionInUseException exEx) {
 						Window.alert( GwtTeaming.getMessages().extensionsRemoveFailed() );
 						//extensionPanelStateText.setText( exEx.getMessage() );
+					} catch (GwtTeamingException gtEx) {
+						if ( gtEx.getExceptionType() == ExceptionType.EXTENSION_DEFINITION_IN_USE )
+							Window.alert( GwtTeaming.getMessages().extensionsRemoveFailed() );
 					} catch (Throwable e) {
 						// display error text if we can't get the tutorial panel state:
 						extensionPanelStateText.setText( msg );
 					}
 				}
 		
-				public void onSuccess(ExtensionInfoClient[] info) {
+				public void onSuccess( VibeRpcResponse response ) {
+					ExtensionInfoClient[] info;
+					RemoveExtensionRpcResponseData responseData;
+					
+					responseData = (RemoveExtensionRpcResponseData) response.getResponseData();
+					info = responseData.getExtensionInfo();
+					
 					// display the tutorial panel state in the label:
 					extensionPanelStateText.setText( "" );
 					extFlexTable.removeRow(row);
@@ -307,8 +324,8 @@ public class ExtensionsConfig  extends Composite {
 			};
 		
 			extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
-			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-			gwtRpcService.removeExtension(HttpRequestInfo.createHttpRequestInfo(), extInfo.getId(), callback);
+			cmd = new RemoveExtensionCmd( extInfo.getId() );
+			GwtClientHelper.executeCommand( cmd, callback );
 		}
 	
 		/**

@@ -107,6 +107,7 @@ import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
+import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -2562,6 +2563,10 @@ public class GwtServerHelper {
 				else if ( ex instanceof FavoritesLimitExceededException )
 				{
 					exType = ExceptionType.FAVORITES_LIMIT_EXCEEDED;
+				}
+				else if ( ex instanceof ExtensionDefinitionInUseException )
+				{
+					exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
 				}
 				else                                                          exType = ExceptionType.UNKNOWN;
 				

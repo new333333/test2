@@ -36,12 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
-import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
-import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -90,18 +86,6 @@ public interface GwtRpcServiceAsync
 	public void executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback );
 	
 	
-	
-	// Returns various binder URLs.
-	public void getModifyBinderUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
-	
-    public void getTutorialPanelState( HttpRequestInfo ri, AsyncCallback<String> callback );
-
-	public void getExtensionInfo( HttpRequestInfo ri, AsyncCallback<ExtensionInfoClient[]> callback );
-	public void removeExtension(HttpRequestInfo ri, String id, AsyncCallback<ExtensionInfoClient[]> callback);
-	public void getExtensionFiles(HttpRequestInfo ri, String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
-	
-	// Returns a permalink to the currently logged in user's workspace.
-	public void getUserWorkspacePermalink( HttpRequestInfo ri, AsyncCallback<String> callback );
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.

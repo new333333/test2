@@ -31,62 +31,52 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.rpc.SerializationException;
 
 /**
- * This can be used for all GWT Teaming exceptions.
+ * This class holds all of the information necessary to execute the "remove extension" command.
+ * 
  * @author jwootton
  *
  */
-public class GwtTeamingException extends SerializationException
-	implements IsSerializable
+public class RemoveExtensionCmd extends VibeRpcCmd
 {
-	/**
-	 * This class defines all the possible types of exceptions that GwtTeamingException knows about.
-	 * @author jwootton
-	 *
-	 */
-	public enum ExceptionType implements IsSerializable
-	{
-		ACCESS_CONTROL_EXCEPTION,
-		EXTENSION_DEFINITION_IN_USE,
-		FAVORITES_LIMIT_EXCEEDED,
-		NO_BINDER_BY_THE_ID_EXCEPTION,
-		NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION,
-		USER_NOT_LOGGED_IN,
-		UNKNOWN;
-	}// end ExceptionType
+	private String m_id;
 	
-
-	private static final long serialVersionUID = -5972316795230937529L;
-	private ExceptionType m_type = ExceptionType.UNKNOWN;
+	/**
+	 * For GWT serialization, must have a zero param contructor
+	 */
+	public RemoveExtensionCmd()
+	{
+		super();
+		
+		init();
+	}
 	
 	/**
 	 * 
 	 */
-	public GwtTeamingException()
+	public RemoveExtensionCmd( String id )
 	{
-		m_type = ExceptionType.UNKNOWN;
-	}// end GwtTeamingException()
+		m_id = id;
+		
+		init();
+	}
 	
 	/**
-	 * Return the type of exception we are dealing with.
+	 * 
 	 */
-	public ExceptionType getExceptionType()
+	public String getId()
 	{
-		return m_type;
-	}// end getExceptionType()
-
+		return m_id;
+	}
 	
 	/**
-	 * Set the type of exception we are dealing with.
+	 * 
 	 */
-	public void setExceptionType( ExceptionType type)
+	private void init()
 	{
-		m_type = type;
-	}// end setExceptionType()
-	
-}// end GwtTeamingException
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.REMOVE_EXTENSION;
+	}
+}

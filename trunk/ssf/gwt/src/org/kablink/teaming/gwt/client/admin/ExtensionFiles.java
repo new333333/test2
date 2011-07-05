@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.admin;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -41,7 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author nbjensen
  *
  */
-public class ExtensionFiles implements IsSerializable{
+public class ExtensionFiles implements IsSerializable, VibeRpcResponseData {
 
 	private int countTotal = 0;	// The total number of items found by the search.
 	private ArrayList<String> results = null;
