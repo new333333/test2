@@ -118,42 +118,36 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 	}
 	
 	protected void doSearch(RenderResponse response, String qry, int offset, int maxResults) throws IOException {
-		if(qry.isEmpty()) {
-			response.getWriter().write("<html><head></head><body>Specify query</body></html>");
-			return;
-		}
-		else {
-			long totalStartTime = System.nanoTime();;
-			
-			String query = "<QUERY><AND><AND><FIELD exactphrase=\"false\"><TERMS>" + qry + "</TERMS></FIELD></AND></AND></QUERY>";
-			
-			long startTime = System.nanoTime();
-			BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
-			Document queryDoc = getDocument(query);
-			Map entries = bm.executeSearchQuery(queryDoc, offset, maxResults);
-			double duration = elapsedTimeInMs(startTime);
+		long totalStartTime = System.nanoTime();;
+		
+		String query = "<QUERY><AND><AND><FIELD exactphrase=\"false\"><TERMS>" + qry + "</TERMS></FIELD></AND></AND></QUERY>";
+		
+		long startTime = System.nanoTime();
+		BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
+		Document queryDoc = getDocument(query);
+		Map entries = bm.executeSearchQuery(queryDoc, offset, maxResults);
+		double duration = elapsedTimeInMs(startTime);
 
-			Integer total = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		Integer total = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
 
-			StringBuilder sb = new StringBuilder();
-			sb.append("<html><head></head><body>").
-			append("Search query = [" + qry + "]<br>").
-			append("Total count = " + total + "<p>").
-			append("BinderModule.executeSearchQuery(Document,int,int) took ").append(duration).append(" milliseconds to execute<p>");
-			List entrylist = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
-			
-			Iterator entryIterator = entrylist.listIterator();
-			int i = 1;
-			while (entryIterator.hasNext()) {
-				Map result = (Map) entryIterator.next();
-				String docType = (String) result.get(org.kablink.util.search.Constants.DOC_TYPE_FIELD);
-				String docId = (String) result.get(org.kablink.util.search.Constants.DOCID_FIELD);
-				sb.append("(").append(i++).append(") docType=").append(docType).append(" docId=").append(docId).append("<br>");
-			}
-			sb.append("<p>Total time is ").append(elapsedTimeInMs(totalStartTime)).append(" ms").
-			append("</body></html>");
-			response.getWriter().write(sb.toString());
+		StringBuilder sb = new StringBuilder();
+		sb.append("<html><head></head><body>").
+		append("Search query = [" + qry + "]<br>").
+		append("Total count = " + total + "<p>").
+		append("BinderModule.executeSearchQuery(Document,int,int) took ").append(duration).append(" milliseconds to execute<p>");
+		List entrylist = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+		
+		Iterator entryIterator = entrylist.listIterator();
+		int i = 1;
+		while (entryIterator.hasNext()) {
+			Map result = (Map) entryIterator.next();
+			String docType = (String) result.get(org.kablink.util.search.Constants.DOC_TYPE_FIELD);
+			String docId = (String) result.get(org.kablink.util.search.Constants.DOCID_FIELD);
+			sb.append("(").append(i++).append(") docType=").append(docType).append(" docId=").append(docId).append("<br>");
 		}
+		sb.append("<p>Total time is ").append(elapsedTimeInMs(totalStartTime)).append(" ms").
+		append("</body></html>");
+		response.getWriter().write(sb.toString());
 	}
 	
 	protected Document getDocument(String xml) {
