@@ -84,7 +84,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MastHead extends Composite
 	implements ClickHandler, MouseOutHandler, MouseOverHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		ContextChangedEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler

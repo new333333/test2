@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.admin.ExtensionsConfig;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.GwtMainPage.GwtMainPageClient;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor.LandingPageEditorClient;
@@ -48,11 +49,12 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ * 
+ * @author jwootton@novell.com
  */
 public class GwtTeaming implements EntryPoint
 {
@@ -62,7 +64,7 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		=                       GWT.create( GwtTeamingMainMenuImageBundle.class      );
 	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
 	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
-	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class );
+	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class                     );
 	
 	private static GwtMainPage	m_mainPage = null;	
 	
@@ -83,9 +85,10 @@ public class GwtTeaming implements EntryPoint
 	 * 
 	 * @return
 	 */
-	public static GwtTeamingWorkspaceTreeImageBundle getWorkspaceTreeImageBundle() {
+	public static GwtTeamingWorkspaceTreeImageBundle getWorkspaceTreeImageBundle()
+	{
 		return m_wsTreeImageBundle;
-	}
+	}// end getWorkspaceTreeImageBundle()
 	
 	
 	/**
@@ -93,9 +96,10 @@ public class GwtTeaming implements EntryPoint
 	 * 
 	 * @return
 	 */
-	public static GwtTeamingMainMenuImageBundle getMainMenuImageBundle() {
+	public static GwtTeamingMainMenuImageBundle getMainMenuImageBundle()
+	{
 		return m_mainMenuImageBundle;
-	}
+	}// end getMainMenuImageBundle()
 	
 	
 	/**
@@ -103,9 +107,10 @@ public class GwtTeaming implements EntryPoint
 	 * 
 	 * @return
 	 */
-	public static GwtTeamingTaskListingImageBundle getTaskListingImageBundle() {
+	public static GwtTeamingTaskListingImageBundle getTaskListingImageBundle()
+	{
 		return m_taskListingImageBundle;
-	}
+	}// end getTaskListingImageBundle()
 	
 	
 	/**
@@ -116,7 +121,7 @@ public class GwtTeaming implements EntryPoint
 	public static GwtMainPage getMainPage()
 	{
 		return m_mainPage;
-	}
+	}// end getMainPage()
 	
 	
 	/**
@@ -381,22 +386,25 @@ public class GwtTeaming implements EntryPoint
 		window.top.location.href = url;
 	}-*/;
 	
+
 	/**
-	 * Get the Event Bus for this Application
+	 * Returns the event bus for Vibe OnPrem.
 	 * 
 	 * @return
 	 */
-	public static SimpleEventBus getEventBus() {
+	public static SimpleEventBus getEventBus()
+	{
 		return m_eventBus;
-	}
+	}// end getEventBus()
+
 	
 	/**
-	 * Fire a global event on the event bus
+	 * Fire a Vibe OnPrem event on the event bus.
 	 * 
 	 * @param event
 	 */
-	public static void fireEvent(Event<?> event) {
-		getEventBus().fireEvent(event);
-	}
-	
+	public static void fireEvent( VibeEventBase<?> event )
+	{
+		m_eventBus.fireEvent( event );
+	}// end fireEvent()	
 }// end GwtTeaming

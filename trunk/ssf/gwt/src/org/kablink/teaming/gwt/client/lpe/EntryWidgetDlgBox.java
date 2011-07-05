@@ -76,7 +76,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class EntryWidgetDlgBox extends DlgBox
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private CheckBox m_showTitleCkBox = null;

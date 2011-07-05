@@ -86,7 +86,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class EnhancedViewWidgetDlgBox extends DlgBox
 	implements KeyPressHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private ListBox m_evListBox = null;

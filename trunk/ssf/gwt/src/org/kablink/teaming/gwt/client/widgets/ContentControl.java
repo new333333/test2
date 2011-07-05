@@ -63,7 +63,7 @@ import com.google.gwt.user.client.ui.NamedFrame;
  */
 public class ContentControl extends Composite
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
 		ContextChangedEvent.Handler,
 		SidebarHideEvent.Handler,

@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
@@ -56,7 +57,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.web.bindery.event.shared.Event;
 
 
 /**
@@ -72,6 +72,8 @@ public class GwtClientHelper {
 	// Marker string used to recognize the format of a URL.
 	private final static String PERMALINK_MARKER = "view_permalink";
 
+	// Enumeration value used to interact with scroll bars on
+	// something.
 	public enum ScrollType {
 		BOTH,
 		HORIZONTAL,
@@ -79,9 +81,10 @@ public class GwtClientHelper {
 	}
 
 	/*
-	 * Inhibits this class from being instantiated. 
+	 * Constructor method. 
 	 */
 	private GwtClientHelper() {
+		// Inhibits this class from being instantiated.
 	}
 	
 	/**
@@ -141,11 +144,9 @@ public class GwtClientHelper {
 	 * Execute the given command via GWT's rpc mechanism
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public static void executeCommand( VibeRpcCmd cmd, AsyncCallback callback )
-	{
-		GwtTeaming.getRpcService().executeCommand( HttpRequestInfo.createHttpRequestInfo(), cmd, callback );
-	}
-	
+	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback callback) {
+		GwtTeaming.getRpcService().executeCommand(HttpRequestInfo.createHttpRequestInfo(), cmd, callback);
+	}	
 	
 	/**
 	 * Returns the RequestInfo object from whatever component we're
@@ -160,10 +161,9 @@ public class GwtClientHelper {
 		if      (null != GwtMainPage.m_requestInfo)         reply = GwtMainPage.m_requestInfo;
 		else if (null != GwtProfilePage.profileRequestInfo) reply = GwtProfilePage.profileRequestInfo;
 		else if (null != TaskListing.m_requestInfo)         reply = TaskListing.m_requestInfo;
-		else if ( LandingPageEditor.m_requestInfo != null )
-			reply = LandingPageEditor.m_requestInfo;
-		else
-			reply = null;
+		else if (LandingPageEditor.m_requestInfo != null)
+		     reply = LandingPageEditor.m_requestInfo;
+		else reply = null;
 
 		return reply;
 	}
@@ -295,23 +295,19 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Open a window with the url that points to the appropriate help documentation.
+	 * Open a window with the url that points to the appropriate help
+	 * documentation.
 	 */
-	public static void invokeHelp( HelpData helpData )
-	{
-		if ( helpData != null )
-		{
-			String url;
-			
-			// Get the url that points to the appropriate help documentation.
-			url = helpData.getUrl();
-			if ( url != null && url.length() > 0 )
-			{
-				Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
+	public static void invokeHelp(HelpData helpData) {
+		if (null != helpData) {
+			// Get the URL that points to the appropriate help
+			// documentation.
+			String url = helpData.getUrl();
+			if (hasString(url)) {
+				Window.open(url, "teaming_help_window", "resizeable,scrollbars");
 			}
 		}
-	}
-	
+	}	
 	
 	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.
@@ -388,16 +384,23 @@ public class GwtClientHelper {
 	public static native void jsEvalString(String url, String jsString) /*-{
 		$wnd.top.jsEvalStringImpl(url, jsString);
 	}-*/;
-
 	
+	/*
+	 * ?
+	 */
+	private static native void jsFixFirstCol(Element eTD) /*-{
+		eTD.colSpan = 2;
+		eTD.width = "100%";
+	}-*/;
+
 	/**
 	 * Search for <script type="text/javascript"> elements found in the given html element
 	 * and execute the javascript.
 	 * 
 	 * @param htmlElement
 	 */
-	public static native void jsExecuteJavaScript( Element htmlElement ) /*-{
-		$wnd.parent.ss_executeJavascript( htmlElement );
+	public static native void jsExecuteJavaScript(Element htmlElement) /*-{
+		$wnd.parent.ss_executeJavascript(htmlElement);
 	}-*/;
 
 	/**
@@ -493,7 +496,7 @@ public class GwtClientHelper {
 	 * @return
 	 */
 	public static native boolean jsIsIE() /*-{
-		return( navigator.userAgent.toLowerCase().indexOf("msie") > -1 );
+		return(navigator.userAgent.toLowerCase().indexOf("msie") > -1);
 	}-*/;
 	
 	/**
@@ -524,9 +527,8 @@ public class GwtClientHelper {
 	 * 
 	 * @param url
 	 */
-	public static void loadUrlInContentFrame(String url)
-	{
-		GwtMainPage.m_contentCtrl.setUrl( url );
+	public static void loadUrlInContentFrame(String url) {
+		GwtMainPage.m_contentCtrl.setUrl(url);
 	}
 
 	/**
@@ -551,17 +553,19 @@ public class GwtClientHelper {
 	 * Use Teaming's existing JavaScript to logout of Teaming.
 	 */
 	public static native void jsLogout() /*-{
-		if ( $wnd.top.ss_logoff != null )
+		if ($wnd.top.ss_logoff != null) {
 			$wnd.top.ss_logoff();
+		}
 	}-*/;
 
 	/**
-	 * Used to pass an Event to the EventBus from JavaScript.
+	 * Used to fire a Vibe OnPrem event to the outer most GwtMainpage's
+	 * event bus from anywhere within the application.
 	 * 
 	 * @param event
 	 */
-	public static native void jsFireEvent( Event<?> event ) /*-{
-		$wnd.top.ss_fireEvent( event );
+	public static native void jsFireVibeEventOnMainEventBus(VibeEventBase<?> event) /*-{
+		$wnd.top.ss_fireVibeEventOnMainEventBus(event);
 	}-*/;
 
 	/**
@@ -574,14 +578,13 @@ public class GwtClientHelper {
 		$wnd.top.resizeGwtContent(reason);
 	}-*/;
 
-
 	/**
-	 * Set the javascript variable, ss_userDisplayStyle, to the given value.
+	 * Set the JavaScript variable, ss_userDisplayStyle, to the given
+	 * value.
 	 */
-	public static native void jsSetEntryDisplayStyle( String style ) /*-{
+	public static native void jsSetEntryDisplayStyle(String style) /*-{
 		$wnd.top.ss_userDisplayStyle = style;
 	}-*/;
-
 
 	/**
 	 * Call ss_setEntryPopupIframeSize() to set the size and position of the view entry popup div.
@@ -669,7 +672,7 @@ public class GwtClientHelper {
 		return
 			jsStringCompare(
 				((null == s1) ? "" : s1),
-				((null == s2) ? "" : s2) );
+				((null == s2) ? "" : s2));
 	}
 	
 	/**
@@ -679,25 +682,21 @@ public class GwtClientHelper {
 	 * @param listbox
 	 * @param value
 	 */
-	public static int selectListboxItemByValue( ListBox listbox, String value )
-	{
+	public static int selectListboxItemByValue(ListBox listbox, String value) {
 		int i;
 		
-		for (i = 0; i < listbox.getItemCount(); ++i)
-		{
-			String tmp;
-			
-			tmp = listbox.getValue( i );
-			if ( tmp != null && tmp.equalsIgnoreCase( value ) )
-			{
-				listbox.setSelectedIndex( i );
+		for (i = 0; i < listbox.getItemCount(); i += 1) {
+			String tmp = listbox.getValue(i);
+			if (tmp != null && tmp.equalsIgnoreCase(value)) {
+				listbox.setSelectedIndex(i);
 				return i;
 			}
 		}
 		
-		// If we get here it means we did not find an item in the listbox with the given value.
+		// If we get here it means we did not find an item in the
+		// list box with the given value.
 		return -1;
-	}// end selectListboxItemByValue()
+	}
 	
 	/**
 	 * Sets up a colspan="span" that spans the cells of a row in a
@@ -718,12 +717,46 @@ public class GwtClientHelper {
 		}
 		
 	}
-	private static native void jsFixFirstCol(Element eTD) /*-{
-		eTD.colSpan = 2;
-		eTD.width = "100%";
-	}-*/;
+	
+	/**
+	 * Replaces all occurrences of oldSub with newSub in s.
+	 * 
+	 * The implementation was copied from StringUtil.replace().
+	 * 
+	 * @param s
+	 * @param oldSub
+	 * @param newSub
+	 * 
+	 * @return
+	 */
+	public static String replace(String s, String oldSub, String newSub) {
+		if ((s == null) || (oldSub == null) || (newSub == null)) {
+			return null;
+		}
 
+		int y = s.indexOf(oldSub);
 
+		if (y >= 0) {
+			StringBuffer sb = new StringBuffer();
+			int length = oldSub.length();
+			int x = 0;
+
+			while (x <= y) {
+				sb.append(s.substring(x, y));
+				sb.append(newSub);
+				x = y + length;
+				y = s.indexOf(oldSub, x);
+			}
+
+			sb.append(s.substring(x));
+
+			return sb.toString();
+		}
+		else {
+			return s;
+		}
+	}
+	
 	/**
 	 * Adds scroll bars to the main content panel for the duration of a
 	 * PopupPanel.
@@ -765,45 +798,6 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Replaces all occurrences of oldSub with newSub in s.
-	 * 
-	 * The implementation was copied from StringUtil.replace().
-	 * 
-	 * @param s
-	 * @param oldSub
-	 * @param newSub
-	 * 
-	 * @return
-	 */
-	public static String replace(String s, String oldSub, String newSub) {
-		if ((s == null) || (oldSub == null) || (newSub == null)) {
-			return null;
-		}
-
-		int y = s.indexOf(oldSub);
-
-		if (y >= 0) {
-			StringBuffer sb = new StringBuffer();
-			int length = oldSub.length();
-			int x = 0;
-
-			while (x <= y) {
-				sb.append(s.substring(x, y));
-				sb.append(newSub);
-				x = y + length;
-				y = s.indexOf(oldSub, x);
-			}
-
-			sb.append(s.substring(x));
-
-			return sb.toString();
-		}
-		else {
-			return s;
-		}
-	}
-	
-	/**
 	 * Validates we have a URL in an OnSelectBinderInfo object.
 	 * 
 	 * Optionally displays an error if there isn't and returns false.
@@ -830,8 +824,8 @@ public class GwtClientHelper {
 		return true;
 	}
 	
-	public static boolean validateOSBI( OnSelectBinderInfo osbi ) {
+	public static boolean validateOSBI(OnSelectBinderInfo osbi) {
 		// Always use the initial form of the method.
-		return validateOSBI( osbi, true );
+		return validateOSBI(osbi, true);
 	}
 }

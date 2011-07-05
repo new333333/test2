@@ -217,14 +217,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	}
 	
 	private void initialize() {
-		//Register with GwtMainPage, so we can fire an event
-		try {
-			GwtClientHelper.jsFireEvent(null);
-		} catch(Exception e) {
-			if(GwtClientHelper.jsIsIE()) {
-				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
-			}
-		}
+		// Nothing to do.
 	}
 
 	private void setUserStatus(final String status) {

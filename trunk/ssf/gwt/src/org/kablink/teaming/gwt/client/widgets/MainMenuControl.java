@@ -100,7 +100,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  */
 public class MainMenuControl extends Composite
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,

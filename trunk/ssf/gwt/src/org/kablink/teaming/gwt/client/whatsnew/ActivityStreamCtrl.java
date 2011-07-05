@@ -114,7 +114,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ActivityStreamCtrl extends Composite
 	implements ClickHandler,
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
 		AdministrationExitEvent.Handler,

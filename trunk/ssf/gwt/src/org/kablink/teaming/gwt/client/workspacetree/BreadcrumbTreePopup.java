@@ -49,7 +49,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  */
 public class BreadcrumbTreePopup extends TeamingPopupPanel
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		BrowseHierarchyExitEvent.Handler
 {
 	// The following defines the TeamingEvents that are handled by

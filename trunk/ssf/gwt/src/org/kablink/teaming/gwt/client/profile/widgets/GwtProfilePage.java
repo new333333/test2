@@ -109,15 +109,6 @@ public class GwtProfilePage extends Composite {
 
 	private void initialize() {
 
-		//Register with GwtMainPage, so we can fire an event
-		try {
-			GwtClientHelper.jsFireEvent(null);
-		} catch(Exception e) {
-			if(GwtClientHelper.jsIsIE()) {
-				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
-			}
-		}
-
 		createProfileInfoSections();
 	}
 

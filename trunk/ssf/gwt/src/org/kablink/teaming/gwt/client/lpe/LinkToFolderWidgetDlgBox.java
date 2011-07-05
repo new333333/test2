@@ -77,7 +77,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class LinkToFolderWidgetDlgBox extends DlgBox
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private TextBox	m_titleTxtBox = null;

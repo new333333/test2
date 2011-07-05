@@ -89,7 +89,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SearchOptionsComposite extends Composite
 	implements
-	// EventBus handlers implemented by this class.
+	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private FindCtrl m_finderControl;
