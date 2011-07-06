@@ -109,10 +109,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderTagsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDocBaseUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryTagsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionFilesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesRpcResponseData;
@@ -130,6 +132,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamManagementInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
@@ -154,12 +160,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTagSortOrderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateBinderTagsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateEntryTagsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateFavoritesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -361,6 +370,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_BINDER_TAGS:
+		{
+			GetBinderTagsCmd gbtCmd;
+			ArrayList<TagInfo> result;
+			GetTagsRpcResponseData responseData;
+			
+			gbtCmd = (GetBinderTagsCmd) cmd;
+			result = getBinderTags( ri, gbtCmd.getBinderId() );
+			responseData = new GetTagsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
 			ActivityStreamInfo asi;
@@ -404,6 +426,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			geCmd = (GetEntryCmd) cmd;
 			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_ENTRY_TAGS:
+		{
+			GetEntryTagsCmd getCmd;
+			ArrayList<TagInfo> result;
+			GetTagsRpcResponseData responseData;
+			
+			getCmd = (GetEntryTagsCmd) cmd;
+			result = getEntryTags( ri, getCmd.getEntryId() );
+			responseData = new GetTagsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -593,6 +628,41 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			brandingData = getSiteBrandingData( ri );
 			response = new VibeRpcResponse( brandingData );
+			return response;
+		}
+		
+		case GET_TAG_RIGHTS_FOR_BINDER:
+		{
+			GetTagRightsForBinderCmd gtrfbCmd;
+			ArrayList<Boolean> result;
+			GetTagRightsRpcResponseData responseData;
+			
+			gtrfbCmd = (GetTagRightsForBinderCmd) cmd;
+			result = getTagRightsForBinder( ri, gtrfbCmd.getBinderId() );
+			responseData = new GetTagRightsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TAG_RIGHTS_FOR_ENTRY:
+		{
+			GetTagRightsForEntryCmd gtrfeCmd;
+			ArrayList<Boolean> result;
+			GetTagRightsRpcResponseData responseData;
+			
+			gtrfeCmd = (GetTagRightsForEntryCmd) cmd;
+			result = getTagRightsForEntry( ri, gtrfeCmd.getEntryId() );
+			responseData = new GetTagRightsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TAG_SORT_ORDER:
+		{
+			TagSortOrder result;
+			
+			result = getTagSortOrder( ri );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -875,6 +945,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_TAG_SORT_ORDER:
+		{
+			SaveTagSortOrderCmd stsoCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			stsoCmd = (SaveTagSortOrderCmd) cmd;
+			result = saveTagSortOrder( ri, stsoCmd.getSortOrder() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case SAVE_WHATS_NEW_SETTINGS:
 		{
 			BooleanRpcResponseData responseData;
@@ -908,6 +991,32 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtShareEntryResults results = shareEntry(
 					ri, seCmd.getEntryId(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case UPDATE_BINDER_TAGS:
+		{
+			UpdateBinderTagsCmd ubtCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			ubtCmd = (UpdateBinderTagsCmd) cmd;
+			result = updateBinderTags( ri, ubtCmd.getBinderId(), ubtCmd.getToBeDeleted(), ubtCmd.getToBeAdded() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case UPDATE_ENTRY_TAGS:
+		{
+			UpdateEntryTagsCmd uetCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			uetCmd = (UpdateEntryTagsCmd) cmd;
+			result = updateEntryTags( ri, uetCmd.getEntryId(), uetCmd.getToBeDeleted(), uetCmd.getToBeAdded() );
+			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1088,7 +1197,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the rights the user has for modifying tags on the given binder.
 	 */
-	public ArrayList<Boolean> getTagRightsForBinder( HttpRequestInfo ri, String binderId )
+	private ArrayList<Boolean> getTagRightsForBinder( HttpRequestInfo ri, String binderId )
 	{
 		ArrayList<Boolean> tagRights;
 		
@@ -1103,7 +1212,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the rights the user has for modifying personal tags on the given entry.
 	 */
-	public ArrayList<Boolean> getTagRightsForEntry( HttpRequestInfo ri, String entryId )
+	private ArrayList<Boolean> getTagRightsForEntry( HttpRequestInfo ri, String entryId )
 	{
 		ArrayList<Boolean> tagRights;
 		
@@ -1118,7 +1227,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
     /**
      * 
      */
-    public TagSortOrder getTagSortOrder( HttpRequestInfo ri )
+    private TagSortOrder getTagSortOrder( HttpRequestInfo ri )
     {
     	UserProperties userProperties;
     	ProfileModule profileModule;
@@ -1868,7 +1977,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return a list of tags associated with the given entry.
 	 */
-	public ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId )
+	private ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId )
 	{
 		return GwtServerHelper.getEntryTags( this, entryId );
 	}
@@ -2452,7 +2561,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Save the given tag sort order to the user's properties
 	 */
-	public Boolean saveTagSortOrder( HttpRequestInfo ri, TagSortOrder sortOrder )
+	private Boolean saveTagSortOrder( HttpRequestInfo ri, TagSortOrder sortOrder )
 	{
 		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_TAG_SORT_ORDER, sortOrder );
 		
@@ -3324,7 +3433,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId )
+	private ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.getBinderTags( this, binderId );
 	}//end getBinderTags()
@@ -3332,7 +3441,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns true if the user can manage personal tags on the binder.
 	 */
-	public Boolean canManagePersonalBinderTags( HttpRequestInfo ri, String binderId )
+	private Boolean canManagePersonalBinderTags( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.canManagePersonalBinderTags( this, binderId );
 	}
@@ -3340,7 +3449,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns true if the user can manager personal tags on the entry.
 	 */
-	public Boolean canManagePersonalEntryTags( HttpRequestInfo ri, String entryId )
+	private Boolean canManagePersonalEntryTags( HttpRequestInfo ri, String entryId )
 	{
 		return GwtServerHelper.canManagePersonalEntryTags( this, entryId );
 	}
@@ -3354,7 +3463,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean canManagePublicBinderTags( HttpRequestInfo ri, String binderId )
+	private Boolean canManagePublicBinderTags( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.canManagePublicBinderTags( this, binderId );
 	}//end canManagePublicBinderTags()
@@ -3369,7 +3478,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId )
+	private Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId )
 	{
 		return GwtServerHelper.canManagePublicEntryTags( this, entryId );
 	}
@@ -4537,7 +4646,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Update the tags for the given binder.
 	 */
-	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
+	private Boolean updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
 	{
 		return GwtServerHelper.updateBinderTags( this, binderId, tagsToBeDeleted, tagsToBeAdded );
 	}
@@ -4546,7 +4655,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Update the tags for the given entry.
 	 */
-	public Boolean updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
+	private Boolean updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
 	{
 		return GwtServerHelper.updateEntryTags( this, entryId, tagsToBeDeleted, tagsToBeAdded );
 	}

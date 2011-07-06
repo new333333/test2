@@ -54,8 +54,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
-import org.kablink.teaming.gwt.client.util.TagInfo;
-import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
@@ -82,18 +80,6 @@ public interface GwtRpcService extends RemoteService
 	
 	
 	
-	// The following methods are used to manage tags on a binder/entry.
-	public Boolean canManagePublicBinderTags( HttpRequestInfo ri, String binderId );
-	public Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId );
-	public ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId );
-	public ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId );
-	public ArrayList<Boolean> getTagRightsForBinder( HttpRequestInfo ri, String binderId );
-	public ArrayList<Boolean> getTagRightsForEntry( HttpRequestInfo ri, String entryId );
-	public TagSortOrder getTagSortOrder( HttpRequestInfo ri );
-	public Boolean saveTagSortOrder( HttpRequestInfo ri, TagSortOrder sortOrder );
-	public Boolean updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded );
-	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded );
-
 	// The following are used to manage the tracking of information.
 	public List<String> getTrackedPeople( HttpRequestInfo ri                  );
 	public List<String> getTrackedPlaces( HttpRequestInfo ri                  );

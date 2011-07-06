@@ -47,9 +47,19 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderTagsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryTagsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagSortOrderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTagsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTagSortOrderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateBinderTagsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateEntryTagsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TagType;
@@ -105,10 +115,10 @@ public class TagThisDlg extends DlgBox
 	private boolean m_canManageGlobalTags;
 	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
-	private AsyncCallback<ArrayList<Boolean>> m_rightsCallback = null;
-	private AsyncCallback<ArrayList<TagInfo>> m_readTagsCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_rightsCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_readTagsCallback = null;
 	private AsyncCallback<Boolean> m_saveTagsCallback = null;
-	private AsyncCallback<Boolean> m_saveSortOrderCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_saveSortOrderCallback = null;
 	private ArrayList<TagInfo> m_currentListOfPersonalTags;
 	private ArrayList<TagInfo> m_currentListOfGlobalTags;
 	private ArrayList<TagInfo> m_toBeAdded;			// List of tags to be added.
@@ -873,9 +883,10 @@ public class TagThisDlg extends DlgBox
 	
 	private void getSortOrderNow()
 	{
-		AsyncCallback<TagSortOrder> callback;
+		GetTagSortOrderCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
 		
-		callback = new AsyncCallback<TagSortOrder>()
+		callback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
 			 * 
@@ -890,15 +901,16 @@ public class TagThisDlg extends DlgBox
 			/**
 			 * 
 			 */
-			public void onSuccess( TagSortOrder sortOrder )
+			public void onSuccess( VibeRpcResponse response )
 			{
-				m_sortOrder = sortOrder;
+				m_sortOrder = (TagSortOrder) response.getResponseData();
 			}
 			
 		};
 		
 		// Issue an ajax request to get the tag sort order from the user's properties.
-		GwtTeaming.getRpcService().getTagSortOrder( HttpRequestInfo.createHttpRequestInfo(),  callback );
+		cmd = new GetTagSortOrderCmd();
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 	/**
@@ -1115,7 +1127,7 @@ public class TagThisDlg extends DlgBox
 		if ( m_readTagsCallback == null )
 		{
 			// Create a callback that will be used when we read the tags for a binder or entry.
-			m_readTagsCallback = new AsyncCallback<ArrayList<TagInfo>>()
+			m_readTagsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -1138,8 +1150,14 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
-				public void onSuccess( ArrayList<TagInfo> tags )
+				public void onSuccess( VibeRpcResponse response )
 				{
+					ArrayList<TagInfo> tags;
+					GetTagsRpcResponseData responseData;
+					
+					responseData = (GetTagsRpcResponseData) response.getResponseData();
+					tags = responseData.getTags();
+					
 					// Update the dialog with the list of tags.
 					updateDlg( tags );
 				}
@@ -1150,7 +1168,7 @@ public class TagThisDlg extends DlgBox
 		{
 			// Create a callback that will be used when we issue an ajax request to see if
 			// the user has rights to manage personal or global tags.
-			m_rightsCallback = new AsyncCallback<ArrayList<Boolean>>()
+			m_rightsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -1173,8 +1191,14 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
-				public void onSuccess( ArrayList<Boolean> tagRights )
+				public void onSuccess( VibeRpcResponse response )
 				{
+					ArrayList<Boolean> tagRights;
+					GetTagRightsRpcResponseData responseData;
+					
+					responseData = (GetTagRightsRpcResponseData) response.getResponseData();
+					tagRights = responseData.getRights();
+					
 					// If the user can't manage personal tags then hide the "Personal tag" radio button.
 					m_canManagePersonalTags = tagRights.get( 0 ).booleanValue();
 					m_personalRB.setVisible( m_canManagePersonalTags );
@@ -1224,14 +1248,20 @@ public class TagThisDlg extends DlgBox
 								// Are we working with a binder?
 								if ( m_binderId != null && m_binderId.length() > 0 )
 								{
+									GetBinderTagsCmd cmd;
+									
 									// Yes, Issue a request to get the tags associated with the given binder.
-									GwtTeaming.getRpcService().getBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_readTagsCallback );
+									cmd = new GetBinderTagsCmd( m_binderId );
+									GwtClientHelper.executeCommand( cmd, m_readTagsCallback );
 								}
 								else if ( m_entryId != null && m_entryId.length() > 0 )
 								{
+									GetEntryTagsCmd cmd;
+									
 									// We are working with an entry.
 									// Issue a request to get the tags associated with the given entry.
-									GwtTeaming.getRpcService().getEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_readTagsCallback );
+									cmd = new GetEntryTagsCmd( m_entryId );
+									GwtClientHelper.executeCommand( cmd, m_readTagsCallback );
 								}
 							}
 						}
@@ -1244,17 +1274,23 @@ public class TagThisDlg extends DlgBox
 		// Are we working with a binder?
 		if ( m_binderId != null && m_binderId.length() > 0 )
 		{
+			GetTagRightsForBinderCmd cmd;
+			
 			// Yes
 			// Issue a request to see what rights the user has regarding tags on a binder.
 			// The onSuccess() method will issue the call to read the tags.
-			GwtTeaming.getRpcService().getTagRightsForBinder( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rightsCallback );
+			cmd = new GetTagRightsForBinderCmd( m_binderId );
+			GwtClientHelper.executeCommand( cmd, m_rightsCallback );
 		}
 		else if ( m_entryId != null && m_entryId.length() > 0 )
 		{
+			GetTagRightsForEntryCmd cmd;
+			
 			// We are working with an entry.
 			// Issue a request to see what rights the user has regarding tags on a binder.
 			// The onSuccess() method will issue a request to get the tags associated with the given entry.
-			GwtTeaming.getRpcService().getTagRightsForEntry( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_rightsCallback );
+			cmd = new GetTagRightsForEntryCmd( m_entryId );
+			GwtClientHelper.executeCommand( cmd, m_rightsCallback );
 		}
 		else
 		{
@@ -1437,10 +1473,12 @@ public class TagThisDlg extends DlgBox
 	 */
 	private void saveSortOrder()
 	{
+		SaveTagSortOrderCmd cmd;
+		
 		// Issue an ajax request to save the sort order.
 		if ( m_saveSortOrderCallback == null )
 		{
-			m_saveSortOrderCallback = new AsyncCallback<Boolean>()
+			m_saveSortOrderCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -1455,7 +1493,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
-				public void onSuccess( Boolean results )
+				public void onSuccess( VibeRpcResponse response )
 				{
 					// Nothing to do.
 				}
@@ -1463,7 +1501,8 @@ public class TagThisDlg extends DlgBox
 		}
 		
 		// Issue an ajax request to save the sort order
-		GwtTeaming.getRpcService().saveTagSortOrder( HttpRequestInfo.createHttpRequestInfo(), m_sortOrder, m_saveSortOrderCallback );
+		cmd = new SaveTagSortOrderCmd( m_sortOrder );
+		GwtClientHelper.executeCommand( cmd, m_saveSortOrderCallback );
 	}
 
 	
@@ -1501,14 +1540,20 @@ public class TagThisDlg extends DlgBox
 		// Are we working with a binder?
 		if ( m_binderId != null && m_binderId.length() > 0 )
 		{
+			UpdateBinderTagsCmd cmd;
+			
 			// Yes, Issue a request to update the tags associated with the given binder.
-			GwtTeaming.getRpcService().updateBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
+			cmd = new UpdateBinderTagsCmd( m_binderId, m_toBeDeleted, m_toBeAdded );
+			GwtClientHelper.executeCommand( cmd, m_saveTagsCallback );
 		}
 		else if ( m_entryId != null && m_entryId.length() > 0 )
 		{
+			UpdateEntryTagsCmd cmd;
+			
 			// We are working with an entry.
 			// Issue a request to update the tags associated with the given entry.
-			GwtTeaming.getRpcService().updateEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
+			cmd = new UpdateEntryTagsCmd( m_entryId, m_toBeDeleted, m_toBeAdded );
+			GwtClientHelper.executeCommand( cmd, m_saveTagsCallback );
 		}
 		else
 		{
