@@ -45,11 +45,12 @@ import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 
 import com.google.gwt.core.client.Scheduler;
@@ -761,28 +762,24 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void markEntryAsRead( final boolean hideEntry )
 	{
-		HttpRequestInfo ri;
-		AsyncCallback<Boolean> callback;
 		Long entryIdL;
 		
-		// Create the callback needed.
-		callback = new AsyncCallback<Boolean>()
+		// Issue an ajax request to mark this entry as read.
+		entryIdL = Long.valueOf( m_entryId );
+		SetSeenCmd cmd = new SetSeenCmd( entryIdL );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable t )
+			@Override
+			public void onFailure( Throwable caught )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SetSeen(),
 					m_entryId );
-			}
-			
-			/**
-			 * 
-			 */
-			public void onSuccess( Boolean success )
+			}// end onFailure()
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
@@ -799,13 +796,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
-			}
-		};
-		
-		// Issue an ajax request to mark this entry as read.
-		entryIdL = Long.valueOf( m_entryId );
-		ri = HttpRequestInfo.createHttpRequestInfo();
-		GwtTeaming.getRpcService().setSeen( ri, entryIdL, callback );
+			}// end onSuccess()			
+		} );
 	}
 	
 	
@@ -814,28 +806,24 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void markEntryAsUnread()
 	{
-		HttpRequestInfo ri;
-		AsyncCallback<Boolean> callback;
 		Long entryIdL;
 		
-		// Create the callback needed.
-		callback = new AsyncCallback<Boolean>()
+		// Issue an ajax request to mark this entry as unread.
+		entryIdL = Long.valueOf( m_entryId );
+		SetUnseenCmd cmd = new SetUnseenCmd( entryIdL );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable t )
+			@Override
+			public void onFailure( Throwable caught )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SetUnseen(),
 					m_entryId );
-			}
-			
-			/**
-			 * 
-			 */
-			public void onSuccess( Boolean success )
+			}// end onFailure()
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
@@ -848,13 +836,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
-			}
-		};
-		
-		// Issue an ajax request to mark this entry as unread.
-		entryIdL = Long.valueOf( m_entryId );
-		ri = HttpRequestInfo.createHttpRequestInfo();
-		GwtTeaming.getRpcService().setUnseen( ri, entryIdL, callback );
+			}// end onSuccess()			
+		} );
 	}
 	
 	

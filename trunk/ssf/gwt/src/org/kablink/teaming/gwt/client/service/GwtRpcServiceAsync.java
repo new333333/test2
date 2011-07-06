@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -57,7 +56,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -179,11 +177,4 @@ public interface GwtRpcServiceAsync
 	public void saveTaskStatus(        HttpRequestInfo ri, Long binderId, Long         entryId,    String  status,        AsyncCallback<String>               callback );
 	public void saveTaskStatus(        HttpRequestInfo ri,                List<TaskId> taskIds,    String  status,        AsyncCallback<String>               callback );
 	public void updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Map<Long, TaskDate>>  callback );
-	
-	// SeenMap servicing APIs.
-	public void isSeen(    HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
-	public void setSeen(   HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
-	public void setSeen(   HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
-	public void setUnseen( HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
-	public void setUnseen( HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
 }// end GwtRpcServiceAsync
