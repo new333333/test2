@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
-import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -193,15 +192,4 @@ public interface GwtRpcServiceAsync
 
 	// Send an email notification to the given recipients for the given entry.
 	public void shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds, AsyncCallback<GwtShareEntryResults> callback );
-
-	// Get the membership of the given group.
-	public void getGroupMembership( HttpRequestInfo ri, String groupId, AsyncCallback<ArrayList<GwtTeamingItem>> callback );
-
-	// See if this group is the "all users" group
-	public void isAllUsersGroup( HttpRequestInfo ri, String groupId, AsyncCallback<Boolean> callback );
-
-	// Take the given html and replace any Vibe markup with the appropriate html.
-	// For example, replace {{attachmentUrl: someimagename}} with the url to the image.
-	public void markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type, AsyncCallback<String> callback );
-	
 }// end GwtRpcServiceAsync

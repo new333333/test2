@@ -33,79 +33,49 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class holds all of the information necessary to execute the
+ * 'markup string replacement' command.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
-public abstract class VibeRpcCmd implements IsSerializable
-{
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		EXPAND_HORIZONTAL_BUCKET,
-		EXPAND_VERTICAL_BUCKET,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_BINDER_PERMALINK,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_DOCUMENT_BASE_URL,
-		GET_ENTRY,
-		GET_EXTENSION_FILES,
-		GET_EXTENSION_INFO,
-		GET_FILE_ATTACHMENTS,
-		GET_FOLDER,
-		GET_GROUP_MEMBERSHIP,
-		GET_HORIZONTAL_NODE,
-		GET_HORIZONTAL_TREE,
-		GET_LOGGED_IN_USER_PERMALINK,
-		GET_LOGIN_INFO,
-		GET_MODIFY_BINDER_URL,
-		GET_PERSONAL_PREFERENCES,
-		GET_ROOT_WORKSPACE_ID,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		GET_USER_PERMALINK,
-		GET_VERTICAL_ACTIVITY_STREAMS_TREE,
-		GET_VERTICAL_NODE,
-		GET_VERTICAL_TREE,
-		GET_VIEW_FOLDER_ENTRY_URL,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		IS_ALL_USERS_GROUP,
-		MARKUP_STRING_REPLACEMENT,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		PERSIST_NODE_COLLAPSE,
-		PERSIST_NODE_EXPAND,
-		REMOVE_EXTENSION,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES,
-		SAVE_WHATS_NEW_SETTINGS,
-		VALIDATE_ENTRY_ACTIONS;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+public class GetGroupMembershipCmd extends VibeRpcCmd {
+	private String m_groupId;
 	
 	/**
+	 * Class constructor.
 	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	public VibeRpcCmd()
-	{
+	public GetGroupMembershipCmd() {
+		super();		
+		init();
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param groupId
+	 */
+	public GetGroupMembershipCmd(String groupId) {
+		this();
+		
+		m_groupId = groupId;
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public VibeRpcCmdType getCmdType()
-	{
-		return m_cmdType;
+	public String getGroupId() {return m_groupId;}	
+	
+	/*
+	 * Initializes the class.
+	 */
+	private void init() {
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_GROUP_MEMBERSHIP;
 	}
 }

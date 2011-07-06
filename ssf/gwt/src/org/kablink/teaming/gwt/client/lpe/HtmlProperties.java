@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,8 +34,10 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -134,39 +136,37 @@ public class HtmlProperties
 		// Do we have html that has any markup in it?
 		if ( m_markedUpHtml != null && m_markedUpHtml.length() > 0 && binderId != null && binderId.length() > 0 )
 		{
-			AsyncCallback<String> callback;
-		
 			// Yes
-			callback = new AsyncCallback<String>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_markupStringReplacement() );
-					m_isRpcInProgress = false;
-					m_markedUpHtml = null;
-				}
-	
-				/**
-				 * 
-				 */
-				public void onSuccess( String newHtml )
-				{
-					setHtml( newHtml );
-					m_isRpcInProgress = false;
-					m_markedUpHtml = null;
-				}
-			};
 
 			// Issue an ajax request to parse the html and replace any markup with the appropriate html.
 			// For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
 			// http://somehost/ssf/s/readFile/.../somename.png.
 			m_isRpcInProgress = true;
-			GwtTeaming.getRpcService().markupStringReplacement( HttpRequestInfo.createHttpRequestInfo(), binderId, m_markedUpHtml, "form", callback );
+			MarkupStringReplacementCmd cmd = new MarkupStringReplacementCmd( binderId, m_markedUpHtml, "form" );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_markupStringReplacement() );
+					m_isRpcInProgress = false;
+					m_markedUpHtml = null;
+				}// end onFailure()
+
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					StringRpcResponseData responseData = ((StringRpcResponseData) result.getResponseData());
+					String newHtml = responseData.getStringValue();
+					
+					setHtml( newHtml );
+					m_isRpcInProgress = false;
+					m_markedUpHtml = null;
+				}// end onSuccess()
+				
+			} );
 		}
 	}
 	
