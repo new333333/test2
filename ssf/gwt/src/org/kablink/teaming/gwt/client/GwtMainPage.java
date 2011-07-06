@@ -1427,7 +1427,7 @@ public class GwtMainPage extends Composite
 		
 		// ...and persist this activity stream in the user's profile.
 		cmd = new PersistActivityStreamSelectionCmd( asi );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<BooleanRpcResponseData>()
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -1436,7 +1436,7 @@ public class GwtMainPage extends Composite
 					GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
 			}// end onFailure()
 			
-			public void onSuccess( BooleanRpcResponseData  result )
+			public void onSuccess( VibeRpcResponse response )
 			{
 				// Note that we're not doing anything with the results
 				// good or bad.  If it fails, so what?  The activity
