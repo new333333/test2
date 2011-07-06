@@ -30,20 +30,23 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.util.TaskId;
+
 
 /**
- * This class holds the response data for RPC commands that return an
- * ActivityStreamEntry object.
+ * This class holds all of the information necessary to execute the
+ * 'delete tasks' command.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ActivityStreamEntry m_activityStreamEntry;
+public class DeleteTasksCmd extends VibeRpcCmd {
+	private List<TaskId> m_taskIds;
 	
 	/**
 	 * Class constructor.
@@ -51,17 +54,35 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ActivityStreamEntryRpcResponseData() {
-		super();
+	public DeleteTasksCmd() {
+		super();		
+		init();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param activityStreamEntry
+	 * @param taskIds
 	 */
-	public ActivityStreamEntryRpcResponseData(ActivityStreamEntry activityStreamEntry) {
-		m_activityStreamEntry = activityStreamEntry;
+	public DeleteTasksCmd(List<TaskId> taskIds) {
+		this();		
+		m_taskIds = taskIds;
+	}
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param binderId
+	 * @param entryId
+	 */
+	public DeleteTasksCmd(Long binderId, Long entryId) {
+		this();
+		
+		m_taskIds = new ArrayList<TaskId>();
+		TaskId taskId = new TaskId();
+		taskId.setBinderId( binderId );
+		taskId.setEntryId(  entryId  );
+		m_taskIds.add(      taskId   );
 	}
 	
 	/**
@@ -69,7 +90,12 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public ActivityStreamEntry getActivityStreamEntry() {
-		return m_activityStreamEntry;
+	public List<TaskId> getTaskIds() {return m_taskIds;}	
+	
+	/*
+	 * Initializes the class.
+	 */
+	private void init() {
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.DELETE_TASKS;
 	}
 }

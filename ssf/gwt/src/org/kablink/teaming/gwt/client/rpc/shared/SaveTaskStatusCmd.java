@@ -30,20 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.util.TaskId;
+
 
 /**
- * This class holds the response data for RPC commands that return an
- * ActivityStreamEntry object.
+ * This class holds all of the information necessary to execute the
+ * 'save task status' command.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ActivityStreamEntry m_activityStreamEntry;
+public class SaveTaskStatusCmd extends VibeRpcCmd {
+	private List<TaskId> m_taskIds;
+	private String m_status;
 	
 	/**
 	 * Class constructor.
@@ -51,17 +55,37 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ActivityStreamEntryRpcResponseData() {
-		super();
+	public SaveTaskStatusCmd() {
+		super();		
+		init();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param activityStreamEntry
+	 * @param taskIds
 	 */
-	public ActivityStreamEntryRpcResponseData(ActivityStreamEntry activityStreamEntry) {
-		m_activityStreamEntry = activityStreamEntry;
+	public SaveTaskStatusCmd(List<TaskId> taskIds, String status) {
+		this();		
+		m_taskIds = taskIds;
+		m_status  = status;
+	}
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param binderId
+	 * @param entryId
+	 */
+	public SaveTaskStatusCmd(Long binderId, Long entryId, String status) {
+		this();
+		
+		m_status  = status;
+		m_taskIds = new ArrayList<TaskId>();
+		TaskId taskId = new TaskId();
+		taskId.setBinderId( binderId );
+		taskId.setEntryId(  entryId  );
+		m_taskIds.add(      taskId   );
 	}
 	
 	/**
@@ -69,7 +93,13 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public ActivityStreamEntry getActivityStreamEntry() {
-		return m_activityStreamEntry;
+	public List<TaskId> getTaskIds() {return m_taskIds;}	
+	public String       getStatus()  {return m_status; }	
+	
+	/*
+	 * Initializes the class.
+	 */
+	private void init() {
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_TASK_STATUS;
 	}
 }

@@ -30,20 +30,19 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for RPC commands that return an
- * ActivityStreamEntry object.
+ * This class holds all of the information necessary to execute the
+ * 'update calculated' command.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ActivityStreamEntry m_activityStreamEntry;
+public class UpdateCalculatedDatesCmd extends VibeRpcCmd {
+	private Long m_binderId;
+	private Long m_entryId;
 	
 	/**
 	 * Class constructor.
@@ -51,17 +50,21 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ActivityStreamEntryRpcResponseData() {
-		super();
+	public UpdateCalculatedDatesCmd() {
+		super();		
+		init();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param activityStreamEntry
+	 * @param binderId
+	 * @param entryId
 	 */
-	public ActivityStreamEntryRpcResponseData(ActivityStreamEntry activityStreamEntry) {
-		m_activityStreamEntry = activityStreamEntry;
+	public UpdateCalculatedDatesCmd(Long binderId, Long entryId) {
+		this();
+		m_binderId = binderId;
+		m_entryId  = entryId;
 	}
 	
 	/**
@@ -69,7 +72,13 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public ActivityStreamEntry getActivityStreamEntry() {
-		return m_activityStreamEntry;
+	public Long getBinderId() {return m_binderId;}	
+	public Long getEntryId()  {return m_entryId; }	
+	
+	/*
+	 * Initializes the class.
+	 */
+	private void init() {
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.UPDATE_CALCULATED_DATES;
 	}
 }

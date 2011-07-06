@@ -32,18 +32,20 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import java.util.Map;
+
+import org.kablink.teaming.gwt.client.util.TaskDate;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for RPC commands that return an
- * ActivityStreamEntry object.
+ * This class holds the response data for the 'update calculated dates'
+ * RPC command.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ActivityStreamEntry m_activityStreamEntry;
+public class UpdateCalculatedDatesRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private Map<Long, TaskDate> m_updateCalculatedDatesResults;
 	
 	/**
 	 * Class constructor.
@@ -51,17 +53,17 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ActivityStreamEntryRpcResponseData() {
+	public UpdateCalculatedDatesRpcResponseData() {
 		super();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param activityStreamEntry
+	 * @param updateCalculatedDatesResults
 	 */
-	public ActivityStreamEntryRpcResponseData(ActivityStreamEntry activityStreamEntry) {
-		m_activityStreamEntry = activityStreamEntry;
+	public UpdateCalculatedDatesRpcResponseData(Map<Long, TaskDate> updateCalculatedDatesResults) {
+		m_updateCalculatedDatesResults = updateCalculatedDatesResults;
 	}
 	
 	/**
@@ -69,7 +71,5 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public ActivityStreamEntry getActivityStreamEntry() {
-		return m_activityStreamEntry;
-	}
+	public Map<Long, TaskDate> getUpdateCalculatedDatesResults() {return m_updateCalculatedDatesResults;}
 }

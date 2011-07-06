@@ -32,18 +32,18 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for RPC commands that return an
- * ActivityStreamEntry object.
+ * This class holds the response data for RPC commands that return a
+ * TaskBundle object.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ActivityStreamEntry m_activityStreamEntry;
+public class TaskBundleRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private TaskBundle m_taskBundle;
 	
 	/**
 	 * Class constructor.
@@ -51,17 +51,17 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ActivityStreamEntryRpcResponseData() {
+	public TaskBundleRpcResponseData() {
 		super();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param activityStreamEntry
+	 * @param taskBundle
 	 */
-	public ActivityStreamEntryRpcResponseData(ActivityStreamEntry activityStreamEntry) {
-		m_activityStreamEntry = activityStreamEntry;
+	public TaskBundleRpcResponseData(TaskBundle taskBundle) {
+		m_taskBundle = taskBundle;
 	}
 	
 	/**
@@ -69,7 +69,5 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public ActivityStreamEntry getActivityStreamEntry() {
-		return m_activityStreamEntry;
-	}
+	public TaskBundle getTaskBundle() {return m_taskBundle;}
 }

@@ -32,18 +32,18 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.TaskLinkage;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for RPC commands that return an
- * ActivityStreamEntry object.
+ * This class holds the response data for RPC commands that return a
+ * TaskLinkage object.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ActivityStreamEntry m_activityStreamEntry;
+public class TaskLinkageRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private TaskLinkage m_Linkage;
 	
 	/**
 	 * Class constructor.
@@ -51,17 +51,17 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ActivityStreamEntryRpcResponseData() {
+	public TaskLinkageRpcResponseData() {
 		super();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param activityStreamEntry
+	 * @param linkage
 	 */
-	public ActivityStreamEntryRpcResponseData(ActivityStreamEntry activityStreamEntry) {
-		m_activityStreamEntry = activityStreamEntry;
+	public TaskLinkageRpcResponseData(TaskLinkage linkage) {
+		m_Linkage = linkage;
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public ActivityStreamEntry getActivityStreamEntry() {
-		return m_activityStreamEntry;
+	public TaskLinkage getLinkage() {
+		return m_Linkage;
 	}
 }

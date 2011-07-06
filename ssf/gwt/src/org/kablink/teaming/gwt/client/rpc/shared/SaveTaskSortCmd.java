@@ -30,20 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for RPC commands that return an
- * ActivityStreamEntry object.
+ * This class holds all of the information necessary to execute the
+ * 'save task sort' command.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ActivityStreamEntry m_activityStreamEntry;
+public class SaveTaskSortCmd extends VibeRpcCmd {
+	private boolean m_sortAscending;
+	private Long m_binderId;
+	private String m_sortKey;
 	
 	/**
 	 * Class constructor.
@@ -51,17 +51,23 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ActivityStreamEntryRpcResponseData() {
-		super();
+	public SaveTaskSortCmd() {
+		super();		
+		init();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param activityStreamEntry
+	 * @param binderId
+	 * @param sortKey
+	 * @param sortAscending
 	 */
-	public ActivityStreamEntryRpcResponseData(ActivityStreamEntry activityStreamEntry) {
-		m_activityStreamEntry = activityStreamEntry;
+	public SaveTaskSortCmd(Long binderId, String sortKey, boolean sortAscending) {
+		this();		
+		m_binderId      = binderId;
+		m_sortKey       = sortKey;
+		m_sortAscending = sortAscending;
 	}
 	
 	/**
@@ -69,7 +75,14 @@ public class ActivityStreamEntryRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public ActivityStreamEntry getActivityStreamEntry() {
-		return m_activityStreamEntry;
+	public boolean getSortAscending() {return m_sortAscending;}	
+	public Long    getBinderId()      {return m_binderId;     }	
+	public String  getSortKey()       {return m_sortKey;      }	
+	
+	/*
+	 * Initializes the class.
+	 */
+	private void init() {
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_TASK_SORT;
 	}
 }
