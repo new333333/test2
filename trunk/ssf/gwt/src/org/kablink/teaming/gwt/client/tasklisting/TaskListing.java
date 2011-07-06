@@ -41,10 +41,12 @@ import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskBundleRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 
 import com.google.gwt.core.client.GWT;
@@ -493,12 +495,13 @@ public class TaskListing extends Composite {
 		
 		// ...and display the tasks in it.
 		final long start = System.currentTimeMillis();
-		m_rpcService.getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<TaskBundle>() {
+		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_binderId, m_filterType, m_mode);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				// Handle the failure...
 				String error = m_messages.rpcFailure_GetTaskList();
-				GwtClientHelper.handleGwtRPCFailure(t, error);
+				GwtClientHelper.handleGwtRPCFailure(caught, error);
 				
 				// ...and display the error as the task listing.
 				m_taskListingDIV.clear();
@@ -506,15 +509,18 @@ public class TaskListing extends Composite {
 			}
 
 			@Override
-			public void onSuccess(TaskBundle result) {
+			public void onSuccess(VibeRpcResponse result) {
+				TaskBundleRpcResponseData responseData = ((TaskBundleRpcResponseData) result.getResponseData());
+				TaskBundle taskBundle = responseData.getTaskBundle();
+				
 				// Clear the task listing DIV's contents and render the
 				// task list.
 				long end = System.currentTimeMillis();
 				m_pleaseWaitLabel.setText(m_messages.taskPleaseWait_Rendering());
-				m_taskBundle = result;
+				m_taskBundle = taskBundle;
 				showTaskBundle(end - start);
 			}			
-		});		
+		});
 	}
 	
 	/*

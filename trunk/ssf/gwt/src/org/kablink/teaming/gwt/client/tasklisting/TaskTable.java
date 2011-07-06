@@ -52,15 +52,30 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CollapseSubtasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ExpandSubtasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskCompletedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskLinkageCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskPriorityCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskSortCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskBundleRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
@@ -1357,40 +1372,46 @@ public class TaskTable extends Composite
 		final Long assigneeId = ai.getId();
 		switch (assigneeType) {
 		case GROUP:
-			m_rpcService.getGroupMembership(HttpRequestInfo.createHttpRequestInfo(), assigneeId, new AsyncCallback<List<AssignmentInfo>>() {
+			GetGroupAssigneeMembershipCmd groupCmd = new GetGroupAssigneeMembershipCmd(assigneeId);
+			GwtClientHelper.executeCommand(groupCmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
-				public void onFailure(Throwable t) {
+				public void onFailure(Throwable caught) {
 					GwtClientHelper.handleGwtRPCFailure(
-						t,
+						caught,
 						GwtTeaming.getMessages().rpcFailure_GetGroupMembership(),
 						String.valueOf(assigneeId));
 				}
-				
+
 				@Override
-				public void onSuccess(List<AssignmentInfo> groupMembers) {
+				public void onSuccess(VibeRpcResponse result) {
 					// Store the group membership (so we don't re-read
 					// it if it gets displayed again) and display it.
+					AssignmentInfoListRpcResponseData responseData = ((AssignmentInfoListRpcResponseData) result.getResponseData());
+					List<AssignmentInfo> groupMembers = responseData.getAssignmentInfoList();
 					ai.setMembership(           groupMembers                           );
 					handleMembershipDisplay(ai, groupMembers, expansionFP, showDisabled);
-				}
+				}				
 			});
 			
 			break;
 			
 		case TEAM:
-			m_rpcService.getTeamMembership(HttpRequestInfo.createHttpRequestInfo(), assigneeId, new AsyncCallback<List<AssignmentInfo>>() {
+			GetTeamAssigneeMembershipCmd teamCmd = new GetTeamAssigneeMembershipCmd(assigneeId);
+			GwtClientHelper.executeCommand(teamCmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
-				public void onFailure(Throwable t) {
+				public void onFailure(Throwable caught) {
 					GwtClientHelper.handleGwtRPCFailure(
-						t,
+						caught,
 						GwtTeaming.getMessages().rpcFailure_GetTeamMembership(),
 						String.valueOf(assigneeId));
 				}
-				
+
 				@Override
-				public void onSuccess(List<AssignmentInfo> teamMembers) {
+				public void onSuccess(VibeRpcResponse result) {
 					// Store the team membership (so we don't re-read
 					// it if it gets displayed again) and display it.
+					AssignmentInfoListRpcResponseData responseData = ((AssignmentInfoListRpcResponseData) result.getResponseData());
+					List<AssignmentInfo> teamMembers = responseData.getAssignmentInfoList();
 					ai.setMembership(           teamMembers                           );
 					handleMembershipDisplay(ai, teamMembers, expansionFP, showDisabled);
 				}
@@ -1472,16 +1493,17 @@ public class TaskTable extends Composite
 
 		// Delete the selected tasks.
 		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-		m_rpcService.deleteTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
+		DeleteTasksCmd cmd = new DeleteTasksCmd(taskIds);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_DeleteTasks());
 			}
-			
+
 			@Override
-			public void onSuccess(Boolean success) {
+			public void onSuccess(VibeRpcResponse result) {
 				handleTaskPostRemoveAsync(taskIds);
 			}
 		});
@@ -1499,16 +1521,17 @@ public class TaskTable extends Composite
 		// Are we collapsing the subtasks?
 		if (task.getExpandSubtasks()) {
 			// Yes!  Collapse them...
-			m_rpcService.collapseSubtasks(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Boolean>() {
+			CollapseSubtasksCmd cmd = new CollapseSubtasksCmd(binderId, entryId);
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
-				public void onFailure(Throwable t) {
+				public void onFailure(Throwable caught) {
 					GwtClientHelper.handleGwtRPCFailure(
-						t,
+						caught,
 						GwtTeaming.getMessages().rpcFailure_CollapseSubtasks());
 				}
-				
+
 				@Override
-				public void onSuccess(Boolean success) {
+				public void onSuccess(VibeRpcResponse result) {
 					// ...and mark the task as having its subtasks
 					// ...collapsed and redisplay the TaskTable. 
 					task.setExpandedSubtasks(false);
@@ -1520,16 +1543,17 @@ public class TaskTable extends Composite
 		
 		else {
 			// No, we must be expanding the subtasks!  Expand them...
-			m_rpcService.expandSubtasks(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Boolean>() {
+			ExpandSubtasksCmd cmd = new ExpandSubtasksCmd(binderId, entryId);
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
-				public void onFailure(Throwable t) {
+				public void onFailure(Throwable caught) {
 					GwtClientHelper.handleGwtRPCFailure(
-						t,
+						caught,
 						GwtTeaming.getMessages().rpcFailure_ExpandSubtasks());
 				}
-				
+
 				@Override
-				public void onSuccess(Boolean success) {
+				public void onSuccess(VibeRpcResponse result) {
 					// ...and mark the task as having its subtasks
 					// ...expanded and redisplay the TaskTable. 
 					task.setExpandedSubtasks(true);
@@ -1754,16 +1778,17 @@ public class TaskTable extends Composite
 
 		// Purge the selected tasks.
 		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-		m_rpcService.purgeTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
+		PurgeTasksCmd cmd = new PurgeTasksCmd(taskIds);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_PurgeTasks());
 			}
-			
+
 			@Override
-			public void onSuccess(Boolean success) {
+			public void onSuccess(VibeRpcResponse result) {
 				handleTaskPostRemoveAsync(taskIds);
 			}
 		});
@@ -1882,17 +1907,18 @@ public class TaskTable extends Composite
 		
 		// Save the new task percent done value.
 		final Long entryId = task.getTask().getTaskId().getEntryId();
-		m_rpcService.saveTaskCompleted(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getTaskId().getBinderId(), entryId, percentDone, new AsyncCallback<String>() {
+		SaveTaskCompletedCmd cmd = new SaveTaskCompletedCmd(task.getTask().getTaskId().getBinderId(), entryId, percentDone);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskCompleted(),
 					String.valueOf(entryId));
 			}
-			
+
 			@Override
-			public void onSuccess(String completedDate) {
+			public void onSuccess(VibeRpcResponse result) {
 				handleTaskSetPercentDoneImpl(task, percentDone, true);
 			}
 		});
@@ -1967,17 +1993,18 @@ public class TaskTable extends Composite
 
 		// Save the new task priority.
 		final Long entryId = task.getTask().getTaskId().getEntryId();
-		m_rpcService.saveTaskPriority(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getTaskId().getBinderId(), entryId, priority, new AsyncCallback<Boolean>() {
+		SaveTaskPriorityCmd cmd = new SaveTaskPriorityCmd(task.getTask().getTaskId().getBinderId(), entryId, priority);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskPriority(),
 					String.valueOf(entryId));
 			}
-			
+
 			@Override
-			public void onSuccess(Boolean success) {
+			public void onSuccess(VibeRpcResponse result) {
 				// Store the new priority in the task...
 				task.getTask().setPriority(priority);
 				
@@ -2024,19 +2051,22 @@ public class TaskTable extends Composite
 		}
 
 		// Save the new status on the affected tasks.
-		m_rpcService.saveTaskStatus(HttpRequestInfo.createHttpRequestInfo(), affectedTaskIds, status, new AsyncCallback<String>() {
+		SaveTaskStatusCmd cmd = new SaveTaskStatusCmd(affectedTaskIds, status);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskStatus(),
 					String.valueOf(taskId.getEntryId()));
 			}
-			
+
 			@Override
-			public void onSuccess(String completedDate) {
+			public void onSuccess(VibeRpcResponse result) {
 				// Find the selected status option so that we can
 				// update the display.
+				StringRpcResponseData responseData = ((StringRpcResponseData) result.getResponseData());
+				String completedDate = responseData.getStringValue();
 				List<TaskMenuOption> sOpts = m_statusMenu.getMenuOptions();
 				for (TaskMenuOption tmo:  sOpts) {
 					if (tmo.getMenu().equals(status)) {
@@ -2318,19 +2348,20 @@ public class TaskTable extends Composite
 		TaskLinkage newLinkage = TaskListItemHelper.buildLinkage(m_taskBundle);
 		m_taskBundle.setTaskLinkage(newLinkage);
 		
-		// ...and write it to the current user's folder preferences.
+		// ...and write it to the binder's properties.
 		final Long binderId = m_taskBundle.getBinderId();
-		m_rpcService.saveTaskLinkage(HttpRequestInfo.createHttpRequestInfo(), binderId, m_taskBundle.getTaskLinkage(), new AsyncCallback<Boolean>() {
+		SaveTaskLinkageCmd cmd = new SaveTaskLinkageCmd(binderId, m_taskBundle.getTaskLinkage());
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskLinkage(),
 					String.valueOf(binderId));
 			}
-			
+
 			@Override
-			public void onSuccess(Boolean result) {
+			public void onSuccess(VibeRpcResponse result) {
 				// If we have a post change command...
 				if (null != postChangeCommand) {
 					// ...schedule it.
@@ -2347,16 +2378,17 @@ public class TaskTable extends Composite
 	private void persistSortChange() {
 		// Simply tell the server to persist the new sort setting on
 		// the binder.
-		m_rpcService.saveTaskSort(HttpRequestInfo.createHttpRequestInfo(), m_taskBundle.getBinderId(), m_sortColumn.getSortKey(), m_sortAscending, new AsyncCallback<Boolean>() {
+		SaveTaskSortCmd cmd = new SaveTaskSortCmd(m_taskBundle.getBinderId(), m_sortColumn.getSortKey(), m_sortAscending);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskSort());
 			}
-			
+
 			@Override
-			public void onSuccess(Boolean result) {
+			public void onSuccess(VibeRpcResponse result) {
 				// Nothing to do.
 			}
 		});
@@ -2408,16 +2440,20 @@ public class TaskTable extends Composite
 	}
 	
 	private void refreshTaskTableNow(final boolean preserveChecks, final boolean persistLinkage) {
-		m_rpcService.getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode(), new AsyncCallback<TaskBundle>() {
+		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode());
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					m_messages.rpcFailure_GetTaskList());
 			}
 
 			@Override
-			public void onSuccess(TaskBundle result) {
+			public void onSuccess(VibeRpcResponse result) {
+				TaskBundleRpcResponseData responseData = ((TaskBundleRpcResponseData) result.getResponseData());
+				TaskBundle taskBundle = responseData.getTaskBundle();
+				
 				// Preserve the tasks that are currently checked...
 				List<Long> checkedTaskIds;
 				if (preserveChecks)
@@ -2425,11 +2461,11 @@ public class TaskTable extends Composite
 				else checkedTaskIds = null;
 				
 				// ...store the new TaskBundle in the TaskListing...
-				m_taskListing.setTaskBundle(result);
+				m_taskListing.setTaskBundle(taskBundle);
 				
 				// ...force the TaskTable to redisplay...
 				m_newTaskTable = true;
-				renderTaskBundle(result, checkedTaskIds);
+				renderTaskBundle(taskBundle, checkedTaskIds);
 				
 				// ...and if we were requested to do so...
 				if (persistLinkage) {
@@ -2440,7 +2476,7 @@ public class TaskTable extends Composite
 						null);	// null  -> No post change commands.
 				}
 			}			
-		});		
+		});
 	}
 	
 	/*
@@ -3295,13 +3331,14 @@ public class TaskTable extends Composite
 		}
 		
 		m_dueDateBusy.setResource(m_images.busyAnimation());
-		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Map<Long, TaskDate>>() {
+		UpdateCalculatedDatesCmd cmd = new UpdateCalculatedDatesCmd(binderId, entryId);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				m_dueDateBusy.setResource(m_images.spacer());
 				if (null == entryId)
-				     GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesBinder(), String.valueOf(binderId));
-				else GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesTask(),   String.valueOf(entryId ));
+				     GwtClientHelper.handleGwtRPCFailure(caught, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesBinder(), String.valueOf(binderId));
+				else GwtClientHelper.handleGwtRPCFailure(caught, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesTask(),   String.valueOf(entryId ));
 
 				// If we have a ProcessActive message going...
 				if (null != pa) {
@@ -3309,9 +3346,12 @@ public class TaskTable extends Composite
 					pa.killIt();
 				}
 			}
-			
+
 			@Override
-			public void onSuccess(Map<Long, TaskDate> updatedTaskInfo) {
+			public void onSuccess(VibeRpcResponse result) {
+				UpdateCalculatedDatesRpcResponseData responseData = ((UpdateCalculatedDatesRpcResponseData) result.getResponseData());
+				Map<Long, TaskDate> updatedTaskInfo = responseData.getUpdateCalculatedDatesResults();
+				
 				// Did any tasks have the logical end dates changed?
 				m_dueDateBusy.setResource(m_images.spacer());
 				if ((null != updatedTaskInfo) && (!(updatedTaskInfo.isEmpty()))) {

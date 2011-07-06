@@ -101,9 +101,13 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.AddFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CollapseSubtasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ExpandSubtasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
@@ -121,6 +125,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
@@ -136,6 +141,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTagsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTaskLinkageCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTaskListCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamManagementInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
@@ -152,13 +161,20 @@ import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveSavedSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveTaskLinkageCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskCompletedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskLinkageCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskPriorityCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskSortCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTagSortOrderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
@@ -167,7 +183,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskBundleRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskLinkageRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskListItemListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateBinderTagsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateEntryTagsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateFavoritesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
@@ -268,6 +289,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case COLLAPSE_SUBTASKS:
+		{
+			CollapseSubtasksCmd csCmd = ((CollapseSubtasksCmd) cmd);
+			Boolean result = collapseSubtasks( ri, csCmd.getBinderId(), csCmd.getEntryId() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case DELETE_TASKS:
+		{
+			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
+			Boolean result = deleteTasks( ri, dtCmd.getTaskIds() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
 		case EXECUTE_SEARCH:
 		{
 			GwtSearchResults searchResults;
@@ -299,6 +336,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ehbCmd = (ExpandHorizontalBucketCmd) cmd;
 			result = expandHorizontalBucket( ri, ehbCmd.getBucketInfo() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case EXPAND_SUBTASKS:
+		{
+			ExpandSubtasksCmd csCmd = ((ExpandSubtasksCmd) cmd);
+			Boolean result = expandSubtasks( ri, csCmd.getBinderId(), csCmd.getEntryId() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
 		
@@ -509,11 +554,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( result );
 			return response;
 		}
+
+		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
+		{
+			GetGroupAssigneeMembershipCmd ggamCmd = ((GetGroupAssigneeMembershipCmd) cmd);
+			List<AssignmentInfo> results = getGroupAssigneeMembership( ri, ggamCmd.getGroupId() );
+			AssignmentInfoListRpcResponseData responseData = new AssignmentInfoListRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
 		
 		case GET_GROUP_MEMBERSHIP:
 		{
 			String groupId = ((GetGroupMembershipCmd) cmd).getGroupId();
-			List<GwtTeamingItem> members = getGroupMembership(ri, groupId);
+			List<GwtTeamingItem> members = getGroupMembership( ri, groupId );
 			GetGroupMembershipRpcResponseData responseData = new GetGroupMembershipRpcResponseData( members );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -666,6 +720,42 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_TASK_BUNDLE:
+		{
+			GetTaskBundleCmd gtbCmd = ((GetTaskBundleCmd) cmd);
+			TaskBundle results = getTaskBundle( ri, gtbCmd.getBinderId(), gtbCmd.getFilterType(), gtbCmd.getModeType() );
+			TaskBundleRpcResponseData responseData = new TaskBundleRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TASK_LINKAGE:
+		{
+			GetTaskLinkageCmd gtlCmd = ((GetTaskLinkageCmd) cmd);
+			TaskLinkage results = getTaskLinkage( ri, gtlCmd.getBinderId() );
+			TaskLinkageRpcResponseData responseData = new TaskLinkageRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TASK_LIST:
+		{
+			GetTaskListCmd gtlCmd = ((GetTaskListCmd) cmd);
+			List<TaskListItem> results = getTaskList( ri, gtlCmd.getBinderId(), gtlCmd.getFilterType(), gtlCmd.getModeType() );
+			TaskListItemListRpcResponseData responseData = new TaskListItemListRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TEAM_ASSIGNEE_MEMBERSHIP:
+		{
+			GetTeamAssigneeMembershipCmd gtamCmd = ((GetTeamAssigneeMembershipCmd) cmd);
+			List<AssignmentInfo> results = getTeamAssigneeMembership( ri, gtamCmd.getBinderId() );
+			AssignmentInfoListRpcResponseData responseData = new AssignmentInfoListRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_TEAM_MANAGEMENT_INFO:
 		{
 			GetTeamManagementInfoCmd gtmiCmd;
@@ -782,7 +872,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case IS_SEEN:
 		{
 			Long entryId = ((IsSeenCmd) cmd).getEntryId();
-			Boolean result = isSeen(ri, entryId);
+			Boolean result = isSeen( ri, entryId );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -850,6 +940,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case PURGE_TASKS:
+		{
+			PurgeTasksCmd dtCmd = ((PurgeTasksCmd) cmd);
+			Boolean result = purgeTasks( ri, dtCmd.getTaskIds() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
 		case REMOVE_EXTENSION:
 		{
 			RemoveExtensionCmd reCmd;
@@ -900,6 +998,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case REMOVE_TASK_LINKAGE:
+		{
+			RemoveTaskLinkageCmd rtlCmd = ((RemoveTaskLinkageCmd) cmd);
+			Boolean result = removeTaskLinkage( ri, rtlCmd.getBinderId() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
 		case REPLY_TO_ENTRY:
 		{
 			ReplyToEntryCmd reCmd = ((ReplyToEntryCmd) cmd);
@@ -920,6 +1026,46 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = saveBrandingData( ri, cmd2.getBinderId(), cmd2.getBrandingData() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_TASK_COMPLETED:
+		{
+			SaveTaskCompletedCmd stcCmd = ((SaveTaskCompletedCmd) cmd);
+			String result = saveTaskCompleted( ri, stcCmd.getTaskIds(), stcCmd.getCompleted() );
+			response = new VibeRpcResponse( new StringRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_TASK_LINKAGE:
+		{
+			SaveTaskLinkageCmd stlCmd = ((SaveTaskLinkageCmd) cmd);
+			Boolean result = saveTaskLinkage( ri, stlCmd.getBinderId(), stlCmd.getLinkage() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_TASK_PRIORITY:
+		{
+			SaveTaskPriorityCmd stpCmd = ((SaveTaskPriorityCmd) cmd);
+			Boolean result = saveTaskPriority( ri, stpCmd.getBinderId(), stpCmd.getEntryId(), stpCmd.getPriority() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_TASK_SORT:
+		{
+			SaveTaskSortCmd stsCmd = ((SaveTaskSortCmd) cmd);
+			Boolean result = saveTaskSort( ri, stsCmd.getBinderId(), stsCmd.getSortKey(), stsCmd.getSortAscending() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_TASK_STATUS:
+		{
+			SaveTaskStatusCmd stsCmd = ((SaveTaskStatusCmd) cmd);
+			String result = saveTaskStatus( ri, stsCmd.getTaskIds(), stsCmd.getStatus() );
+			response = new VibeRpcResponse( new StringRpcResponseData( result ));
 			return response;
 		}
 		
@@ -972,7 +1118,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_SEEN:
 		{
 			List<Long> entryIds = ((SetSeenCmd) cmd).getEntryIds();
-			Boolean result = setSeen(ri, entryIds);
+			Boolean result = setSeen( ri, entryIds );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -980,7 +1126,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_UNSEEN:
 		{
 			List<Long> entryIds = ((SetUnseenCmd) cmd).getEntryIds();
-			Boolean result = setUnseen(ri, entryIds);
+			Boolean result = setUnseen( ri, entryIds );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -991,6 +1137,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtShareEntryResults results = shareEntry(
 					ri, seCmd.getEntryId(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+
+		case UPDATE_CALCULATED_DATES:
+		{
+			UpdateCalculatedDatesCmd ucdCmd = ((UpdateCalculatedDatesCmd) cmd);
+			Map<Long, TaskDate> results = updateCalculatedDates( ri, ucdCmd.getBinderId(), ucdCmd.getEntryId() );
+			UpdateCalculatedDatesRpcResponseData responseData = new UpdateCalculatedDatesRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1100,19 +1255,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return searchResults;
 	}// end executeSearch()
 	
-	/**
+	/*
 	 * Marks the given task in the given binder as having its subtask
 	 * display collapsed.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param taskId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean collapseSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+	private Boolean collapseSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.collapseSubtasks()");
 		try {
 			return GwtTaskHelper.collapseSubtasks( this, binderId, entryId );
@@ -1122,17 +1269,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 
-	/**
+	/*
 	 * Deletes the specified tasks.
-	 * 
-	 * @param ri
-	 * @param taskIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean deleteTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
+	private Boolean deleteTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.deleteTasks()");
 		try {
 			return GwtTaskHelper.deleteTasks( getRequest( ri ), this, taskIds );
@@ -1141,29 +1281,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SimpleProfiler.stop("GwtRpcServiceImpl.deleteTasks()");
 		}
 	}
-	
-	public Boolean deleteTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		List<TaskId> taskIds = new ArrayList<TaskId>();
-		TaskId taskId = new TaskId();
-		taskId.setBinderId( binderId );
-		taskId.setEntryId(  entryId  );
-		taskIds.add(        taskId   );
-		return deleteTasks( ri, taskIds );
-	}
 
-	/**
+	/*
 	 * Marks the given task in the given binder as having its subtask
 	 * display expanded.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param taskId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean expandSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+	private Boolean expandSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.expandSubtasks()");
 		try {
 			return GwtTaskHelper.expandSubtasks( this, binderId, entryId );
@@ -1173,18 +1296,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 
-	/**
+	/*
 	 * Returns a List<AssignmentInfo> containing information about the
 	 * membership of a group.
-	 * 
-	 * @param ri
-	 * @param groupId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public List<AssignmentInfo> getGroupMembership( HttpRequestInfo ri, Long groupId ) throws GwtTeamingException {
+	private List<AssignmentInfo> getGroupAssigneeMembership( HttpRequestInfo ri, Long groupId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.getGroupMembership()");
 		try {
 			return GwtTaskHelper.getGroupMembership( this, groupId );
@@ -1247,18 +1363,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
     }
     
     
-	/**
+	/*
 	 * Returns a List<AssignmentInfo> containing information about the
 	 * membership of a team.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public List<AssignmentInfo> getTeamMembership( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
+	private List<AssignmentInfo> getTeamAssigneeMembership( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.getTeamMembership()");
 		try {
 			return GwtTaskHelper.getTeamMembership( this, binderId );
@@ -1268,17 +1377,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 
-	/**
+	/*
 	 * Purges the specified tasks.
-	 * 
-	 * @param ri
-	 * @param taskIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean purgeTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
+	private Boolean purgeTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.purgeTasks()");
 		try {
 			return GwtTaskHelper.purgeTasks( getRequest( ri ), this, taskIds );
@@ -1288,15 +1390,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 	
-	public Boolean purgeTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		List<TaskId> taskIds = new ArrayList<TaskId>();
-		TaskId taskId = new TaskId();
-		taskId.setBinderId( binderId );
-		taskId.setEntryId(  entryId  );
-		taskIds.add(        taskId   );
-		return purgeTasks( ri, taskIds );
-	}
-
 	/*
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
@@ -2464,19 +2557,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return brandingData;
 	}// end getSiteBrandingData()
 
-	/**
+	/*
 	 * Reads the task information from the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param filterType
-	 * @param modeType
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
 	 */
-	public List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	private List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskList()");
 		try {
@@ -2487,20 +2571,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}// end getTaskList()
 
-	/**
+	/*
 	 * Returns a TaskBundle object for the specified binder.
-	 *
-	 * @param request
-	 * @param ri
-	 * @param binderId
-	 * @param filterType
-	 * @param modeType
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	private TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskBundle()");
 		try {
@@ -2517,17 +2591,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}// end getTaskBundle()
 
-	/**
+	/*
 	 * Returns a TaskLinkage object for the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public TaskLinkage getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
+	private TaskLinkage getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskLinkage()");
 		try {
@@ -2538,17 +2605,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}// end getTaskLinkage()
 
-	/**
+	/*
 	 * Removes the TaskLinkage object from the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
+	private Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.removeTaskLinkage()");
 		try {
 			return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
@@ -2568,18 +2628,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return Boolean.TRUE;
 	}
 	
-	/**
+	/*
 	 * Stores a completed value on the specified tasks.
-	 * 
-	 * @param ri
-	 * @param taskIds
-	 * @param completed
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public String saveTaskCompleted( HttpRequestInfo ri, List<TaskId> taskIds, String completed ) throws GwtTeamingException {
+	private String saveTaskCompleted( HttpRequestInfo ri, List<TaskId> taskIds, String completed ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskCompleted()");
 		try {
 			return GwtTaskHelper.saveTaskCompleted( this, taskIds, completed );
@@ -2589,27 +2641,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 	
-	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, Long entryId, String completed ) throws GwtTeamingException {
-		List<TaskId> taskIds = new ArrayList<TaskId>();
-		TaskId taskId = new TaskId();
-		taskId.setBinderId( binderId );
-		taskId.setEntryId(  entryId  );
-		taskIds.add(        taskId   );
-		return saveTaskCompleted( ri, taskIds, completed );
-	}
-	
-	/**
+	/*
 	 * Stores a TaskLinkage object on the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param taskLinkage
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
+	private Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskLinkage()");
 		try {
 			return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
@@ -2619,19 +2654,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}// end saveTaskLinkage()
 
-	/**
+	/*
 	 * Stores a priority value on the specified task.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param entryId
-	 * @param priority
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean saveTaskPriority( HttpRequestInfo ri, Long binderId, Long entryId, String priority ) throws GwtTeamingException {
+	private Boolean saveTaskPriority( HttpRequestInfo ri, Long binderId, Long entryId, String priority ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskPriority()");
 		try {
 			return GwtTaskHelper.saveTaskPriority( this, binderId, entryId, priority );
@@ -2641,19 +2667,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 	
-	/**
+	/*
 	 * Save a task folder sort options on the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param sortKey
-	 * @param sortAscending
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Boolean saveTaskSort( HttpRequestInfo ri, Long binderId, String sortKey, boolean sortAscending ) throws GwtTeamingException {
+	private Boolean saveTaskSort( HttpRequestInfo ri, Long binderId, String sortKey, boolean sortAscending ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskSort()");
 		try {
 			return GwtTaskHelper.saveTaskSort( this, binderId, sortKey, sortAscending );
@@ -2663,18 +2680,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 	
-	/**
+	/*
 	 * Stores a status value on the specified tasks.
-	 * 
-	 * @param ri
-	 * @param taskIds
-	 * @param status
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public String saveTaskStatus( HttpRequestInfo ri, List<TaskId> taskIds, String status ) throws GwtTeamingException {
+	private String saveTaskStatus( HttpRequestInfo ri, List<TaskId> taskIds, String status ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskStatus()");
 		try {
 			return GwtTaskHelper.saveTaskStatus( this, taskIds, status );
@@ -2683,33 +2692,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskStatus()");
 		}
 	}
-	
-	public String saveTaskStatus( HttpRequestInfo ri, Long binderId, Long entryId, String status ) throws GwtTeamingException {
-		List<TaskId> taskIds = new ArrayList<TaskId>();
-		TaskId taskId = new TaskId();
-		taskId.setBinderId( binderId );
-		taskId.setEntryId(  entryId  );
-		taskIds.add(        taskId   );
-		return saveTaskStatus( ri, taskIds, status );
-	}
 
-	/**
+	/*
 	 * Updates the calculated dates on a given task.
 	 * 
 	 * If the updating required changes to this task or others, the
 	 * Map<Long, TaskDate> returned will contain a mapping between the
 	 * task IDs and the new calculated end date.  Otherwise, the map
 	 * returned will be empty.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param entryId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public Map<Long, TaskDate> updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+	private Map<Long, TaskDate> updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.updateCalculatedDates()");
 		try {
 			return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );

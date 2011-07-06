@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
@@ -54,12 +53,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskDate;
-import org.kablink.teaming.gwt.client.util.TaskId;
-import org.kablink.teaming.gwt.client.util.TaskLinkage;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -126,26 +119,4 @@ public interface GwtRpcService extends RemoteService
 	
 	// Save the subscription information for the given entry id.
 	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException;
-
-	// Task servicing APIs.
-	public Boolean              collapseSubtasks(      HttpRequestInfo ri, Long binderId, Long         entryId                           ) throws GwtTeamingException;
-	public Boolean              deleteTask(            HttpRequestInfo ri, Long binderId, Long         entryId                           ) throws GwtTeamingException;
-	public Boolean              deleteTasks(           HttpRequestInfo ri,                List<TaskId> taskIds                           ) throws GwtTeamingException;
-	public Boolean              expandSubtasks(        HttpRequestInfo ri, Long binderId, Long         entryId                           ) throws GwtTeamingException;
-	public List<AssignmentInfo> getGroupMembership(    HttpRequestInfo ri,                Long         groupId                           ) throws GwtTeamingException;
-	public List<TaskListItem>   getTaskList(           HttpRequestInfo ri, Long binderId, String       filterType, String modeType       ) throws GwtTeamingException;
-	public TaskBundle           getTaskBundle(         HttpRequestInfo ri, Long binderId, String       filterType, String modeType       ) throws GwtTeamingException;
-	public TaskLinkage          getTaskLinkage(        HttpRequestInfo ri, Long binderId                                                 ) throws GwtTeamingException;
-	public List<AssignmentInfo> getTeamMembership(     HttpRequestInfo ri, Long binderId                                                 ) throws GwtTeamingException;
-	public Boolean              purgeTask(             HttpRequestInfo ri, Long binderId, Long         entryId                           ) throws GwtTeamingException;
-	public Boolean              purgeTasks(            HttpRequestInfo ri,                List<TaskId> taskIds                           ) throws GwtTeamingException;
-	public Boolean              removeTaskLinkage(     HttpRequestInfo ri, Long binderId                                                 ) throws GwtTeamingException;
-	public String               saveTaskCompleted(     HttpRequestInfo ri, Long binderId, Long         entryId,    String  completed     ) throws GwtTeamingException;
-	public String               saveTaskCompleted(     HttpRequestInfo ri,                List<TaskId> taskIds,    String  completed     ) throws GwtTeamingException;
-	public Boolean              saveTaskLinkage(       HttpRequestInfo ri, Long binderId, TaskLinkage  taskLinkage                       ) throws GwtTeamingException;
-	public Boolean              saveTaskPriority(      HttpRequestInfo ri, Long binderId, Long         entryId,    String  priority      ) throws GwtTeamingException;
-	public Boolean              saveTaskSort(          HttpRequestInfo ri, Long binderId, String       sortKey,    boolean sortAscending ) throws GwtTeamingException;
-	public String               saveTaskStatus(        HttpRequestInfo ri, Long binderId, Long         entryId,    String  status        ) throws GwtTeamingException;
-	public String               saveTaskStatus(        HttpRequestInfo ri,                List<TaskId> taskIds,    String  status        ) throws GwtTeamingException;
-	public Map<Long, TaskDate>  updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long         entryId                           ) throws GwtTeamingException;
 }// end GwtRpcService
