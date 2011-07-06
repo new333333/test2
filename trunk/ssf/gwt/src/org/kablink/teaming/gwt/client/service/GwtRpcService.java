@@ -194,10 +194,4 @@ public interface GwtRpcService extends RemoteService
 	public Boolean setSeen(   HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
 	public Boolean setUnseen( HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
 	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
-	
-	// Add a reply to the given entry
-	public ActivityStreamEntry replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc ) throws GwtTeamingException;
-	
-	// Send an email notification to the given recipients for the given entry.
-	public GwtShareEntryResults shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds ) throws GwtTeamingException;
 }// end GwtRpcService

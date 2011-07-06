@@ -50,6 +50,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
@@ -110,7 +113,6 @@ public class ShareThisDlg extends DlgBox
 	private FlexCellFormatter m_cellFormatter;
 	private String m_entryId;
 	private AsyncCallback<List<TeamInfo>> m_readTeamsCallback;
-	private AsyncCallback<GwtShareEntryResults> m_shareEntryCallback;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -804,32 +806,41 @@ public class ShareThisDlg extends DlgBox
 	 */
 	public boolean editSuccessful( Object callbackData )
 	{
-		HttpRequestInfo ri;
 		String comment;
 		ArrayList<String> principalIds;
 		ArrayList<String> teamIds;
 		
-		if ( m_shareEntryCallback == null )
+		// Get the comment the user entered.
+		comment = getComment();
+		
+		// Get the ids of the users and groups we should send an email to.
+		principalIds = getRecipientIds();
+		
+		// Get the ids of the teams we should send an email to.
+		teamIds = getTeamIds();
+		
+		// Did the user specify any recipients or teams to send to?
+		if ( (principalIds != null && principalIds.size() > 0) || (teamIds != null && teamIds.size() > 0) )
 		{
-			m_shareEntryCallback = new AsyncCallback<GwtShareEntryResults>()
+			// Yes
+			// Issue an ajax request to send the email.
+			ShareEntryCmd cmd = new ShareEntryCmd( m_entryId, comment, principalIds, teamIds );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
+				@Override
+				public void onFailure( Throwable caught )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_ShareEntry() );
+						caught,
+						GwtTeaming.getMessages().rpcFailure_ShareEntry() );
 					
 					hide();
-				}
+				}// end onFailure()
 
-				/**
-				 * 
-				 */
-				public void onSuccess( GwtShareEntryResults result )
+				@Override
+				public void onSuccess( VibeRpcResponse vibeResult )
 				{
+					GwtShareEntryResults result = ((ShareEntryResultsRpcResponseData) vibeResult.getResponseData()).getShareEntryResults();
 					ArrayList<GwtUser> usersWithoutReadRights;
 					String[] errorMessages;
 					FlowPanel errorPanel;
@@ -912,26 +923,8 @@ public class ShareThisDlg extends DlgBox
 						// Close this dialog.
 						hide();
 					}
-				}
-			};
-		}
-		
-		// Get the comment the user entered.
-		comment = getComment();
-		
-		// Get the ids of the users and groups we should send an email to.
-		principalIds = getRecipientIds();
-		
-		// Get the ids of the teams we should send an email to.
-		teamIds = getTeamIds();
-		
-		// Did the user specify any recipients or teams to send to?
-		if ( (principalIds != null && principalIds.size() > 0) || (teamIds != null && teamIds.size() > 0) )
-		{
-			// Yes
-			// Issue an ajax request to send the email.
-			ri = HttpRequestInfo.createHttpRequestInfo();
-			GwtTeaming.getRpcService().shareEntry( ri, m_entryId, comment, principalIds, teamIds, m_shareEntryCallback );
+				}// end onSuccess()				
+			} );
 		}
 		else
 		{

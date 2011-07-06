@@ -36,7 +36,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'markup string replacement' command.
+ * 'get group membership' command.
  * 
  * @author drfoster@novell.com
  */

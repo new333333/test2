@@ -36,12 +36,14 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'is all users' command.
+ * 'reply to entry' command.
  * 
  * @author drfoster@novell.com
  */
-public class IsAllUsersGroupCmd extends VibeRpcCmd {
-	private String m_groupId;
+public class ReplyToEntryCmd extends VibeRpcCmd {
+	private String m_entryId;
+	private String m_description;
+	private String m_title;
 	
 	/**
 	 * Class constructor.
@@ -49,7 +51,7 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public IsAllUsersGroupCmd() {
+	public ReplyToEntryCmd() {
 		super();		
 		init();
 	}
@@ -57,12 +59,16 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param groupId
+	 * @param entryId
+	 * @param description
+	 * @param title
 	 */
-	public IsAllUsersGroupCmd(String groupId) {
+	public ReplyToEntryCmd(String entryId, String description, String title) {
 		this();
 		
-		m_groupId = groupId;
+		m_entryId     = entryId;
+		m_description = description;
+		m_title       = title;
 	}
 	
 	/**
@@ -70,12 +76,14 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public String getGroupId() {return m_groupId;}	
+	public String getEntryId()     {return m_entryId;    }	
+	public String getDescription() {return m_description;}	
+	public String getTitle()       {return m_title;      }	
 	
 	/*
 	 * Initializes the class.
 	 */
 	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.IS_ALL_USERS_GROUP;
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.REPLY_TO_ENTRY;
 	}
 }

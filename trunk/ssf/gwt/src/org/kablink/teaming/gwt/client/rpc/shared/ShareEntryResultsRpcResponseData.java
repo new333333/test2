@@ -30,18 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.GwtShareEntryResults;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'is all users' command.
+ * This class holds the response data for the 'share entry' RPC
+ * command.
  * 
  * @author drfoster@novell.com
  */
-public class IsAllUsersGroupCmd extends VibeRpcCmd {
-	private String m_groupId;
+public class ShareEntryResultsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private GwtShareEntryResults m_shareEntryResults;
 	
 	/**
 	 * Class constructor.
@@ -49,20 +51,17 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public IsAllUsersGroupCmd() {
-		super();		
-		init();
+	public ShareEntryResultsRpcResponseData() {
+		super();
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param groupId
+	 * @param shareEntryResults
 	 */
-	public IsAllUsersGroupCmd(String groupId) {
-		this();
-		
-		m_groupId = groupId;
+	public ShareEntryResultsRpcResponseData(GwtShareEntryResults shareEntryResults) {
+		m_shareEntryResults = shareEntryResults;
 	}
 	
 	/**
@@ -70,12 +69,7 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public String getGroupId() {return m_groupId;}	
-	
-	/*
-	 * Initializes the class.
-	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.IS_ALL_USERS_GROUP;
+	public GwtShareEntryResults getShareEntryResults() {
+		return m_shareEntryResults;
 	}
 }
