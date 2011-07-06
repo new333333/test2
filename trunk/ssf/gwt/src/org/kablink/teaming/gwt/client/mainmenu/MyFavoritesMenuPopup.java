@@ -37,7 +37,11 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.AddFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -191,28 +195,34 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			// What operation are we performing?
 			switch (m_operation) {
 			case ADD:
+				AddFavoriteCmd cmd;
+				
 				// Adding the current binder to the favorites!
-				m_rpcService.addFavorite(HttpRequestInfo.createHttpRequestInfo(), m_id, new AsyncCallback<Boolean>() {
+				cmd = new AddFavoriteCmd( m_id );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_AddFavorite(),
 							m_id);
 					}
-					public void onSuccess(Boolean result)  {}
+					public void onSuccess(VibeRpcResponse response)  {}
 				});
 				break;
 				
 			case REMOVE:
+				RemoveFavoriteCmd rfCmd;
+				
 				// Removing the current binder from the favorites!
-				m_rpcService.removeFavorite(HttpRequestInfo.createHttpRequestInfo(), m_id, new AsyncCallback<Boolean>() {
+				rfCmd = new RemoveFavoriteCmd( m_id );
+				GwtClientHelper.executeCommand( rfCmd, new AsyncCallback<VibeRpcResponse>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_RemoveFavorite(),
 							m_id);
 					}
-					public void onSuccess(Boolean result)  {}
+					public void onSuccess(VibeRpcResponse response)  {}
 				});
 				break;
 				
@@ -360,6 +370,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void showPopup(int left, int top) {
+		GetFavoritesCmd cmd;
+		
 		// Position the popup and if we've already constructed its
 		// content...
 		m_menuLeft = left;
@@ -372,14 +384,21 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		}
 
 		// Otherwise, read the users favorites.
-		m_rpcService.getFavorites(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<FavoriteInfo>>() {
+		cmd = new GetFavoritesCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetFavorites());
 			}
 			
-			public void onSuccess(List<FavoriteInfo> fList)  {
+			public void onSuccess(VibeRpcResponse response)  {
+				List<FavoriteInfo> fList;
+				GetFavoritesRpcResponseData responseData;
+				
+				responseData = (GetFavoritesRpcResponseData) response.getResponseData();
+				fList = responseData.getFavorites();
+				
 				// Show the 'My Favorites' popup menu asynchronously
 				// so that we can release the AJAX request ASAP.
 				showMyFavoritesMenuAsync(fList);

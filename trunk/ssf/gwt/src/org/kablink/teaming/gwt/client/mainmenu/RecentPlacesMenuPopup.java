@@ -38,6 +38,9 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -169,6 +172,8 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void showPopup(int left, int top) {
+		GetRecentPlacesCmd cmd;
+		
 		// Position the popup and if we've already constructed its
 		// content...
 		setPopupPosition(left, top);
@@ -179,14 +184,21 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 		}
 		
 		// Otherwise, read the users recent places.
-		m_rpcService.getRecentPlaces( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<RecentPlaceInfo>>() {
+		cmd = new GetRecentPlacesCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetRecentPlaces());
 			}
 			
-			public void onSuccess(List<RecentPlaceInfo> rpList)  {
+			public void onSuccess(VibeRpcResponse response)  {
+				List<RecentPlaceInfo> rpList;
+				GetRecentPlacesRpcResponseData responseData;
+				
+				responseData = (GetRecentPlacesRpcResponseData) response.getResponseData();
+				rpList = responseData.getRecentPlaces();
+				
 				// Show the 'Recent Places' popup menu asynchronously
 				// so that we can release the AJAX request ASAP.
 				showRecentPlacesMenuAsync(rpList);

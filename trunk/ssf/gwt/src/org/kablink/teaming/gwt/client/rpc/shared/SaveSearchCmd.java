@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,38 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.mainmenu;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 
 
 /**
- * Class used to communicate recent place information between the
- * client (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.getSavedSearches().)
+ * This class holds all of the information necessary to execute the "save search" command.
  * 
- * @author drfoster@novell.com
+ * @author jwootton
  *
  */
-public class SavedSearchInfo implements IsSerializable, VibeRpcResponseData {
-	private String m_name;
+public class SaveSearchCmd extends VibeRpcCmd
+{
+	private String m_searchTabId;
+	private SavedSearchInfo m_ssi;
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public SavedSearchInfo() {
-		// Nothing to do.
+	public SaveSearchCmd()
+	{
+		super();
+		
+		init();
 	}
-
+	
 	/**
-	 * Get'ers and Set'ers.
 	 * 
-	 * @return
 	 */
-	public String getName()            {return m_name;}
-	public void   setName(String name) {m_name = name;}
+	public SaveSearchCmd( String searchTabId, SavedSearchInfo ssi )
+	{
+		m_searchTabId = searchTabId;
+		m_ssi = ssi;
+		
+		init();
+	}
+	
+	/**
+	 * 
+	 */
+	public SavedSearchInfo getSavedSearchInfo()
+	{
+		return m_ssi;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getSearchTabId()
+	{
+		return m_searchTabId;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_SEARCH;
+	}
 }

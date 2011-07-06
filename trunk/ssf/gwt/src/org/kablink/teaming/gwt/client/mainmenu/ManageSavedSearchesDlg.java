@@ -41,6 +41,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveSavedSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveSearchCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -312,6 +315,8 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		// ...and create the save push button.
 		Button saveButton = new Button(m_messages.mainMenuManageSavedSearchesDlgSave(), new ClickHandler() {
 			public void onClick(ClickEvent event) {
+				SaveSearchCmd cmd;
+				
 				// Is the name of the search to save valid?
 				final String searchName = validateSearchName(saveName.getValue());
 				if (!(GwtClientHelper.hasString(searchName))) {
@@ -325,14 +330,20 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 				ssi.setName(searchName);
 				
 				// Can we save it?
-				GwtTeaming.getRpcService().saveSearch(HttpRequestInfo.createHttpRequestInfo(), m_searchTabId, ssi, new AsyncCallback<SavedSearchInfo>() {
+				cmd = new SaveSearchCmd( m_searchTabId, ssi );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_SaveSearch(),
 							searchName);
 					}
-					public void onSuccess(SavedSearchInfo savedSSI) {
+					public void onSuccess(VibeRpcResponse response) {
+						SavedSearchInfo savedSSI = null;
+						
+						if ( response.getResponseData() != null )
+							savedSSI = (SavedSearchInfo) response.getResponseData();
+						
 						// Perhaps.  Did it really get saved?
 						if (null != savedSSI) {
 							// Yes!  Add it to the appropriate list...
@@ -372,14 +383,17 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		deleteAnchor.getElement().appendChild(deleteImg.getElement());
 		deleteAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				GwtTeaming.getRpcService().removeSavedSearch(HttpRequestInfo.createHttpRequestInfo(), ssi, new AsyncCallback<Boolean>() {
+				RemoveSavedSearchCmd cmd;
+				
+				cmd = new RemoveSavedSearchCmd( ssi );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_RemoveSavedSearch(),
 							ssi.getName());
 					}
-					public void onSuccess(Boolean success) {
+					public void onSuccess(VibeRpcResponse response) {
 						// Remove the deleted SavedSearchInfo from the
 						// list...
 						m_ssList.remove(ssi);

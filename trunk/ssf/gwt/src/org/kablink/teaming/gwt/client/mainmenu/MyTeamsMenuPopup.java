@@ -37,6 +37,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -197,6 +200,8 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void showPopup(int left, int top) {
+		GetMyTeamsCmd cmd;
+		
 		// Position the popup and if we've already constructed its
 		// content...
 		setPopupPosition(left, top);
@@ -207,14 +212,21 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 		}
 		
 		// Otherwise, read the users teams.
-		m_rpcService.getMyTeams( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<TeamInfo>>() {
+		cmd = new GetMyTeamsCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetMyTeams());
 			}
 			
-			public void onSuccess(List<TeamInfo> mtList)  {
+			public void onSuccess(VibeRpcResponse response)  {
+				List<TeamInfo> mtList;
+				GetMyTeamsRpcResponseData responseData;
+				
+				responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
+				mtList = responseData.getTeams();
+				
 				// Show the 'My Teams' popup menu asynchronously so
 				// that we can release the AJAX request ASAP.
 				showMyTeamsMenuAsync(mtList);

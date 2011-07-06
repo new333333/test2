@@ -39,6 +39,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
@@ -70,20 +73,27 @@ public class ProfileSearchesSectionPanel extends ProfileSectionPanel {
 	 * Called to use GWT RPC to populate the saved searches list box.
 	 */
 	private void populateSavedSearchList() {
-
+		GetSavedSearchesCmd cmd;
+		
 		//ssList.addItem(GwtTeaming.getMessages().mainMenuSearchOptionsNoSavedSearches(),"noSavedSearches");
 		//ssList.setEnabled(false);
 		
 		// Does the user have any saved searches defined?
-		GwtTeaming.getRpcService().getSavedSearches(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<SavedSearchInfo>>() {
+		cmd = new GetSavedSearchesCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetSavedSearches());
 			}
 			
-			public void onSuccess(List<SavedSearchInfo> ssiList)  {
-
+			public void onSuccess(VibeRpcResponse response)  {
+				List<SavedSearchInfo> ssiList;
+				GetSavedSearchesRpcResponseData responseData;
+				
+				responseData = (GetSavedSearchesRpcResponseData) response.getResponseData();
+				ssiList = responseData.getSavedSearches();
+				
 				ssList = ssiList;
 				buildSavedSearchLinks();
 			}

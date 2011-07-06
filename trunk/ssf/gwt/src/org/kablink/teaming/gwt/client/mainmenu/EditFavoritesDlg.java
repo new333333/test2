@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateFavoritesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -285,16 +287,19 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler, E
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public boolean editSuccessful(Object callbackData) {
+		UpdateFavoritesCmd cmd;
+		
 		// Update the favorites.
 		List<FavoriteInfo> favoritesList = ((List<FavoriteInfo>) callbackData);
-		GwtTeaming.getRpcService().updateFavorites(HttpRequestInfo.createHttpRequestInfo(), favoritesList, new AsyncCallback<Boolean>() {
+		cmd = new UpdateFavoritesCmd( favoritesList );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_UpdateFavorites());
 			}
 			
-			public void onSuccess(Boolean result) {
+			public void onSuccess(VibeRpcResponse response) {
 				hide();
 			}
 		});

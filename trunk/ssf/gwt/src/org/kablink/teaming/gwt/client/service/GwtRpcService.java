@@ -37,13 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
-import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
-import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
-import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -67,7 +62,6 @@ import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
-import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -88,23 +82,6 @@ public interface GwtRpcService extends RemoteService
 	
 	
 	
-	// The following are used in the implementation of the
-	// MainMenuControl.
-	public Boolean               addFavorite(                  HttpRequestInfo ri, String binderId                                   ) throws GwtTeamingException;
-	public Boolean               removeFavorite(               HttpRequestInfo ri, String favoriteId                                 );
-	public Boolean               updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList );
-	public String                getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId                                   );
-	public List<FavoriteInfo>    getFavorites(                 HttpRequestInfo ri                                                    );
-	public List<TeamInfo>        getMyTeams(                   HttpRequestInfo ri                                                    );
-	public List<GroupInfo>       getMyGroups(                  HttpRequestInfo ri                                                    );
-	public List<RecentPlaceInfo> getRecentPlaces(              HttpRequestInfo ri                                                    );
-	public List<SavedSearchInfo> getSavedSearches(             HttpRequestInfo ri                                                    );
-	public TeamManagementInfo    getTeamManagementInfo(        HttpRequestInfo ri, String binderId                                   );
-	public List<ToolbarItem>     getToolbarItems(              HttpRequestInfo ri, String binderId                                   );
-	public List<TopRankedInfo>   getTopRanked(                 HttpRequestInfo ri                                                    );
-	public Boolean               removeSavedSearch(            HttpRequestInfo ri,                     SavedSearchInfo ssi           );
-	public SavedSearchInfo       saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi           );
-
 	// The following methods are used to manage tags on a binder/entry.
 	public Boolean canManagePublicBinderTags( HttpRequestInfo ri, String binderId );
 	public Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId );
