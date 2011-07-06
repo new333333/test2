@@ -1020,11 +1020,11 @@ public class ExportHelper {
 		if (versionsEnabled != null) {
 			versionControls.addAttribute("versionsEnabled", versionsEnabled.toString());
 		}
-		Integer versionsToKeep = binder.getVersionsToKeep();
+		Long versionsToKeep = binder.getVersionsToKeep();
 		if (versionsToKeep != null) {
 			versionControls.addAttribute("versionsToKeep", versionsToKeep.toString());
 		}
-		Integer versionsMaxFileSize = binder.getMaxFileSize();
+		Long versionsMaxFileSize = binder.getMaxFileSize();
 		if (versionsMaxFileSize != null) {
 			versionControls.addAttribute("versionsMaxFileSize", versionsMaxFileSize.toString());
 		}
@@ -2515,11 +2515,11 @@ public class ExportHelper {
 			}
 			String versionsToKeep = versionControls.attributeValue("versionsToKeep", null);
 			if (versionsToKeep != null) {
-				binder.setVersionsToKeep(Integer.valueOf(versionsToKeep));
+				binder.setVersionsToKeep(Long.valueOf(versionsToKeep));
 			}
 			String versionsMaxFileSize = versionControls.attributeValue("versionsMaxFileSize", null);
 			if (versionsMaxFileSize != null) {
-				binder.setMaxFileSize(Integer.valueOf(versionsMaxFileSize));
+				binder.setMaxFileSize(Long.valueOf(versionsMaxFileSize));
 			}
 			String fileEncryptionEnabled = versionControls.attributeValue("fileEncryptionEnabled", null);
 			if (fileEncryptionEnabled != null) {

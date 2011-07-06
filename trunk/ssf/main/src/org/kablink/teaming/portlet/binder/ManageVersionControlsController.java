@@ -93,7 +93,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					
 					// Get the maximum number of versions.
 					String s_versionsToKeep;
-					Integer versionsToKeep = null;
+					Long versionsToKeep = null;
 					try {
 						s_versionsToKeep = PortletRequestUtils.getStringParameter(request, "versionsToKeep", "");
 						if (!enableBinderVersions) {
@@ -101,7 +101,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 							s_versionsToKeep = "0";
 						}
 						if (!s_versionsToKeep.equals("")) {
-							versionsToKeep = Integer.valueOf(s_versionsToKeep);
+							versionsToKeep = Long.valueOf(s_versionsToKeep);
 						}
 						getBinderModule().setBinderVersionsToKeep(binderId, versionsToKeep);
 					} catch (Exception ex) {
@@ -111,12 +111,12 @@ public class ManageVersionControlsController extends AbstractBinderController {
 				
 				// Get the maximum file size.
 				String s_maxFileSize;
-				Integer maxFileSize = null;
+				Long maxFileSize = null;
 				try {
 					//The file size is specified in GB on the form and translated to bytes for the database
 					s_maxFileSize = PortletRequestUtils.getStringParameter(request, "maxFileSize", "");
 					if (!s_maxFileSize.equals("")) {
-						maxFileSize = Integer.valueOf(s_maxFileSize);
+						maxFileSize = Long.valueOf(s_maxFileSize);
 					}
 					getBinderModule().setBinderMaxFileSize(binderId, maxFileSize);
 				} catch (Exception ex) {
