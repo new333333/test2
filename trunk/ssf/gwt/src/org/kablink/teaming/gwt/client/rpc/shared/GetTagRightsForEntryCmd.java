@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,25 +30,53 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * Enumeration used to identify the different ways to sort tags in the "Tag This" dialog.
+ * This class holds all of the information necessary to execute the "get tag rights for entry" command.
  * 
- * @author jwootton@novell.com
+ * @author jwootton
  *
  */
-public enum TagSortOrder implements IsSerializable, VibeRpcResponseData
+public class GetTagRightsForEntryCmd extends VibeRpcCmd
 {
-	SORT_BY_NAME_ASCENDING,
-	SORT_BY_NAME_DESCENDING,
-	SORT_BY_TYPE_ASCENDING,
-	SORT_BY_TYPE_DESCENDING,
+	private String m_entryId;
 	
-	UNKNOWN,
+	/**
+	 * For GWT serialization, must have a zero param contructor
+	 */
+	public GetTagRightsForEntryCmd()
+	{
+		super();
+		
+		init();
+	}
+	
+	/**
+	 * 
+	 */
+	public GetTagRightsForEntryCmd( String entryId )
+	{
+		m_entryId = entryId;
+		
+		init();
+	}
+	
+	/**
+	 * 
+	 */
+	public String getEntryId()
+	{
+		return m_entryId;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TAG_RIGHTS_FOR_ENTRY;
+	}
 }
