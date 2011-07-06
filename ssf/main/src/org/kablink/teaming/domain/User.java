@@ -78,6 +78,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long miniBlogId;
     protected Long diskSpaceUsed;
     protected Long maxGroupsQuota;
+    protected Long maxGroupsFileSizeLimit;
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
     }
@@ -338,6 +339,14 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	
 	public void setMaxGroupsQuota(Long maxGroupsQuota) {
 		this.maxGroupsQuota = maxGroupsQuota;
+	}
+	
+	public Long getMaxGroupsFileSizeLimit() {
+		return maxGroupsFileSizeLimit;
+	}
+	
+	public void setMaxGroupsFileSizeLimit(Long maxGroupsFileSizeLimit) {
+		this.maxGroupsFileSizeLimit = maxGroupsFileSizeLimit;
 	}
 	
 	/**

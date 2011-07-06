@@ -684,6 +684,53 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
    
+   // RW transaction
+   public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) {
+		//Set each users individual quota
+     	for (Long id : userIds) {
+			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
+			user.setFileSizeLimit(fileSizeLimit);
+     	}
+	}
+   
+   //RW transaction
+   public void setGroupFileSizeLimits(Collection<Long> groupIds, Long fileSizeLimit) {
+		// iterate through the members of a group - set each member's max file size limit to the 
+	    // maximum value of all the groups they're a member of.
+	   Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	   Collection<GroupPrincipal> groupPrincipals = getProfileDao().loadGroupPrincipals(groupIds, zoneId, false);
+		for (GroupPrincipal gp : groupPrincipals) {
+			if (gp instanceof Group) {
+				Group group = (Group)gp;
+				group.setFileSizeLimit(fileSizeLimit);
+				List gIds = new ArrayList();
+				gIds.add(group.getId());
+				Set memberIds = getProfileDao().explodeGroups(gIds, zoneId);
+				List memberList = getProfileDao().loadUserPrincipals(memberIds, zoneId, false);
+				Iterator itUsers = memberList.iterator();
+				while (itUsers.hasNext()) {
+					Principal member = (Principal) itUsers.next();
+					if (member.getEntityType().equals(EntityIdentifier.EntityType.user)) {
+						User user = (User)member;
+						Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+						List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
+						Long maxGroupFileSizeLimit = 0L;
+						for (Group g : groups) {
+							if (g.getFileSizeLimit() == null) {
+								//One of the groups has no limit, so we are done
+								maxGroupFileSizeLimit = null;
+								break;
+							} else if (g.getFileSizeLimit() > maxGroupFileSizeLimit) {
+								maxGroupFileSizeLimit = g.getFileSizeLimit();
+							}
+						}
+						user.setMaxGroupsFileSizeLimit(maxGroupFileSizeLimit);
+					}
+				}
+			}
+		}
+	}
+   
    // This returns a list of all disabled user account ids 
    public List<Long> getDisabledUserAccounts() {
 	   return getProfileDao().getDisabledUserAccounts(RequestContextHolder.getRequestContext().getZoneId());
@@ -692,6 +739,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    // this returns non-zero quotas (any quota which has been set by the admin)
    public List getNonDefaultQuotas(String type) {
 	   return getProfileDao().getNonDefaultQuotas(type,
+				RequestContextHolder.getRequestContext().getZoneId());
+   }
+   
+   // this returns non-zero file size limits (any limit which has been set by the admin)
+   public List getNonDefaultFileSizeLimits(String type) {
+	   return getProfileDao().getNonDefaultFileSizeLimits(type,
 				RequestContextHolder.getRequestContext().getZoneId());
    }
    

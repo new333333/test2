@@ -35,6 +35,7 @@ package org.kablink.teaming.domain;
 public abstract class UserPrincipal extends Principal {
     
 	protected Long diskQuota;
+	protected Long fileSizeLimit;
 	
 	/**
      * @hibernate.property
@@ -48,5 +49,18 @@ public abstract class UserPrincipal extends Principal {
 	 */
 	public void setDiskQuota(Long diskQuota) {
 		this.diskQuota = diskQuota;
+	}
+
+	/**
+     * @hibernate.property
+     */
+	public Long getFileSizeLimit() {
+		return fileSizeLimit;		//Can be null;  null means no limit.
+	}
+	/**
+	 * @param fileSizeLimit to set.
+	 */
+	public void setFileSizeLimit(Long fileSizeLimit) {
+		this.fileSizeLimit = fileSizeLimit;
 	}
 }

@@ -53,7 +53,7 @@ public class DefaultFileVersionAgingDelete extends SSCronTriggerJob
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	Integer fileVersionsMaxAge = coreDao.loadZoneConfig(zoneId).getFileVersionsMaxAge();
+    	Long fileVersionsMaxAge = coreDao.loadZoneConfig(zoneId).getFileVersionsMaxAge();
 		if (fileVersionsMaxAge == null) {
 			logger.debug("File version aging is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
 	   		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);

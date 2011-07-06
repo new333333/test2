@@ -58,19 +58,29 @@ public class ConfigureFileVersionAgingJobController extends  SAbstractController
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 			throws Exception {
 		Map formData = request.getParameterMap();
-		// Get the maximum number of versions.
-		String s_versionAge;
-		Integer versionAge = null;
-		try {
-			s_versionAge = PortletRequestUtils.getStringParameter(request, "maxVersionAge", "");
-			if (!s_versionAge.equals("")) {
-				versionAge = Integer.valueOf(s_versionAge);
-			}
-			getAdminModule().setFileVersionsMaxAge(versionAge);
-		} catch (Exception ex) {
-			// The value entered by the user must not be valid, don't set it.
-		}
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+			String s_versionAge;
+			Long versionAge = null;
+			try {
+				s_versionAge = PortletRequestUtils.getStringParameter(request, "maxVersionAge", "");
+				if (!s_versionAge.equals("")) {
+					versionAge = Long.valueOf(s_versionAge);
+				}
+				getAdminModule().setFileVersionsMaxAge(versionAge);
+			} catch (Exception ex) {
+				// The value entered by the user must not be valid, don't set it.
+			}
+
+			ScheduleInfo fileVersionAgingScheduleInfo = null;
+			Long fileVersionMaxAge = getAdminModule().getFileVersionsMaxAge();
+			if (fileVersionMaxAge != null && fileVersionMaxAge > 0) {
+				fileVersionAgingScheduleInfo = getAdminModule().getFileVersionAgingSchedule();
+				fileVersionAgingScheduleInfo.setSchedule(ScheduleHelper.getSchedule(request, "post"));
+				fileVersionAgingScheduleInfo.setEnabled(Boolean.TRUE);
+			} else {
+				fileVersionAgingScheduleInfo = getAdminModule().getFileVersionAgingSchedule();
+				fileVersionAgingScheduleInfo.setEnabled(Boolean.FALSE);
+			}
 			response.setRenderParameters(formData);
 		} else {
 			response.setRenderParameters(formData);
@@ -80,7 +90,7 @@ public class ConfigureFileVersionAgingJobController extends  SAbstractController
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		HashMap model = new HashMap();
-  		Integer fileVersionMaxAge = getAdminModule().getFileVersionsMaxAge();
+		Long fileVersionMaxAge = getAdminModule().getFileVersionsMaxAge();
 		model.put(WebKeys.FILE_VERSION_MAXIMUM_AGE, fileVersionMaxAge);
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_FILE_VERSION_AGING_JOB, model);
 	}

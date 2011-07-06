@@ -911,6 +911,7 @@ public class WebKeys {
     public static final String FILE_QUOTA_WOULD_BE_EXCEEDED = "ss_fileQuotaWouldBeExceeded";
     public static final String FILE_VERSION_MAXIMUM_AGE = "ss_fileVersionMaximumAge";
     public static final String FILE_NAME = "ss_fileName";
+    public static final String FILE_SIZE_LIMIT_USER_DEFAULT = "ss_fileSizeLimitUserDefault";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
@@ -1141,6 +1142,8 @@ public class WebKeys {
     public static final String QUOTAS_DEFAULT="ss_quotasDefault";
     public static final String QUOTAS_GROUPS="ss_quotasGroups";
     public static final String QUOTAS_USERS="ss_quotasUsers";
+    public static final String FILE_SIZE_LIMITS_GROUPS="ss_fileSizeLimitsGroups";
+    public static final String FILE_SIZE_LIMITS_USERS="ss_fileSizeLimitsUsers";
     public static final String QUOTAS_HIGH_WATER_MARK="ss_quotasHighWaterMark";
     public static final String BINDER_QUOTA="ss_binderQuota";
     public static final String BINDER_QUOTAS_INITIALIZED="ss_binderQuotasInitialized";

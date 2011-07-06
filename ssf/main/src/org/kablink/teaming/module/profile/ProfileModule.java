@@ -545,11 +545,25 @@ public interface ProfileModule {
      */
     public void setUserDiskQuotas(Collection<Long> entryIds, long megabytes);
     /**
-     * Set the diskquota value for a set of users (in megabytes)
+     * Set the diskquota value for a set of groups (in megabytes)
 	 * @param entryIds
 	 * @param megabytes
      */
     public void setGroupDiskQuotas(Collection<Long> groupIds, long megabytes);
+    
+    /**
+     * Set the fileSizeLimit value for a set of users (in megabytes)
+	 * @param entryIds
+	 * @param megabytes
+     */
+    public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit);
+    /**
+     * Set the fileSizeLimit value for a set of groups (in megabytes)
+	 * @param entryIds
+	 * @param megabytes
+     */
+    public void setGroupFileSizeLimits(Collection<Long> groupIds, Long fileSizeLimit);
+    
     /**
      * Reset the diskspace usage value for all users
      */
@@ -559,6 +573,11 @@ public interface ProfileModule {
      *this returns non-zero quotas (any quota which has been set by the admin) 
      */
     public List getNonDefaultQuotas(String type);
+    
+    /**
+     *this returns non-zero file size limits (any limit which has been set by the admin) 
+     */
+    public List getNonDefaultFileSizeLimits(String type);
 
     /**
      *This returns a list of all disabled user account ids 

@@ -47,10 +47,11 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean diskQuotasEnabled;
 	private Integer diskQuotaUserDefault;
 	private Integer diskQuotasHighwaterPercentage;
+	private Long fileSizeLimitUserDefault;
 	private Boolean binderQuotasInitialized;
 	private Boolean binderQuotasEnabled;
 	private Boolean binderQuotasAllowOwner;
-	private Integer fileVersionsMaxAge;
+	private Long fileVersionsMaxAge;
 	private MailConfig mailConfig;
 	public ZoneConfig()
 	{
@@ -165,15 +166,19 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.diskQuotaUserDefault = diskQuotaUserDefault;
 	}
 	
-	public Integer getFileVersionsMaxAge() {
-		if (fileVersionsMaxAge != null) {
-			return fileVersionsMaxAge.intValue();
-		} else {
-			return null; // null means none set
-		}
+	public Long getFileSizeLimitUserDefault() {
+		return fileSizeLimitUserDefault;
 	}
 	
-	public void setFileVersionsMaxAge(Integer fileVersionsMaxAge) {
+	public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault) {
+		this.fileSizeLimitUserDefault = fileSizeLimitUserDefault;
+	}
+	
+	public Long getFileVersionsMaxAge() {
+		return fileVersionsMaxAge;
+	}
+	
+	public void setFileVersionsMaxAge(Long fileVersionsMaxAge) {
 		this.fileVersionsMaxAge = fileVersionsMaxAge;
 	}
 	

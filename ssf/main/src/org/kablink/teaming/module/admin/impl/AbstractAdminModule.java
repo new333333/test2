@@ -80,6 +80,7 @@ import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
+import org.kablink.teaming.jobs.FileVersionAging;
 import org.kablink.teaming.jobs.IndexOptimization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -138,6 +139,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule {
 	
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
+	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
 	
 	protected MailModule mailModule;
 	/**
@@ -326,6 +328,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			case manageFunctionCondition:
 			case manageMail:
 			case manageFileVersionAging:
+			case manageFileSizeLimit:
 			case manageTemplate:
 			case manageErrorLogs:
   			case manageFunctionMembership:
@@ -437,7 +440,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		return zoneConfig.isBinderQuotaAllowBinderOwnerEnabled(); 		
     }
 
-  	public void setFileVersionsMaxAge(Integer fileVersionsMaxAge) {
+  	public void setFileVersionsMaxAge(Long fileVersionsMaxAge) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		if (zoneConfig.getFileVersionsMaxAge() == fileVersionsMaxAge) return; // if no change, do nothing
   		zoneConfig.setFileVersionsMaxAge(fileVersionsMaxAge);
@@ -467,14 +470,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setWeekendsAndHolidaysConfig(weekendsAndHolidaysConfig); 		
   	}
-  	public Integer getFileVersionsMaxAge() {
+  	public Long getFileVersionsMaxAge() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getFileVersionsMaxAge();
   	}
-  	public void setFileVersionAgingDays(Integer fileVersionAge) {
+  	public void setFileVersionAgingDays(Long fileVersionAge) {
   	   	checkAccess(AdminOperation.manageFileVersionAging);
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setFileVersionsMaxAge(fileVersionAge);
+  	}
+  	public Long getFileSizeLimitUserDefault() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.getFileSizeLimitUserDefault();
+  	}
+  	public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault) {
+  	   	checkAccess(AdminOperation.manageFileSizeLimit);
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setFileSizeLimitUserDefault(fileSizeLimitUserDefault);
   	}
   	public MailConfig getMailConfig() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
@@ -564,6 +576,58 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		}
    		return (EmailNotification)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultEmailNotification.class);
      }    
+
+    /**
+     * Do actual work to either enable or disable file version aging.
+     * @param id
+     * @param value
+     */
+	public ScheduleInfo getFileVersionAgingSchedule() {
+		ScheduleInfo info = getFileVersionAgingObject().getScheduleInfo(
+				RequestContextHolder.getRequestContext().getZoneId());
+		info.getSchedule().setDaily(true);
+		info.getSchedule().setHours("0");
+		info.getSchedule().setMinutes("30");
+		//Testing values - trigger every 5 minutes (Don't forget to comment this out)
+		//info.getSchedule().setDaily(true);
+		//info.getSchedule().setHours("*");
+		//info.getSchedule().setMinutes("0/5");
+    	return info;
+	}
+	    
+    private FileVersionAging getFileVersionAgingObject() {
+    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String jobClass = getFileVersionAgingProperty(zoneName, FILE_VERSION_AGING_JOB);
+    	if (Validator.isNotNull(jobClass)) {
+		   try {
+			   return  (FileVersionAging)ReflectHelper.getInstance(jobClass);
+		   } catch (Exception ex) {
+			   logger.error("Cannot instantiate FileVersionAging custom class", ex);
+		   }
+   		}
+   		return (FileVersionAging)ReflectHelper.getInstance(
+   				org.kablink.teaming.jobs.DefaultFileVersionAgingDelete.class);
+     }    
+
+	//See if there is a custom scheduling job being specified
+    protected String getFileVersionAgingProperty(String zoneName, String name) {
+		return SZoneConfig.getString(zoneName, "fileVersionAgingConfiguration/property[@name='" + name + "']");
+	}
+
+  	public void setFileVersionAgingSchedule(ScheduleInfo info) {
+  	   	checkAccess(AdminOperation.manageFileVersionAging);
+  		//even if schedules are running, these settings should stop the processing in the job
+  	   	long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+ 		if (info != null) {
+ 			Long fileVersionMaxAge = getFileVersionsMaxAge();
+ 			if (fileVersionMaxAge != null && fileVersionMaxAge > 0) {
+ 				getFileVersionAgingObject().setScheduleInfo(info);
+ 				getFileVersionAgingObject().enable(Boolean.TRUE, zoneId);
+ 			}
+ 		}
+  	}
+
 	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
 		

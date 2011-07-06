@@ -71,6 +71,7 @@ public interface AdminModule {
 		manageFunction,
 		manageMail,
 		manageFileVersionAging,
+		manageFileSizeLimit,
 		manageTemplate,
 		report,
 		manageFunctionMembership,
@@ -158,8 +159,10 @@ public interface AdminModule {
     public void setHomePageConfig(HomePageConfig homePageConfig);
     public WeekendsAndHolidaysConfig getWeekendsAndHolidaysConfig();
     public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig);
-    public Integer getFileVersionsMaxAge();
-    public void setFileVersionsMaxAge(Integer fileVersionAge);
+    public Long getFileVersionsMaxAge();
+    public void setFileVersionsMaxAge(Long fileVersionAge);
+    public Long getFileSizeLimitUserDefault();
+    public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault);
     public MailConfig getMailConfig();
     public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier);
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
@@ -185,6 +188,9 @@ public interface AdminModule {
      * @return
      */
     public ScheduleInfo getPostingSchedule();
+    
+    public ScheduleInfo getFileVersionAgingSchedule();
+    public void setFileVersionAgingSchedule(ScheduleInfo info);
 	
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public List<WorkAreaFunctionMembership> getWorkAreaFunctionMemberships(WorkArea workArea);
