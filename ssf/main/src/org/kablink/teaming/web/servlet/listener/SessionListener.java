@@ -32,7 +32,10 @@
  */
 package org.kablink.teaming.web.servlet.listener;
 
+import java.io.Serializable;
+
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -46,19 +49,27 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.Tabs;
 
-
 public class SessionListener implements HttpSessionListener {
 
 	private static Log logger = LogFactory.getLog(SessionListener.class);
 	
+	// Singleton instance
+	public static ActiveSessionCounter activeSessionCounter = new ActiveSessionCounter();
+	
 	public void sessionCreated(HttpSessionEvent se) {
 		if(logger.isDebugEnabled())
 			logger.debug("Creating session: " + se.getSession().getId());
+		
+		se.getSession().setAttribute(activeSessionCounter.getClass().getName(), activeSessionCounter);
+		
+		activeSessionCounter.incrementWebSessionCount();
 	}
 
 	public void sessionDestroyed(HttpSessionEvent se) {
 		if(logger.isDebugEnabled())
 			logger.debug("Destroying session: " + se.getSession().getId());
+
+		activeSessionCounter.decrementWebSessionCount();
 
 		// This listener is invoked in the same thread executing portal-side code
 		// as side effect of the portal session being invalidated. Consequently,
@@ -97,4 +108,50 @@ public class SessionListener implements HttpSessionListener {
 			}, zoneId, userId);
 		}
 	}
+	
+	public static class ActiveSessionCounter implements Serializable, HttpSessionActivationListener {
+
+		private static final long serialVersionUID = 1L;
+		
+		// guarded by "this"
+		private int activeSessionCount = 0;
+		// guarded by "this"
+		private int peakActiveSessionCount = 0;
+
+		@Override
+		public void sessionDidActivate(HttpSessionEvent se) {
+			if(logger.isDebugEnabled())
+				logger.debug("Activating session: " + se.getSession().getId());
+			
+			this.incrementWebSessionCount();
+		}
+
+		@Override
+		public void sessionWillPassivate(HttpSessionEvent se) {
+			if(logger.isDebugEnabled())
+				logger.debug("Passivating session: " + se.getSession().getId());
+			
+			this.decrementWebSessionCount();
+		}
+		
+		public synchronized int incrementWebSessionCount() {
+			if(++activeSessionCount > peakActiveSessionCount)
+				peakActiveSessionCount = activeSessionCount;
+			return activeSessionCount;
+		}
+		
+		public synchronized int decrementWebSessionCount() {
+			return --activeSessionCount;
+		}
+		
+		public synchronized int getActiveSessionCount() {
+			return activeSessionCount;
+		}
+		
+		public synchronized int getPeakActiveSessionCount() {
+			return peakActiveSessionCount;
+		}
+		
+	}
+	
 }
