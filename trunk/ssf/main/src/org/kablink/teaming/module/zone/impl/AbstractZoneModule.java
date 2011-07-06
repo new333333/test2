@@ -490,6 +490,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			zoneConfig.getMailConfig().setSendMailEnabled(true);
 			getAdminModule().setMailConfigAndSchedules(zoneConfig.getMailConfig(), notify, null);
 			
+			//Turn on file version aging job
+			ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
+			getAdminModule().setFileVersionAgingSchedule(info);
+
+			
 			//If not configured yet,  check old config
 			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, top.getId()).isEmpty()) {				
 				LdapSchedule schedule = getLdapModule().getLdapSchedule();
@@ -796,6 +801,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		} else if (!SPropsUtil.getBoolean("mail.posting.offWhenEmpty", true)) {
 			zoneConfig.getMailConfig().setPostingEnabled(true);
 		}
+		//Turn on file version aging job
+		ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
+		getAdminModule().setFileVersionAgingSchedule(info);
+
 		//Enable/Disable access control rights
 		if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 			WorkAreaOperation.deleteInstance("viewBinderTitle");
@@ -975,6 +984,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
    			info.setEnabled(true);
 			zoneConfig.getMailConfig().setSendMailEnabled(true);
 			getAdminModule().setMailConfigAndSchedules(zoneConfig.getMailConfig(), info, null); 
+			
+			//Turn on file version aging job
+			info = getAdminModule().getFileVersionAgingSchedule();
+			getAdminModule().setFileVersionAgingSchedule(info);
+
     		return top;
  	}
  	

@@ -49,8 +49,10 @@ public class User extends Principal implements Serializable {
 	private String twitterId;
 	private Long miniBlogId;
 	private Long diskQuota;
+	private Integer fileSizeLimit;
 	private Long diskSpaceUsed;
 	private Long maxGroupsQuota;
+    protected Long maxGroupsFileSizeLimit;
 	private Long workspaceId;
 	
 	public String getFirstName() {
@@ -132,6 +134,12 @@ public class User extends Principal implements Serializable {
 	public void setDiskQuota(Long diskQuota) {
 		this.diskQuota = diskQuota;
 	}
+	public Integer getFileSizeLimit() {
+		return fileSizeLimit;
+	}
+	public void setFileSizeLimit(Integer fileSizeLimit) {
+		this.fileSizeLimit = fileSizeLimit;
+	}
 	public Long getMaxGroupsQuota() {
 		if (maxGroupsQuota == null) return 0L;
 		return maxGroupsQuota;
@@ -139,6 +147,12 @@ public class User extends Principal implements Serializable {
 	public void setMaxGroupsQuota(Long maxGroupsQuota) {
 		this.maxGroupsQuota = maxGroupsQuota;
 	}
+	public Long getMaxGroupsFileSizeLimit() {
+		return maxGroupsFileSizeLimit;
+	}	
+	public void setMaxGroupsFileSizeLimit(Long maxGroupsFileSizeLimit) {
+		this.maxGroupsFileSizeLimit = maxGroupsFileSizeLimit;
+	}	
 	public Long getDiskSpaceUsed() {
 		if (diskSpaceUsed == null) return 0L;
 		return diskSpaceUsed;
