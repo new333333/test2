@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -1815,17 +1816,18 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskSeen(final TaskListItem task) {
 		final Long entryId = task.getTask().getTaskId().getEntryId();
-		m_rpcService.setSeen(HttpRequestInfo.createHttpRequestInfo(), entryId, new AsyncCallback<Boolean>() {
+		SetSeenCmd cmd = new SetSeenCmd(entryId);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
+					caught,
 					GwtTeaming.getMessages().rpcFailure_SetSeen(),
 					String.valueOf(entryId));
 			}
-			
+
 			@Override
-			public void onSuccess(Boolean success) {
+			public void onSuccess(VibeRpcResponse result) {
 				// Get and remove the Anchor from the task's UIData...
 				UIData uid = getUIData(task);
 				Anchor a = uid.getTaskUnseenAnchor();

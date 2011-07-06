@@ -33,84 +33,48 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class holds all of the information necessary to execute the
+ * 'is seen' command.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
-public abstract class VibeRpcCmd implements IsSerializable
-{
-	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		EXECUTE_SEARCH,
-		EXPAND_HORIZONTAL_BUCKET,
-		EXPAND_VERTICAL_BUCKET,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_BINDER_PERMALINK,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_DOCUMENT_BASE_URL,
-		GET_ENTRY,
-		GET_EXTENSION_FILES,
-		GET_EXTENSION_INFO,
-		GET_FILE_ATTACHMENTS,
-		GET_FOLDER,
-		GET_GROUP_MEMBERSHIP,
-		GET_HORIZONTAL_NODE,
-		GET_HORIZONTAL_TREE,
-		GET_LOGGED_IN_USER_PERMALINK,
-		GET_LOGIN_INFO,
-		GET_MODIFY_BINDER_URL,
-		GET_PERSONAL_PREFERENCES,
-		GET_ROOT_WORKSPACE_ID,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_UPGRADE_INFO,
-		GET_USER_PERMALINK,
-		GET_VERTICAL_ACTIVITY_STREAMS_TREE,
-		GET_VERTICAL_NODE,
-		GET_VERTICAL_TREE,
-		GET_VIEW_FOLDER_ENTRY_URL,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		IS_ALL_USERS_GROUP,
-		IS_SEEN,
-		MARKUP_STRING_REPLACEMENT,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		PERSIST_NODE_COLLAPSE,
-		PERSIST_NODE_EXPAND,
-		REMOVE_EXTENSION,
-		REPLY_TO_ENTRY,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES,
-		SAVE_WHATS_NEW_SETTINGS,
-		SET_SEEN,
-		SET_UNSEEN,
-		SHARE_ENTRY,
-		VALIDATE_ENTRY_ACTIONS;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
+public class IsSeenCmd extends VibeRpcCmd {
+	private Long m_entryId;
 	
 	/**
+	 * Class constructor.
 	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	public VibeRpcCmd()
-	{
+	public IsSeenCmd() {
+		super();		
+		init();
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param entryId
+	 */
+	public IsSeenCmd(Long entryId) {
+		this();		
+		m_entryId = entryId;
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public VibeRpcCmdType getCmdType()
-	{
-		return m_cmdType;
+	public Long getEntryId() {return m_entryId;}	
+	
+	/*
+	 * Initializes the class.
+	 */
+	private void init() {
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.IS_SEEN;
 	}
 }

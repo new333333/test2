@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
@@ -56,7 +55,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -187,11 +185,4 @@ public interface GwtRpcService extends RemoteService
 	public String               saveTaskStatus(        HttpRequestInfo ri, Long binderId, Long         entryId,    String  status        ) throws GwtTeamingException;
 	public String               saveTaskStatus(        HttpRequestInfo ri,                List<TaskId> taskIds,    String  status        ) throws GwtTeamingException;
 	public Map<Long, TaskDate>  updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long         entryId                           ) throws GwtTeamingException;
-	
-	// SeenMap servicing APIs.
-	public Boolean isSeen(    HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
-	public Boolean setSeen(   HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
-	public Boolean setSeen(   HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
-	public Boolean setUnseen( HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
-	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
 }// end GwtRpcService

@@ -131,6 +131,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IsSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
@@ -141,6 +142,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -587,6 +590,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case IS_SEEN:
+		{
+			Long entryId = ((IsSeenCmd) cmd).getEntryId();
+			Boolean result = isSeen(ri, entryId);
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case HAS_ACTIVITY_STREAM_CHANGED:
 		{
 			ActivityStreamInfo asi;
@@ -719,6 +730,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case SET_SEEN:
+		{
+			List<Long> entryIds = ((SetSeenCmd) cmd).getEntryIds();
+			Boolean result = setSeen(ri, entryIds);
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SET_UNSEEN:
+		{
+			List<Long> entryIds = ((SetUnseenCmd) cmd).getEntryIds();
+			Boolean result = setUnseen(ri, entryIds);
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case SHARE_ENTRY:
 		{
 			ShareEntryCmd seCmd = ((ShareEntryCmd) cmd);
@@ -4387,15 +4414,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return eventValidations;
 	}
 
-	/**
+	/*
 	 * Return true if an entry has been seen and false otherwise.
-	 * 
-	 * @param ri
-	 * @param entryId
-	 * 
-	 * @return
 	 */
-	public Boolean isSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
+	private Boolean isSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
 	{
 		try
 		{
@@ -4419,59 +4441,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtServerHelper.saveWhatsNewShowSetting( this, showSetting );
 	}
 	
-	/**
-	 * Marks an entry as having been seen.
-	 * 
-	 * @param ri
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public Boolean setSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
-	{
-		List<Long> entryIds = new ArrayList<Long>();
-		entryIds.add( entryId );
-		return setSeen(ri, entryIds);
-	}//end setSeen()
-	
-	/**
+	/*
 	 * Marks a list of entries as having been seen.
-	 * 
-	 * @param ri
-	 * @param entryIds
-	 * 
-	 * @return
 	 */
-	public Boolean setSeen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
+	private Boolean setSeen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
 	{
 		getProfileModule().setSeenIds( GwtServerHelper.getCurrentUser().getId(), entryIds );
 		return Boolean.TRUE;
 	}//end setSeen()
 	
-	/**
-	 * Marks an entry as having been unseen.
-	 * 
-	 * @param ri
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public Boolean setUnseen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
-	{
-		List<Long> entryIds = new ArrayList<Long>();
-		entryIds.add( entryId );
-		return setUnseen( ri, entryIds );
-	}//end setUnseen()
-	
-	/**
+	/*
 	 * Marks a list of entries as having been unseen.
-	 * 
-	 * @param ri
-	 * @param entryIds
-	 * 
-	 * @return
 	 */
-	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
+	private Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
 	{
 		getProfileModule().setUnseen( GwtServerHelper.getCurrentUser().getId(), entryIds );
 		return Boolean.TRUE;
