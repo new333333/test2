@@ -573,20 +573,20 @@ public interface BinderModule {
      * @param versionsToKeep
      * @throws AccessControlException
      */
-    public void setBinderVersionsToKeep(Long binderId, final Integer binderVersionsToKeep)
+    public void setBinderVersionsToKeep(Long binderId, final Long binderVersionsToKeep)
 		throws AccessControlException;
     //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderVersionsToKeep(Binder binder);
+    public Long getBinderVersionsToKeep(Binder binder);
 	/**
      * Set maxFileSize.
      * 
      * @param maxFileSize
      * @throws AccessControlException
      */
-    public void setBinderMaxFileSize(Long binderId, final Integer maxFileSize)
+    public void setBinderMaxFileSize(Long binderId, final Long maxFileSize)
 		throws AccessControlException;
 	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderMaxFileSize(Binder binder);
+    public Long getBinderMaxFileSize(Binder binder);
 
 	/**
      * Set the fileEncryptionEnabled flag.

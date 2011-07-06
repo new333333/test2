@@ -97,8 +97,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Definition entryDef; // initialized by hibernate access=field
     //File related settings
     protected Boolean versionsEnabled;
-	protected Integer versionsToKeep;
-    protected Integer maxFileSize;	//MB
+	protected Long versionsToKeep;
+    protected Long maxFileSize;	//MB
     protected Boolean fileEncryptionEnabled;
     public Binder() {
     }
@@ -815,16 +815,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public void setVersionsEnabled(Boolean versionsEnabled) {
 		this.versionsEnabled = versionsEnabled;
 	}
-	public Integer getVersionsToKeep() {
+	public Long getVersionsToKeep() {
 		return versionsToKeep;
 	}
-	public void setVersionsToKeep(Integer versionsToKeep) {
+	public void setVersionsToKeep(Long versionsToKeep) {
 		this.versionsToKeep = versionsToKeep;
 	}
-	public Integer getMaxFileSize() {
+	public Long getMaxFileSize() {
 		return maxFileSize;
 	}
-	public void setMaxFileSize(Integer maxFileSize) {
+	public void setMaxFileSize(Long maxFileSize) {
 		this.maxFileSize = maxFileSize;
 	}
 	public Boolean isFileEncryptionEnabled() {

@@ -201,6 +201,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return failedFilterFile;
 	}
 	
+	protected AdminModule getAdminModule() {
+		// Can't use IoC due to circular dependency
+		return (AdminModule) SpringContextUtil.getBean("adminModule");
+	}
+
 	protected BinderModule getBinderModule() {
 		// Can't use IoC due to circular dependency
 		return (BinderModule) SpringContextUtil.getBean("binderModule");
@@ -478,7 +483,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 	
 	public void pruneFileVersions(Binder binder, DefinableEntity entry) {
-    	Integer maxVersions = getBinderModule().getBinderVersionsToKeep(binder);
+		Long maxVersions = getBinderModule().getBinderVersionsToKeep(binder);
     	if (maxVersions != null) {
 	    	Collection<FileAttachment> atts = entry.getFileAttachments();
 	    	for (FileAttachment fa : atts) {
@@ -755,7 +760,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fui = new FileUploadItem(type, name, file, va.getRepositoryName());
    		fuis.add(fui);
 
-   		Integer maxVersionsToKeep = getBinderModule().getBinderVersionsToKeep(binder);
+   		Long maxVersionsToKeep = getBinderModule().getBinderVersionsToKeep(binder);
    		if (maxVersionsToKeep != null && maxVersionsToKeep == 0) {
    			//This is a special case. We explicitly turn off pruning of versions 
    			//  so the user doesn't lose the original top version during this operation
@@ -2007,14 +2012,37 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void checkFileSizeLimit(Binder binder, Long fileSize, String fileName) 
 			throws DataQuotaException {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		//Check that the file isn't too big
-		Integer maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
+		//If there is a binder setting, it must match irrespective of user settings
+		Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
 		if (maxFileSize != null) {
 			//There is a file size limit, go check it
 			if (fileSize > maxFileSize * 1000000) {
 				throw new DataQuotaException("file.maxSizeExceeded", 
 						new Object[]{fileName});
 			}
+		}
+		//Check the system default and the user limits
+		Long userMaxFileSize = user.getFileSizeLimit();
+		Long userMaxGroupsFileSize = user.getMaxGroupsFileSizeLimit();
+		Long fileSizeLimit = null;
+		if (userMaxGroupsFileSize != null) {
+			//Start with the group setting (if any)
+			fileSizeLimit = userMaxGroupsFileSize;
+		}
+		if (userMaxFileSize != null) {
+			//If there is a user setting, use that (even if it is less than the group setting)
+			fileSizeLimit = userMaxFileSize;
+		}
+		if (fileSizeLimit == null) {
+			//There aren't any per-user or per-group settings, so see if there is a site default
+			fileSizeLimit = getAdminModule().getFileSizeLimitUserDefault();
+		}
+		//Now check to see if the file size is above the limit
+		if (fileSizeLimit != null && fileSize > fileSizeLimit * 1000000) {
+			throw new DataQuotaException("file.maxSizeExceeded", 
+					new Object[]{fileName});
 		}
 	}
 	

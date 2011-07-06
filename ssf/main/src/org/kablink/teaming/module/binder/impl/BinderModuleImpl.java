@@ -2404,16 +2404,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
     //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderVersionsToKeep(Binder binder) {
+    public Long getBinderVersionsToKeep(Binder binder) {
     	Boolean versionsEnabled = binder.getVersionsEnabled();
     	if (versionsEnabled != null && !versionsEnabled) {
     		//Versions have been explicitly turned off. Simulate no versions by returning 0
-    		return 0;
+    		return 0L;
     	} else if (versionsEnabled != null && versionsEnabled) {
     		//Versions have been explicitly turned on, so don't inherit anything
     		return binder.getVersionsToKeep();
     	}
-    	Integer result = binder.getVersionsToKeep();
+    	Long result = binder.getVersionsToKeep();
 		Binder parent = binder;
 		while (parent.getParentBinder() != null) {
 			if (result != null) break;
@@ -2422,7 +2422,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 		return result;
     }
-    public void setBinderVersionsToKeep(Long binderId, final Integer binderVersionsToKeep)
+    public void setBinderVersionsToKeep(Long binderId, final Long binderVersionsToKeep)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
@@ -2435,8 +2435,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
-    public Integer getBinderMaxFileSize(Binder binder) {
-    	Integer result = binder.getMaxFileSize();
+    public Long getBinderMaxFileSize(Binder binder) {
+    	Long result = binder.getMaxFileSize();
 		Binder parent = binder;
 		while (parent.getParentBinder() != null) {
 			if (result != null) break;
@@ -2446,7 +2446,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return result;
     }
 
-    public void setBinderMaxFileSize(Long binderId, final Integer maxFileSize)
+    public void setBinderMaxFileSize(Long binderId, final Long maxFileSize)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
