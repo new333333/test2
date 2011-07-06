@@ -186,10 +186,4 @@ public interface GwtRpcServiceAsync
 	public void setSeen(   HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
 	public void setUnseen( HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
 	public void setUnseen( HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
-	
-	// Add a reply to the given entry
-	public void replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc, AsyncCallback<ActivityStreamEntry> callback );
-
-	// Send an email notification to the given recipients for the given entry.
-	public void shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds, AsyncCallback<GwtShareEntryResults> callback );
 }// end GwtRpcServiceAsync

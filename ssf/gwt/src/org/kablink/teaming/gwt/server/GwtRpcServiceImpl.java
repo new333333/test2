@@ -98,6 +98,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
@@ -136,9 +137,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -670,6 +674,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case REPLY_TO_ENTRY:
+		{
+			ReplyToEntryCmd reCmd = ((ReplyToEntryCmd) cmd);
+			ActivityStreamEntry result = replyToEntry(
+					ri, reCmd.getEntryId(), reCmd.getTitle(), reCmd.getDescription() );
+			ActivityStreamEntryRpcResponseData responseData = new ActivityStreamEntryRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case SAVE_BRANDING:
 		{
 			BooleanRpcResponseData responseData;
@@ -701,6 +715,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			result = saveWhatsNewShowSetting( ri, ((SaveWhatsNewSettingsCmd) cmd).getSettings() );
 			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+
+		case SHARE_ENTRY:
+		{
+			ShareEntryCmd seCmd = ((ShareEntryCmd) cmd);
+			GwtShareEntryResults results = shareEntry(
+					ri, seCmd.getEntryId(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
+			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2932,11 +2956,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getVerticalNode()
 	
 	
-	/**
+	/*
 	 * Parse the given html and replace any markup with the appropriate url.  For example,
 	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
 	 */
-	public String markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type ) throws GwtTeamingException
+	private String markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type ) throws GwtTeamingException
 	{
 		String newHtml;
 		
@@ -3618,10 +3642,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 	
 
-	/**
+	/*
 	 * Send an email notification to the given recipients for the given entry.
 	 */
-	public GwtShareEntryResults shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds )
+	private GwtShareEntryResults shareEntry( HttpRequestInfo ri, String entryId, String comment, List<String> principalIds, List<String> teamIds )
 		throws GwtTeamingException
 	{
 		GwtShareEntryResults retValue;
@@ -3678,10 +3702,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return Boolean.TRUE;
 	}//end untrackPerson()
 
-	/**
+	/*
 	 * Return whether the given group is the "all users" group.
 	 */
-	public Boolean isAllUsersGroup( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
+	private Boolean isAllUsersGroup( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
 	{
 		try
 		{
@@ -3903,10 +3927,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return tmi;
 	}//end getTeamManagementInfo()
 	
-	/**
+	/*
 	 * Add a reply to the given entry.  Return an object that can be used by the What's New page.
 	 */
-	public ActivityStreamEntry replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc ) throws GwtTeamingException
+	private ActivityStreamEntry replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc ) throws GwtTeamingException
 	{
 		ActivityStreamEntry asEntry;
 		
@@ -4120,10 +4144,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 
-	/**
+	/*
 	 * Return the membership of the given group.
 	 */
-	public ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
+	private ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
 	{
 		return GwtServerHelper.getGroupMembership( this, groupId );
 	}

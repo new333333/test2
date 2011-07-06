@@ -33,15 +33,20 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.List;
+
 
 /**
  * This class holds all of the information necessary to execute the
- * 'is all users' command.
+ * 'share entry' command.
  * 
  * @author drfoster@novell.com
  */
-public class IsAllUsersGroupCmd extends VibeRpcCmd {
-	private String m_groupId;
+public class ShareEntryCmd extends VibeRpcCmd {
+	private List<String> m_principalIds;
+	private List<String> m_teamIds;
+	private String m_comment;
+	private String m_entryId;
 	
 	/**
 	 * Class constructor.
@@ -49,7 +54,7 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public IsAllUsersGroupCmd() {
+	public ShareEntryCmd() {
 		super();		
 		init();
 	}
@@ -57,12 +62,18 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param groupId
+	 * @param entryId
+	 * @param comment
+	 * @param principalIds
+	 * @param teamIds
 	 */
-	public IsAllUsersGroupCmd(String groupId) {
+	public ShareEntryCmd(String entryId, String comment, List<String> principalIds, List<String> teamIds) {
 		this();
 		
-		m_groupId = groupId;
+		m_comment      = comment;
+		m_entryId      = entryId;
+		m_principalIds = principalIds;
+		m_teamIds      = teamIds;
 	}
 	
 	/**
@@ -70,12 +81,15 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public String getGroupId() {return m_groupId;}	
+	public List<String> getPrincipalIds() {return m_principalIds;}	
+	public List<String> getTeamIds()      {return m_teamIds;     }	
+	public String       getComment()      {return m_comment;     }	
+	public String       getEntryId()      {return m_entryId;     }	
 	
 	/*
 	 * Initializes the class.
 	 */
 	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.IS_ALL_USERS_GROUP;
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SHARE_ENTRY;
 	}
 }

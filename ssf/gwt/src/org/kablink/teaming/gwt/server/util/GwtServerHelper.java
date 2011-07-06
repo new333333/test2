@@ -3821,7 +3821,7 @@ public class GwtServerHelper {
 	 * This code was taken from RelevanceAjaxController.java, ajaxSaveShareThisBinder() and modified.
 	 */
 	@SuppressWarnings("unchecked")
-	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, String entryId, String addedComments, ArrayList<String> principalIds, ArrayList<String> teamIds )
+	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, String entryId, String addedComments, List<String> principalIds, List<String> teamIds )
 		throws Exception
 	{
 		FolderModule folderModule;

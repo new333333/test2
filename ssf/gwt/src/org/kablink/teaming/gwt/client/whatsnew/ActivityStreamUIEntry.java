@@ -42,7 +42,9 @@ import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -942,28 +944,22 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	private void replyToEntry( String title, String desc )
 	{
-		HttpRequestInfo ri;
-		AsyncCallback<ActivityStreamEntry> callback;
-		
-		callback = new AsyncCallback<ActivityStreamEntry>()
+		ReplyToEntryCmd cmd = new ReplyToEntryCmd( getEntryId(), desc, title );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable t )
+			@Override
+			public void onFailure( Throwable caught )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_ReplyToEntry(),
-						m_entryId );
-			}
+					caught,
+					GwtTeaming.getMessages().rpcFailure_ReplyToEntry(),
+					m_entryId );
+			}// end onFailure()
 
-			/**
-			 * 
-			 * @param result
-			 */
-			public void onSuccess( final ActivityStreamEntry asEntry )
+			@Override
+			public void onSuccess( VibeRpcResponse result )
 			{
+				final ActivityStreamEntry asEntry = ((ActivityStreamEntryRpcResponseData) result.getResponseData()).getActivityStreamEntry();
 				Scheduler.ScheduledCommand cmd;
 				
 				cmd = new Scheduler.ScheduledCommand()
@@ -975,13 +971,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
-			}
-			
-		};
-		
-		// Issue an ajax request to add a reply to this entry.
-		ri = HttpRequestInfo.createHttpRequestInfo();
-		GwtTeaming.getRpcService().replyToEntry( ri, getEntryId(), title, desc, callback );
+			}// end onSuccess()
+		} );
 	}
 	
 	/**
