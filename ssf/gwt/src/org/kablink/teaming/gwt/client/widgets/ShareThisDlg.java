@@ -50,11 +50,12 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
@@ -112,7 +113,7 @@ public class ShareThisDlg extends DlgBox
 	private FlowPanel m_recipientTablePanel;
 	private FlexCellFormatter m_cellFormatter;
 	private String m_entryId;
-	private AsyncCallback<List<TeamInfo>> m_readTeamsCallback;
+	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -1099,6 +1100,8 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void init( String title, String entryId )
 	{
+		GetMyTeamsCmd cmd;
+		
 		m_titleTextBox.setText( title );
 		m_msgTextArea.setText( "" );
 		m_entryId = entryId;
@@ -1125,7 +1128,7 @@ public class ShareThisDlg extends DlgBox
 		if ( m_readTeamsCallback == null )
 		{
 			// Create a callback that will be used when we read the teams the user is a member of
-			m_readTeamsCallback = new AsyncCallback<List<TeamInfo>>()
+			m_readTeamsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -1140,8 +1143,14 @@ public class ShareThisDlg extends DlgBox
 				/**
 				 * 
 				 */
-				public void onSuccess( List<TeamInfo> listOfTeams )
+				public void onSuccess( VibeRpcResponse response )
 				{
+					List<TeamInfo> listOfTeams;
+					GetMyTeamsRpcResponseData responseData;
+					
+					responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
+					listOfTeams = responseData.getTeams();
+					
 					// Update the dialog with the list of teams.
 					updateListOfTeams( listOfTeams );
 				}
@@ -1149,7 +1158,8 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		// Issue an rpc request to get the teams this user is a member of.
-		GwtTeaming.getRpcService().getMyTeams( HttpRequestInfo.createHttpRequestInfo(), m_readTeamsCallback );
+		cmd = new GetMyTeamsCmd();
+		GwtClientHelper.executeCommand( cmd, m_readTeamsCallback );
 	}
 
 	/**

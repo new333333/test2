@@ -519,9 +519,10 @@ public class WorkspaceTreeControl extends Composite
 				}
 				
 				public void onSuccess(VibeRpcResponse response) {
-					ActivityStreamInfo asi;
+					ActivityStreamInfo asi = null;
 					
-					asi = (ActivityStreamInfo) response.getResponseData();
+					if ( response.getResponseData() != null )
+						asi = (ActivityStreamInfo) response.getResponseData();
 					
 					// If the user doesn't have a default
 					// saved or the default saved is

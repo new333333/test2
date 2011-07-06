@@ -37,6 +37,11 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg.ManageSavedSearchesDlgClient;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTopRankedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTopRankedRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -99,6 +104,8 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 		final MenuPopupAnchor mpa = new MenuPopupAnchor("ss_mainMenuManageSavedSearches", m_messages.mainMenuBarManageSavedSearches(), null,
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
+					GetSavedSearchesCmd cmd;
+					
 					// Remove the selection from the menu item...
 					Element menuItemElement = Document.get().getElementById("ss_mainMenuManageSavedSearches");
 					menuItemElement.removeClassName("mainMenuPopup_ItemHover");
@@ -107,14 +114,21 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 					hide();
 					
 					// ...and run the manage saved searches dialog.
-					GwtTeaming.getRpcService().getSavedSearches(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<SavedSearchInfo>>() {
+					cmd = new GetSavedSearchesCmd();
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								m_messages.rpcFailure_GetSavedSearches());
 						}
 						
-						public void onSuccess(List<SavedSearchInfo> ssList) {
+						public void onSuccess(VibeRpcResponse response) {
+							List<SavedSearchInfo> ssList;
+							GetSavedSearchesRpcResponseData responseData;
+							
+							responseData = (GetSavedSearchesRpcResponseData) response.getResponseData();
+							ssList = responseData.getSavedSearches();
+							
 							ManageSavedSearchesDlg.createAsync(
 								false,	// false -> Don't auto hide.
 								true,	// true  -> Modal.
@@ -149,7 +163,9 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	private void addTopRankedToView() {
 		final MenuPopupAnchor mpa = new MenuPopupAnchor("ss_mainMenuTopRanged", m_messages.mainMenuBarTopRanked(), null,
 			new ClickHandler() {
-				public void onClick(ClickEvent event) {					
+				public void onClick(ClickEvent event) {
+					GetTopRankedCmd cmd;
+					
 					// Remove the selection from the menu item...
 					Element menuItemElement = Document.get().getElementById("ss_mainMenuTopRanged");
 					menuItemElement.removeClassName("mainMenuPopup_ItemHover");
@@ -158,14 +174,21 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 					hide();
 					
 					// ...and run the top ranked dialog.
-					GwtTeaming.getRpcService().getTopRanked( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<TopRankedInfo>>() {
+					cmd = new GetTopRankedCmd();
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								m_messages.rpcFailure_GetTopRanked());
 						}
 						
-						public void onSuccess(List<TopRankedInfo> triList) {
+						public void onSuccess(VibeRpcResponse response) {
+							List<TopRankedInfo> triList;
+							GetTopRankedRpcResponseData responseData;
+							
+							responseData = (GetTopRankedRpcResponseData) response.getResponseData();
+							triList = responseData.getTopRanked();
+							
 							TopRankedDlg topRankedDlg = new TopRankedDlg(
 								false,	// false -> Don't auto hide.
 								true,	// true  -> Modal.

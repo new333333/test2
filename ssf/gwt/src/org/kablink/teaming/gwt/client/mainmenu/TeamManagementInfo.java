@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -43,7 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  *
  */
-public class TeamManagementInfo implements IsSerializable {
+public class TeamManagementInfo implements IsSerializable, VibeRpcResponseData {
 	private boolean m_viewAllowed;		// Is viewing teaming membership allowed?
 	private String  m_manageUrl;		// The URL for team management.
 	private String  m_sendMailUrl;		// The URL to sending mail to the team.

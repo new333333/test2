@@ -36,13 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
-import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
-import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
-import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -66,7 +62,6 @@ import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -82,23 +77,6 @@ public interface GwtRpcServiceAsync
 	
 	
 	
-	// The following are used in the implementation of the
-	// MainMenuControl.
-	public void addFavorite(                  HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
-	public void removeFavorite(               HttpRequestInfo ri, String favoriteId,                                 AsyncCallback<Boolean>               callback );
-	public void updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
-	public void getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId,                                   AsyncCallback<String>                callback );
-	public void getFavorites(                 HttpRequestInfo ri,                                                    AsyncCallback<List<FavoriteInfo>>    callback );
-	public void getMyTeams(                   HttpRequestInfo ri,                                                    AsyncCallback<List<TeamInfo>>        callback );
-	public void getMyGroups(                  HttpRequestInfo ri,                                                    AsyncCallback<List<GroupInfo>>        callback );
-	public void getRecentPlaces(              HttpRequestInfo ri,                                                    AsyncCallback<List<RecentPlaceInfo>> callback );
-	public void getSavedSearches(             HttpRequestInfo ri,                                                    AsyncCallback<List<SavedSearchInfo>> callback );
-	public void getTeamManagementInfo(        HttpRequestInfo ri, String binderId,                                   AsyncCallback<TeamManagementInfo>    callback );
-	public void getToolbarItems(              HttpRequestInfo ri, String binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
-	public void getTopRanked(                 HttpRequestInfo ri,                                                    AsyncCallback<List<TopRankedInfo>>   callback );
-	public void removeSavedSearch(            HttpRequestInfo ri,                     SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
-	public void saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
-
 	// The following methods are used to manage tags on a binder/entry.
 	public void canManagePublicBinderTags( HttpRequestInfo ri, String binderId, AsyncCallback<Boolean> callback );
 	public void canManagePublicEntryTags( HttpRequestInfo ri, String binderId, AsyncCallback<Boolean> callback );

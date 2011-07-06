@@ -52,6 +52,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -418,6 +420,8 @@ public class SearchOptionsComposite extends Composite
 	 * Called to use GWT RPC to populate the saved searches list box.
 	 */
 	private void populateSavedSearchList(final ListBox ssList) {
+		GetSavedSearchesCmd cmd;
+		
 		// Add a no saved searches item and disable the widget.  If we
 		// find some from the RPC call, we'll remove this and re-enable
 		// it.
@@ -425,13 +429,20 @@ public class SearchOptionsComposite extends Composite
 		ssList.setEnabled(false);
 		
 		// Does the user have any saved searches defined?
-		GwtTeaming.getRpcService().getSavedSearches(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<SavedSearchInfo>>() {
+		cmd = new GetSavedSearchesCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetSavedSearches());
 			}
-			public void onSuccess(List<SavedSearchInfo> ssiList)  {
+			public void onSuccess(VibeRpcResponse response)  {
+				List<SavedSearchInfo> ssiList;
+				GetSavedSearchesRpcResponseData responseData;
+				
+				responseData = (GetSavedSearchesRpcResponseData) response.getResponseData();
+				ssiList = responseData.getSavedSearches();
+				
 				int count = ((null == ssiList) ? 0 : ssiList.size());
 				if (0 < count) {
 					// Yes!  Remove the no saved searches item and

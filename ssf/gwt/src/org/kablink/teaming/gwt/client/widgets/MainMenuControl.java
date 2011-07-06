@@ -67,12 +67,14 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup.ViewsMenuPopupClient;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTeamManagementInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -775,23 +777,44 @@ public class MainMenuControl extends Composite
 	 * Synchronously shows the context that was loaded.
 	 */
 	private void showContextNow(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
+		GetToolbarItemsCmd cmd;
+		
 		m_contextBinder = binderInfo;
-		GwtTeaming.getRpcService().getToolbarItems(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<List<ToolbarItem>>() {
+		cmd = new GetToolbarItemsCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetToolbarItems(),
 					binderId);
 			}
-			public void onSuccess(final List<ToolbarItem> toolbarItemList) {
-				GwtTeaming.getRpcService().getTeamManagementInfo( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
+			public void onSuccess(VibeRpcResponse response) {
+				GetTeamManagementInfoCmd cmd;
+				GetToolbarItemsRpcResponseData responseData;
+				final List<ToolbarItem> toolbarItemList;
+				
+				if ( response.getResponseData() != null )
+				{
+					responseData = (GetToolbarItemsRpcResponseData) response.getResponseData();
+					toolbarItemList = responseData.getToolbarItems();
+				}
+				else
+					toolbarItemList = null;
+				
+				cmd = new GetTeamManagementInfoCmd( binderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_GetTeamManagement(),
 							binderId);
 					}
-					public void onSuccess(TeamManagementInfo tmi) {
+					public void onSuccess(VibeRpcResponse response) {
+						TeamManagementInfo tmi = null;
+						
+						if ( response.getResponseData() != null )
+							tmi = (TeamManagementInfo) response.getResponseData();
+						
 						// Show the toolbar items asynchronously so
 						// that we can release the AJAX request ASAP.
 						showToolbarItemsAsync(

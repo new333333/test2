@@ -38,8 +38,10 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -146,15 +148,28 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	private void checkDefaultFolderView() {
 		// Did we display any folder view options in the dialog?
 		if (0 < m_folderViewsListCount) {
+			GetDefaultFolderDefinitionIdCmd cmd;
+			
 			// Yes!  Does the folder we're working on have a default
 			// view defined?
-			GwtTeaming.getRpcService().getDefaultFolderDefinitionId(HttpRequestInfo.createHttpRequestInfo(), m_binderId, new AsyncCallback<String>() {
+			cmd = new GetDefaultFolderDefinitionIdCmd( m_binderId );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						m_messages.rpcFailure_GetFolderDefinitionId());
 				}
-				public void onSuccess(String folderDefId) {
+				public void onSuccess(VibeRpcResponse response) {
+					String folderDefId = null;
+						
+					if ( response.getResponseData() != null )
+					{
+						StringRpcResponseData responseData;
+						
+						responseData = (StringRpcResponseData) response.getResponseData();
+						folderDefId = responseData.getStringValue();
+					}
+					
 					if (GwtClientHelper.hasString(folderDefId)) {
 						// Yes!  Scan the folder view options.
 						for (int i = 0; i < m_folderViewsListCount; i += 1) {

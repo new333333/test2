@@ -98,6 +98,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.AddFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -109,10 +110,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDocBaseUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionFilesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
@@ -122,8 +125,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetModifyBinderUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTeamManagementInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTopRankedRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalNodeCmd;
@@ -138,15 +148,19 @@ import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveFavoriteCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveSavedSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateFavoritesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -232,6 +246,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		switch ( cmd.getCmdType() )
 		{
+		case ADD_FAVORITE:
+		{
+			AddFavoriteCmd afCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			afCmd = (AddFavoriteCmd) cmd;
+			result = addFavorite( ri, afCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case EXECUTE_SEARCH:
 		{
 			GwtSearchResults searchResults;
@@ -345,6 +372,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_DEFAULT_FOLDER_DEFINITION_ID:
+		{
+			GetDefaultFolderDefinitionIdCmd gdfdiCmd;
+			StringRpcResponseData responseData;
+			String result;
+			
+			gdfdiCmd = (GetDefaultFolderDefinitionIdCmd) cmd;
+			result = getDefaultFolderDefinitionId( ri, gdfdiCmd.getBinderId() );
+			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_DOCUMENT_BASE_URL:
 		{
 			String binderId;
@@ -385,6 +425,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			result = getExtensionInfo( ri );
 			responseData = new GetExtensionInfoRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_FAVORITES:
+		{
+			GetFavoritesRpcResponseData responseData;
+			List<FavoriteInfo> result;
+			
+			result = getFavorites( ri );
+			responseData = new GetFavoritesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -468,12 +519,34 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_MY_TEAMS:
+		{
+			GetMyTeamsRpcResponseData responseData;
+			List<TeamInfo> result;
+			
+			result = getMyTeams( ri );
+			responseData = new GetMyTeamsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_PERSONAL_PREFERENCES:
 		{
 			GwtPersonalPreferences prefs;
 			
 			prefs = getPersonalPreferences( ri );
 			response = new VibeRpcResponse( prefs );
+			return response;
+		}
+		
+		case GET_RECENT_PLACES:
+		{
+			GetRecentPlacesRpcResponseData responseData;
+			List<RecentPlaceInfo> result;
+			
+			result = getRecentPlaces( ri );
+			responseData = new GetRecentPlacesRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -486,6 +559,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			grwiCmd = (GetRootWorkspaceIdCmd) cmd;
 			result = getRootWorkspaceId( ri, grwiCmd.getBinderId() );
 			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_SAVED_SEARCHES:
+		{
+			GetSavedSearchesRpcResponseData responseData;
+			List<SavedSearchInfo> result;
+			
+			result = getSavedSearches( ri );
+			responseData = new GetSavedSearchesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -509,6 +593,41 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			brandingData = getSiteBrandingData( ri );
 			response = new VibeRpcResponse( brandingData );
+			return response;
+		}
+		
+		case GET_TEAM_MANAGEMENT_INFO:
+		{
+			GetTeamManagementInfoCmd gtmiCmd;
+			TeamManagementInfo result;
+			
+			gtmiCmd = (GetTeamManagementInfoCmd) cmd;
+			result = getTeamManagementInfo( ri, gtmiCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_TOOLBAR_ITEMS:
+		{
+			GetToolbarItemsCmd gtiCmd;
+			List<ToolbarItem> result;
+			GetToolbarItemsRpcResponseData responseData;
+			
+			gtiCmd = (GetToolbarItemsCmd) cmd;
+			result = getToolbarItems( ri, gtiCmd.getBinderId() );
+			responseData = new GetToolbarItemsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TOP_RANKED:
+		{
+			List<TopRankedInfo> result;
+			GetTopRankedRpcResponseData responseData;
+			
+			result = getTopRanked( ri );
+			responseData = new GetTopRankedRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -684,6 +803,32 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
+		
+		case REMOVE_FAVORITE:
+		{
+			RemoveFavoriteCmd rfCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			rfCmd = (RemoveFavoriteCmd) cmd;
+			result = removeFavorite( ri, rfCmd.getFavoriteId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case REMOVE_SAVED_SEARCH:
+		{
+			RemoveSavedSearchCmd rssCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			rssCmd = (RemoveSavedSearchCmd) cmd;
+			result = removeSavedSearch( ri, rssCmd.getSavedSearchInfo() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
 
 		case REPLY_TO_ENTRY:
 		{
@@ -716,6 +861,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = savePersonalPreferences( ri, ((SavePersonalPrefsCmd) cmd).getPersonalPrefs() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_SEARCH:
+		{
+			SaveSearchCmd ssCmd;
+			SavedSearchInfo result;
+			
+			ssCmd = (SaveSearchCmd) cmd;
+			result = saveSearch( ri, ssCmd.getSearchTabId(), ssCmd.getSavedSearchInfo() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -752,6 +908,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtShareEntryResults results = shareEntry(
 					ri, seCmd.getEntryId(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case UPDATE_FAVORITES:
+		{
+			UpdateFavoritesCmd ufCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			ufCmd = (UpdateFavoritesCmd) cmd;
+			result = updateFavorites( ri, ufCmd.getFavoritesList() );
+			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3062,7 +3231,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean addFavorite( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private Boolean addFavorite( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		Binder binder;
 		Favorites f;
@@ -3104,7 +3273,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean removeFavorite( HttpRequestInfo ri, String favoriteId )
+	private Boolean removeFavorite( HttpRequestInfo ri, String favoriteId )
 	{
 		Favorites f;
 		UserProperties userProperties;
@@ -3124,7 +3293,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean updateFavorites( HttpRequestInfo ri, List<FavoriteInfo> favoritesList )
+	private Boolean updateFavorites( HttpRequestInfo ri, List<FavoriteInfo> favoritesList )
 	{
 		Favorites f;
 		Iterator<FavoriteInfo> fiIT;
@@ -3273,7 +3442,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public String getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId ) {
+	private String getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId ) {
 		return GwtServerHelper.getDefaultFolderDefinitionId( this, binderId );
 	}
 
@@ -3284,23 +3453,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<FavoriteInfo> getFavorites( HttpRequestInfo ri )
+	private List<FavoriteInfo> getFavorites( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getFavorites( this );
 	}// end getFavorites()
-	
-	/**
-	 * Returns information about the groups the current user is a member
-	 * of.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	public List<GroupInfo> getMyGroups( HttpRequestInfo ri )
-	{
-		return GwtServerHelper.getMyGroups( getRequest( ri ), this );
-	}// end getMyGroups()
 	
 	/**
 	 * Returns information about the teams the current user is a member
@@ -3310,7 +3466,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<TeamInfo> getMyTeams( HttpRequestInfo ri )
+	private List<TeamInfo> getMyTeams( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getMyTeams( getRequest( ri ), this );
 	}// end getMyTeams()
@@ -3538,7 +3694,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<RecentPlaceInfo> getRecentPlaces( HttpRequestInfo ri )
+	private List<RecentPlaceInfo> getRecentPlaces( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getRecentPlaces( getRequest( ri ), this );
 	}// end getRecentPlaces()
@@ -3551,7 +3707,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<SavedSearchInfo> getSavedSearches( HttpRequestInfo ri )
+	private List<SavedSearchInfo> getSavedSearches( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getSavedSearches( this );
 	}// end getSavedSearches()
@@ -3580,7 +3736,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<ToolbarItem> getToolbarItems( HttpRequestInfo ri, String binderId )
+	private List<ToolbarItem> getToolbarItems( HttpRequestInfo ri, String binderId )
 	{
 		// Construct an ArrayList<ToolbarItem> to hold the toolbar
 		// items.
@@ -3627,7 +3783,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<TopRankedInfo> getTopRanked( HttpRequestInfo ri )
+	private List<TopRankedInfo> getTopRanked( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getTopRanked( getRequest( ri ), this );
 	}
@@ -3640,7 +3796,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean removeSavedSearch( HttpRequestInfo ri, SavedSearchInfo ssi ) {
+	private Boolean removeSavedSearch( HttpRequestInfo ri, SavedSearchInfo ssi ) {
 		return GwtServerHelper.removeSavedSearch( this, ssi );
 	}// end removeSavedSearch()
 	
@@ -3653,7 +3809,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public SavedSearchInfo saveSearch( HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi ) {
+	private SavedSearchInfo saveSearch( HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi ) {
 		return GwtServerHelper.saveSearch( this, searchTabId, ssi );
 	}// end saveSearch()
 	
@@ -3886,7 +4042,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TeamManagementInfo getTeamManagementInfo( HttpRequestInfo ri, String binderId )
+	private TeamManagementInfo getTeamManagementInfo( HttpRequestInfo ri, String binderId )
 	{
 		TeamManagementInfo tmi;
 		User user;
