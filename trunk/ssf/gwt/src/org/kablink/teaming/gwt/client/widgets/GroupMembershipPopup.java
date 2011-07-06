@@ -32,14 +32,18 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -72,8 +76,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	private FlexTable m_membersTable;
 	private FlowPanel m_membersTablePanel;
 	private FlexCellFormatter m_cellFormatter;
-	private AsyncCallback<ArrayList<GwtTeamingItem>> m_getGroupMembershipCallback;
-	private AsyncCallback<Boolean> m_isAllUsersGroupCallback;
 	
 	/**
 	 * This widget is used to display a group members's name.  If the member is a group
@@ -450,81 +452,68 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	 */
 	private void getGroupMembership()
 	{
-		if ( m_getGroupMembershipCallback == null )
-		{
-			m_getGroupMembershipCallback = new AsyncCallback<ArrayList<GwtTeamingItem>>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t)
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_GetGroupMembership() );
-				}
-
-				/**
-				 * 
-				 * @param result
-				 */
-				public void onSuccess( ArrayList<GwtTeamingItem> results )
-				{
-					boolean haveMember;
-					
-					haveMember = false;
-					
-					// Add each member to this popup
-					for ( GwtTeamingItem nextMember : results )
-					{
-						addGroupMember( nextMember );
-						haveMember = true;
-					}
-					
-					// If there aren't any members in this group, add some text indicating that.
-					if ( !haveMember )
-						addNoMembersMessage();
-				}
-			};
-		}
-		
-		if ( m_isAllUsersGroupCallback == null )
-		{
-			m_isAllUsersGroupCallback = new AsyncCallback<Boolean>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_IsAllUsersGroup() );
-				}
-				
-				/**
-				 * 
-				 */
-				public void onSuccess( Boolean isAllUsersGroup )
-				{
-					// Are we dealing with the "all users" group?
-					if ( isAllUsersGroup )
-					{
-						addAllUsersGroupMessage();
-					}
-					else
-					{
-						// No
-						// Issue an ajax request to get the membership of this group.
-						GwtTeaming.getRpcService().getGroupMembership( HttpRequestInfo.createHttpRequestInfo(), m_groupId, m_getGroupMembershipCallback );
-					}
-				}
-			};
-		}
-		
 		// Issue an ajax request to see if this group is the "all users" group.  If it is
 		// not the "all users" group we will make another ajax request to get the group membership.
-		GwtTeaming.getRpcService().isAllUsersGroup( HttpRequestInfo.createHttpRequestInfo(), m_groupId, m_isAllUsersGroupCallback );
+		IsAllUsersGroupCmd cmd = new IsAllUsersGroupCmd( m_groupId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_IsAllUsersGroup() );
+			}// end onFailure()
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				BooleanRpcResponseData responseData = ((BooleanRpcResponseData) result.getResponseData());
+				Boolean isAllUsersGroup = responseData.getBooleanValue();
+				
+				// Are we dealing with the "all users" group?
+				if ( isAllUsersGroup )
+				{
+					addAllUsersGroupMessage();
+				}
+				else
+				{
+					// No
+					// Issue an ajax request to get the membership of this group.
+					GetGroupMembershipCmd cmd = new GetGroupMembershipCmd( m_groupId );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+					{
+
+						@Override
+						public void onFailure( Throwable caught )
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+								caught,
+								GwtTeaming.getMessages().rpcFailure_GetGroupMembership() );
+						}// end onFailure()
+
+						@Override
+						public void onSuccess( VibeRpcResponse result )
+						{
+							GetGroupMembershipRpcResponseData responseData = ((GetGroupMembershipRpcResponseData) result.getResponseData());
+							List<GwtTeamingItem> results = responseData.getMembers();
+							boolean haveMember = false;
+							
+							// Add each member to this popup
+							for ( GwtTeamingItem nextMember : results )
+							{
+								addGroupMember( nextMember );
+								haveMember = true;
+							}
+							
+							// If there aren't any members in this group, add some text indicating that.
+							if ( !haveMember )
+								addNoMembersMessage();
+						}// end onSuccess()						
+					} );
+				}
+			}// end onSuccess()			
+		} );
 	}
 	
 	/**

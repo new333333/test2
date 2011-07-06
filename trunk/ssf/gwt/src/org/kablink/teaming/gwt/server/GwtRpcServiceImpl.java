@@ -115,6 +115,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoRpcResponseData
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeRpcResponseData;
@@ -127,6 +129,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
@@ -413,6 +417,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_GROUP_MEMBERSHIP:
+		{
+			String groupId = ((GetGroupMembershipCmd) cmd).getGroupId();
+			List<GwtTeamingItem> members = getGroupMembership(ri, groupId);
+			GetGroupMembershipRpcResponseData responseData = new GetGroupMembershipRpcResponseData( members );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_HORIZONTAL_TREE:
 		{
 			GetHorizontalTreeCmd ghtCmd;
@@ -561,6 +574,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
+
+		case IS_ALL_USERS_GROUP:
+		{
+			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
+			Boolean result = isAllUsersGroup( ri, groupId );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
 		
 		case HAS_ACTIVITY_STREAM_CHANGED:
 		{
@@ -570,6 +591,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			asi = ((HasActivityStreamChangedCmd) cmd).getActivityStreamInfo();
 			result = hasActivityStreamChanged( ri, asi );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+
+		case MARKUP_STRING_REPLACEMENT:
+		{
+			MarkupStringReplacementCmd msr = ((MarkupStringReplacementCmd) cmd); 
+			String binderId = msr.getBinderId();
+			String html     = msr.getHtml();
+			String type     = msr.getType();
+			
+			String newHtml = markupStringReplacement( ri, binderId, html, type );
+			StringRpcResponseData responseData = new StringRpcResponseData( newHtml );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
