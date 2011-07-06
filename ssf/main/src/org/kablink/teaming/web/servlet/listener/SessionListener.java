@@ -53,7 +53,9 @@ public class SessionListener implements HttpSessionListener {
 
 	private static Log logger = LogFactory.getLog(SessionListener.class);
 	
-	// Singleton instance
+	// Singleton instance (to be precise, there might be multiple instances of
+	// this in JVM due to those created from deserialization during session
+	// re-activation).
 	public static ActiveSessionCounter activeSessionCounter = new ActiveSessionCounter();
 	
 	public void sessionCreated(HttpSessionEvent se) {
@@ -62,14 +64,14 @@ public class SessionListener implements HttpSessionListener {
 		
 		se.getSession().setAttribute(activeSessionCounter.getClass().getName(), activeSessionCounter);
 		
-		activeSessionCounter.incrementWebSessionCount();
+		ActiveSessionCounter.incrementWebSessionCount();
 	}
 
 	public void sessionDestroyed(HttpSessionEvent se) {
 		if(logger.isDebugEnabled())
 			logger.debug("Destroying session: " + se.getSession().getId());
 
-		activeSessionCounter.decrementWebSessionCount();
+		ActiveSessionCounter.decrementWebSessionCount();
 
 		// This listener is invoked in the same thread executing portal-side code
 		// as side effect of the portal session being invalidated. Consequently,
@@ -113,17 +115,19 @@ public class SessionListener implements HttpSessionListener {
 
 		private static final long serialVersionUID = 1L;
 		
-		// guarded by "this"
-		private int activeSessionCount = 0;
-		// guarded by "this"
-		private int peakActiveSessionCount = 0;
+		// The following two variables are used to keep the counters and guarded by the class.
+		// Since there might be multiple instances of this class due to session passivation/
+		// activation, it is important NOT to use instance level variables to keep JVM wide
+		// counters.
+		private static int activeSessionCount = 0;
+		private static int peakActiveSessionCount = 0;
 
 		@Override
 		public void sessionDidActivate(HttpSessionEvent se) {
 			if(logger.isDebugEnabled())
 				logger.debug("Activating session: " + se.getSession().getId());
 			
-			this.incrementWebSessionCount();
+			incrementWebSessionCount();
 		}
 
 		@Override
@@ -131,24 +135,24 @@ public class SessionListener implements HttpSessionListener {
 			if(logger.isDebugEnabled())
 				logger.debug("Passivating session: " + se.getSession().getId());
 			
-			this.decrementWebSessionCount();
+			decrementWebSessionCount();
 		}
 		
-		public synchronized int incrementWebSessionCount() {
+		public static synchronized int incrementWebSessionCount() {
 			if(++activeSessionCount > peakActiveSessionCount)
 				peakActiveSessionCount = activeSessionCount;
 			return activeSessionCount;
 		}
 		
-		public synchronized int decrementWebSessionCount() {
+		public static synchronized int decrementWebSessionCount() {
 			return --activeSessionCount;
 		}
 		
-		public synchronized int getActiveSessionCount() {
+		public static synchronized int getActiveSessionCount() {
 			return activeSessionCount;
 		}
 		
-		public synchronized int getPeakActiveSessionCount() {
+		public static synchronized int getPeakActiveSessionCount() {
 			return peakActiveSessionCount;
 		}
 		
