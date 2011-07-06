@@ -34,12 +34,14 @@ package org.kablink.teaming.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.report.impl.ReportModuleImpl;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.teaming.util.cache.DefinitionCache;
+import org.kablink.teaming.web.servlet.listener.SessionListener;
 
 public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
@@ -125,6 +127,14 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		return sb.toString();
 	}
 	
+	public int getWebActiveSessionCount() {
+		return SessionListener.activeSessionCounter.getActiveSessionCount();
+	}
+	
+	public int getWebPeakActiveSessionCount() {
+		return SessionListener.activeSessionCounter.getPeakActiveSessionCount();
+	}
+
 	private String propertiesAsString() {
 		StringBuilder sb = new StringBuilder();
 		

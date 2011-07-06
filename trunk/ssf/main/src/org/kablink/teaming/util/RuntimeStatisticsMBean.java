@@ -91,4 +91,11 @@ public interface RuntimeStatisticsMBean {
 	 * Dump a snapshot of all statistics as string.
 	 */
 	public String dumpAllAsString();
+	
+	/*
+	 * 
+	 */
+	public int getWebActiveSessionCount();
+	
+	public int getWebPeakActiveSessionCount();
 }
