@@ -45,6 +45,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMicroBlogUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetQuickViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IsPersonTrackedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
@@ -443,11 +445,11 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 */
 	private void createProfileInfoSections() {
 
-		GwtRpcServiceAsync gwtRpcService;
+		GetQuickViewInfoCmd cmd;
 
 		// create an async callback to handle the result of the request to get
 		// the state:
-		AsyncCallback<ProfileInfo> callback = new AsyncCallback<ProfileInfo>() {
+		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -457,7 +459,11 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 				hide();
 			}
 
-			public void onSuccess(ProfileInfo profile) {		
+			public void onSuccess( VibeRpcResponse response ) {
+				ProfileInfo profile;
+				
+				profile = (ProfileInfo) response.getResponseData();
+				
 				boolean isPictureEnabled = profile.isPictureEnabled();
 				String url = profile.getPictureScaledUrl();
 				if(isPictureEnabled) {
@@ -497,8 +503,8 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			}
 		};
 
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getQuickViewInfo( HttpRequestInfo.createHttpRequestInfo(), binderId, callback);
+		cmd = new GetQuickViewInfoCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 
 	
@@ -648,21 +654,22 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		
 		String mbBinderId;
 		
-		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		
 		public MicroBlogClickHandler(String binderId){
 			this.mbBinderId = binderId;
 		}
 		
 		public void onClick(ClickEvent event) {
 
+			GetMicroBlogUrlCmd cmd;
+			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			rpcService.getMicrBlogUrl( HttpRequestInfo.createHttpRequestInfo(), mbBinderId, rpcCallback );
+			cmd = new GetMicroBlogUrlCmd( mbBinderId );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 
 		
-		AsyncCallback<String> rpcCallback = new AsyncCallback<String>(){
+		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -670,7 +677,17 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					binderId );
 				}
 
-				public void onSuccess(String url) {
+				public void onSuccess(VibeRpcResponse response) {
+					String url = null;
+					
+					if ( response.getResponseData() != null )
+					{
+						StringRpcResponseData responseData;
+					
+						responseData = (StringRpcResponseData) response.getResponseData();
+						url = responseData.getStringValue();
+					}
+
 					if(GwtClientHelper.hasString(url)) {
 						//GwtClientHelper.loadUrlInContentFrame(url);
 						GwtClientHelper.jsLaunchUrlInWindow(url,"_blank", 500, 500);

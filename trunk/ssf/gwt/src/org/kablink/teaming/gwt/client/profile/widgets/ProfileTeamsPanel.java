@@ -39,6 +39,9 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTeamsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
@@ -67,7 +70,10 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 	
 	private void getTeams() {
 		
-		rpcService.getTeams( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), new AsyncCallback<List<TeamInfo>>() {
+		GetTeamsCmd cmd;
+		
+		cmd = new GetTeamsCmd( profileRequestInfo.getBinderId() );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -75,8 +81,13 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 					profileRequestInfo.getBinderId());
 			}
 			
-			public void onSuccess(List<TeamInfo> tList)  {
+			public void onSuccess( VibeRpcResponse response )  {
 				
+				List<TeamInfo> tList;
+				GetMyTeamsRpcResponseData responseData;
+				
+				responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
+				tList = responseData.getTeams();
 				teamList = tList;
 				
 				// Scan the teams...

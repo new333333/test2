@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
+import org.kablink.teaming.gwt.client.rpc.shared.GetProfileInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -157,11 +159,11 @@ public class GwtProfilePage extends Composite {
 	 */
 	private void createProfileInfoSections() {
 
-		GwtRpcServiceAsync gwtRpcService;
-
+		GetProfileInfoCmd cmd;
+		
 		// create an async callback to handle the result of the request to get
 		// the state:
-		AsyncCallback<ProfileInfo> callback = new AsyncCallback<ProfileInfo>() {
+		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				// display error
 				GwtClientHelper.handleGwtRPCFailure(
@@ -170,7 +172,11 @@ public class GwtProfilePage extends Composite {
 					profileRequestInfo.getBinderId());
 			}
 
-			public void onSuccess(ProfileInfo profile) {
+			public void onSuccess( VibeRpcResponse response ) {
+				ProfileInfo profile;
+				
+				profile = (ProfileInfo) response.getResponseData();
+				
 				for (ProfileCategory cat: profile.getCategories()) {
 					if(cat != null) {
 						String catName = cat.getName();
@@ -188,9 +194,8 @@ public class GwtProfilePage extends Composite {
 			}
 		};
 
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getProfileInfo( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
-
+		cmd = new GetProfileInfoCmd( profileRequestInfo.getBinderId() );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 
 	private void relayoutPage() {

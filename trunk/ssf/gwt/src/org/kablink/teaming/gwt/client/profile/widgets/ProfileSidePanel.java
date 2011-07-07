@@ -38,6 +38,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
+import org.kablink.teaming.gwt.client.rpc.shared.GetProfileStatsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -154,7 +156,7 @@ public class ProfileSidePanel extends Composite {
 
 		// create an async callback to handle the result of the request to get
 		// the state:
-		AsyncCallback<ProfileStats> callback = new AsyncCallback<ProfileStats>() {
+		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
 
 			public void onFailure(Throwable t) {
 				// display error
@@ -164,8 +166,8 @@ public class ProfileSidePanel extends Composite {
 					profileRequestInfo.getBinderId());
 			}
 
-			public void onSuccess(ProfileStats stats) {
-				profileStats = stats;
+			public void onSuccess( VibeRpcResponse response ) {
+				profileStats = (ProfileStats) response.getResponseData();
 
 				if(statsPanel != null) {
 					statsPanel.addStats(profileStats);
@@ -178,8 +180,10 @@ public class ProfileSidePanel extends Composite {
 		};
 
 		if(profileStats == null) {
-			GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-			gwtRpcService.getProfileStats( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), profileRequestInfo.getUserId(), callback);
+			GetProfileStatsCmd cmd;
+			
+			cmd = new GetProfileStatsCmd( profileRequestInfo.getBinderId(), profileRequestInfo.getUserId() );
+			GwtClientHelper.executeCommand( cmd, callback );
 		}
 	}
 	

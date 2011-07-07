@@ -32,15 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
-import java.util.List;
 
-import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
-import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
-import org.kablink.teaming.gwt.client.profile.ProfileInfo;
-import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -60,13 +54,6 @@ public interface GwtRpcServiceAsync
 	
 	
 	// Return information about the User Profile
-	public void getProfileInfo(		HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileInfo> 	    callback );
-	public void getProfileStats(	HttpRequestInfo ri, String binderId, String userId, AsyncCallback<ProfileStats> 	callback );
-	public void getProfileAvatars(	HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileAttribute> callback );
-	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileInfo> 	    callback );
-	public void getTeams(			HttpRequestInfo ri, String binderId,                AsyncCallback<List<TeamInfo>>   callback );
-	public void getGroups(			HttpRequestInfo ri, String binderId,                AsyncCallback<List<GroupInfo>>  callback );
-	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId,                AsyncCallback<String> 			callback );
 	public void isPresenceEnabled(  HttpRequestInfo ri,                                 AsyncCallback<Boolean>			callback );
 	public void getImUrl(			HttpRequestInfo ri, String binderId,                AsyncCallback<String> 			callback );
 	public void getPresenceInfo(    HttpRequestInfo ri, String binderId,                AsyncCallback<GwtPresenceInfo>  callback );
