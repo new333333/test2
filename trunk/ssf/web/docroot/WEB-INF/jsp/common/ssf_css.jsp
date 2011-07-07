@@ -2552,8 +2552,8 @@ div.ss_thumbnail_small img {
     height: 75px;
 	}
 div.ss_thumbnail_tiny img {
-    width: 35px;
-    height: 35px;
+    width: 20px;
+    height: 20px;
 	}
 div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     width: 50px;
