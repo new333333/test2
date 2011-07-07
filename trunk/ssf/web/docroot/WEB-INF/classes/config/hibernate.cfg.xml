@@ -25,12 +25,15 @@
 		<property name="jdbc.batch_size">0</property>
 		<property name="jdbc.use_scrollable_resultset">true</property>
 		<property name="bytecode.use_reflection_optimizer">true</property>
+		<!-- Cache properties -->
+		<!-- Use EHCache as second-level cache in a single server environment -->
 		<property name="cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
 		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
  		<property name="cache.use_query_cache">true</property>
  		<property name="cache.use_second_level_cache">true</property>
  		<property name="cache.use_minimal_puts">true</property>
  		<property name="cache.use_structured_entries">false</property>
+ 		<property name="cache.region_prefix">hibernate</property>
  		<!-- Do not set the following property to true on a production system since it significantly affects performance -->
 		<property name="show_sql">false</property>
 		<property name="hibernate.generate_statistics">false</property>
