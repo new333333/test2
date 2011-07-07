@@ -40,7 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This class provides very simple profiling functionality.
+ * This class implements simple per-thread profiler.
  *
  */
 public class SimpleProfiler {
