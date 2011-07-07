@@ -114,6 +114,7 @@ public class ShareThisDlg extends DlgBox
 	private FlexCellFormatter m_cellFormatter;
 	private String m_entryId;
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
+	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -811,22 +812,9 @@ public class ShareThisDlg extends DlgBox
 		ArrayList<String> principalIds;
 		ArrayList<String> teamIds;
 		
-		// Get the comment the user entered.
-		comment = getComment();
-		
-		// Get the ids of the users and groups we should send an email to.
-		principalIds = getRecipientIds();
-		
-		// Get the ids of the teams we should send an email to.
-		teamIds = getTeamIds();
-		
-		// Did the user specify any recipients or teams to send to?
-		if ( (principalIds != null && principalIds.size() > 0) || (teamIds != null && teamIds.size() > 0) )
+		if ( m_shareEntryCallback == null )
 		{
-			// Yes
-			// Issue an ajax request to send the email.
-			ShareEntryCmd cmd = new ShareEntryCmd( m_entryId, comment, principalIds, teamIds );
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			m_shareEntryCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				@Override
 				public void onFailure( Throwable caught )
@@ -925,7 +913,25 @@ public class ShareThisDlg extends DlgBox
 						hide();
 					}
 				}// end onSuccess()				
-			} );
+			};
+		}
+		
+		// Get the comment the user entered.
+		comment = getComment();
+		
+		// Get the ids of the users and groups we should send an email to.
+		principalIds = getRecipientIds();
+		
+		// Get the ids of the teams we should send an email to.
+		teamIds = getTeamIds();
+		
+		// Did the user specify any recipients or teams to send to?
+		if ( (principalIds != null && principalIds.size() > 0) || (teamIds != null && teamIds.size() > 0) )
+		{
+			// Yes
+			// Issue an ajax request to send the email.
+			ShareEntryCmd cmd = new ShareEntryCmd( m_entryId, comment, principalIds, teamIds );
+			GwtClientHelper.executeCommand( cmd, m_shareEntryCallback );
 		}
 		else
 		{

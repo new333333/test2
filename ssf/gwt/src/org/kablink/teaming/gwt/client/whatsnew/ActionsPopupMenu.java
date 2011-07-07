@@ -70,6 +70,7 @@ public class ActionsPopupMenu extends PopupMenu
 	private PopupMenuItem m_tagMenuItem;
 	private PopupMenuItem m_markReadMenuItem;
 	private PopupMenuItem m_markUnreadMenuItem;
+	private AsyncCallback<VibeRpcResponse> m_checkRightsCallback = null;
 	private List<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
 	private int m_x;
@@ -148,49 +149,55 @@ public class ActionsPopupMenu extends PopupMenu
 		if ( m_entry == null )
 			return;
 		
-		ValidateEntryEventsCmd cmd = new ValidateEntryEventsCmd( m_entry.getEntryId(), m_eventValidations );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		if ( m_checkRightsCallback == null )
 		{
-			@Override
-			public void onFailure( Throwable caught )
+			m_checkRightsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
-				Window.alert( "call to validateEntryEvents() failed: " + caught.toString() );
-				//!!! Finish
-				//GwtClientHelper.handleGwtRPCFailure(
-				//	t,
-				//	GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-				//	m_parentBinderId );
-			}// end onFailure()
-
-			@Override
-			public void onSuccess( VibeRpcResponse result )
-			{
-				EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
-				List<EventValidation> eventValidations = responseData.getEventValidationListResults();
-				
-				for( EventValidation nextValidation : eventValidations )
+				@Override
+				public void onFailure( Throwable caught )
 				{
-					if ( nextValidation.isValid() == false )
+					Window.alert( "call to validateEntryEvents() failed: " + caught.toString() );
+					//!!! Finish
+					//GwtClientHelper.handleGwtRPCFailure(
+					//	t,
+					//	GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+					//	m_parentBinderId );
+				}// end onFailure()
+
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
+					List<EventValidation> eventValidations = responseData.getEventValidationListResults();
+					
+					for( EventValidation nextValidation : eventValidations )
 					{
-						TeamingEvents event;
-						
-						event = nextValidation.getEvent();
-						
-						if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
-							setMenuItemVisibility( m_replyMenuItem, false );
-						else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
-							setMenuItemVisibility( m_subscribeMenuItem, false );
-						else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
-							setMenuItemVisibility( m_shareMenuItem, false );
-						else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
-							setMenuItemVisibility( m_tagMenuItem, false );
+						if ( nextValidation.isValid() == false )
+						{
+							TeamingEvents event;
+							
+							event = nextValidation.getEvent();
+							
+							if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
+								setMenuItemVisibility( m_replyMenuItem, false );
+							else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
+								setMenuItemVisibility( m_subscribeMenuItem, false );
+							else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
+								setMenuItemVisibility( m_shareMenuItem, false );
+							else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
+								setMenuItemVisibility( m_tagMenuItem, false );
+						}
 					}
-				}
-				
-				// Now that we have validated all the events, show this menu.
-				showMenu();
-			}// end onSuccess()
-		} );
+					
+					// Now that we have validated all the events, show this menu.
+					showMenu();
+				}// end onSuccess()
+			};
+		}
+		
+		// Issue an ajax request to check the rights the user has for the given entry.
+		ValidateEntryEventsCmd cmd = new ValidateEntryEventsCmd( m_entry.getEntryId(), m_eventValidations );
+		GwtClientHelper.executeCommand( cmd, m_checkRightsCallback );
 	}
 
 	
