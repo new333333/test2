@@ -36,9 +36,11 @@ package org.kablink.teaming.gwt.client.profile;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ProfileInfo implements IsSerializable  {
+public class ProfileInfo implements IsSerializable, VibeRpcResponseData  {
 
 	private String title;
 	private String binderId;

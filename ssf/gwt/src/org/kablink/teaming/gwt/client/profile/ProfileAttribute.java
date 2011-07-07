@@ -36,12 +36,14 @@ package org.kablink.teaming.gwt.client.profile;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author Nathan Jensen
  */
-public class ProfileAttribute implements IsSerializable {
+public class ProfileAttribute implements IsSerializable, VibeRpcResponseData {
 
 	public static final int NONE=0;
 	public static final int STRING= 1;

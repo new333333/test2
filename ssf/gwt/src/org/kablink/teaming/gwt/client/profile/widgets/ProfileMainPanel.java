@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetProfileAvatarsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IsPersonTrackedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -731,6 +732,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			editAvatarSuccessHandler = new EditSuccessfulHandler() {
 				public boolean editSuccessful(Object obj) {
 					
+					GetProfileAvatarsCmd cmd;
+					
 					if(profileAvatarArea != null) {
 						profileAvatarArea.clear();
 					}
@@ -744,11 +747,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					}
 					
 					//rebuild the avatar area
-					GwtRpcServiceAsync gwtRpcService;
 
 					// create an async callback to handle the result of the request to get
 					// the state:
-					AsyncCallback<ProfileAttribute> callback = new AsyncCallback<ProfileAttribute>() {
+					AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							// display error
 							GwtClientHelper.handleGwtRPCFailure(
@@ -757,7 +759,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 								profileRequestInfo.getBinderId());
 						}
 
-						public void onSuccess(ProfileAttribute attr) {
+						public void onSuccess( VibeRpcResponse response ) {
+							ProfileAttribute attr;
+							
+							attr = (ProfileAttribute) response.getResponseData();
 							
 							try {
 								profileAvatarArea.createWidget(attr);
@@ -801,8 +806,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						}
 					};
 
-					gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-					gwtRpcService.getProfileAvatars( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
+					cmd = new GetProfileAvatarsCmd( profileRequestInfo.getBinderId() );
+					GwtClientHelper.executeCommand( cmd, callback );
 					
 					return true;
 				}

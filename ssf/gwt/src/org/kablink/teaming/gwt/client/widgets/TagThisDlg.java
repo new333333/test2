@@ -117,7 +117,7 @@ public class TagThisDlg extends DlgBox
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
 	private AsyncCallback<VibeRpcResponse> m_rightsCallback = null;
 	private AsyncCallback<VibeRpcResponse> m_readTagsCallback = null;
-	private AsyncCallback<Boolean> m_saveTagsCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_saveTagsCallback = null;
 	private AsyncCallback<VibeRpcResponse> m_saveSortOrderCallback = null;
 	private ArrayList<TagInfo> m_currentListOfPersonalTags;
 	private ArrayList<TagInfo> m_currentListOfGlobalTags;
@@ -1514,7 +1514,7 @@ public class TagThisDlg extends DlgBox
 		// Issue an ajax request to save the subscription data.
 		if ( m_saveTagsCallback == null )
 		{
-			m_saveTagsCallback = new AsyncCallback<Boolean>()
+			m_saveTagsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
 				 * 
@@ -1529,7 +1529,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
-				public void onSuccess( Boolean results )
+				public void onSuccess( VibeRpcResponse response )
 				{
 					// Nothing to do.
 				}

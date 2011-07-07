@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,40 +31,53 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.*;
 
-import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class ProfileStats  implements IsSerializable, VibeRpcResponseData {
-
-	private String entries = "0";
-	private ArrayList<GwtUser> trackedUsers = new ArrayList<GwtUser>();
-
-	//Must have default constructor in order to serialize
-	public ProfileStats() {}
-
-	public void setEntries(String posted) {
-		this.entries = posted;
+/**
+ * This class holds all of the information necessary to execute the "get profile info" command.
+ * 
+ * @author jwootton
+ *
+ */
+public class GetProfileInfoCmd extends VibeRpcCmd
+{
+	private String m_binderId;
+	
+	/**
+	 * For GWT serialization, must have a zero param contructor
+	 */
+	public GetProfileInfoCmd()
+	{
+		super();
+		
+		init();
 	}
 	
-	public String getEntries(){
-		return this.entries;
-	}
-
-	public ArrayList<GwtUser> getTrackedUsers() {
-		return trackedUsers;
-	}
-
-	public void addTrackedUser(GwtUser user) {
-		trackedUsers.add(user);
+	/**
+	 * 
+	 */
+	public GetProfileInfoCmd( String binderId )
+	{
+		m_binderId = binderId;
+		
+		init();
 	}
 	
-	public int getTrackedCnt(){
-		return trackedUsers.size(); 
+	/**
+	 * 
+	 */
+	public String getBinderId()
+	{
+		return m_binderId;
+	}
+	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_PROFILE_INFO;
 	}
 }

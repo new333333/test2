@@ -492,6 +492,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_GROUPS:
+		{
+			GetGroupsCmd ggCmd;
+			List<GroupInfo> result;
+			GetGroupsRpcResponseData responseData;
+			
+			ggCmd = (GetGroupsCmd) cmd;
+			result = getGroups( ri, ggCmd.getBinderId() );
+			responseData = new GetGroupsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_HORIZONTAL_TREE:
 		{
 			GetHorizontalTreeCmd ghtCmd;
@@ -511,6 +524,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			loginInfo = getLoginInfo( ri );
 			response = new VibeRpcResponse( loginInfo );
+			return response;
+		}
+		
+		case GET_MICRO_BLOG_URL:
+		{
+			GetMicroBlogUrlCmd gmbuCmd;
+			String result;
+			StringRpcResponseData responseData;
+			
+			gmbuCmd = (GetMicroBlogUrlCmd) cmd;
+			result = getMicrBlogUrl( ri, gmbuCmd.getBinderId() );
+			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -547,6 +573,49 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PROFILE_AVATARS:
+		{
+			GetProfileAvatarsCmd gpaCmd;
+			ProfileAttribute result;
+			
+			gpaCmd = (GetProfileAvatarsCmd) cmd;
+			result = getProfileAvatars( ri, gpaCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_PROFILE_INFO:
+		{
+			GetProfileInfoCmd gpiCmd;
+			ProfileInfo result;
+			
+			gpiCmd = (GetProfileInfoCmd) cmd;
+			result = getProfileInfo( ri, gpiCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_PROFILE_STATS:
+		{
+			GetProfileStatsCmd gpsCmd;
+			ProfileStats result;
+			
+			gpsCmd = (GetProfileStatsCmd) cmd;
+			result = getProfileStats( ri, gpsCmd.getBinderId(), gpsCmd.getUserId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_QUICK_VIEW_INFO:
+		{
+			GetQuickViewInfoCmd gqviCmd;
+			ProfileInfo result;
+			
+			gqviCmd = (GetQuickViewInfoCmd) cmd;
+			result = getQuickViewInfo( ri, gqviCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
 		case GET_RECENT_PLACES:
 		{
 			GetRecentPlacesRpcResponseData responseData;
@@ -694,6 +763,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_TEAMS:
+		{
+			GetTeamsCmd gtCmd;
+			List<TeamInfo> result;
+			GetMyTeamsRpcResponseData responseData;
+			
+			gtCmd = (GetTeamsCmd) cmd;
+			result = getTeams( ri, gtCmd.getBinderId() );
+			responseData = new GetMyTeamsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
 		case GET_TOOLBAR_ITEMS:
 		{
 			GetToolbarItemsCmd gtiCmd;
@@ -4313,7 +4394,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public ProfileInfo getProfileInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
+	private ProfileInfo getProfileInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
 		try
 		{
 			//get the binder
@@ -4337,7 +4418,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public ProfileInfo getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
+	private ProfileInfo getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
 		
 		try {
 			Long binderIdL = Long.valueOf(binderId);
@@ -4403,7 +4484,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public List<TeamInfo> getTeams( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private List<TeamInfo> getTeams( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try {
 			Long userId = null;
