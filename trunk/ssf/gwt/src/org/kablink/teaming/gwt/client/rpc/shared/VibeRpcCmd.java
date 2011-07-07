@@ -55,6 +55,7 @@ public abstract class VibeRpcCmd implements IsSerializable
 		EXPAND_HORIZONTAL_BUCKET,
 		EXPAND_SUBTASKS,
 		EXPAND_VERTICAL_BUCKET,
+		GET_ACTIVITY_STREAM_DATA,
 		GET_ACTIVITY_STREAM_PARAMS,
 		GET_ADMIN_ACTIONS,
 		GET_BINDER_BRANDING,
@@ -133,7 +134,7 @@ public abstract class VibeRpcCmd implements IsSerializable
 		UPDATE_CALCULATED_DATES,
 		UPDATE_ENTRY_TAGS,
 		UPDATE_FAVORITES,
-		VALIDATE_ENTRY_ACTIONS;
+		VALIDATE_ENTRY_EVENTS;
 	}
 	
 	protected VibeRpcCmdType m_cmdType;

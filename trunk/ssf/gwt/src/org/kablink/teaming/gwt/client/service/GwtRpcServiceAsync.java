@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
@@ -45,14 +44,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.SubscriptionData;
-import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -96,13 +88,4 @@ public interface GwtRpcServiceAsync
 	
 	// Get DiskUsage Info.
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
-
-	// Activity Stream servicing APIs.
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd,                              AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                                             AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
-	
-	// Validate the given TeamingEvents for the given entry id.
-	public void validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId, AsyncCallback<ArrayList<EventValidation>> callback );
 }// end GwtRpcServiceAsync

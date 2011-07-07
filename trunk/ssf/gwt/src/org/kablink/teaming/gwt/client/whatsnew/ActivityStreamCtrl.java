@@ -63,7 +63,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -75,7 +74,9 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
+import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamParamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
@@ -83,7 +84,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -140,7 +140,6 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_showSettingPanel;
 	private GwtMainPage m_mainPage;
 	private Object m_selectedObj = null;
-	private AsyncCallback<ActivityStreamData> m_searchResultsCallback;
 	private AsyncCallback<VibeRpcResponse> m_checkForChangesCallback = null;
 	private AsyncCallback<VibeRpcResponse> m_getActivityStreamParamsCallback = null;
 	private PagingData m_pagingData = null;
@@ -162,7 +161,6 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_msgPanel;
 	private InlineLabel m_msgText;
 	private ActivityStreamInfo m_activityStreamInfo = null;
-	private GwtRpcServiceAsync m_rpcService = null;
 	private String m_asSourcePermalink = null;		// Permalink to the binder or user that is the source of the activity stream.
 	// This is a list of ui widgets, one for each entry returned by the search.
 	// We will reuse these ui widgets every time we get a new page of results.
@@ -224,9 +222,6 @@ public class ActivityStreamCtrl extends Composite
 			m_registeredEvents,
 			this );
 
-		// Get the rpc service.
-		m_rpcService = GwtTeaming.getRpcService();
-		
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "activityStreamCtrl" );
 		
@@ -267,48 +262,6 @@ public class ActivityStreamCtrl extends Composite
 			m_msgPanel.setVisible( false );
 		}
 		
-		// Create the callback that will be used when we issue an ajax call to do a search.
-		m_searchResultsCallback = new AsyncCallback<ActivityStreamData>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure(Throwable t)
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_Search() );
-				
-				m_searchInProgress = false;
-				hideSearchingText();
-				showMessage( GwtTeaming.getMessages().noEntriesFound() );
-			}// end onFailure()
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			public void onSuccess( final ActivityStreamData activityStreamData )
-			{
-				if ( activityStreamData != null )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						public void execute()
-						{
-							m_searchInProgress = false;
-							hideSearchingText();
-
-							// Add the search results to the search results widget.
-							addSearchResults( activityStreamData );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}// end onSuccess()
-		};
 		m_searchInProgress = false;
 		
 		// Create an Actions popup menu.
@@ -966,8 +919,48 @@ public class ActivityStreamCtrl extends Composite
 			Window.alert( "in executeSearch() unknown m_showSetting" );
 			return;
 		}
-		m_rpcService.getActivityStreamData( HttpRequestInfo.createHttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, asType, m_searchResultsCallback );
+		
+		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd( asType, m_activityStreamInfo, m_activityStreamParams, m_pagingData );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_Search() );
+				
+				m_searchInProgress = false;
+				hideSearchingText();
+				showMessage( GwtTeaming.getMessages().noEntriesFound() );
+			}// end onFailure()
 
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				ActivityStreamDataRpcResponseData asDataResponse = ((ActivityStreamDataRpcResponseData) result.getResponseData());
+				final ActivityStreamData activityStreamData = asDataResponse.getActivityStreamDataResults();
+				
+				if ( activityStreamData != null )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							m_searchInProgress = false;
+							hideSearchingText();
+
+							// Add the search results to the search results widget.
+							addSearchResults( activityStreamData );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}// end onSuccess()
+		} );
+		
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?
 		if ( m_searchTimer == null )

@@ -4073,7 +4073,7 @@ public class GwtServerHelper {
 	/**
 	 * Validate the list of TeamingEvents to see if the user has rights to perform the events
 	 */
-	public static void validateEntryEvents( AllModulesInjected bs, HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId )
+	public static void validateEntryEvents( AllModulesInjected bs, HttpRequestInfo ri, List<EventValidation> eventValidations, String entryId )
 	{
 		// Initialize all events as invalid.
 		for ( EventValidation nextValidation : eventValidations )

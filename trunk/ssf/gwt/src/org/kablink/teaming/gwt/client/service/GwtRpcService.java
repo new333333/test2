@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -46,14 +45,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.SubscriptionData;
-import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -104,13 +96,4 @@ public interface GwtRpcService extends RemoteService
 	
 	// Get DiskUsageInfo.
 	public  DiskUsageInfo getDiskUsageInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-
-	// Activity Stream servicing APIs.
-	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd                              );
-	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt );
-	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi                                             );
-	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt );
-
-	// Validate the given TeamingEvents for the given entry id.
-	public ArrayList<EventValidation> validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId );
 }// end GwtRpcService
