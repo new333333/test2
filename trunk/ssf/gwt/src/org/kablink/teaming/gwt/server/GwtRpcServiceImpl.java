@@ -788,22 +788,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
-		case IS_ALL_USERS_GROUP:
-		{
-			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
-			Boolean result = isAllUsersGroup( ri, groupId );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
-			return response;
-		}
-		
-		case IS_SEEN:
-		{
-			Long entryId = ((IsSeenCmd) cmd).getEntryId();
-			Boolean result = isSeen( ri, entryId );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
-			return response;
-		}
-		
 		case HAS_ACTIVITY_STREAM_CHANGED:
 		{
 			ActivityStreamInfo asi;
@@ -815,6 +799,34 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case IS_ALL_USERS_GROUP:
+		{
+			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
+			Boolean result = isAllUsersGroup( ri, groupId );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+
+		case IS_PERSON_TRACKED:
+		{
+			IsPersonTrackedCmd iptCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			iptCmd = (IsPersonTrackedCmd) cmd;
+			result = isPersonTracked( ri, iptCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		case IS_SEEN:
+		{
+			Long entryId = ((IsSeenCmd) cmd).getEntryId();
+			Boolean result = isSeen( ri, entryId );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case MARKUP_STRING_REPLACEMENT:
 		{
 			MarkupStringReplacementCmd msr = ((MarkupStringReplacementCmd) cmd); 
@@ -1075,6 +1087,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
+		
+		case TRACK_BINDER:
+		{
+			TrackBinderCmd tbCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			tbCmd = (TrackBinderCmd) cmd;
+			result = trackBinder( ri, tbCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
 
 		case UPDATE_CALCULATED_DATES:
 		{
@@ -1119,6 +1144,32 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			ufCmd = (UpdateFavoritesCmd) cmd;
 			result = updateFavorites( ri, ufCmd.getFavoritesList() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case UNTRACK_BINDER:
+		{
+			UntrackBinderCmd ubCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			ubCmd = (UntrackBinderCmd) cmd;
+			result = untrackBinder( ri, ubCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case UNTRACK_PERSON:
+		{
+			UntrackPersonCmd upCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			upCmd = (UntrackPersonCmd) cmd;
+			result = untrackPerson( ri, upCmd.getBinderId() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2611,32 +2662,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 
-	/**
-	 * Returns a List<String> of the user ID's of the people the
-	 * current user is tracking.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	public List<String> getTrackedPeople( HttpRequestInfo ri )
-	{
-		return GwtServerHelper.getTrackedPeople( this );
-	}// end getTrackedPeople()
-	
-	/**
-	 * Returns a List<String> of the binder ID's of the places the
-	 * current user is tracking.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	public List<String> getTrackedPlaces( HttpRequestInfo ri )
-	{
-		return GwtServerHelper.getTrackedPlaces( this );
-	}// end getTrackedPlaces()
-	
     /**
      * 
 	 * @param ri
@@ -3853,7 +3878,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean trackBinder( HttpRequestInfo ri, String binderId )
+	private Boolean trackBinder( HttpRequestInfo ri, String binderId )
 	{
 		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "add" );
 		return Boolean.TRUE;
@@ -3866,7 +3891,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean untrackBinder( HttpRequestInfo ri, String binderId )
+	private Boolean untrackBinder( HttpRequestInfo ri, String binderId )
 	{
 		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "delete" );
 		return Boolean.TRUE;
@@ -3879,7 +3904,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean untrackPerson( HttpRequestInfo ri, String binderId )
+	private Boolean untrackPerson( HttpRequestInfo ri, String binderId )
 	{
 		Binder binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
 		BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
@@ -3924,7 +3949,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean isPersonTracked( HttpRequestInfo ri, String binderId )
+	private Boolean isPersonTracked( HttpRequestInfo ri, String binderId )
 	{
 		return BinderHelper.isPersonTracked( this, Long.parseLong( binderId ) );
 	}//end isPersonTracked()

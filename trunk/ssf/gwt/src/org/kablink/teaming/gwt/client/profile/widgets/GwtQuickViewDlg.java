@@ -43,8 +43,12 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileClientUtil;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IsPersonTrackedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -266,7 +270,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			}// end onClick()
 
 			private void followAction() {
-				GwtTeaming.getRpcService().trackBinder( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<Boolean>()
+				TrackBinderCmd cmd;
+				
+				cmd = new TrackBinderCmd( binderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
 					public void onFailure( Throwable t )
 					{
@@ -276,7 +283,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 							binderId);
 					}//end onFailure()
 					
-					public void onSuccess( Boolean success )
+					public void onSuccess( VibeRpcResponse response )
 					{
 						updateFollowingButton(true);
 					}// end onSuccess()
@@ -284,7 +291,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			}
 
 			private void unFollowAction() {
-				GwtTeaming.getRpcService().untrackPerson( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<Boolean>()
+				UntrackPersonCmd cmd;
+				
+				cmd = new UntrackPersonCmd( binderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
 					public void onFailure( Throwable t )
 					{
@@ -294,7 +304,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 							binderId);
 					}//end onFailure()
 					
-					public void onSuccess( Boolean success )
+					public void onSuccess( VibeRpcResponse response )
 					{
 						updateFollowingButton(false);
 					}// end onSuccess()
@@ -564,8 +574,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 * @return
 	 */
 	private void updateFollowingStatus() {
+		IsPersonTrackedCmd cmd;
 		
-		GwtTeaming.getRpcService().isPersonTracked( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<Boolean>()
+		cmd = new IsPersonTrackedCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
 					public void onFailure( Throwable t )
 					{
@@ -575,8 +587,14 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 							binderId);
 					}//end onFailure()
 					
-					public void onSuccess( Boolean success )
+					public void onSuccess( VibeRpcResponse response )
 					{
+						Boolean success;
+						BooleanRpcResponseData responseData;
+						
+						responseData = (BooleanRpcResponseData) response.getResponseData();
+						success = responseData.getBooleanValue();
+						
 						updateFollowingButton(success.booleanValue());
 					}// end onSuccess()
 				});

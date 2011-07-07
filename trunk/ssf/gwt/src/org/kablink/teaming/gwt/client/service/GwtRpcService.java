@@ -65,14 +65,6 @@ public interface GwtRpcService extends RemoteService
 	
 	
 	
-	// The following are used to manage the tracking of information.
-	public List<String> getTrackedPeople( HttpRequestInfo ri                  );
-	public List<String> getTrackedPlaces( HttpRequestInfo ri                  );
-	public Boolean      isPersonTracked(  HttpRequestInfo ri, String binderId );
-	public Boolean      trackBinder(      HttpRequestInfo ri, String binderId );
-	public Boolean      untrackBinder(    HttpRequestInfo ri, String binderId );
-	public Boolean      untrackPerson(    HttpRequestInfo ri, String binderId );
-	
 	// The following are used in the implementation of the
 	// User Profiles
 	public ProfileInfo 		getProfileInfo(    HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
