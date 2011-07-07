@@ -105,10 +105,4 @@ public interface GwtRpcServiceAsync
 	
 	// Validate the given TeamingEvents for the given entry id.
 	public void validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId, AsyncCallback<ArrayList<EventValidation>> callback );
-
-	// Get subscription information for the given entry id.
-	public void getSubscriptionData( HttpRequestInfo ri, String entryId, AsyncCallback<SubscriptionData> callback );
-	
-	// Save the given subscription data for the given entry id.
-	public void saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData, AsyncCallback<Boolean> callback );
 }// end GwtRpcServiceAsync

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,8 +37,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSubscriptionDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveSubscriptionDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SubscriptionDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -75,8 +78,6 @@ public class SubscribeToEntryDlg extends DlgBox
 	CheckBox m_primaryAddress3;
 	CheckBox m_mobileAddress3;
 	CheckBox m_textAddress3;
-	AsyncCallback<SubscriptionData> m_readSubscriptionDataCallback = null;
-	AsyncCallback<Boolean> m_saveSubscriptionDataCallback = null;
 	
 	/**
 	 * 
@@ -249,33 +250,24 @@ public class SubscribeToEntryDlg extends DlgBox
 			
 			subscriptionData = (SubscriptionData) data;
 			
-			// Issue an ajax request to save the subscription data.
-			if ( m_saveSubscriptionDataCallback == null )
-			{
-				m_saveSubscriptionDataCallback = new AsyncCallback<Boolean>()
-				{
-					/**
-					 * 
-					 */
-					public void onFailure( Throwable t )
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_SaveSubscriptionData() );
-					}
-					
-					/**
-					 * 
-					 */
-					public void onSuccess( Boolean results )
-					{
-						// Nothing to do.
-					}
-				};
-			}
-			
 			// Issue an ajax request to save the subscription data for the entry we are working with.
-			GwtTeaming.getRpcService().saveSubscriptionData( HttpRequestInfo.createHttpRequestInfo(), m_entryId, subscriptionData, m_saveSubscriptionDataCallback );
+			SaveSubscriptionDataCmd cmd = new SaveSubscriptionDataCmd( m_entryId, subscriptionData );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_SaveSubscriptionData() );
+				}// end onFailure()
+
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					// Nothing to do.
+				}// end onSuccess()
+			} );
 		}
 		
 		return true;
@@ -376,33 +368,26 @@ public class SubscribeToEntryDlg extends DlgBox
 		m_entryId = entryId;
 		m_entryTitle = entryTitle;
 		
-		if ( m_readSubscriptionDataCallback == null )
+		GetSubscriptionDataCmd cmd = new GetSubscriptionDataCmd( m_entryId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			m_readSubscriptionDataCallback = new AsyncCallback<SubscriptionData>()
+			@Override
+			public void onFailure( Throwable caught )
 			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_GetSubscriptionData() );
-				}
-				
-				/**
-				 * 
-				 */
-				public void onSuccess( SubscriptionData subscriptionData )
-				{
-					// Update the dialog with the given subscription data.
-					updateDlg( subscriptionData, m_entryTitle );
-				}
-			};
-		}
-		
-		// Issue an ajax request to get the subscription data for the entry we are working with.
-		GwtTeaming.getRpcService().getSubscriptionData( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_readSubscriptionDataCallback );
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_GetSubscriptionData() );
+			}// end onFailure()
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				// Update the dialog with the given subscription data.
+				SubscriptionDataRpcResponseData responseData = ((SubscriptionDataRpcResponseData) result.getResponseData());
+				SubscriptionData subscriptionData = responseData.getSubscriptionDataResults();
+				updateDlg( subscriptionData, m_entryTitle );
+			}// end onSuccess()
+		} );
 	}
 	
 	
