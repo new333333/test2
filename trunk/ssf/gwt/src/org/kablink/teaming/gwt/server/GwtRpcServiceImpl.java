@@ -137,6 +137,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSubscriptionDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsRpcResponseData;
@@ -170,6 +171,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.RemoveTaskLinkageCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveSubscriptionDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskCompletedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskLinkageCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskPriorityCmd;
@@ -183,6 +185,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SubscriptionDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskBundleRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskLinkageRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskListItemListRpcResponseData;
@@ -685,6 +688,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_SUBSCRIPTION_DATA:
+		{
+			GetSubscriptionDataCmd gsdCmd = ((GetSubscriptionDataCmd) cmd);
+			SubscriptionData result = getSubscriptionData( ri, gsdCmd.getEntryId() );
+			response = new VibeRpcResponse( new SubscriptionDataRpcResponseData( result ));
+			return response;
+		}
+		
 		case GET_TAG_RIGHTS_FOR_BINDER:
 		{
 			GetTagRightsForBinderCmd gtrfbCmd;
@@ -1026,6 +1037,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = saveBrandingData( ri, cmd2.getBinderId(), cmd2.getBrandingData() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_SUBSCRIPTION_DATA:
+		{
+			SaveSubscriptionDataCmd ssdCmd = ((SaveSubscriptionDataCmd) cmd);
+			Boolean result = saveSubscriptionData( ri, ssdCmd.getEntryId(), ssdCmd.getSubscriptionData() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
 		
@@ -3915,11 +3934,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end saveSearch()
 	
 	
-	/**
+	/*
 	 * Save the given subscription data for the given entry id.
 	 * @throws GwtTeamingException 
 	 */
-	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData )
+	private Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData )
 		throws GwtTeamingException
 	{
 		return GwtServerHelper.saveSubscriptionData( this, entryId, subscriptionData );
@@ -4122,10 +4141,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return toolbarItem;
 	}
 
-	/**
+	/*
 	 * Get the subscription data for the given entry id.
 	 */
-	public SubscriptionData getSubscriptionData( HttpRequestInfo ri, String entryId )
+	private SubscriptionData getSubscriptionData( HttpRequestInfo ri, String entryId )
 	{
 		SubscriptionData subscriptionData;
 		

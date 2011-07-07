@@ -113,10 +113,4 @@ public interface GwtRpcService extends RemoteService
 
 	// Validate the given TeamingEvents for the given entry id.
 	public ArrayList<EventValidation> validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId );
-
-	// Get subscription information for the given entry id.
-	public SubscriptionData getSubscriptionData( HttpRequestInfo ri, String entryId );
-	
-	// Save the subscription information for the given entry id.
-	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException;
 }// end GwtRpcService
