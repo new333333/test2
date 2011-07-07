@@ -87,6 +87,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionC
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -2124,7 +2127,10 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onTrackCurrentBinder( TrackCurrentBinderEvent event )
 	{
-		GwtTeaming.getRpcService().trackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
+		TrackBinderCmd cmd;
+		
+		cmd = new TrackBinderCmd( m_selectedBinderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -2134,7 +2140,7 @@ public class GwtMainPage extends Composite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			public void onSuccess( Boolean success )
+			public void onSuccess( VibeRpcResponse response )
 			{
 				// It's overkill to force a full context reload, which
 				// this does, but it's the only way right now to ensure
@@ -2169,7 +2175,10 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onUntrackCurrentBinder( UntrackCurrentBinderEvent event )
 	{
-		GwtTeaming.getRpcService().untrackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
+		UntrackBinderCmd cmd;
+		
+		cmd = new UntrackBinderCmd( m_selectedBinderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -2179,7 +2188,7 @@ public class GwtMainPage extends Composite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			public void onSuccess( Boolean success )
+			public void onSuccess( VibeRpcResponse respnse )
 			{
 				// It's overkill to force a full context reload, which
 				// this does, but it's the only way right now to ensure
@@ -2296,7 +2305,10 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onUntrackCurrentPerson( UntrackCurrentPersonEvent event )
 	{
-		GwtTeaming.getRpcService().untrackPerson( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
+		UntrackPersonCmd cmd;
+		
+		cmd = new UntrackPersonCmd( m_selectedBinderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -2306,7 +2318,7 @@ public class GwtMainPage extends Composite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			public void onSuccess( Boolean success )
+			public void onSuccess( VibeRpcResponse response )
 			{
 				// It's overkill to force a full context reload, which
 				// this does, but it's the only way right now to ensure

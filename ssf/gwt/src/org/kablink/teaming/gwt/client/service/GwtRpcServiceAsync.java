@@ -59,14 +59,6 @@ public interface GwtRpcServiceAsync
 	
 	
 	
-	// The following are used to manage the tracking of information.
-	public void getTrackedPeople( HttpRequestInfo ri,                  AsyncCallback<List<String>> callback );
-	public void getTrackedPlaces( HttpRequestInfo ri,                  AsyncCallback<List<String>> callback );
-	public void isPersonTracked(  HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
-	public void trackBinder(      HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
-	public void untrackBinder(    HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
-	public void untrackPerson(    HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
-	
 	// Return information about the User Profile
 	public void getProfileInfo(		HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileInfo> 	    callback );
 	public void getProfileStats(	HttpRequestInfo ri, String binderId, String userId, AsyncCallback<ProfileStats> 	callback );

@@ -46,6 +46,9 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.IsPersonTrackedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -536,8 +539,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * @return
 	 */
 	private void updateFollowingStatus() {
+		IsPersonTrackedCmd cmd;
 		
-		GwtTeaming.getRpcService().isPersonTracked( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), new AsyncCallback<Boolean>()
+		cmd = new IsPersonTrackedCmd( profileRequestInfo.getBinderId() );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
 					public void onFailure( Throwable t )
 					{
@@ -547,8 +552,14 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 							profileRequestInfo.getBinderId());
 					}//end onFailure()
 					
-					public void onSuccess( Boolean success )
+					public void onSuccess( VibeRpcResponse response )
 					{
+						Boolean success;
+						BooleanRpcResponseData responseData;
+						
+						responseData = (BooleanRpcResponseData) response.getResponseData();
+						success = responseData.getBooleanValue();
+						
 						if(success.booleanValue()) {
 							updateFollowingButton(true);
 						} else {
