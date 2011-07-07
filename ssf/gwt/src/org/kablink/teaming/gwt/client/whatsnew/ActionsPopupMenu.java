@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -46,7 +47,10 @@ import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.EventValidationListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEntryEventsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -66,8 +70,7 @@ public class ActionsPopupMenu extends PopupMenu
 	private PopupMenuItem m_tagMenuItem;
 	private PopupMenuItem m_markReadMenuItem;
 	private PopupMenuItem m_markUnreadMenuItem;
-	private AsyncCallback<ArrayList<EventValidation>> m_checkRightsCallback = null;
-	private ArrayList<EventValidation> m_eventValidations;
+	private List<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
 	private int m_x;
 	private int m_y;
@@ -142,61 +145,52 @@ public class ActionsPopupMenu extends PopupMenu
 	 */
 	private void checkRights()
 	{
-		HttpRequestInfo ri;
-
 		if ( m_entry == null )
 			return;
 		
-		if ( m_checkRightsCallback == null )
+		ValidateEntryEventsCmd cmd = new ValidateEntryEventsCmd( m_entry.getEntryId(), m_eventValidations );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			m_checkRightsCallback = new AsyncCallback<ArrayList<EventValidation>>()
+			@Override
+			public void onFailure( Throwable caught )
 			{
-				/**
-				 * 
-				 */
-				public void onFailure(Throwable t)
+				Window.alert( "call to validateEntryEvents() failed: " + caught.toString() );
+				//!!! Finish
+				//GwtClientHelper.handleGwtRPCFailure(
+				//	t,
+				//	GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+				//	m_parentBinderId );
+			}// end onFailure()
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
+				List<EventValidation> eventValidations = responseData.getEventValidationListResults();
+				
+				for( EventValidation nextValidation : eventValidations )
 				{
-					Window.alert( "call to validateEntryActions() failed: " + t.toString() );
-					//!!! Finish
-					//GwtClientHelper.handleGwtRPCFailure(
-					//	t,
-					//	GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					//	m_parentBinderId );
+					if ( nextValidation.isValid() == false )
+					{
+						TeamingEvents event;
+						
+						event = nextValidation.getEvent();
+						
+						if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
+							setMenuItemVisibility( m_replyMenuItem, false );
+						else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
+							setMenuItemVisibility( m_subscribeMenuItem, false );
+						else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
+							setMenuItemVisibility( m_shareMenuItem, false );
+						else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
+							setMenuItemVisibility( m_tagMenuItem, false );
+					}
 				}
 				
-				/**
-				 * 
-				 */
-				public void onSuccess( ArrayList<EventValidation> eventValidations )
-				{
-					for( EventValidation nextValidation : eventValidations )
-					{
-						if ( nextValidation.isValid() == false )
-						{
-							TeamingEvents event;
-							
-							event = nextValidation.getEvent();
-							
-							if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
-								setMenuItemVisibility( m_replyMenuItem, false );
-							else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
-								setMenuItemVisibility( m_subscribeMenuItem, false );
-							else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
-								setMenuItemVisibility( m_shareMenuItem, false );
-							else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
-								setMenuItemVisibility( m_tagMenuItem, false );
-						}
-					}
-					
-					// Now that we have validated all the events, show this menu.
-					showMenu();
-				}
-			};
-		}
-		
-		// Issue an ajax request to check the rights the user has for the given entry.
-		ri = HttpRequestInfo.createHttpRequestInfo();
-		GwtTeaming.getRpcService().validateEntryEvents( ri, m_eventValidations, m_entry.getEntryId(), m_checkRightsCallback );
+				// Now that we have validated all the events, show this menu.
+				showMenu();
+			}// end onSuccess()
+		} );
 	}
 
 	

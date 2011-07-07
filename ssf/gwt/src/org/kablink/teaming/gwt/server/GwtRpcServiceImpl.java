@@ -98,104 +98,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.client.rpc.shared.AddFavoriteCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.CollapseSubtasksCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ExecuteSearchCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ExpandSubtasksCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderTagsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultActivityStreamCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDocBaseUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetEntryTagsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionFilesCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetExtensionInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetModifyBinderUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSubscriptionDataCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForBinderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsForEntryCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTagRightsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTagsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTaskLinkageCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTaskListCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTeamManagementInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTopRankedRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalNodeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.IsSeenCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.RemoveExtensionRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.RemoveFavoriteCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.RemoveSavedSearchCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.RemoveTaskLinkageCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveSubscriptionDataCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskCompletedCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskLinkageCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskPriorityCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskSortCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskStatusCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveSearchCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveTagSortOrderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.SubscriptionDataRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.TaskBundleRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.TaskLinkageRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.TaskListItemListRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.UpdateBinderTagsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.UpdateEntryTagsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.UpdateFavoritesCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -358,6 +261,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			evbCmd = (ExpandVerticalBucketCmd) cmd;
 			result = expandVerticalBucket( ri, evbCmd.getBucketInfo() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+
+		case GET_ACTIVITY_STREAM_DATA:
+		{
+			GetActivityStreamDataCmd gasdCmd = ((GetActivityStreamDataCmd) cmd);
+			ActivityStreamData asData = getActivityStreamData(
+				ri,
+				gasdCmd.getActivityStreamParams(),
+				gasdCmd.getActivityStreamInfo(),
+				gasdCmd.getPagingData(),
+				gasdCmd.getActivityStreamDataType() );
+			response = new VibeRpcResponse( new ActivityStreamDataRpcResponseData( asData ) );
 			return response;
 		}
 		
@@ -1208,24 +1124,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case VALIDATE_ENTRY_ACTIONS:
+		case VALIDATE_ENTRY_EVENTS:
 		{
-			/*!!!
-			ArrayList<ActionValidation> actionValidations;
-			String entryId;
-			ValidateEntryActionsCmd veaCmd;
-			ArrayList<ActionValidation> results;
-			ValidateEntryActionsRpcResponseData responseData;
-			
-			veaCmd = (ValidateEntryActionsCmd) cmd;
-			actionValidations = veaCmd.getActionsToBeValidated();
-			entryId = veaCmd.getEntryId();
-			results = validateEntryActions( ri, actionValidations, entryId );
-			responseData = new ValidateEntryActionsRpcResponseData( results );
+			ValidateEntryEventsCmd veaCmd  = ((ValidateEntryEventsCmd) cmd);
+			String entryId = veaCmd.getEntryId();
+			List<EventValidation> eventValidations = veaCmd.getEventsToBeValidated();
+			List<EventValidation> results = validateEntryEvents( ri, eventValidations, entryId );
+			EventValidationListRpcResponseData responseData = new EventValidationListRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
-			*/
-			return null;
 		}
 		
 		}
@@ -1843,39 +1750,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end doSearch()
 	
 	
-	/**
+	/*
 	 * Returns a ActivityStreamData of corresponding to activity stream
 	 * parameters, paging data and info provided.
-	 * 
-	 * @param ri
-	 * @param asp
-	 * @param asi
-	 * @param pagingData
-	 * @param asdt
-	 * 
-	 * @return
 	 */
-	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData, ActivityStreamDataType asdt )
+	private ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData, ActivityStreamDataType asdt )
 	{
 		return GwtActivityStreamHelper.getActivityStreamData( getRequest( ri ), this, asp, asi, pagingData, asdt );
-	}// end getActivityStreamData()
-	
-	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData )
-	{
-		// Always use the initial form of the method.
-		return getActivityStreamData( ri, asp, asi, pagingData, ActivityStreamDataType.ALL );
-	}// end getActivityStreamData()
-	
-	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi )
-	{
-		// Always use the initial form of the method.
-		return getActivityStreamData( ri, asp, asi, null, ActivityStreamDataType.ALL );
-	}// end getActivityStreamData()
-	
-	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt )
-	{
-		// Always use the initial form of the method.
-		return getActivityStreamData( ri, asp, asi, null, asdt );
 	}// end getActivityStreamData()
 	
 	/**
@@ -4672,17 +4553,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 
-	/**
+	/*
 	 * Validates the list of TeamingEvents to see if the user has rights to perform the events
 	 * for the given entry id.
-	 *  
-	 * @param ri
-	 * @param teamingEvents
-	 * @param entryId
-	 * 
-	 * @return
 	 */
-	public ArrayList<EventValidation> validateEntryEvents( HttpRequestInfo ri, ArrayList<EventValidation> eventValidations, String entryId )
+	private List<EventValidation> validateEntryEvents( HttpRequestInfo ri, List<EventValidation> eventValidations, String entryId )
 	{
 		// Validate the given events.
 		GwtServerHelper.validateEntryEvents( this, ri, eventValidations, entryId );
