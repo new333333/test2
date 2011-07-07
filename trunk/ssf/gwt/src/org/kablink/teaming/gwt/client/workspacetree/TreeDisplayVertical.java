@@ -48,12 +48,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -200,8 +198,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			final GwtRpcServiceAsync rpcService = getRpcService();
-				
 			// Are we collapsing the row?
 			if (m_ti.isBinderExpanded()) {
 				// Yes!  Are we showing an expanded bucket or activity
@@ -274,13 +270,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				}
 				
 				else {
-					PersistNodeExpandCmd cmd;
-					
 					// No, we aren't showing a collapsed activity
 					// stream either!  We must be showing a normal row.
 					// Can we mark the row as being opened?
-					cmd = new PersistNodeExpandCmd( m_ti.getBinderInfo().getBinderId() );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					PersistNodeExpandCmd cmd = new PersistNodeExpandCmd( m_ti.getBinderInfo().getBinderId() );
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -289,30 +283,42 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						}
 						
 						public void onSuccess(VibeRpcResponse response) {
-							GetVerticalNodeCmd cmd;
-							
-							// Yes!  Can we get a TreeInfo for the
-							// expansion?
-							cmd = new GetVerticalNodeCmd( m_ti.getBinderInfo().getBinderId() );
-							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-								public void onFailure(Throwable t) {
-									GwtClientHelper.handleGwtRPCFailure(
-										t,
-										GwtTeaming.getMessages().rpcFailure_GetTree(),
-										m_ti.getBinderInfo().getBinderId());
-								}
-								
-								public void onSuccess(VibeRpcResponse response) {
-									TreeInfo expandedTI;
+							// Run the 'Get Vertical Node' RPC request
+							// as a scheduled command so the RPC
+							// request that got us here can be
+							// terminated.
+							ScheduledCommand getVNode = new ScheduledCommand() {
+								@Override
+								public void execute() {
+									GetVerticalNodeCmd cmd;
 									
-									// Yes!  Update the TreeInfo, and if
-									// there are any expanded rows, render
-									// them and change the row's Anchor
-									// Image to a tree_closer.
-									expandedTI = (TreeInfo) response.getResponseData();
-									doExpandRowAsync(expandedTI);
+									// Can we get a TreeInfo for the
+									// expansion?
+									cmd = new GetVerticalNodeCmd( m_ti.getBinderInfo().getBinderId() );
+									GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+										public void onFailure(Throwable t) {
+											GwtClientHelper.handleGwtRPCFailure(
+												t,
+												GwtTeaming.getMessages().rpcFailure_GetTree(),
+												m_ti.getBinderInfo().getBinderId());
+										}
+										
+										public void onSuccess(VibeRpcResponse response) {
+											TreeInfo expandedTI;
+											
+											// Yes!  Update the
+											// TreeInfo, and if there
+											// are any expanded rows,
+											// render them and change
+											// the row's Anchor Image
+											// to a tree_closer.
+											expandedTI = (TreeInfo) response.getResponseData();
+											doExpandRowAsync(expandedTI);
+										}
+									});
 								}
-							});
+							};
+							Scheduler.get().scheduleDeferred(getVNode);
 						}
 					});
 				}

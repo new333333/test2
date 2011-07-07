@@ -789,41 +789,48 @@ public class MainMenuControl extends Composite
 					binderId);
 			}
 			public void onSuccess(VibeRpcResponse response) {
-				GetTeamManagementInfoCmd cmd;
-				GetToolbarItemsRpcResponseData responseData;
 				final List<ToolbarItem> toolbarItemList;
-				
-				if ( response.getResponseData() != null )
+				if (null != response.getResponseData())
 				{
-					responseData = (GetToolbarItemsRpcResponseData) response.getResponseData();
+					GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
 					toolbarItemList = responseData.getToolbarItems();
 				}
-				else
+				else {
 					toolbarItemList = null;
-				
-				cmd = new GetTeamManagementInfoCmd( binderId );
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-					public void onFailure(Throwable t) {
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							m_messages.rpcFailure_GetTeamManagement(),
-							binderId);
+				}
+
+				// Run the 'Get Team Management' RPC request as a
+				// scheduled command so the RPC request that got us
+				// here can be terminated.
+				ScheduledCommand getTMInfo = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GetTeamManagementInfoCmd cmd = new GetTeamManagementInfoCmd(binderId);
+						GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+							public void onFailure(Throwable t) {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									m_messages.rpcFailure_GetTeamManagement(),
+									binderId);
+							}
+							public void onSuccess(VibeRpcResponse response) {
+								TeamManagementInfo tmi = null;
+								
+								if ( response.getResponseData() != null )
+									tmi = (TeamManagementInfo) response.getResponseData();
+								
+								// Show the toolbar items asynchronously so
+								// that we can release the AJAX request ASAP.
+								showToolbarItemsAsync(
+									inSearch,
+									searchTabId,
+									toolbarItemList,
+									tmi);
+							}
+						});
 					}
-					public void onSuccess(VibeRpcResponse response) {
-						TeamManagementInfo tmi = null;
-						
-						if ( response.getResponseData() != null )
-							tmi = (TeamManagementInfo) response.getResponseData();
-						
-						// Show the toolbar items asynchronously so
-						// that we can release the AJAX request ASAP.
-						showToolbarItemsAsync(
-							inSearch,
-							searchTabId,
-							toolbarItemList,
-							tmi);
-					}
-				});
+				};
+				Scheduler.get().scheduleDeferred(getTMInfo);
 			}
 		});
 	}
