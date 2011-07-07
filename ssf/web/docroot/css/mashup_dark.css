@@ -98,6 +98,7 @@ div.ss_mashup_folder_header_form a span {
 }
   
 div.ss_mashup_folder_header_view {
+  font-size: 16px;
   padding: 5px 10px;
   margin-bottom: 2px;
   background: #949494;
@@ -105,13 +106,11 @@ div.ss_mashup_folder_header_view {
   -webkit-border-radius: 6px;
   }
 div.ss_mashup_folder_header_view span {
-  font-size: 20px;
   color: #ededed;
 }
 div.ss_mashup_folder_header_view a span {
-  font-size: 17px;
   font-weight: bold;
-  color: #ededed;
+  color: #fafafa;
 }
 div.ss_mashup_folder_header_view a:hover {
   background-color: transparent;
@@ -125,7 +124,8 @@ div.ss_mashup_folder_header_view a span:hover {
 }  
 div.ss_mashup_folder_description {
   padding: 5px 10px 5px 0px;
-  color: #f6f6f6;
+  color: #F6F6F6;
+  font-size: 14px;
   }
 div.ss_mashup_folder_description p {
   margin: 0px;

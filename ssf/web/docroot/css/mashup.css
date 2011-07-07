@@ -89,14 +89,13 @@ div.ss_mashup_folder_header_form a span {
 }
   
 div.ss_mashup_folder_header_view {
+  font-size: 17px;
   padding: 5px 10px;
   }
 div.ss_mashup_folder_header_view span {
-  font-size: 20px;
   color: #5691A6;
 }
 div.ss_mashup_folder_header_view a span {
-  font-size: 20px;
   color: #5691A6;
 }
 div.ss_mashup_folder_header_view a:hover {
@@ -113,6 +112,7 @@ div.ss_mashup_folder_header_view a span:hover {
 div.ss_mashup_folder_description {
   padding: 0px;
   color: #505354;
+  font-size: 14px;
   } 
 
 div.ss_mashup_folder_list_closed {
