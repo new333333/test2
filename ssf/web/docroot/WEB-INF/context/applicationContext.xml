@@ -231,6 +231,7 @@
 	<bean id="moduleNonTransactionProxy" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil" abstract="true">
 		<property name="interceptorNames">
 			<list>
+				<value>performanceMonitorInterceptor</value>
 				<value>moduleEventListenerManagerInterceptor</value>
 			</list>
 		</property>
