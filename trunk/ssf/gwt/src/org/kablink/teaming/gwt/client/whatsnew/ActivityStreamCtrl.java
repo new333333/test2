@@ -140,6 +140,7 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_showSettingPanel;
 	private GwtMainPage m_mainPage;
 	private Object m_selectedObj = null;
+	private AsyncCallback<VibeRpcResponse> m_searchResultsCallback;
 	private AsyncCallback<VibeRpcResponse> m_checkForChangesCallback = null;
 	private AsyncCallback<VibeRpcResponse> m_getActivityStreamParamsCallback = null;
 	private PagingData m_pagingData = null;
@@ -261,7 +262,47 @@ public class ActivityStreamCtrl extends Composite
 			m_msgPanel.add( m_msgText );
 			m_msgPanel.setVisible( false );
 		}
-		
+
+		// Create the callback that will be used when we issue an ajax call to do a search.
+		m_searchResultsCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_Search() );
+				
+				m_searchInProgress = false;
+				hideSearchingText();
+				showMessage( GwtTeaming.getMessages().noEntriesFound() );
+			}// end onFailure()
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				ActivityStreamDataRpcResponseData asDataResponse = ((ActivityStreamDataRpcResponseData) result.getResponseData());
+				final ActivityStreamData activityStreamData = asDataResponse.getActivityStreamDataResults();
+				
+				if ( activityStreamData != null )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							m_searchInProgress = false;
+							hideSearchingText();
+
+							// Add the search results to the search results widget.
+							addSearchResults( activityStreamData );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}// end onSuccess()
+		};
 		m_searchInProgress = false;
 		
 		// Create an Actions popup menu.
@@ -921,45 +962,7 @@ public class ActivityStreamCtrl extends Composite
 		}
 		
 		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd( asType, m_activityStreamInfo, m_activityStreamParams, m_pagingData );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable caught )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_Search() );
-				
-				m_searchInProgress = false;
-				hideSearchingText();
-				showMessage( GwtTeaming.getMessages().noEntriesFound() );
-			}// end onFailure()
-
-			@Override
-			public void onSuccess( VibeRpcResponse result )
-			{
-				ActivityStreamDataRpcResponseData asDataResponse = ((ActivityStreamDataRpcResponseData) result.getResponseData());
-				final ActivityStreamData activityStreamData = asDataResponse.getActivityStreamDataResults();
-				
-				if ( activityStreamData != null )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						public void execute()
-						{
-							m_searchInProgress = false;
-							hideSearchingText();
-
-							// Add the search results to the search results widget.
-							addSearchResults( activityStreamData );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}// end onSuccess()
-		} );
+		GwtClientHelper.executeCommand( cmd, m_searchResultsCallback );
 		
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?

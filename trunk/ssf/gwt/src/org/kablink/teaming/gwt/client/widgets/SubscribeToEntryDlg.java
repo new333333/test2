@@ -78,6 +78,8 @@ public class SubscribeToEntryDlg extends DlgBox
 	CheckBox m_primaryAddress3;
 	CheckBox m_mobileAddress3;
 	CheckBox m_textAddress3;
+	AsyncCallback<VibeRpcResponse> m_readSubscriptionDataCallback = null;
+	AsyncCallback<VibeRpcResponse> m_saveSubscriptionDataCallback = null;
 	
 	/**
 	 * 
@@ -250,24 +252,30 @@ public class SubscribeToEntryDlg extends DlgBox
 			
 			subscriptionData = (SubscriptionData) data;
 			
+			// Issue an ajax request to save the subscription data.
+			if ( m_saveSubscriptionDataCallback == null )
+			{
+				m_saveSubscriptionDataCallback = new AsyncCallback<VibeRpcResponse>()
+				{
+					@Override
+					public void onFailure( Throwable caught )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							GwtTeaming.getMessages().rpcFailure_SaveSubscriptionData() );
+					}// end onFailure()
+
+					@Override
+					public void onSuccess( VibeRpcResponse result )
+					{
+						// Nothing to do.
+					}// end onSuccess()
+				};
+			}
+			
 			// Issue an ajax request to save the subscription data for the entry we are working with.
 			SaveSubscriptionDataCmd cmd = new SaveSubscriptionDataCmd( m_entryId, subscriptionData );
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-			{
-				@Override
-				public void onFailure( Throwable caught )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_SaveSubscriptionData() );
-				}// end onFailure()
-
-				@Override
-				public void onSuccess( VibeRpcResponse result )
-				{
-					// Nothing to do.
-				}// end onSuccess()
-			} );
+			GwtClientHelper.executeCommand( cmd, m_saveSubscriptionDataCallback );
 		}
 		
 		return true;
@@ -368,26 +376,32 @@ public class SubscribeToEntryDlg extends DlgBox
 		m_entryId = entryId;
 		m_entryTitle = entryTitle;
 		
-		GetSubscriptionDataCmd cmd = new GetSubscriptionDataCmd( m_entryId );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		if ( m_readSubscriptionDataCallback == null )
 		{
-			@Override
-			public void onFailure( Throwable caught )
+			m_readSubscriptionDataCallback = new AsyncCallback<VibeRpcResponse>()
 			{
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_GetSubscriptionData() );
-			}// end onFailure()
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetSubscriptionData() );
+				}// end onFailure()
 
-			@Override
-			public void onSuccess( VibeRpcResponse result )
-			{
-				// Update the dialog with the given subscription data.
-				SubscriptionDataRpcResponseData responseData = ((SubscriptionDataRpcResponseData) result.getResponseData());
-				SubscriptionData subscriptionData = responseData.getSubscriptionDataResults();
-				updateDlg( subscriptionData, m_entryTitle );
-			}// end onSuccess()
-		} );
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					// Update the dialog with the given subscription data.
+					SubscriptionDataRpcResponseData responseData = ((SubscriptionDataRpcResponseData) result.getResponseData());
+					SubscriptionData subscriptionData = responseData.getSubscriptionDataResults();
+					updateDlg( subscriptionData, m_entryTitle );
+				}// end onSuccess()
+			};
+		}
+		
+		// Issue an ajax request to get the subscription data for the entry we are working with.
+		GetSubscriptionDataCmd cmd = new GetSubscriptionDataCmd( m_entryId );
+		GwtClientHelper.executeCommand( cmd, m_readSubscriptionDataCallback );
 	}
 	
 	

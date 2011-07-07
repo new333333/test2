@@ -76,6 +76,8 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	private FlexTable m_membersTable;
 	private FlowPanel m_membersTablePanel;
 	private FlexCellFormatter m_cellFormatter;
+	private AsyncCallback<VibeRpcResponse> m_getGroupMembershipCallback;
+	private AsyncCallback<VibeRpcResponse> m_isAllUsersGroupCallback;
 	
 	/**
 	 * This widget is used to display a group members's name.  If the member is a group
@@ -452,68 +454,87 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	 */
 	private void getGroupMembership()
 	{
+		if ( m_getGroupMembershipCallback == null )
+		{
+			m_getGroupMembershipCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetGroupMembership() );
+				}// end onFailure()
+
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					GetGroupMembershipRpcResponseData responseData = ((GetGroupMembershipRpcResponseData) result.getResponseData());
+					List<GwtTeamingItem> results = responseData.getMembers();
+					boolean haveMember = false;
+					
+					// Add each member to this popup
+					for ( GwtTeamingItem nextMember : results )
+					{
+						addGroupMember( nextMember );
+						haveMember = true;
+					}
+					
+					// If there aren't any members in this group, add some text indicating that.
+					if ( !haveMember )
+						addNoMembersMessage();
+				}// end onSuccess()						
+			}; 
+		}
+		
+		if ( m_isAllUsersGroupCallback == null )
+		{
+			m_isAllUsersGroupCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_IsAllUsersGroup() );
+				}// end onFailure()
+
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					BooleanRpcResponseData responseData = ((BooleanRpcResponseData) result.getResponseData());
+					Boolean isAllUsersGroup = responseData.getBooleanValue();
+					
+					// Are we dealing with the "all users" group?
+					if ( isAllUsersGroup )
+					{
+						addAllUsersGroupMessage();
+					}
+					else
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								// No
+								// Issue an ajax request to get the membership of this group.
+								GetGroupMembershipCmd cmd = new GetGroupMembershipCmd( m_groupId );
+								GwtClientHelper.executeCommand( cmd, m_getGroupMembershipCallback );
+							}// end execute()
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}// end onSuccess()			
+			}; 
+		}
+		
 		// Issue an ajax request to see if this group is the "all users" group.  If it is
 		// not the "all users" group we will make another ajax request to get the group membership.
 		IsAllUsersGroupCmd cmd = new IsAllUsersGroupCmd( m_groupId );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable caught )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_IsAllUsersGroup() );
-			}// end onFailure()
-
-			@Override
-			public void onSuccess( VibeRpcResponse result )
-			{
-				BooleanRpcResponseData responseData = ((BooleanRpcResponseData) result.getResponseData());
-				Boolean isAllUsersGroup = responseData.getBooleanValue();
-				
-				// Are we dealing with the "all users" group?
-				if ( isAllUsersGroup )
-				{
-					addAllUsersGroupMessage();
-				}
-				else
-				{
-					// No
-					// Issue an ajax request to get the membership of this group.
-					GetGroupMembershipCmd cmd = new GetGroupMembershipCmd( m_groupId );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-					{
-
-						@Override
-						public void onFailure( Throwable caught )
-						{
-							GwtClientHelper.handleGwtRPCFailure(
-								caught,
-								GwtTeaming.getMessages().rpcFailure_GetGroupMembership() );
-						}// end onFailure()
-
-						@Override
-						public void onSuccess( VibeRpcResponse result )
-						{
-							GetGroupMembershipRpcResponseData responseData = ((GetGroupMembershipRpcResponseData) result.getResponseData());
-							List<GwtTeamingItem> results = responseData.getMembers();
-							boolean haveMember = false;
-							
-							// Add each member to this popup
-							for ( GwtTeamingItem nextMember : results )
-							{
-								addGroupMember( nextMember );
-								haveMember = true;
-							}
-							
-							// If there aren't any members in this group, add some text indicating that.
-							if ( !haveMember )
-								addNoMembersMessage();
-						}// end onSuccess()						
-					} );
-				}
-			}// end onSuccess()			
-		} );
+		GwtClientHelper.executeCommand( cmd, m_isAllUsersGroupCallback );		
 	}
 	
 	/**
