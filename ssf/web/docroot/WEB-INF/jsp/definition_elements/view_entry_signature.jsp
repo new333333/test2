@@ -152,7 +152,7 @@
 				    <ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
 				  </div>
 				</div>
-				<div class="ss_entryContent ss_entrySignature" style="padding-left: 30px;">
+				<div class="ss_entryContent ss_entrySignature" style="padding-left: 19px;">
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					 value="${ssDefinitionEntry.modification.date}" type="both" 
 					 timeStyle="short" dateStyle="medium" />
