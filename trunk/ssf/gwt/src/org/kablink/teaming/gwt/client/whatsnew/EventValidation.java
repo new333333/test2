@@ -33,33 +33,31 @@
 
 package org.kablink.teaming.gwt.client.whatsnew;
 
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class is used in a request to see if the user has rights to preform the given action.
+ * This class is used in a request to see if the user has rights to perform the given action.
  * @author jwootton
  *
  */
 public class EventValidation implements IsSerializable
 {
 	private boolean m_isValid;
-	private TeamingEvents m_event;
+	private int m_eventOrdinal;
 	
 	/**
 	 * 
 	 */
 	public EventValidation()
 	{
-		m_isValid = false;
-		m_event = TeamingEvents.UNDEFINED;
+		m_isValid      = false;
+		m_eventOrdinal = (-1);
 	}
 	
 
-	public TeamingEvents getEvent()
+	public int getEventOrdinal()
 	{
-		return m_event;
+		return m_eventOrdinal;
 	}
 	
 	
@@ -75,9 +73,9 @@ public class EventValidation implements IsSerializable
 	/**
 	 * 
 	 */
-	public void setEvent( TeamingEvents event )
+	public void setEventOrdinal( int eventOrdinal )
 	{
-		m_event = event;
+		m_eventOrdinal = eventOrdinal;
 	}
 	
 	

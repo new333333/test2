@@ -125,4 +125,23 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_UNREAD_ENTRIES,				// Show unread entries.
 		
 	UNDEFINED;							// Undefined event - Should never be fired !!!
+
+	/**
+	 * Converts the ordinal value of a TeamingEvents to its enumeration
+	 * equivalent.
+	 * 
+	 * @param eventOrdinal
+	 * 
+	 * @return
+	 */
+	public static TeamingEvents getEnum(int eventOrdinal) {
+		TeamingEvents event;
+		try {
+			event = TeamingEvents.values()[eventOrdinal];
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
+			event = TeamingEvents.UNDEFINED;
+		}
+		return event;
+	}
 }
