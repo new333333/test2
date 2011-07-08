@@ -53,7 +53,6 @@ public class SaveTaskSortCmd extends VibeRpcCmd {
 	 */
 	public SaveTaskSortCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -79,10 +78,15 @@ public class SaveTaskSortCmd extends VibeRpcCmd {
 	public Long    getBinderId()      {return m_binderId;     }	
 	public String  getSortKey()       {return m_sortKey;      }	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_TASK_SORT;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_TASK_SORT.ordinal();
 	}
 }

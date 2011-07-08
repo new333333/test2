@@ -51,8 +51,6 @@ public class GetAddMeetingUrlCmd extends VibeRpcCmd
 	public GetAddMeetingUrlCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetAddMeetingUrlCmd extends VibeRpcCmd
 	 */
 	public GetAddMeetingUrlCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetAddMeetingUrlCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_ADD_MEETING_URL;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_ADD_MEETING_URL.ordinal();
 	}
 }

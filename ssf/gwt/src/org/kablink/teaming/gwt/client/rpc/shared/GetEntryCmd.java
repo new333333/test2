@@ -51,8 +51,6 @@ public class GetEntryCmd extends VibeRpcCmd
 	public GetEntryCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,10 +58,9 @@ public class GetEntryCmd extends VibeRpcCmd
 	 */
 	public GetEntryCmd( String zoneUUId, String entryId )
 	{
+		this();
 		m_zoneUUId = zoneUUId;
 		m_entryId = entryId;
-		
-		init();
 	}
 	
 	/**
@@ -83,10 +80,14 @@ public class GetEntryCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_ENTRY;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_ENTRY.ordinal();
 	}
 }

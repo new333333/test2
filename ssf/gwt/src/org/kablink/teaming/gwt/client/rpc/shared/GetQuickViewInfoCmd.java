@@ -51,8 +51,6 @@ public class GetQuickViewInfoCmd extends VibeRpcCmd
 	public GetQuickViewInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetQuickViewInfoCmd extends VibeRpcCmd
 	 */
 	public GetQuickViewInfoCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetQuickViewInfoCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_QUICK_VIEW_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_QUICK_VIEW_INFO.ordinal();
 	}
 }

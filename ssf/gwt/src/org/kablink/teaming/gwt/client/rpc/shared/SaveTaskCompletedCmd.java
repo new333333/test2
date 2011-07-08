@@ -57,7 +57,6 @@ public class SaveTaskCompletedCmd extends VibeRpcCmd {
 	 */
 	public SaveTaskCompletedCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -96,10 +95,15 @@ public class SaveTaskCompletedCmd extends VibeRpcCmd {
 	public List<TaskId> getTaskIds()   {return m_taskIds;  }	
 	public String       getCompleted() {return m_completed;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_TASK_COMPLETED;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_TASK_COMPLETED.ordinal();
 	}
 }

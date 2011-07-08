@@ -51,8 +51,6 @@ public class TrackBinderCmd extends VibeRpcCmd
 	public TrackBinderCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class TrackBinderCmd extends VibeRpcCmd
 	 */
 	public TrackBinderCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class TrackBinderCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.TRACK_BINDER;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.TRACK_BINDER.ordinal();
 	}
 }

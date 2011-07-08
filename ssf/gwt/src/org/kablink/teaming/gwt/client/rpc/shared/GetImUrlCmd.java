@@ -51,8 +51,6 @@ public class GetImUrlCmd extends VibeRpcCmd
 	public GetImUrlCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetImUrlCmd extends VibeRpcCmd
 	 */
 	public GetImUrlCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetImUrlCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_IM_URL;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_IM_URL.ordinal();
 	}
 }

@@ -51,7 +51,6 @@ public class GetTaskLinkageCmd extends VibeRpcCmd {
 	 */
 	public GetTaskLinkageCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -71,10 +70,15 @@ public class GetTaskLinkageCmd extends VibeRpcCmd {
 	 */
 	public Long getBinderId() {return m_binderId;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TASK_LINKAGE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TASK_LINKAGE.ordinal();
 	}
 }

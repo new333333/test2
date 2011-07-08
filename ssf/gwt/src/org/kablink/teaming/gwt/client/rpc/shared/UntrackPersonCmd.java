@@ -51,8 +51,6 @@ public class UntrackPersonCmd extends VibeRpcCmd
 	public UntrackPersonCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class UntrackPersonCmd extends VibeRpcCmd
 	 */
 	public UntrackPersonCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class UntrackPersonCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.UNTRACK_PERSON;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.UNTRACK_PERSON.ordinal();
 	}
 }

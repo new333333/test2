@@ -50,8 +50,6 @@ public class GetToolbarItemsCmd extends VibeRpcCmd
 	public GetToolbarItemsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetToolbarItemsCmd extends VibeRpcCmd
 	 */
 	public GetToolbarItemsCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetToolbarItemsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TOOLBAR_ITEMS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TOOLBAR_ITEMS.ordinal();
 	}
 }

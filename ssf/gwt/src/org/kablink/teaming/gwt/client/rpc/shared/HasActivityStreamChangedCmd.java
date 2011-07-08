@@ -52,8 +52,6 @@ public class HasActivityStreamChangedCmd extends VibeRpcCmd
 	public HasActivityStreamChangedCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +59,8 @@ public class HasActivityStreamChangedCmd extends VibeRpcCmd
 	 */
 	public HasActivityStreamChangedCmd( ActivityStreamInfo asi )
 	{
+		this();
 		m_asi = asi;
-		
-		init();
 	}
 	
 	/**
@@ -75,11 +72,14 @@ public class HasActivityStreamChangedCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.HAS_ACTIVITY_STREAM_CHANGED;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.HAS_ACTIVITY_STREAM_CHANGED.ordinal();
 	}
-
 }

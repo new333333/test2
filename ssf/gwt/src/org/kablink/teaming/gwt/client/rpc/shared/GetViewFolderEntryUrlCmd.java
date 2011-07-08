@@ -51,8 +51,6 @@ public class GetViewFolderEntryUrlCmd extends VibeRpcCmd
 	public GetViewFolderEntryUrlCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,10 +58,9 @@ public class GetViewFolderEntryUrlCmd extends VibeRpcCmd
 	 */
 	public GetViewFolderEntryUrlCmd( Long binderId, Long entryId )
 	{
+		this();
 		m_binderId = binderId;
 		m_entryId = entryId;
-		
-		init();
 	}
 	
 	/**
@@ -83,10 +80,14 @@ public class GetViewFolderEntryUrlCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_VIEW_FOLDER_ENTRY_URL;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_VIEW_FOLDER_ENTRY_URL.ordinal();
 	}
 }

@@ -179,8 +179,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		HttpServletRequest req;
 		
 		req = getRequest( ri );
-		
-		switch ( cmd.getCmdType() )
+
+		VibeRpcCmdType cmdEnum = VibeRpcCmdType.getEnum( cmd.getCmdType() );
+		switch ( cmdEnum )
 		{
 		case ADD_FAVORITE:
 		{
@@ -1343,7 +1344,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		}
 		
-		m_logger.warn( "In GwtRpcServiceImpl.executeCommand(), unknown command: " + cmd.getClass().getName() );
+		m_logger.warn( "In GwtRpcServiceImpl.executeCommand(), unknown command: " + cmdEnum.name() + " (" +cmd.getClass().getName() + ")" );
 		return null;
 	}
 	

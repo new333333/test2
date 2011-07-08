@@ -52,7 +52,6 @@ public class ExpandSubtasksCmd extends VibeRpcCmd {
 	 */
 	public ExpandSubtasksCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -75,10 +74,15 @@ public class ExpandSubtasksCmd extends VibeRpcCmd {
 	public Long getBinderId() {return m_binderId;}
 	public Long getEntryId()  {return m_entryId; }
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.EXPAND_SUBTASKS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.EXPAND_SUBTASKS.ordinal();
 	}
 }

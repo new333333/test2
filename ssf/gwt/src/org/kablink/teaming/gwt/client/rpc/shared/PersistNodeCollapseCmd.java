@@ -51,8 +51,6 @@ public class PersistNodeCollapseCmd extends VibeRpcCmd
 	public PersistNodeCollapseCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class PersistNodeCollapseCmd extends VibeRpcCmd
 	 */
 	public PersistNodeCollapseCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,11 +71,14 @@ public class PersistNodeCollapseCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.PERSIST_NODE_COLLAPSE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.PERSIST_NODE_COLLAPSE.ordinal();
 	}
-
 }

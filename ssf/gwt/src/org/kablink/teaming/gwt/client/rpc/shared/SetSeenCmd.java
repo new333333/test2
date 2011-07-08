@@ -54,7 +54,6 @@ public class SetSeenCmd extends VibeRpcCmd {
 	 */
 	public SetSeenCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -85,10 +84,15 @@ public class SetSeenCmd extends VibeRpcCmd {
 	 */
 	public List<Long> getEntryIds() {return m_entryIds;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SET_SEEN;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SET_SEEN.ordinal();
 	}
 }

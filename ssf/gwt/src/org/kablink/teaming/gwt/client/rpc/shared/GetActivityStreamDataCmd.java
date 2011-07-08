@@ -59,7 +59,6 @@ public class GetActivityStreamDataCmd extends VibeRpcCmd {
 	 */
 	public GetActivityStreamDataCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -89,10 +88,14 @@ public class GetActivityStreamDataCmd extends VibeRpcCmd {
 	public ActivityStreamParams   getActivityStreamParams()   {return m_asParams;  }
 	public PagingData             getPagingData()             {return m_pagingData;}
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_ACTIVITY_STREAM_DATA;
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_ACTIVITY_STREAM_DATA.ordinal();
 	}
 }

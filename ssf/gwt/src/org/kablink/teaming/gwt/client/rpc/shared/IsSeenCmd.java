@@ -51,7 +51,6 @@ public class IsSeenCmd extends VibeRpcCmd {
 	 */
 	public IsSeenCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -71,10 +70,15 @@ public class IsSeenCmd extends VibeRpcCmd {
 	 */
 	public Long getEntryId() {return m_entryId;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.IS_SEEN;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.IS_SEEN.ordinal();
 	}
 }

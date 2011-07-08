@@ -36,7 +36,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents a command sent to the server via GWT's rpc mechanism.
+ * This class represents a command sent to the server via GWT's RPC
+ * mechanism.
  * 
  * @author jwootton
  *
@@ -44,130 +45,22 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public abstract class VibeRpcCmd implements IsSerializable
 {
 	/**
-	 * This class defines all the possible commands
-	 */
-	public enum VibeRpcCmdType implements IsSerializable
-	{
-		ADD_FAVORITE,
-		COLLAPSE_SUBTASKS,
-		DELETE_TASKS,
-		EXECUTE_SEARCH,
-		EXPAND_HORIZONTAL_BUCKET,
-		EXPAND_SUBTASKS,
-		EXPAND_VERTICAL_BUCKET,
-		GET_ACTIVITY_STREAM_DATA,
-		GET_ACTIVITY_STREAM_PARAMS,
-		GET_ADD_MEETING_URL,
-		GET_ADMIN_ACTIONS,
-		GET_BINDER_BRANDING,
-		GET_BINDER_INFO,
-		GET_BINDER_PERMALINK,
-		GET_BINDER_TAGS,
-		GET_DEFAULT_ACTIVITY_STREAM,
-		GET_DEFAULT_FOLDER_DEFINITION_ID,
-		GET_DOCUMENT_BASE_URL,
-		GET_DISK_USAGE_INFO,
-		GET_ENTRY,
-		GET_ENTRY_TAGS,
-		GET_EXTENSION_FILES,
-		GET_EXTENSION_INFO,
-		GET_FAVORITES,
-		GET_FILE_ATTACHMENTS,
-		GET_FOLDER,
-		GET_GROUP_ASSIGNEE_MEMBERSHIP,
-		GET_GROUP_MEMBERSHIP,
-		GET_GROUPS,
-		GET_HORIZONTAL_NODE,
-		GET_HORIZONTAL_TREE,
-		GET_IM_URL,
-		GET_LOGGED_IN_USER_PERMALINK,
-		GET_LOGIN_INFO,
-		GET_MICRO_BLOG_URL,
-		GET_MODIFY_BINDER_URL,
-		GET_MY_TEAMS,
-		GET_PERSONAL_PREFERENCES,
-		GET_PRESENCE_INFO,
-		GET_PROFILE_AVATARS,
-		GET_PROFILE_INFO,
-		GET_PROFILE_STATS,
-		GET_QUICK_VIEW_INFO,
-		GET_RECENT_PLACES,
-		GET_ROOT_WORKSPACE_ID,
-		GET_SAVED_SEARCHES,
-		GET_SITE_ADMIN_URL,
-		GET_SITE_BRANDING,
-		GET_SUBSCRIPTION_DATA,
-		GET_TAG_RIGHTS_FOR_BINDER,
-		GET_TAG_RIGHTS_FOR_ENTRY,
-		GET_TAG_SORT_ORDER,
-		GET_TEAM_ASSIGNEE_MEMBERSHIP,
-		GET_TEAM_MANAGEMENT_INFO,
-		GET_TEAMS,
-		GET_TASK_BUNDLE,
-		GET_TASK_LINKAGE,
-		GET_TASK_LIST,
-		GET_TOOLBAR_ITEMS,
-		GET_TOP_RANKED,
-		GET_UPGRADE_INFO,
-		GET_USER_PERMALINK,
-		GET_USER_STATUS,
-		GET_VERTICAL_ACTIVITY_STREAMS_TREE,
-		GET_VERTICAL_NODE,
-		GET_VERTICAL_TREE,
-		GET_VIEW_FOLDER_ENTRY_URL,
-		HAS_ACTIVITY_STREAM_CHANGED,
-		IS_ALL_USERS_GROUP,
-		IS_PERSON_TRACKED,
-		IS_SEEN,
-		MARKUP_STRING_REPLACEMENT,
-		PERSIST_ACTIVITY_STREAM_SELECTION,
-		PERSIST_NODE_COLLAPSE,
-		PERSIST_NODE_EXPAND,
-		PURGE_TASKS,
-		REMOVE_EXTENSION,
-		REMOVE_FAVORITE,
-		REMOVE_TASK_LINKAGE,
-		REMOVE_SAVED_SEARCH,
-		REPLY_TO_ENTRY,
-		SAVE_BRANDING,
-		SAVE_PERSONAL_PREFERENCES,
-		SAVE_SUBSCRIPTION_DATA,
-		SAVE_TASK_COMPLETED,
-		SAVE_TASK_LINKAGE,
-		SAVE_TASK_PRIORITY,
-		SAVE_TASK_SORT,
-		SAVE_TASK_STATUS,
-		SAVE_SEARCH,
-		SAVE_TAG_SORT_ORDER,
-		SAVE_USER_STATUS,
-		SAVE_WHATS_NEW_SETTINGS,
-		SET_SEEN,
-		SET_UNSEEN,
-		SHARE_ENTRY,
-		TRACK_BINDER,
-		UPDATE_BINDER_TAGS,
-		UPDATE_CALCULATED_DATES,
-		UPDATE_ENTRY_TAGS,
-		UPDATE_FAVORITES,
-		UNTRACK_BINDER,
-		UNTRACK_PERSON,
-		VALIDATE_ENTRY_EVENTS;
-	}
-	
-	protected VibeRpcCmdType m_cmdType;
-	
-	/**
-	 * 
+	 * Class constructor. 
 	 */
 	public VibeRpcCmd()
 	{
-	}
-	
+		// Nothing to do.
+	}// end VibeRpcCmd()
+
 	/**
+	 * Returns the ordinal of the VibeRpcCmdType enumeration value for
+	 * a given command.
 	 * 
+	 * Classes that extend this class need to return the ordinal of
+	 * their VibeRpcCmdType enumeration value from their implementation
+	 * of this. 
+	 *
+	 * @return
 	 */
-	public VibeRpcCmdType getCmdType()
-	{
-		return m_cmdType;
-	}
-}
+	public abstract int getCmdType();
+}// end VibeRpcCmd()

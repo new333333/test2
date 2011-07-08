@@ -51,7 +51,6 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 */
 	public IsAllUsersGroupCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -72,10 +71,15 @@ public class IsAllUsersGroupCmd extends VibeRpcCmd {
 	 */
 	public String getGroupId() {return m_groupId;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.IS_ALL_USERS_GROUP;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.IS_ALL_USERS_GROUP.ordinal();
 	}
 }

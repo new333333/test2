@@ -48,15 +48,17 @@ public class GetMyTeamsCmd extends VibeRpcCmd
 	public GetMyTeamsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_MY_TEAMS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_MY_TEAMS.ordinal();
 	}
 }

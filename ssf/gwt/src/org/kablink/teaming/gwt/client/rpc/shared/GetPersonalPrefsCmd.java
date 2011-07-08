@@ -45,15 +45,17 @@ public class GetPersonalPrefsCmd extends VibeRpcCmd
 	public GetPersonalPrefsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_PERSONAL_PREFERENCES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_PERSONAL_PREFERENCES.ordinal();
 	}
 }

@@ -45,16 +45,17 @@ public class GetUpgradeInfoCmd extends VibeRpcCmd
 	public GetUpgradeInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_UPGRADE_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_UPGRADE_INFO.ordinal();
 	}
-
 }

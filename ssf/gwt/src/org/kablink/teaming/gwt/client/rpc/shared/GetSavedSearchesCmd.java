@@ -48,15 +48,17 @@ public class GetSavedSearchesCmd extends VibeRpcCmd
 	public GetSavedSearchesCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_SAVED_SEARCHES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_SAVED_SEARCHES.ordinal();
 	}
 }

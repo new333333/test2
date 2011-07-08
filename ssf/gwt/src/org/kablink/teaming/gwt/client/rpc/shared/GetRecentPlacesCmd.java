@@ -48,15 +48,17 @@ public class GetRecentPlacesCmd extends VibeRpcCmd
 	public GetRecentPlacesCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_RECENT_PLACES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_RECENT_PLACES.ordinal();
 	}
 }

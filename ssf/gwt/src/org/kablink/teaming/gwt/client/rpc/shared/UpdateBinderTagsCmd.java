@@ -56,8 +56,6 @@ public class UpdateBinderTagsCmd extends VibeRpcCmd
 	public UpdateBinderTagsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -65,11 +63,11 @@ public class UpdateBinderTagsCmd extends VibeRpcCmd
 	 */
 	public UpdateBinderTagsCmd( String binderId, ArrayList<TagInfo> toBeDeleted, ArrayList<TagInfo> toBeAdded )
 	{
+		this();
+		
 		m_binderId = binderId;
 		m_toBeDeleted = toBeDeleted;
 		m_toBeAdded = toBeAdded;
-		
-		init();
 	}
 	
 	/**
@@ -97,10 +95,14 @@ public class UpdateBinderTagsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.UPDATE_BINDER_TAGS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.UPDATE_BINDER_TAGS.ordinal();
 	}
 }

@@ -51,8 +51,6 @@ public class GetUserStatusCmd extends VibeRpcCmd
 	public GetUserStatusCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetUserStatusCmd extends VibeRpcCmd
 	 */
 	public GetUserStatusCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetUserStatusCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_USER_STATUS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_USER_STATUS.ordinal();
 	}
 }

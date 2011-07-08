@@ -53,7 +53,6 @@ public class ReplyToEntryCmd extends VibeRpcCmd {
 	 */
 	public ReplyToEntryCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -80,10 +79,15 @@ public class ReplyToEntryCmd extends VibeRpcCmd {
 	public String getDescription() {return m_description;}	
 	public String getTitle()       {return m_title;      }	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.REPLY_TO_ENTRY;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.REPLY_TO_ENTRY.ordinal();
 	}
 }

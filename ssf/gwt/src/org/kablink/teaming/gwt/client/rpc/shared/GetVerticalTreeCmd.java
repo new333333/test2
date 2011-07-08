@@ -50,8 +50,6 @@ public class GetVerticalTreeCmd extends VibeRpcCmd
 	public GetVerticalTreeCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetVerticalTreeCmd extends VibeRpcCmd
 	 */
 	public GetVerticalTreeCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetVerticalTreeCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_VERTICAL_TREE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_VERTICAL_TREE.ordinal();
 	}
 }

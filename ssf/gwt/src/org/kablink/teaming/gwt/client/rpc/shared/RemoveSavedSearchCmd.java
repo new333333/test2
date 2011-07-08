@@ -52,8 +52,6 @@ public class RemoveSavedSearchCmd extends VibeRpcCmd
 	public RemoveSavedSearchCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +59,8 @@ public class RemoveSavedSearchCmd extends VibeRpcCmd
 	 */
 	public RemoveSavedSearchCmd( SavedSearchInfo ssi )
 	{
+		this();
 		m_ssi = ssi;
-		
-		init();
 	}
 	
 	/**
@@ -75,10 +72,14 @@ public class RemoveSavedSearchCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.REMOVE_SAVED_SEARCH;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.REMOVE_SAVED_SEARCH.ordinal();
 	}
 }

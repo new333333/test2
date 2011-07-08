@@ -51,8 +51,6 @@ public class PersistNodeExpandCmd extends VibeRpcCmd
 	public PersistNodeExpandCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class PersistNodeExpandCmd extends VibeRpcCmd
 	 */
 	public PersistNodeExpandCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class PersistNodeExpandCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.PERSIST_NODE_EXPAND;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.PERSIST_NODE_EXPAND.ordinal();
 	}
 }

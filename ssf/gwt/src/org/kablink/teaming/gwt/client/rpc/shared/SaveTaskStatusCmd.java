@@ -57,7 +57,6 @@ public class SaveTaskStatusCmd extends VibeRpcCmd {
 	 */
 	public SaveTaskStatusCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -96,10 +95,15 @@ public class SaveTaskStatusCmd extends VibeRpcCmd {
 	public List<TaskId> getTaskIds() {return m_taskIds;}	
 	public String       getStatus()  {return m_status; }	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_TASK_STATUS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_TASK_STATUS.ordinal();
 	}
 }

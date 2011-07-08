@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
-
 
 /**
  * This class holds all of the information necessary to execute the "Get Admin Actions" command.
@@ -52,8 +50,6 @@ public class GetAdminActionsCmd extends VibeRpcCmd
 	public GetAdminActionsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +57,8 @@ public class GetAdminActionsCmd extends VibeRpcCmd
 	 */
 	public GetAdminActionsCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -75,10 +70,14 @@ public class GetAdminActionsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_ADMIN_ACTIONS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_ADMIN_ACTIONS.ordinal();
 	}
 }

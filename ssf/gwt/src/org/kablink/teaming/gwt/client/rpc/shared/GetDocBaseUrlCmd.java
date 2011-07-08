@@ -50,8 +50,6 @@ public class GetDocBaseUrlCmd extends VibeRpcCmd
 	public GetDocBaseUrlCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetDocBaseUrlCmd extends VibeRpcCmd
 	 */
 	public GetDocBaseUrlCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetDocBaseUrlCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_DOCUMENT_BASE_URL;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_DOCUMENT_BASE_URL.ordinal();
 	}
 }

@@ -52,7 +52,6 @@ public class CollapseSubtasksCmd extends VibeRpcCmd {
 	 */
 	public CollapseSubtasksCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -75,10 +74,15 @@ public class CollapseSubtasksCmd extends VibeRpcCmd {
 	public Long getBinderId() {return m_binderId;}
 	public Long getEntryId()  {return m_entryId; }
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.COLLAPSE_SUBTASKS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.COLLAPSE_SUBTASKS.ordinal();
 	}
 }

@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
-
 
 /**
  * This class holds all of the information necessary to execute the "get default folder definition id" command.
@@ -52,8 +50,6 @@ public class GetDefaultFolderDefinitionIdCmd extends VibeRpcCmd
 	public GetDefaultFolderDefinitionIdCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +57,8 @@ public class GetDefaultFolderDefinitionIdCmd extends VibeRpcCmd
 	 */
 	public GetDefaultFolderDefinitionIdCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -75,10 +70,14 @@ public class GetDefaultFolderDefinitionIdCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_DEFAULT_FOLDER_DEFINITION_ID;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_DEFAULT_FOLDER_DEFINITION_ID.ordinal();
 	}
 }

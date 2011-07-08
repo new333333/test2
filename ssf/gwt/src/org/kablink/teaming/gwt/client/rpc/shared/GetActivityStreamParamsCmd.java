@@ -45,16 +45,17 @@ public class GetActivityStreamParamsCmd extends VibeRpcCmd
 	public GetActivityStreamParamsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_ACTIVITY_STREAM_PARAMS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_ACTIVITY_STREAM_PARAMS.ordinal();
 	}
-
 }

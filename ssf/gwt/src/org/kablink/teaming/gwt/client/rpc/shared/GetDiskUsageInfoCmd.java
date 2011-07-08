@@ -51,8 +51,6 @@ public class GetDiskUsageInfoCmd extends VibeRpcCmd
 	public GetDiskUsageInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetDiskUsageInfoCmd extends VibeRpcCmd
 	 */
 	public GetDiskUsageInfoCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetDiskUsageInfoCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_DISK_USAGE_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_DISK_USAGE_INFO.ordinal();
 	}
 }

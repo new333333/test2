@@ -45,15 +45,17 @@ public class GetSiteBrandingCmd extends VibeRpcCmd
 	public GetSiteBrandingCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_SITE_BRANDING;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_SITE_BRANDING.ordinal();
 	}
 }

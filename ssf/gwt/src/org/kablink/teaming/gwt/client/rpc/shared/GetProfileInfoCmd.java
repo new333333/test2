@@ -51,8 +51,6 @@ public class GetProfileInfoCmd extends VibeRpcCmd
 	public GetProfileInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetProfileInfoCmd extends VibeRpcCmd
 	 */
 	public GetProfileInfoCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetProfileInfoCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_PROFILE_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_PROFILE_INFO.ordinal();
 	}
 }

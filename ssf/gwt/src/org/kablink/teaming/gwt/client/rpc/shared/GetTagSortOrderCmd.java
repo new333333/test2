@@ -48,15 +48,17 @@ public class GetTagSortOrderCmd extends VibeRpcCmd
 	public GetTagSortOrderCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TAG_SORT_ORDER;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TAG_SORT_ORDER.ordinal();
 	}
 }

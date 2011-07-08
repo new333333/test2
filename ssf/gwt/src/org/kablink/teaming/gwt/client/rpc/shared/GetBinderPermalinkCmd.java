@@ -50,8 +50,6 @@ public class GetBinderPermalinkCmd extends VibeRpcCmd
 	public GetBinderPermalinkCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetBinderPermalinkCmd extends VibeRpcCmd
 	 */
 	public GetBinderPermalinkCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetBinderPermalinkCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_BINDER_PERMALINK;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_BINDER_PERMALINK.ordinal();
 	}
 }

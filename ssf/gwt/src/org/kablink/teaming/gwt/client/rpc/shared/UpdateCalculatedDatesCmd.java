@@ -52,7 +52,6 @@ public class UpdateCalculatedDatesCmd extends VibeRpcCmd {
 	 */
 	public UpdateCalculatedDatesCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -75,10 +74,15 @@ public class UpdateCalculatedDatesCmd extends VibeRpcCmd {
 	public Long getBinderId() {return m_binderId;}	
 	public Long getEntryId()  {return m_entryId; }	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.UPDATE_CALCULATED_DATES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.UPDATE_CALCULATED_DATES.ordinal();
 	}
 }

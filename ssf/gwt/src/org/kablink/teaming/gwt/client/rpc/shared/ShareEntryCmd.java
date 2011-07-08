@@ -56,7 +56,6 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	 */
 	public ShareEntryCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -86,10 +85,15 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	public String       getComment()      {return m_comment;     }	
 	public String       getEntryId()      {return m_entryId;     }	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SHARE_ENTRY;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SHARE_ENTRY.ordinal();
 	}
 }

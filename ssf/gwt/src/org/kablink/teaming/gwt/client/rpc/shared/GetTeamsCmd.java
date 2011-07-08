@@ -51,8 +51,6 @@ public class GetTeamsCmd extends VibeRpcCmd
 	public GetTeamsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetTeamsCmd extends VibeRpcCmd
 	 */
 	public GetTeamsCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetTeamsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TEAMS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TEAMS.ordinal();
 	}
 }

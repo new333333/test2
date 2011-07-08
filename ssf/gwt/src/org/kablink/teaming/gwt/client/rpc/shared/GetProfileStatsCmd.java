@@ -52,8 +52,6 @@ public class GetProfileStatsCmd extends VibeRpcCmd
 	public GetProfileStatsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,10 +59,9 @@ public class GetProfileStatsCmd extends VibeRpcCmd
 	 */
 	public GetProfileStatsCmd( String binderId, String userId )
 	{
+		this();
 		m_binderId = binderId;
 		m_userId = userId;
-		
-		init();
 	}
 	
 	/**
@@ -84,10 +81,14 @@ public class GetProfileStatsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_PROFILE_STATS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_PROFILE_STATS.ordinal();
 	}
 }
