@@ -195,6 +195,7 @@ public class MastHead extends Composite
 				m_userName.addClickHandler( this );
 				m_userName.addMouseOverHandler( this );
 				m_userName.addMouseOutHandler( this );
+				m_userName.getElement().setId( "mhUserName" );
 				m_globalActionsPanel.add( m_userName );
 			}
 			
@@ -327,6 +328,7 @@ public class MastHead extends Composite
 		m_adminLink.addMouseOverHandler( this );
 		m_adminLink.setTitle( GwtTeaming.getMessages().administrationHint() );
 		linkElement = m_adminLink.getElement();
+		linkElement.setId( "mhAdminAction" );
 		
 		// Add the mouse-out image to the link.
 		imgResource = GwtTeaming.getImageBundle().administration1();
@@ -434,6 +436,7 @@ public class MastHead extends Composite
 		m_helpLink.addMouseOverHandler( this );
 		m_helpLink.setTitle( GwtTeaming.getMessages().helpHint() );
 		linkElement = m_helpLink.getElement();
+		linkElement.setId( "mhHelpAction" );
 		
 		// Add the mouse-out image to the link.
 		imgResource = GwtTeaming.getImageBundle().help1();
@@ -469,6 +472,7 @@ public class MastHead extends Composite
 			m_logoutLink.addMouseOverHandler( this );
 			m_logoutLink.setTitle( GwtTeaming.getMessages().logoutHint() );
 			linkElement = m_logoutLink.getElement();
+			linkElement.setId( "mhLogoutAction" );
 			
 			// Add the mouse-out image to the link.
 			imgResource = GwtTeaming.getImageBundle().logout1();
@@ -493,6 +497,7 @@ public class MastHead extends Composite
 			m_loginLink.addMouseOverHandler( this );
 			m_loginLink.setTitle( GwtTeaming.getMessages().loginHint() );
 			linkElement = m_loginLink.getElement();
+			linkElement.setId( "mhLogoutAction" );
 			
 			// Add the mouse-out image to the link.
 			imgResource = GwtTeaming.getImageBundle().login1();
@@ -529,6 +534,7 @@ public class MastHead extends Composite
 			m_personalPrefsLink.addMouseOverHandler( this );
 			m_personalPrefsLink.setTitle( GwtTeaming.getMessages().personalPreferencesHint() );
 			linkElement = m_personalPrefsLink.getElement();
+			linkElement.setId( "mhPersonalPrefsAction" );
 			
 			// Add the mouse-out image to the link.
 			imgResource = GwtTeaming.getImageBundle().personalPrefs1();
@@ -561,6 +567,7 @@ public class MastHead extends Composite
 		m_resourceLibLink.addMouseOverHandler( this );
 		m_resourceLibLink.setTitle( GwtTeaming.getMessages().resourceLibraryHint() );
 		linkElement = m_resourceLibLink.getElement();
+		linkElement.setId( "mhResourceLibAction" );
 		
 		// Add the mouse-out image to the link.
 		imgResource = GwtTeaming.getImageBundle().resourceLib1();
@@ -596,6 +603,7 @@ public class MastHead extends Composite
 			m_teamingFeedLink.addMouseOverHandler( this );
 			m_teamingFeedLink.setTitle( GwtTeaming.getMessages().teamingFeedHint() );
 			linkElement = m_teamingFeedLink.getElement();
+			linkElement.setId( "mhTeamingFeedAction" );
 			
 			// Add the mouse-out image to the link.
 			imgResource = GwtTeaming.getImageBundle().teamingFeed1();
