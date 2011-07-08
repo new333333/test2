@@ -33,9 +33,6 @@
 package org.kablink.teaming.gwt.client.service;
 
 
-import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
-import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -51,20 +48,4 @@ public interface GwtRpcServiceAsync
 	// Execute the given command.
 	public void executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback );
 	
-	
-	
-	// Return information about the User Profile
-	public void isPresenceEnabled(  HttpRequestInfo ri,                                 AsyncCallback<Boolean>			callback );
-	public void getImUrl(			HttpRequestInfo ri, String binderId,                AsyncCallback<String> 			callback );
-	public void getPresenceInfo(    HttpRequestInfo ri, String binderId,                AsyncCallback<GwtPresenceInfo>  callback );
-
-	// Return the URL for the start/schedule meeting page
-	public void getAddMeetingUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback);
-
-	// The following are used for the UserStatus control
-	public void saveUserStatus( HttpRequestInfo ri, String status, 	 AsyncCallback<Boolean>    callback );
-	public void getUserStatus(  HttpRequestInfo ri, String binderId, AsyncCallback<UserStatus> callback ); 
-	
-	// Get DiskUsage Info.
-	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
-}// end GwtRpcServiceAsync
+}

@@ -39,6 +39,9 @@ import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserStatusCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -225,7 +228,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		if( savingUserStatusInProgress )
 			return;
 		
-		AsyncCallback<Boolean> rpcCallback = new AsyncCallback<Boolean>(){
+		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -236,7 +239,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				savingUserStatusInProgress = false;
 			}
 
-			public void onSuccess(Boolean result) {
+			public void onSuccess( VibeRpcResponse response ) {
 
 				//Get the text from the input widget and set the status text field
 				statusText.setText(status);
@@ -269,23 +272,23 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 			return;
 		}
 		
-		// Issue an ajax request to save the branding data.
+		// Issue an ajax request to save the user status.
 		{
-			GwtRpcServiceAsync rpcService;
-			rpcService = GwtTeaming.getRpcService();
+			SaveUserStatusCmd cmd;
 			
 			savingUserStatusInProgress = true;
 			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			rpcService.saveUserStatus( HttpRequestInfo.createHttpRequestInfo(), status, rpcCallback );
+			cmd = new SaveUserStatusCmd( status );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
 	
 	
 	private void getUserStatus() {
 		
-		AsyncCallback<UserStatus> rpcCallback = new AsyncCallback<UserStatus>(){
+		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -294,7 +297,12 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					getBinderId());
 			}
 
-			public void onSuccess(UserStatus result) {
+			public void onSuccess( VibeRpcResponse response ) {
+				UserStatus result = null;
+				
+				if ( response.getResponseData() != null )
+					result = (UserStatus) response.getResponseData();
+				
 				if(result != null) {
 					
 					String description = result.getStatus();
@@ -316,13 +324,12 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		
 		// Issue an ajax request to save the branding data.
 		{
-			GwtRpcServiceAsync rpcService;
-			
-			rpcService = GwtTeaming.getRpcService();
+			GetUserStatusCmd cmd;
 			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			rpcService.getUserStatus(HttpRequestInfo.createHttpRequestInfo(), getBinderId(), rpcCallback );
+			cmd = new GetUserStatusCmd( getBinderId() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 
 		

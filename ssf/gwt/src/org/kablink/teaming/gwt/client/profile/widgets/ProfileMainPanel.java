@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDiskUsageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetProfileAvatarsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IsPersonTrackedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -819,9 +820,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	
 	private void updateQuota() {
 		
-		GwtRpcServiceAsync gwtRpcService;
+		GetDiskUsageInfoCmd cmd;
 		
-		AsyncCallback<DiskUsageInfo> callback = new AsyncCallback<DiskUsageInfo>() {
+		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				// display error
 				GwtClientHelper.handleGwtRPCFailure(
@@ -829,7 +830,12 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
 					profileRequestInfo.getBinderId());
 			}
-			public void onSuccess(DiskUsageInfo info) {
+			public void onSuccess( VibeRpcResponse response) {
+				DiskUsageInfo info = null;
+				
+				if ( response.getResponseData() != null )
+					info = (DiskUsageInfo) response.getResponseData();
+				
 				if(info != null) {
 					if(info.getQuotaMessage() != null){
 						quotaMsgLabel.setText(info.getQuotaMessage());
@@ -844,8 +850,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			}
 		};
 		
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getDiskUsageInfo( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
+		cmd = new GetDiskUsageInfoCmd( profileRequestInfo.getBinderId() );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 	public final native boolean isFileError() /*-{  if( wnd.profileEmptyFrame.ss_error_code != null ) {

@@ -1,8 +1,10 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class DiskUsageInfo implements IsSerializable  {
+public class DiskUsageInfo implements IsSerializable, VibeRpcResponseData  {
 
 	private boolean isEnabled = false;
 	private boolean isHighWaterMarkExceeded = false;

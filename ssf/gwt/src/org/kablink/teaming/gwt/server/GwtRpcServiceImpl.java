@@ -286,6 +286,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ADD_MEETING_URL:
+		{
+			GetAddMeetingUrlCmd gamuCmd;
+			String result;
+			StringRpcResponseData responseData;
+			
+			gamuCmd = (GetAddMeetingUrlCmd) cmd;
+			result = getAddMeetingUrl( ri, gamuCmd.getBinderId() );
+			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_ADMIN_ACTIONS:
 		{
 			ArrayList<GwtAdminCategory> adminActions;
@@ -368,6 +381,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = getDefaultFolderDefinitionId( ri, gdfdiCmd.getBinderId() );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+
+		case GET_DISK_USAGE_INFO:
+		{
+			GetDiskUsageInfoCmd gduiCmd;
+			DiskUsageInfo result;
+			
+			gduiCmd = (GetDiskUsageInfoCmd) cmd;
+			result = getDiskUsageInfo( ri, gduiCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -463,17 +487,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_HORIZONTAL_NODE:
-		{
-			GetHorizontalNodeCmd ghnCmd;
-			TreeInfo result;
-			
-			ghnCmd = (GetHorizontalNodeCmd) cmd;
-			result = getHorizontalNode( ri, ghnCmd.getBinderId() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		{
 			GetGroupAssigneeMembershipCmd ggamCmd = ((GetGroupAssigneeMembershipCmd) cmd);
@@ -505,6 +518,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_HORIZONTAL_NODE:
+		{
+			GetHorizontalNodeCmd ghnCmd;
+			TreeInfo result;
+			
+			ghnCmd = (GetHorizontalNodeCmd) cmd;
+			result = getHorizontalNode( ri, ghnCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+
 		case GET_HORIZONTAL_TREE:
 		{
 			GetHorizontalTreeCmd ghtCmd;
@@ -514,6 +538,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ghtCmd = (GetHorizontalTreeCmd) cmd;
 			result = getHorizontalTree( ri, ghtCmd.getBinderId() );
 			responseData = new GetHorizontalTreeRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_IM_URL:
+		{
+			GetImUrlCmd giuCmd;
+			String result;
+			StringRpcResponseData responseData;
+			
+			giuCmd = (GetImUrlCmd) cmd;
+			result = getImUrl( ri, giuCmd.getBinderId() );
+			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -573,6 +610,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PRESENCE_INFO:
+		{
+			GetPresenceInfoCmd gpiCmd;
+			GwtPresenceInfo result;
+			
+			gpiCmd = (GetPresenceInfoCmd) cmd;
+			result = getPresenceInfo( ri, gpiCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_PROFILE_AVATARS:
 		{
 			GetProfileAvatarsCmd gpaCmd;
@@ -616,6 +664,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( result );
 			return response;
 		}
+
 		case GET_RECENT_PLACES:
 		{
 			GetRecentPlacesRpcResponseData responseData;
@@ -821,6 +870,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_USER_STATUS:
+		{
+			GetUserStatusCmd gusCmd;
+			UserStatus result;
+			
+			gusCmd = (GetUserStatusCmd) cmd;
+			result = getUserStatus( ri, gusCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_VERTICAL_ACTIVITY_STREAMS_TREE:
 		{
 			GetVerticalActivityStreamsTreeCmd gvastCmd;
@@ -900,6 +960,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
+		
 		case IS_SEEN:
 		{
 			Long entryId = ((IsSeenCmd) cmd).getEntryId();
@@ -1127,6 +1188,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			stsoCmd = (SaveTagSortOrderCmd) cmd;
 			result = saveTagSortOrder( ri, stsoCmd.getSortOrder() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_USER_STATUS:
+		{
+			SaveUserStatusCmd susCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			susCmd = (SaveUserStatusCmd) cmd;
+			result = saveUserStatus( ri, susCmd.getStatus() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1927,7 +2001,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean hasActivityStreamChanged( HttpRequestInfo ri, ActivityStreamInfo asi )
+	private Boolean hasActivityStreamChanged( HttpRequestInfo ri, ActivityStreamInfo asi )
 	{
 		return GwtActivityStreamHelper.hasActivityStreamChanged( getRequest( ri ), this, asi );
 	}// end hasActivityStreamChanged()
@@ -1941,7 +2015,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean persistActivityStreamSelection( HttpRequestInfo ri, ActivityStreamInfo asi )
+	private Boolean persistActivityStreamSelection( HttpRequestInfo ri, ActivityStreamInfo asi )
 	{
 		return GwtActivityStreamHelper.persistActivityStreamSelection( getRequest( ri ), this, asi );
 	}// end persistActivityStreamSelection()
@@ -2528,7 +2602,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		AdaptedPortletURL adapterUrl;
 
@@ -2969,7 +3043,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
      */
-	public ExtensionFiles getExtensionFiles(HttpRequestInfo ri, String id, String zoneName) {
+	private ExtensionFiles getExtensionFiles(HttpRequestInfo ri, String id, String zoneName) {
     	ExtensionFiles extFiles = new ExtensionFiles();
     	try 
     	{
@@ -3588,7 +3662,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
  	 */
-	public String getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private String getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try {
 			
@@ -3625,19 +3699,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getSiteAdministrationUrl()
 	
 	/**
-	 * Return true if the presence service is enabled and false
-	 * otherwise.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
- 	 */
-	public Boolean isPresenceEnabled( HttpRequestInfo ri )
-	{
-		return GwtServerHelper.isPresenceEnabled();
-	}
-
-	/**
 	 * Return the URL needed to start an Instant Message with the user.
 	 *
 	 * @param ri
@@ -3647,7 +3708,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
  	 */
-	public String getImUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private String getImUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try {
 			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
@@ -3707,7 +3768,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public GwtPresenceInfo getPresenceInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private GwtPresenceInfo getPresenceInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try {
 			User userAsking = GwtServerHelper.getCurrentUser();
@@ -4453,7 +4514,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public List<GroupInfo> getGroups( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	private List<GroupInfo> getGroups( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try {
 			Long userId = null;
@@ -4515,7 +4576,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public Boolean saveUserStatus( HttpRequestInfo ri, String status ) throws GwtTeamingException
+	private Boolean saveUserStatus( HttpRequestInfo ri, String status ) throws GwtTeamingException
 	{
 		try
 		{
@@ -4560,7 +4621,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public UserStatus getUserStatus(HttpRequestInfo ri, String sbinderId)
+	private UserStatus getUserStatus(HttpRequestInfo ri, String sbinderId)
 			throws GwtTeamingException {
 	
 		return GwtProfileHelper.getUserStatus(this, sbinderId);
@@ -4577,7 +4638,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public ProfileStats getProfileStats(HttpRequestInfo ri, String binderId, String userId) throws GwtTeamingException {
+	private ProfileStats getProfileStats(HttpRequestInfo ri, String binderId, String userId) throws GwtTeamingException {
 		try
 		{
 			User binderCreator = GwtServerHelper.getBinderCreator(this, binderId);
@@ -4607,7 +4668,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return ProfileAttribute  The ProfileAttribute contains the information needed to populate the avatars
 	 */
-	public ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId) {
+	private ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId) {
 		ProfileAttribute attr = GwtProfileHelper.getProfileAvatars(getRequest( ri ), this, Long.valueOf(binderId));
 		return attr;
 	}
@@ -4623,7 +4684,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public  DiskUsageInfo getDiskUsageInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
+	private  DiskUsageInfo getDiskUsageInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
 		
 		DiskUsageInfo diskUsageInfo = null;
 		try {
