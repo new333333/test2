@@ -568,6 +568,17 @@ public interface BinderModule {
 	//Get the versionsEnabled setting from the first binder it is set in up the ancestor chain
     public Boolean getBinderVersionsEnabled(Binder binder);
 	/**
+     * Set versionAgingDays.
+     * 
+     * @param versionAgingDays
+     * @throws AccessControlException
+     */
+    public void setBinderVersionAgingDays(Long binderId, final Long binderVersionAgingDays)
+		throws AccessControlException;
+    //Get the versionAgingDays setting from the binder
+    public Long getBinderVersionAgingDays(Binder binder);
+	
+	/**
      * Set versionsToKeep.
      * 
      * @param versionsToKeep
@@ -577,7 +588,8 @@ public interface BinderModule {
 		throws AccessControlException;
     //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
     public Long getBinderVersionsToKeep(Binder binder);
-	/**
+	
+    /**
      * Set maxFileSize.
      * 
      * @param maxFileSize

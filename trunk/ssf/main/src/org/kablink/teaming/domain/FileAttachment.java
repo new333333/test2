@@ -68,6 +68,7 @@ public class FileAttachment extends Attachment {
     private Integer majorVersion;
     private Integer minorVersion;
     private Boolean agingEnabled = Boolean.FALSE;
+    private Date agingDate;
     private Integer fileStatus = FileStatus.valueOf(FileStatus.not_set);
     private boolean fileExists = true;
    
@@ -116,6 +117,14 @@ public class FileAttachment extends Attachment {
 
 	public void setFileExists(boolean fileExists) {
 		this.fileExists = fileExists;
+	}
+
+	public Date getAgingDate() {
+		return this.agingDate;	//This can be null if it has never been initialized
+	}
+
+	public void setAgingDate(Date agingDate) {
+		this.agingDate = agingDate;
 	}
 
 	public Boolean getAgingEnabled() {

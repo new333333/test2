@@ -109,6 +109,19 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					}
 				}
 				
+				// Get the aging days.
+				String s_agingDays;
+				Long agingDays = null;
+				try {
+					s_agingDays = PortletRequestUtils.getStringParameter(request, "versionAgingDays", "");
+					if (!s_agingDays.equals("")) {
+						agingDays = Long.valueOf(s_agingDays);
+					}
+					getBinderModule().setBinderVersionAgingDays(binderId, agingDays);
+				} catch (Exception ex) {
+					// The value entered by the user must not be valid, don't set it.
+				}
+				
 				// Get the maximum file size.
 				String s_maxFileSize;
 				Long maxFileSize = null;
@@ -163,6 +176,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		}
 		model.put(WebKeys.BINDER_VERSIONS_ENABLED, getBinderModule().getBinderVersionsEnabled(binder));
 		model.put(WebKeys.BINDER_VERSIONS_TO_KEEP, getBinderModule().getBinderVersionsToKeep(binder));
+		model.put(WebKeys.BINDER_VERSION_AGING_DAYS, getBinderModule().getBinderVersionAgingDays(binder));
 		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, getBinderModule().getBinderMaxFileSize(binder));
 		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.isFileEncryptionEnabled());
 
