@@ -209,8 +209,6 @@ public class IFrameDropWidget extends DropWidget
 				else
 					iframeElement.setFrameBorder( 0 );
 				
-				iframeElement.setMarginHeight( iframeProps.getMarginHeight() );
-				iframeElement.setMarginWidth( iframeProps.getMarginWidth() );
 				iframeElement.setName( iframeProps.getName() );
 				
 				value = iframeProps.getScrollbarValueAsString();

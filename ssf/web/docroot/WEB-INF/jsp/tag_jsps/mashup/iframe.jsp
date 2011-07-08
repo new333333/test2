@@ -65,16 +65,6 @@
 			<c:set var="height" value="${mashup_attributes['height']}" />
 		</c:if>
 		
-		<c:set var="marginHeight" value="0" />
-		<c:if test="${!empty mashup_attributes['marginHeight']}">
-			<c:set var="marginHeight" value="${mashup_attributes['marginHeight']}" />
-		</c:if>
-		
-		<c:set var="marginWidth" value="0" />
-		<c:if test="${!empty mashup_attributes['marginWidth']}">
-			<c:set var="marginWidth" value="${mashup_attributes['marginWidth']}" />
-		</c:if>
-		
 		<c:set var="name" value="" />
 		<c:if test="${!empty mashup_attributes['name']}">
 			<c:set var="name" value="${mashup_attributes['name']}" />
@@ -93,8 +83,6 @@
 		<iframe src="${url}" 
 				frameborder="${frameBorder}"
 				height="${height}"
-				marginheight="${marginHeight}"
-				marginwidth="${marginWidth}"
 				name="${name}"
 				id="lpIFrame"
 				${scrolling}

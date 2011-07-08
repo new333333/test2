@@ -67,8 +67,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 	private TextBox m_frameNameTxtBox;
 	private TextBox m_heightTxtBox;
 	private TextBox m_widthTxtBox;
-	private TextBox m_marginHeightTxtBox;
-	private TextBox m_marginWidthTxtBox;
 	private CheckBox m_frameBorderCkBox;
 	private ListBox m_scrollbarListBox;
 	
@@ -189,43 +187,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 			++row;
 		}
 		
-		// Add a label and edit control for margin height
-		label = new Label( messages.marginHeightLabel() );
-		table.setWidget( row, 0, label );
-		m_marginHeightTxtBox = new TextBox();
-		m_marginHeightTxtBox.setVisibleLength( 4 );
-		m_marginHeightTxtBox.addKeyPressHandler( this );
-		panel = new FlowPanel();
-		panel.add( m_marginHeightTxtBox );
-		inlineLabel = new InlineLabel( messages.pxLabel() );
-		panel.add( inlineLabel );
-		table.setWidget( row, 1, panel );
-		++row;
-		
-		// Add a label and edit control for margin width
-		label = new Label( messages.marginWidthLabel() );
-		table.setWidget( row, 0, label );
-		m_marginWidthTxtBox = new TextBox();
-		m_marginWidthTxtBox.setVisibleLength( 4 );
-		m_marginWidthTxtBox.addKeyPressHandler( this );
-		panel = new FlowPanel();
-		panel.add( m_marginWidthTxtBox );
-		inlineLabel = new InlineLabel( messages.pxLabel() );
-		panel.add( inlineLabel );
-		table.setWidget( row, 1, panel );
-		++row;
-		
-		// Add an empty div for space.
-		{
-			Label spacer;
-			
-			spacer = new Label();
-			spacer.getElement().getStyle().setWidth( 10, Unit.PX );
-			spacer.getElement().getStyle().setHeight( 4, Unit.PX );
-			table.setWidget( row, 0, spacer );
-			++row;
-		}
-		
 		// Add a listbox for the scrollbar value.
 		{
 			label = new Label( messages.showScrollbarsLabel() );
@@ -272,12 +233,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 		
 		// Save the width.
 		properties.setWidth( m_widthTxtBox.getText() );
-		
-		// Save the margin height.
-		properties.setMarginHeight( m_marginHeightTxtBox.getText() );
-		
-		// Save the margin width.
-		properties.setMarginWidth( m_marginWidthTxtBox.getText() );
 		
 		// Save whether or not the frame should have a border
 		properties.setShowBorder( m_frameBorderCkBox.getValue().booleanValue() );
@@ -349,16 +304,6 @@ public class IFrameWidgetDlgBox extends DlgBox
 			value = "";
 		m_widthTxtBox.setText( value );
 		
-		value = properties.getMarginHeigthAsString();
-		if ( value == null )
-			value = "";
-		m_marginHeightTxtBox.setText( value );
-		
-		value = properties.getMarginWidthAsString();
-		if ( value == null )
-			value = "";
-		m_marginWidthTxtBox.setText( value );
-		
 		// Select the appropriate option in the list box
 		selectScrollbarValue( properties.getScrollbarValue() );
 
@@ -369,7 +314,7 @@ public class IFrameWidgetDlgBox extends DlgBox
 	}
 	
 	/**
-	 * This method gets called when the user types in the height, width, margin height or margin width text boxes.
+	 * This method gets called when the user types in the height, width, text boxes.
 	 * We only want to let the user enter numbers.
 	 */
 	public void onKeyPress( KeyPressEvent event )

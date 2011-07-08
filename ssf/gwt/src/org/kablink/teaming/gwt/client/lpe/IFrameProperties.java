@@ -55,8 +55,6 @@ public class IFrameProperties
 	private String m_name;
 	private int m_height;
 	private int m_width;
-	private int m_marginHeight;
-	private int m_marginWidth;
 	private boolean m_showBorder;
 	private ScrollbarValue m_scrollbarValue;
 	
@@ -70,8 +68,6 @@ public class IFrameProperties
 		m_height = 200;
 		m_width = 400;
 		m_showBorder = false;
-		m_marginHeight = 0;
-		m_marginWidth = 0;
 		m_scrollbarValue = ScrollbarValue.AUTO;
 	}
 	
@@ -91,8 +87,6 @@ public class IFrameProperties
 			setHeight( iframeProps.getHeight() );
 			setWidth( iframeProps.getWidth() );
 			setShowBorder( iframeProps.getShowBorder() );
-			setMarginHeight( iframeProps.getMarginHeight() );
-			setMarginWidth( iframeProps.getMarginWidth() );
 			setScrollbarValue( iframeProps.getScrollbarValue() );
 		}
 	}
@@ -115,8 +109,6 @@ public class IFrameProperties
 		
 		str += ",height=" + String.valueOf( m_height );
 		str += ",width=" + String.valueOf( m_width );
-		str += ",marginHeight=" + String.valueOf( m_marginHeight );
-		str += ",marginWidth=" + String.valueOf( m_marginWidth );
 		
 		str += ",frameBorder=";
 		if ( m_showBorder )
@@ -149,38 +141,6 @@ public class IFrameProperties
 	public String getHeightAsString()
 	{
 		return String.valueOf( m_height );
-	}
-	
-	/**
-	 * 
-	 */
-	public int getMarginHeight()
-	{
-		return m_marginHeight;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getMarginHeigthAsString()
-	{
-		return String.valueOf( m_marginHeight );
-	}
-	
-	/**
-	 * 
-	 */
-	public int getMarginWidth()
-	{
-		return m_marginWidth;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getMarginWidthAsString()
-	{
-		return String.valueOf( m_marginWidth );
 	}
 	
 	/**
@@ -267,52 +227,6 @@ public class IFrameProperties
 		catch (Exception ex)
 		{
 			setHeight( 200 );
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMarginHeight( int height )
-	{
-		m_marginHeight = height;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMarginHeight( String height )
-	{
-		try
-		{
-			setMarginHeight( Integer.parseInt( height ) );
-		}
-		catch (Exception ex)
-		{
-			setMarginHeight( 0 );
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMarginWidth( int width )
-	{
-		m_marginWidth = width;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMarginWidth( String width )
-	{
-		try
-		{
-			setMarginWidth( Integer.parseInt( width ) );
-		}
-		catch ( Exception ex )
-		{
-			setMarginWidth( 0 );
 		}
 	}
 	
