@@ -58,6 +58,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
@@ -2451,6 +2452,31 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		}
 		finally {
 			end(begin, "getLoginInfoIds()");
+		}
+	}
+	
+	public List getOldFileVersions(final Long zoneId, final Date ageDate) {
+		long begin = System.nanoTime();
+		try {
+			List result = new ArrayList();
+			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException {
+					ProjectionList proj = Projections.projectionList()
+						.add(Projections.groupProperty("id"))
+						.add(Projections.groupProperty("owner.entity"));
+					Criteria crit = session.createCriteria(FileAttachment.class)
+						.setProjection(proj)
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.isNotNull("agingEnabled"))
+							.add(Restrictions.eq("agingEnabled", true))
+							.add(Restrictions.lt("creation.date", ageDate))
+							.setCacheable(false);
+					return crit.list();
+				}});
+			return result;
+		}
+		finally {
+			end(begin, "getOldFileVersions()");
 		}
 	}
 	

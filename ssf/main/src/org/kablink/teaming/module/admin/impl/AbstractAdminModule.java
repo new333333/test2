@@ -588,7 +588,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		info.getSchedule().setDaily(true);
 		info.getSchedule().setHours("0");
 		info.getSchedule().setMinutes("30");
-		//Testing values - trigger every 5 minutes (Don't forget to comment this out)
+		//Testing values - trigger every 5 minutes (Don't forget to comment this out before checking it back in)
 		//info.getSchedule().setDaily(true);
 		//info.getSchedule().setHours("*");
 		//info.getSchedule().setMinutes("0/5");

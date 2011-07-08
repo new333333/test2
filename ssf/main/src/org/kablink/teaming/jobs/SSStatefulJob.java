@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
@@ -70,6 +71,7 @@ import org.quartz.StatefulJob;
 public abstract class SSStatefulJob implements StatefulJob {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected JobDataMap jobDataMap;
+	protected FileModule fileModule;
 	protected ProfileDao profileDao;
 	protected CoreDao coreDao;
 	protected User user;
@@ -83,6 +85,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
 		setupSession();
+    	fileModule = (FileModule)SpringContextUtil.getBean("fileModule");
     	profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
     	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
