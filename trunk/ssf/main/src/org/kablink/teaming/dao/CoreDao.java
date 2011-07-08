@@ -230,6 +230,8 @@ public interface CoreDao {
     
 	public List<String> getLoginInfoIds(final Long zoneId, final Long userId, final String authenticatorName, final Date startDate, final Integer maxResult);
 	
+	public List<String> getOldFileVersions(final Long zoneId, final Date ageDate);
+	
 	/**
 	 * Computes disk usage for the binder. 
 	 * The result is a sum of the sizes of all files associated with the binder 

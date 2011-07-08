@@ -434,7 +434,18 @@ public interface FileModule {
 	 */
 	public void deleteVersion(Binder binder, DefinableEntity entity,
 			VersionAttachment va) throws DeleteVersionException; 
-	
+
+	/**
+	 * Delete the versions in an entity that have passed the aging date. 
+	 * This goes through all versions in the entity looking for versions that are too old and deletes them
+	 * The highest version in each major version set is never deleted 
+	 * 
+	 * @param entity
+	 * @param agingDate
+	 * @throws DeleteVersionException
+	 */
+	public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate);
+
 	/**
 	 * Returns a map of names of the files contained in the specified binder
 	 * to its enclosing entry ids.

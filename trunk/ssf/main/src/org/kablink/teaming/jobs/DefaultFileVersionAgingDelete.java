@@ -32,10 +32,15 @@
  */
 package org.kablink.teaming.jobs;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.jobs.DefaultEmailNotification.JobDescription;
 import org.kablink.teaming.jobs.SSCronTriggerJob.CronJobDescription;
@@ -62,7 +67,32 @@ public class DefaultFileVersionAgingDelete extends SSCronTriggerJob
 		}
 
     	//Get the list of potential file versions to delete
-    	//TODO implement something here
+		Date ageDate = new Date();
+		//Calculate the "aged" date. If any file version was created before this date, then it is time to delete it
+		ageDate.setTime(ageDate.getTime() - fileVersionsMaxAge*24*60*60*1000);	//Subtract the "max age days" from today's date
+    	List fileAtts = coreDao.getOldFileVersions(zoneId, ageDate);
+    	List entitiesProcessed = new ArrayList();
+    	long totalDelCount = 0;
+    	for (Object o : fileAtts) {
+    		Object[] fAttObj = (Object []) o;
+    		String fAttId = (String)fAttObj[0];
+    		DefinableEntity entity = (DefinableEntity)fAttObj[1];
+    		if (!entitiesProcessed.contains(entity)) {
+    			//Purge old versions
+    			entitiesProcessed.add(entity);
+    			try {
+    				long delCount = fileModule.deleteAgedFileVersions(entity, ageDate);
+    				totalDelCount = totalDelCount + delCount;
+    			} catch(Exception e) {
+    				logger.error("Could not delete old file versions from " + 
+    						entity.getEntityType().name() + ": " + entity.getTitle() + " (" + 
+    						entity.getId().toString() + ")");
+    			}
+    		}
+    	}
+    	if (totalDelCount > 0) {
+    		logger.info("Old versions deleted: " + String.valueOf(totalDelCount));
+    	}
     }
 
 	public ScheduleInfo getScheduleInfo(Long zoneId) {

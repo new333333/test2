@@ -64,6 +64,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
@@ -1156,6 +1157,26 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return result;
 	}
 
+	public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
+		Binder binder = entity.getParentBinder();
+		if (entity.getEntityType().equals(EntityType.folder) || entity.getEntityType().equals(EntityType.workspace)) {
+			binder = (Binder)entity;
+		}
+		long counter = 0;
+		for (Attachment att : entity.getAttachments()) {
+			if (att instanceof FileAttachment) {
+				FileAttachment fAtt = (FileAttachment)att;
+				for (VersionAttachment vAtt : (Set<VersionAttachment>)fAtt.getFileVersions()) {
+					if (vAtt.isAgingEnabled() && vAtt.getCreation().getDate().before(agingDate)) {
+						//This file version was created before the aging date and is subject to aging, delete it
+						deleteVersion(binder, entity, vAtt);
+						counter++;
+					}
+				}
+			}
+		}
+		return counter;
+	}
 
 	
 	private void triggerUpdateTransaction() {
