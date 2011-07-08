@@ -4100,7 +4100,7 @@ public class GwtServerHelper {
 				// Validate the next event.
 				try
 				{
-					teamingEvent = nextValidation.getEvent();
+					teamingEvent = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 					
 					if ( teamingEvent.equals( TeamingEvents.INVOKE_REPLY ))
 						folderModule.checkAccess( folderEntry, FolderOperation.addReply );

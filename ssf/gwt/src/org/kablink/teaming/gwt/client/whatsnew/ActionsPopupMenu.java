@@ -92,29 +92,29 @@ public class ActionsPopupMenu extends PopupMenu
 			m_eventValidations = new ArrayList<EventValidation>();
 			
 			// Create the "Reply" menu item.
-			m_replyMenuItem = addMenuItem( TeamingEvents.INVOKE_REPLY, new InvokeReplyEvent(), null, messages.reply() );
+			m_replyMenuItem = addMenuItem( new InvokeReplyEvent(), null, messages.reply() );
 			
 			// Create the "Share" menu item.
-			m_shareMenuItem = addMenuItem( TeamingEvents.INVOKE_SHARE, new InvokeShareEvent(), null, messages.share() );
+			m_shareMenuItem = addMenuItem( new InvokeShareEvent(), null, messages.share() );
 			
 			// Create the "Subscribe" menu item.
-			m_subscribeMenuItem = addMenuItem( TeamingEvents.INVOKE_SUBSCRIBE, new InvokeSubscribeEvent(), null, messages.subscribe() );
+			m_subscribeMenuItem = addMenuItem( new InvokeSubscribeEvent(), null, messages.subscribe() );
 			
 			// Create the "Tag" menu item.
-			m_tagMenuItem = addMenuItem( TeamingEvents.INVOKE_TAG, new InvokeTagEvent(), null, messages.tag() );
+			m_tagMenuItem = addMenuItem( new InvokeTagEvent(), null, messages.tag() );
 			
 			// Add a separator
 			addSeparator();
 			
 			// Create the "Mark read" menu item.
-			m_markReadMenuItem = addMenuItem( TeamingEvents.MARK_ENTRY_READ, new MarkEntryReadEvent(), null, messages.markRead() );
+			m_markReadMenuItem = addMenuItem( new MarkEntryReadEvent(), null, messages.markRead() );
 
 			// Create the "Mark unread" menu item.
-			m_markUnreadMenuItem = addMenuItem( TeamingEvents.MARK_ENTRY_UNREAD, new MarkEntryUnreadEvent(), null, messages.markUnread() );
+			m_markUnreadMenuItem = addMenuItem( new MarkEntryUnreadEvent(), null, messages.markUnread() );
 		}
 	}
 	
-	
+
 	/**
 	 * 
 	 * @param event
@@ -123,7 +123,8 @@ public class ActionsPopupMenu extends PopupMenu
 	 * 
 	 * @return
 	 */
-	public PopupMenuItem addMenuItem( TeamingEvents eventEnum, VibeEventBase<?> event, Image img, String text )
+	@Override
+	public PopupMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
 	{
 		EventValidation eventValidation;
 		PopupMenuItem menuItem;
@@ -131,7 +132,7 @@ public class ActionsPopupMenu extends PopupMenu
 	    menuItem = super.addMenuItem( event, img, text );
 
 		eventValidation = new EventValidation();
-		eventValidation.setEvent( eventEnum );
+		eventValidation.setEventOrdinal( event.getEventEnum().ordinal() );
 		
 		m_eventValidations.add( eventValidation );
 		
@@ -176,7 +177,7 @@ public class ActionsPopupMenu extends PopupMenu
 						{
 							TeamingEvents event;
 							
-							event = nextValidation.getEvent();
+							event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 							
 							if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
 								setMenuItemVisibility( m_replyMenuItem, false );
