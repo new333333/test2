@@ -1024,6 +1024,10 @@ public class ExportHelper {
 		if (versionsToKeep != null) {
 			versionControls.addAttribute("versionsToKeep", versionsToKeep.toString());
 		}
+		Long versionAgingDays = binder.getVersionAgingDays();
+		if (versionAgingDays != null) {
+			versionControls.addAttribute("versionAgingDays", versionAgingDays.toString());
+		}
 		Long versionsMaxFileSize = binder.getMaxFileSize();
 		if (versionsMaxFileSize != null) {
 			versionControls.addAttribute("versionsMaxFileSize", versionsMaxFileSize.toString());
@@ -2516,6 +2520,10 @@ public class ExportHelper {
 			String versionsToKeep = versionControls.attributeValue("versionsToKeep", null);
 			if (versionsToKeep != null) {
 				binder.setVersionsToKeep(Long.valueOf(versionsToKeep));
+			}
+			String versionAgingDays = versionControls.attributeValue("versionAgingDays", null);
+			if (versionAgingDays != null) {
+				binder.setVersionAgingDays(Long.valueOf(versionAgingDays));
 			}
 			String versionsMaxFileSize = versionControls.attributeValue("versionsMaxFileSize", null);
 			if (versionsMaxFileSize != null) {

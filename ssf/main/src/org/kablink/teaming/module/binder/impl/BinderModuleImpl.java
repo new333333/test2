@@ -2434,9 +2434,26 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		});
 	}
 
+	//Get the versionAgingDays setting from the binder
+    public Long getBinderVersionAgingDays(Binder binder) {
+    	return binder.getVersionAgingDays();
+    }
+
+    public void setBinderVersionAgingDays(Long binderId, final Long binderVersionAgingDays)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setVersionAgingDays(binderVersionAgingDays);
+				return binderVersionAgingDays;
+			}
+		});
+	}
+
 	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
-    public Long getBinderMaxFileSize(Binder binder) {
-    	Long result = binder.getMaxFileSize();
+	public Long getBinderMaxFileSize(Binder binder) {
+		Long result = binder.getMaxFileSize();
 		Binder parent = binder;
 		while (parent.getParentBinder() != null) {
 			if (result != null) break;
@@ -2444,7 +2461,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			parent = parent.getParentBinder();
 		}
 		return result;
-    }
+	}
 
     public void setBinderMaxFileSize(Long binderId, final Long maxFileSize)
 			throws AccessControlException {

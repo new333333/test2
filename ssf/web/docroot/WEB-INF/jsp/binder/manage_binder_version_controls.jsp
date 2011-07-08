@@ -117,7 +117,7 @@ function ss_checkIfNumberValid(s) {
 		/>
 		<span class="ss_bold"><ssf:nlt tag="binder.versions.enableVersionsForFolder" /></span>
 		<c:if test="${ss_binder_versions_inherited}">
-		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
 	  </legend>
       
@@ -129,7 +129,7 @@ function ss_checkIfNumberValid(s) {
 		    <c:if test="${ss_binder_versions_inherited || !ss_binder_versions_enabled}">disabled=disabled</c:if>
           >
         <c:if test="${ss_binder_versions_inherited}">
-		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
 		<br/>
 		<span class="ss_smallprint" style="padding-left:16px;">
@@ -155,6 +155,27 @@ function ss_checkIfNumberValid(s) {
 
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
+	    <span class="ss_bold"><ssf:nlt tag="binder.file.versionAging" /></span>
+	  </legend>
+       <div style="padding:10px 10px 0px 10px;">
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.agingDays"/></span>
+          <input type="text" name="versionAgingDays" 
+            value="${ss_binder_version_aging_days}"
+            style="width:80px; text-align:right;"
+            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+          ><ssf:nlt tag="smallWords.days"/>
+          <br/>
+		  <span class="ss_smallprint" style="padding:6px 0px 0px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint1" /></span>
+		  <br/>
+		  <span class="ss_smallprint" style="padding:6px 0px 0px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint2" /></span>
+		  <br/>
+		  <span class="ss_smallprint" style="padding:6px 0px 0px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint3" /></span>
+       </div>
+	</fieldset>
+<br/>
+
+    <fieldset class="ss_fieldset">
+	  <legend class="ss_legend">
 	    <span class="ss_bold"><ssf:nlt tag="binder.file.uploadSizeLimit" /></span>
 	  </legend>
        <div style="padding:10px 10px 0px 10px;">
@@ -165,7 +186,7 @@ function ss_checkIfNumberValid(s) {
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
           ><ssf:nlt tag="file.sizeMB"/>
         <c:if test="${ss_binder_file_size_limit_inherited}">
-		  <span class="ss_smallprint" style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
 		<br/>
 		<span class="ss_smallprint" style="padding-left:16px;">
