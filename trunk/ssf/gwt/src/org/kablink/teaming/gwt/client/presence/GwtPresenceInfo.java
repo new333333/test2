@@ -32,9 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.presence;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GwtPresenceInfo implements IsSerializable {
+public class GwtPresenceInfo implements IsSerializable, VibeRpcResponseData {
 	public static final int STATUS_UNKNOWN = -1;
 	public static final int STATUS_OFFLINE = 0;
 	public static final int STATUS_AVAILABLE = 1;

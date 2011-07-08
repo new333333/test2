@@ -33,6 +33,9 @@
 package org.kablink.teaming.gwt.client.presence;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetImUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -54,10 +57,12 @@ public class InstantMessageClickHandler implements ClickHandler {
 		if (m_url != null && m_url.length() > 0) {
 			openUrl();
 		} else {
-			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();		
-			rpcService.getImUrl(HttpRequestInfo.createHttpRequestInfo(),
-								m_binderId, 
-								new AsyncCallback<String>() {
+			GetImUrlCmd cmd;
+			
+			cmd = new GetImUrlCmd( m_binderId );
+			GwtClientHelper.executeCommand( 
+								cmd,
+								new AsyncCallback<VibeRpcResponse>() {
 									public void onFailure(Throwable t) {
 										GwtClientHelper.handleGwtRPCFailure(
 											t,
@@ -65,7 +70,13 @@ public class InstantMessageClickHandler implements ClickHandler {
 											m_binderId);
 									}
 	
-									public void onSuccess(String url) {
+									public void onSuccess(VibeRpcResponse response) {
+										String url;
+										StringRpcResponseData responseData;
+										
+										responseData = (StringRpcResponseData) response.getResponseData();
+										url = responseData.getStringValue();
+										
 										m_url = url;
 										openUrl();
 									}

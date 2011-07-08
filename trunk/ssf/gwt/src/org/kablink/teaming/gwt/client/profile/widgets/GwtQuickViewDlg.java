@@ -44,9 +44,11 @@ import org.kablink.teaming.gwt.client.profile.ProfileClientUtil;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetAddMeetingUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMicroBlogUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetQuickViewInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IsPersonTrackedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
@@ -624,7 +626,8 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	
 	private void getUserStatus() {
 		
-		AsyncCallback<UserStatus> rpcCallback = new AsyncCallback<UserStatus>(){
+		GetUserStatusCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -633,7 +636,12 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					binderId );
 			}
 
-			public void onSuccess(UserStatus result) {
+			public void onSuccess( VibeRpcResponse response ) {
+				UserStatus result = null;
+				
+				if ( response.getResponseData() != null )
+					result = (UserStatus) response.getResponseData();
+				
 				if(result != null) {
 					String description = result.getStatus();
 					if(description != null && !description.equals("")){
@@ -647,7 +655,8 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			
 		// Issue an ajax request to save the user status to the db.  rpcCallback will
 		// be called when we get the response back.
-		rpcService.getUserStatus(HttpRequestInfo.createHttpRequestInfo(), binderId, rpcCallback );
+		cmd = new GetUserStatusCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
 	private class MicroBlogClickHandler implements ClickHandler {
@@ -699,10 +708,23 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 
 	private class ConferencingClickHandler implements ClickHandler {
 		public void onClick(ClickEvent event) {
+			GetAddMeetingUrlCmd cmd;
+			
 			// Get the URL to the meeting start/schedule dialog and launch it in a new window
-			GwtTeaming.getRpcService().getAddMeetingUrl( HttpRequestInfo.createHttpRequestInfo(), binderId,
-					new AsyncCallback<String>() {
-						public void onSuccess(String url) {
+			cmd = new GetAddMeetingUrlCmd( binderId );
+			GwtClientHelper.executeCommand( cmd,
+					new AsyncCallback<VibeRpcResponse>() {
+						public void onSuccess( VibeRpcResponse response ) {
+							String url=null;
+							
+							if ( response.getResponseData() != null )
+							{
+								StringRpcResponseData responseData;
+								
+								responseData = (StringRpcResponseData) response.getResponseData();
+								url = responseData.getStringValue();
+							}
+							
 							if (GwtClientHelper.hasString(url)) {
 								GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 500, 600);
 								hide();

@@ -35,12 +35,14 @@ package org.kablink.teaming.gwt.client.profile;
 
 import java.util.Date;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author Nathan Jensen
  */
-public class UserStatus implements IsSerializable{
+public class UserStatus implements IsSerializable, VibeRpcResponseData {
 	
 	private String status;
 	private Date modifyDate;

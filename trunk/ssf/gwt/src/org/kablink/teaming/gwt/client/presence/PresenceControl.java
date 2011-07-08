@@ -33,7 +33,10 @@
 package org.kablink.teaming.gwt.client.presence;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPresenceInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -93,7 +96,9 @@ public class PresenceControl extends Composite {
 		m_presenceA = new Anchor();
 
 		if (null == pi) {
-			AsyncCallback<GwtPresenceInfo> callback = new AsyncCallback<GwtPresenceInfo>() {
+			GetPresenceInfoCmd cmd;
+			
+			AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					// Just ignore any errors.  All we need to do is hide the presence control
 					// See bug 648358.
@@ -105,13 +110,18 @@ public class PresenceControl extends Composite {
 					panel.setVisible(false);
 				}
 	
-				public void onSuccess(GwtPresenceInfo piFromRPC) {
+				public void onSuccess( VibeRpcResponse response ) {
+					GwtPresenceInfo piFromRPC = null;
+					
+					if ( response.getResponseData() != null )
+						piFromRPC = (GwtPresenceInfo) response.getResponseData();
+					
 					getPresenceInfoData(piFromRPC);
 				}
 			};
 	
-			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();		
-			rpcService.getPresenceInfo(HttpRequestInfo.createHttpRequestInfo(), m_binderId, callback);
+			cmd = new GetPresenceInfoCmd( m_binderId );
+			GwtClientHelper.executeCommand( cmd, callback );
 		}
 		else {
 			getPresenceInfoData(pi);
