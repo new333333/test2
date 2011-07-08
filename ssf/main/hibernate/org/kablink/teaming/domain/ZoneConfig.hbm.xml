@@ -12,6 +12,7 @@
 	<property name="diskQuotasEnabled" access="field"/>
 	<property name="diskQuotaUserDefault" access="field"/>
 	<property name="diskQuotasHighwaterPercentage" access="field"/>
+	<property name="fileSizeLimitUserDefault" access="field"/>
 	<property name="binderQuotasInitialized" access="field"/>
 	<property name="binderQuotasEnabled" access="field"/>
 	<property name="binderQuotasAllowOwner" access="field"/>

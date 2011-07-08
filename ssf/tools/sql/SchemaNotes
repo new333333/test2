@@ -100,3 +100,11 @@ Version 22:
 Version 23:
   Add SS_ZoneConfig column for the version aging date (fileVersionsMaxAge)
   
+Version 24:
+  Add SS_Principals column for the user file size limit (fileSizeLimit)
+  Add SS_Principals column for the user max group file size limit (maxGroupsFileSizeLimit)
+  Add SS_ZoneConfig column for the default user file size limit (fileSizeLimitUserDefault)
+
+Version 25:
+  Add SS_Forums column for the version aging days (versionAgingDays)
+  Add SS_Attachments column for the version aging date (agingDate)
