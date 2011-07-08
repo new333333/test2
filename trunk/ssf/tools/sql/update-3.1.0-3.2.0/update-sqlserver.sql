@@ -6,6 +6,12 @@ alter table SS_Forums add maxFileSize numeric(19,0);
 alter table SS_Forums add fileEncryptionEnabled tinyint null;
 
 alter table SS_Attachments add agingEnabled tinyint null;
-alter table SS_ZoneConfig add fileVersionsMaxAge int;
+alter table SS_ZoneConfig add fileVersionsMaxAge numeric(19,0);
+alter table SS_Principals add fileSizeLimit numeric(19,0);
+alter table SS_Principals add maxGroupsFileSizeLimit numeric(19,0);
+alter table SS_ZoneConfig add fileSizeLimitUserDefault numeric(19,0);
 
-INSERT INTO SS_SchemaInfo values (23);
+alter table SS_Forums add versionAgingDays numeric(19,0);
+alter table SS_Attachments add agingDate datetime null;
+
+INSERT INTO SS_SchemaInfo values (25);
