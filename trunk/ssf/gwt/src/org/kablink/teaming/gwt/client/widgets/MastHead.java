@@ -497,7 +497,7 @@ public class MastHead extends Composite
 			m_loginLink.addMouseOverHandler( this );
 			m_loginLink.setTitle( GwtTeaming.getMessages().loginHint() );
 			linkElement = m_loginLink.getElement();
-			linkElement.setId( "mhLogoutAction" );
+			linkElement.setId( "mhLoginAction" );
 			
 			// Add the mouse-out image to the link.
 			imgResource = GwtTeaming.getImageBundle().login1();

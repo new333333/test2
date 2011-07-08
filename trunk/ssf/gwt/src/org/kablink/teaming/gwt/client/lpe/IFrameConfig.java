@@ -78,10 +78,6 @@ public class IFrameConfig extends ConfigItem
 							m_properties.setHeight( results2[1] );
 						else if ( results2[0].equalsIgnoreCase( "width" ) )
 							m_properties.setWidth( results2[1] );
-						else if ( results2[0].equalsIgnoreCase( "marginHeight" ) )
-							m_properties.setMarginHeight( results2[1] );
-						else if ( results2[0].equalsIgnoreCase( "marginWidth" ) )
-							m_properties.setMarginWidth( results2[1] );
 						else if ( results2[0].equalsIgnoreCase( "frameBorder" ) )
 							m_properties.setShowBorder( results2[1] );
 						else if ( results2[0].equalsIgnoreCase( "scrolling" ) )
