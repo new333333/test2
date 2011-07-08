@@ -56,7 +56,6 @@ public class PurgeTasksCmd extends VibeRpcCmd {
 	 */
 	public PurgeTasksCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -92,10 +91,15 @@ public class PurgeTasksCmd extends VibeRpcCmd {
 	 */
 	public List<TaskId> getTaskIds() {return m_taskIds;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.PURGE_TASKS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.PURGE_TASKS.ordinal();
 	}
 }

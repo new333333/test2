@@ -52,8 +52,6 @@ public class ExpandVerticalBucketCmd extends VibeRpcCmd
 	public ExpandVerticalBucketCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +59,8 @@ public class ExpandVerticalBucketCmd extends VibeRpcCmd
 	 */
 	public ExpandVerticalBucketCmd( BucketInfo bucketInfo )
 	{
+		this();
 		m_bucketInfo = bucketInfo;
-		
-		init();
 	}
 	
 	/**
@@ -75,10 +72,14 @@ public class ExpandVerticalBucketCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.EXPAND_VERTICAL_BUCKET;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.EXPAND_VERTICAL_BUCKET.ordinal();
 	}
 }

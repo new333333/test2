@@ -51,8 +51,6 @@ public class GetPresenceInfoCmd extends VibeRpcCmd
 	public GetPresenceInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetPresenceInfoCmd extends VibeRpcCmd
 	 */
 	public GetPresenceInfoCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetPresenceInfoCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_PRESENCE_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_PRESENCE_INFO.ordinal();
 	}
 }

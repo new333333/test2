@@ -50,8 +50,6 @@ public class GetFileAttachmentsCmd extends VibeRpcCmd
 	public GetFileAttachmentsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetFileAttachmentsCmd extends VibeRpcCmd
 	 */
 	public GetFileAttachmentsCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetFileAttachmentsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_FILE_ATTACHMENTS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_FILE_ATTACHMENTS.ordinal();
 	}
 }

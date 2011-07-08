@@ -51,8 +51,6 @@ public class IsPersonTrackedCmd extends VibeRpcCmd
 	public IsPersonTrackedCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class IsPersonTrackedCmd extends VibeRpcCmd
 	 */
 	public IsPersonTrackedCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class IsPersonTrackedCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.IS_PERSON_TRACKED;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.IS_PERSON_TRACKED.ordinal();
 	}
 }

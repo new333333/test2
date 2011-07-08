@@ -56,7 +56,6 @@ public class DeleteTasksCmd extends VibeRpcCmd {
 	 */
 	public DeleteTasksCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -92,10 +91,15 @@ public class DeleteTasksCmd extends VibeRpcCmd {
 	 */
 	public List<TaskId> getTaskIds() {return m_taskIds;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.DELETE_TASKS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.DELETE_TASKS.ordinal();
 	}
 }

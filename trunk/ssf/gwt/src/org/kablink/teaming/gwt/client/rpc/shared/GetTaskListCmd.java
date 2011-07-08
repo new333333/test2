@@ -53,7 +53,6 @@ public class GetTaskListCmd extends VibeRpcCmd {
 	 */
 	public GetTaskListCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -80,10 +79,15 @@ public class GetTaskListCmd extends VibeRpcCmd {
 	public String getFilterType() {return m_filterType;}	
 	public String getModeType()   {return m_modeType;  }	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TASK_LIST;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TASK_LIST.ordinal();
 	}
 }

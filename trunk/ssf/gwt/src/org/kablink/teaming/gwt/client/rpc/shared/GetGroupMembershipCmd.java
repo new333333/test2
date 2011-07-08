@@ -51,7 +51,6 @@ public class GetGroupMembershipCmd extends VibeRpcCmd {
 	 */
 	public GetGroupMembershipCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -72,10 +71,15 @@ public class GetGroupMembershipCmd extends VibeRpcCmd {
 	 */
 	public String getGroupId() {return m_groupId;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_GROUP_MEMBERSHIP;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_GROUP_MEMBERSHIP.ordinal();
 	}
 }

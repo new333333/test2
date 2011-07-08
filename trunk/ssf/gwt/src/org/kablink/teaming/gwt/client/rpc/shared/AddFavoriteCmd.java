@@ -50,8 +50,6 @@ public class AddFavoriteCmd extends VibeRpcCmd
 	public AddFavoriteCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class AddFavoriteCmd extends VibeRpcCmd
 	 */
 	public AddFavoriteCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class AddFavoriteCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.ADD_FAVORITE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.ADD_FAVORITE.ordinal();
 	}
 }

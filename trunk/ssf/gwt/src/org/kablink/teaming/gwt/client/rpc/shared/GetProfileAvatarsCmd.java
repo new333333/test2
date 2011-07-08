@@ -51,8 +51,6 @@ public class GetProfileAvatarsCmd extends VibeRpcCmd
 	public GetProfileAvatarsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetProfileAvatarsCmd extends VibeRpcCmd
 	 */
 	public GetProfileAvatarsCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetProfileAvatarsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_PROFILE_AVATARS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_PROFILE_AVATARS.ordinal();
 	}
 }

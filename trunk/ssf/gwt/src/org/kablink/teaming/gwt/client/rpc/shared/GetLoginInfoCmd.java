@@ -45,16 +45,17 @@ public class GetLoginInfoCmd extends VibeRpcCmd
 	public GetLoginInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_LOGIN_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_LOGIN_INFO.ordinal();
 	}
-
 }

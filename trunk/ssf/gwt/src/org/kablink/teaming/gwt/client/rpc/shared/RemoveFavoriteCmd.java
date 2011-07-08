@@ -50,8 +50,6 @@ public class RemoveFavoriteCmd extends VibeRpcCmd
 	public RemoveFavoriteCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class RemoveFavoriteCmd extends VibeRpcCmd
 	 */
 	public RemoveFavoriteCmd( String favoriteId )
 	{
+		this();
 		m_favoriteId = favoriteId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class RemoveFavoriteCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.REMOVE_FAVORITE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.REMOVE_FAVORITE.ordinal();
 	}
 }

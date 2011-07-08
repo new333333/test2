@@ -51,7 +51,6 @@ public class GetTeamAssigneeMembershipCmd extends VibeRpcCmd {
 	 */
 	public GetTeamAssigneeMembershipCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -71,10 +70,15 @@ public class GetTeamAssigneeMembershipCmd extends VibeRpcCmd {
 	 */
 	public Long getBinderId() {return m_binderId;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TEAM_ASSIGNEE_MEMBERSHIP;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TEAM_ASSIGNEE_MEMBERSHIP.ordinal();
 	}
 }

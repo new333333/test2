@@ -51,8 +51,6 @@ public class GetMicroBlogUrlCmd extends VibeRpcCmd
 	public GetMicroBlogUrlCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class GetMicroBlogUrlCmd extends VibeRpcCmd
 	 */
 	public GetMicroBlogUrlCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class GetMicroBlogUrlCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_MICRO_BLOG_URL;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_MICRO_BLOG_URL.ordinal();
 	}
 }

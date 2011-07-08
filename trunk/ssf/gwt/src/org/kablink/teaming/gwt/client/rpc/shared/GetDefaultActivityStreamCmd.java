@@ -50,8 +50,6 @@ public class GetDefaultActivityStreamCmd extends VibeRpcCmd
 	public GetDefaultActivityStreamCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetDefaultActivityStreamCmd extends VibeRpcCmd
 	 */
 	public GetDefaultActivityStreamCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetDefaultActivityStreamCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_DEFAULT_ACTIVITY_STREAM;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_DEFAULT_ACTIVITY_STREAM.ordinal();
 	}
 }

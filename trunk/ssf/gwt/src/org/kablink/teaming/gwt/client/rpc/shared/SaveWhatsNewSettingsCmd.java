@@ -52,8 +52,6 @@ public class SaveWhatsNewSettingsCmd extends VibeRpcCmd
 	public SaveWhatsNewSettingsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +59,8 @@ public class SaveWhatsNewSettingsCmd extends VibeRpcCmd
 	 */
 	public SaveWhatsNewSettingsCmd( ShowSetting showSetting )
 	{
+		this();
 		m_showSetting = showSetting;
-		
-		init();
 	}
 	
 	/**
@@ -75,10 +72,14 @@ public class SaveWhatsNewSettingsCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_WHATS_NEW_SETTINGS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_WHATS_NEW_SETTINGS.ordinal();
 	}
 }

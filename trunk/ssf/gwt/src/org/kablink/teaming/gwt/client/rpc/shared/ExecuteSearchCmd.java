@@ -52,8 +52,6 @@ public class ExecuteSearchCmd extends VibeRpcCmd
 	public ExecuteSearchCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +59,8 @@ public class ExecuteSearchCmd extends VibeRpcCmd
 	 */
 	public ExecuteSearchCmd( GwtSearchCriteria searchCriteria )
 	{
+		this();
 		m_searchCriteria = searchCriteria;
-		
-		init();
 	}
 	
 	/**
@@ -75,10 +72,14 @@ public class ExecuteSearchCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.EXECUTE_SEARCH;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.EXECUTE_SEARCH.ordinal();
 	}
 }

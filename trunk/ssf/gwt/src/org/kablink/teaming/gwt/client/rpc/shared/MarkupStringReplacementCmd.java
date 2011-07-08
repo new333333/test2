@@ -53,7 +53,6 @@ public class MarkupStringReplacementCmd extends VibeRpcCmd {
 	 */
 	public MarkupStringReplacementCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -80,10 +79,15 @@ public class MarkupStringReplacementCmd extends VibeRpcCmd {
 	public String getHtml()     {return m_html;    }
 	public String getType()     {return m_type;    }
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.MARKUP_STRING_REPLACEMENT;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.MARKUP_STRING_REPLACEMENT.ordinal();
 	}
 }

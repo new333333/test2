@@ -54,7 +54,6 @@ public class SaveSubscriptionDataCmd extends VibeRpcCmd {
 	 */
 	public SaveSubscriptionDataCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -77,10 +76,15 @@ public class SaveSubscriptionDataCmd extends VibeRpcCmd {
 	public String           getEntryId()          {return m_entryId;         }
 	public SubscriptionData getSubscriptionData() {return m_subscriptionData;}
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_SUBSCRIPTION_DATA;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_SUBSCRIPTION_DATA.ordinal();
 	}
 }

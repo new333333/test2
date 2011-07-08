@@ -52,8 +52,6 @@ public class SaveTagSortOrderCmd extends VibeRpcCmd
 	public SaveTagSortOrderCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -61,9 +59,8 @@ public class SaveTagSortOrderCmd extends VibeRpcCmd
 	 */
 	public SaveTagSortOrderCmd( TagSortOrder sortOrder )
 	{
+		this();
 		m_sortOrder = sortOrder;
-		
-		init();
 	}
 	
 	/**
@@ -75,10 +72,14 @@ public class SaveTagSortOrderCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_TAG_SORT_ORDER;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_TAG_SORT_ORDER.ordinal();
 	}
 }

@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
-
 
 /**
  * This class holds all of the information necessary to execute the "get favorites" command.
@@ -50,15 +48,17 @@ public class GetFavoritesCmd extends VibeRpcCmd
 	public GetFavoritesCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_FAVORITES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_FAVORITES.ordinal();
 	}
 }

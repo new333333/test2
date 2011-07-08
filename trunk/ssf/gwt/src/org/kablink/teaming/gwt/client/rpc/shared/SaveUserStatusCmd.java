@@ -51,8 +51,6 @@ public class SaveUserStatusCmd extends VibeRpcCmd
 	public SaveUserStatusCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class SaveUserStatusCmd extends VibeRpcCmd
 	 */
 	public SaveUserStatusCmd( String status )
 	{
+		this();
 		m_status = status;
-		
-		init();
 	}
 	
 	/**
@@ -74,10 +71,14 @@ public class SaveUserStatusCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_USER_STATUS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_USER_STATUS.ordinal();
 	}
 }

@@ -53,7 +53,6 @@ public class SaveTaskPriorityCmd extends VibeRpcCmd {
 	 */
 	public SaveTaskPriorityCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -77,10 +76,15 @@ public class SaveTaskPriorityCmd extends VibeRpcCmd {
 	public Long   getEntryId()  {return m_entryId; }	
 	public String getPriority() {return m_priority;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_TASK_PRIORITY;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_TASK_PRIORITY.ordinal();
 	}
 }

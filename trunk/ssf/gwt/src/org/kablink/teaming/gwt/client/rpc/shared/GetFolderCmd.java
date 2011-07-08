@@ -51,8 +51,6 @@ public class GetFolderCmd extends VibeRpcCmd
 	public GetFolderCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,10 +58,9 @@ public class GetFolderCmd extends VibeRpcCmd
 	 */
 	public GetFolderCmd( String zoneUUId, String folderId )
 	{
+		this();
 		m_zoneUUId = zoneUUId;
 		m_folderId = folderId;
-		
-		init();
 	}
 	
 	/**
@@ -83,10 +80,14 @@ public class GetFolderCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_FOLDER;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_FOLDER.ordinal();
 	}
 }

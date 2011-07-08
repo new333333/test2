@@ -50,8 +50,6 @@ public class RemoveExtensionCmd extends VibeRpcCmd
 	public RemoveExtensionCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class RemoveExtensionCmd extends VibeRpcCmd
 	 */
 	public RemoveExtensionCmd( String id )
 	{
+		this();
 		m_id = id;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class RemoveExtensionCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.REMOVE_EXTENSION;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.REMOVE_EXTENSION.ordinal();
 	}
 }

@@ -53,8 +53,6 @@ public class SaveSearchCmd extends VibeRpcCmd
 	public SaveSearchCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -62,10 +60,9 @@ public class SaveSearchCmd extends VibeRpcCmd
 	 */
 	public SaveSearchCmd( String searchTabId, SavedSearchInfo ssi )
 	{
+		this();
 		m_searchTabId = searchTabId;
 		m_ssi = ssi;
-		
-		init();
 	}
 	
 	/**
@@ -85,10 +82,14 @@ public class SaveSearchCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_SEARCH;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_SEARCH.ordinal();
 	}
 }

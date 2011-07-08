@@ -50,8 +50,6 @@ public class GetVerticalNodeCmd extends VibeRpcCmd
 	public GetVerticalNodeCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetVerticalNodeCmd extends VibeRpcCmd
 	 */
 	public GetVerticalNodeCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetVerticalNodeCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_VERTICAL_NODE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_VERTICAL_NODE.ordinal();
 	}
 }

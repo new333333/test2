@@ -50,8 +50,6 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	public GetBinderBrandingCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	 */
 	public GetBinderBrandingCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_BINDER_BRANDING;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_BINDER_BRANDING.ordinal();
 	}
 }

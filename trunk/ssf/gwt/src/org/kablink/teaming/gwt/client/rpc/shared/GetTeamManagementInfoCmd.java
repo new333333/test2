@@ -50,8 +50,6 @@ public class GetTeamManagementInfoCmd extends VibeRpcCmd
 	public GetTeamManagementInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetTeamManagementInfoCmd extends VibeRpcCmd
 	 */
 	public GetTeamManagementInfoCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetTeamManagementInfoCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TEAM_MANAGEMENT_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TEAM_MANAGEMENT_INFO.ordinal();
 	}
 }

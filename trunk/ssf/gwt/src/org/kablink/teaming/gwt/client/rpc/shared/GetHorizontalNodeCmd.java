@@ -50,8 +50,6 @@ public class GetHorizontalNodeCmd extends VibeRpcCmd
 	public GetHorizontalNodeCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetHorizontalNodeCmd extends VibeRpcCmd
 	 */
 	public GetHorizontalNodeCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetHorizontalNodeCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_HORIZONTAL_NODE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_HORIZONTAL_NODE.ordinal();
 	}
 }

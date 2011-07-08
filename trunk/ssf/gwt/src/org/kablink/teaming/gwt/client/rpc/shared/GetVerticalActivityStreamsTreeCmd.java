@@ -50,8 +50,6 @@ public class GetVerticalActivityStreamsTreeCmd extends VibeRpcCmd
 	public GetVerticalActivityStreamsTreeCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetVerticalActivityStreamsTreeCmd extends VibeRpcCmd
 	 */
 	public GetVerticalActivityStreamsTreeCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetVerticalActivityStreamsTreeCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_VERTICAL_ACTIVITY_STREAMS_TREE;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_VERTICAL_ACTIVITY_STREAMS_TREE.ordinal();
 	}
 }

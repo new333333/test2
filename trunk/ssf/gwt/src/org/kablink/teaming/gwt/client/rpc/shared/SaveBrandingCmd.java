@@ -53,8 +53,6 @@ public class SaveBrandingCmd extends VibeRpcCmd
 	public SaveBrandingCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -62,10 +60,9 @@ public class SaveBrandingCmd extends VibeRpcCmd
 	 */
 	public SaveBrandingCmd( String binderId, GwtBrandingData brandingData )
 	{
+		this();
 		m_binderId = binderId;
 		m_brandingData = brandingData;
-		
-		init();
 	}
 	
 	/**
@@ -85,10 +82,14 @@ public class SaveBrandingCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_BRANDING;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_BRANDING.ordinal();
 	}
 }

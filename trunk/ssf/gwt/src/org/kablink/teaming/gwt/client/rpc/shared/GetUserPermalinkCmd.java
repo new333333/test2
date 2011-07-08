@@ -50,8 +50,6 @@ public class GetUserPermalinkCmd extends VibeRpcCmd
 	public GetUserPermalinkCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetUserPermalinkCmd extends VibeRpcCmd
 	 */
 	public GetUserPermalinkCmd( String userId )
 	{
+		this();
 		m_userId = userId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetUserPermalinkCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_USER_PERMALINK;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_USER_PERMALINK.ordinal();
 	}
 }

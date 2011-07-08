@@ -54,7 +54,6 @@ public class SetUnseenCmd extends VibeRpcCmd {
 	 */
 	public SetUnseenCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -85,10 +84,15 @@ public class SetUnseenCmd extends VibeRpcCmd {
 	 */
 	public List<Long> getEntryIds() {return m_entryIds;}	
 	
-	/*
-	 * Initializes the class.
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SET_UNSEEN;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SET_UNSEEN.ordinal();
 	}
 }

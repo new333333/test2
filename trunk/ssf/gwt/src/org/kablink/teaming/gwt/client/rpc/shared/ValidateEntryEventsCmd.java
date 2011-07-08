@@ -56,7 +56,6 @@ public class ValidateEntryEventsCmd extends VibeRpcCmd {
 	 */
 	public ValidateEntryEventsCmd() {
 		super();		
-		init();
 	}
 
 	/**
@@ -79,10 +78,16 @@ public class ValidateEntryEventsCmd extends VibeRpcCmd {
 	public List<EventValidation> getEventsToBeValidated() {return m_eventValidations;}
 	public String                getEntryId()             {return m_entryId;         }
 	
-	/*
-	 * Initializes the class.
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init() {
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.VALIDATE_ENTRY_EVENTS;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.VALIDATE_ENTRY_EVENTS.ordinal();
 	}
 }

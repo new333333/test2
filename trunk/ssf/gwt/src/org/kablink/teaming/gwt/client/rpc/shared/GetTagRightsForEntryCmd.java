@@ -50,8 +50,6 @@ public class GetTagRightsForEntryCmd extends VibeRpcCmd
 	public GetTagRightsForEntryCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetTagRightsForEntryCmd extends VibeRpcCmd
 	 */
 	public GetTagRightsForEntryCmd( String entryId )
 	{
+		this();
 		m_entryId = entryId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetTagRightsForEntryCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_TAG_RIGHTS_FOR_ENTRY;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_TAG_RIGHTS_FOR_ENTRY.ordinal();
 	}
 }

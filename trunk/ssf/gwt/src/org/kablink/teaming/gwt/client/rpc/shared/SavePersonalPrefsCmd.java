@@ -51,8 +51,6 @@ public class SavePersonalPrefsCmd extends VibeRpcCmd
 	public SavePersonalPrefsCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,9 +58,8 @@ public class SavePersonalPrefsCmd extends VibeRpcCmd
 	 */
 	public SavePersonalPrefsCmd( GwtPersonalPreferences personalPrefs )
 	{
+		this();
 		m_personalPrefs = personalPrefs;
-		
-		init();
 	}
 	
 	/**
@@ -73,12 +70,16 @@ public class SavePersonalPrefsCmd extends VibeRpcCmd
 		return m_personalPrefs;
 	}
 	
+	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.SAVE_PERSONAL_PREFERENCES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_PERSONAL_PREFERENCES.ordinal();
 	}
-
 }

@@ -51,8 +51,6 @@ public class GetExtensionFilesCmd extends VibeRpcCmd
 	public GetExtensionFilesCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -60,10 +58,9 @@ public class GetExtensionFilesCmd extends VibeRpcCmd
 	 */
 	public GetExtensionFilesCmd( String id, String zoneName )
 	{
+		this();
 		m_id = id;
 		m_zoneName = zoneName;
-		
-		init();
 	}
 	
 	/**
@@ -83,10 +80,14 @@ public class GetExtensionFilesCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_EXTENSION_FILES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_EXTENSION_FILES.ordinal();
 	}
 }

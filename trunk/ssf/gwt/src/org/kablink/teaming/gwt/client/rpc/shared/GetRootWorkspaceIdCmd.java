@@ -50,8 +50,6 @@ public class GetRootWorkspaceIdCmd extends VibeRpcCmd
 	public GetRootWorkspaceIdCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -59,9 +57,8 @@ public class GetRootWorkspaceIdCmd extends VibeRpcCmd
 	 */
 	public GetRootWorkspaceIdCmd( String binderId )
 	{
+		this();
 		m_binderId = binderId;
-		
-		init();
 	}
 	
 	/**
@@ -73,10 +70,14 @@ public class GetRootWorkspaceIdCmd extends VibeRpcCmd
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_ROOT_WORKSPACE_ID;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_ROOT_WORKSPACE_ID.ordinal();
 	}
 }

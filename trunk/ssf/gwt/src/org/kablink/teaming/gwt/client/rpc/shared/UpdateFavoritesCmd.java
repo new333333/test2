@@ -54,8 +54,6 @@ public class UpdateFavoritesCmd extends VibeRpcCmd
 	public UpdateFavoritesCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
@@ -63,9 +61,8 @@ public class UpdateFavoritesCmd extends VibeRpcCmd
 	 */
 	public UpdateFavoritesCmd( List<FavoriteInfo> favoritesList )
 	{
+		this();
 		m_favoritesList = favoritesList;
-		
-		init();
 	}
 	
 	/**
@@ -76,11 +73,16 @@ public class UpdateFavoritesCmd extends VibeRpcCmd
 		return m_favoritesList;
 	}
 	
+	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.UPDATE_FAVORITES;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.UPDATE_FAVORITES.ordinal();
 	}
 }

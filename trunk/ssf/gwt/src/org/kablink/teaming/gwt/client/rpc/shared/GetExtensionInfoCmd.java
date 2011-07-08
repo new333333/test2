@@ -48,15 +48,17 @@ public class GetExtensionInfoCmd extends VibeRpcCmd
 	public GetExtensionInfoCmd()
 	{
 		super();
-		
-		init();
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	private void init()
-	{
-		m_cmdType = VibeRpcCmd.VibeRpcCmdType.GET_EXTENSION_INFO;
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_EXTENSION_INFO.ordinal();
 	}
 }
