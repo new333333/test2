@@ -46,7 +46,7 @@ import org.apache.commons.logging.LogFactory;
 public class SimpleProfiler {
 	
 	private static Log logger = LogFactory.getLog(SimpleProfiler.class);
-	
+
 	// Per thread profilers
 	private static final ConcurrentHashMap<String,SimpleProfiler> profilers = new ConcurrentHashMap<String,SimpleProfiler>();
 	
@@ -84,25 +84,21 @@ public class SimpleProfiler {
 		StringBuilder sb = new StringBuilder();
 		long currTime = System.nanoTime();
 		if(name != null)
-			sb.append("(").append(name).append(") ");
-		sb.append("profile time = ")
+			sb.append("Profiler name: ").append(name).append(", ");
+		sb.append("Profile time: ")
 		.append((double) (currTime - beginTime)/1000000.0)
 		.append(" (ms)");
+		int i = 1;
 		for(Map.Entry entry : events.entrySet()) {
-			if(sb.length() > 0)
-				sb.append(Constants.NEWLINE);
-			sb.append(entry.getKey())
+			sb.append(Constants.NEWLINE)
+			.append(i++ + ". ")
+			.append(entry.getKey())
 			.append(": ")
 			.append(entry.getValue().toString());
 		}
 		return sb.toString();
     }
-    
-    private void logInfo(Log logger) {
-		if(logger.isInfoEnabled())
-			logger.info(toString());
-    }
-    
+        
     public static boolean isEnabled() {
     	return enabled;
     }
@@ -141,27 +137,36 @@ public class SimpleProfiler {
     }
     
     public static void dumpToLog() {
-    	if(enabled) {
-    		try {
-	    		for(SimpleProfiler sp:profilers.values()) {
-	    			sp.logInfo(logger);
-	    		}
-    		}
+    	dumpToLog(logger);
+    }
+    
+    public static void dumpToLog(Log logger) {
+    	if(enabled && logger.isInfoEnabled()) {
+			try {
+				logger.info("Simple Profiler" + Constants.NEWLINE + dumpAsString());
+			}
     		catch(Exception ignore) {}
     	}
     }
     
     public static String dumpAsString() {
-    	StringBuilder sb = new StringBuilder();
     	if(enabled) {
+        	StringBuilder sb = new StringBuilder();
     		try {
+    			int i = 0;
 	    		for(SimpleProfiler sp:profilers.values()) {
-	    			sb.append(sp.toString()).append(Constants.NEWLINE);
+	    			if(i > 0)
+	    				sb.append(Constants.NEWLINE).append(Constants.NEWLINE);
+	    			sb.append(sp.toString());
+	    			i++;
 	    		}
     		}
     		catch(Exception ignore) {}
+        	return sb.toString();
     	}
-    	return sb.toString();
+    	else {
+    		return "";
+    	}
     }
     
     /*
@@ -228,7 +233,7 @@ public class SimpleProfiler {
         	return averageMSTime() / 1000.0;
         }
         public String toString() {
-        	return new StringBuilder().append("count = ").append(count).append(" total = ").append(totalMSTime()).append(" (ms) average = ").append(averageMSTime()).append(" (ms)").toString();
+        	return new StringBuilder().append("count=").append(count).append(", total=").append(totalMSTime()).append(" (ms), average=").append(averageMSTime()).append(" (ms)").toString();
         }
     }
 }

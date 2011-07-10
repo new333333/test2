@@ -38,14 +38,25 @@ import java.lang.reflect.Modifier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.report.impl.ReportModuleImpl;
+import org.kablink.teaming.util.aopalliance.InvocationStatisticsInterceptor;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.servlet.listener.SessionListener.ActiveSessionCounter;
+import org.kablink.util.EventsStatistics;
 
 public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
+	private InvocationStatisticsInterceptor invocationStatisticsInterceptor;
+	
+	private volatile EventsStatistics eventsStatistics;
+	
+	public void setInvocationStatisticsInterceptor(
+			InvocationStatisticsInterceptor invocationStatisticsInterceptor) {
+		this.invocationStatisticsInterceptor = invocationStatisticsInterceptor;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.util.RuntimeHelperMBean#clearSimpleProfiler()
 	 */
@@ -67,7 +78,7 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public void dumpSimpleProfilerToLog() {
-		SimpleProfiler.dumpToLog();
+		SimpleProfiler.dumpToLog(logger);
 	}
 
 	public String dumpSimpleProfilerAsString() {
@@ -115,14 +126,15 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	}
 	
 	public void dumpAllToLog() {
-		String str = propertiesAsString();
-		logger.info(Constants.NEWLINE + str);
-		this.dumpSimpleProfilerToLog();
+		if(logger.isInfoEnabled())
+			logger.info(Constants.NEWLINE + dumpAllAsString());
 	}
 
 	public String dumpAllAsString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(propertiesAsString()).append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSimpleProfilerAsString());
+		sb.append(propertiesAsString()).append(Constants.NEWLINE)
+		.append(Constants.NEWLINE).append(dumpSimpleProfilerAsString()).append(Constants.NEWLINE)
+		.append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
 		return sb.toString();
 	}
 	
@@ -167,5 +179,64 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		*/
 		
 		return sb.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#isMethodInvocationStatisticsEnabled()
+	 */
+	@Override
+	public boolean isMethodInvocationStatisticsEnabled() {
+		return (eventsStatistics != null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#enableMethodInvocationStatistics()
+	 */
+	@Override
+	public void enableMethodInvocationStatistics() {
+		if(eventsStatistics == null) {
+			eventsStatistics = new EventsStatistics();
+			invocationStatisticsInterceptor.setEventsStatistics(eventsStatistics);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#disableMethodInvocationStatistics()
+	 */
+	@Override
+	public void disableMethodInvocationStatistics() {
+		eventsStatistics = null;
+		invocationStatisticsInterceptor.setEventsStatistics(null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#clearMethodInvocationStatistics()
+	 */
+	@Override
+	public void clearMethodInvocationStatistics() {
+		if(eventsStatistics != null) {
+			eventsStatistics = new EventsStatistics();
+			invocationStatisticsInterceptor.setEventsStatistics(eventsStatistics);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpMethodInvocationStatisticsToLog()
+	 */
+	@Override
+	public void dumpMethodInvocationStatisticsToLog() {
+		if(eventsStatistics != null && logger.isInfoEnabled())
+			logger.info("Method Invocation Statistics" + Constants.NEWLINE + eventsStatistics.asString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpMethodInvocationStatisticsAsString()
+	 */
+	@Override
+	public String dumpMethodInvocationStatisticsAsString() {
+		if(eventsStatistics != null)
+			return "Method Invocation Statistics, " + eventsStatistics.asString();
+		else
+			return "";
 	}
 }

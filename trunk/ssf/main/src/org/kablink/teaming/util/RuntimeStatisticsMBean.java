@@ -93,9 +93,43 @@ public interface RuntimeStatisticsMBean {
 	public String dumpAllAsString();
 	
 	/*
-	 * 
+	 * Return number of active sessions for web interactions
 	 */
 	public int getWebActiveSessionCount();
 	
+	/*
+	 * Return number of peak active sessions for web interactions
+	 */
 	public int getWebPeakActiveSessionCount();
+	
+	/*
+	 * Returns whether method invocation statistics is enabled or not.
+	 */
+	public boolean isMethodInvocationStatisticsEnabled();
+	
+	/*
+	 * Enable method invocation statistics.
+	 */
+	public void enableMethodInvocationStatistics();
+	
+	/*
+	 * Disable method invocation statistics.
+	 */
+	public void disableMethodInvocationStatistics();
+	
+	/*
+	 * Clear method invocation statistics.
+	 */
+	public void clearMethodInvocationStatistics();
+	
+	/*
+	 * Dump a snapshot of method invocation statistics to logger.
+	 */
+	public void dumpMethodInvocationStatisticsToLog();
+	
+	/*
+	 * Dump a snapshot of method invocation statistics as string.
+	 */
+	public String dumpMethodInvocationStatisticsAsString();
+
 }

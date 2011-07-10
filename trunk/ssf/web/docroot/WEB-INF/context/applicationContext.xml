@@ -154,6 +154,9 @@
 	<bean id="performanceMonitorInterceptor" class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor">
 	</bean>
 	
+	<bean id="invocationStatisticsInterceptor" class="org.kablink.teaming.util.aopalliance.InvocationStatisticsInterceptor">
+	</bean>
+	
 	<bean id="moduleEventListenerManagerInterceptor" class="org.kablink.teaming.module.interceptor.EventListenerManagerInterceptor">
 	</bean>
 	
@@ -192,7 +195,8 @@
 	<bean id="baseTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
 		<property name="preInterceptors">
 			<list>
-				<ref bean="performanceMonitorInterceptor"/>
+				<!--<ref bean="performanceMonitorInterceptor"/>-->
+				<ref bean="invocationStatisticsInterceptor"/>
 				<ref bean="indexSynchronizationManagerInterceptor"/>
 			</list>
 		</property>
@@ -221,7 +225,8 @@
 	<bean id="moduleTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
 		<property name="preInterceptors">
 			<list>
-				<ref bean="performanceMonitorInterceptor"/>
+				<!--<ref bean="performanceMonitorInterceptor"/>-->
+				<ref bean="invocationStatisticsInterceptor"/>
 				<ref bean="moduleEventListenerManagerInterceptor"/>
 				<ref bean="indexSynchronizationManagerInterceptor"/>
 			</list>
@@ -231,7 +236,8 @@
 	<bean id="moduleNonTransactionProxy" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil" abstract="true">
 		<property name="interceptorNames">
 			<list>
-				<value>performanceMonitorInterceptor</value>
+				<!--<value>performanceMonitorInterceptor</value>-->
+				<value>invocationStatisticsInterceptor</value>
 				<value>moduleEventListenerManagerInterceptor</value>
 			</list>
 		</property>
@@ -1276,6 +1282,7 @@ text/calendar											  ics
 	</bean>
 	
 	<bean id="runtimeStatistics" class="org.kablink.teaming.util.RuntimeStatistics">
+		<property name="invocationStatisticsInterceptor"><ref bean="invocationStatisticsInterceptor"/></property>
 	</bean>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
