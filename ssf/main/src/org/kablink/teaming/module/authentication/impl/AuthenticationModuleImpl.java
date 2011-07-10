@@ -368,7 +368,6 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 					SimpleProfiler.start( "1-AuthenticationModuleImpl.doAuthenticate()");
 					Authentication retVal = doAuthenticate(authentication);
 					SimpleProfiler.stop( "1-AuthenticationModuleImpl.doAuthenticate()");
-					SimpleProfiler.dumpToLog();
 					
 					return retVal;
 				}
