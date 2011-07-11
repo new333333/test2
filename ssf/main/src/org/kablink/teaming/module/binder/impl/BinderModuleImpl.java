@@ -620,7 +620,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-
+	
     //no transaction
     public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -2449,6 +2449,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				return binderVersionAgingDays;
 			}
 		});
+	}
+    
+	//Routine to calculate the aging date for each file in a binder
+	public void setBinderFileAgingDates(Binder binder) {
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		loadBinderProcessor(binder).setFileAgingDates(binder);
 	}
 
 	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain

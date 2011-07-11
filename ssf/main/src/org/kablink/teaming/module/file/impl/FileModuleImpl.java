@@ -1159,6 +1159,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 	public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
 		Binder binder = entity.getParentBinder();
+		Date now = new Date();
 		if (entity.getEntityType().equals(EntityType.folder) || entity.getEntityType().equals(EntityType.workspace)) {
 			binder = (Binder)entity;
 		}
@@ -1167,8 +1168,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			if (att instanceof FileAttachment) {
 				FileAttachment fAtt = (FileAttachment)att;
 				for (VersionAttachment vAtt : (Set<VersionAttachment>)fAtt.getFileVersions()) {
-					if (vAtt.isAgingEnabled() && vAtt.getCreation().getDate().before(agingDate)) {
-						//This file version was created before the aging date and is subject to aging, delete it
+					Date versionAgingDate = vAtt.getAgingDate();
+					if (vAtt.isAgingEnabled() && versionAgingDate != null && 
+							versionAgingDate.before(now)) {
+						//This version is subject to a binder aging date
+						deleteVersion(binder, entity, vAtt);
+						counter++;
+					} else if (vAtt.isAgingEnabled() && versionAgingDate == null && 
+							vAtt.getCreation().getDate().before(agingDate)) {
+						//This file version was created before the zone default aging date.
+						//  It is subject to aging, so delete it
 						deleteVersion(binder, entity, vAtt);
 						counter++;
 					}

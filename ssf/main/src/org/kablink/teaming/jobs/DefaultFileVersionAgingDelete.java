@@ -59,18 +59,17 @@ public class DefaultFileVersionAgingDelete extends SSCronTriggerJob
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	Long fileVersionsMaxAge = coreDao.loadZoneConfig(zoneId).getFileVersionsMaxAge();
-		if (fileVersionsMaxAge == null) {
-			logger.debug("File version aging is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
-	   		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
-    		context.setResult("Success");
-			return;
-		}
 
     	//Get the list of potential file versions to delete
+		List fileAtts = new ArrayList();
 		Date ageDate = new Date();
-		//Calculate the "aged" date. If any file version was created before this date, then it is time to delete it
-		ageDate.setTime(ageDate.getTime() - fileVersionsMaxAge*24*60*60*1000);	//Subtract the "max age days" from today's date
-    	List fileAtts = coreDao.getOldFileVersions(zoneId, ageDate);
+		Date now = new Date();
+		if (fileVersionsMaxAge != null) {
+			//Calculate the "aged" date. If any file version was created before this date, then it is time to delete it
+			ageDate.setTime(now.getTime() - fileVersionsMaxAge*24*60*60*1000);	//Subtract the "max age days" from today's date
+	    	fileAtts.addAll(coreDao.getOldFileVersions(zoneId, ageDate));
+		}
+    	fileAtts.addAll(coreDao.getOldBinderFileVersions(zoneId, now));
     	List entitiesProcessed = new ArrayList();
     	long totalDelCount = 0;
     	for (Object o : fileAtts) {

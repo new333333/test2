@@ -117,9 +117,15 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					if (!s_agingDays.equals("")) {
 						agingDays = Long.valueOf(s_agingDays);
 					}
-					getBinderModule().setBinderVersionAgingDays(binderId, agingDays);
 				} catch (Exception ex) {
 					// The value entered by the user must not be valid, don't set it.
+					agingDays = getBinderModule().getBinderVersionAgingDays(binder);
+				}
+				Long originalAgingDays = getBinderModule().getBinderVersionAgingDays(binder);
+				if (originalAgingDays != agingDays) {
+					//Store the new value, then fix up the entries in this binder to have the correct agingDate
+					getBinderModule().setBinderVersionAgingDays(binderId, agingDays);
+					getBinderModule().setBinderFileAgingDates(binder);
 				}
 				
 				// Get the maximum file size.
