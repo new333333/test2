@@ -225,8 +225,9 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public void dumpMethodInvocationStatisticsToLog() {
-		if(eventsStatistics != null && logger.isInfoEnabled())
-			logger.info("Method Invocation Statistics" + Constants.NEWLINE + eventsStatistics.asString());
+		EventsStatistics es = eventsStatistics;
+		if(es != null && logger.isInfoEnabled())
+			logger.info("Method Invocation Statistics" + Constants.NEWLINE + es.asString());
 	}
 
 	/* (non-Javadoc)
@@ -234,8 +235,9 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public String dumpMethodInvocationStatisticsAsString() {
-		if(eventsStatistics != null)
-			return "Method Invocation Statistics, " + eventsStatistics.asString();
+		EventsStatistics es = eventsStatistics;
+		if(es != null)
+			return "Method Invocation Statistics, " + es.asString();
 		else
 			return "";
 	}
