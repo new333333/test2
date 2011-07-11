@@ -153,7 +153,8 @@ function ss_checkIfNumberValid(s) {
     </fieldset>
     <br/>
 
-    <fieldset class="ss_fieldset">
+    <c:if test="${ssBinder.entityType == 'folder'}">
+     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
 	    <span class="ss_bold"><ssf:nlt tag="binder.file.versionAging" /></span>
 	  </legend>
@@ -171,8 +172,9 @@ function ss_checkIfNumberValid(s) {
 		  <br/>
 		  <span class="ss_smallprint" style="padding:6px 0px 0px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint3" /></span>
        </div>
-	</fieldset>
-<br/>
+	 </fieldset>
+     <br/>
+    </c:if>
 
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">

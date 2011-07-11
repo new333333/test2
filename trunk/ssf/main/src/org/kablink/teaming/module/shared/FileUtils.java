@@ -33,15 +33,24 @@
 package org.kablink.teaming.module.shared;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
 
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
 
 public class FileUtils {
 
 	public static void setFileVersionAging(DefinableEntity entity) {
+		Binder binder = entity.getParentBinder();
+		if (!entity.getEntityType().equals(EntityType.folderEntry) && 
+				!entity.getEntityType().equals(EntityType.user)) {
+			binder = (Binder)entity;
+		}
+		Long versionAgingDays = binder.getVersionAgingDays();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
     	for (FileAttachment fa : atts) {
 			Integer currentMajorVersion = -1;
@@ -58,6 +67,12 @@ public class FileUtils {
     				//This is a minor version that is not the highest in its major class. It is subject to aging
     				if (va.getAgingEnabled() == null || !va.isAgingEnabled()) {
     					va.setAgingEnabled(Boolean.TRUE);
+    				}
+    				//Calculate the binder aging date (if any)
+    				if (versionAgingDays != null) {
+    					Date creationDate = va.getCreation().getDate();
+    					Date agingDate = new Date(creationDate.getTime() + versionAgingDays*24*60*60*1000);
+    					va.setAgingDate(agingDate);
     				}
     			}
 			}

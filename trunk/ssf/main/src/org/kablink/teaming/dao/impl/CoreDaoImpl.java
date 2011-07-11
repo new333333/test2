@@ -2468,6 +2468,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 						.setProjection(proj)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
 							.add(Restrictions.isNotNull("agingEnabled"))
+							.add(Restrictions.isNull("agingDate"))
 							.add(Restrictions.eq("agingEnabled", true))
 							.add(Restrictions.lt("creation.date", ageDate))
 							.setCacheable(false);
@@ -2477,6 +2478,32 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		}
 		finally {
 			end(begin, "getOldFileVersions()");
+		}
+	}
+	
+	public List getOldBinderFileVersions(final Long zoneId, final Date now) {
+		long begin = System.nanoTime();
+		try {
+			List result = new ArrayList();
+			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException {
+					ProjectionList proj = Projections.projectionList()
+						.add(Projections.groupProperty("id"))
+						.add(Projections.groupProperty("owner.entity"));
+					Criteria crit = session.createCriteria(FileAttachment.class)
+						.setProjection(proj)
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.isNotNull("agingEnabled"))
+							.add(Restrictions.eq("agingEnabled", true))
+							.add(Restrictions.isNotNull("agingDate"))
+							.add(Restrictions.lt("agingDate", now))
+							.setCacheable(false);
+					return crit.list();
+				}});
+			return result;
+		}
+		finally {
+			end(begin, "getOldBinderFileVersions()");
 		}
 	}
 	

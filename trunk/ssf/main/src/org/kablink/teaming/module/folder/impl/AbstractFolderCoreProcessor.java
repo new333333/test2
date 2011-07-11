@@ -80,6 +80,7 @@ import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.security.AccessControlException;
@@ -858,6 +859,40 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		}
     }
 
+    //***********************************************************************************************************
+    //no transaction
+	public void setFileAgingDates(final Binder binder) { 
+		if (binder instanceof Folder) {
+	 		//now update the entries in the binder
+	 		final Folder folder = (Folder)binder;
+	 		getTransactionTemplate().execute(new TransactionCallback() {
+	 			public Object doInTransaction(TransactionStatus status) {
+	 				FilterControls filter = new FilterControls();
+	 				filter.setOrderBy(new OrderBy("HKey.sortKey"));
+	 				SFQuery query = getFolderDao().queryEntries((Folder)binder, filter);
+	 				List<FolderEntry> batch = new ArrayList();
+	 		      	try {       
+	 		      		while (query.hasNext()) {
+		       				Object obj = query.next();
+		       				if (obj instanceof Object[]) {
+		       					obj = ((Object [])obj)[0];
+		       					batch.add((FolderEntry)obj);
+		       				}
+	 		      		}
+	       				getCoreDao().bulkLoadCollections(batch);
+	 		      		for (FolderEntry entry : batch) {
+ 		       				FileUtils.setFileVersionAging(entry);
+	 		        	}
+	 		      		getCoreDao().flush();
+	 		        } finally {
+	 		        	//clear out anything remaining
+	 		        	query.close();
+	 		        }
+	 		        return null;
+	 		}});
+		}
+	}
+	
     //***********************************************************************************************************
     public Set getPrincipalIds(DefinableEntity entity) {
     	Set ids = super.getPrincipalIds(entity);

@@ -2031,6 +2031,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     }
 
+    //Routine to calculate the aging date for each file in a binder
+    public void setFileAgingDates(Binder binder) {
+    	//Nothing to be done here. It is all done in FolderCoreProcessor
+    }
    	
     // ***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {

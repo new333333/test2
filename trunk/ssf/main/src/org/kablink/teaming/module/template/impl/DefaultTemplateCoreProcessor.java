@@ -123,5 +123,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     		List<Long> errors) {
     	return new ArrayList();
     }
+    
+    public void setFileAgingDates(Binder binder) {
+    	//Nothing to be done
+    }
 
 }

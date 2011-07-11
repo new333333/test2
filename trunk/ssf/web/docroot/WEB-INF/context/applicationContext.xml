@@ -767,6 +767,7 @@
 				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setBinderFileAgingDates">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				
 			</props>
 		</property>

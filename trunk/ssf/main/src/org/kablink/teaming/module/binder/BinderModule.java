@@ -575,8 +575,12 @@ public interface BinderModule {
      */
     public void setBinderVersionAgingDays(Long binderId, final Long binderVersionAgingDays)
 		throws AccessControlException;
+    
     //Get the versionAgingDays setting from the binder
     public Long getBinderVersionAgingDays(Binder binder);
+    
+    //Routine to calculate the aging date for each file in a binder
+    public void setBinderFileAgingDates(Binder binder);
 	
 	/**
      * Set versionsToKeep.
