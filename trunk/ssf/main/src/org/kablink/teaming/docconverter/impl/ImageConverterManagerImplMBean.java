@@ -30,13 +30,9 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.smtp.impl;
+package org.kablink.teaming.docconverter.impl;
 
-public interface SMTPManagerImplMBean {
+public interface ImageConverterManagerImplMBean {
 
-	public boolean isEnabled();
-	public String getBindAddress();
-	public int getPort();
-	public boolean isTls();
-	public String getUsername();
+	public String getActiveConverterClass();
 }

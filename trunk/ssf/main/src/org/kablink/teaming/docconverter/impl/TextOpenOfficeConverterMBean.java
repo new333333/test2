@@ -37,4 +37,8 @@ public interface TextOpenOfficeConverterMBean {
 	public String getHost();
 
 	public int getPort();
+	
+	public String getNullTransform();
+	
+	public String getExcludedExtensions();
 }

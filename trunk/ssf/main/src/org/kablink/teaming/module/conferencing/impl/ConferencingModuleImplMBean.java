@@ -34,5 +34,6 @@
 package org.kablink.teaming.module.conferencing.impl;
 
 public interface ConferencingModuleImplMBean {
+	public boolean isEnabled();
 	public String getConferencingURL();
 }

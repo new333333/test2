@@ -100,6 +100,10 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		logger.info("Index root directory path is set to [" + indexRootDirPath + "]");
 	}
 	
+	public String getIndexRootDirPath() {
+		return indexRootDirPath;
+	}
+	
 	public void setMbeanObjectName(String mbeanObjectName) {
 		this.mbeanObjectName = mbeanObjectName;
 	}

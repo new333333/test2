@@ -36,7 +36,7 @@ import org.kablink.teaming.docconverter.IImageConverterManager;
 import org.kablink.teaming.docconverter.ImageConverter;
 
 public class ImageConverterManagerImpl
-	implements IImageConverterManager
+	implements IImageConverterManager, ImageConverterManagerImplMBean
 {
 	int _active = IImageConverterManager.OPENOFFICE;
 	ImageConverter _stellentConverter = null,
@@ -55,6 +55,10 @@ public class ImageConverterManagerImpl
 		return null;
 	}
 	
+	public String getActiveConverterClass() {
+		return getConverter().getClass().getName();
+	}
+
 	public ImageConverter getConverter(int type)
 	{
 		if (type == IImageConverterManager.STELLANT)

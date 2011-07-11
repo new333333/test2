@@ -132,9 +132,11 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
 	public String dumpAllAsString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(propertiesAsString()).append(Constants.NEWLINE)
-		.append(Constants.NEWLINE).append(dumpSimpleProfilerAsString()).append(Constants.NEWLINE)
-		.append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
+		sb.append(propertiesAsString());
+		if(isSimpleProfilerEnabled())
+			sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSimpleProfilerAsString());
+		if(isMethodInvocationStatisticsEnabled())
+			sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
 		return sb.toString();
 	}
 	
