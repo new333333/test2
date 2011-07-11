@@ -1292,6 +1292,15 @@ text/calendar											  ics
 	        <entry key="Vibe:type=Indexing,name=luceneSessionFactory">
 	          <ref bean="luceneSessionFactory"/>
 	        </entry>
+	        <entry key="Vibe:type=Converter,name=htmlConverterManager">
+	          <ref bean="htmlConverterManager"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=textConverterManager">
+	          <ref bean="textConverterManager"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=imageConverterManager">
+	          <ref bean="imageConverterManager"/>
+	        </entry>
 	        <entry key="Vibe:type=Converter,name=htmlOpenOfficeConverter">
 	          <ref bean="htmlOpenOfficeConverter"/>
 	        </entry>

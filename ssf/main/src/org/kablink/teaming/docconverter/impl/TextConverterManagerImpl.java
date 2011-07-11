@@ -36,7 +36,7 @@ import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.TextConverter;
 
 public class TextConverterManagerImpl
-	implements ITextConverterManager
+	implements ITextConverterManager, TextConverterManagerImplMBean
 {
 	int _active = ITextConverterManager.OPENOFFICE;
 	TextConverter _stellentConverter = null,
@@ -55,6 +55,10 @@ public class TextConverterManagerImpl
 		return null;
 	}
 	
+	public String getActiveConverterClass() {
+		return getConverter().getClass().getName();
+	}
+
 	public TextConverter getConverter(int type)
 	{
 		if (type == ITextConverterManager.STELLANT)

@@ -49,4 +49,8 @@ public interface LuceneProviderManagerMBean {
 	boolean getInfoStreamEnabled();
 
 	void setInfoStreamEnabled(boolean infoStreamEnabled);
+	
+	public String getIndexRootDirPath();
+	
+	public boolean getCommitCheckForWorkInCallingThread();
 }

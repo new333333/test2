@@ -36,7 +36,7 @@ import org.kablink.teaming.docconverter.HtmlConverter;
 import org.kablink.teaming.docconverter.IHtmlConverterManager;
 
 public class HtmlConverterManagerImpl
-	implements IHtmlConverterManager
+	implements IHtmlConverterManager, HtmlConverterManagerImplMBean
 {
 	int _active = IHtmlConverterManager.OPENOFFICE;
 	HtmlConverter _stellentConverter = null,
@@ -55,6 +55,10 @@ public class HtmlConverterManagerImpl
 		return null;
 	}
 	
+	public String getActiveConverterClass() {
+		return getConverter().getClass().getName();
+	}
+
 	public HtmlConverter getConverter(int type)
 	{
 		if (type == IHtmlConverterManager.STELLANT)
@@ -70,7 +74,7 @@ public class HtmlConverterManagerImpl
 	{
 		_active = active;
 	}
-	
+		
 	public int getActive()
 	{
 		return _active;
