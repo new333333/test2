@@ -47,7 +47,8 @@ public class FileUtils {
 	public static void setFileVersionAging(DefinableEntity entity) {
 		Binder binder = entity.getParentBinder();
 		if (!entity.getEntityType().equals(EntityType.folderEntry) && 
-				!entity.getEntityType().equals(EntityType.user)) {
+				!entity.getEntityType().equals(EntityType.user) &&
+				!entity.getEntityType().equals(EntityType.group)) {
 			binder = (Binder)entity;
 		}
 		Long versionAgingDays = binder.getVersionAgingDays();
