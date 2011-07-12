@@ -35,8 +35,10 @@ package org.kablink.teaming.gwt.client.tasklisting;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 
@@ -58,14 +60,15 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class TaskButton extends Anchor {
-	private boolean			m_enabled;			// true -> The button is enabled.  false -> The button is disabled.
-	private Image			m_buttonImage;		// For image buttons, the Image widget that displays the button.
-	private ImageResource	m_baseImgRes;		// For image buttons, the base       image resource. 
-	private ImageResource	m_disabledImgRes;	// For image buttons, the disabled   image resource.
-	private ImageResource	m_overImgRes;		// For image buttons, the mouse over image resource.
-	private InlineLabel		m_buttonLabel;		// For text  buttons, the InlineLabel widget that displays the text.
-	private String			m_imgTitle;			// The default title text for the button.
-	private TeamingEvents	m_event;			// The event to fire when the button is clicked.
+	private boolean				m_enabled;			// true -> The button is enabled.  false -> The button is disabled.
+	private Image				m_buttonImage;		// For image buttons, the Image widget that displays the button.
+	private ImageResource		m_baseImgRes;		// For image buttons, the base       image resource. 
+	private ImageResource		m_disabledImgRes;	// For image buttons, the disabled   image resource.
+	private ImageResource		m_overImgRes;		// For image buttons, the mouse over image resource.
+	private InlineLabel			m_buttonLabel;		// For text  buttons, the InlineLabel widget that displays the text.
+	private String				m_imgTitle;			// The default title text for the button.
+	private TeamingEvents		m_eventEnum;		// The enumeration of the event to fire when the button is clicked.
+	private VibeEventBase<?>	m_event;			// The                    event to fire when the button is clicked.
 	
 	/*
 	 * Inner class that handle mousing over the button.
@@ -127,7 +130,7 @@ public class TaskButton extends Anchor {
 			// If the button is enabled...
 			if (m_enabled) {
 				// ...fire the event.
-				EventHelper.fireSimpleEvent(m_event);
+				GwtTeaming.fireEvent(m_event);
 			}
 		}
 	}
@@ -140,14 +143,22 @@ public class TaskButton extends Anchor {
 	 * @param overImgRes
 	 * @param enabled
 	 * @param imgTitle
+	 * @param eventEnum
 	 * @param event
 	 */
-	public TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents event) {
+	private TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum, VibeEventBase<?> event) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_event          = event;
+		if (null == event) {
+			m_eventEnum = eventEnum;
+			m_event     = EventHelper.createSimpleEvent(m_eventEnum);
+		}
+		else {
+			m_eventEnum = event.getEventEnum();
+			m_event     = event;
+		}
 		m_enabled        = enabled;
 		m_baseImgRes     = baseImgRes;
 		m_disabledImgRes = disabledImgRes;
@@ -161,7 +172,9 @@ public class TaskButton extends Anchor {
 		
 		// ...create the Image...
 		m_buttonImage = new Image(enabled ? baseImgRes : disabledImgRes);
-		m_buttonImage.setTitle(imgTitle);
+		if (GwtClientHelper.hasString(imgTitle)) {
+			m_buttonImage.setTitle(imgTitle);
+		}
 		m_buttonImage.addStyleName("gwtTaskToolsButton_WidgetImage");
 		m_buttonImage.getElement().setAttribute("align", "absmiddle");
 		
@@ -174,20 +187,36 @@ public class TaskButton extends Anchor {
 		EventWrapper.addHandlers(this, ehs);
 	}
 	
+	public TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, eventEnum, null);
+	}
+	
+	public TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, VibeEventBase<?> event) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, event);
+	}
+	
 	/**
 	 * Class constructor for text buttons.
 	 * 
 	 * @param buttonText
 	 * @param buttonTitle
 	 * @param enabled
+	 * @param eventEnum
 	 * @param event
 	 */
-	public TaskButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents event) {
+	private TaskButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents eventEnum, VibeEventBase<?> event) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_event   = event;
+		if (null == event) {
+			m_eventEnum = eventEnum;
+			m_event     = EventHelper.createSimpleEvent(m_eventEnum);
+		}
+		else {
+			m_eventEnum = event.getEventEnum();
+			m_event     = event;
+		}
 		m_enabled = enabled;
 		
 		// ..initialize the Anchor...
@@ -210,6 +239,14 @@ public class TaskButton extends Anchor {
 		ehs.add(new ButtonSelector());
 		ehs.add(new ButtonHover(m_buttonLabel));
 		EventWrapper.addHandlers(this, ehs);
+	}
+	
+	public TaskButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents eventEnum) {
+		this(buttonText, buttonTitle, enabled, eventEnum, null);
+	}
+	
+	public TaskButton(String buttonText, String buttonTitle, boolean enabled, VibeEventBase<?> event) {
+		this(buttonText, buttonTitle, enabled, null, event);
 	}
 	
 	/**

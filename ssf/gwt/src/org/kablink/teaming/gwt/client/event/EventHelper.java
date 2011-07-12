@@ -587,6 +587,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case TASK_PICK_DATE:
+				// A TaskPickDateEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof TaskPickDateEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskPickDateEvent.registerEvent(eventBus, ((TaskPickDateEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case TASK_PURGE:
 				// A TaskPurgeEvent!  Can the event handler we were
 				// given handle that?
@@ -880,6 +889,7 @@ public class EventHelper {
 			case TASK_MOVE_RIGHT:                   hasHandler = (eventHandler instanceof TaskMoveRightEvent.Handler);                break;
 			case TASK_MOVE_UP:                      hasHandler = (eventHandler instanceof TaskMoveUpEvent.Handler);                   break;
 			case TASK_NEW_TASK:                     hasHandler = (eventHandler instanceof TaskNewTaskEvent.Handler);                  break;
+			case TASK_PICK_DATE:                    hasHandler = (eventHandler instanceof TaskPickDateEvent.Handler);                 break;
 			case TASK_PURGE:                        hasHandler = (eventHandler instanceof TaskPurgeEvent.Handler);                    break;
 			case TASK_QUICK_FILTER:                 hasHandler = (eventHandler instanceof TaskQuickFilterEvent.Handler);              break;
 			case TASK_SET_PERCENT_DONE:             hasHandler = (eventHandler instanceof TaskSetPercentDoneEvent.Handler);           break;

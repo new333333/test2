@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesRpcRespons
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
+import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
@@ -139,6 +140,7 @@ public class TaskTable extends Composite
 	private EventHandler			m_assigneeMouseOverEvent;	//
 	private EventHandler			m_cbClickHandler;			//
 	private EventHandler			m_columnClickHandler;		//
+	private EventHandler			m_dueDateClickHandler;		//
 	private EventHandler			m_expanderClickHandler;		//
 	private EventHandler			m_newTaskClickHandler;		//
 	private EventHandler			m_taskOptionClickHandler;	//
@@ -614,8 +616,12 @@ public class TaskTable extends Composite
 		}
 	}
 
-	/*
+	/**
 	 * Called from the task disposition dialog to apply the selection.
+	 * 
+	 * @param disposition
+	 * @param newTaskId
+	 * @param selectedTaskId
 	 */
 	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {		
 		switch (disposition) {
@@ -651,6 +657,17 @@ public class TaskTable extends Composite
 			newTaskList.add(newTask);
 			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), newTaskList);
 		}		
+	}
+	
+	/**
+	 * Called from the task disposition dialog to apply the selection.
+	 * 
+	 * @param newDueDate
+	 * @param selectedTaskId
+	 */
+	public void applyTaskDueDate(String newDueDate, Long selectedTaskId) {
+//!		...this needs to be implemented...
+		Window.alert("applyTaskDueDate():  ...this needs to be implemented...");
 	}
 	
 	/*
@@ -1044,6 +1061,16 @@ public class TaskTable extends Composite
 			}			
 		};
 
+		// Event handler used when the user clicks on a task's due
+		// date.
+		m_dueDateClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Anchor ddA = ((Anchor) event.getSource());
+				handleTaskChangeDueDateAsync(ddA, getTaskFromEventWidget(ddA));
+			}				
+		};
+		
 		// Event handler used when the user clicks on a task's
 		// expand / collapse widget.
 		m_expanderClickHandler = new ClickHandler() {
@@ -1466,6 +1493,38 @@ public class TaskTable extends Composite
 		persistSortChange();
 	}
 
+	/*
+	 * Called when the user clicks the due date on a task to
+	 * asynchronously run the due date editor dialog.
+	 */
+	private void handleTaskChangeDueDateAsync(final Anchor dueDateAnchor, final TaskListItem task) {
+		ScheduledCommand dueDateEditor = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				handleTaskChangeDueDateNow(dueDateAnchor, task);
+			}
+		};
+		Scheduler.get().scheduleDeferred(dueDateEditor);
+	}
+	
+	/*
+	 * Called when the user clicks the due date on a task to
+	 * synchronously run the due date editor dialog.
+	 */
+	private void handleTaskChangeDueDateNow(Anchor dueDateAnchor, TaskListItem task) {
+		// Run the task due date editing dialog.
+		Element ddaE = dueDateAnchor.getElement();
+		TaskDueDateDlg tddDlg = new TaskDueDateDlg(
+			false,						// false -> Don't auto hide.
+			true,						// true  -> Modal.
+			ddaE.getAbsoluteLeft(),		// Left.
+			ddaE.getAbsoluteBottom(),	// Top.
+			this,
+			task);
+		tddDlg.addStyleName("taskDueDateDlg");
+		tddDlg.show();
+	}
+	
 	/*
 	 * Called when the user presses the delete button on the task tool
 	 * bar.
@@ -2585,6 +2644,7 @@ public class TaskTable extends Composite
 	/*
 	 * Renders the 'Due Date' column.
 	 */
+	@SuppressWarnings("unused")
 	private void renderColumnDueDate(final TaskListItem task, int row) {
 		TaskInfo  ti  = task.getTask();
 		TaskEvent tie = ti.getEvent();
@@ -2599,7 +2659,21 @@ public class TaskTable extends Composite
 			il.addStyleName("gwtTaskList_calculatedDate");
 			il.setTitle(m_messages.taskAltDateCalculated());
 		}
-		m_flexTable.setWidget(row, getColumnIndex(Column.DUE_DATE), il);
+		Widget dueDateWidget;
+		if (false) {
+//!		if (ti.getCanModify() && ti.isTaskActive()) {
+			Anchor a = buildAnchor();
+			Element aE = a.getElement();
+			aE.appendChild(il.getElement());
+			aE.appendChild(buildImage(m_images.menu()).getElement());
+			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(ti.getTaskId().getEntryId()));
+			EventWrapper.addHandler(a, m_dueDateClickHandler);
+			dueDateWidget = a;
+		}
+		else {
+			dueDateWidget = il;
+		}
+		m_flexTable.setWidget(row, getColumnIndex(Column.DUE_DATE), dueDateWidget);
 	}
 	
 	/*

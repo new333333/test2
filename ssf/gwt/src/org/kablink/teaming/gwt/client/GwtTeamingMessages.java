@@ -927,6 +927,14 @@ public interface GwtTeamingMessages extends Messages
 	String taskDispositionDlgInsertAppend();
 	String taskDispositionDlgInsertAsSubtask();
 	String taskDispositionDlgInsertBefore();
+	
+	// The following are used for task due date editing dialog.
+	String taskDueDateDlgHeader();
+	String taskDueDateDlgLabelClearAll();
+	String taskDueDateDlgLabelDays();
+	String taskDueDateDlgLabelDuration();
+	String taskDueDateDlgLabelStart();
+	String taskDueDateDlgLabelEnd();
 
 	// The following are used for task folder listing.
 	String taskAltDateCalculated();

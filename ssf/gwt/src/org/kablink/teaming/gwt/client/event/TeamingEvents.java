@@ -105,6 +105,7 @@ public enum TeamingEvents implements IsSerializable {
 	TASK_MOVE_RIGHT,					// Move the Selected Task Right (i.e., Increase its Subtask Level.)
 	TASK_MOVE_UP,						// Move the Selected Task Up in the Ordering.
 	TASK_NEW_TASK,						// Creates a New Task Relative to an Existing One.
+	TASK_PICK_DATE,						// Run the date picker with the given ID.
 	TASK_PURGE,							// Delete and Immediately Purge the Selected Tasks.
 	TASK_QUICK_FILTER,					// Creates or Clears a Quick Filter on the Task Folder.
 	TASK_SET_PERCENT_DONE,				// Sets a Task's Percentage Done.

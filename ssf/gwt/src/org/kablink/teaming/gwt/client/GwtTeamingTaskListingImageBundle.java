@@ -98,6 +98,14 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource busyAnimation();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/cal_menu.png")
+	public ImageResource calMenu();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/cal_menu_over.png")
+	public ImageResource calMenuOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/TaskListing/c0.png")
 	public ImageResource c0();
 

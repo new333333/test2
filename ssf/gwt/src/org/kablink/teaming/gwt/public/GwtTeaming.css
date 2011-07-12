@@ -2844,6 +2844,36 @@ top:100px;
 	width: 400px;
 	margin-top: 5px;
 }
+.taskDispositionDlg_TimePicker
+{
+	margin-left: 5px;
+	margin-right: 3px;
+}
+.taskDispositionDlg_DateTimeTable td
+{
+	vertical-align: middle !important;
+}
+
+/* Styles for the task due date dialog. */
+.taskDueDateDlg
+{
+}
+.taskDueDateDlg_Grid
+{
+	margin-top: 8px;
+}
+.taskDueDateDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+}
+.taskDueDateDlg_TaskTitle
+{
+	width: 400px;
+	margin-top: 5px;
+}
 
 /* Start:  GWT Task Folder Listing styles. */
 .gwtTaskFilter_div
@@ -3238,6 +3268,45 @@ a.gwtTaskList_task-icon:hover
 	
 }
 /* End:  GWT Task Folder Listing styles. */
+
+
+/* Spinner styles. */
+.gwt-ValueSpinner .arrows
+{
+	width: 17px;
+	height: 18px;
+	margin-left: 1px;
+}
+.gwt-ValueSpinner .textBox
+{
+	border: 0px;
+	text-align: right;
+	font-family: sans-serif;
+	font-weight: bold;
+	border: 1px solid #7F9DB9;
+}
+.gwt-TimePicker
+{
+	padding: 1px;
+}
+.gwt-TimePicker .textBox
+{
+	border: 0px;
+	width: 22px;
+	text-align: center;
+	font-family: sans-serif;
+	font-weight: bold;
+	font-size: 11px;
+	color: #506374;
+	border: 1px solid #7F9DB9;
+	background: url('%background%') repeat-x;
+}
+/* End:  Spinner styles. */
+
+.dateBoxPopup
+{
+	z-index:  1002;
+}
 
 
 /* The following styles are used with an object list table. */
