@@ -746,8 +746,8 @@
 				<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
 			</bean>
 		</property>
-		<!-- addBinder, modifyBinder, setTeamMembers, setTeamMembershipInherited, deleteBinder, copyBinder provide transaction semantics at a finer
-		granularity then the method. Handled by processor through transactionTemplate-->
+		<!-- addBinder, modifyBinder, setTeamMembers, setTeamMembershipInherited, deleteBinder, copyBinder, setBinderFileAgingDates 
+		     provide transaction semantics at a finer granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
 				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -767,8 +767,6 @@
 				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="setBinderFileAgingDates">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				
 			</props>
 		</property>
 	</bean>
