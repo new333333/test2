@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
+import java.lang.Character;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
@@ -40,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -65,7 +67,8 @@ public class TableWidgetDlgBox extends DlgBox
 {
 	private CheckBox		m_showBorderCkBox = null;
 	private ListBox		m_numColsCtrl = null;
-	private ArrayList<TextBox>	m_columnWidths = null;
+	private ArrayList<TextBox>	m_colWidths = null;
+	private ArrayList<ListBox> m_colWidthUnits = null;
 	private VerticalPanel	m_mainPanel = null;
 	private FlexTable		m_table = null;
 	
@@ -98,15 +101,16 @@ public class TableWidgetDlgBox extends DlgBox
 		TextBox	txtBox;
 		
 		// Remove all existing text box controls used to specify column width.
-		if ( m_columnWidths != null )
+		if ( m_colWidths != null )
 		{
-			for (i = 0; i < m_columnWidths.size(); ++i)
+			for (i = 0; i < m_colWidths.size(); ++i)
 			{
 				// Remove the 2nd row.  Row 0, contains the "Show border" checkbox and Row 1, contains the "Number of columns" controls.
 				m_table.removeRow( 2 );
 			}
 			
-			m_columnWidths.clear();
+			m_colWidths.clear();
+			m_colWidthUnits.clear();
 		}
 		
 		// Add a label and text box control for every column
@@ -114,6 +118,9 @@ public class TableWidgetDlgBox extends DlgBox
 		for (i = 0; i < numCols; ++i)
 		{
 			Label	label;
+			ListBox listBox;
+			ColWidthUnit units;
+			String colWidth;
 
 			// Add the label, "Column X width:"
 			label = new Label( GwtTeaming.getMessages().columnXWidth( i+1 ) );
@@ -121,14 +128,31 @@ public class TableWidgetDlgBox extends DlgBox
 			
 			txtBox = new TextBox();
 			txtBox.setVisibleLength( 3 );
-			txtBox.setValue( properties.getColWidthStr( i ) );
+			colWidth = properties.getColWidth( i );
+			txtBox.setValue( colWidth );
 			txtBox.addKeyPressHandler( this );
 			m_table.setWidget( i+2, 1, txtBox );
 			
-			label = new Label( GwtTeaming.getMessages().percent() );
-			m_table.setWidget( i+2, 2, label );
+			// Remember this TextBox
+			m_colWidths.add( i, txtBox );
+
+			listBox = new ListBox();
+			listBox.setVisibleItemCount( 1 );
+			listBox.addItem( GwtTeaming.getMessages().percent(), "1" );
+			listBox.addItem( GwtTeaming.getMessages().pxLabel(), "2" );
+			units = properties.getColWidthUnit( i );
+			if ( units == ColWidthUnit.PERCENTAGE )
+				listBox.setSelectedIndex( 0 );
+			else if ( units == ColWidthUnit.PX )
+				listBox.setSelectedIndex( 1 );
+			else
+				listBox.setSelectedIndex( 0 );
+			m_table.setWidget( i+2, 2, listBox );
 			
-			m_columnWidths.add( i, txtBox );
+			// Remember this ListBox
+			m_colWidthUnits.add( i, listBox );
+			
+			danceWidthUnits( txtBox );
 		}// end for()
 	}// end addColumnWidthControls()
 	
@@ -136,7 +160,6 @@ public class TableWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@SuppressWarnings("unchecked")
 	public Panel createContent( Object props )
 	{
 		TableProperties properties;
@@ -144,7 +167,8 @@ public class TableWidgetDlgBox extends DlgBox
 		
 		properties = (TableProperties) props;
 
-		m_columnWidths = new ArrayList( 3 );
+		m_colWidths = new ArrayList<TextBox>( 5 );
+		m_colWidthUnits = new ArrayList<ListBox>( 5 );
 
 		m_mainPanel = new VerticalPanel();
 		m_mainPanel.setStyleName( "teamingDlgBoxContent" );
@@ -183,29 +207,59 @@ public class TableWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * Enable/disable the units listbox that is associated with the given textbox based on what the
+	 * given textbox contains.
+	 */
+	private void danceWidthUnits( TextBox textBox )
+	{
+		ListBox listBox;
+		
+		// Get the listbox associated with the given textbox
+		listBox = getListBox( textBox );
+		
+		if ( listBox != null )
+		{
+			String value;
+			
+			value = textBox.getValue();
+			if ( value == null || value.length() == 0 )
+				listBox.setEnabled( false );
+			else if ( value.equals( "*" ) )
+				listBox.setEnabled( false );
+			else
+				listBox.setEnabled( true );
+		}
+	}
+	
+	
+	/**
 	 * Get the width of the given column that was entered by the user.
 	 */
-	public int getColWidth( int col )
+	private String getColWidth( int col )
 	{
-		int width;
-		
-		width = 0;
-		
 		// Is the requested column valid?
-		if ( col < m_columnWidths.size() )
+		if ( col < m_colWidths.size() )
 		{
 			String value;
 			TextBox txtBox;
 			
 			// Yes, get the string entered by the user.
-			txtBox = m_columnWidths.get( col );
+			txtBox = m_colWidths.get( col );
 			value = txtBox.getValue();
 
 			if ( value != null && value.length() > 0 )
 			{
+				if ( value.equals( "*" ) )
+				{
+					// "*" is a valid width.
+					return value;
+				}
+				
 				try
 				{
-					width = Integer.parseInt( value );
+					Integer.parseInt( value );
+					
+					return value;
 				}
 				catch ( NumberFormatException nfEx )
 				{
@@ -214,8 +268,44 @@ public class TableWidgetDlgBox extends DlgBox
 			}
 		}
 		
-		return width;
+		return "";
 	}// end getColWidth()
+	
+	/**
+	 * Return the width units of the given column.
+	 */
+	public ColWidthUnit getColWidthUnits( int col )
+	{
+		ColWidthUnit units;
+		
+		// Default to %
+		units = ColWidthUnit.NONE;
+		
+		// Is the requested column valid?
+		if ( col < m_colWidthUnits.size() )
+		{
+			ListBox listBox;
+			
+			// Yes
+			units = ColWidthUnit.NONE;
+
+			listBox = m_colWidthUnits.get( col );
+			
+			if ( listBox.isEnabled() == true )
+			{
+				int selectedIndex;
+
+				selectedIndex = listBox.getSelectedIndex();
+
+				if ( selectedIndex == 0 )
+					units = ColWidthUnit.PERCENTAGE;
+				else if ( selectedIndex == 1 )
+					units = ColWidthUnit.PX;
+			}
+		}
+		
+		return units;
+	}
 	
 	
 	/**
@@ -226,7 +316,7 @@ public class TableWidgetDlgBox extends DlgBox
 		TableProperties	properties;
 		int numColumns;
 		int i;
-		int totalWidth = 0;
+		int totalPercentageWidth = 0;
 		
 		properties = new TableProperties();
 		
@@ -240,28 +330,55 @@ public class TableWidgetDlgBox extends DlgBox
 		// Save away the "column widths" values.
 		for (i = 0; i < numColumns; ++i)
 		{
-			int width;
+			String width;
+			ColWidthUnit units;
 			
 			// Get the width of this column.
 			width = getColWidth( i );
 			
-			// Is the width valid?  Width must be 1-99
-			if ( width > 0 && width <= 100 )
-			{
-				// Yes
-				properties.setColWidth( i, width );
-				totalWidth += width;
-			}
-			else
+			// Did the user enter anything?
+			if ( width == null || width.length() == 0 )
 			{
 				// No, tell the user about the problem.
-				Window.alert( GwtTeaming.getMessages().invalidColumnWidth( i+1 ) );
+				Window.alert( GwtTeaming.getMessages().emptyColumnWidth( i+ 1 ) );
 				return null;
 			}
+			
+			// Get the width units, % or px
+			units = getColWidthUnits( i );
+			
+			// Are we dealing with %?
+			if ( units == ColWidthUnit.PERCENTAGE )
+			{
+				int widthInt;
+				
+				// Yes
+				// Is the width valid?  Width must be 1-99
+				widthInt = Integer.valueOf( width ).intValue();
+				if ( widthInt > 0 && widthInt <= 100 )
+				{
+					// Yes
+					properties.setColWidth( i, width );
+					totalPercentageWidth += widthInt;
+				}
+				else
+				{
+					// No, tell the user about the problem.
+					Window.alert( GwtTeaming.getMessages().invalidColumnWidth( i+1 ) );
+					return null;
+				}
+			}
+			else if ( units == ColWidthUnit.PX || units == ColWidthUnit.NONE )
+			{
+				properties.setColWidth( i, width );
+			}
+			
+			// Save away the width units
+			properties.setColWidthUnit( i, units );
 		}
 		
 		// Is the total width entered by the user valid?
-		if ( totalWidth > 100 )
+		if ( totalPercentageWidth > 100 )
 		{
 			// No, tell the user about the problem.
 			Window.alert( GwtTeaming.getMessages().invalidTotalTableWidth() );
@@ -279,6 +396,26 @@ public class TableWidgetDlgBox extends DlgBox
 	{
 		return m_numColsCtrl;
 	}// end getFocusWidget()
+	
+	
+	/**
+	 * Get the listbox associated with the given textbox
+	 */
+	private ListBox getListBox( TextBox textBox )
+	{
+		int i;
+		
+		i = 0;
+		for (TextBox nextTextBox : m_colWidths)
+		{
+			if ( nextTextBox == textBox )
+				return m_colWidthUnits.get( i );
+			
+			++i;
+		}
+
+		return null;
+	}
 	
 	
 	/**
@@ -350,8 +487,33 @@ public class TableWidgetDlgBox extends DlgBox
 	 */
 	public void onKeyPress( KeyPressEvent event )
 	{
+    	final TextBox txtBox;
         int keyCode;
+    	Object source;
+    	Scheduler.RepeatingCommand cmd;
+    	
+    	// Make sure we are dealing with a text box.
+    	source = event.getSource();
+    	if ( source instanceof TextBox )
+    		txtBox = (TextBox) source;
+    	else
+    		txtBox = null;
 
+        // Allow the user to enter '*'.  That is a valid column width.
+        if ( event.getCharCode() == '*' )
+        {
+        	// Remove any characters from the text box.
+        	if ( txtBox != null )
+        	{
+        		txtBox.setValue( "*" );
+        		txtBox.cancelKey();
+        		
+        		danceWidthUnits( txtBox );
+        	}
+
+        	return;
+        }
+        
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
@@ -360,17 +522,28 @@ public class TableWidgetDlgBox extends DlgBox
             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
             && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
         {
-        	TextBox txtBox;
-        	Object source;
-        	
         	// Make sure we are dealing with a text box.
-        	source = event.getSource();
-        	if ( source instanceof TextBox )
+        	if ( txtBox != null )
         	{
         		// Suppress the current keyboard event.
-        		txtBox = (TextBox) source;
         		txtBox.cancelKey();
         	}
         }
-	}// end onKeyPress()
+        
+        cmd = new Scheduler.RepeatingCommand()
+        {
+        	/**
+        	 * 
+        	 */
+			@Override
+			public boolean execute()
+			{
+		        danceWidthUnits( txtBox );
+		        
+		        return false;
+			}
+		};
+		Scheduler.get().scheduleFixedPeriod( cmd, 250 );
+	}
+	
 }// end TableWidgetDlgBox

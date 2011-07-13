@@ -107,18 +107,42 @@ public class TableConfig extends ConfigItem
 								
 								for (j = 0; j < results3.length; ++j)
 								{
-									width = 0;
-
-									try
-									{
-										width = Integer.parseInt( results3[j] );
-									}
-									catch (NumberFormatException nfe)
-									{
-										// Nothing to do.
-									}
-									m_properties.setColWidth( j, width );
+									m_properties.setColWidth( j, results3[j] );
 								}// end for()
+							}
+						}
+						catch (Exception ex)
+						{
+							// Nothing to do.  This is here to handle the case when the data is
+							// not properly url encoded.
+						}
+					}
+					else if ( results2[0].equalsIgnoreCase( "widthUnits" ) )
+					{
+						String[] results3;
+						String tmp;
+					
+						try
+						{
+							// Get the individual column width units.
+							tmp = URL.decodeComponent( results2[1] );
+							results3 = tmp.split( "[|]" );
+							if ( results3 != null )
+							{
+								int j;
+								
+								for (j = 0; j < results3.length; ++j)
+								{
+									ColWidthUnit unit;
+									String str;
+									
+									str = results3[j];
+									if ( str != null && str.length() > 0 )
+									{
+										unit = ColWidthUnit.getEnum( Integer.parseInt( str ) );
+										m_properties.setColWidthUnit( j, unit );
+									}
+								}
 							}
 						}
 						catch (Exception ex)
@@ -136,7 +160,10 @@ public class TableConfig extends ConfigItem
 		numCols = m_properties.getNumColumnsInt();
 		for (i = 0; i < numCols && valid == true; ++i)
 		{
-			if ( m_properties.getColWidthInt( i ) == 0 )
+			String widthStr;
+			
+			widthStr = m_properties.getColWidth( i );
+			if ( widthStr == null || widthStr.length() == 0 )
 				valid = false;
 		}
 		
@@ -148,7 +175,8 @@ public class TableConfig extends ConfigItem
 			
 			for (i = 0; i < numCols; ++i)
 			{
-				m_properties.setColWidth( i, width );
+				m_properties.setColWidth( i, String.valueOf( width ) );
+				m_properties.setColWidthUnit( i, ColWidthUnit.PERCENTAGE );
 			}
 		}
 	}// end TableConfig()

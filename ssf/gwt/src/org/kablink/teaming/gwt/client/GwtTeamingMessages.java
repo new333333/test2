@@ -170,6 +170,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used with the "table" widget
 	String columnXWidth( int colNum );
+	String emptyColumnWidth( int colNum );
 	String invalidColumnWidth( int colNum );
 	String invalidTotalTableWidth();
 	String numColumns();

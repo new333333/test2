@@ -46,7 +46,8 @@ public class TableProperties
 	implements PropertiesObj
 {
 	private boolean	m_showBorder;
-	private int[]		m_colWidths;
+	private String[] m_colWidths;
+	private ColWidthUnit[] m_colWidthUnits;
 	
 	/**
 	 * 
@@ -79,7 +80,8 @@ public class TableProperties
 			
 			for (i = 0; i < numCols; ++i)
 			{
-				setColWidth( i, tableProps.getColWidthInt( i ) );
+				setColWidth( i, tableProps.getColWidth( i ) );
+				setColWidthUnit( i, tableProps.getColWidthUnit( i ) );
 			}
 		}
 	}// end copy()
@@ -92,9 +94,10 @@ public class TableProperties
 	{
 		String str;
 		String colWidthsStr;
+		String unitsStr;
 		int i;
 		
-		// The string should look like: "tableStart,showBorder=1,cols=3,colWidths=33%7C33%7C33;"
+		// The string should look like: "tableStart,showBorder=1,cols=3,colWidths=33%7C33%7C33;widthUnits=1%7C%2%7C%1"
 		str = "tableStart,";
 		if ( m_showBorder )
 			str += "showBorder=1,";
@@ -107,7 +110,7 @@ public class TableProperties
 		{
 			String colWidth;
 			
-			colWidth = getColWidthStr( i );
+			colWidth = getColWidth( i );
 			if ( colWidth != null )
 			{
 				if ( i > 0 )
@@ -116,7 +119,25 @@ public class TableProperties
 				colWidthsStr += colWidth;
 			}
 		}
-		str += ConfigData.encodeConfigData( colWidthsStr );
+		str += ConfigData.encodeConfigData( colWidthsStr ) + ",";
+		
+		str += "widthUnits=";
+		unitsStr = "";
+		for (i = 0; i < getNumColumnsInt(); ++i)
+		{
+			ColWidthUnit unit;
+			
+			unit = getColWidthUnit( i );
+			if ( unit != ColWidthUnit.UNDEFINED )
+			{
+				if ( i > 0 )
+					unitsStr += "|";
+				
+				unitsStr += String.valueOf( unit.getValue() );
+			}
+		}
+		str += ConfigData.encodeConfigData( unitsStr );
+		
 		str += ";";
 
 		return str;
@@ -124,11 +145,11 @@ public class TableProperties
 	
 	
 	/**
-	 * Return the width of the given column as an int.
+	 * Return the width of the given column as a string.
 	 */
-	public int getColWidthInt( int col )
+	public String getColWidth( int col )
 	{
-		int width;
+		String width;
 		
 		// Is the requested column valid?
 		if ( col < getNumColumnsInt() )
@@ -139,24 +160,24 @@ public class TableProperties
 		else
 		{
 			// The requested column is invalid.  Just return 0.
-			width = 0;
+			width = "0";
 		}
 		
 		return width;
-	}// end getColWidthInt()
-	
+	}// end getColWidthStr()
 	
 	/**
-	 * Return the width of the given column as a string.
+	 * Return the width unit for the given column
 	 */
-	public String getColWidthStr( int col )
+	public ColWidthUnit getColWidthUnit( int col )
 	{
-		int width;
+		if ( col < getNumColumnsInt() )
+		{
+			return m_colWidthUnits[col];
+		}
 		
-		width = getColWidthInt( col );
-		
-		return String.valueOf( width );
-	}// end getColWidthStr()
+		return ColWidthUnit.PERCENTAGE;
+	}
 	
 	
 	/**
@@ -189,7 +210,7 @@ public class TableProperties
 	/**
 	 * 
 	 */
-	public void setColWidth( int col, int width )
+	public void setColWidth( int col, String width )
 	{
 		// Is the column valid?
 		if ( col < getNumColumnsInt() )
@@ -198,6 +219,19 @@ public class TableProperties
 			m_colWidths[col] = width;
 		}
 	}// end setColWidth()
+	
+	/**
+	 * 
+	 */
+	public void setColWidthUnit( int col, ColWidthUnit unit )
+	{
+		// Is the column valid?
+		if ( col < getNumColumnsInt() )
+		{
+			// Yes
+			m_colWidthUnits[col] = unit;
+		}
+	}
 	
 	
 	/**
@@ -208,7 +242,8 @@ public class TableProperties
 		int defaultWidth;
 		int i;
 		
-		m_colWidths = new int[numColumns];
+		m_colWidths = new String[numColumns];
+		m_colWidthUnits = new ColWidthUnit[numColumns];
 		
 		// Set the default width of each column.
 		if ( numColumns > 0 )
@@ -216,7 +251,8 @@ public class TableProperties
 			defaultWidth = 100 / numColumns;
 			for (i = 0; i < numColumns; ++i)
 			{
-				m_colWidths[i] = defaultWidth;
+				m_colWidths[i] = String.valueOf( defaultWidth );
+				m_colWidthUnits[i] = ColWidthUnit.PERCENTAGE;
 			}
 		}
 	}// end setNumColumns()

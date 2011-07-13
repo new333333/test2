@@ -36,12 +36,35 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="colWidth" value="${mashup_attributes['colWidth']}"/>
 <jsp:useBean id="colWidth" type="java.lang.String"/>
+
+<c:set var="widthUnits" value="${mashup_attributes['widthUnits']}"/>
+<c:if test="${empty widthUnits}">
+	<c:set var="widthUnits" value="1"/>
+</c:if>
+<jsp:useBean id="widthUnits" type="java.lang.String"/>
+
 <%
-	if (colWidth.indexOf("%") < 0 && !colWidth.trim().equals("")) colWidth = colWidth.trim() + "%";
+	// Has the width units been specified?
+	if ( widthUnits == null || widthUnits.trim().length() == 0 )
+	{
+		// No, default to "%"
+		widthUnits = "1";
+	}
+	// Are the width units something we understand? ie % or px
+	else if ( widthUnits.trim().equals( "0" ) == false && widthUnits.trim().equals( "1" ) == false && widthUnits.trim().equals( "2" ) == false )
+	{
+		// No, default to "%"
+		widthUnits = "1";
+	}
+
+	if ( widthUnits.equals( "1" ) )
+		widthUnits = "%";
+	else if ( widthUnits.equals( "0" ) || widthUnits.equals( "2" ) )
+		widthUnits = "";
 %>
 
 <c:if test="${ss_mashupColStarted == 'true'}">
 </td>
 </c:if>
-<td valign="top" <c:if test="${!empty mashup_attributes['colWidth']}">width="<%= colWidth %>"</c:if> >
+<td valign="top" <c:if test="${!empty mashup_attributes['colWidth']}">width="<%= colWidth %><%= widthUnits %>"</c:if> >
 <c:set var="ss_mashupColStarted" value="true" scope="request"/>

@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -312,7 +313,12 @@ public class TableDropWidget extends DropWidget
 		// For every cell, get the widgets that live in that cell.
 		for (i = 0; i < numColumns; ++i)
 		{
-			configStr += "tableCol,colWidth=" + m_properties.getColWidthStr( i ) + ";";
+			ColWidthUnit units;
+			
+			configStr += "tableCol";
+			configStr += ",colWidth=" + m_properties.getColWidth( i );
+			units = m_properties.getColWidthUnit( i );
+			configStr += ",widthUnits=" + String.valueOf( units.getValue() ) + ";";
 			
 			// Get the DropZone for this cell.
 			widget = m_flexTable.getWidget( 0, i );
@@ -536,15 +542,43 @@ public class TableDropWidget extends DropWidget
 		cellFormatter = m_flexTable.getFlexCellFormatter();
 		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
 		{
+			ColWidthUnit unit;
+			Element tdElement;
+			
+			// Get the width unit for this column.
+			unit = m_properties.getColWidthUnit( i );
+			
 			// Get the width of this column.
-			width = m_properties.getColWidthInt( i );
+			widthStr = m_properties.getColWidth( i );
 			
-			// IE does not allow a width of 0%.  If the width is 0 set it to 1.
-			if ( width == 0 )
-				width = 1;
+			// Are we dealing with percentage?
+			if ( unit == ColWidthUnit.PERCENTAGE )
+			{
+				// Yes
+				try
+				{
+					width = Integer.parseInt( widthStr );
+				}
+				catch (Exception ex)
+				{
+					// Error parsing the width, default to 25%
+					width = 25;
+				}
+				
+				// IE does not allow a width of 0%.  If the width is 0 set it to 1.
+				if ( width == 0 )
+					width = 1;
+				
+				widthStr = String.valueOf( width );
+			}
 			
-			widthStr = String.valueOf( width ) + "%";
-			cellFormatter.setWidth( 0, i, widthStr );
+			widthStr = widthStr + unit.getHtmlUnit();
+
+			// IE chokes if we call cellFormatter.setWidth(...) and pass in "*" for the width.
+			// That is why we call tdElement.setAttribute(...)
+			//cellFormatter.setWidth( 0, i, widthStr );
+			tdElement = cellFormatter.getElement( 0, i );
+			tdElement.setAttribute( "width", widthStr );
 			
 			// Set the vertical alignment of this cell to "top".
 			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
