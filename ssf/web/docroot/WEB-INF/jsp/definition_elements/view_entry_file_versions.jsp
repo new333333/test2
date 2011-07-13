@@ -127,4 +127,28 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
 </c:forEach>
 </tbody>
 </table>
+<c:if test="${ss_fileVersionAgingEnabledSeen}">
+  <div style="padding-left:16px;"><ssf:nlt tag="file.versions.subjectToAgingDeletion"/></div>
+  <c:if test="${!empty ssBinder.versionAgingDays}">
+    <div style="padding-left:16px;">
+     <c:if test="${ssBinder.versionAgingDays == 1}">
+      <ssf:nlt tag="file.versions.binderAgingDay">
+        <ssf:param name="value" value="${ssBinder.versionAgingDays}"/>
+      </ssf:nlt>
+     </c:if>
+     <c:if test="${ssBinder.versionAgingDays != 1}">
+      <ssf:nlt tag="file.versions.binderAgingDays">
+        <ssf:param name="value" value="${ssBinder.versionAgingDays}"/>
+      </ssf:nlt>
+     </c:if>
+    </div>
+  </c:if>
+  <c:if test="${empty ssBinder.versionAgingDays && !empty ss_zoneVersionAgingDays}">
+    <div style="padding-left:16px;">
+      <ssf:nlt tag="file.versions.zoneAgingDays">
+        <ssf:param name="value" value="${ss_zoneVersionAgingDays}"/>
+      </ssf:nlt>
+    </div>
+  </c:if>
+</c:if>
 </form>

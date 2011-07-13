@@ -523,6 +523,8 @@ public class BinderHelper {
 		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
+		Long fileVersionMaxAge = bs.getAdminModule().getFileVersionsMaxAge();
+		model.put(WebKeys.ZONE_VERSION_AGING_DAYS, fileVersionMaxAge);
 	}
 	
 	//Set up the beans needed to warn people of quota issues
