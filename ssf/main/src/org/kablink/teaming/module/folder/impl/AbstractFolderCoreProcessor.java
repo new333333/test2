@@ -879,7 +879,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		       					batch.add((FolderEntry)obj);
 		       				}
 	 		      		}
-	       				getCoreDao().bulkLoadCollections(batch);
 	 		      		for (FolderEntry entry : batch) {
  		       				FileUtils.setFileVersionAging(entry);
 	 		        	}
