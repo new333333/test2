@@ -42,6 +42,7 @@ if (!window.ssSurvey) {
 		var surveyContainerId = surveyContainerId;
 	
 		var ss_questionsArray = new Array();
+		var ss_orderArray = new Array();
 		
 		var ss_questionsCounter = 0;
 		
@@ -91,6 +92,7 @@ if (!window.ssSurvey) {
 		function ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers, requiredAnswer) {
 			if (!ss_questionsArray[ss_questionsCounter] || ss_questionsArray[ss_questionsCounter] == 'undefined') {
 				ss_questionsArray[ss_questionsCounter] = new Array();
+				ss_orderArray[ss_questionsCounter] = ss_questionsCounter;
 			}
 			ss_questionsArray[ss_questionsCounter].type=type;
 		
@@ -117,6 +119,25 @@ if (!window.ssSurvey) {
 			removerImg.setAttribute("align", "absmiddle");
 			removerLink.appendChild(removerImg);
 			questionHeader.appendChild(removerLink);
+			
+			var upLink = document.createElement('a');
+			upLink.href = "javascript: //;";
+			dojo.connect(upLink, "onclick", ss_callMoveQuestion(that, ss_questionsCounter, true));
+			var upImg = document.createElement('img');
+			upImg.setAttribute("src", ss_imagesPath + "pics/sym_s_up.gif");
+			upImg.setAttribute("align", "absmiddle");
+			upLink.appendChild(upImg);
+			questionHeader.appendChild(upLink);
+
+			var downLink = document.createElement('a');
+			downLink.href = "javascript: //;";
+			dojo.connect(downLink, "onclick", ss_callMoveQuestion(that, ss_questionsCounter, false));
+			var downImg = document.createElement('img');
+			downImg.setAttribute("src", ss_imagesPath + "pics/sym_s_down.gif");
+			downImg.setAttribute("align", "absmiddle");
+			downLink.appendChild(downImg);
+			questionHeader.appendChild(downLink);
+
 			var label = document.createElement('span');
 			label.id = prefix + "questionHeaderLabel"+ss_questionsCounter;
 			label.appendChild(document.createTextNode(that.locale.questionHeader));
@@ -136,7 +157,36 @@ if (!window.ssSurvey) {
 				ss_refreshAllHeaders();
 			}
 		}
-		
+
+		function ss_callMoveQuestion(obj, index, directionUp) {
+			return function(evt) {obj.ss_moveQuestion(index, directionUp);};
+		}
+
+		this.ss_moveQuestion = function(index, directionUp) {
+			var orderIndex = -1;
+			//Find where this question is in the order
+			for (i=0; i<ss_orderArray.length; i++) {
+				if (ss_orderArray[i] == index) {
+					orderIndex = i;
+					break;
+				}
+			}
+			//Make sure the question isn't at the top or bottom
+			if (orderIndex < 0 || (directionUp && orderIndex <= 0)) return;
+			if (!directionUp && orderIndex >= ss_questionsArray.length - 1) return;
+			//It is ok to move
+			if (directionUp) {
+				var firstItem = ss_orderArray[(orderIndex-1)];
+				ss_orderArray[(orderIndex-1)] = ss_orderArray[(orderIndex)];
+				ss_orderArray[(orderIndex)] = firstItem;
+			} else {
+				var firstItem = ss_orderArray[(orderIndex)];
+				ss_orderArray[(orderIndex)] = ss_orderArray[(orderIndex+1)];
+				ss_orderArray[(orderIndex+1)] = firstItem;
+			}
+			ss_refreshAllHeaders();
+		}
+
 		function ss_addQuestionDescription(questionContainer, questionText, questionIndex) {
 			var question = document.createElement('textarea');
 			if (questionText) {
@@ -171,16 +221,16 @@ if (!window.ssSurvey) {
 		
 		function ss_refreshAllHeaders() {
 			var totalQC =0;
-			for (var i=0; i<ss_questionsArray.length; i++) {
-				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
+			for (var i=0; i<ss_orderArray.length; i++) {
+				var index = ss_orderArray[i];
+				if (ss_questionsArray[index].type && ss_questionsArray[index].type != 'undefined') {
 					totalQC++;
 				}
 			}
-			var counter=0;
-			for (var j=0; j<ss_questionsArray.length; j++) {
-				if (ss_questionsArray[j].type && ss_questionsArray[j].type != 'undefined') {
-					counter++;
-					dojo.byId(prefix + "questionHeaderLabel"+j).innerHTML = that.locale.questionHeader+" "+counter+"/"+totalQC;
+			for (var j=0; j<ss_orderArray.length; j++) {
+				var index = ss_orderArray[j];
+				if (ss_questionsArray[index].type && ss_questionsArray[index].type != 'undefined') {
+					dojo.byId(prefix + "questionHeaderLabel"+index).innerHTML = that.locale.questionHeader+" "+(j+1)+"/"+totalQC;
 				}
 			}
 		}
@@ -228,25 +278,26 @@ if (!window.ssSurvey) {
 			var content;
 			var questionIndexInput;
 			var requiredAnswer;
-			for (var i=0; i<ss_questionsArray.length;i++){
-				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
+			for (var i=0; i<ss_orderArray.length;i++){
+				var index = ss_orderArray[i];
+				if (ss_questionsArray[index].type && ss_questionsArray[index].type != 'undefined') {
 					ss_toSend[ind] = {};
-					ss_toSend[ind].type = ss_questionsArray[i].type;
-					content = tinyMCE.get(prefix + "questionText"+i).getContent().replace(/\+/g, "&#43");
+					ss_toSend[ind].type = ss_questionsArray[index].type;
+					content = tinyMCE.get(prefix + "questionText"+index).getContent().replace(/\+/g, "&#43");
 					ss_toSend[ind].question = content;
-					questionIndexInput = dojo.byId(prefix + "questionText"+i+"_index");
+					questionIndexInput = dojo.byId(prefix + "questionText"+index+"_index");
 					if (questionIndexInput) {
 						ss_toSend[ind].index = questionIndexInput.value;
 					}
-					requiredAnswer = dojo.byId(prefix + "answerRequired" + i);
+					requiredAnswer = dojo.byId(prefix + "answerRequired" + index);
 					ss_toSend[ind].answerRequired = requiredAnswer && requiredAnswer.checked;
-					if (ss_questionsArray[i].type == 'multiple' || ss_questionsArray[i].type == 'single') {
+					if (ss_questionsArray[index].type == 'multiple' || ss_questionsArray[index].type == 'single') {
 						ss_toSend[ind].answers = new Array();
 						aCounter = 0;
-						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
-							var answerObj = dojo.byId(prefix + "question"+i+"answer"+j);
+						for (var j=0; j<ss_questionsArray[index].answersNo; j++) {
+							var answerObj = dojo.byId(prefix + "question"+index+"answer"+j);
 							if (answerObj && answerObj.value && trim(answerObj.value)) {
-								var answerIndexInput = dojo.byId(prefix + "question"+i+"answer"+j+"_index");
+								var answerIndexInput = dojo.byId(prefix + "question"+index+"answer"+j+"_index");
 								ss_toSend[ind].answers[aCounter] = {
 									'text' : trim(answerObj.value)
 								};
