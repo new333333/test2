@@ -1448,6 +1448,7 @@ public class WebKeys {
 	public static final String YEAR_MONTH="ss_yearMonth";
     public static final String ZONE_NAME = "com.sitescape.zonename";
     public static final String ZONE_ID = "com.sitescape.zoneId";
+    public static final String ZONE_VERSION_AGING_DAYS = "ss_zoneVersionAgingDays";
     public static final String TOKEN_INFO_ID = "ssTokenInfoId";
     
     public static final String FOLDER_SORT_BY = "ssFolderSortBy";
