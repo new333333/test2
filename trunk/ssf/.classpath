@@ -160,5 +160,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-jpa-2.0-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-memcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spymemcached.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmemcached.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
