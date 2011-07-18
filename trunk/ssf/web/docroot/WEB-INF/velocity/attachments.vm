@@ -28,8 +28,10 @@
  *#
 #if ($ssVisitor.Entity.FileAttachments.size() > 0)
 #if ($ssVisitor.isHtml())
+<div style="#ss_eLabel()">
+  ${ssVisitor.getNLT("email.attachments")}
+</div>
 <div style="#ss_entryContent() ">
-<span style="#ss_labelAbove()">${property_caption}</span>
 #if (${ssVisitor.NotifyDef.Type} == 'summary')
 <ul style="#ss_ul()">
 #foreach ($selection in ${ssVisitor.Entity.FileAttachments})
@@ -40,27 +42,25 @@
 
 </ul>
 #else
-<table style="padding-left:30px;" cellpadding="0" cellspacing="0" border="0">
+<table cellpadding="0" cellspacing="0" border="0">
 <tbody>
 #foreach ($selection in $ssVisitor.Entity.FileAttachments)
-     <tr><td colspan="4"><hr style="border-top:1px solid #CCCCCC;border-bottom:none;height:0px;" noshade="noshade" /></td></tr>
-	  <tr>
-	#if ($ssVisitor.NotifyDef.isAttachmentsIncluded())
-		<td style="font-size:10px;font-weight:bold;padding-left:0px;" width="25%">${selection.fileItem.name}
-		</td>
-	#else
-		<td style="font-size:10px;font-weight:bold;padding-left:0px;" width="25%"><a style="text-decoration: none;" 
-			href="$ssVisitor.getFileLink(${selection})">
-			${selection.fileItem.name}</a>
-		</td>
-	#end
-		<td style="font-size:10px;white-space:nowrap;padding-left:5px;color:#666666">
+	<tr>
+		#if ($ssVisitor.NotifyDef.isAttachmentsIncluded())
+			<td style="font-size:10px;font-weight:bold;padding-left:0px;">${selection.fileItem.name}
+			</td>
+		#else
+			<td style="font-size:10px;font-weight:bold;padding-left:0px;"><a style="text-decoration: none;" 
+				href="$ssVisitor.getFileLink(${selection})">
+				${selection.fileItem.name}</a>
+			</td>
+		#end
+		<td style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">
 			$ssVisitor.NotifyDef.DateFormat.format($selection.Modification.Date)</td>
-		<td style="font-size:10px;white-space:nowrap;padding-left:5px;color:#666666">${selection.FileItem.LengthKB}KB</td>
-		<td style="font-size:10px;white-space:nowrap;padding-left:5px;color:#666666">$esc.html($ssVisitor.getUserTitle(${selection.Modification.Principal}))</td>
+		<td style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">${selection.FileItem.LengthKB}KB</td>
+		<td style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">$esc.html($ssVisitor.getUserTitle(${selection.Modification.Principal}))</td>
 	</tr>
 #end
-<tr><td colspan="4"><hr style="border-top:1px solid #CCCCCC;border-bottom:none;height:0px;" noshade="noshade" /></td></tr>
 </tbody>
 </table>
 #end

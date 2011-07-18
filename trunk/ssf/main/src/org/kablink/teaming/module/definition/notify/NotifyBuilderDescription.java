@@ -67,10 +67,12 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     	Description obj = visitor.getEntity().getDescription();
     	String value="";
     	if (obj != null) {
-    		if (visitor.isHtml())
+    		if (visitor.isHtml()) {
     			value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), obj.getText(), WebKeys.MARKUP_EMAIL);
-    		else 
+    			value = MarkupUtil.markupSectionsReplacement(value);
+    		} else {
     			value = obj.getText();
+    		}
     	}
     	if (visitor.isHtml()) {
     		if ((null != obj) && (Description.FORMAT_NONE == obj.getFormat())) {

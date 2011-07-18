@@ -27,88 +27,32 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())  
-<div style="#ss_entryContent()">
-#if (1 == 0)
-## looks crappy in mail without picture
-##if ($propertyValues_displayType.get(0) == 'leftAligned')
+  <div style="#ss_eAuthor()">
+    #ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
 
-<table>
-<tr>
-<td valign="top">
-#if ($property_caption)
-${property_caption}&nbsp;&nbsp;
-#end
-<table cellspacing="0" cellpadding="0">
- <tr>
-  <td valign="top">
-
-#if ($ssVisitor.Entity.Creation.Principal)
-#ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
-#end		
-#if ($ssVisitor.Entity.PostedBy)
-    ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))&nbsp;
-#end 
-  </td>
- </tr>
- <tr>
-  <td valign="top">
-    $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
- 
-  </td>
- </tr>
-
-#if ($ssVisitor.Entity.Modification.Principal && 
-  $ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
- <tr>
-  <td valign="top">
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ssVisitor.getNLT("entry.modifiedBy")&nbsp;
-#ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
-  </td>
- </tr>
- <tr>
-  <td valign="top">
-   $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
-  </td>
- </tr>
-#end
-</table>
-
-</td>
-<td valign="top" style="padding-left:10px;">
-$ssVisitor.visit()
-</td>
-</tr>
-</table>
-#else
-#if ($property_caption)
-${property_caption}&nbsp;&nbsp;
-#end
-
-#ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
-
-#if ($ssVisitor.Entity.PostedBy)
-    ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))&nbsp;
-#end 
+    #if ($ssVisitor.Entity.PostedBy)
+      ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))&nbsp;
+    #end 
     $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
 
+    #if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
+      <div style="padding-left:6px;">
+	    $ssVisitor.getNLT("entry.modifiedBy")&nbsp;
+        #ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
+        $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
+      </div>
+    #end
+  </div>
+  $ssVisitor.visit()
 
-#if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
-  <br/>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ssVisitor.getNLT("entry.modifiedBy")&nbsp;
-#ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
-   $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
-#end
-$ssVisitor.visit()
-#end
-</div>
 #else
-#ss_print("${property_caption} $ssVisitor.getUserTitle(${ssVisitor.Entity.Creation.Principal})")
-#if ($ssVisitor.Entity.PostedBy)
-#ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
-#end 
-#ss_printLn(" $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})")
-#if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
-#ss_printLn("      $ssVisitor.getNLT('entry.modifiedBy') $ssVisitor.getUserTitle(${ssVisitor.Entity.Modification.Principal}) $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})")
-#end
-$ssVisitor.visit()
+  #ss_print("${property_caption} $ssVisitor.getUserTitle(${ssVisitor.Entity.Creation.Principal})")
+  #if ($ssVisitor.Entity.PostedBy)
+    #ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
+  #end 
+  #ss_printLn(" $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})")
+  #if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
+    #ss_printLn("      $ssVisitor.getNLT('entry.modifiedBy') $ssVisitor.getUserTitle(${ssVisitor.Entity.Modification.Principal}) $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})")
+  #end
+  $ssVisitor.visit()
 #end

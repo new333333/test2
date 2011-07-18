@@ -628,8 +628,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				params.put("ssReplyTo", getReplyTo(lastFolder));
 				
 			}
-			//make sure change of entries exist from topentry down to changed entry
-			//since entries are sorted by sortKey, we should have processed an changed parents
+			//make sure chain of entries exist from top entry down to changed entry
+			//since entries are sorted by sortKey, we should have processed any changed parents
 			//already
 			FolderEntry parent = entry.getParentEntry();
 			while ((parent != null) && (!seenIds.contains(parent.getId()))) {
@@ -698,22 +698,23 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		params.put("ssReplyTo", getReplyTo(entry.getParentBinder()));
 		if (Notify.NotifyType.interactive.equals(notify.getType())) {
 			params.put("org.kablink.teaming.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
+			params.put("org.kablink.teaming.notify.params.showAvatar", Boolean.TRUE);
 
 			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "header.vm");
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
 			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "footer.vm");
 			EmailUtil.putHTML(result, EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
-			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "header.vm");
+			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.TEXT, params, "header.vm");
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
-			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "footer.vm");
+			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.TEXT, params, "footer.vm");
 			EmailUtil.putText(result, EmailFormatter.TEXT, writer.toString());
 			
 		} else {
-			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML, params, Boolean.TRUE);
 			EmailUtil.putHTML(result, EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
-			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT, params, Boolean.TRUE);
 			EmailUtil.putText(result, EmailFormatter.TEXT, writer.toString());
 		}
 
@@ -722,11 +723,13 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 
 	}
 	
-	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Map params) {
+	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, 
+			Map params, Boolean requestedEntry) {
 		if (entry == null) return;
 		//handle direct ancestors of the changed entry first
-		doEntry(entry.getParentEntry(), notify, writer, type, params); 
+		doEntry(entry.getParentEntry(), notify, writer, type, params, Boolean.FALSE); 
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
+		params.put("org.kablink.teaming.notify.params.showAvatar", requestedEntry);
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "footer.vm");
 	}

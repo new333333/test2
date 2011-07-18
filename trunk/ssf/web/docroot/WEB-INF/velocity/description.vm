@@ -27,15 +27,18 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml()) 
+<div style="#ss_eLabel()">
+${property_caption}
+</div>
 <div style="#ss_entryContent()">
-<span style="#ss_labelAbove()">${property_caption}</span>
 #if ($ssDescription_markup)
 #if ($ssVisitor.NotifyDef.Type == 'summary')
 $ssDescription_markup
 #else
-<div style="#ss_entryDescription()">
+<div>
 <span>$ssDescription_markup</span>
 </div>
+
 #end
 #end
 </div>
