@@ -39,9 +39,9 @@
 
 <a name="$ssVisitor.Entity.Id" style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
 #if ($ssVisitor.Entity.Title)
-	 <span style="#ss_entryTitle()">$esc.html($ssVisitor.Entity.Title)</span>
+	 <span style="#ss_eTitle()">$esc.html($ssVisitor.Entity.Title)</span>
 #else
-<span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
+<span style="#ss_eTitle() #ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
 #end
 </a>
 #if (${ssElement.attributeValue("hasChanges")} == 'true')

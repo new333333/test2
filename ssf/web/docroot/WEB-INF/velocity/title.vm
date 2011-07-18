@@ -27,49 +27,23 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())  
-<div style="#ss_entryContent() #ss_entryTitle()">
-<span>
-<table border="0" width="100%">
-<tr><td align="left">
-#if ($ssVisitor.Entity.DocNumber)
-	${ssVisitor.Entity.DocNumber}.&nbsp;
+<div style="#ss_eTitle()">
+#if ($ssVisitor.getDocNumber())
+	${ssVisitor.getDocNumber()}.&nbsp;
 #end
 
 <a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
-#if ($ssVisitor.Entity.Title)
+#if ($ssVisitor.Entity.Title && $ssVisitor.Entity.Title != "" )
 	$esc.html($ssVisitor.Entity.Title)
 #else
-<span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
+  <span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
 #end
 </a>
-#if ($ssVisitor.getParam('ssReplyTo'))
-</td><td style="padding-left: 50px;">
-
-&nbsp;&nbsp;<a href="mailto:${ssVisitor.getParam('ssReplyTo')}?subject=RE: DocId:${ssVisitor.Entity.ParentBinder.Id}:${ssVisitor.Entity.Id}"
-	style="font-size: 11px; 
-		color: #3366cc; font-weight:bold;
-		border-top: 1px solid #d5d5d5; 
-		border-left: 1px solid #d5d5d5;
-		border-right: 1px solid #666666;
-  		border-bottom: 1px solid #666666;
-		background-color: #e5e5e5; padding: 3px;
-		font-family: arial, helvetica, sans-serif;
-		margin-left: 0px; 
-		margin-right: 6px; 
-		margin-bottom, margin-top: 2px;
-		line-height: 200%; 
-		text-decoration: none;" >$ssVisitor.getNLT("mail.reply")</a>
-
- 	  	
-</td>
-#end
-</tr>
-</table>
 
 </div>
 #else
-#if ($ssVisitor.Entity.DocNumber)
-#ss_print("${ssVisitor.Entity.DocNumber}. ") 
+#if ($ssVisitor.getDocNumber())
+  #ss_print("${ssVisitor.getDocNumber()}. ") 
 #end
 #if ($ssVisitor.Entity.Title)
 #ss_printLn($ssVisitor.Entity.Title)

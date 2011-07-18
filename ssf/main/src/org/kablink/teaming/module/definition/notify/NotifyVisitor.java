@@ -32,22 +32,35 @@
  */
 package org.kablink.teaming.module.definition.notify;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.dom4j.Element;
+import org.kablink.teaming.dao.util.SSBlobSerializableType;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.file.ConvertedFileModule;
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -103,6 +116,10 @@ public class NotifyVisitor {
  		if (params == null) return null;
  		return params.get(name);
  	}
+ 	//parameters set for entity
+ 	public void setParam(String name, Object value) {
+ 		params.put(name, value);
+ 	}
  	//start processing templates.
  	public void processTemplate(String template, VelocityContext ctx) throws Exception {
  		NotifyBuilderUtil.getVelocityEngine().mergeTemplate(template, ctx, currentWriter);
@@ -157,6 +174,55 @@ public class NotifyVisitor {
 		} else {
 			return Utils.getUserName(p);
 		}
+	}
+	public String getUserThumbnailInlineImage(Principal p) {
+		ConvertedFileModule convertedFileModule = (ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule");
+		String s_photo = "";
+		String ext = "";
+		if (!this.notifyDef.isRedacted()) {
+			Set photos = null;
+			CustomAttribute ca = p.getCustomAttribute("picture");
+			if (ca != null) photos = ca.getValueSet();
+			if (photos != null) {
+				FileAttachment photo = (FileAttachment)photos.iterator().next();
+				String fileName = photo.getFileItem().getName();
+				if (fileName.lastIndexOf(".") > 0) {
+					ext = fileName.substring(fileName.lastIndexOf(".")+1);
+				}
+				ByteArrayOutputStream baos = new ByteArrayOutputStream(
+						SSBlobSerializableType.OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
+				convertedFileModule.readThumbnailFile(p.getParentBinder(), p, photo, baos);
+				try {
+					s_photo = new String(Base64.encodeBase64(baos.toByteArray()),"utf-8");
+				} catch (UnsupportedEncodingException e) {
+					s_photo = "";
+				}
+			}
+		}
+		if (!s_photo.equals("") && !ext.equals("")) {
+			s_photo = "<img src=\"data:image/" + ext + ";base64," + s_photo + "\"/>";
+		}
+		return s_photo;
+	}
+	public String getDocNumber() {
+		String result = null;
+		if (entity instanceof FolderEntry) {
+			FolderEntry entry = (FolderEntry) entity;
+			Binder binder = entity.getParentBinder();
+			Map ssFolderColumns = (Map) binder.getProperty("folderColumns");
+			if (ssFolderColumns == null) {
+				ssFolderColumns = new java.util.HashMap();
+			}
+			if (ssFolderColumns.containsKey("number")) {
+				//This folder is showing numbers
+				result = entry.getDocNumber();
+			} else if (!entry.isTop()) {
+				//The folder isn't showing doc numbers, but this is a reply, so get it's reply number only
+				String docNum = entry.getDocNumber();
+		  		result = docNum.substring(docNum.indexOf(".") + 1, docNum.length());
+			}
+		}
+		return result;
 	}
 
 }
