@@ -43,7 +43,7 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 		    if (binderId == "") { binderId == currentBinderId };
 		    if (linkText == "") { linkText = title; pad = " "; }
 		    //if (title == "") { title = linkText; }
-			link = '<a class="ss_icecore_link" rel="binderId=' + binderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
+			link = '<a href="#" class="ss_icecore_link" rel="binderId=' + binderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
 		}
 		if (link != "") {
 			tinyMCE.execCommand('mceInsertContent', false, link);

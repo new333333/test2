@@ -1042,7 +1042,7 @@ public class MarkupUtil {
 					//build the link
 		    		StringBuffer titleLink = new StringBuffer();
 			    	if (type.equals(WebKeys.MARKUP_FORM)) {
-			        	titleLink.append("<a class=\"ss_icecore_link\" rel=\"binderId=");
+			        	titleLink.append("<a href=\"#\" class=\"ss_icecore_link\" rel=\"binderId=");
 			        	titleLink.append(s_binderId);
 			        	if (!s_zoneUUID.equals("")) titleLink.append(" zoneUUID=" + s_zoneUUID);
 			        	titleLink.append(" title=");
