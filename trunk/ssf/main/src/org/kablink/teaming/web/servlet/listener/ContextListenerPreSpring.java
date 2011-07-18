@@ -36,6 +36,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.kablink.teaming.util.BootstrapProperties;
+import org.kablink.teaming.util.SystemProperties;
 
 public class ContextListenerPreSpring implements ServletContextListener {
 	
@@ -44,6 +45,7 @@ public class ContextListenerPreSpring implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
+		SystemProperties.init();
 		BootstrapProperties.init();
 	}
 

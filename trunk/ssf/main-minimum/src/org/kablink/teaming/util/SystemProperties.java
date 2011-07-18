@@ -40,33 +40,32 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-public class BootstrapProperties {
-	private static Log logger = LogFactory.getLog(BootstrapProperties.class);
-	private static final String BOOTSTRAP_PROPERTIES_EXT_FILE = "/config/bootstrap-ext.properties";
-	private static Properties properties;
+public class SystemProperties {
+	private static Log logger = LogFactory.getLog(SystemProperties.class);
+	private static final String SYSTEM_PROPERTIES_FILE = "/config/system.properties";
+	private static final String SYSTEM_PROPERTIES_EXT_FILE = "/config/system-ext.properties";
 	
 	public static void init() {
+		loadAndSet(SYSTEM_PROPERTIES_FILE);
+		loadAndSet(SYSTEM_PROPERTIES_EXT_FILE);
+	}
+	
+	static void loadAndSet(String systemFile) {
 		try {
-			ClassPathResource resource = new ClassPathResource(BOOTSTRAP_PROPERTIES_EXT_FILE);
+			ClassPathResource resource = new ClassPathResource(systemFile);
 			if(resource.exists()) {
-				logger.info("Loading " + BOOTSTRAP_PROPERTIES_EXT_FILE);
-				properties = PropertiesLoaderUtils.loadProperties(resource);
+				logger.info("Loading " + systemFile);
+				Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+				for(String key:properties.stringPropertyNames())
+					System.setProperty(key, properties.getProperty(key));
 			}
 			else {
-				logger.info(BOOTSTRAP_PROPERTIES_EXT_FILE + " does not exist");
-				properties = new Properties(); // empty
+				logger.info(systemFile + " does not exist");
 			}
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Could not load '" + BOOTSTRAP_PROPERTIES_EXT_FILE + "': " + ex.toString());
+			throw new IllegalStateException("Could not load '" + systemFile + "': " + ex.toString());
 		}
 	}
 
-	public static String getProperty(String key) {
-		return properties.getProperty(key);
-	}
-
-	public static String getProperty(String key, String defaultValue) {
-		return properties.getProperty(key, defaultValue);
-	}
 }
