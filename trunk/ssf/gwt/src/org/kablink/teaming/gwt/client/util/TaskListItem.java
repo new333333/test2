@@ -245,6 +245,8 @@ public class TaskListItem implements IsSerializable {
 	public static class TaskEvent implements IsSerializable {
 		private boolean				m_allDayEvent;						//
 		private boolean				m_endIsCalculated;					//
+		private TaskDate			m_actualStart = new TaskDate();		//
+		private TaskDate			m_actualEnd   = new TaskDate();		//
 		private TaskDate			m_logicalStart = new TaskDate();	//
 		private TaskDate			m_logicalEnd   = new TaskDate();	//
 		private TaskDuration		m_duration;							//
@@ -269,6 +271,8 @@ public class TaskListItem implements IsSerializable {
 		 */
 		public boolean      getAllDayEvent()     {return m_allDayEvent;    }
 		public boolean      getEndIsCalculated() {return m_endIsCalculated;}
+		public TaskDate     getActualStart()     {return m_actualStart;    }
+		public TaskDate     getActualEnd()       {return m_actualEnd;      }
 		public TaskDate     getLogicalStart()    {return m_logicalStart;   }
 		public TaskDate     getLogicalEnd()      {return m_logicalEnd;     }
 		public TaskDuration getDuration()        {return m_duration;       }
@@ -281,6 +285,8 @@ public class TaskListItem implements IsSerializable {
 		 */
 		public void setAllDayEvent(    boolean      allDayEvent)     {m_allDayEvent     = allDayEvent;    }
 		public void setEndIsCalculated(boolean      endIsCalculated) {m_endIsCalculated = endIsCalculated;}
+		public void setActualStart(    TaskDate     actualStart)     {m_actualStart     = actualStart;    }
+		public void setActualEnd(      TaskDate     actualEnd)       {m_actualEnd       = actualEnd;      }
 		public void setLogicalStart(   TaskDate     logicalStart)    {m_logicalStart    = logicalStart;   }
 		public void setLogicalEnd(     TaskDate     logicalEnd)      {m_logicalEnd      = logicalEnd;     }
 		public void setDuration(       TaskDuration duration)        {m_duration        = duration;       }

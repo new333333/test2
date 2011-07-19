@@ -45,7 +45,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TimePicker;
 
@@ -63,6 +65,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.gwt.user.datepicker.client.DatePicker;
 
 
 /**
@@ -84,8 +87,10 @@ public class TaskDueDateDlg extends DlgBox
 	private final GwtTeamingTaskListingImageBundle	m_images	= GwtTeaming.getTaskListingImageBundle();	//
 	
 	private final static String IDBASE	= "taskDueDate_";	// Base ID for rows in the task due date Grid.
+	private final static String IDDATE	= "_date";			// ID used to identify the date  widgets in the dialog.
 	private final static String IDEND	= "end";			// ID used to identify the end   widgets in the dialog.
 	private final static String IDSTART	= "start";			// ID used to identify the start widgets in the dialog.
+	private final static String IDTIME	= "_time";			// ID used to identify the time  widgets in the dialog.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -172,8 +177,8 @@ public class TaskDueDateDlg extends DlgBox
 		m_taskDueDateGrid.setCellSpacing(0);
 
 		// ...populate the grid...
-		renderDateRow((IDBASE + IDSTART), m_messages.taskDueDateDlgLabelStart());
-		renderDateRow((IDBASE + IDEND),   m_messages.taskDueDateDlgLabelEnd()  );
+		renderDateRow(IDSTART, m_messages.taskDueDateDlgLabelStart());
+		renderDateRow(IDEND,   m_messages.taskDueDateDlgLabelEnd()  );
 		renderDurationRow();
 		renderClearAllRow();
 		
@@ -291,36 +296,52 @@ public class TaskDueDateDlg extends DlgBox
 	/*
 	 * Renders a date row into the dialog.
 	 */
-	private void renderDateRow(String id, String label) {
+	private void renderDateRow(String baseId, String label) {
+		// Insert the row into the table...
 		int row	= m_taskDueDateGrid.getRowCount();
 		m_taskDueDateGrid.insertRow(row);
-		
+
+		// ...determine the date to initialize the pickers with...
+		TaskDate  taskDate;
+		TaskEvent taskEvent = m_selectedTask.getTask().getEvent();
+		if (null == taskEvent)
+		     taskDate = null;
+		else taskDate = (baseId.equals(IDSTART) ? taskEvent.getActualStart() : taskEvent.getActualEnd());
+		Date pickerDate = ((null == taskDate) ? null : taskDate.getDate());
+
+		// ...create the DateBox...
 		m_taskDueDateGrid.setWidget(row, 0, new DlgLabel(label));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.addStyleName("taskDispositionDlg_DateTimeTable");
-		DateTimeFormat dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_LONG);
-		DateBox dateBox = new DateBox();
-		dateBox.setFormat(new DateBox.DefaultFormat(dateFormat));
-		dateBox.getElement().setId(id);
+		DateTimeFormat dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
+		DateBox dateBox = new DateBox(new DatePicker(), pickerDate, new DateBox.DefaultFormat(dateFormat));
+		String rowId = (IDBASE + baseId);
+		DatePicker dp = dateBox.getDatePicker();
+		dp.getElement().setId(rowId + IDDATE);
+		dateBox.getElement().setId(rowId);
 		hp.add(dateBox);
-		m_dateBoxMap.put(id, dateBox);
+		m_dateBoxMap.put(rowId, dateBox);
 
+		// ...create the associated picker button...
 		TaskButton datePickerButton = new TaskButton(
 			m_images.calMenu(),
 			null,	// null -> No disabled image.
 			m_images.calMenuOver(),
 			true,	// true -> Enabled.
 			null,	// null -> No alternate text necessary.
-			new TaskPickDateEvent(id));
+			new TaskPickDateEvent(rowId));
 		hp.add(datePickerButton);
 
+		// ...define the TimePicker...
 		TimePicker tp = new TimePicker(
-			new Date(),	// Initial date.
-			false,		// false -> Not 24 hour mode.
-			null);		// null -> No seconds.
+			((null == pickerDate) ? new Date() : pickerDate),	// Initial date.
+			false,												// false -> Not 24 hour mode.
+			null);												// null -> No seconds.
 		tp.addStyleName("taskDispositionDlg_TimePicker taskDispositionDlg_DateTimeTable");
+		tp.getElement().setId(rowId + IDTIME);
 		hp.add(tp);
-		
+
+		// ...and finally, tie everything together.
 		m_taskDueDateGrid.setWidget(row, 1, hp);
 	}
 	

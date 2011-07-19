@@ -5,5 +5,8 @@
  	<!-- Other 'development only' module inherits go here. -->
  	
 	<!-- Support for English only. -->
-	<set-property name="locale" value="default"/>	<!-- English only. -->
+	<extend-property       name="locale" values="en" />	<!-- English.            -->
+		
+	<set-property          name="locale" value="en"  />	<!-- English only.       -->
+	<set-property-fallback name="locale" value="en"  />	<!-- Default is English. -->
 </module>
