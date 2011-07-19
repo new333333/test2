@@ -48,7 +48,9 @@ public class FileUtils {
 		Binder binder = entity.getParentBinder();
 		if (!entity.getEntityType().equals(EntityType.folderEntry) && 
 				!entity.getEntityType().equals(EntityType.user) &&
-				!entity.getEntityType().equals(EntityType.group)) {
+				!entity.getEntityType().equals(EntityType.group) &&
+				!entity.getEntityType().equals(EntityType.application) &&
+				!entity.getEntityType().equals(EntityType.applicationGroup)) {
 			binder = (Binder)entity;
 		}
 		Long versionAgingDays = binder.getVersionAgingDays();
