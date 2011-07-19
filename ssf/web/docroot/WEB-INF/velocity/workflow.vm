@@ -35,27 +35,27 @@ ${ssVisitor.getNLT("email.workflow")}
 
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
-  <th align="left" style="#ss_fineprint() #ss_light() text-decoration:underline;padding:0px 0px 4px 0px;font-weight:normal;">
+  <th align="left" style="#ss_fineprint() #ss_light() text-decoration:underline;padding:0px 0px 4px 10px;font-weight:normal;">
     $ssVisitor.getNLT("workflow.process")</th>
-  <th align="left" style="#ss_fineprint() #ss_light() text-decoration:underline;padding:0px 0px 4px 0px;font-weight:normal;">
+  <th align="left" style="#ss_fineprint() #ss_light() text-decoration:underline;padding:0px 0px 4px 10px;font-weight:normal;">
     $ssVisitor.getNLT("workflow.state")</th>
  </tr>
  
 #foreach ($workflow in $ssVisitor.Entity.WorkflowStates)
   #if ($workflow.Definition && !$workflow.ThreadName)
 	  <tr>
-	    <td valign="top" style="padding:0px 0px 4px 0px; #ss_fineprint()">
+	    <td valign="top" style="padding:0px 0px 4px 10px; #ss_fineprint()">
 			$ssVisitor.getNLTDef($workflow.Definition.Title)
 	    </td>
-	    <td valign="top" style="padding:0px 0px 4px 0px; #ss_fineprint()">${ssCaptions.get($workflow.Id)}</td>
+	    <td valign="top" style="padding:0px 0px 4px 10px; #ss_fineprint()">${ssCaptions.get($workflow.Id)}</td>
 	  </tr>
 
 	#foreach ($workflow2 in $ssVisitor.Entity.WorkflowStates)
         #if ($workflow2.Definition.Id == $workflow.Definition.Id)
           #if ($workflow2.ThreadName)
 			  <tr>
-			    <td valign="top" style="padding:0px 0px 4px 0px; #ss_fineprint()">${workflow2.ThreadName}</td>
-			    <td valign="top" style="padding:0px 0px 4px 0px; #ss_fineprint()">${ssCaptions.get($workflow2.Id)}</td>
+			    <td valign="top" style="padding:0px 0px 4px 10px; #ss_fineprint()">${workflow2.ThreadName}</td>
+			    <td valign="top" style="padding:0px 0px 4px 10px; #ss_fineprint()">${ssCaptions.get($workflow2.Id)}</td>
 			  </tr>
 			#end
 		#end

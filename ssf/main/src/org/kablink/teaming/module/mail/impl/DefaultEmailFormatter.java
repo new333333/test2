@@ -711,10 +711,10 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			EmailUtil.putText(result, EmailFormatter.TEXT, writer.toString());
 			
 		} else {
-			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML, params, Boolean.TRUE);
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
 			EmailUtil.putHTML(result, EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
-			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT, params, Boolean.TRUE);
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
 			EmailUtil.putText(result, EmailFormatter.TEXT, writer.toString());
 		}
 
@@ -724,12 +724,17 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	}
 	
 	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, 
-			Map params, Boolean requestedEntry) {
-		if (entry == null) return;
-		//handle direct ancestors of the changed entry first
-		doEntry(entry.getParentEntry(), notify, writer, type, params, Boolean.FALSE); 
+			Map params) {
+		//Build the list of direct ancestors of the changed entry, from the top down 
+		List<FolderEntry> parentEntryList = new ArrayList<FolderEntry>();
+		FolderEntry parentEntry = entry.getParentEntry();
+		while (parentEntry != null) {
+			parentEntryList.add(0, parentEntry);
+			parentEntry = parentEntry.getParentEntry();
+		}
+		params.put("org.kablink.teaming.notify.params.relatedEntries", parentEntryList);
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
-		params.put("org.kablink.teaming.notify.params.showAvatar", requestedEntry);
+		params.put("org.kablink.teaming.notify.params.showAvatar", Boolean.TRUE);
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "footer.vm");
 	}

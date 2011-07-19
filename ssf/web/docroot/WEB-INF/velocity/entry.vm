@@ -27,8 +27,8 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())
-#set ($creatorImage =  ${ssVisitor.getUserThumbnailInlineImage($ssVisitor.Entity.Creation.Principal)})
-<style type="text/css">
+ #set ($creatorImage =  ${ssVisitor.getUserThumbnailInlineImage($ssVisitor.Entity.Creation.Principal)})
+ <style type="text/css">
 	.e-user-avatar {
 	  background: #B8B8B8;
 	  padding: 5px;
@@ -63,14 +63,14 @@
 	  padding: 10px 10px 0 0;
 	}
 	.n-logo img {width: 220px;}
-</style>
+ </style>
 
-<div style="#ss_eWrapper()">
- #if ($ssVisitor.getParam("org.kablink.teaming.notify.params.showAvatar"))
- <div class="e-user-avatar">
-  <table width="100%" cellspacing="0" cellpadding="0">
-   <tr>
-    <td width="90%" valign="top">
+ <div style="#ss_eWrapper()">
+  #if ($ssVisitor.getParam("org.kablink.teaming.notify.params.showAvatar"))
+  <div class="e-user-avatar">
+   <table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+     <td width="90%" valign="top">
       <div>
         #if (!$creatorImage.isEmpty())
           #ss_printLn("$creatorImage")
@@ -85,63 +85,93 @@
 	    #end		
         <span style="#ss_eDate()">$ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})</span>
       </div>
-    </td>
+     </td>
 
-	#if ($ssVisitor.getParam('ssReplyTo'))
+	 #if ($ssVisitor.getParam('ssReplyTo'))
 	  <td width="10%" align="right" valign="top">
 	    <div style="white-space:nowrap;padding-top:4px;">
 		  <a href="mailto:${ssVisitor.getParam('ssReplyTo')}?subject=RE: DocId:${ssVisitor.Entity.ParentBinder.Id}:${ssVisitor.Entity.Id}"
 			class="actionbut">${ssVisitor.getNLT("mail.reply")}</a>
 		</div>
 	  </td>
-	#end
+	 #end
 
-    <td width="10%" align="right" valign="top">
+     <td width="10%" align="right" valign="top">
 	  <div style="white-space:nowrap;padding-top:4px;">
 	    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity)" 
 	      class="actionbut">${ssVisitor.getNLT("email.visitMessage")}</a>
 	  </div>
-	</td>
-   </tr>
-  </table>
- </div>
- #end 
+	 </td>
+    </tr>
+   </table>
+  </div>
+  #end 
 
-	#if (!$ssVisitor.Entity.ParentEntry)
-	  <div style="#ss_eLabel()">
-		<span>$ssVisitor.getNLT("email.folder")</span>
-		<span style="#ss_eFolderLink()">
-		  <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)"
-		    title="$esc.html(${ssVisitor.Entity.ParentBinder.PathName})"
-		  >$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.Title}) / $esc.html(${ssVisitor.Entity.ParentBinder.Title})</a>
-		</span>
-	  </div>
-	#end
+  ## Show the entry
+  $ssVisitor.visit()
 	
-	$ssVisitor.visit()
-	
-	#set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
-	#if ($replies && !$replies.isEmpty())
-		<div style="#ss_eLabel()">${ssVisitor.getNLT("__entry_replies")}
+  #set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
+  #if ($replies && !$replies.isEmpty())
+	<div style="#ss_eLabel()">
+	  ${ssVisitor.getNLT("__entry_replies")}
+	</div>
+	#foreach ($selection in $replies)
+		$ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatar", false)
+		<div style="#ss_eChild()">
+		  ## Show this reply
+		  $ssVisitor.visit($selection)
 		</div>
-		#foreach ($selection in $replies)
-			$ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatar", false)
-			<div style="#ss_eChild()">
-			  $ssVisitor.visit($selection)
-			</div>
-		#end
 	#end
-</div>
+  #end
+ </div>
+
+ #set ($relatedEntries = ${ssVisitor.getParam("org.kablink.teaming.notify.params.relatedEntries")})
+ #if ($relatedEntries && !$relatedEntries.isEmpty())
+  <div style="#ss_eRelated()">
+    #foreach ($selection in $relatedEntries)
+	  $ssVisitor.setParam("org.kablink.teaming.notify.params.showAvatar", false)
+      #if (!$selection.ParentEntry)
+	    <div style="#ss_eLabel2()">
+	      $ssVisitor.getNLT("email.relatedFolder")
+	    </div>
+	    <div style="#ss_entryContent()">
+	      #if ($selection.ParentBinder.ParentBinder)
+		    <a href="$ssVisitor.getPermaLink($selection.ParentBinder.ParentBinder)"
+		      title="$esc.html(${selection.ParentBinder.ParentBinder.PathName})"
+		    >$esc.html(${selection.ParentBinder.ParentBinder.Title})</a>
+		    / 
+		  #end
+		  <a href="$ssVisitor.getPermaLink($selection.ParentBinder)"
+		    title="$esc.html(${selection.ParentBinder.PathName})"
+		  >$esc.html(${selection.ParentBinder.Title})</a>
+	    </div>
+	    <div style="#ss_eLabel2()">
+	      $ssVisitor.getNLT("email.relatedEntry")
+	    </div>
+	    <div>
+		  ## Show this top entry
+		  $ssVisitor.visit($selection)
+	    </div>
+	  #else
+	    <div style="#ss_eChild()">
+		  ## Show this entry
+		  $ssVisitor.visit($selection)
+	    </div>
+	  #end
+	#end
+  </div>
+ #end
+
 #else
-#if (!$ssVisitor.Entity.ParentEntry)
-#ss_printLn("$ssVisitor.getNLT('notify.forum.label') (${ssVisitor.Entity.ParentBinder.PathName})")
-#end
-$ssVisitor.visit()
-#set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
-#if ($replies && !$replies.isEmpty())
-#ss_printLn("$ssVisitor.getNLT('__entry_replies')")
-#foreach ($selection in $replies)
-$ssVisitor.visit($selection)
-#end
-#end
+  #if (!$ssVisitor.Entity.ParentEntry)
+    #ss_printLn("$ssVisitor.getNLT('notify.forum.label') (${ssVisitor.Entity.ParentBinder.PathName})")
+  #end
+  $ssVisitor.visit()
+  #set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
+  #if ($replies && !$replies.isEmpty())
+    #ss_printLn("$ssVisitor.getNLT('__entry_replies')")
+    #foreach ($selection in $replies)
+      $ssVisitor.visit($selection)
+    #end
+  #end
 #end
