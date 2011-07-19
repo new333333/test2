@@ -57,7 +57,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
@@ -100,6 +99,11 @@ public class SearchOptionsComposite extends Composite
 	private GwtTeamingMessages m_messages;
 	private PopupPanel m_searchOptionsPopup;
 
+	// The following are used as the ID's on the radio buttons.
+	private final static String RB_PERSON = "personRadio";
+	private final static String RB_PLACE  = "placeRadio";
+	private final static String RB_TAG    = "tagRadio";
+
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -115,7 +119,7 @@ public class SearchOptionsComposite extends Composite
 		/*
 		 * Class constructor.
 		 */
-		FinderRB(String label, final GwtSearchCriteria.SearchType searchType, boolean checked) {
+		FinderRB(String id, String label, final GwtSearchCriteria.SearchType searchType, boolean checked) {
 			super("finders", label);
 			addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
@@ -125,12 +129,13 @@ public class SearchOptionsComposite extends Composite
 					setFocusOnSearch();
 				}
 			});
+			getElement().setId(id);
 			addStyleName("searchOptionsDlg_FindersRadio mediumtext");
 			setValue(checked);
 		}
 		
-		FinderRB(String label, final GwtSearchCriteria.SearchType searchType) {
-			this(label, searchType, false);
+		FinderRB(String id, String label, final GwtSearchCriteria.SearchType searchType) {
+			this(id, label, searchType, false);
 		}
 	}
 
@@ -235,9 +240,9 @@ public class SearchOptionsComposite extends Composite
 
 		// create the radio buttons themselves...
 		FinderRB rb;
-		rb = new FinderRB(m_messages.mainMenuSearchOptionsPeople(), GwtSearchCriteria.SearchType.PERSON, true); rbPanel.add(rb);
-		rb = new FinderRB(m_messages.mainMenuSearchOptionsPlaces(), GwtSearchCriteria.SearchType.PLACES);       rbPanel.add(rb);
-		rb = new FinderRB(m_messages.mainMenuSearchOptionsTags(),   GwtSearchCriteria.SearchType.TAG);          rbPanel.add(rb);
+		rb = new FinderRB(RB_PERSON, m_messages.mainMenuSearchOptionsPeople(), GwtSearchCriteria.SearchType.PERSON, true); rbPanel.add(rb);
+		rb = new FinderRB(RB_PLACE,  m_messages.mainMenuSearchOptionsPlaces(), GwtSearchCriteria.SearchType.PLACES);       rbPanel.add(rb);
+		rb = new FinderRB(RB_TAG,    m_messages.mainMenuSearchOptionsTags(),   GwtSearchCriteria.SearchType.TAG);          rbPanel.add(rb);
 
 		// ...add the radio button panel to the main content...
 		m_mainPanel.add(rbPanel);

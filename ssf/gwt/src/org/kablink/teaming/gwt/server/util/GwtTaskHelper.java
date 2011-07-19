@@ -351,9 +351,11 @@ public class GwtTaskHelper {
 	private static String buildDumpString(String label, TaskEvent event) {
 		StringBuffer buf = new StringBuffer(label);
 		
-		buf.append(buildDumpString("Start", event.getLogicalStart()));
-		buf.append(buildDumpString(", End", event.getLogicalEnd()));
-		buf.append(buildDumpString(", All Day", event.getAllDayEvent()));
+		buf.append(buildDumpString("Actual Start",    event.getActualStart()));
+		buf.append(buildDumpString(", Actual End",    event.getActualEnd()));
+		buf.append(buildDumpString(", Logical Start", event.getLogicalStart()));
+		buf.append(buildDumpString(", Logical End",   event.getLogicalEnd()));
+		buf.append(buildDumpString(", All Day",       event.getAllDayEvent()));
 		
 		TaskDuration taskDuration = event.getDuration();
 		buf.append(buildDumpString(", Duration:S", taskDuration.getSeconds()));
@@ -1079,7 +1081,11 @@ public class GwtTaskHelper {
 			reply.setServerData(sd);
 		}
 		
-		// Extract the event's logical start and end...
+		// Extract the event's actual start and end...
+		reply.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE), false ));		
+		reply.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE  ), false ));
+		
+		// ...extract the event's logical start and end...
 		reply.setLogicalStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE), false ));		
 		reply.setLogicalEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  ), false ));
 		
