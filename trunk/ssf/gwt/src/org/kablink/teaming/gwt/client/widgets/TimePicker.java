@@ -181,6 +181,10 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
    * 
    */
   public TimePicker(Date date, DateTimeFormat amPmFormat, DateTimeFormat hoursFormat, DateTimeFormat minutesFormat, DateTimeFormat secondsFormat, ValueSpinnerResources styles, SpinnerResources images) {
+    boolean hasPickerDate = (null != date);
+    if (!hasPickerDate) {
+    	date = new Date();
+    }
     this.dateInMillis = date.getTime();
     HorizontalPanel horizontalPanel = new HorizontalPanel();
     horizontalPanel.setStylePrimaryName("gwt-TimePicker");
@@ -219,6 +223,10 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
     }
     
     initWidget(horizontalPanel);
+    
+    if (!hasPickerDate) {
+    	clearTime();
+    }
   }
 
   public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Date> handler) {
@@ -229,6 +237,9 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
    * @return the date specified by this {@link TimePicker}
    */
   public Date getDateTime() {
+	if (!hasTime()) {
+		return null;
+	}
     return new Date(dateInMillis);
   }
 
@@ -243,10 +254,19 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
    * @param date	The date to be set. Only the date part will be set, the time part will not be affected.
    */
   public void setDate(Date date) {
+    boolean hasPickerDate = (null != date);
+	if (!hasPickerDate) {
+		date = new Date();
+	}
+	
     // Only change the date part, leave time part untouched
     dateInMillis = (long) ((Math.floor(date.getTime() / DAY_IN_MS) + 1) * DAY_IN_MS) + dateInMillis % DAY_IN_MS;
     for (TimeSpinner spinner:  timeSpinners) {
       spinner.getSpinner().setValue(dateInMillis, false);
+    }
+    
+    if (!hasPickerDate) {
+    	clearTime();
     }
   }
 
@@ -254,9 +274,18 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
    * @param date	The date to be set. Both date and time part will be set.
    */
   public void setDateTime(Date date) {
+    boolean hasPickerDate = (null != date);
+	if (!hasPickerDate) {
+		date = new Date();
+	}
+		
     dateInMillis = date.getTime();
     for (TimeSpinner spinner:  timeSpinners) {
       spinner.getSpinner().setValue(dateInMillis, true);
+    }
+    
+    if (!hasPickerDate) {
+    	clearTime();
     }
   }
 
@@ -270,5 +299,33 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
     for (TimeSpinner spinner:  timeSpinners) {
       spinner.setEnabled(enabled);
     }
+  }
+
+  /**
+   * Clears the values from the picker's spinners.
+   */
+  public void clearTime() {
+	  for (TimeSpinner spinner:  timeSpinners) {
+		  spinner.clearValue();
+	  }
+  }
+  
+  /**
+   * Returns true if all the time picker spinners contain a value and
+   * false otherwise.
+   * 
+   * @return
+   */
+  public boolean hasTime() {
+	  // If any of the spinners are blank...
+	  for (TimeSpinner spinner:  timeSpinners) {
+		  if (!(spinner.hasValue())) {
+			  // ...we have no value.  Return false.
+			  return false;
+		  }
+	  }
+	  
+	  // If we get here, all the spinners have values!  Return true.
+	  return true;
   }
 }

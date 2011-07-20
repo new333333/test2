@@ -651,9 +651,10 @@ body, table td, select
 .mediumtext { color: black; font-size: 0.85em;  line-height: 1.1em; }
 .largetext  { color: black; font-style: normal; line-height: 1.1em; font-weight: normal; font-size: 1em; }
 
-.margintop1 { margin-top: 0.3em }
-.margintop2 { margin-top: 0.5em }
-.margintop3 { margin-top: 1em   }
+.margintop1    { margin-top: 0.3em }
+.margintop1a   { margin-top: 0.3em !important; }
+.margintop2    { margin-top: 0.5em }
+.margintop3    { margin-top: 1em   }
 .marginleft1   { margin-left: 1em }
 .marginleft2   { margin-left: 2em }
 .marginleft2px { margin-left: 2px }
@@ -2877,7 +2878,7 @@ top:100px;
 .taskDueDateDlg
 {
 }
-.taskDueDateDlg_Grid
+.taskDueDateDlg_Table
 {
 	margin-top: 8px;
 }

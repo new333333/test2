@@ -154,6 +154,7 @@ public class TaskTable extends Composite
 	private RowFormatter			m_flexTableRF;				//
 	private String					m_quickFilter;				//
 	private TaskBundle				m_taskBundle;				//
+	private TaskDueDateDlg			m_dueDateDlg;				//
 	private TaskListing				m_taskListing;				//
 	private TaskPopupMenu			m_newTaskMenu;				//
 	private TaskPopupMenu			m_percentDoneMenu;			//
@@ -665,9 +666,9 @@ public class TaskTable extends Composite
 	 * @param newDueDate
 	 * @param selectedTaskId
 	 */
-	public void applyTaskDueDate(String newDueDate, Long selectedTaskId) {
+	public void applyTaskDueDate(TaskEvent newDueDate, Long selectedTaskId) {
 //!		...this needs to be implemented...
-		Window.alert("applyTaskDueDate():  ...this needs to be implemented...");
+		Window.alert("TaskTable.applyTaskDueDate():  ...this needs to be implemented...");
 	}
 	
 	/*
@@ -1109,7 +1110,7 @@ public class TaskTable extends Composite
 				else                                                                         {return;}
 				
 				// ...and run the menu.
-				taskMenu.showTaskPopupMenu(task, taskMenuImg.getElement());
+				taskMenu.showTaskPopupMenu(task, taskMenuImg);
 			}
 		};
 		
@@ -1455,7 +1456,7 @@ public class TaskTable extends Composite
 		// Simply run the new task menu for this task.
 		m_newTaskMenu.showTaskPopupMenu(
 			task,
-			getUIData(task).getTaskNewTaskMenuImage().getElement());
+			getUIData(task).getTaskNewTaskMenuImage());
 	}
 	
 	/*
@@ -1513,16 +1514,15 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskChangeDueDateNow(Anchor dueDateAnchor, TaskListItem task) {
 		// Run the task due date editing dialog.
-		Element ddaE = dueDateAnchor.getElement();
-		TaskDueDateDlg tddDlg = new TaskDueDateDlg(
-			false,						// false -> Don't auto hide.
-			true,						// true  -> Modal.
-			ddaE.getAbsoluteLeft(),		// Left.
-			ddaE.getAbsoluteBottom(),	// Top.
-			this,
-			task);
-		tddDlg.addStyleName("taskDueDateDlg");
-		tddDlg.show();
+		TaskInfo ti = task.getTask();
+		if (null == m_dueDateDlg) {
+			m_dueDateDlg = new TaskDueDateDlg(this, ti);
+			m_dueDateDlg.addStyleName("taskDueDateDlg");
+		}
+		else {
+			m_dueDateDlg.resetDueDateTask(ti);
+		}
+		m_dueDateDlg.showRelativeTo(dueDateAnchor);
 	}
 	
 	/*
@@ -2644,7 +2644,6 @@ public class TaskTable extends Composite
 	/*
 	 * Renders the 'Due Date' column.
 	 */
-	@SuppressWarnings("unused")
 	private void renderColumnDueDate(final TaskListItem task, int row) {
 		TaskInfo  ti  = task.getTask();
 		TaskEvent tie = ti.getEvent();
@@ -2660,8 +2659,7 @@ public class TaskTable extends Composite
 			il.setTitle(m_messages.taskAltDateCalculated());
 		}
 		Widget dueDateWidget;
-		if (false) {
-//!		if (ti.getCanModify() && ti.isTaskActive()) {
+		if (ti.getCanModify() && ti.isTaskActive()) {
 			Anchor a = buildAnchor();
 			Element aE = a.getElement();
 			aE.appendChild(il.getElement());

@@ -277,4 +277,21 @@ public class ValueSpinner extends HorizontalPanel {
 	protected long parseValue(String value) {
 		return Long.valueOf(value);
 	}
+	
+    /**
+	 * Clears the value from the spinner.
+	 */
+	public void clearValue() {
+		getTextBox().setValue("");
+	}
+	
+	/**
+	 * Returns true if the spinner has a value and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean hasValue() {
+		String v = getTextBox().getValue();
+		return ((null != v) && (0 < v.length()));
+	}
 }
