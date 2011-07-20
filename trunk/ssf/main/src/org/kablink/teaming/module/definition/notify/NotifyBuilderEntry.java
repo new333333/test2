@@ -74,6 +74,8 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     }
     protected void doTitle(NotifyVisitor visitor, VelocityContext ctx) {
        	try {
+    		visitor.processTemplate("style.vm", ctx);
+    		visitor.processTemplate("showAvatar.vm", ctx);
     		visitor.processTemplate("digestTitle.vm", ctx);
     	} catch (Exception ex) {
     		NotifyBuilderUtil.logger.error("Error processing template " + "digestTitle", ex);

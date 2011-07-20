@@ -27,11 +27,11 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())
-<div style="#ss_entryContent()">
-$ssVisitor.getNLT('notify.forum.label')
-<a href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
-$esc.html(${ssVisitor.Entity.PathName})</a><br/>
-</div>
+  <div style="#ss_entryContent()">
+    $ssVisitor.getNLT('notify.forum.label')
+    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
+      $esc.html(${ssVisitor.Entity.PathName})</a>
+  </div>
 #else
-#ss_printLn("$ssVisitor.getNLT('notify.forum.label') $esc.html(${ssVisitor.Entity.PathName})")
+  #ss_printLn("$ssVisitor.getNLT('notify.forum.label') $esc.html(${ssVisitor.Entity.PathName})")
 #end

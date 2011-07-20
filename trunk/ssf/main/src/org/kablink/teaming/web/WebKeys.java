@@ -1571,6 +1571,7 @@ public class WebKeys {
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
     public static final String VIEW_MANAGE_BINDER_QUOTA="binder/manage_binder_quota";
     public static final String VIEW_MANAGE_BINDER_VERSION_CONTROLS="binder/manage_binder_version_controls";
+    public static final String VIEW_MANAGE_FOLDER_ENTRY_TYPES="binder/manage_folder_entry_types";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
