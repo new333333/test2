@@ -561,6 +561,23 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		String initialState = startState;
 		if (Validator.isNull(initialState)) initialState = WorkflowProcessUtils.getInitialState(workflowDef);
 		if (!Validator.isNull(initialState)) {
+			//Check if this is an acceptable state to start in
+			if (!checkIfReasonableStartingState(entry, workflowDef, initialState)) {
+				//This state would probably loop, so don't start it at the desired state
+				//See if this can be started at the regular initial state
+				initialState = WorkflowProcessUtils.getInitialState(workflowDef);
+				if (!Validator.isNull(initialState)) {
+					if (!checkIfReasonableStartingState(entry, workflowDef, initialState)) {
+						//The regular initial state would probably loop, so don't start it either
+						return;
+					}
+				} else if (Validator.isNull(initialState)) {
+					//There is no alternative starting point
+					return;
+				}
+				//Ok, switch to the regular starting point
+				startState = initialState;
+			}
 			//Now start the workflow at the desired initial state
 			JbpmContext context=WorkflowFactory.getContext();
 			ProcessDefinition pD;
@@ -609,6 +626,16 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		    	context.close();
 		    }
 		}
+	}
+	
+	public boolean checkIfReasonableStartingState(WorkflowSupport entry, Definition workflowDef, String state) {
+		//Check whether this state does a copy on entry
+		if (WorkflowProcessUtils.checkForCopyOnEnter(workflowDef, state)) {
+			//Yes, this is not a reasonable request since it will loop
+			return false;
+		}
+		//Add other checks as needed
+		return true;
 	}
 
 	public void deleteEntryWorkflow(WorkflowSupport wEntry, WorkflowState state) {
