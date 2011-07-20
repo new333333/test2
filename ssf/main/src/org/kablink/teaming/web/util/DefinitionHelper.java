@@ -1002,6 +1002,19 @@ public class DefinitionHelper {
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_TOOLBAR, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_FOOTER);
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_FOOTER, attr.getValue());
+    		
+    		attr = entity.getCustomAttribute( attrName + DefinitionModule.MASHUP_PROPERTIES );
+    		if ( attr != null )
+    		{
+    			Document doc;
+    			
+    			if ( attr.getValue() instanceof Document )
+    			{
+    				doc = (Document) attr.getValue();
+    				if ( doc != null )
+    					model.put( WebKeys.MASHUP_PROPERTIES, doc.asXML() );
+    			}
+    		}
 
         	attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_STYLE);
     		if (attr == null || attr.equals("")) {

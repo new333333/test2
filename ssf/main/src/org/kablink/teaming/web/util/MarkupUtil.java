@@ -1660,6 +1660,12 @@ public class MarkupUtil {
 							if (ca.containsKey(attrName + DefinitionModule.MASHUP_STYLE))
 								data.put(attrName + DefinitionModule.MASHUP_STYLE, 
 										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_STYLE).getValue().toString());
+
+							if ( ca.containsKey( attrName + DefinitionModule.MASHUP_PROPERTIES ) )
+							{
+								data.put( attrName + DefinitionModule.MASHUP_PROPERTIES, 
+										  entity.getCustomAttribute( attrName + DefinitionModule.MASHUP_PROPERTIES ).getValue().toString() );
+							}
 						}
 					}
 				}

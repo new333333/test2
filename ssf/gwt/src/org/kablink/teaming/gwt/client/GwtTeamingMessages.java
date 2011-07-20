@@ -282,6 +282,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
+	String rpcFailure_GetListOfAttachments();
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();
@@ -1016,4 +1017,8 @@ public interface GwtTeamingMessages extends Messages
 	String taskViewAllActive();
 	String taskViewAssignedTasks();
 	String taskViewFromFolder();
+	
+	// Strings used in the Landing Page Properties Dialog
+	String landingPagePropertiesDlgHeader();
+	
 }// end GwtTeamingMessages

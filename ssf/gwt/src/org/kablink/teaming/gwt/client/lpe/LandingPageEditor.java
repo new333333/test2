@@ -82,7 +82,7 @@ public class LandingPageEditor extends Composite
 				 Event.NativePreviewHandler
 {
 	private Palette		m_palette;
-	private DropZone		m_canvas;
+	private Canvas		m_canvas;
 	private boolean		m_paletteItemDragInProgress;
 	private DragProxy		m_paletteItemDragProxy;
 	private PaletteItem		m_paletteItemBeingDragged = null;
@@ -94,6 +94,7 @@ public class LandingPageEditor extends Composite
 	private HandlerRegistration		m_previewHandlerReg = null;
 	private HandlerRegistration		m_mouseUpHandlerReg = null;
 	private Hidden m_configResultsInputCtrl = null;
+	private Hidden m_propertiesHiddenInput = null;
 	private ArrayList<DropZone> m_dropZones = null;
 	private LandingPageConfig m_lpeConfig = null;
 	private AbstractTinyMCEConfiguration m_tinyMCEConfig = null;
@@ -145,11 +146,15 @@ public class LandingPageEditor extends Composite
 		
 		// Create a panel for the palette and canvas to live in.
 		hPanel = new HorizontalPanel();
+		vPanel.add( hPanel );
 		
-		// Create a palette and a canvas.
+		// Create a palette
 		m_palette = new Palette( this );
-		m_canvas = new DropZone( this, "lpeCanvas" );
-		m_canvas.setParentDropZone( null );
+		hPanel.add( m_palette );
+		
+		// Create a canvas
+		m_canvas = new Canvas( this, m_lpeConfig.getMashupPropertiesXML() );
+		hPanel.add( m_canvas );
 		
 		// Add items to the canvas that are defined in the configuration.
 		numItems = configData.size();
@@ -171,16 +176,15 @@ public class LandingPageEditor extends Composite
 			}
 		}
 		
-		// Add the palette and canvas to the panel.
-		hPanel.add( m_palette );
-		hPanel.add( m_canvas );
-		
-		vPanel.add( hPanel );
-		
 		// Create a hidden input control where we will put the configuration string when
 		// the user presses the ok button.
 		m_configResultsInputCtrl = new Hidden( m_lpeConfig.getMashupPropertyName() );
 		vPanel.add( m_configResultsInputCtrl );
+		
+		// Create a hidden input control where we will put the properties xml string when
+		// the user presses the ok button.
+		m_propertiesHiddenInput = new Hidden( m_lpeConfig.getMashupPropertyName() + "__properties" );
+		vPanel.add( m_propertiesHiddenInput );
 		
 		doLog = false;
 		if ( doLog == true )
@@ -239,6 +243,9 @@ public class LandingPageEditor extends Composite
 							
 							// Put the configuration string in a hidden input control.
 							m_configResultsInputCtrl.setValue( configStr );
+							
+							// Save away the properties xml string in a hidden input control.
+							m_propertiesHiddenInput.setValue( m_canvas.getLandingPageProperties() );
 						}
 					}
 				}

@@ -2435,6 +2435,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				Boolean hideFooter = false;
 				String mashupStyle = "";
 				String value = "";
+				Document propertiesDoc = null;
+				
+				if ( inputData.exists( nameValue + MASHUP_PROPERTIES ) )
+				{
+					String propertiesXML;
+					
+					propertiesXML = inputData.getSingleValue( nameValue + MASHUP_PROPERTIES );
+					
+					if ( propertiesXML == null )
+						propertiesXML = "<landingPageData><background /></landingPageData>";
+				
+					try
+					{
+						propertiesDoc = DocumentHelper.parseText( propertiesXML );
+					}
+		    		catch(Exception e)
+		    		{
+		    		}
+				}
 				
 				if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) {
 					String val = inputData.getSingleValue( nameValue + MASHUP_SHOW_BRANDING );
@@ -2493,6 +2512,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
 					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
 					entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, StringCheckUtil.check(mashupStyle));
+					entryData.put( nameValue + DefinitionModule.MASHUP_PROPERTIES, propertiesDoc );
 				}
 			}
 		} else if (itemName.equals("profileConferencingPwd")) {
