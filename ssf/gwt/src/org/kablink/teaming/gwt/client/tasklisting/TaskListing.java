@@ -599,7 +599,7 @@ public class TaskListing extends Composite {
 		}
 		
 		// ...and create the <A> that activates the menu.
-		Anchor a = new Anchor();
+		final Anchor a = new Anchor();
 		a.setWordWrap(false);
 		a.addStyleName("gwtTaskTools_ViewMenuAnchor");
 		il = new InlineLabel(menuBuf.toString());
@@ -613,7 +613,7 @@ public class TaskListing extends Composite {
 		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {
-				m_viewMenu.showTaskPopupMenu(aE);
+				m_viewMenu.showTaskPopupMenu(a);
 			}			
 		});
 		fp = new FlowPanel();

@@ -245,8 +245,8 @@ public class TaskListItem implements IsSerializable {
 	public static class TaskEvent implements IsSerializable {
 		private boolean				m_allDayEvent;						//
 		private boolean				m_endIsCalculated;					//
-		private TaskDate			m_actualStart = new TaskDate();		//
-		private TaskDate			m_actualEnd   = new TaskDate();		//
+		private TaskDate			m_actualStart  = new TaskDate();	//
+		private TaskDate			m_actualEnd    = new TaskDate();	//
 		private TaskDate			m_logicalStart = new TaskDate();	//
 		private TaskDate			m_logicalEnd   = new TaskDate();	//
 		private TaskDuration		m_duration;							//

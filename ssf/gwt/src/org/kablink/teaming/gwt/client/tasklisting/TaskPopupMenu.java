@@ -50,9 +50,9 @@ import org.kablink.teaming.gwt.client.util.TaskListItem;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This popup menu is used to display menus of for the various task
@@ -69,13 +69,13 @@ public class TaskPopupMenu extends PopupMenu
 		TaskSetStatusEvent.Handler,
 		TaskViewEvent.Handler
 {
-	private Element					m_menuPartner;		//
 	private List<PopupMenuItem>		m_menuItems;		//
 	private List<TaskMenuOption>	m_menuOptions;		//
 	private TaskListItem			m_task;				//
 	private TaskListing				m_taskListing;		//
 	private TaskTable				m_taskTable;		//
 	private TeamingEvents			m_taskEventEnum;	//
+	private Widget					m_menuPartner;		//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -116,7 +116,7 @@ public class TaskPopupMenu extends PopupMenu
 		addCloseHandler(new CloseHandler<PopupPanel>(){
 			@Override
 			public void onClose(CloseEvent<PopupPanel> event) {
-				removeAutoHidePartner(m_menuPartner);
+				removeAutoHidePartner(m_menuPartner.getElement());
 			}});
 		
 		// ...and add the menu items.
@@ -243,7 +243,7 @@ public class TaskPopupMenu extends PopupMenu
 	/**
 	 * Called to show the TaskPopupMenu.
 	 */
-	public void showTaskPopupMenu(TaskListItem task, Element menuPartner) {
+	public void showTaskPopupMenu(TaskListItem task, Widget menuPartner) {
 		// Remember the task and menu partner that we are dealing
 		// with...
 		m_task        = task;
@@ -256,16 +256,13 @@ public class TaskPopupMenu extends PopupMenu
 
 		// ...and allow the popup to be closed if the parter item is
 		// ...clicked on again...
-		addAutoHidePartner(m_menuPartner);
+		addAutoHidePartner(m_menuPartner.getElement());
 		
 		// ...and position and show the popup.
-		int popupLeft = m_menuPartner.getAbsoluteLeft();
-		int popupTop  = m_menuPartner.getAbsoluteBottom();
-		setPopupPosition(popupLeft, popupTop);
-		show();
+		showRelativeTo(menuPartner);
 	}
 	
-	public void showTaskPopupMenu(Element menuPartner) {
+	public void showTaskPopupMenu(Widget menuPartner) {
 		// Always use the initial form of the method.
 		showTaskPopupMenu(null, menuPartner);
 	}

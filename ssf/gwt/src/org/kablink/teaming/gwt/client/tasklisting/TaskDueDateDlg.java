@@ -46,10 +46,11 @@ import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskDate;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TimePicker;
+import org.kablink.teaming.gwt.client.widgets.ValueSpinner;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,8 +59,9 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -78,10 +80,15 @@ public class TaskDueDateDlg extends DlgBox
 	// Event handlers implemented by this class.
 		TaskPickDateEvent.Handler
 	{
-	private Grid					m_taskDueDateGrid;	// Once displayed, the table of task due date dialog's widgets.
-	private Map<String, DateBox>	m_dateBoxMap;		//
-	private TaskListItem			m_selectedTask;		// The task whose due date is being edited.
-	private TaskTable				m_taskTable;		// Access to the TaskTable we're prompting for.
+	private CheckBox				m_allDayCB;
+	private FlexTable				m_taskDueDateTable;		// Once displayed, the table of task due date dialog's widgets.
+	private int						m_durationDaysRow;		// The index of the row in the table that contains the duration days spinner.
+	private Map<String, DateBox>	m_dateBoxMap;			// Map of the DateBox    widgets, indexed by their base ID.
+	private Map<String, TimePicker>	m_timePickerMap;		// Map of the TimePicker widgets, indexed by their base ID.
+	private TaskEvent				m_selectedTaskEvent;	// The task whose due date is being edited.
+	private TaskInfo				m_selectedTask;			// The task whose due date is being edited.
+	private TaskTable				m_taskTable;			// Access to the TaskTable we're prompting for.
+	private ValueSpinner			m_durationDays;			// The duration days ValueSpinner.
 
 	private final GwtTeamingMessages				m_messages  = GwtTeaming.getMessages();					//
 	private final GwtTeamingTaskListingImageBundle	m_images	= GwtTeaming.getTaskListingImageBundle();	//
@@ -120,16 +127,15 @@ public class TaskDueDateDlg extends DlgBox
 	/**
 	 * Class constructor.
 	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param left
-	 * @param top
 	 * @param taskTable
 	 * @param selectedTask
 	 */
-	public TaskDueDateDlg(boolean autoHide, boolean modal, int left, int top, TaskTable taskTable, TaskListItem selectedTask) {
+	public TaskDueDateDlg(TaskTable taskTable, TaskInfo selectedTask) {
 		// Initialize the superclass...
-		super(autoHide, modal, left, top);
+		super(
+			false,	// false -> Don't auto hide.
+			true,	// true --> Dialog is modal.
+			0, 0);	// The position of the dialog will be set dynamically based on the position of the widget it's being shown relative to.
 
 		// ..register the events to be handled by this class...
 		EventHelper.registerEventHandlers(
@@ -138,9 +144,11 @@ public class TaskDueDateDlg extends DlgBox
 			this);
 		
 		// ...initialize everything else...
-		m_dateBoxMap   = new HashMap<String, DateBox>();
-		m_taskTable    = taskTable;
-		m_selectedTask = selectedTask;
+		m_dateBoxMap        = new HashMap<String, DateBox>();
+		m_timePickerMap     = new HashMap<String, TimePicker>();
+		m_taskTable         = taskTable;
+		m_selectedTask      = selectedTask;
+		m_selectedTaskEvent = m_selectedTask.getEvent();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -149,7 +157,7 @@ public class TaskDueDateDlg extends DlgBox
 			this,	// The dialog's EditCanceledHandler.
 			null);	// Data passed via global data members.
 	}
-	
+
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -167,23 +175,24 @@ public class TaskDueDateDlg extends DlgBox
 		// ...add the title of the top of the dialog...
 		vp.add(
 			new DlgLabel(
-				m_selectedTask.getTask().getTitle(),
+				m_selectedTask.getTitle(),
 				"taskDueDateDlg_TaskTitle"));
 
 		// ...create Grid for it...
-		m_taskDueDateGrid = new Grid(0, 2);
-		m_taskDueDateGrid.addStyleName("taskDueDateDlg_Grid");
-		m_taskDueDateGrid.setCellPadding(0);
-		m_taskDueDateGrid.setCellSpacing(0);
+		m_taskDueDateTable = new FlexTable();
+		m_taskDueDateTable.addStyleName("taskDueDateDlg_Table");
+		m_taskDueDateTable.setCellPadding(0);
+		m_taskDueDateTable.setCellSpacing(0);
 
 		// ...populate the grid...
+		renderAllDayRow();
 		renderDateRow(IDSTART, m_messages.taskDueDateDlgLabelStart());
 		renderDateRow(IDEND,   m_messages.taskDueDateDlgLabelEnd()  );
 		renderDurationRow();
 		renderClearAllRow();
 		
 		// ...and connect everything together.
-		vp.add(m_taskDueDateGrid);
+		vp.add(m_taskDueDateTable);
 			
 		// Finally, return the panel the with the dialog's contents.
 		return vp;
@@ -200,7 +209,7 @@ public class TaskDueDateDlg extends DlgBox
 	 * @return
 	 */
 	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
+		// Return true to allow the dialog to close.
 		return true;
 	}
 
@@ -217,14 +226,23 @@ public class TaskDueDateDlg extends DlgBox
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
+		// Are the contents of the dialog valid?
+		final TaskEvent reply = getNewTaskDueDate();
+		if (null == reply) {
+			// No!  getNewTaskDueDate() will have told the user about
+			// the problem.  Return false to keep the dialog open.
+			return false;
+		}
+		
 		// Asynchronously put the due date into affect...
 		Scheduler.ScheduledCommand taskDueDateChanger;
 		taskDueDateChanger = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
+				// Put the new due date information into affect.
 				m_taskTable.applyTaskDueDate(
-					null,	//! ...this needs to be implemented...   NEW DUE DATE INFORMATION GOES HERE.
-					m_selectedTask.getTask().getTaskId().getEntryId());
+					reply,
+					m_selectedTask.getTaskId().getEntryId());
 			}
 		};
 		Scheduler.get().scheduleDeferred(taskDueDateChanger);
@@ -247,6 +265,21 @@ public class TaskDueDateDlg extends DlgBox
 		return Boolean.TRUE;
 	}
 
+	/*
+	 * Returns the duration days value to use for the current task.
+	 */
+	private long getDurationDays() {
+		long days = (-1);
+		boolean hasDurationDays = hasEvent();
+		if (hasDurationDays) {
+			hasDurationDays = m_selectedTaskEvent.getDuration().hasDaysOnly();
+			if (hasDurationDays) {
+				days = m_selectedTaskEvent.getDuration().getDays();
+			}
+		}
+		return days;
+	}
+	
 	/**
 	 * Returns the Widget to give the focus to.
 	 * 
@@ -258,6 +291,35 @@ public class TaskDueDateDlg extends DlgBox
 	public FocusWidget getFocusWidget() {
 		// There is no specific focus widget for this dialog.
 		return null;
+	}
+
+	/*
+	 * Validates the dialog's contents and if everything is valid,
+	 * constructs a TaskEvent with the edited due date.
+	 * 
+	 * If anything is invalid, the user is told about the problem and
+	 * null is returned.
+	 */
+	private TaskEvent getNewTaskDueDate() {
+//!		...this needs to be implemented...
+		Window.alert("TaskDueDateDlg.getNewTaskDueDate():  ...this needs to be implemented...");
+		return null;
+	}
+	
+	/*
+	 * Returns true if the task we were given has an event associated
+	 * with it and false otherwise.
+	 */
+	private boolean hasEvent() {
+		return (null != m_selectedTaskEvent);
+	}
+	
+	/*
+	 * Returns true if the task we were given has an event associated
+	 * with it that's an all day event and false otherwise.
+	 */
+	private boolean isAllDayEvent() {
+		return (hasEvent() && m_selectedTaskEvent.getAllDayEvent());
 	}
 	
 	/**
@@ -275,42 +337,74 @@ public class TaskDueDateDlg extends DlgBox
 	}
 
 	/*
+	 * Renders the all day row into the dialog.
+	 */
+	private void renderAllDayRow() {
+		m_allDayCB = new CheckBox();
+		m_allDayCB.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// Based on the current state of the checkbox...
+				CheckBox cb = ((CheckBox) event.getSource());
+				boolean notAllDay = (!(cb.getValue()));
+				
+				// ...hide/show the time picker widgets...
+				for (String tpKey:  m_timePickerMap.keySet()) {
+					m_timePickerMap.get(tpKey).setVisible(notAllDay);
+				}
+				
+				// ...and hide/show the duration days row.
+				m_taskDueDateTable.getRowFormatter().setVisible(m_durationDaysRow, notAllDay);
+			}
+		});
+		setAllDay();
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.addStyleName("margintop1a");
+		hp.add(m_allDayCB);
+		hp.add(new DlgLabel(m_messages.taskDueDateDlgLabelAllDay()));
+		m_taskDueDateTable.setWidget(m_taskDueDateTable.getRowCount(), 1, hp);
+	}
+	
+	/*
 	 * Renders the clear all push button row into the dialog.
 	 */
 	private void renderClearAllRow() {
-		int row	= m_taskDueDateGrid.getRowCount();
-		m_taskDueDateGrid.insertRow(row);
-		
 		Button clearAllBtn = new Button(m_messages.taskDueDateDlgLabelClearAll());
-		clearAllBtn.addStyleName("teamingButton");
+		clearAllBtn.addStyleName("teamingButton margintop1a");
 		clearAllBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-//!				...this needs to be implemented...
-				Window.alert("...clear all...");
+				// Clear the date boxes...
+				for (String dbKey:  m_dateBoxMap.keySet()) {
+					m_dateBoxMap.get(dbKey).setValue(null);
+				}
+				
+				// ...clear the time pickers...
+				for (String tpKey:  m_timePickerMap.keySet()) {
+					m_timePickerMap.get(tpKey).clearTime();
+				}
+				
+				// ...and clear the duration days spinner.
+				m_durationDays.clearValue();
 			}
 		});
-		m_taskDueDateGrid.setWidget(row, 1, clearAllBtn);
+		m_taskDueDateTable.setWidget(m_taskDueDateTable.getRowCount(), 1, clearAllBtn);
 	}
 	
 	/*
 	 * Renders a date row into the dialog.
 	 */
 	private void renderDateRow(String baseId, String label) {
-		// Insert the row into the table...
-		int row	= m_taskDueDateGrid.getRowCount();
-		m_taskDueDateGrid.insertRow(row);
-
-		// ...determine the date to initialize the pickers with...
-		TaskDate  taskDate;
-		TaskEvent taskEvent = m_selectedTask.getTask().getEvent();
-		if (null == taskEvent)
+		// Determine the date to initialize the pickers with...
+		TaskDate taskDate;
+		if (!hasEvent())
 		     taskDate = null;
-		else taskDate = (baseId.equals(IDSTART) ? taskEvent.getActualStart() : taskEvent.getActualEnd());
+		else taskDate = (baseId.equals(IDSTART) ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
 		Date pickerDate = ((null == taskDate) ? null : taskDate.getDate());
 
 		// ...create the DateBox...
-		m_taskDueDateGrid.setWidget(row, 0, new DlgLabel(label));
+		int row	= m_taskDueDateTable.getRowCount();
+		m_taskDueDateTable.setWidget(row, 0, new DlgLabel(label));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.addStyleName("taskDispositionDlg_DateTimeTable");
 		DateTimeFormat dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
@@ -320,7 +414,7 @@ public class TaskDueDateDlg extends DlgBox
 		dp.getElement().setId(rowId + IDDATE);
 		dateBox.getElement().setId(rowId);
 		hp.add(dateBox);
-		m_dateBoxMap.put(rowId, dateBox);
+		m_dateBoxMap.put(baseId, dateBox);
 
 		// ...create the associated picker button...
 		TaskButton datePickerButton = new TaskButton(
@@ -329,29 +423,104 @@ public class TaskDueDateDlg extends DlgBox
 			m_images.calMenuOver(),
 			true,	// true -> Enabled.
 			null,	// null -> No alternate text necessary.
-			new TaskPickDateEvent(rowId));
+			new TaskPickDateEvent(baseId));
 		hp.add(datePickerButton);
 
 		// ...define the TimePicker...
 		TimePicker tp = new TimePicker(
-			((null == pickerDate) ? new Date() : pickerDate),	// Initial date.
-			false,												// false -> Not 24 hour mode.
-			null);												// null -> No seconds.
+			pickerDate,	// Initial date.
+			false,		// false -> Not 24 hour mode.
+			null);		// null -> No seconds.
 		tp.addStyleName("taskDispositionDlg_TimePicker taskDispositionDlg_DateTimeTable");
 		tp.getElement().setId(rowId + IDTIME);
 		hp.add(tp);
+		m_timePickerMap.put(baseId, tp);
+		if (isAllDayEvent()) {
+			tp.setVisible(false);
+		}
 
 		// ...and finally, tie everything together.
-		m_taskDueDateGrid.setWidget(row, 1, hp);
+		m_taskDueDateTable.setWidget(row, 1, hp);
 	}
 	
 	/*
 	 * Renders the duration row into the dialog.
 	 */
 	private void renderDurationRow() {
-		int row	= m_taskDueDateGrid.getRowCount();
-		m_taskDueDateGrid.insertRow(row);
+		m_durationDaysRow = m_taskDueDateTable.getRowCount();
+		m_taskDueDateTable.setWidget(m_durationDaysRow, 0, new DlgLabel(m_messages.taskDueDateDlgLabelDuration()));
 		
-		m_taskDueDateGrid.setWidget(row, 0, new DlgLabel(m_messages.taskDueDateDlgLabelDuration()));
+		HorizontalPanel hp = new HorizontalPanel();
+		m_taskDueDateTable.setWidget(m_durationDaysRow, 1, hp);
+		
+		m_durationDays = new ValueSpinner(1, 1, Integer.MAX_VALUE, 1, 1);
+		m_durationDays.getTextBox().setVisibleLength(5);
+		hp.add(m_durationDays);
+		hp.add(new DlgLabel(m_messages.taskDueDateDlgLabelDays()));
+		
+		setDurationDays();
+	}
+	/**
+	 * Resets the dialog based on a new task.
+	 * 
+	 * @param selectedTask
+	 */
+	public void resetDueDateTask(TaskInfo selectedTask) {
+		// Store the new task information...
+		m_selectedTask      = selectedTask;
+		m_selectedTaskEvent = m_selectedTask.getEvent();
+
+		// ...and put it into affect.
+		setAllDay();
+		setDueDate(IDSTART);
+		setDueDate(IDEND  );
+		setDurationDays();
+	}
+
+	/*
+	 * Sets the value of the all day event check box.
+	 */
+	private void setAllDay() {
+		// Simply set the state of the all day checkbox.
+		m_allDayCB.setValue(isAllDayEvent());
+	}
+
+	/*
+	 * Set the value of a set of the due date widgets. 
+	 */
+	private void setDueDate(String baseId) {
+		// Extract the date for the picker...
+		TaskDate taskDate;
+		if (!hasEvent())
+		     taskDate = null;
+		else taskDate = (baseId.equals(IDSTART) ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
+		Date pickerDate = ((null == taskDate) ? null : taskDate.getDate());
+
+		// ...use it to set the date box...
+		DateBox db = m_dateBoxMap.get(baseId);
+		db.setValue(pickerDate);
+
+		// ...and time picker.
+		TimePicker tp = m_timePickerMap.get(baseId);
+		tp.setDateTime(pickerDate);
+		tp.setVisible(!(isAllDayEvent())); 
+	}
+
+	/*
+	 * Sets the value of the duration days widgets.
+	 */
+	private void setDurationDays() {
+		// If we don't have a duration days value...
+		long days = getDurationDays();
+		boolean hasDurationDays = ((-1) != days);
+		m_durationDays.getSpinner().setValue((hasDurationDays ? days : 1), true);
+		if (!hasDurationDays) {
+			// ...clear the spinner...
+			m_durationDays.clearValue();
+		}
+		
+		// ...and hide/show the widget based on whether this task is
+		// ...an all day event.
+		m_taskDueDateTable.getRowFormatter().setVisible(m_durationDaysRow, (!(isAllDayEvent())));
 	}
 }

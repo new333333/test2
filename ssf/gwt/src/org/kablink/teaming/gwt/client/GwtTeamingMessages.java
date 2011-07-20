@@ -932,6 +932,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// The following are used for task due date editing dialog.
 	String taskDueDateDlgHeader();
+	String taskDueDateDlgLabelAllDay();
 	String taskDueDateDlgLabelClearAll();
 	String taskDueDateDlgLabelDays();
 	String taskDueDateDlgLabelDuration();
