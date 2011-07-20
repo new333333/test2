@@ -164,6 +164,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	protected void addBinderAttributes(Element entryElem, Map entry) {
+		addCommonAttributes(entryElem, entry);
 		entryElem.addAttribute("type", (String) entry.get(Constants.ENTITY_FIELD));
 		entryElem.addAttribute("family", (String) entry.get(Constants.FAMILY_FIELD));
 		entryElem.addAttribute("library", (String) entry.get(Constants.IS_LIBRARY_FIELD));
@@ -171,13 +172,20 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("definitionType", (String) entry.get(Constants.DEFINITION_TYPE_FIELD));
 	}
 	
+	protected void addAttachmentAttributes(Element entryElem, Map entry) {
+		addCommonAttributes(entryElem, entry);
+		entryElem.addAttribute("fileID", (String)entry.get(Constants.FILE_ID_FIELD));
+		entryElem.addAttribute("fileName", (String)entry.get(Constants.FILENAME_FIELD));
+	}
+	
 	protected void addEntryAttributes(Element entryElem, Map entry, boolean isPrincipal)
 	{
 		addCommonAttributes(entryElem, entry);
+		entryElem.addAttribute("type", (String) entry.get(Constants.ENTRY_TYPE_FIELD));
 		if(isPrincipal) {
-			entryElem.addAttribute("type", (String) entry.get(Constants.ENTRY_TYPE_FIELD));
 			entryElem.addAttribute("reserved", Boolean.toString(entry.get(Constants.RESERVEDID_FIELD)!=null));
 		} else {
+			entryElem.addAttribute("family", (String) entry.get(Constants.FAMILY_FIELD));
 			entryElem.addAttribute("docNumber", (String) entry.get(Constants.DOCNUMBER_FIELD));
 			entryElem.addAttribute("docLevel", "" + (new HKey((String) entry.get(Constants.SORTNUMBER_FIELD))).getLevel());
 
