@@ -726,4 +726,6 @@ public interface BinderModule {
 	public String filename8BitSingleByteOnly(String fileName, String fallBackName, boolean _8BitSingleByteOnly);
 	
 	public Long getZoneBinderId(Long binderId, String zoneUUID, String entityType);
+	
+	public void changeEntryTypes(Long binderId, String oldDefId, String newDefId);
 }

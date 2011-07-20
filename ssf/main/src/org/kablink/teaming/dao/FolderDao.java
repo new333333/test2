@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -119,6 +120,9 @@ public interface FolderDao {
     public void move(Folder folder);
     public void moveEntries(Folder folder, List<Long> ids);
     public List<Tag> loadEntryTags(EntityIdentifier ownerIdentifier, Collection<Long> ids);
+	public List getFolderEntriesByType(Long zoneId, Folder folder, String defId);
+	public void setFolderEntryType(Folder folder, List<Long> entryIds, String newDefId);
+
 
     /**
      * Find all of the Folder Entry Ids associated with a workflow state

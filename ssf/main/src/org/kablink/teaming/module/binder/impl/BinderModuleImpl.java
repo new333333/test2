@@ -1201,6 +1201,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			doCopyChildren(child, binder);
 		}
 	}
+	
+	//Change entry types
+	public void changeEntryTypes(Long binderId, String oldDefId, String newDefId) {
+		Binder binder = loadBinder(binderId);
+		if (!(binder instanceof Folder)) return;
+		Folder folder = (Folder)binder;
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		List<Long> entryIds = getFolderDao().getFolderEntriesByType(zoneId, folder, oldDefId);
+		if (!entryIds.isEmpty()) {
+			getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
+		}
+	}
 
 	// inside write transaction
 	public Binder setDefinitionsInherited(Long binderId,

@@ -47,6 +47,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -56,6 +59,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -311,6 +315,57 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     		end(begin, "loadEntryDescendants(FolderEntry)");
     	}	        
      } 
+
+    /**
+     * Get all of the ids for entries of a specified definitiontype.
+     */
+	public List<Long> getFolderEntriesByType(final Long zoneId, final Folder folder, final String defId) {
+		long begin = System.nanoTime();
+		try {
+			List<Long> result = new ArrayList<Long>();
+			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException {
+					ProjectionList proj = Projections.projectionList()
+						.add(Projections.groupProperty("id"));
+					Criteria crit = session.createCriteria(FolderEntry.class)
+						.setProjection(proj)
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder))
+							.add(Restrictions.eq(ObjectKeys.FIELD_ENTITY_DEFID, defId))
+							.setCacheable(false);
+					return crit.list();
+				}});
+			return result;
+		}
+		finally {
+			end(begin, "getFolderEntriesByType()");
+		}
+	}
+	
+    //Change a set of entries to have a new definition id
+    public void setFolderEntryType(final Folder folder, final List<Long> entryIds, final String newDefId) {
+		long begin = System.nanoTime();
+		try {
+		   if (entryIds.isEmpty()) return;
+		   getHibernateTemplate().execute(
+	        	   	new HibernateCallback() {
+	        	   		public Object doInHibernate(Session session) throws HibernateException {
+	       		   			session.createQuery("Update org.kablink.teaming.domain.FolderEntry set entryDefId=:entryDefId where id in (:pList)")
+	       		   			.setString("entryDefId", newDefId)
+	    	   				.setParameterList("pList", entryIds)
+	    	   				.executeUpdate();
+	               	   		return null;
+	        	   		}
+	        	   	}
+	        	 );    	
+    	}
+    	finally {
+    		end(begin, "setFolderEntryType");
+    	}	        
+             		 
+    }
+
+
  
     /**
      * Load all entries of a folder and it sub-folders that have been updated with a specified range.
@@ -442,10 +497,10 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     	}	        
     	
     }
-   //mark entries deleted - used when deleting entries in bulk and want
-   //to exclude some from future queries
-   //entries evicted from cache
-   public void markEntriesDeleted(final Folder folder, final Collection<FolderEntry> entries) {
+    //mark entries deleted - used when deleting entries in bulk and want
+    //to exclude some from future queries
+    //entries evicted from cache
+    public void markEntriesDeleted(final Folder folder, final Collection<FolderEntry> entries) {
 		long begin = System.nanoTime();
 		try {
 		   if (entries.isEmpty()) return;
@@ -471,7 +526,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     		end(begin, "markEntriesDeleted(Folder,Collection<FolderEntry>)");
     	}	        
              		 
-   }
+    }
     public void deleteEntries(final Folder folder, final Collection<FolderEntry> entries) {
 		long begin = System.nanoTime();
 		try {

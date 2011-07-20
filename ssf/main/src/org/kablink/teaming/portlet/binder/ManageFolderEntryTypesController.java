@@ -70,10 +70,16 @@ public class ManageFolderEntryTypesController extends AbstractBinderController {
 		response.setRenderParameters(request.getParameterMap());
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map formData = request.getParameterMap();
 
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+			String oldEntryType = PortletRequestUtils.getStringParameter(request, "oldEntryType", "");
+			String newEntryType = PortletRequestUtils.getStringParameter(request, "newEntryType", "");
+			if (!oldEntryType.equals("") && !newEntryType.equals("") && !oldEntryType.equals(newEntryType)) {
+				//There is something to do. Go change the entry types.
+				getBinderModule().changeEntryTypes(binderId, oldEntryType, newEntryType);
+			}
+				
 			if (binder instanceof TemplateBinder) {
 				setupViewTemplateBinder(response, binderId, binder.getEntityType().name());
 			} else {
