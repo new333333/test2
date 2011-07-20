@@ -82,4 +82,10 @@ public class LandingPageConfig extends JavaScriptObject
 	 */
 	public final native String getMashupPropertyName() /*-{ return this.mashupPropertyName; }-*/;
 	
+
+	/**
+	 * Return the xml string that holds the landing page properties such as background color, background image.
+	 */
+	public final native String getMashupPropertiesXML() /*-{ return this.propertiesXML; }-*/;
+	
 }// end LandingPageConfig

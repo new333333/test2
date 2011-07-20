@@ -800,7 +800,7 @@ body, table td, select
 }
 
 /* Style used for the Browse link in the "edit branding" dialog. */
-.editBrandingBrowseLink
+.editBrandingBrowseLink, .addAttachmentLink
 {
 	height: 20px;
 	overflow: hidden;
@@ -810,7 +810,7 @@ body, table td, select
 }
 
 /* Style used for links in the "edit branding" dialog. */
-.editBrandingLink, .editorOverridesLink2, .selfRegLink2
+.editBrandingLink, .editorOverridesLink2, .selfRegLink2, .landingPagePropertiesLink
 {
 	color: #135c8f;
 	cursor: pointer;
@@ -1134,6 +1134,25 @@ body, table td, select
 	position: relative;
 	width: 850px;
 }
+
+/* Styles for the panel that holds the main canvas in the landing page editor. */
+.lpeCanvasWrapperPanel
+{
+	position: relative;
+}
+
+/* Styles used with the actions control found on the main canvas in the landing page editor. */
+.lpeCanvasActionsControl
+{
+	background-color: #EBECA5;
+	border: 1px solid #CCCCCC;
+	padding: 1px;
+	position: absolute;
+	right: 0px;
+	top: -16px;
+	white-space: nowrap;
+}
+
 
 /* Styles for the canvas widget when the user is dragging something over the canvas. */
 .lpeCanvas-highlighted
