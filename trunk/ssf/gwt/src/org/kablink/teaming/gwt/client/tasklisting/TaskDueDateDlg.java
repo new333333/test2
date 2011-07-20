@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskDate;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskDuration;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -66,6 +67,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 
@@ -158,6 +160,23 @@ public class TaskDueDateDlg extends DlgBox
 			null);	// Data passed via global data members.
 	}
 
+	/*
+	 * Returns a TaskDate object based on a date and time.
+	 * 
+	 * Note:
+	 *    We use deprecated APIs here since GWT's client side has no
+	 *    GregorianCalendar equivalent.  This is the only way to merge
+	 *    a date an time.
+	 */
+	@SuppressWarnings("deprecation")
+	private TaskDate getTDFromDT(Date date, Date time) {
+		Date reply = CalendarUtil.copyDate(date);
+		reply.setHours(time.getHours());
+		reply.setMinutes(time.getMinutes());
+		reply.setSeconds(time.getSeconds());
+		return new TaskDate(reply);
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -230,7 +249,8 @@ public class TaskDueDateDlg extends DlgBox
 		final TaskEvent reply = getNewTaskDueDate();
 		if (null == reply) {
 			// No!  getNewTaskDueDate() will have told the user about
-			// the problem.  Return false to keep the dialog open.
+			// any problem.  Simply return false to keep the dialog
+			// open.
 			return false;
 		}
 		
@@ -272,9 +292,13 @@ public class TaskDueDateDlg extends DlgBox
 		long days = (-1);
 		boolean hasDurationDays = hasEvent();
 		if (hasDurationDays) {
-			hasDurationDays = m_selectedTaskEvent.getDuration().hasDaysOnly();
+			TaskDuration duration = m_selectedTaskEvent.getDuration();
+			hasDurationDays = ((null != duration));
 			if (hasDurationDays) {
-				days = m_selectedTaskEvent.getDuration().getDays();
+				hasDurationDays = duration.hasDaysOnly();
+				if (hasDurationDays) {
+					days = duration.getDays();
+				}
 			}
 		}
 		return days;
@@ -301,9 +325,121 @@ public class TaskDueDateDlg extends DlgBox
 	 * null is returned.
 	 */
 	private TaskEvent getNewTaskDueDate() {
-//!		...this needs to be implemented...
-		Window.alert("TaskDueDateDlg.getNewTaskDueDate():  ...this needs to be implemented...");
-		return null;
+		String      alertMessage = null;
+		TaskEvent   reply        = null;
+		
+		DateBox    startDate = m_dateBoxMap.get(   IDSTART); boolean hasStartDate = hasDateBoxDate(startDate); 
+		TimePicker startTime = m_timePickerMap.get(IDSTART); boolean hasStartTime = startTime.hasTime();
+		
+		DateBox    endDate   = m_dateBoxMap.get(   IDEND  ); boolean hasEndDate   = hasDateBoxDate(endDate  );
+		TimePicker endTime   = m_timePickerMap.get(IDEND  ); boolean hasEndTime   = endTime.hasTime();
+		
+		boolean hasDurationDays = m_durationDays.hasValue();
+		
+		// Is the all day checkbox checked? 
+		boolean allDayChecked = m_allDayCB.getValue();
+		if (allDayChecked) {
+			// Yes!  Do we have both a start and end date?
+			if (    (!hasStartDate) && (!hasEndDate)) alertMessage = m_messages.taskDueDateDlgError_NoStartNoEnd();
+			else if (!hasStartDate)                   alertMessage = m_messages.taskDueDateDlgError_NoStart();
+			else if                    (!hasEndDate)  alertMessage = m_messages.taskDueDateDlgError_NoEnd();
+			else {
+				// Yes!  Construct an appropriate TaskEvent to return.
+				reply = new TaskEvent(true);
+				reply.setAllDayEvent(true);
+				reply.setActualStart(new TaskDate(startDate.getValue()));
+				reply.setActualEnd(  new TaskDate(endDate.getValue()  ));
+			}
+		}
+		
+		else {
+			// No, the all day checkbox was not checked!  Has anything
+			// been specified?
+			if ((!hasStartDate) && (!hasStartTime) &&
+				(!hasEndDate)   && (!hasEndTime)   &&
+				(!hasDurationDays)) {
+				// No!  Bugzilla 682430:
+				//    If the start, end and duration are all blank,
+				//    supply a default duration days of 1.
+				// Is that what the user wants to do?
+				if (Window.confirm(m_messages.taskDueDateDlgConfirm_DefaultTo1Day())) {
+					// Yes!  Construct an appropriate TaskEvent to
+					// return.
+					reply = new TaskEvent(true);
+					reply.setDuration(new TaskDuration(1));
+				}
+			}
+			
+			else {
+				// Yes, something has been specified!
+				//    As per the Task Improvements for Evergreen
+				//    design document, the following items must be
+				//    supplied:
+				//    1) A 'Start' date and time; or
+				//    2) Both a 'Start' and an End' date and time; or
+				//    3) A 'Start' date and time and a 'Duration' (in days); or
+				//    4) A 'Duration' (in days.)
+				// Is it valid?
+				boolean hasStart = (hasStartDate && hasStartTime);
+				boolean hasEnd   = (hasEndDate   && hasEndTime);
+				if (hasStart && (!hasEnd) && (!hasDurationDays)) {
+					// Condition 1 has been met.
+					reply = new TaskEvent(true);
+					reply.setActualStart(getTDFromDT(startDate.getValue(), startTime.getDateTime()));
+				}
+				
+				else {
+					if (hasStart && hasEnd && (!hasDurationDays)) {
+						// Condition 2 has been met.
+						reply = new TaskEvent(true);
+						reply.setActualStart(getTDFromDT(startDate.getValue(), startTime.getDateTime()));
+						reply.setActualEnd(  getTDFromDT(endDate.getValue(),   endTime.getDateTime()));
+					}
+					
+					else {
+						if (hasStart && (!hasEnd) && hasDurationDays) {
+							// Condition 3 has been met.
+							reply = new TaskEvent(true);
+							reply.setActualStart(getTDFromDT(startDate.getValue(), startTime.getDateTime()));
+							reply.setDuration(new TaskDuration((int) m_durationDays.getSpinner().getValue()));
+						}
+						
+						else {
+							if ((!hasStart) && (!hasEnd) && hasDurationDays) {
+								// Condition 4 has been met.
+								reply = new TaskEvent(true);
+								reply.setDuration(new TaskDuration((int) m_durationDays.getSpinner().getValue()));
+							}
+							
+							else {
+								// One of the conditions has not been met.
+								alertMessage = m_messages.taskDueDateDlgError_DurationInvalidCombination();
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// If we have a message to display...
+		if (null != alertMessage) {
+			// ...display it.
+			Window.alert(alertMessage);
+		}
+		
+		// If we get here, reply refers to the validated TaskEvent
+		// object to return or is null (if there was an error.)  Return
+		// it.
+		return reply;
+	}
+
+	/*
+	 * Returns true if a DateBox widget has a value and false
+	 * otherwise.
+	 */
+	private boolean hasDateBoxDate(DateBox db) {
+		String value = db.getTextBox().getValue();
+		return ((null != value) && (0 < value.length()));
 	}
 	
 	/*

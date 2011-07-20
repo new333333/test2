@@ -162,6 +162,37 @@ public class TaskListItem implements IsSerializable {
 		public TaskDuration() {
 			// Nothing to do.
 		}
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param s	Seconds.
+		 * @param m	Minutes.
+		 * @param h	Hours.
+		 * @param d	Days.
+		 * @param w	Weeks.
+		 */
+		public TaskDuration(int s, int m, int h, int d, int w) {
+			// Construct the base object...
+			this();
+
+			// ...and store the parameters.
+			setSeconds(s);
+			setMinutes(m);
+			setHours(  h);
+			setDays(   d);
+			setWeeks(  w);
+		}
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param d	Days only.
+		 */
+		public TaskDuration(int d) {
+			// Always use the other form of the constructor.
+			this(0, 0, 0, d, 0);
+		}
 		
 		/**
 		 * Get'er methods.
@@ -197,15 +228,18 @@ public class TaskListItem implements IsSerializable {
 		 * @return
 		 */
 		public static TaskDuration construct(int s, int m, int h, int d, int w) {
-			TaskDuration reply = new TaskDuration();
-			
-			reply.setSeconds(s);
-			reply.setMinutes(m);
-			reply.setHours(  h);
-			reply.setDays(   d);
-			reply.setWeeks(  w);
-			
-			return reply;
+			return new TaskDuration(s, m, h, d, w);
+		}
+
+		/**
+		 * Constructs a TaskDuration from the parameters.
+		 * 
+		 * @param d
+		 * 
+		 * @return
+		 */
+		public static TaskDuration construct(int d) {
+			return new TaskDuration(d);
 		}
 		
 		/**
@@ -243,13 +277,13 @@ public class TaskListItem implements IsSerializable {
 	 * compatible with GWT RPC calls 
 	 */
 	public static class TaskEvent implements IsSerializable {
-		private boolean				m_allDayEvent;						//
-		private boolean				m_endIsCalculated;					//
-		private TaskDate			m_actualStart  = new TaskDate();	//
-		private TaskDate			m_actualEnd    = new TaskDate();	//
-		private TaskDate			m_logicalStart = new TaskDate();	//
-		private TaskDate			m_logicalEnd   = new TaskDate();	//
-		private TaskDuration		m_duration;							//
+		private boolean			m_allDayEvent;		//
+		private boolean			m_endIsCalculated;	//
+		private TaskDate		m_actualStart;		//
+		private TaskDate		m_actualEnd;		//
+		private TaskDate		m_logicalStart;		//
+		private TaskDate		m_logicalEnd;		//
+		private TaskDuration	m_duration;			//
 		
 		// The following is used to store information for managing this
 		// TaskEvent on the server while updating calculated dates.
@@ -261,7 +295,23 @@ public class TaskListItem implements IsSerializable {
 		 * No parameters as per GWT serialization requirements.
 		 */
 		public TaskEvent() {
-			// Nothing to do.
+			this(false);
+		}
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param empty
+		 */
+		public TaskEvent(boolean empty) {
+			// If we're not creating an empty TaskEvent...
+			if (!empty) {
+				// ...generate non-null start and end values.
+				m_actualStart  = new TaskDate();
+				m_actualEnd    = new TaskDate();
+				m_logicalStart = new TaskDate();
+				m_logicalEnd   = new TaskDate();
+			}
 		}
 		
 		/**

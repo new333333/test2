@@ -1824,6 +1824,22 @@ public class GwtTaskHelper {
 		}
 		return reply;
 	}
+	
+	/**
+	 * Stores a new due date value for a task.
+	 * 
+	 * @param bs
+	 * @param taskId
+	 * @param taskEvent
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static TaskEvent saveTaskDueDate(AllModulesInjected bs, TaskId taskId, TaskEvent taskEvent) throws GwtTeamingException {
+//!		...this needs to be implemented...
+		return null;
+	}
 
 	/**
 	 * Stores the TaskLinkage for a task folder.
