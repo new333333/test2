@@ -26,23 +26,45 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#if ($ssVisitor.isHtml()) 
-  #if ($ssDescription_markup && $ssDescription_markup != "")
-    <div style="#ss_eLabel()">
-      ${property_caption}
-    </div>
-    <div style="#ss_entryContent()">
-      #if ($ssVisitor.NotifyDef.Type == 'summary')
-        $ssDescription_markup
-      #else
-        <div>
-          <span>$ssDescription_markup</span>
-        </div>
-      #end
-    </div>
-  #end
-  
-#else
-  #ss_printLn("${property_caption}")
-  #ss_printLn("$ssDescription_markup")
+#if ($ssVisitor.isHtml())
+ #set ($creatorImage =  ${ssVisitor.getUserThumbnailInlineImage($ssVisitor.Entity.Creation.Principal)})
+ <style type="text/css">
+	.e-user-avatar {
+	  background: #D8D8D8;
+	  padding: 5px;
+	  margin-bottom: 8px;
+	  color: #fff;
+	  font-weight: bold;
+	  text-decoration:none;
+	  -moz-border-radius: 5px;
+	  -webkit-border-radius: 5px;
+	}
+	.e-user-avatar-new {
+	  background: #B8B8B8;
+	}
+	.e-user-avatar img {
+	  width: 24px;
+	  vertical-align: middle;
+	  padding-right: 5px;
+	}
+	a.actionbut {
+	  background: #81b2bd;
+	  color:#FFFFFF;
+	  font-size:0.75em;
+	  font-weight: normal;
+	  margin-right: 5px;
+	  padding: 2px 12px;
+	  border: 1px solid #59828f;
+	  text-decoration:none;
+	  -moz-border-radius: 15px;
+	  -webkit-border-radius: 15px;
+	}
+	a.actionbut:hover {
+	  border: 1px solid #ebf5f5;
+	}
+	.n-logo {
+	  padding: 10px 10px 0 0;
+	}
+	.n-logo img {width: 220px;}
+ </style>
 #end

@@ -641,8 +641,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				parent = (FolderEntry)parentChain.get(pos);
 				doEntry(element, parent, notify, false);
 				params.put("ssElement", element);
-				doDigestEntry(parent, notify, entryWriter, NotifyVisitor.WriterType.HTML, params);
-				doDigestEntry(parent, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, params);
+				doDigestEntry(parent, notify, entryWriter, NotifyVisitor.WriterType.HTML, params, entries.contains(parent));
+				doDigestEntry(parent, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, params, entries.contains(parent));
 				seenIds.add(parent.getId());
 			}
 					
@@ -650,8 +650,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			element = fElement.addElement("folderEntry");
 			doEntry(element, entry, notify, true);
 			params.put("ssElement", element);
-			doDigestEntry(entry, notify, entryWriter, NotifyVisitor.WriterType.HTML, params);
-			doDigestEntry(entry, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, params);
+			doDigestEntry(entry, notify, entryWriter, NotifyVisitor.WriterType.HTML, params, entries.contains(entry));
+			doDigestEntry(entry, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, params, entries.contains(entry));
 		}
 		
 			
@@ -662,8 +662,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		
 		return result;
 	}
-	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Map params) {
+	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, 
+			NotifyVisitor.WriterType type, Map params, Boolean isNewEntry) {
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
+		params.put("org.kablink.teaming.notify.params.showAvatar", Boolean.TRUE);
+		params.put("org.kablink.teaming.notify.params.showAvatarNew", isNewEntry);
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "footer.vm");
 	}
@@ -699,6 +702,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		if (Notify.NotifyType.interactive.equals(notify.getType())) {
 			params.put("org.kablink.teaming.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
 			params.put("org.kablink.teaming.notify.params.showAvatar", Boolean.TRUE);
+			params.put("org.kablink.teaming.notify.params.showAvatarNew", Boolean.TRUE);
 
 			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "header.vm");
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
@@ -735,6 +739,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		params.put("org.kablink.teaming.notify.params.relatedEntries", parentEntryList);
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
 		params.put("org.kablink.teaming.notify.params.showAvatar", Boolean.TRUE);
+		params.put("org.kablink.teaming.notify.params.showAvatarNew", Boolean.TRUE);
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "footer.vm");
 	}
