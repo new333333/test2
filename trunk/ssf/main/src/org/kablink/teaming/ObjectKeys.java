@@ -487,6 +487,7 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_DESCRIPTION_FORMAT="description.format";
     public static final String FIELD_ENTITY_PARENTBINDER="parentBinder";
     public static final String FIELD_ENTITY_DEFTYPE="definitionType";
+    public static final String FIELD_ENTITY_DEFID="entryDefId";
     public static final String FIELD_ENTITY_ICONNAME="iconName";
     public static final String FIELD_ENTITY_CREATE_PRINCIPAL="creation.principal";
     public static final String FIELD_ENTITY_MODIFY_PRINCIPAL="modification.principal";
