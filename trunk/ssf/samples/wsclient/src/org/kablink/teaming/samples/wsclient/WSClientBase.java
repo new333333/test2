@@ -639,7 +639,14 @@ public abstract class WSClientBase {
 	}
 	
 	void printBinderBrief(BinderBrief bb) {
-		System.out.println(bb.getId() + ", " + bb.getTitle());
+		StringBuilder sb = new StringBuilder();
+		sb.append("id=").append(bb.getId())
+		.append(", title=").append(bb.getTitle())
+		.append(", family=").append(bb.getFamily())
+		.append(", library=").append(bb.getLibrary())
+		.append(", definitionType=").append(bb.getDefinitionType())
+		.append(", path=").append(bb.getPath());
+		System.out.println(sb.toString());
 	}
 	
 	void printPrimitiveArray(Object array) {

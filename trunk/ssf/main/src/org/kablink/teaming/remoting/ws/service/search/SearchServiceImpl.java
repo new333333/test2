@@ -96,12 +96,9 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			if(Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
 				String attachmentType = "file";
 				resultElem = folderElement.addElement(attachmentType);
-				addCommonAttributes(resultElem, result);
-				resultElem.addAttribute("fileID", (String)result.get(Constants.FILE_ID_FIELD));
-				resultElem.addAttribute("fileName", (String)result.get(Constants.FILENAME_FIELD));
+				addAttachmentAttributes(resultElem, result);
 			} else if(Constants.DOC_TYPE_BINDER.equals(docType)) {
 				resultElem = folderElement.addElement(docType);
-				addCommonAttributes(resultElem, result);
 				addBinderAttributes(resultElem, result);
 			} else if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
 				String entryType = (String) result.get(Constants.ENTRY_TYPE_FIELD);
