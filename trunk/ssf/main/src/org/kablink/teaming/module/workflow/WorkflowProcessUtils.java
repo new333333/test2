@@ -519,7 +519,21 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		}
 		return qNames;	
     }  
- 	/**
+
+    public static boolean checkForCopyOnEnter(Definition wfDef, String stateName) {
+    	List onEntryList = getOnEntry(wfDef, stateName);
+		for (int i=0; i<onEntryList.size(); ++i) {
+			Element item = (Element)onEntryList.get(i);
+   			String name = item.attributeValue("name","");
+   			if ("copyEntry".equals(name)) {
+   				return true;
+   			}
+		}
+		//None found
+		return false;
+    }  
+    
+    /**
 	 * Process the conditions related to a state.  
 	 * @param executionContext
 	 * @param entry
