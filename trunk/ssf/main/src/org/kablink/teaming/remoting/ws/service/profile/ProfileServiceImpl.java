@@ -443,16 +443,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 				org.kablink.teaming.domain.Binder binder = getBinder(Long.valueOf(e.attributeValue("value")));
 				if(binder != null){
 					BinderBrief brief = new BinderBrief();
-					brief.setId(Long.valueOf(e.attributeValue("value")));
-					brief.setTitle(e.attributeValue("name"));
-					HistoryStamp hs = null;
-					hs = binder.getCreation();
-					brief.setCreation(new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate()));
-					hs = binder.getModification();
-					brief.setModification(new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate()));
-					brief.setPermaLink(PermaLinkUtil.getPermalink(binder));
-					brief.setEntityType(binder.getEntityType().toString());
-					brief.setDefinitionType(binder.getDefinitionType());
+					fillBinderBriefModel(brief, binder);
 					binders.add(brief);
 				}
 			}

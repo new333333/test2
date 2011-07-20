@@ -77,6 +77,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.ws.ElementBuilder;
 import org.kablink.teaming.module.definition.ws.ElementBuilderUtil;
+import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
 import org.kablink.teaming.remoting.ws.model.PrincipalBrief;
@@ -160,6 +161,14 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 							EntityIdentifier.EntityType.valueOf((String) entry
 									.get(Constants.ENTITY_FIELD))));
 		}
+	}
+	
+	protected void addBinderAttributes(Element entryElem, Map entry) {
+		entryElem.addAttribute("type", (String) entry.get(Constants.ENTITY_FIELD));
+		entryElem.addAttribute("family", (String) entry.get(Constants.FAMILY_FIELD));
+		entryElem.addAttribute("library", (String) entry.get(Constants.IS_LIBRARY_FIELD));
+		entryElem.addAttribute("path", (String) entry.get(Constants.ENTITY_PATH));
+		entryElem.addAttribute("definitionType", (String) entry.get(Constants.DEFINITION_TYPE_FIELD));
 	}
 	
 	protected void addEntryAttributes(Element entryElem, Map entry, boolean isPrincipal)
@@ -332,6 +341,27 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	    	binderModel.setFamily(DefinitionUtils.getFamily(def));
     	}
 	}
+	
+	protected void fillBinderBriefModel(BinderBrief brief, Binder binder) {
+		brief.setId(binder.getId());
+		brief.setTitle(binder.getTitle());
+		brief.setEntityType(binder.getEntityType().toString());
+    	org.dom4j.Document def = binder.getEntryDefDoc();
+    	if(def != null) {
+	    	brief.setFamily(DefinitionUtils.getFamily(def));
+    	}
+		brief.setLibrary(binder.isLibrary());
+		brief.setDefinitionType(binder.getDefinitionType());
+		brief.setPath(binder.getPathName());
+		if(binder.getCreation() != null) {
+			brief.setCreation(toTimestampModel(binder.getCreation()));
+		}
+		if(binder.getModification() != null) {
+			brief.setModification(toTimestampModel(binder.getModification()));
+		}
+		brief.setPermaLink(PermaLinkUtil.getPermalink(binder));
+	}
+	
 	protected void fillUserModel(org.kablink.teaming.remoting.ws.model.User userModel, User user) {
 		// Principal common
 		fillPrincipalModel(userModel, user);

@@ -100,10 +100,9 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 				resultElem.addAttribute("fileID", (String)result.get(Constants.FILE_ID_FIELD));
 				resultElem.addAttribute("fileName", (String)result.get(Constants.FILENAME_FIELD));
 			} else if(Constants.DOC_TYPE_BINDER.equals(docType)) {
-				String binderType = (String) result.get(Constants.ENTITY_FIELD);
 				resultElem = folderElement.addElement(docType);
 				addCommonAttributes(resultElem, result);
-				resultElem.addAttribute("type", binderType);
+				addBinderAttributes(resultElem, result);
 			} else if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
 				String entryType = (String) result.get(Constants.ENTRY_TYPE_FIELD);
 				String elementName = null;
