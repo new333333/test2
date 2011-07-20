@@ -198,6 +198,8 @@ function ss_checkIfNumberValid(s) {
 	</fieldset>
 <br/>
 
+<%
+/**  This is turned off until file encryption is implemented
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -218,6 +220,9 @@ function ss_checkIfNumberValid(s) {
 	</fieldset>
 <br/>
 </c:if>
+*/
+%>
+
 <br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >

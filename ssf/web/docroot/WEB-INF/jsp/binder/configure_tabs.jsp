@@ -54,6 +54,15 @@
 					  ><ssf:nlt tag="binder.configure.definitions.simpleUrls"/></a>
 				  </div>
 			  </td>
+			  <c:if test="${ssBinder.entityType == 'folder'}">
+			  <td>
+				  <div class="wg-tab roundcornerSM ${ss_tab_changeEntryTypes}">
+					  <a href="<ssf:url action="manage_folder_entry_types" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/></ssf:url>"
+					  ><ssf:nlt tag="binder.configure.folderEntryTypes"/></a>
+				  </div>
+			  </td>
+			  </c:if>
 			  <td>
 				  <div class="wg-tab roundcornerSM ${ss_tab_quota}">
 					  <a href="<ssf:url action="manage_binder_quota" actionUrl="true"><ssf:param 
