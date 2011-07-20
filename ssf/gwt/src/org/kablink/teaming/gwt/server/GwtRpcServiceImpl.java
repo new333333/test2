@@ -119,6 +119,7 @@ import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -1124,6 +1125,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveTaskCompletedCmd stcCmd = ((SaveTaskCompletedCmd) cmd);
 			String result = saveTaskCompleted( ri, stcCmd.getTaskIds(), stcCmd.getCompleted() );
 			response = new VibeRpcResponse( new StringRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_TASK_DUE_DATE:
+		{
+			SaveTaskDueDateCmd stddCmd = ((SaveTaskDueDateCmd) cmd);
+			TaskEvent result = saveTaskDueDate( ri, stddCmd.getTaskId(), stddCmd.getDueDate() );
+			response = new VibeRpcResponse( new TaskEventRpcResponseData( result ));
 			return response;
 		}
 		
@@ -2745,6 +2754,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskCompleted()");
+		}
+	}
+	
+	/*
+	 * Stores a due date on the specified task.
+	 */
+	private TaskEvent saveTaskDueDate( HttpRequestInfo ri, TaskId taskId, TaskEvent taskEvent ) throws GwtTeamingException {
+		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskDueDate()");
+		try {
+			return GwtTaskHelper.saveTaskDueDate( this, taskId, taskEvent );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskDueDate()");
 		}
 	}
 	

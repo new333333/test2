@@ -62,6 +62,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskCompletedCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskDueDateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskLinkageCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskPriorityCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskSortCmd;
@@ -69,6 +70,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskBundleRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskEventRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -667,8 +669,42 @@ public class TaskTable extends Composite
 	 * @param selectedTaskId
 	 */
 	public void applyTaskDueDate(TaskEvent newDueDate, Long selectedTaskId) {
-//!		...this needs to be implemented...
-		Window.alert("TaskTable.applyTaskDueDate():  ...this needs to be implemented...");
+		final TaskListItem selectedTask = TaskListItemHelper.findTask(m_taskBundle, selectedTaskId);
+		final TaskInfo ti = selectedTask.getTask();
+		final Long entryId = ti.getTaskId().getEntryId();
+		SaveTaskDueDateCmd cmd = new SaveTaskDueDateCmd(ti.getTaskId(), newDueDate);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_SaveTaskDueDate(),
+					String.valueOf(entryId));
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Store the new event, as modified by the RPC call, in
+				// the task...
+				TaskEventRpcResponseData responseData = ((TaskEventRpcResponseData) result.getResponseData());
+				TaskEvent taskEvent = responseData.getTaskEvent();
+				if (null == taskEvent) {
+//!					...this needs to be implemented...
+					Window.alert("GwtTaskHelper.saveTaskDueDate():  ...this needs to be implemented...");
+					return;
+				}
+				ti.setEvent(taskEvent);
+				
+				// ...force the due date column to redraw...
+				UIData uid = getUIData(selectedTask);
+				renderColumnDueDate(selectedTask, uid.getTaskRow());
+
+				// ...and update any calculated dates that may be
+				// ...affected.
+				updateCalculatedDatesAsync(null, ti.getTaskId().getBinderId(), entryId);
+			}
+		});
+		
 	}
 	
 	/*

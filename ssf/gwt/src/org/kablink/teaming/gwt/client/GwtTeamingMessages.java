@@ -345,6 +345,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTags();
 	String rpcFailure_SaveTagSortOrder();
 	String rpcFailure_SaveTaskCompleted();
+	String rpcFailure_SaveTaskDueDate();
 	String rpcFailure_SaveTaskLinkage();
 	String rpcFailure_SaveTaskPriority();
 	String rpcFailure_SaveTaskSort();
@@ -931,6 +932,11 @@ public interface GwtTeamingMessages extends Messages
 	String taskDispositionDlgInsertBefore();
 	
 	// The following are used for task due date editing dialog.
+	String taskDueDateDlgConfirm_DefaultTo1Day();
+	String taskDueDateDlgError_DurationInvalidCombination();
+	String taskDueDateDlgError_NoEnd();
+	String taskDueDateDlgError_NoStartNoEnd();
+	String taskDueDateDlgError_NoStart();
 	String taskDueDateDlgHeader();
 	String taskDueDateDlgLabelAllDay();
 	String taskDueDateDlgLabelClearAll();

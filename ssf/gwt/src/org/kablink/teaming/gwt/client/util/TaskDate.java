@@ -57,6 +57,16 @@ public class TaskDate implements IsSerializable {
 	}
 
 	/**
+	 * Class constructor.
+	 * 
+	 * @param date
+	 */
+	public TaskDate(Date date) {
+		this();
+		m_date = date;
+	}
+
+	/**
 	 * Get'er methods.
 	 * 
 	 * @return
