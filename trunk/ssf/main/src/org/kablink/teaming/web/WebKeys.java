@@ -1038,12 +1038,15 @@ public class WebKeys {
     public static final String MARKUP_VIEW_TEXT="view_text";
     public static final String MARKUP_EXPORT="export";
     public static final String MARKUP_EMAIL="email";
+    public static final String MASHUP_BACKGROUND_COLOR = "ss_mashupBGColor";
+    public static final String MASHUP_BACKGROUND_IMAGE = "ss_mashupBGImg";
+    public static final String MASHUP_BACKGROUND_IMAGE_REPEAT = "ss_mashupBGImgRepeat";
     public static final String MASHUP_BINDER = "ss_mashupBinder";
     public static final String MASHUP_BINDERS="ss_mashupBinders"; 
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
     public static final String MASHUP_CSS="ss_mashupCss"; 
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
-    public static final String MASHUP_ENTRY_REPLIES="ss_mashupEntryReplies"; 
+    public static final String MASHUP_ENTRY_REPLIES="ss_mashupEntryReplies";
     public static final String MASHUP_HIDE_MASTHEAD="ss_mashupHideMasthead"; 
     public static final String MASHUP_HIDE_SIDEBAR="ss_mashupHideSidebar"; 
     public static final String MASHUP_HIDE_FOOTER="ss_mashupHideFooter"; 

@@ -55,16 +55,25 @@
 %>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
 
-<div id="ss_mashup_canvas_print" style="position: relative;">
-	&nbsp;
-	<a style="position: absolute; right: 10px;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
-		<img border="0" 
-      		 alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
-      		 src="<html:rootPath/>images/pics/masthead/masthead_printer.png" border="0" align="absmiddle" />
-	</a>
-</div>
+<script type="text/javascript">
 
-<div class="ss_mashup_canvas_view" >
+document.body.style.backgroundColor = '${ss_mashupBGColor}';
+document.body.style.backgroundImage = "url( '${ss_mashupBGImg}' )";
+document.body.style.backgroundRepeat = '${ss_mashupBGImgRepeat}';
+
+</script>
+
+<div class="ss_mashup_canvas_view" style="background-color: ${ss_mashupBGColor};">
+	<div id="ss_mashup_canvas_print" style="position: relative;">
+		&nbsp;
+		<a style="position: absolute; right: 10px;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
+			<img border="0" 
+	      		 alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+	      		 src="<html:rootPath/>images/pics/masthead/masthead_printer.png" border="0" align="absmiddle" />
+		</a>
+	</div>
+
+
   <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
     <c:set var="mashupValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
     <jsp:useBean id="mashupValue" type="java.lang.String" />

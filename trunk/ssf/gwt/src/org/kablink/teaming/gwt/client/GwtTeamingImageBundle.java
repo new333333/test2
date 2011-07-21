@@ -99,6 +99,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource collapser();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/colorPicker.png")
+	public ImageResource colorPicker();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/delete.png")
 	public ImageResource delete();
 

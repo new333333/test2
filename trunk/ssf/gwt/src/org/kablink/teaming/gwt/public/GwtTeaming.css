@@ -801,7 +801,7 @@ body, table td, select
 }
 
 /* Style used for the Browse link in the "edit branding" dialog. */
-.editBrandingBrowseLink, .addAttachmentLink
+.editBrandingBrowseLink, .addAttachmentLink, .colorPickerLink
 {
 	height: 20px;
 	overflow: hidden;
@@ -2577,7 +2577,7 @@ body, table td, select
 	background: url(images/trans10_black_blend.png) repeat;
 	background-position:bottom;
 }
-.subhead-control-bg2, .btn-bg2
+.subhead-control-bg2, .btn-bg2, .colorPickerLink:hover
 {
 	color: #FFFFFF;
 	background: url(images/teal_slice.png) repeat-x center;

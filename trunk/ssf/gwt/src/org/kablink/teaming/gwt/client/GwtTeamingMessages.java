@@ -112,6 +112,10 @@ public interface GwtTeamingMessages extends Messages
 	
 	// lpe stands for Landing Page Editor
 	String lpeAltCustomJsp();
+	String lpeAltDeleteAll();
+	String lpeAltDeleteElement();
+	String lpeAltEditElementProperties();
+	String lpeAltEditLPProperties();
 	String lpeAltEntry();
 	String lpeAltFolder();
 	String lpeAltGoogleGadget();
@@ -122,10 +126,12 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltLinkFolderWorkspace();
 	String lpeAltLinkURL();
 	String lpeAltList();
+	String lpeAltMoveElement();
 	String lpeAltEnhancedView();
 	String lpeAltTable();
 	String lpeAltUtilityElement();
 	String lpeCustomJSP();
+	String lpeDeleteAllWarning();
 	String lpeDeleteWidget();
 	String lpeEditHtml();
 	String lpeEntry();
@@ -1027,5 +1033,10 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Landing Page Properties Dialog
 	String landingPagePropertiesDlgHeader();
+	String backgroundRepeatLabel();
+	String backgroundRepeat();
+	String backgroundRepeatX();
+	String backgroundRepeatY();
+	String backgroundNoRepeat();
 	
 }// end GwtTeamingMessages

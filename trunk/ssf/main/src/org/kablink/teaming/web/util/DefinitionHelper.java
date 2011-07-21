@@ -1012,7 +1012,44 @@ public class DefinitionHelper {
     			{
     				doc = (Document) attr.getValue();
     				if ( doc != null )
+    				{
+    					Element bgElement;
+    					Element fontElement;
+    					
     					model.put( WebKeys.MASHUP_PROPERTIES, doc.asXML() );
+
+    					// Get the <background ...> element.
+    					bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
+    					if ( bgElement != null )
+    					{
+    						String bgColor;
+    						String bgImgName;
+    						
+    						bgColor = bgElement.attributeValue( "color" );
+    						if ( bgColor != null )
+    							model.put( WebKeys.MASHUP_BACKGROUND_COLOR, bgColor );
+    						
+    						bgImgName = bgElement.attributeValue( "imgName");
+    						if ( bgImgName != null )
+    						{
+    							String fileUrl;
+    							String webPath;
+    							
+    							webPath = WebUrlUtil.getServletRootURL( request );
+		    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, entity, bgImgName );
+    							model.put( WebKeys.MASHUP_BACKGROUND_IMAGE, fileUrl );
+    							
+    							// Get the background image repeat value.
+    							{
+    								String repeat;
+    								
+    								repeat = bgElement.attributeValue( "repeat" );
+    								if ( repeat != null )
+    									model.put( WebKeys.MASHUP_BACKGROUND_IMAGE_REPEAT, repeat );
+    							}
+    						}
+    					}
+    				}
     			}
     		}
 

@@ -16,15 +16,13 @@ public class LandingPageProperties
 {
 	public final String ROOT_ELEMENT_NAME = "landingPageData";
 	public final String BACKGROUND_ELEMENT_NAME = "background";
-	public final String FONT_ELEMENT_NAME = "font";
 	public final String COLOR_ATTRIBUTE_NAME = "color";
 	public final String IMAGE_NAME_ATTRIBUTE_NAME = "imgName";
-	public final String STRETCH_IMAGE_ATTRIBUTE_NAME = "stretchImg";
+	public final String REPEAT_ATTRIBUTE_NAME = "repeat";
 	
 	private String m_backgroundColor;
 	private String m_backgroundImageName;
-	private String m_fontColor;
-	private boolean m_stretchImg;
+	private String m_backgroundRepeat;
 	
 	/**
 	 * 
@@ -33,8 +31,7 @@ public class LandingPageProperties
 	{
 		m_backgroundColor = null;
 		m_backgroundImageName = null;
-		m_fontColor = null;
-		m_stretchImg = false;
+		m_backgroundRepeat = null;
 		
 		if ( propertiesXML != null )
 		{
@@ -50,32 +47,16 @@ public class LandingPageProperties
 				if ( nodeList != null && nodeList.getLength() == 1 )
 				{
 					Element backgroundElement;
-					String value;
 					
 					backgroundElement = (Element) nodeList.item( 0 );
 					
 					m_backgroundColor = backgroundElement.getAttribute( COLOR_ATTRIBUTE_NAME );
 					m_backgroundImageName = backgroundElement.getAttribute( IMAGE_NAME_ATTRIBUTE_NAME );
-					
-					value = backgroundElement.getAttribute( STRETCH_IMAGE_ATTRIBUTE_NAME );
-					if ( value != null && value.equalsIgnoreCase( "true" ) )
-						m_stretchImg = true;
-				}
-
-				// Get the <font ...> element.
-				nodeList = doc.getElementsByTagName( FONT_ELEMENT_NAME );
-				if ( nodeList != null && nodeList.getLength() == 1 )
-				{
-					Element fontElement;
-					
-					fontElement = (Element) nodeList.item( 0 );
-					
-					m_fontColor = fontElement.getAttribute( COLOR_ATTRIBUTE_NAME );
+					m_backgroundRepeat = backgroundElement.getAttribute( REPEAT_ATTRIBUTE_NAME );
 				}
 			}
 			catch (DOMParseException ex)
 			{
-				
 			}
 		}
 	}
@@ -87,8 +68,7 @@ public class LandingPageProperties
 	{
 		m_backgroundColor = lpProperties.getBackgroundColor();
 		m_backgroundImageName = lpProperties.getBackgroundImageName();
-		m_fontColor = lpProperties.getFontColor();
-		m_stretchImg = lpProperties.getStretchImg();
+		m_backgroundRepeat = lpProperties.getBackgroundRepeat();
 	}
 	
 	/**
@@ -106,19 +86,19 @@ public class LandingPageProperties
 	{
 		return m_backgroundImageName;
 	}
-
+	
 	/**
 	 * 
 	 */
-	public String getFontColor()
+	public String getBackgroundRepeat()
 	{
-		return m_fontColor;
+		return m_backgroundRepeat;
 	}
-	
+
 	/**
 	 * Return the properties as an xml string that looks like the following:
 	 * <landingPageData>
-	 * 	<background color="" imgName="" stretchImg="true | false" />
+	 * 	<background color="" imgName="" />
 	 * </landingPageData>
 	 */
 	public String getPropertiesAsXMLString()
@@ -131,7 +111,7 @@ public class LandingPageProperties
 		rootElement = doc.createElement( ROOT_ELEMENT_NAME );
 		doc.appendChild( rootElement );
 		
-		// Add the <background color="" imgName="" stretchImg=""> element
+		// Add the <background color="" imgName="" /> element
 		{
 			Element backgroundElement;
 
@@ -141,33 +121,17 @@ public class LandingPageProperties
 				backgroundElement.setAttribute( COLOR_ATTRIBUTE_NAME, m_backgroundColor );
 			
 			if ( m_backgroundImageName != null )
+			{
 				backgroundElement.setAttribute( IMAGE_NAME_ATTRIBUTE_NAME, m_backgroundImageName );
-			
-			backgroundElement.setAttribute( this.STRETCH_IMAGE_ATTRIBUTE_NAME, Boolean.toString( m_stretchImg ) );
+				
+				if ( m_backgroundRepeat != null )
+					backgroundElement.setAttribute( REPEAT_ATTRIBUTE_NAME, m_backgroundRepeat );
+			}
 			
 			rootElement.appendChild( backgroundElement );
 		}
 		
-		// Add the <font color="" /> element
-		{
-			Element fontElement;
-			
-			fontElement = doc.createElement( FONT_ELEMENT_NAME );
-			
-			if ( m_fontColor != null )
-				fontElement.setAttribute( COLOR_ATTRIBUTE_NAME, m_fontColor );
-			
-			rootElement.appendChild( fontElement );
-		}
 		return doc.toString();
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getStretchImg()
-	{
-		return m_stretchImg;
 	}
 	
 	/**
@@ -189,16 +153,8 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
-	public void setFontColor( String color )
+	public void setBackgroundRepeat( String repeat )
 	{
-		m_fontColor = color;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setStretchImg( boolean stretch )
-	{
-		m_stretchImg = stretch;
+		m_backgroundRepeat = repeat;
 	}
 }

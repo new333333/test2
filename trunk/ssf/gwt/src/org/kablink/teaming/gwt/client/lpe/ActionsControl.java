@@ -85,6 +85,7 @@ public class ActionsControl extends Composite
 			img.addMouseDownHandler( mouseDownHandler );
 			img.addStyleName( "margin-right-5" );
 			img.addStyleName( "cursorMove" );
+			img.setTitle( GwtTeaming.getMessages().lpeAltMoveElement() );
 			
 			mainPanel.add( img );
 		}
@@ -95,6 +96,7 @@ public class ActionsControl extends Composite
 			m_editImg = new Image(imageResource);
 			m_editImg.addClickHandler( this );
 			m_editImg.addStyleName( "lpeEditImg" );
+			m_editImg.setTitle( GwtTeaming.getMessages().lpeAltEditElementProperties() );
 			
 			mainPanel.add( m_editImg );
 		}
@@ -105,6 +107,7 @@ public class ActionsControl extends Composite
 			m_deleteImg = new Image(imageResource);
 			m_deleteImg.addStyleName( "lpeDeleteImg" );
 			m_deleteImg.addClickHandler( this );
+			m_deleteImg.setTitle( GwtTeaming.getMessages().lpeAltDeleteElement() );
 			
 			mainPanel.add( m_deleteImg );
 		}
