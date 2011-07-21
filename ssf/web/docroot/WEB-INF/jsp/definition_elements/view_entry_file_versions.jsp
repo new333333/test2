@@ -59,6 +59,16 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
 <script type="text/javascript">
 var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersions.confirm'/>\n<ssf:nlt tag='file.deleteConfirm2'/>";
+
+function ss_selectFileVersions(formName, isToBeSet) {
+	var formObj = document.forms[formName];
+    for (i = 0; i < formObj.elements.length; i++) {
+        if (formObj.elements[i].name.indexOf("delete_version_") == 0) {
+        	formObj.elements[i].checked = isToBeSet;
+        }
+    }
+}
+
 </script>
 <form method="post" name="ss_deleteFilesForm" id="ss_deleteFilesForm"
 	action="<ssf:url
@@ -75,6 +85,16 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
 	  <li style="float:right; padding:0px 20px 6px 0px;">
 	    <a href="javascript: ;" onClick="return(ss_deleteMultipleFileVersions('ss_deleteFilesForm', ss_deleteFileVersionsConfirmText));">
 	      <span><ssf:nlt tag="file.command.deleteVersions"/></span>
+	    </a>
+	  </li>
+	  <li style="float:right; padding:0px 20px 6px 0px;">
+	    <a href="javascript: ;" onClick="ss_selectFileVersions('ss_deleteFilesForm', false);return false;">
+	      <span><ssf:nlt tag="file.command.deleteVersionsSelectNone"/></span>
+	    </a>
+	  </li>
+	  <li style="float:right; padding:0px 20px 6px 0px;">
+	    <a href="javascript: ;" onClick="ss_selectFileVersions('ss_deleteFilesForm', true);return false;">
+	      <span><ssf:nlt tag="file.command.deleteVersionsSelectAll"/></span>
 	    </a>
 	  </li>
 	</ul>
