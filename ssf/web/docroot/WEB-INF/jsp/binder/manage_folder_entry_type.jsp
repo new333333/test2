@@ -46,18 +46,15 @@
   var def${item.value.id} = "${item.key}";
 </c:forEach>
 
-function confirmChangeTypes() {
+function confirmChangeType() {
 	var formObj = document.forms['form1'];
 	if (formObj.oldEntryType.value == "" || formObj.newEntryType.value == "") {
-		alert("<ssf:nlt tag="binder.changeEntryType.selectBoth"/>");
+		alert("<ssf:nlt tag="binder.changeEntryType.selectOne"/>");
 		return false;
 	}
-	eval("var oldDefName = def"+formObj.oldEntryType.value);
 	eval("var newDefName = def"+formObj.newEntryType.value);
-	var confirmText = '<ssf:escapeJavaScript><ssf:nlt tag="binder.changeEntryType.confirm"><ssf:param
-		name="value" value="__OldDefName"/><ssf:param
+	var confirmText = '<ssf:escapeJavaScript><ssf:nlt tag="binder.changeEntryType.confirm1"><ssf:param
 		name="value" value="__NewDefName"/></ssf:nlt></ssf:escapeJavaScript>';
-		confirmText = ss_replaceSubStr(confirmText, "__OldDefName", oldDefName);
 		confirmText = ss_replaceSubStr(confirmText, "__NewDefName", newDefName);
 	return confirm(confirmText);
 }
@@ -74,20 +71,14 @@ function confirmChangeTypes() {
 		  <br/>
 		</c:if>
 	
-<c:set var="ss_tab_changeEntryTypes" value="on"/>
-<%@ include file="/WEB-INF/jsp/binder/configure_tabs.jsp" %>
-
 <div style="display:block;" class="wg-tab-content marginbottom3">
 <form name="form1" class="ss_form" method="post" 
 	action="<ssf:url action="manage_folder_entry_types" actionUrl="true"><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param
-	name="operation" value="change_entry_type_binder"/></ssf:url>"
-	onSubmit="return confirmChangeTypes();"
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="entryId" value="${ssEntry.id}"/><ssf:param
+	name="operation" value="change_entry_type_entry"/></ssf:url>"
+	onSubmit="return confirmChangeType();"
 >
-<br/>
-<span><ssf:nlt tag="access.currentFolder"/></span>
-<% //need to check tags for templates %>
-<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 <div align="right">
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
   <input type="submit" class="ss_submit" name="closeBtn" 
@@ -98,21 +89,19 @@ function confirmChangeTypes() {
 	
 <fieldset class="ss_fieldset">
   <legend class="ss_legend">
-    <span class="ss_bold"><ssf:nlt tag="binder.changeEntryTypes" /></span>
+    <span class="ss_bold"><ssf:nlt tag="binder.changeEntryType" /></span>
   </legend>
    
   <div style="padding:10px 10px 0px 10px;">
-    <span class="ss_bold"><ssf:nlt tag="binder.changeEntryType.selectOld"/></span>
-	<br/>
-	<select name="oldEntryType">
-	  <option value="" selected><ssf:nlt tag="binder.changeEntryType.selectType"/></option>
+    <span class="ss_bold"><ssf:nlt tag="binder.changeEntryType.currentType"><ssf:param
+      name="value" useBody="true">
       <c:forEach var="item" items="${ssAllEntryDefinitions}">
-	      <option value="${item.value.id}" id="oldOption_${item.value.id}">
-	        ${item.key}<c:if test="${item.value.binderId != -1}"><sup>*</sup></c:if>
-	      </option>
+	      <c:if test="${item.value.id == ssEntry.entryDefId}">
+	        ${item.key}
+	      </c:if>
       </c:forEach>
-    </select>
-    <br>
+      </ssf:param></ssf:nlt></span>
+    <br/>
     <br/>
     <span class="ss_bold"><ssf:nlt tag="binder.changeEntryType.selectNew"/></span>
     <br/>
@@ -126,7 +115,7 @@ function confirmChangeTypes() {
     </select>
     <br/>
     <br/>
-    <div class="ss_fineprint" style="padding:6px 6px 4px 6px;"><ssf:nlt tag="binder.changeEntryType.warning1"/></div>
+    <div class="ss_fineprint" style="padding:6px 6px 4px 6px;"><ssf:nlt tag="binder.changeEntryType.warning1a"/></div>
     <div class="ss_fineprint" style="padding:0px 6px 10px 6px;"><ssf:nlt tag="binder.changeEntryType.warning2"/></div>
     <span class="ss_fineprint">* <ssf:nlt tag="definition.local"/></span>
   </div>

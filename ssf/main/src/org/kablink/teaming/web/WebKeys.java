@@ -341,6 +341,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
 	public static final String ACTION_MANAGE_BINDER_QUOTA="manage_binder_quota";
 	public static final String ACTION_MANAGE_VERSION_CONTROLS="manage_version_controls";
+	public static final String MANAGE_FOLDER_ENTRY_TYPES="manage_folder_entry_types";
 	public static final String ACTION_EXPORT_IMPORT="export_import";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
@@ -565,6 +566,8 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_FOLDER_SORT_INFO="save_folder_sort_info";
 	public static final String OPERATION_SAVE_FOLDER_PAGE_INFO="save_folder_page_info";
 	public static final String OPERATION_SAVE_FOLDER_GOTOPAGE_INFO="save_folder_goto_page_info";
+	public static final String OPERATION_CHANGE_ENTRY_TYPE_BINDER="change_entry_type_binder";
+	public static final String OPERATION_CHANGE_ENTRY_TYPE_ENTRY="change_entry_type_entry";
 	public static final String OPERATION_CHANGE_ENTRIES_ON_PAGE="change_entries_on_page";
 	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
@@ -1571,6 +1574,7 @@ public class WebKeys {
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
     public static final String VIEW_MANAGE_BINDER_QUOTA="binder/manage_binder_quota";
     public static final String VIEW_MANAGE_BINDER_VERSION_CONTROLS="binder/manage_binder_version_controls";
+    public static final String VIEW_MANAGE_FOLDER_ENTRY_TYPE="binder/manage_folder_entry_type";
     public static final String VIEW_MANAGE_FOLDER_ENTRY_TYPES="binder/manage_folder_entry_types";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";

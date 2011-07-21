@@ -47,6 +47,7 @@ import javax.portlet.RenderResponse;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -70,14 +71,22 @@ public class ManageFolderEntryTypesController extends AbstractBinderController {
 		response.setRenderParameters(request.getParameterMap());
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map formData = request.getParameterMap();
 
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			String oldEntryType = PortletRequestUtils.getStringParameter(request, "oldEntryType", "");
 			String newEntryType = PortletRequestUtils.getStringParameter(request, "newEntryType", "");
-			if (!oldEntryType.equals("") && !newEntryType.equals("") && !oldEntryType.equals(newEntryType)) {
+			if ((op.equals(WebKeys.OPERATION_CHANGE_ENTRY_TYPE_ENTRY) || !oldEntryType.equals("")) && 
+					!newEntryType.equals("") && !oldEntryType.equals(newEntryType)) {
 				//There is something to do. Go change the entry types.
-				getBinderModule().changeEntryTypes(binderId, oldEntryType, newEntryType);
+				if (op.equals(WebKeys.OPERATION_CHANGE_ENTRY_TYPE_BINDER)) {
+					getBinderModule().changeEntryTypes(binderId, oldEntryType, newEntryType);
+				}
+				if (op.equals(WebKeys.OPERATION_CHANGE_ENTRY_TYPE_ENTRY)) {
+					Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+					getFolderModule().changeEntryType(entryId, newEntryType);
+				}
 			}
 				
 			if (binder instanceof TemplateBinder) {
@@ -98,6 +107,7 @@ public class ManageFolderEntryTypesController extends AbstractBinderController {
 		Long binderId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		model.put(WebKeys.BINDER, binder);
 
 		//Set up navigation beans
@@ -106,7 +116,14 @@ public class ManageFolderEntryTypesController extends AbstractBinderController {
 		
 		model.put(WebKeys.ALL_ENTRY_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binderId, Definition.FOLDER_ENTRY));
 
-		return new ModelAndView(WebKeys.VIEW_MANAGE_FOLDER_ENTRY_TYPES, model);
+		if (op.equals(WebKeys.OPERATION_CHANGE_ENTRY_TYPE_ENTRY)) {
+			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			model.put(WebKeys.ENTRY, entry);
+			return new ModelAndView(WebKeys.VIEW_MANAGE_FOLDER_ENTRY_TYPE, model);
+		} else {
+			return new ModelAndView(WebKeys.VIEW_MANAGE_FOLDER_ENTRY_TYPES, model);
+		}
 	}
 
 }

@@ -83,6 +83,7 @@ public interface FolderModule {
 	   preDeleteEntry,
 	   restoreEntry,
 	   deleteEntry,
+	   changeEntryType,
 	   deleteEntryWorkflow,
 	   manageEmail,
 	   manageTag,
@@ -544,6 +545,13 @@ public interface FolderModule {
 	 * @param def
 	 */
 	public void setEntryDef(Long folderId, Long entryId, String entryDef);
+	
+	/**
+	 * Changes the existing definition type of an entry.
+	 * @param entryId
+	 * @param defId
+	 */
+	public void changeEntryType(Long entryId, String newDefId);
 
 	/**
      * Add a tag to a folderEntry

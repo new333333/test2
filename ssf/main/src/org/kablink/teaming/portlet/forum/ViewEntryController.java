@@ -917,6 +917,18 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.copy"), url, qualifiers);
 			}
+			if (getFolderModule().testAccess(entry, FolderOperation.changeEntryType)) {
+				//The "Change entry type" menu
+				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				qualifiers.put("popup", new Boolean(true));
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.MANAGE_FOLDER_ENTRY_TYPES);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CHANGE_ENTRY_TYPE_ENTRY);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.changeEntryType"), url, qualifiers);
+			}
 
 			HttpServletRequest req = WebHelper.getHttpServletRequest(request);
 			String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
