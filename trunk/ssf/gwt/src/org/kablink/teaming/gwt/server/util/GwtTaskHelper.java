@@ -55,6 +55,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -105,6 +106,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
+import org.kablink.util.cal.Duration;
 import org.kablink.util.search.Constants;
 
 /**
@@ -1022,6 +1024,21 @@ public class GwtTaskHelper {
 	}
 
 	/*
+	 * Returns the Calendar equivalent of a TaskDate.
+	 */
+	private static Calendar getCFromTD(TaskDate td) {
+		GregorianCalendar reply;
+		if (null == td) {
+			reply = null;
+		}
+		else {
+			reply = new GregorianCalendar();
+			reply.setTime(td.getDate());
+		}
+		return reply;
+	}
+
+	/*
 	 * Returns a List<Long> of the task IDs from the Binder that should
 	 * have their subtask lists collapsed.
 	 */
@@ -1056,7 +1073,7 @@ public class GwtTaskHelper {
 			}
 		}
 		else {
-			reply = null;;
+			reply = null;
 		}
 		return reply;
 	}
@@ -1369,6 +1386,35 @@ public class GwtTaskHelper {
 		return reply;
 	}
 	
+	/*
+	 * Returns the TaskDate equivalent of a Calendar. 
+	 */
+	private static TaskDate getTDFromC(Calendar c) {
+		Date date = ((null == c) ? null : c.getTime());
+		TaskDate reply = new TaskDate(date);
+		reply.setDateDisplay(EventHelper.getDateTimeString(date));
+		return reply;
+	}
+
+	/*
+	 * Returns the TaskDuration equivalent of an Event Duration.
+	 */
+	private static TaskDuration getTDurFromEDur(Duration eDuration) {
+		TaskDuration reply;
+		if (null == eDuration) {
+			reply = null;
+		}
+		else {
+			reply = new TaskDuration();
+			reply.setDays(   eDuration.getDays()   );
+			reply.setHours(  eDuration.getHours()  );
+			reply.setMinutes(eDuration.getMinutes());
+			reply.setSeconds(eDuration.getSeconds());
+			reply.setWeeks(  eDuration.getWeeks()  );
+		}
+		return reply;
+	}
+
 	/*
 	 * Returns a count of the members of a team.
 	 */
@@ -1836,9 +1882,95 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static TaskEvent saveTaskDueDate(AllModulesInjected bs, TaskId taskId, TaskEvent taskEvent) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		return null;
+		TaskEvent reply = null;
+		try {
+			// - - - - - - - - - - - - - //
+			// Modify the task's Event.  //
+			// - - - - - - - - - - - - - //
+			
+			// Read the Event currently stored on the task...
+			Long binderId = taskId.getBinderId();
+			Long entryId = taskId.getEntryId();
+			FolderModule fm = bs.getFolderModule();
+			FolderEntry fe = fm.getEntry(binderId, entryId);
+			CustomAttribute customAttribute = fe.getCustomAttribute(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME);
+			Event event = ((Event) customAttribute.getValue());
+			if (null == event) {
+				event = new Event();
+			}
+
+			// ...modify that Event based on the TaskEvent we were
+			// ...given...
+			boolean oldIsAllDay = event.isAllDayEvent();
+			boolean newIsAllDay = taskEvent.getAllDayEvent();
+			if (oldIsAllDay != newIsAllDay) {
+				// The Event's all day setting is changing!
+				// Store/clear a TZ in the Event.  It's the TZ controls
+				// whether an event is recognized as an all day event
+				// or not.
+				event.setTimeZone(
+					newIsAllDay ?
+						null    :							// null ---> All day.
+						TimeZoneHelper.getTimeZone("GMT"));	// Any TZ -> Not all day.
+			}			
+			TaskDuration tDuration = taskEvent.getDuration();
+			Duration eDuration = new Duration();
+			if (null != tDuration) {
+				eDuration.setDays(tDuration.getDays());
+			}
+			event.setDuration(eDuration);
+			event.setDtCalcStart((Calendar) null); event.setDtStart(getCFromTD(taskEvent.getActualStart()));			
+			event.setDtCalcEnd(  (Calendar) null); event.setDtEnd(  getCFromTD(taskEvent.getActualEnd()));
+			
+			// ...check whether the user has seen this entry already...
+			ProfileModule pm = bs.getProfileModule();
+			boolean taskSeen = pm.getUserSeenMap(null).checkIfSeen(fe);
+			
+			// ...save the new Event...
+			Map formData = new HashMap(); 
+			formData.put(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME, event);
+			fm.modifyEntry(binderId, entryId, new MapInputData(formData), null, null, null, null);
+			
+			// ...and if the user saw the entry before we modified
+			// ...it...
+			if (taskSeen) {
+				// ...retain that seen state.
+				pm.setSeen(null, fe);
+			}
+
+			// - - - - - - - - - - - - - - - //
+			// Create a TaskEvent to return. //
+			// - - - - - - - - - - - - - - - //
+			
+			// Reread the task so that we have its Event AFTER we
+			// modified it.  Note that there's processing that goes on
+			// that may have changed it as part of the modify.
+			fe              = fm.getEntry(binderId, entryId);
+			customAttribute = fe.getCustomAttribute(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME);
+			event           = ((Event) customAttribute.getValue());
+			
+			// Finally we need to create a TaskEvent to return that
+			// reflects the Event stored as it stands AFTER it was
+			// modified.
+			reply = new TaskEvent(true);
+			reply.setActualStart(getTDFromC(     event.getDtStart() )); reply.setLogicalStart(getTDFromC(event.getLogicalStart()));
+			reply.setActualEnd(  getTDFromC(     event.getDtEnd()   )); reply.setLogicalEnd(  getTDFromC(event.getLogicalEnd()  ));			
+			reply.setDuration(   getTDurFromEDur(event.getDuration()));				
+			reply.setAllDayEvent(event.isAllDayEvent());
+			
+			// If we get here, reply refers to the modified TaskEvent or is
+			// null.  Return it.
+			return reply;			
+		}
+		
+		catch (Exception ex) {
+			m_logger.debug("GwtTaskHelper.saveTaskDueDate( Can't Save Due Date on task:  '" + taskId.getEntryId() + "' )");
+			m_logger.debug("GwtTaskHelper.saveTaskDueDate( EXCEPTION ):  ", ex);
+			
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
 	}
 
 	/**
