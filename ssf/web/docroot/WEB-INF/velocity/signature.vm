@@ -26,33 +26,5 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#if ($ssVisitor.isHtml())  
-  <div style="#ss_eAuthor()">
-    #ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
-
-    #if ($ssVisitor.Entity.PostedBy)
-      ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))&nbsp;
-    #end 
-    $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
-
-    #if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
-      <div style="padding-left:6px;">
-	    $ssVisitor.getNLT("entry.modifiedBy")&nbsp;
-        #ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
-        $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
-      </div>
-    #end
-  </div>
-  $ssVisitor.visit()
-
-#else
-  #ss_print("${property_caption} $ssVisitor.getUserTitle(${ssVisitor.Entity.Creation.Principal})")
-  #if ($ssVisitor.Entity.PostedBy)
-    #ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
-  #end 
-  #ss_printLn(" $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})")
-  #if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
-    #ss_printLn("      $ssVisitor.getNLT('entry.modifiedBy') $ssVisitor.getUserTitle(${ssVisitor.Entity.Modification.Principal}) $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})")
-  #end
-  $ssVisitor.visit()
-#end
+## The signature is output in title.vm
+$ssVisitor.visit()

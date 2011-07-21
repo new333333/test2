@@ -27,27 +27,52 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())  
-<div style="#ss_eTitle()">
-#if ($ssVisitor.getDocNumber())
-	${ssVisitor.getDocNumber()}.&nbsp;
-#end
+  <div style="#ss_eTitle()">
+    #if ($ssVisitor.getDocNumber())
+      ${ssVisitor.getDocNumber()}.&nbsp;
+    #end
 
-<a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
-#if ($ssVisitor.Entity.Title && $ssVisitor.Entity.Title != "" )
-	$esc.html($ssVisitor.Entity.Title)
-#else
-  <span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
-#end
-</a>
+    <a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
+      #if ($ssVisitor.Entity.Title && $ssVisitor.Entity.Title != "" )
+	    $esc.html($ssVisitor.Entity.Title)
+      #else
+        <span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
+      #end
+    </a>
+  </div>
 
-</div>
+  <div style="#ss_eAuthor()">
+    #ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
+
+    #if ($ssVisitor.Entity.PostedBy)
+      ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))&nbsp;
+    #end 
+    $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
+
+    #if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
+      <div style="padding-left:6px;">
+	    $ssVisitor.getNLT("entry.modifiedBy")&nbsp;
+        #ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
+        $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
+      </div>
+    #end
+  </div>
 #else
-#if ($ssVisitor.getDocNumber())
-  #ss_print("${ssVisitor.getDocNumber()}. ") 
-#end
-#if ($ssVisitor.Entity.Title)
-#ss_printLn($ssVisitor.Entity.Title)
-#else
-#ss_printLn("--$ssVisitor.getNLT('entry.noTitle')--")
-#end
+  #if ($ssVisitor.getDocNumber())
+    #ss_print("${ssVisitor.getDocNumber()}. ") 
+  #end
+  #if ($ssVisitor.Entity.Title)
+    #ss_printLn($ssVisitor.Entity.Title)
+  #else
+    #ss_printLn("--$ssVisitor.getNLT('entry.noTitle')--")
+  #end
+
+  #ss_print("${property_caption} $ssVisitor.getUserTitle(${ssVisitor.Entity.Creation.Principal})")
+  #if ($ssVisitor.Entity.PostedBy)
+    #ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
+  #end 
+  #ss_printLn(" $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})")
+  #if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
+    #ss_printLn("      $ssVisitor.getNLT('entry.modifiedBy') $ssVisitor.getUserTitle(${ssVisitor.Entity.Modification.Principal}) $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})")
+  #end
 #end
