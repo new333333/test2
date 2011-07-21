@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.Date;
+
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -51,6 +53,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
@@ -168,6 +171,23 @@ public class GwtClientHelper {
 		return reply;
 	}
 
+	/**
+     * Returns the client's time zone offset.
+	 * 
+	 * Note:
+	 *    We use deprecated APIs here since GWT's client side has no
+	 *    GregorianCalendar equivalent.  This is the only way to
+	 *    manipulate a date and time.
+     * 
+     * @return
+     */
+	@SuppressWarnings("deprecation")
+	public static int getTimeZoneOffset() {
+		final Date now = new Date();
+		final int tzo = now.getTimezoneOffset();
+		return tzo;
+	}
+	
 	/*
 	 * Applies patches to a message string.
 	 */

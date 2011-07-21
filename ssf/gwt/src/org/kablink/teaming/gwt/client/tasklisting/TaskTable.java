@@ -687,13 +687,7 @@ public class TaskTable extends Composite
 				// Store the new event, as modified by the RPC call, in
 				// the task...
 				TaskEventRpcResponseData responseData = ((TaskEventRpcResponseData) result.getResponseData());
-				TaskEvent taskEvent = responseData.getTaskEvent();
-				if (null == taskEvent) {
-//!					...this needs to be implemented...
-					Window.alert("GwtTaskHelper.saveTaskDueDate():  ...this needs to be implemented...");
-					return;
-				}
-				ti.setEvent(taskEvent);
+				ti.setEvent(responseData.getTaskEvent());
 				
 				// ...force the due date column to redraw...
 				UIData uid = getUIData(selectedTask);

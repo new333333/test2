@@ -75,6 +75,11 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 /**
  * Implements a dialog for editing a task's due date.
  *  
+ * Note:
+ *    We use deprecated APIs here since GWT's client side has no
+ *    GregorianCalendar equivalent.  This is the only way to manipulate
+ *    a date and time.
+ *    
  * @author drfoster@novell.com
  */
 public class TaskDueDateDlg extends DlgBox
@@ -162,16 +167,11 @@ public class TaskDueDateDlg extends DlgBox
 
 	/*
 	 * Returns a TaskDate object based on a date and time.
-	 * 
-	 * Note:
-	 *    We use deprecated APIs here since GWT's client side has no
-	 *    GregorianCalendar equivalent.  This is the only way to merge
-	 *    a date an time.
 	 */
 	@SuppressWarnings("deprecation")
 	private TaskDate getTDFromDT(Date date, Date time) {
 		Date reply = CalendarUtil.copyDate(date);
-		reply.setHours(time.getHours());
+		reply.setHours(  time.getHours()  );
 		reply.setMinutes(time.getMinutes());
 		reply.setSeconds(time.getSeconds());
 		return new TaskDate(reply);
@@ -324,6 +324,7 @@ public class TaskDueDateDlg extends DlgBox
 	 * If anything is invalid, the user is told about the problem and
 	 * null is returned.
 	 */
+	@SuppressWarnings("deprecation")
 	private TaskEvent getNewTaskDueDate() {
 		String      alertMessage = null;
 		TaskEvent   reply        = null;
@@ -347,8 +348,21 @@ public class TaskDueDateDlg extends DlgBox
 				// Yes!  Construct an appropriate TaskEvent to return.
 				reply = new TaskEvent(true);
 				reply.setAllDayEvent(true);
-				reply.setActualStart(new TaskDate(startDate.getValue()));
-				reply.setActualEnd(  new TaskDate(endDate.getValue()  ));
+				
+				int tzoM = GwtClientHelper.getTimeZoneOffset();	// Time zone offset, in minutes.
+				int hFix = ((0 < tzoM) ? 24 : 0);				// Hour adjustment so we don't change days.
+				
+				Date jDate = startDate.getValue();
+				jDate.setHours(   hFix);	// An all day start...
+				jDate.setMinutes(-tzoM);	// ...is always at...
+				jDate.setSeconds( 0   );	// ...midnight GMT.
+				reply.setActualStart(new TaskDate(jDate));
+				
+				jDate = endDate.getValue();
+				jDate.setHours(   hFix);	// An all day end...
+				jDate.setMinutes(-tzoM);	// ...is always at...
+				jDate.setSeconds(-1   );	// ...1 second before midnight GMT.
+				reply.setActualEnd(new TaskDate(jDate));
 			}
 		}
 		
@@ -561,11 +575,13 @@ public class TaskDueDateDlg extends DlgBox
 			null,	// null -> No alternate text necessary.
 			new TaskPickDateEvent(baseId));
 		hp.add(datePickerButton);
-
+		
 		// ...define the TimePicker...
+		String  myTime   = (DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT).format(new Date())).toLowerCase();
+		boolean is24Hour = ((0 > myTime.indexOf("am")) && (0 > myTime.indexOf("pm")));
 		TimePicker tp = new TimePicker(
 			pickerDate,	// Initial date.
-			false,		// false -> Not 24 hour mode.
+			is24Hour,	// AM/PM vs. 24 hour mode.
 			null);		// null -> No seconds.
 		tp.addStyleName("taskDispositionDlg_TimePicker taskDispositionDlg_DateTimeTable");
 		tp.getElement().setId(rowId + IDTIME);
