@@ -26,20 +26,4 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#if ($ssVisitor.isHtml()) 
-<div style="#ss_entryContent()">
-<span style="#ss_labelLeft()">${property_caption}</span>
-#if ($ssVisitor.Entity.Creation.Principal)
-#ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
-#end		
-#if ($ssVisitor.Entity.PostedBy)
-    ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))
-#end
-</div>
-#else
-#ss_print("${property_caption} $ssVisitor.getUserTitle($ssVisitor.Entity.Creation.Principal)")
-#if ($ssVisitor.Entity.PostedBy)
-#ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
-#end
-#ss_printLn("")
-#end
+##This is shown as part of the title (title.vm)
