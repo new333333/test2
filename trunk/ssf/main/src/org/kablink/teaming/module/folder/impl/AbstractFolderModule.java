@@ -103,6 +103,7 @@ import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -304,6 +305,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case reserveEntry:
 			case copyEntry:
 			case moveEntry:
+			case changeEntryType:
 				AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   
 				break;
 			case modifyEntryFields:
@@ -1016,6 +1018,21 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		FolderEntry entry = getEntry(folderId, entryId);
 		entry.setEntryDef(definitionModule.getDefinition(entryDef));
 	}
+	
+	//Change entry def type
+	public void changeEntryType(Long entryId, String newDefId) {
+		FolderEntry entry = loadEntry(null, entryId);
+		if (entry == null) return;
+		Folder folder = (Folder)entry.getParentBinder();
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		checkAccess(entry, FolderOperation.changeEntryType);
+		List<Long> entryIds = new ArrayList<Long>();
+		entryIds.add(entryId);
+		getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
+		loadProcessor(entry.getParentFolder()).indexEntry(entry);
+	}
+
+
     //inside write transaction    	
 	public void setUserRating(Long folderId, Long entryId, long value) {
 		//getEntry does read check

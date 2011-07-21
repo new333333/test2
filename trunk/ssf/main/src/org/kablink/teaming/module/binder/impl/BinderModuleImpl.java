@@ -1212,6 +1212,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		List<Long> entryIds = getFolderDao().getFolderEntriesByType(zoneId, folder, oldDefId);
 		if (!entryIds.isEmpty()) {
 			getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
+			BinderProcessor processor = loadBinderProcessor(binder);
+			processor.indexBinder(binder, true);
+
 		}
 	}
 
