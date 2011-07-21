@@ -471,6 +471,29 @@ public class DropZone extends Composite
 
 
 	/**
+	 * Remove all the widgets from this DropZone.
+	 */
+	public void removeAllWidgets()
+	{
+		ArrayList<DropWidget> widgets;
+		int i;
+		
+		// Get all of the widgets from this DropZone
+		widgets = getWidgets();
+		
+		// Go through the list of widgets and have each TableDropWidget adjust its height
+		for (i = 0; i < widgets.size(); ++i)
+		{
+			DropWidget nextWidget;
+			
+			// Get the next widget.
+			nextWidget = widgets.get( i );
+
+			nextWidget.removeFromParent();
+		}
+	}
+	
+	/**
 	 * This method gets called to let us know where the user wants a widget dropped on this drop zone.
 	 */
 	public void setDropLocation( int clientX, int clientY )

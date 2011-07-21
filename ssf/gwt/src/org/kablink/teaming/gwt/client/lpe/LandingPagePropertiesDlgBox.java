@@ -58,7 +58,6 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -87,11 +86,10 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 
 	private AsyncCallback<VibeRpcResponse> m_rpcReadCallback;
 	private String m_binderId;
-	private ListBox m_backgroundImgListbox;
-	private CheckBox m_stretchBgImgCb;
-	private TextBox m_backgroundColorTextbox;
-	private TextBox m_textColorTextbox;
-	private InlineLabel m_sampleText;
+	private ListBox m_bgImgListbox;
+	private ListBox m_bgImgRepeatListbox;
+	private TextBox m_bgColorTextbox;
+	private InlineLabel m_sampleBGColor;
 	private LandingPageProperties m_origLPProperties;
 	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
 	private ColorPickerDlg m_colorPickerDlg;
@@ -158,13 +156,15 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		Label spacer;
 		FlexTable table = null;
 		int nextRow;
-		
+		HTMLTable.CellFormatter cellFormatter;
+
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
 		table.addStyleName( "dlgContent" );
+		cellFormatter = table.getCellFormatter();
 		
 		nextRow = 0;
 		
@@ -176,11 +176,11 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 
 			// Create a list box to hold the list of attachments for the given binder.
 			// User can select one of these files to use as the background image.
-			m_backgroundImgListbox = new ListBox( false );
-			m_backgroundImgListbox.setVisibleItemCount( 1 );
+			m_bgImgListbox = new ListBox( false );
+			m_bgImgListbox.setVisibleItemCount( 1 );
 
 			hPanel = new HorizontalPanel();
-			hPanel.add( m_backgroundImgListbox );
+			hPanel.add( m_bgImgListbox );
 			
 			// Add a link the user can click on to add a file
 			{
@@ -270,14 +270,29 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			
 			table.setWidget( nextRow, 1, hPanel );
 			++nextRow;
+		}
+		
+		// Add the controls for "Background Image Repeat"
+		{
+			cellFormatter.setWordWrap( nextRow, 0, false );
 			
-			// Add a "stretch image" checkbox.
-			m_stretchBgImgCb = new CheckBox( GwtTeaming.getMessages().stretchImg() );
-			table.setWidget( nextRow, 1, m_stretchBgImgCb );
+			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundRepeatLabel() );
+
+			// Create a list box to hold the possible values for the background image repeat
+			m_bgImgRepeatListbox = new ListBox( false );
+			m_bgImgRepeatListbox.setVisibleItemCount( 1 );
+
+			// Add all the possible values for the background image repeat
+			m_bgImgRepeatListbox.addItem( GwtTeaming.getMessages().backgroundRepeat(), "repeat" );
+			m_bgImgRepeatListbox.addItem( GwtTeaming.getMessages().backgroundRepeatX(), "repeat-x" );
+			m_bgImgRepeatListbox.addItem( GwtTeaming.getMessages().backgroundRepeatY(), "repeat-y" );
+			m_bgImgRepeatListbox.addItem( GwtTeaming.getMessages().backgroundNoRepeat(), "no-repeat" );
+			
+			table.setWidget( nextRow, 1, m_bgImgRepeatListbox );
 			++nextRow;
 		}
 		
-		// Add an empty row to add some space between the "background image" listbox and the "background color" textbox.
+		// Add an empty row to add some space between the "background image repeat" listbox and the "background color" textbox.
 		spacer = new Label( " " );
 		spacer.addStyleName( "marginTop10px" );
 		table.setWidget( nextRow, 0, spacer );
@@ -288,7 +303,6 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			KeyUpHandler keyUpHandler;
 			ClickHandler clickHandler;
 			HorizontalPanel hPanel;
-			Anchor colorHint;
 			
 			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundColorLabel() );
 
@@ -296,124 +310,94 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			hPanel = new HorizontalPanel();
 			
 			// Add a text box where the user can enter the background color
-			m_backgroundColorTextbox = new TextBox();
-			m_backgroundColorTextbox.setVisibleLength( 20 );
-			hPanel.add( m_backgroundColorTextbox );
-
-			// Add a hint next to the background color textbox the user can click on to invoke a color picker.
-			colorHint = new Anchor( GwtTeaming.getMessages().colorHint() );
-			colorHint.setTitle( GwtTeaming.getMessages().displayColorPicker() );
-			colorHint.addStyleName( "editBrandingLink" );
-			hPanel.add( colorHint );
-
-			table.setWidget( nextRow, 1, hPanel );
-			
-			// Add a keyup handler so we can update the "sample text" background color.
-			keyUpHandler = new KeyUpHandler()
 			{
-				/**
-				 * Update the background color of the sample text.
-				 */
-				public void onKeyUp( KeyUpEvent event )
+				m_bgColorTextbox = new TextBox();
+				m_bgColorTextbox.setVisibleLength( 20 );
+				hPanel.add( m_bgColorTextbox );
+
+				// Add a keyup handler so we can update the "sample text" background color.
+				keyUpHandler = new KeyUpHandler()
 				{
-					updateSampleTextBgColor();
-				}
-			};
-			m_backgroundColorTextbox.addKeyUpHandler( keyUpHandler );
+					/**
+					 * Update the background color of the sample text.
+					 */
+					public void onKeyUp( KeyUpEvent event )
+					{
+						updateSampleTextBgColor();
+					}
+				};
+				m_bgColorTextbox.addKeyUpHandler( keyUpHandler );
+			}
 			
-			// Add a clickhandler to the color hint.  When the user clicks on the hint we
-			// will invoke the color picker.
-			clickHandler = new ClickHandler()
+			// Add a link next to the background color textbox the user can click on to invoke a color picker.
 			{
-				/**
-				 * Invoke the color picker.
-				 */
-				public void onClick( ClickEvent event )
+				Anchor colorLink;
+
+				colorLink = new Anchor();
+				colorLink.setTitle( GwtTeaming.getMessages().displayColorPicker() );
+				colorLink.addStyleName( "colorPickerLink" );
+				colorLink.addStyleName( "landingPagePropertiesLink" );
+				colorLink.addStyleName( "subhead-control-bg1" );
+				colorLink.addStyleName( "roundcornerSM" );
+				hPanel.add( colorLink );
+
+				// Add the browse image to the link.
 				{
-					Widget anchor;
+					Image colorPickerImg;
+					Element linkElement;
+					Element imgElement;
 					
-					// Get the anchor the user clicked on.
-					anchor = (Widget) event.getSource();
-					
-					// Invoke the "Color Picker" dialog.
-					invokeColorPickerDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop(), m_backgroundColorTextbox );
+					colorPickerImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
+					linkElement = colorLink.getElement();
+					imgElement = colorPickerImg.getElement();
+					imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
+					linkElement.appendChild( imgElement );
 				}
-			};
-			colorHint.addClickHandler( clickHandler );
 
-			++nextRow;
-		}
-		
-		// Add the controls for "Text color"
-		{
-			KeyUpHandler keyUpHandler;
-			ClickHandler clickHandler;
-			Anchor textColorHint;
-			HorizontalPanel hPanel;
-			
-			table.setText( nextRow, 0, GwtTeaming.getMessages().textColorLabel() );
-
-			// Create a panel where the text color control and hint will live.
-			hPanel = new HorizontalPanel();
-			
-			// Add a text box where the user can enter the font color.
-			m_textColorTextbox = new TextBox();
-			m_textColorTextbox.setVisibleLength( 20 );
-			hPanel.add( m_textColorTextbox );
-			
-			// Add a hint next to the text color textbox the user can click on to invoke a color picker.
-			textColorHint = new Anchor( GwtTeaming.getMessages().colorHint() );
-			textColorHint.setTitle( GwtTeaming.getMessages().displayColorPicker() );
-			textColorHint.addStyleName( "editBrandingLink" );
-			hPanel.add( textColorHint );
+				// Add a clickhandler to the color hint.  When the user clicks on the hint we
+				// will invoke the color picker.
+				clickHandler = new ClickHandler()
+				{
+					/**
+					 * Invoke the color picker.
+					 */
+					public void onClick( ClickEvent event )
+					{
+						Widget anchor;
+						
+						// Get the anchor the user clicked on.
+						anchor = (Widget) event.getSource();
+						
+						// Invoke the "Color Picker" dialog.
+						invokeColorPickerDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop(), m_bgColorTextbox );
+					}
+				};
+				colorLink.addClickHandler( clickHandler );
+			}
 			
 			table.setWidget( nextRow, 1, hPanel );
 			
-			// Add a keyup handler so we can update the "sample text" color
-			keyUpHandler = new KeyUpHandler()
-			{
-				/**
-				 * Update the text color of the sample text.
-				 */
-				public void onKeyUp( KeyUpEvent event )
-				{
-					updateSampleTextColor();
-				}
-			};
-			m_textColorTextbox.addKeyUpHandler( keyUpHandler );
-			
-			// Add a clickhandler to the color hint.  When the user clicks on the hint we
-			// will invoke the color picker.
-			clickHandler = new ClickHandler()
-			{
-				/**
-				 * Invoke the color picker.
-				 */
-				public void onClick( ClickEvent event )
-				{
-					Widget anchor;
-					
-					anchor = (Widget) event.getSource();
-					
-					// Invoke the "color picker" dialog
-					invokeColorPickerDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop(), m_textColorTextbox );
-				}
-			};
-			textColorHint.addClickHandler( clickHandler );
-
 			++nextRow;
+			
+			// Add a hint below the background color text box.
+			{
+				Label colorHint;
+				
+				colorHint = new Label( GwtTeaming.getMessages().colorHint() );
+				table.setWidget( nextRow, 1, colorHint );
+				
+				++nextRow;
+			}
 		}
 		
-		// Add a "sample text" field that will display the selected background color and text color.
+		// Add a "sample text" field that will display the selected background color.
 		{
-			HTMLTable.CellFormatter cellFormatter;
-
-			cellFormatter = table.getCellFormatter();
 			cellFormatter.addStyleName( nextRow, 1, "paddingTop8px" );
 
-			m_sampleText = new InlineLabel( GwtTeaming.getMessages().sampleText() );
-			m_sampleText.addStyleName( "editBrandingSampleText" );
-			table.setWidget( nextRow, 1, m_sampleText );
+			m_sampleBGColor = new InlineLabel( "" );
+			m_sampleBGColor.getElement().setInnerHTML( "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+			m_sampleBGColor.addStyleName( "editBrandingSampleText" );
+			table.setWidget( nextRow, 1, m_sampleBGColor );
 			++nextRow;
 		}
 		
@@ -439,11 +423,11 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		{
 			// Is something selected in the "background image" listbox?
 			imgName = "";
-			index = m_backgroundImgListbox.getSelectedIndex();
+			index = m_bgImgListbox.getSelectedIndex();
 			if ( index != -1 )
 			{
 				// Yes
-				imgName = m_backgroundImgListbox.getValue( index );
+				imgName = m_bgImgListbox.getValue( index );
 				
 				// Is "none" or "no available images" selected.
 				if ( imgName.equalsIgnoreCase( NO_IMAGE ) || imgName.equalsIgnoreCase( NO_AVAILABLE_IMAGES ) )
@@ -456,11 +440,22 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			lpProperties.setBackgroundImgName( imgName );
 		}
 		
-		// Get the "stretch background image" value.
-		lpProperties.setStretchImg( m_stretchBgImgCb.getValue() );
+		// Get the selected background repeat value
+		{
+			String repeat = "";
+			
+			if ( m_bgImgRepeatListbox.isVisible() )
+			{
+				index = m_bgImgRepeatListbox.getSelectedIndex();
+				if ( index != -1 )
+					repeat = m_bgImgRepeatListbox.getValue( index );
+			}
+
+			lpProperties.setBackgroundRepeat( repeat );
+		}
 		
 		// Get the background color from the dialog
-		color = m_backgroundColorTextbox.getText();
+		color = m_bgColorTextbox.getText();
 		if ( color != null && color.length() > 0 )
 		{
 			// Is this background color valid?
@@ -473,20 +468,6 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		}
 		lpProperties.setBackgroundColor( color );
 		
-		// Get the font color from the dialog.
-		color = m_textColorTextbox.getText();
-		if ( color != null && color.length() > 0 )
-		{
-			// Is this font color valid?
-			if ( isColorValid( color ) == false )
-			{
-				// No, tell the user about the problem.
-				Window.alert( GwtTeaming.getMessages().invalidTextColor( color ) );
-				return null;
-			}
-		}
-		lpProperties.setFontColor( color );
-		
 		return lpProperties;
 	}
 
@@ -496,7 +477,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return m_backgroundImgListbox;
+		return m_bgImgListbox;
 	}
 
 	/**
@@ -518,6 +499,8 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	 */
 	public void init( LandingPageProperties lpProperties, String binderId )
 	{
+		int index;
+		
 		// Remember the properties we started with.
 		m_origLPProperties = lpProperties;
 		
@@ -526,19 +509,17 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		// Issue an ajax request to get the list of file attachments for this binder.
 		// When we get the response, updateListOfFileAttachments() will be called.
 		getListOfFileAttachmentsFromServer();
-		
-		// Initialize the "stretch image" checkbox.
-		m_stretchBgImgCb.setValue( m_origLPProperties.getStretchImg() );
-		
+
+		// Select the appropriate option in the background repeat listbox
+		index = GwtClientHelper.selectListboxItemByValue( m_bgImgRepeatListbox, m_origLPProperties.getBackgroundRepeat() );
+		if ( index == -1 )
+			m_bgImgRepeatListbox.setSelectedIndex( 0 );
+
 		// Add the background color to the appropriate textbox.
-		m_backgroundColorTextbox.setText( m_origLPProperties.getBackgroundColor() );
-		
-		// Add the text color to the appropriate textbox.
-		m_textColorTextbox.setText( m_origLPProperties.getFontColor() );
+		m_bgColorTextbox.setText( m_origLPProperties.getBackgroundColor() );
 		
 		// Update the sample text with the given background color and font color.
 		updateSampleTextBgColor();
-		updateSampleTextColor();
 	}
 	
 
@@ -660,7 +641,6 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 
 						// Update the sample text with the selected color.
 						updateSampleTextBgColor();
-						updateSampleTextColor();
 					}
 					
 					return true;
@@ -718,7 +698,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		if ( color == null )
 			return false;
 		
-		element = m_sampleText.getElement();
+		element = m_sampleBGColor.getElement();
 		style = element.getStyle();
 		origColor = style.getBackgroundColor();
 		
@@ -806,7 +786,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		int i;
 
 		// Empty the "background image" listbox.
-		m_backgroundImgListbox.clear();
+		m_bgImgListbox.clear();
 		
 		// Do we have any file attachments?
 		if ( listOfFileAttachments != null && listOfFileAttachments.size() > 0 )
@@ -814,7 +794,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			// Yes
 			// Add an entry called "None" to the background listbox.  The user can select "None" if
 			// they don't want to use a background image.
-			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().imgNone(), NO_IMAGE );
+			m_bgImgListbox.addItem( GwtTeaming.getMessages().imgNone(), NO_IMAGE );
 
 			// Add each file name to the "background image" listbox.
 			for (i = 0; listOfFileAttachments != null && i < listOfFileAttachments.size(); ++i)
@@ -822,18 +802,18 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 				String fileName;
 				
 				fileName = listOfFileAttachments.get( i );
-				m_backgroundImgListbox.addItem( fileName, fileName );
+				m_bgImgListbox.addItem( fileName, fileName );
 			}
 		}
 		else
 		{
 			// No
 			// Add an entry called "No available images" to the listbox.
-			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().noImagesAvailable(), NO_AVAILABLE_IMAGES );
+			m_bgImgListbox.addItem( GwtTeaming.getMessages().noImagesAvailable(), NO_AVAILABLE_IMAGES );
 		}
 		
-		// Select the background image file in the listbox that is defined in the original branding data. 
-		selectImageInListbox( m_backgroundImgListbox, m_origLPProperties.getBackgroundImageName() );
+		// Select the background image file in the listbox that is defined in the original landing page properties. 
+		selectImageInListbox( m_bgImgListbox, m_origLPProperties.getBackgroundImageName() );
 	}
 
 	/**
@@ -845,11 +825,11 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		Style style;
 		String color;
 		
-		element = m_sampleText.getElement();
+		element = m_sampleBGColor.getElement();
 		style = element.getStyle();
 		
 		// Get the background color
-		color = m_backgroundColorTextbox.getText();
+		color = m_bgColorTextbox.getText();
 		style.clearBackgroundColor();
 		if ( color != null && color.length() > 0 )
 		{
@@ -860,35 +840,6 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			catch (Exception ex)
 			{
 				// Nothing to do
-			}
-		}
-	}
-	
-	
-	/**
-	 * Update the text color of the sample text with the color found in the textbox.
-	 */
-	private void updateSampleTextColor()
-	{
-		Element element;
-		Style style;
-		String color;
-		
-		element = m_sampleText.getElement();
-		style = element.getStyle();
-		
-		// Set the text color
-		color = m_textColorTextbox.getText();
-		style.clearColor();
-		if ( color != null && color.length() > 0 )
-		{
-			try
-			{
-				style.setColor( color );
-			}
-			catch( Exception ex )
-			{
-				// Nothing to do.
 			}
 		}
 	}

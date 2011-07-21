@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -74,15 +75,18 @@ public class Canvas extends Composite
 		{
 			ImageResource imageResource;
 			Image editImg;
+			Image delImg;
 			FlowPanel actionsPanel;
 			ClickHandler clickHandler;
 			
 			actionsPanel = new FlowPanel();
 			actionsPanel.addStyleName( "lpeCanvasActionsControl" );
 
+			// Add an edit image
 			imageResource = GwtTeaming.getImageBundle().edit10();
 			editImg = new Image( imageResource );
 			editImg.addStyleName( "lpeEditImg" );
+			editImg.setTitle( GwtTeaming.getMessages().lpeAltEditLPProperties() );
 			clickHandler = new ClickHandler()
 			{
 				/**
@@ -101,7 +105,31 @@ public class Canvas extends Composite
 			};
 			editImg.addClickHandler( clickHandler );
 			
+			// Create a "delete" image.
+			{
+				imageResource = GwtTeaming.getImageBundle().delete10();
+				delImg = new Image(imageResource);
+				delImg.setTitle( GwtTeaming.getMessages().lpeAltDeleteAll() );
+				delImg.addStyleName( "lpeDeleteImg" );
+				clickHandler = new ClickHandler()
+				{
+					/**
+					 * Remove all elements from the canvas.
+					 */
+					public void onClick( ClickEvent event )
+					{
+						// Ask the user if they really want to remove all the elements from the landing page.
+						if ( Window.confirm( GwtTeaming.getMessages().lpeDeleteAllWarning() ) )
+						{
+							m_dropZone.removeAllWidgets();
+						}
+					}
+				};
+				delImg.addClickHandler( clickHandler );
+			}
+			
 			actionsPanel.add( editImg );
+			actionsPanel.add( delImg );
 			mainPanel.add( actionsPanel );
 		}
 
