@@ -1284,6 +1284,100 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
 						
 					
+					} else if (type.equals("workflowSetEntryDataValue")) {
+						Element workflowConditionProperty = (Element)rootElement.selectSingleNode("properties/property[@name='dataValue']");
+						if (workflowConditionProperty != null) {
+							List<Element> workflowConditionElements = workflowConditionProperty.selectNodes("workflowSetEntryData");
+							if (workflowConditionElements != null && !workflowConditionElements.isEmpty()) {
+								Element workflowConditionEle = workflowConditionElements.get(0);  //all the same definition
+								//We have the current condition element; print out its values
+								String definitionId = workflowConditionEle.attributeValue("definitionId", "");
+								StringBuffer elementName = new StringBuffer();
+								StringBuffer elementNameView = new StringBuffer();
+								for (Element element:workflowConditionElements) {
+									if (definitionId.equals(element.attributeValue("definitionId"))) {
+										String name = element.attributeValue("elementName", "");
+										if (Validator.isNull(name)) continue;
+										if (elementName.length() > 0) elementName.append(",");
+										elementName.append(name);
+										if (elementNameView.length() > 0) elementNameView.append(", ");
+										String nameText = name;
+										if (name.indexOf(":") >= 0) nameText = name.substring(name.indexOf(":")+1);
+										elementNameView.append(nameText);
+									}
+								}
+								//Get the entry definition itself
+								Definition def = DefinitionHelper.getDefinition(definitionId);
+								if (def != null && elementName.length()>0) {
+									//Put the previous values into hidden fields in case these are not changed
+									sb.append("<input type=\"hidden\" name=\"previous_conditionDefinitionId\"");
+									sb.append(" value=\""+definitionId+"\" />\n");
+									sb.append("<input type=\"hidden\" name=\"previous_conditionElementName\"");
+									sb.append(" value=\""+elementName+"\" />\n");
+									
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.workflowSetEntryData"));
+									sb.append("</span><br/><br/>");
+									sb.append("<table class=\"ss_form\"><tbody>");
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionEntryType"));
+									sb.append("</span>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
+									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
+										sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")
+												.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</del>");
+									} else {
+										sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")
+												.replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+									}
+									sb.append("</td>");
+									sb.append("</tr>");
+									
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionElementName"));
+									sb.append("</span>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
+									sb.append(elementNameView.toString());
+									sb.append("</td>");
+									sb.append("</tr>");
+																		
+									sb.append("</tbody></table>");
+									sb.append("");
+									sb.append("");
+									sb.append("<br/>");
+								}
+							}
+						}
+						
+						sb.append("<span class=\"ss_bold\">");
+						sb.append(NLT.get("definition.selectEntryType"));
+						sb.append("</span><br/>");
+						sb.append("<select name=\"conditionDefinitionId\" ");
+						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_data_elements')\" ");
+						sb.append(">\n");
+						sb.append("<option value=\"-\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
+						sb.append("<option value=\"\">").append(NLT.get("common.select.none")).append("</option>\n");
+						//GET both entry and file Entry definitions
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(this.binderId, Definition.FOLDER_ENTRY);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
+							//Build a list of the entry definitions
+							Definition entryDef = me.getValue();
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")
+									.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
+						}
+						sb.append("</select>\n<br/><br/>\n");
+						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
+						sb.append("<div id=\"conditionOperations\"></div><br/>\n");
+						sb.append("<div id=\"conditionOperand\"></div>\n");
+						
+					
 					} else if (type.equals("workflowStatesList")) {
 						String selectedId ="";
 						List<String> previousStates = new ArrayList();

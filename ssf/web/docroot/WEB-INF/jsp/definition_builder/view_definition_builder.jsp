@@ -61,6 +61,8 @@
 %>
 <script type="text/javascript">
 	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find/find.js");
+	dojo.require("dijit.form.DateTextBox");
+	dojo.require("dijit.form.TimeTextBox");
 </script> 
 <script type="text/javascript">
 
@@ -612,7 +614,7 @@ function ss_saveUserGroupResults(s) {
 </td>
 <td align="right">
 
-<form action="<ssf:url actionUrl="false" binderId="${ssBinderId}" action="manage_definitions"/>" 
+<form name="form1" action="<ssf:url actionUrl="false" binderId="${ssBinderId}" action="manage_definitions"/>" 
 				method="post">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </form>
