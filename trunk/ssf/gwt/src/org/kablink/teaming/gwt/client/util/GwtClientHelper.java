@@ -53,7 +53,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
@@ -76,6 +75,9 @@ public class GwtClientHelper {
 	// Marker string used to recognize the format of a URL.
 	private final static String PERMALINK_MARKER = "view_permalink";
 
+	// Number of milliseconds in a day.
+    public static final long DAY_IN_MS = (24L * 60L * 60L * 1000L);
+    
 	// Enumeration value used to interact with scroll bars on
 	// something.
 	public enum ScrollType {
@@ -172,7 +174,7 @@ public class GwtClientHelper {
 	}
 
 	/**
-     * Returns the client's time zone offset.
+     * Returns the client's timezone offset.
 	 * 
 	 * Note:
 	 *    We use deprecated APIs here since GWT's client side has no
@@ -188,6 +190,41 @@ public class GwtClientHelper {
 		return tzo;
 	}
 	
+	/**
+	 * Returns the client's timezone offset in milliseconds.
+	 * 
+	 * @return
+	 */
+	public static long getTimeZoneOffsetMillis() {
+		return (((long) getTimeZoneOffset()) * 60L * 1000L);
+	}
+	
+    /**
+     * Converts a time in GMT to a GWT Date object which is in the
+     * timezone of the browser.
+     * 
+     * @param time
+     * 
+     * @return
+     */
+    public static final Date gmtToLocal(Date date) {       
+        // Add the timezone offset.
+        return new Date(date.getTime() + getTimeZoneOffsetMillis());
+    }
+
+    /**
+     * Converts a GWT Date in the timezone of the browser to a time in
+     * GMT.
+     * 
+     * @param date
+     * 
+     * @return
+     */
+    public static final Date localToGmt(Date date) {
+        // Remove the timezone offset.        
+        return new Date(date.getTime() - getTimeZoneOffsetMillis());
+    }
+   
 	/*
 	 * Applies patches to a message string.
 	 */
