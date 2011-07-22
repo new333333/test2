@@ -345,7 +345,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("binder/get_entry_elements", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
-				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
+					op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_DATA_VALUE_LIST)) {
 				return new ModelAndView("definition_builder/get_condition_element", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_WORKFLOW_STATES)) {
 				return new ModelAndView("definition_builder/get_entry_workflow_states", model);
@@ -484,8 +484,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 				op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 			return ajaxGetFilterData(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_DATA_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_USER_LIST_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_DATA_OPERATIONS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_DATA_VALUE_LIST) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 			return ajaxGetConditionData(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_WORKFLOW_STATES)) {
@@ -1557,7 +1560,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.CONDITION_ELEMENT_OPERATION, value);
 		}
 		
-		value = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_VALUE);
+		value = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_VALUE, null);
 		if (Validator.isNotNull(value)) {
 			model.put(WebKeys.CONDITION_ELEMENT_VALUE, value);
 		}
@@ -1565,10 +1568,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element", model);
+		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_DATA_ELEMENTS)) {
+			return new ModelAndView("definition_builder/get_condition_entry_data_element", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_USER_LIST_ELEMENTS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_user_list_element", model);
+		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_DATA_OPERATIONS)) {
+			return new ModelAndView("definition_builder/get_condition_entry_data_element_operations", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element_operations", model);
+		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_DATA_VALUE_LIST)) {
+			return new ModelAndView("definition_builder/get_condition_entry_data_element_value", model);
 		} else {
 			return new ModelAndView("definition_builder/get_condition_entry_element_value", model);
 		}

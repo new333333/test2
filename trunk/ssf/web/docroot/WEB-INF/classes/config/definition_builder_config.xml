@@ -4038,11 +4038,11 @@
 		</properties>
 	</item>
 	
-	<item name="variable" caption="__workflow_variable" >
+	<item name="variable" caption="__workflow_variable_set" >
 		<properties>
-			<property name="value" caption="__workflow_variable_value" type="text" />
 			<property name="name" caption="__workflow_variable_name" type="text" 
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
+			<property name="value" caption="__workflow_variable_value" type="text" />
 		</properties>
 	</item>
 	
@@ -4129,6 +4129,7 @@
 			<option name="stopParallelThread" />
 			<option name="startProcess" />
 			<option name="notifications" />
+			<option name="setEntryData" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
@@ -4145,6 +4146,7 @@
 			<option name="stopParallelThread" />
 			<option name="startProcess" />
 			<option name="notifications" />
+			<option name="setEntryData" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
@@ -4185,6 +4187,12 @@
 			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupNotification" caption="__notification_bcclist" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
+		</properties>
+	</item>
+	
+	<item name="setEntryData" caption="__setEntryData">
+		<properties>
+			<property name="dataValue" caption="__entry_data_value" type="workflowSetEntryDataValue" />
 		</properties>
 	</item>
 	
