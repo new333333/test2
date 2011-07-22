@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TimePicker;
 import org.kablink.teaming.gwt.client.widgets.ValueSpinner;
+import org.kablink.teaming.gwt.client.widgets.TZDateBox;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -87,10 +88,11 @@ public class TaskDueDateDlg extends DlgBox
 	// Event handlers implemented by this class.
 		TaskPickDateEvent.Handler
 	{
-	private CheckBox				m_allDayCB;
+	private CheckBox				m_allDayCB;				// The all day checkbox.
+	private DlgLabel				m_bannerLabel;			// The banner at the top of the dialog containing the task's title.
 	private FlexTable				m_taskDueDateTable;		// Once displayed, the table of task due date dialog's widgets.
 	private int						m_durationDaysRow;		// The index of the row in the table that contains the duration days spinner.
-	private Map<String, DateBox>	m_dateBoxMap;			// Map of the DateBox    widgets, indexed by their base ID.
+	private Map<String, TZDateBox>	m_dateBoxMap;			// Map of the TZDateBox  widgets, indexed by their base ID.
 	private Map<String, TimePicker>	m_timePickerMap;		// Map of the TimePicker widgets, indexed by their base ID.
 	private TaskEvent				m_selectedTaskEvent;	// The task whose due date is being edited.
 	private TaskInfo				m_selectedTask;			// The task whose due date is being edited.
@@ -117,17 +119,46 @@ public class TaskDueDateDlg extends DlgBox
 	 * Inner class that wraps labels displayed in the dialog's content.
 	 */
 	private class DlgLabel extends Label {
+		/**
+		 * Class constructor.
+		 * 
+		 * @param label
+		 * @param addedStyle
+		 */
 		public DlgLabel(String label, String addedStyle) {
 			super(label);
+			setStyles(addedStyle);
+		}
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param label
+		 */
+		public DlgLabel(String label) {
+			this(label, null);
+		}
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ignored
+		 * @param addedStyle
+		 */
+		public DlgLabel(boolean ignored, String addedStyle) {
+			super();
+			setStyles(addedStyle);
+		}
+
+		/*
+		 * Sets the DlgLabel's styles.
+		 */
+		private void setStyles(String addedStyle) {
 			addStyleName("taskDueDateDlg_Label");
 			if (!(GwtClientHelper.hasString(addedStyle))) {
 				addedStyle = "gwtUI_nowrap";
 			}
 			addStyleName(addedStyle);
-		}
-		
-		public DlgLabel(String label) {
-			this(label, null);
 		}
 	}
 
@@ -151,7 +182,7 @@ public class TaskDueDateDlg extends DlgBox
 			this);
 		
 		// ...initialize everything else...
-		m_dateBoxMap        = new HashMap<String, DateBox>();
+		m_dateBoxMap        = new HashMap<String, TZDateBox>();
 		m_timePickerMap     = new HashMap<String, TimePicker>();
 		m_taskTable         = taskTable;
 		m_selectedTask      = selectedTask;
@@ -192,10 +223,9 @@ public class TaskDueDateDlg extends DlgBox
 		VerticalPanel vp = new VerticalPanel();
 
 		// ...add the title of the top of the dialog...
-		vp.add(
-			new DlgLabel(
-				m_selectedTask.getTitle(),
-				"taskDueDateDlg_TaskTitle"));
+		m_bannerLabel = new DlgLabel(false, "taskDueDateDlg_TaskTitle");
+		vp.add(m_bannerLabel);
+		setBanner();
 
 		// ...create Grid for it...
 		m_taskDueDateTable = new FlexTable();
@@ -205,8 +235,8 @@ public class TaskDueDateDlg extends DlgBox
 
 		// ...populate the grid...
 		renderAllDayRow();
-		renderDateRow(IDSTART, m_messages.taskDueDateDlgLabelStart());
-		renderDateRow(IDEND,   m_messages.taskDueDateDlgLabelEnd()  );
+		renderDateRow(true,  m_messages.taskDueDateDlgLabelStart());	// true --> Start date.
+		renderDateRow(false, m_messages.taskDueDateDlgLabelEnd()  );	// false -> End date.
 		renderDurationRow();
 		renderClearAllRow();
 		
@@ -324,15 +354,14 @@ public class TaskDueDateDlg extends DlgBox
 	 * If anything is invalid, the user is told about the problem and
 	 * null is returned.
 	 */
-	@SuppressWarnings("deprecation")
 	private TaskEvent getNewTaskDueDate() {
 		String      alertMessage = null;
 		TaskEvent   reply        = null;
 		
-		DateBox    startDate = m_dateBoxMap.get(   IDSTART); boolean hasStartDate = hasDateBoxDate(startDate); 
+		TZDateBox  startDate = m_dateBoxMap.get(   IDSTART); boolean hasStartDate = hasDateBoxDate(startDate); 
 		TimePicker startTime = m_timePickerMap.get(IDSTART); boolean hasStartTime = startTime.hasTime();
 		
-		DateBox    endDate   = m_dateBoxMap.get(   IDEND  ); boolean hasEndDate   = hasDateBoxDate(endDate  );
+		TZDateBox  endDate   = m_dateBoxMap.get(   IDEND  ); boolean hasEndDate   = hasDateBoxDate(endDate  );
 		TimePicker endTime   = m_timePickerMap.get(IDEND  ); boolean hasEndTime   = endTime.hasTime();
 		
 		boolean hasDurationDays = m_durationDays.hasValue();
@@ -346,23 +375,10 @@ public class TaskDueDateDlg extends DlgBox
 			else if                    (!hasEndDate)  alertMessage = m_messages.taskDueDateDlgError_NoEnd();
 			else {
 				// Yes!  Construct an appropriate TaskEvent to return.
-				reply = new TaskEvent(true);
-				reply.setAllDayEvent(true);
-				
-				int tzoM = GwtClientHelper.getTimeZoneOffset();	// Time zone offset, in minutes.
-				int hFix = ((0 < tzoM) ? 24 : 0);				// Hour adjustment so we don't change days.
-				
-				Date jDate = startDate.getValue();
-				jDate.setHours(   hFix);	// An all day start...
-				jDate.setMinutes(-tzoM);	// ...is always at...
-				jDate.setSeconds( 0   );	// ...midnight GMT.
-				reply.setActualStart(new TaskDate(jDate));
-				
-				jDate = endDate.getValue();
-				jDate.setHours(   hFix);	// An all day end...
-				jDate.setMinutes(-tzoM);	// ...is always at...
-				jDate.setSeconds(-1   );	// ...1 second before midnight GMT.
-				reply.setActualEnd(new TaskDate(jDate));
+				reply = new TaskEvent(true                                         );	// true -> Initialize with null dates.
+				reply.setAllDayEvent( true                                         );				
+				reply.setActualStart( new TaskDate(getAllDayActualStart(startDate)));
+				reply.setActualEnd(   new TaskDate(getAllDayActualEnd(  endDate  )));
 			}
 		}
 		
@@ -399,22 +415,22 @@ public class TaskDueDateDlg extends DlgBox
 				if (hasStart && (!hasEnd) && (!hasDurationDays)) {
 					// Condition 1 has been met.
 					reply = new TaskEvent(true);
-					reply.setActualStart(getTDFromDT(startDate.getValue(), startTime.getDateTime()));
+					reply.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
 				}
 				
 				else {
 					if (hasStart && hasEnd && (!hasDurationDays)) {
 						// Condition 2 has been met.
 						reply = new TaskEvent(true);
-						reply.setActualStart(getTDFromDT(startDate.getValue(), startTime.getDateTime()));
-						reply.setActualEnd(  getTDFromDT(endDate.getValue(),   endTime.getDateTime()));
+						reply.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
+						reply.setActualEnd(  getTDFromDT(new Date(endDate.getValue()),   endTime.getDateTime()));
 					}
 					
 					else {
 						if (hasStart && (!hasEnd) && hasDurationDays) {
 							// Condition 3 has been met.
 							reply = new TaskEvent(true);
-							reply.setActualStart(getTDFromDT(startDate.getValue(), startTime.getDateTime()));
+							reply.setActualStart(getTDFromDT(new Date(startDate.getValue()), startTime.getDateTime()));
 							reply.setDuration(new TaskDuration((int) m_durationDays.getSpinner().getValue()));
 						}
 						
@@ -451,8 +467,8 @@ public class TaskDueDateDlg extends DlgBox
 	 * Returns true if a DateBox widget has a value and false
 	 * otherwise.
 	 */
-	private boolean hasDateBoxDate(DateBox db) {
-		String value = db.getTextBox().getValue();
+	private boolean hasDateBoxDate(TZDateBox db) {
+		String value = db.getDateBox().getTextBox().getValue();
 		return ((null != value) && (0 < value.length()));
 	}
 	
@@ -471,6 +487,31 @@ public class TaskDueDateDlg extends DlgBox
 	private boolean isAllDayEvent() {
 		return (hasEvent() && m_selectedTaskEvent.getAllDayEvent());
 	}
+
+	/*
+	 * Returns the Date to use as the actual end date of an all day
+	 * event.
+	 */
+	@SuppressWarnings("deprecation")
+	private Date getAllDayActualEnd(TZDateBox db) {
+		Date date = new Date(db.getRawValue());
+		
+		int tzoM = GwtClientHelper.getTimeZoneOffset();	// Time zone offset, in minutes.
+		int hFix = ((0 < tzoM) ? 24 : 0);				// Hour adjustment so we don't change days.
+		date.setHours(   hFix);							// An all day end...
+		date.setMinutes(-tzoM);							// ...is always at...
+		date.setSeconds(-1   );							// ...1 second before midnight GMT.
+		
+		return date;
+	}
+	
+	/*
+	 * Returns the Date to use as the actual start date of an all day
+	 * event.
+	 */
+	private Date getAllDayActualStart(TZDateBox db) {
+		return new Date(db.getValue());
+	}
 	
 	/**
 	 * Handles TaskPickDateEvent's received by this class.
@@ -482,8 +523,8 @@ public class TaskDueDateDlg extends DlgBox
 	@Override
 	public void onTaskPickDate(TaskPickDateEvent event) {
 		String datePickerId = event.getDatePickerId();
-		DateBox db = m_dateBoxMap.get(datePickerId);
-		db.showDatePicker();
+		TZDateBox db = m_dateBoxMap.get(datePickerId);
+		db.getDateBox().showDatePicker();
 	}
 
 	/*
@@ -496,15 +537,26 @@ public class TaskDueDateDlg extends DlgBox
 			public void onClick(ClickEvent event) {
 				// Based on the current state of the checkbox...
 				CheckBox cb = ((CheckBox) event.getSource());
-				boolean notAllDay = (!(cb.getValue()));
+				boolean allDay = cb.getValue();
 				
 				// ...hide/show the time picker widgets...
 				for (String tpKey:  m_timePickerMap.keySet()) {
-					m_timePickerMap.get(tpKey).setVisible(notAllDay);
+					TimePicker tp = m_timePickerMap.get(tpKey);
+					if (allDay) {
+						tp.clearTime();
+					}
+					tp.setVisible(!allDay);
+				}
+
+				// ...set the correct timezone offset in the date box
+				// ...widgets...
+				for (String dpKey:  m_dateBoxMap.keySet()) {
+					TZDateBox db = m_dateBoxMap.get(dpKey);
+					db.setTZOffset(allDay ? GwtClientHelper.getTimeZoneOffsetMillis() : 0);
 				}
 				
 				// ...and hide/show the duration days row.
-				m_taskDueDateTable.getRowFormatter().setVisible(m_durationDaysRow, notAllDay);
+				m_taskDueDateTable.getRowFormatter().setVisible(m_durationDaysRow, (!allDay));
 			}
 		});
 		setAllDay();
@@ -544,12 +596,12 @@ public class TaskDueDateDlg extends DlgBox
 	/*
 	 * Renders a date row into the dialog.
 	 */
-	private void renderDateRow(String baseId, String label) {
+	private void renderDateRow(boolean isStart, String label) {
 		// Determine the date to initialize the pickers with...
 		TaskDate taskDate;
 		if (!hasEvent())
 		     taskDate = null;
-		else taskDate = (baseId.equals(IDSTART) ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
+		else taskDate = (isStart ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
 		Date pickerDate = ((null == taskDate) ? null : taskDate.getDate());
 
 		// ...create the DateBox...
@@ -558,9 +610,14 @@ public class TaskDueDateDlg extends DlgBox
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.addStyleName("taskDispositionDlg_DateTimeTable");
 		DateTimeFormat dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
-		DateBox dateBox = new DateBox(new DatePicker(), pickerDate, new DateBox.DefaultFormat(dateFormat));
+		TZDateBox dateBox = new TZDateBox(new DatePicker(), (-1), new DateBox.DefaultFormat(dateFormat));
+		dateBox.setTZOffset(isAllDayEvent() ? GwtClientHelper.getTimeZoneOffsetMillis() : 0);
+		if (null != pickerDate) {
+			dateBox.setValue(pickerDate.getTime());
+		}
+		String baseId = (isStart ? IDSTART : IDEND);
 		String rowId = (IDBASE + baseId);
-		DatePicker dp = dateBox.getDatePicker();
+		DatePicker dp = dateBox.getDateBox().getDatePicker();
 		dp.getElement().setId(rowId + IDDATE);
 		dateBox.getElement().setId(rowId);
 		hp.add(dateBox);
@@ -588,6 +645,7 @@ public class TaskDueDateDlg extends DlgBox
 		hp.add(tp);
 		m_timePickerMap.put(baseId, tp);
 		if (isAllDayEvent()) {
+			tp.clearTime();
 			tp.setVisible(false);
 		}
 
@@ -623,9 +681,10 @@ public class TaskDueDateDlg extends DlgBox
 		m_selectedTaskEvent = m_selectedTask.getEvent();
 
 		// ...and put it into affect.
+		setBanner();
 		setAllDay();
-		setDueDate(IDSTART);
-		setDueDate(IDEND  );
+		setDueDate(true );	// true --> Start date.
+		setDueDate(false);	// false -> End date.
 		setDurationDays();
 	}
 
@@ -638,23 +697,35 @@ public class TaskDueDateDlg extends DlgBox
 	}
 
 	/*
+	 * Sets the value of the banner label to the task's title.
+	 */
+	private void setBanner() {
+		m_bannerLabel.setText(m_selectedTask.getTitle());
+	}
+	
+	/*
 	 * Set the value of a set of the due date widgets. 
 	 */
-	private void setDueDate(String baseId) {
+	private void setDueDate(boolean isStart) {
 		// Extract the date for the picker...
 		TaskDate taskDate;
 		if (!hasEvent())
 		     taskDate = null;
-		else taskDate = (baseId.equals(IDSTART) ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
+		else taskDate = (isStart ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
 		Date pickerDate = ((null == taskDate) ? null : taskDate.getDate());
 
 		// ...use it to set the date box...
-		DateBox db = m_dateBoxMap.get(baseId);
-		db.setValue(pickerDate);
+		String baseId = (isStart ? IDSTART : IDEND);
+		TZDateBox db = m_dateBoxMap.get(baseId);
+		db.setTZOffset(isAllDayEvent() ? GwtClientHelper.getTimeZoneOffsetMillis() : 0);
+		db.setValue(pickerDate.getTime());
 
 		// ...and time picker.
 		TimePicker tp = m_timePickerMap.get(baseId);
 		tp.setDateTime(pickerDate);
+		if (isAllDayEvent()) {
+			tp.clearTime();
+		}
 		tp.setVisible(!(isAllDayEvent())); 
 	}
 
