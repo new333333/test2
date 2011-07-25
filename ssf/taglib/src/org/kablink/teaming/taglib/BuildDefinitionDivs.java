@@ -710,9 +710,10 @@ public class BuildDefinitionDivs extends TagSupport {
 						} else if (propertyValue0.equalsIgnoreCase("true")) {
 							checked = "checked=\"checked\"";
 						}
-						sb.append("<br/><input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
+						sb.append("<div><input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
 						sb.append(NLT.getDef(propertyConfig.attributeValue("caption", ""))
 								.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+						sb.append("</div>");
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
@@ -1287,11 +1288,14 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else if (type.equals("workflowSetEntryDataValue")) {
 						Element workflowConditionProperty = (Element)rootElement.selectSingleNode("properties/property[@name='dataValue']");
 						if (workflowConditionProperty != null) {
-							List<Element> workflowConditionElements = workflowConditionProperty.selectNodes("workflowSetEntryData");
+							List<Element> workflowConditionElements = workflowConditionProperty.selectNodes("workflowSetEntryDataValue");
 							if (workflowConditionElements != null && !workflowConditionElements.isEmpty()) {
 								Element workflowConditionEle = workflowConditionElements.get(0);  //all the same definition
 								//We have the current condition element; print out its values
 								String definitionId = workflowConditionEle.attributeValue("definitionId", "");
+								String operation = workflowConditionEle.attributeValue("operation", "");
+								String duration = workflowConditionEle.attributeValue("duration", "");
+								String durationType = workflowConditionEle.attributeValue("durationType", "");
 								StringBuffer elementName = new StringBuffer();
 								StringBuffer elementNameView = new StringBuffer();
 								for (Element element:workflowConditionElements) {
@@ -1314,6 +1318,20 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append(" value=\""+definitionId+"\" />\n");
 									sb.append("<input type=\"hidden\" name=\"previous_conditionElementName\"");
 									sb.append(" value=\""+elementName+"\" />\n");
+									sb.append("<input type=\"hidden\" name=\"previous_conditionElementOperation\"");
+									sb.append(" value=\""+operation+"\" />\n");
+									if (!duration.equals("") && !durationType.equals("")) {
+										sb.append("<input type=\"hidden\" name=\"previous_operationDuration\"");
+										sb.append(" value=\""+duration+"\" />\n");
+										sb.append("<input type=\"hidden\" name=\"previous_operationDurationType\"");
+										sb.append(" value=\""+durationType+"\" />\n");
+									}
+									//See if there are values
+									Iterator it_workflowConditionValues = workflowConditionEle.elementIterator("value");
+									while (it_workflowConditionValues.hasNext()) {
+										sb.append("<input type=\"hidden\" name=\"previous_conditionElementValue\"");
+										sb.append(" value=\""+((Element)it_workflowConditionValues.next()).getText()+"\" />\n");
+									}
 									
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.workflowSetEntryData"));
@@ -1347,6 +1365,75 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</td>");
 									sb.append("</tr>");
 																		
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionOperation"));
+									sb.append("</span>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
+									if (operation.equals("set")) {
+										sb.append(NLT.get("definition.operation_set"));
+									} else if (operation.equals("increment")) {
+										sb.append(NLT.get("definition.operation_increment"));
+									} else if (operation.equals("decrement")) {
+										sb.append(NLT.get("definition.operation_decrement"));
+									} else if (operation.equals("setCurrentDate")) {
+										sb.append(NLT.get("definition.operation_setCurrentDate"));
+									} else if (operation.equals("setCurrentDateStart")) {
+										sb.append(NLT.get("definition.operation_setCurrentDateStart"));
+									} else if (operation.equals("incrementStart")) {
+										sb.append(NLT.get("definition.operation_incrementStart"));
+									} else if (operation.equals("setCurrentDateEnd")) {
+										sb.append(NLT.get("definition.operation_setCurrentDateEnd"));
+									} else if (operation.equals("incrementEnd")) {
+										sb.append(NLT.get("definition.operation_incrementEnd"));
+									} else {
+										sb.append(operation);
+									}
+									sb.append("</td>");
+									sb.append("</tr>");
+									
+									//See if there is a duration
+									if (!duration.equals("") && !durationType.equals("")) {
+										sb.append("<tr>");
+										sb.append("<td valign=\"top\">");
+										sb.append("<span class=\"ss_bold\">");
+										sb.append(NLT.get("definition.currentWorkflowConditionAmount"));
+										sb.append("</span>");
+										sb.append("</td>");
+										sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
+										sb.append(duration);
+										sb.append(" ");
+										if (durationType.equals("minutes")) {
+											sb.append(NLT.get("definition.currentWorkflowConditionDurationMinutes"));
+										} else if (durationType.equals("hours")) {
+											sb.append(NLT.get("definition.currentWorkflowConditionDurationHours"));
+										} else if (durationType.equals("days")) {
+											sb.append(NLT.get("definition.currentWorkflowConditionDurationDays"));
+										}
+										sb.append("</td>");
+										sb.append("</tr>");
+									}
+									
+									//See if there are values
+									it_workflowConditionValues = workflowConditionEle.elementIterator("value");
+									if (it_workflowConditionValues.hasNext()) {
+										sb.append("<tr>");
+										sb.append("<td valign=\"top\">");
+										sb.append("<span class=\"ss_bold\">");
+										sb.append(NLT.get("definition.currentWorkflowConditionValues"));
+										sb.append("</span>");
+										sb.append("</td>");
+										sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
+										while (it_workflowConditionValues.hasNext()) {
+											sb.append(((Element)it_workflowConditionValues.next()).getText());
+											if (it_workflowConditionValues.hasNext()) sb.append("<br/>");
+										}
+										sb.append("</td>");
+										sb.append("</tr>");
+									}
+										
 									sb.append("</tbody></table>");
 									sb.append("");
 									sb.append("");
@@ -1577,7 +1664,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					sb.append("<input type=\"hidden\" name=\"propertyName_" + propertyId + "\" ");
 					sb.append("value=\""+Html.formatTo(propertyName)+"\"/>\n");
-					sb.append("<br/><br/>\n");
+					sb.append("<br/>\n");
 				}
 			
 			sb.append("<br/>");
@@ -1832,11 +1919,13 @@ public class BuildDefinitionDivs extends TagSupport {
 						Element property = (Element) itProperties.next();
 						String name = property.attributeValue("name", "");
 						String caption = name;
+						String type = "";
 						if (configItem != null) {
 							//Get the property caption from the config definitions
 							Element configPropertyEle = (Element)configItem.selectSingleNode("./properties/property[@name='"+name+"']");
 							if (configPropertyEle != null) {
 								String configCaption = configPropertyEle.attributeValue("caption", "");
+								type = configPropertyEle.attributeValue("type", "");
 								if (!configCaption.equals("")) caption = configCaption;
 							}
 						}
@@ -1851,6 +1940,25 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<li>");
 							sb.append("<span class='ss_infoDivName'>"+name+":</span> <span class='ss_infoDivValue'>" + NLT.getDef(value) + "</span>");
 							sb.append("</li>");
+						} else if (!name.equals("") && type.equals("workflowSetEntryDataValue")) {
+							Element setEntryDataValueEle = (Element)item.selectSingleNode("./properties/property[@name='dataValue']");
+							if (setEntryDataValueEle != null) {
+								Element workflowSetEntryDataValueEle = (Element)setEntryDataValueEle.selectSingleNode("workflowSetEntryDataValue");
+								//Output the "set data" params
+								if (!startDivText.equals("")) {
+									sb.append(startDivText);
+									startDivText = "";
+									endDivText = "</ul>\n</div>\n";
+								}
+								sb.append("<li>");
+								name = workflowSetEntryDataValueEle.attributeValue("operation", "?");
+								if (!name.equals("?")) {
+									name = NLT.get("definition.operation_"+name);
+								}
+								value = workflowSetEntryDataValueEle.attributeValue("elementName", "?");
+								sb.append("<span class='ss_infoDivName'>"+name+":</span> <span class='ss_infoDivValue'>" + NLT.getDef(value) + "</span>");
+								sb.append("</li>");
+							}
 						}
 					}
 					sb.append(endDivText);

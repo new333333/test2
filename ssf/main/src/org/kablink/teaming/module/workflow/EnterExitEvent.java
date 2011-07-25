@@ -62,6 +62,7 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
@@ -86,6 +87,8 @@ import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.definition.notify.NotifyVisitor;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
+import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.workflow.WorkflowProcessUtils.WfNotify;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowAction;
 import org.kablink.teaming.module.workflow.support.WorkflowScheduledAction;
@@ -169,6 +172,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 		   			String name = item.attributeValue("name","");
 		   			if ("variable".equals(name)) {
 		   				WorkflowProcessUtils.setVariable(item, executionContext, entry, ws);
+		   			} else if ("setEntryData".equals(name)) {
+		   				setEntryData(item, executionContext, entry, ws);
 		   			} else if ("notifications".equals(name)) {
 		   				//don't send mail if forcing state
 		   				if (isEnter && ws.getState().equals(executionContext.getContextInstance().getTransientVariable(WorkflowModule.FORCE_STATE))) continue;
@@ -423,6 +428,58 @@ public class EnterExitEvent extends AbstractActionHandler {
 		}
 		return false;
 	}
+
+	protected void setEntryData(Element item, ExecutionContext executionContext, WorkflowSupport wfEntry, WorkflowState currentWs) {
+		Entry entry = (Entry)wfEntry;
+		Binder parent = entry.getParentBinder();
+    	List<Element> props;
+    	String name, value, type;
+    	props = item.selectNodes("./properties/property");
+ 		if (props != null) {
+	    	for (Element prop:props) {
+	    		name = prop.attributeValue("name","");
+	    		value = prop.attributeValue("value","");
+	    		if ("dataValue".equals(name)) {
+		    		Element wsedv = (Element)prop.selectSingleNode("workflowSetEntryDataValue");
+		    		if (wsedv != null) {
+		    			String defId = wsedv.attributeValue("definitionId", "");
+		    			String dataName = wsedv.attributeValue("elementName", "");
+		    			String operation = wsedv.attributeValue("operation", "");
+		    			String duration = wsedv.attributeValue("duration", "");
+		    			String durationType = wsedv.attributeValue("durationType", "");
+		    			String dataValue = "";
+		    			Element wsedvValueEle = (Element)wsedv.selectSingleNode("value");
+		    			if (wsedvValueEle != null) {
+		    				dataValue = wsedvValueEle.getText();
+		    			}
+		    			//Is the entry type one that we are dealing with?
+		    			if (!dataName.equals("") && entry.getEntryDefId().equals(defId)) {
+		    				//Yes, do the modification
+		    				Map updates = new HashMap();
+		    				if (operation.equals("set")) {
+		    					updates.put(dataName, dataValue);
+		    				}
+		    				
+			    			//Are there any changes to be made?
+			    			if (!updates.isEmpty()) {
+			    				EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
+			    				try {
+			    					processor.modifyEntry(parent, entry, new MapInputData(updates), null, null, null, null);
+			    				} catch(Exception e) {
+			    					//The modify failed, log it on the console
+			    					logger.error("Error setting entry data from a workflow: (" +
+			    							operation + " " + dataName + " in: " + entry.getTitle() + "). " + 
+			    							e.getLocalizedMessage());
+			    				}
+			    			}
+		    			}
+		    		}
+		    	}
+	    	}
+ 		}
+
+	}
+
 	protected void doNotification(Element item, ExecutionContext executionContext, WorkflowSupport wEntry, WorkflowState currentWs) {
 		Entry entry = (Entry)wEntry;
 		WorkflowProcessUtils.WfNotify notify = WorkflowProcessUtils.getNotification(item, wEntry);
@@ -481,8 +538,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 		StringWriter writer = new StringWriter();
 		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.TEXT, "workflow_notification_header.vm");
 		tMsg.append(writer.toString());
-		tMsg.append(permaLink);
-		tMsg.append("\n\n");
+		if (notify.isIncludeLink()) {
+			tMsg.append(permaLink);
+			tMsg.append("\n\n");
+		}
 		
 		String bodyText = MarkupUtil.markupStringReplacement(null, null, null, null, entry, notify.getBody(), WebKeys.MARKUP_VIEW);
 		tMsg.append(Html.stripHtml(bodyText));
@@ -507,12 +566,14 @@ public class EnterExitEvent extends AbstractActionHandler {
 		writer = new StringWriter();
 		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.HTML, "workflow_notification_header.vm");
 		hMsg.append(writer.toString());
-		hMsg.append("<a href=\"");
-		hMsg.append(permaLink);
-		hMsg.append("\">");
-		hMsg.append(entry.getTitle());
-		hMsg.append("</a>");
-		hMsg.append("<br /><br />");
+		if (notify.isIncludeLink()) {
+			hMsg.append("<a href=\"");
+			hMsg.append(permaLink);
+			hMsg.append("\">");
+			hMsg.append(entry.getTitle());
+			hMsg.append("</a>");
+			hMsg.append("<br /><br />");
+		}
 		hMsg.append(bodyTextHtml);
 		if (notify.isAppendBody()) {
 			hMsg.append("<p>");
