@@ -59,6 +59,8 @@ import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.MenuHideEvent;
+import org.kablink.teaming.gwt.client.event.MenuShowEvent;
 import org.kablink.teaming.gwt.client.event.SearchAdvancedEvent;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
@@ -81,6 +83,7 @@ import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
@@ -93,7 +96,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -165,6 +167,8 @@ public class GwtMainPage extends Composite
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
+		MenuHideEvent.Handler,
+		MenuShowEvent.Handler,
 		SearchAdvancedEvent.Handler,
 		SearchRecentPlaceEvent.Handler,
 		SearchSavedEvent.Handler,
@@ -252,6 +256,10 @@ public class GwtMainPage extends Composite
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
 		TeamingEvents.MASTHEAD_SHOW,
+		
+		// Menu events
+		TeamingEvents.MENU_HIDE,
+		TeamingEvents.MENU_SHOW,
 
 		// Search events.
 		TeamingEvents.SEARCH_ADVANCED,
@@ -688,9 +696,9 @@ public class GwtMainPage extends Composite
 	 * This method will show/hide controls based on these settings.
 	 */
 	private native void initHandleLandingPageOptionsJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_handleLandingPageOptions = function( hideMasthead, hideSidebar, showBranding )
+		$wnd.ss_handleLandingPageOptions = function( hideMasthead, hideSidebar, showBranding, hideMenu )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleLandingPageOptions(ZZZ)( hideMasthead, hideSidebar, showBranding );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleLandingPageOptions(ZZZZ)( hideMasthead, hideSidebar, showBranding, hideMenu );
 		}//end ss_handleLandingPageOptions()
 	}-*/;
 
@@ -1074,7 +1082,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
-	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding )
+	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding, boolean hideMenu )
 	{
 		// If we are running in captive mode we never want to show the masthead of sidebar.
 		// Are we running in captive mode (GroupWise integration)?
@@ -1100,6 +1108,59 @@ public class GwtMainPage extends Composite
 			if ( showMasthead )
 			     MastheadShowEvent.fireOne();
 			else MastheadHideEvent.fireOne();
+			
+			// Hide or show the menu
+			if ( hideMenu )
+			{
+				CanModifyBinderCmd cmd;
+				
+				// Issue a command to see if the user has rights to modify this landing page.
+				// If they have rights we will not hide the menu.
+				cmd = new CanModifyBinderCmd( m_selectedBinderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					public void onFailure( Throwable t )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_CanModifyBinder(),
+							m_selectedBinderId );
+					}
+					
+					/**
+					 * 
+					 */
+					public void onSuccess( VibeRpcResponse response )
+					{
+						BooleanRpcResponseData responseData;
+
+						// Does the user have rights to modify the landing page?
+						responseData = (BooleanRpcResponseData) response.getResponseData();
+						if ( responseData.getBooleanValue().booleanValue() == false )
+						{
+							Scheduler.ScheduledCommand scCmd;
+							
+							// No, go ahead and hide the main menu
+							scCmd = new Scheduler.ScheduledCommand()
+							{
+								/**
+								 * 
+								 */
+								public void execute()
+								{
+									MenuHideEvent.fireOne();
+								}
+							};
+							Scheduler.get().scheduleDeferred( scCmd );
+						}
+					}
+				});
+			}
+			else
+				MenuShowEvent.fireOne();
 		}
 	}// end handleLandingPageOptions()
 	
@@ -1406,6 +1467,7 @@ public class GwtMainPage extends Composite
 		uiState = m_uiStateManager.new UIState();
 		uiState.setMastheadVisibility( m_mastHead.isVisible() );
 		uiState.setSidebarVisibility( m_wsTreeCtrl.isVisible() );
+		uiState.setMenuVisibility( m_mainMenuCtrl.isVisible() );
 		m_uiStateManager.saveUIState( uiState );
 	}
 
@@ -1971,6 +2033,64 @@ public class GwtMainPage extends Composite
 	{
 		relayoutPage( true );
 	}// end onMastheadShow()
+	
+	/**
+	 * Handles MenuHideEvent's received by this class.
+	 * 
+	 * Implements the MenuHideEvent.Handler.onMenuHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMenuHide( MenuHideEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		// Hide the main menu
+		m_mainMenuCtrl.setVisible( false );
+
+		// Because the main menu is hidden we need to relayout the page.
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			/**
+			 * 
+			 */
+			public void execute()
+			{
+				relayoutPage( true );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * Handles MenuShowEvent's received by this class.
+	 * 
+	 * Implements the MenuShowEvent.Handler.onMenuShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMenuShow( MenuShowEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		// Show the main menu
+		m_mainMenuCtrl.setVisible( true );
+
+		// Because the main menu is now visible we need to relayout the page.
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			/**
+			 * 
+			 */
+			public void execute()
+			{
+				relayoutPage( true );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
 	
 	/**
 	 * Handles SearchAdvancedEvent's received by this class.

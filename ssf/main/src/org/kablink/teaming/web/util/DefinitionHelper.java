@@ -1014,7 +1014,7 @@ public class DefinitionHelper {
     				if ( doc != null )
     				{
     					Element bgElement;
-    					Element fontElement;
+    					Element pgLayoutElement;
     					
     					model.put( WebKeys.MASHUP_PROPERTIES, doc.asXML() );
 
@@ -1047,6 +1047,22 @@ public class DefinitionHelper {
     								if ( repeat != null )
     									model.put( WebKeys.MASHUP_BACKGROUND_IMAGE_REPEAT, repeat );
     							}
+    						}
+    					}
+    					
+    					// Get the <pageLayout hideMenu="true | false" /> element.
+    					pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
+    					if ( pgLayoutElement != null )
+    					{
+    						String hideMenu;
+    						
+    						hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
+    						if ( hideMenu != null )
+    						{
+    							boolean value;
+    							
+    							value = Boolean.parseBoolean( hideMenu );
+    							model.put( WebKeys.MASHUP_HIDE_MENU, value );
     						}
     					}
     				}

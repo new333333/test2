@@ -61,6 +61,7 @@ public enum TeamingEvents implements IsSerializable {
 	CONTEXT_CHANGING,					// Tells the UI That a context switch is about to take place.
 
 	EDIT_CURRENT_BINDER_BRANDING,		// Edits the branding on the current binder.
+	EDIT_LANDING_PAGE_PROPERTIES,		// Edit the landing page properties
 	EDIT_PERSONAL_PREFERENCES,			// Edits the user's personal preferences.
 	EDIT_SITE_BRANDING,					// Edits the site branding.
 	
@@ -85,6 +86,9 @@ public enum TeamingEvents implements IsSerializable {
 	
 	MASTHEAD_HIDE,						// Hides the masthead.
 	MASTHEAD_SHOW,						// Shows the masthead.
+	
+	MENU_HIDE,							// Hides the main menu
+	MENU_SHOW,							// Shows the main menu
 	
 	SEARCH_ADVANCED,					// Runs the advanced Search in the content area.
 	SEARCH_FIND_RESULTS,				// Fired when the FindCtrl is returning its results.

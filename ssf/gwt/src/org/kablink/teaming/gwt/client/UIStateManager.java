@@ -37,6 +37,8 @@ import java.util.Stack;
 
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.MenuHideEvent;
+import org.kablink.teaming.gwt.client.event.MenuShowEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 
@@ -79,6 +81,12 @@ public class UIStateManager
 			if ( uiState.getSidebarVisibility() == true )
 			     SidebarShowEvent.fireOne();
 			else SidebarHideEvent.fireOne();
+			
+			// Set the visibility of the main menu
+			if ( uiState.getMenuVisibility() == true )
+				MenuShowEvent.fireOne();
+			else
+				MenuHideEvent.fireOne();
 		}
 	}
 	
@@ -101,6 +109,7 @@ public class UIStateManager
 	{
 		private boolean m_mastheadVisible;
 		private boolean m_sidebarVisible;
+		private boolean m_menuVisible;
 		
 		/**
 		 * 
@@ -120,6 +129,14 @@ public class UIStateManager
 		/**
 		 * 
 		 */
+		public boolean getMenuVisibility()
+		{
+			return m_menuVisible;
+		}
+
+		/**
+		 * 
+		 */
 		public boolean getSidebarVisibility()
 		{
 			return m_sidebarVisible;
@@ -130,6 +147,14 @@ public class UIStateManager
 		public void setMastheadVisibility( boolean visible )
 		{
 			m_mastheadVisible = visible;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setMenuVisibility( boolean visible )
+		{
+			m_menuVisible = visible;
 		}
 		
 		/**

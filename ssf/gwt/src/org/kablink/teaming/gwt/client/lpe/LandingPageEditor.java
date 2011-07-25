@@ -44,10 +44,14 @@ import org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
+import org.kablink.teaming.gwt.client.event.EditLandingPagePropertiesEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.InputElement;
@@ -65,6 +69,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -77,9 +82,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class LandingPageEditor extends Composite
 	implements MouseDownHandler,
 				MouseUpHandler,
-				 HasMouseUpHandlers,
-				 EditSuccessfulHandler, EditCanceledHandler,
-				 Event.NativePreviewHandler
+				HasMouseUpHandlers,
+				EditSuccessfulHandler, EditCanceledHandler,
+				Event.NativePreviewHandler,
+				EditLandingPagePropertiesEvent.Handler
 {
 	private Palette		m_palette;
 	private Canvas		m_canvas;
@@ -98,6 +104,8 @@ public class LandingPageEditor extends Composite
 	private ArrayList<DropZone> m_dropZones = null;
 	private LandingPageConfig m_lpeConfig = null;
 	private AbstractTinyMCEConfiguration m_tinyMCEConfig = null;
+	private LandingPageProperties m_landingPageProperties;
+	private LandingPagePropertiesDlgBox m_lpPropertiesDlg = null;
 	
 	private static TextArea m_textBox = null;//!!!
 	public static RequestInfo m_requestInfo = null;
@@ -109,6 +117,10 @@ public class LandingPageEditor extends Composite
 	 */
 	private LandingPageEditor()
 	{
+		// The following defines the TeamingEvents that are handled by
+		// this class.  See EventHelper.registerEventHandlers() for how
+		// this array is used.
+		TeamingEvents[] registeredEvents = new TeamingEvents[] { TeamingEvents.EDIT_LANDING_PAGE_PROPERTIES };
 		ConfigData		configData;
 		HorizontalPanel	hPanel;
 		VerticalPanel 	vPanel;
@@ -116,6 +128,9 @@ public class LandingPageEditor extends Composite
 		int				i;
 		int				numItems;
 		boolean			doLog;
+
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers( GwtTeaming.getEventBus(), registeredEvents, this );
 
 		// Get the RequestInfo object that is a JavaScript object.
 		m_requestInfo = jsGetRequestInfo();
@@ -136,6 +151,9 @@ public class LandingPageEditor extends Composite
 		// Create a stack that will keep track of when we enter and leave drop zones.
 		m_enteredDropZones = new Stack<DropZone>();
 		
+		// Get the landing page properties.
+		m_landingPageProperties = new LandingPageProperties( m_lpeConfig.getMashupPropertiesXML() );
+		
 		// Create a vertical panel for the hint and the horizontal panel to live in.
 		vPanel = new VerticalPanel();
 		
@@ -153,7 +171,7 @@ public class LandingPageEditor extends Composite
 		hPanel.add( m_palette );
 		
 		// Create a canvas
-		m_canvas = new Canvas( this, m_lpeConfig.getMashupPropertiesXML() );
+		m_canvas = new Canvas( this );
 		hPanel.add( m_canvas );
 		
 		// Add items to the canvas that are defined in the configuration.
@@ -245,7 +263,25 @@ public class LandingPageEditor extends Composite
 							m_configResultsInputCtrl.setValue( configStr );
 							
 							// Save away the properties xml string in a hidden input control.
-							m_propertiesHiddenInput.setValue( m_canvas.getLandingPageProperties() );
+							{
+								Element element;
+								InputElement ckboxElement;
+								
+								// Add the "hide menu" setting to the landing page properties.
+								try
+								{
+									element = Document.get().getElementById( m_lpeConfig.getMashupPropertyName() + "__hideMenu" );
+									ckboxElement = InputElement.as( element );
+								
+									m_landingPageProperties.setHideMenu( ckboxElement.isChecked() );
+								}
+								catch (Exception ex)
+								{
+									
+								}
+								
+								m_propertiesHiddenInput.setValue( m_landingPageProperties.getPropertiesAsXMLString() );
+							}
 						}
 					}
 				}
@@ -618,6 +654,56 @@ public class LandingPageEditor extends Composite
 	
 
 	/**
+	 * Invoke the "edit landing page properties" dialog.
+	 */
+	private void invokeEditLandingPagePropertiesDlg()
+	{
+		PopupPanel.PositionCallback posCallback;
+
+		if ( m_lpPropertiesDlg == null )
+		{
+			EditSuccessfulHandler successHandler;
+			
+			successHandler = new EditSuccessfulHandler()
+			{
+				/**
+				 * This method gets called when user user presses ok in the "Edit Landing Page Properties" dialog.
+				 */
+				public boolean editSuccessful( Object obj )
+				{
+					if ( obj instanceof LandingPageProperties )
+					{
+						m_landingPageProperties.copy( (LandingPageProperties) obj );
+					}
+					
+					return true;
+				}
+			};
+
+			m_lpPropertiesDlg = new LandingPagePropertiesDlgBox( successHandler, null, false, true, 0, 0 );
+		}
+		
+		m_lpPropertiesDlg.init( m_landingPageProperties, getBinderId() );
+
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				int x;
+				int y;
+				
+				x = m_canvas.getAbsoluteLeft() + m_canvas.getOffsetWidth();
+				y = m_canvas.getAbsoluteTop();
+				m_lpPropertiesDlg.setPopupPosition( x - offsetWidth, y );
+			}
+		};
+		m_lpPropertiesDlg.setPopupPositionAndShow( posCallback );
+	}
+
+	/**
 	 * Return a boolean indicating whether or not the user is current dragging an item from
 	 * the palette or an existing item.
 	 */
@@ -705,6 +791,18 @@ public class LandingPageEditor extends Composite
 		adjustHeightOfAllTableWidgets();
 	}// end notifyWidgetUpdated()
 	
+	
+	/**
+	 * Handles EditLandingPagePropertiesEvents received by this class.
+	 * 
+	 * Implements the EditLandingPagePropertiesEvent.Handler.onEditLPProperties() method.
+	 * 
+	 * @param event
+	 */
+	public void onEditLPProperties( EditLandingPagePropertiesEvent event )
+	{
+		invokeEditLandingPagePropertiesDlg();
+	}
 	
 	/**
 	 * Handles the MouseDownEvent.  This will initiate the dragging of an item from the palette.

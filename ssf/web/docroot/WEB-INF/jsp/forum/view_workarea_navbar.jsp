@@ -74,13 +74,15 @@
 				var hideMasthead;
 				var hideSidebar;
 				var showBranding;
+				var hideMenu;
 
 				hideMasthead = ${ss_mashupHideMasthead};
 				hideSidebar = ${ss_mashupHideSidebar};
-				showBranding = ${ss_mashupShowBranding}; 
+				showBranding = ${ss_mashupShowBranding};
+				hideMenu = ${ss_mashupHideMenu};
 				if ( window.parent.ss_handleLandingPageOptions ) {
 					if (window.name == "gwtContentIframe") {
-						window.parent.ss_handleLandingPageOptions( hideMasthead, hideSidebar, showBranding );
+						window.parent.ss_handleLandingPageOptions( hideMasthead, hideSidebar, showBranding, hideMenu );
 					}
 				}
 			</c:if>

@@ -169,6 +169,15 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 				  </label>
 				</div>
 		
+				<div class="ss_nowrap">
+				  <input type="checkbox" name="${ss_mashupPropertyName}__hideMenu"
+					id="${ss_mashupPropertyName}__hideMenu"
+					<c:if test="${ss_mashupHideMenu}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__hideMenu">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideMenu"/></span>
+				  </label>
+				</div>
+		
 		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 				<div>
 				  <input type="checkbox" name="${ss_mashupPropertyName}__showBranding"

@@ -99,6 +99,7 @@ public class EventHelper {
 		case BROWSE_HIERARCHY_EXIT:             reply = new BrowseHierarchyExitEvent();          break;
 		case CONTEXT_CHANGING:                  reply = new ContextChangingEvent();              break;
 		case EDIT_CURRENT_BINDER_BRANDING:      reply = new EditCurrentBinderBrandingEvent();    break;
+		case EDIT_LANDING_PAGE_PROPERTIES:		reply = new EditLandingPagePropertiesEvent();	 break;
 		case EDIT_PERSONAL_PREFERENCES:         reply = new EditPersonalPreferencesEvent();      break;
 		case EDIT_SITE_BRANDING:                reply = new EditSiteBrandingEvent();             break;
 		case FULL_UI_RELOAD:                    reply = new FullUIReloadEvent();                 break;
@@ -108,6 +109,8 @@ public class EventHelper {
 		case LOGOUT:                            reply = new LogoutEvent();                       break;
 		case MASTHEAD_HIDE:                     reply = new MastheadHideEvent();                 break;
 		case MASTHEAD_SHOW:                     reply = new MastheadShowEvent();                 break;
+		case MENU_HIDE:							reply = new MenuHideEvent();					 break;
+		case MENU_SHOW:							reply = new MenuShowEvent();					 break;
 		case SEARCH_ADVANCED:                   reply = new SearchAdvancedEvent();               break;
 		case SIDEBAR_HIDE:                      reply = new SidebarHideEvent();                  break;
 		case SIDEBAR_RELOAD:                    reply = new SidebarReloadEvent();                break;
@@ -281,6 +284,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case EDIT_LANDING_PAGE_PROPERTIES:
+				// A EditLandingPagePropertiesEvent.  Can the event handler we were given handle that?
+				if ( eventHandler instanceof EditLandingPagePropertiesEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = EditLandingPagePropertiesEvent.registerEvent( eventBus, ((EditLandingPagePropertiesEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case EDIT_PERSONAL_PREFERENCES:
 				// A EditPersonalPreferencesEvent!  Can the event
 				// handler we were given handle that?
@@ -440,6 +452,24 @@ public class EventHelper {
 				if (eventHandler instanceof MastheadShowEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = MastheadShowEvent.registerEvent(eventBus, ((MastheadShowEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case MENU_HIDE:
+				// A MenuHideEvent.  Can the event handler we were given handle that?
+				if ( eventHandler instanceof MenuHideEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = MenuHideEvent.registerEvent( eventBus, ((MenuHideEvent.Handler) eventHandler) );
+				}
+				break;
+			
+			case MENU_SHOW:
+				// A MenuShowEvent.  Can the event handler we were given handle that?
+				if ( eventHandler instanceof MenuShowEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = MenuShowEvent.registerEvent( eventBus, ((MenuShowEvent.Handler) eventHandler) );
 				}
 				break;
 			
@@ -848,9 +878,14 @@ public class EventHelper {
 			case EDIT_PERSONAL_PREFERENCES:         hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);      break;
 			case EDIT_SITE_BRANDING:                hasHandler = (eventHandler instanceof EditSiteBrandingEvent.Handler);             break;
 			
+			case EDIT_LANDING_PAGE_PROPERTIES:      hasHandler = (eventHandler instanceof EditLandingPagePropertiesEvent.Handler);    break;
+			
 			case MASTHEAD_HIDE:                     hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);                 break;
 			case MASTHEAD_SHOW:                     hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);                 break;
 			
+			case MENU_HIDE:                     	hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	  break;
+			case MENU_SHOW:                     	hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                     break;
+
 			case FULL_UI_RELOAD:                    hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);                 break;
 			
 			case GOTO_CONTENT_URL:                  hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);               break;
