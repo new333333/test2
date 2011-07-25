@@ -136,6 +136,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    		n.body = prop.getText();
 		    	} else if ("appendBody".equals(name)) {
 		    		n.appendBody = GetterUtil.getBoolean(value, false);
+		    	} else if ("includeLink".equals(name)) {
+		    		n.includeLink = GetterUtil.getBoolean(value, true);
 		    	} else if ("emailAddrs".equals(name)) {
 		    		n.toEmailAddrs = new ArrayList();
 		    		String[] addrs = prop.getText().split("\\n");
@@ -1262,6 +1264,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 		private List<String> bccEmailAddrs;
 		private boolean appendTitle=false;
 		private boolean appendBody=false;
+		private boolean includeLink=true;
 		private Collection<User> toUsers;
 		private Collection<User> ccUsers;
 		private Collection<User> bccUsers;
@@ -1277,6 +1280,9 @@ public static void resumeTimers(WorkflowSupport entry) {
 		}
 		public boolean isAppendBody() {
 			return appendBody;
+		}
+		public boolean isIncludeLink() {
+			return includeLink;
 		}
 		public Collection<User> getToUsers() {
 			return toUsers;

@@ -113,8 +113,8 @@
 	   		 <span class="ss_bold"><ssf:nlt tag="definition.selectEntryNewValue"/></span><br/>
 		     <select name="conditionElementValue">
 		       <option value="" selected="selected"><ssf:nlt tag="workflow.condition.selectValue"/></option>
-		       <option value="checked"><ssf:nlt tag="definition.operation_checked"/></option>
-		       <option value="unchecked"><ssf:nlt tag="definition.operation_checkedNot"/></option>
+		       <option value="on"><ssf:nlt tag="definition.operation_checked"/></option>
+		       <option value="off"><ssf:nlt tag="definition.operation_checkedNot"/></option>
 		     </select>
 		   </c:if>
 		   

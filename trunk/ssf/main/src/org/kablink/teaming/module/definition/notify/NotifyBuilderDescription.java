@@ -53,14 +53,16 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     }
     public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
     	Object obj = attr.getValue();
-    	String value;
-    	if (obj instanceof Description && !visitor.isHtml())
-    		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), ((Description)obj).getText(), WebKeys.MARKUP_EMAIL);	
-    	else
-    		value = obj.toString();	
-    	if (!visitor.isHtml()) value = replaceHtml(value);
-    	ctx.put("ssDescription_markup", value);
-    	super.build(visitor, template, ctx);
+    	if (obj != null) {
+	    	String value;
+	    	if (obj instanceof Description && !visitor.isHtml())
+	    		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), ((Description)obj).getText(), WebKeys.MARKUP_EMAIL);	
+	    	else
+	    		value = obj.toString();	
+	    	if (!visitor.isHtml()) value = replaceHtml(value);
+	    	ctx.put("ssDescription_markup", value);
+	    	super.build(visitor, template, ctx);
+    	}
     }
     public void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
     	ctx.remove("property_name");
