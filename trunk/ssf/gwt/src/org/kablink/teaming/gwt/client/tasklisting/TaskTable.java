@@ -2919,6 +2919,7 @@ public class TaskTable extends Composite
 		
 		// Add the appropriately styled task name Anchor to the panel.
 		Anchor ta = buildAnchor();
+		ta.addStyleName("gwtTaskList_task-nameAnchor");
 		ta.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
 		EventWrapper.addHandler(ta, m_taskViewClickHandler);
 		InlineLabel taskLabel = new InlineLabel(task.getTask().getTitle());
@@ -2931,7 +2932,8 @@ public class TaskTable extends Composite
 
 		// Finally, put the FlowPanel in the table.
 		int col = getColumnIndex(Column.TASK_NAME);
-		m_flexTableCF.addStyleName(row, col, "gwtTaskList_task-name");
+		m_flexTableCF.addStyleName(row, col, "gwtTaskList_task-nameCell");
+		m_flexTableCF.setWidth(    row, col, "100%");
 		m_flexTable.setWidget(row, col, fp);
 	}
 

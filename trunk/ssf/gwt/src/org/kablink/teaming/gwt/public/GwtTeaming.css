@@ -3104,17 +3104,16 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 
 /* Note that the following styles were copied from the prototype's hf_teaming.css stylesheet. */
 .gwtTaskList_objlist2  /*   apply to the object list table tag <table class="objlist">  */ 
-	{ 
+{ 
 	background-color: #f6f6f6;
 	border-bottom: 0px solid #f6f6f6;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
-	}
-
+}
 .gwtTaskList_objlist2b  /*   apply to the object list table tag <table class="objlist">  */ 
-	{ 
+{ 
 	margin-top: 0px;
 	padding-bottom: .5em;
 	background-color: #f6f6f6;
@@ -3122,10 +3121,9 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	border-left: 0px solid transparent;
 	border-right: 0px solid transparent;
 	border-bottom: 0px solid transparent;
-	}
-
+}
 .gwtTaskList_objlist2 tr.title  /* apply to the first row in table  <tr class="title"> */
-	{
+{
 	color: white;
 	font-weight: bold;
 	font-size: 0.95em;
@@ -3137,13 +3135,13 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	background: #85bcc3 url(images/bg/H_bg_blend_teal.png) repeat-x; 
 	background-position: bottom;
 	white-space: nowrap;
-	}
-
-.gwtTaskList_objlist-border {
+}
+.gwtTaskList_objlist-border
+{
 	border: 1px solid #ccc;
-	}
-
-.gwtTaskList_objlist-filter {
+}
+.gwtTaskList_objlist-filter
+{
 	background-color: #fff;
 	position: absolute;
 	top: 7px;
@@ -3152,8 +3150,9 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	border: 1px solid #ccc;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	}
-.dialog .gwtTaskList_objlist-filter {
+}
+.dialog .gwtTaskList_objlist-filter
+{
 	background-color: #fafafa;
 	position: absolute;
 	top: 5px;
@@ -3162,31 +3161,36 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	border: 1px solid #ccc;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	}
-	
-.gwtTaskList_objlist2 tr.entry-menu td {
+}	
+.gwtTaskList_objlist2 tr.entry-menu td
+{
 	padding: 3px;
 	background-color: #f6f6f6;
-	}
-	
-.gwtTaskList_objlist2 tr.entry-menu td.nocolor { background-color: transparent;}
-	
+}	
+.gwtTaskList_objlist2 tr.entry-menu td.nocolor
+{
+	background-color: transparent;
+}	
 .gwtTaskList_objlist2 tr.menu div.menuitem1  /* allows the menu item to wrap if text is longer than the the menu. */ 
-	{ white-space: normal; }
-
+{
+	white-space: normal;
+}
 .gwtTaskList_objlist2 tr.menu a	/* menu style will automaticallly apply to all links within the table row*/ 
-	{ text-decoration: none; 
+{
+	text-decoration: none; 
 	padding-top: 2px; 
 	padding-bottom: 2px; 
 	padding-right: 6px; 
 	padding-left: 6px; 
-	font-size: 0.85em; }
-.gwtTaskList_objlist2 tr.menu td {
-	padding: 2px 2px 2px 0;}
-
+	font-size: 0.85em;
+}
+.gwtTaskList_objlist2 tr.menu td
+{
+	padding: 2px 2px 2px 0;
+}
 .gwtTaskList_objlist2 tr.columnhead td,
 .gwtTaskList_objlist2b tr.columnhead td   /* Apply to the column headings row following the menu <tr class="columnhead"> */
-	{ 
+{ 
 	color: #666; 
 	font-size: 0.75em; 
 	padding-top: 0.2em; 
@@ -3197,95 +3201,107 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	white-space: nowrap;
 	background:url(images/blends/gray_blend8_28.png) repeat-x;
 	background-position:bottom;
-	}
-	
+}	
 .gwtTaskList_objlist2 tr.columnhead .sortedcol { color: #000000; font-weight: bold;}
-a.sort-column {
+a.sort-column
+{
 	color: inherit !important;
 	text-decoration: none !important;
 	vertical-align: top !important;
-	}
-a.sort-column:hover {
+}
+a.sort-column:hover
+{
 	color: #135c8f !important;
-	}
-
+}
 .gwtTaskList_objlist2 tr.regrow td,
 .gwtTaskList_objlist2b tr.regrow td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
-	{ 
+{ 
 	background-color: #fff;
 	font-size:.75em;
 	padding: 2px 6px 2px 0px;
 	border-bottom: 1px solid #d2d5d1;
 	white-space: nowrap;
-	}
-	
-.gwtTaskList_objlist2 tr.disabled td, .gwtTaskList_objlist2 tr.disabled td a {
+}	
+.gwtTaskList_objlist2 tr.disabled td, .gwtTaskList_objlist2 tr.disabled td a
+{
 	color: #c4c4c4 !important;
-	}
-		
-.gwtTaskList_objlist2 tr.selected td {
+}		
+.gwtTaskList_objlist2 tr.selected td
+{
 	background-color: #e6f2f7 !important;
-	}
-
+}
 .gwtTaskList_objlist2b tr.regrowB td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
-	{ 
+{ 
 	background-color: transparent;
 	font-size:.75em;
 	padding: 3px;
 	border-bottom: 1px solid #d2d5d1;
-	}	
-
+}	
 .gwtTaskList_objlist2 tr.regrow td.related	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
-	{
+{
 	padding: 0px;
 	vertical-align: top;
-	}
-
+}
 .gwtTaskList_objlist2 tr.related-bg td	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
-	{ 
+{ 
 	background-color: #ffe085;
 	font-size:.75em;
 	padding: 3px 8px;
 	border-bottom: 1px solid #d2d5d1;
-	}
-
-.gwtTaskList_objlist2 tr.regrow td.wrapOK { white-space: normal;}
-
+}
+.gwtTaskList_objlist2 tr.regrow td.wrapOK
+{
+	white-space: normal;
+}
 .gwtTaskList_objlist2 tr.regrowB td	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
-	{ 
+{ 
 	background-color: #fff;
 	font-size:.75em;
 	border-bottom: 1px solid #d2d5d1;
 	vertical-align: top;
-	}
-
+}
 .gwtTaskList_objlist2 tr.footrow td
-	{ color: #666666; text-align: center; letter-spacing: 0.05em; font-size:0.7em; padding: 5px; } /* #babdb6 */
+{
+	color: #666666;
+	text-align: center;
+	letter-spacing: 0.05em;
+	font-size:0.7em;
+	padding: 5px;
+} /* #babdb6 */
 	
-.gwtTaskList_ckbox {
+.gwtTaskList_ckbox
+{
 	display: inline;
-	}
-.gwtTaskList_task-strike {
+}
+.gwtTaskList_task-strike
+{
 	background:url(images/strike_marker_blue.png) no-repeat 15px 2px;
-	}
-.gwtTaskList_task-overdue {
-	}
-.gwtTaskList_task-overdue-color {
+}
+.gwtTaskList_task-overdue
+{
+}
+.gwtTaskList_task-overdue-color
+{
 	color: red;
 	font-weight: bold;
-	}
+}
 	
-.gwtTaskList_task-icon, .gwtTaskList_icon-spacer {
+.gwtTaskList_task-icon, .gwtTaskList_icon-spacer
+{
 	margin-right: 3px;
 	vertical-align: text-bottom;
-	}
+}
 a.gwtTaskList_task-icon:hover
 {
 	background: none !important;
 }
-.gwtTaskList_task-name
+.gwtTaskList_task-nameAnchor
 {
-	
+	display:      inline-block !important;
+	white-space:  normal       !important;
+}
+.gwtTaskList_task-nameCell
+{
 }
 /* End:  GWT Task Folder Listing styles. */
 
