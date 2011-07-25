@@ -81,7 +81,8 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
 				getBinderModule().setBinderVersionsEnabled(binderId, Boolean.TRUE);
 			}
-		} else if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && 
+				WebHelper.isMethodPost(request)) {
 			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
 				//See if inheriting
@@ -147,10 +148,12 @@ public class ManageVersionControlsController extends AbstractBinderController {
 				getBinderModule().setBinderFileEncryptionEnabled(binderId, fileEncryptionEnabled);
 				
 			}
-			if (binder instanceof TemplateBinder) {
-				setupViewTemplateBinder(response, binderId, binder.getEntityType().name());
-			} else {
-				setupViewBinder(response, binderId, binder.getEntityType().name());
+			if (formData.containsKey("okBtn")) {
+				if (binder instanceof TemplateBinder) {
+					setupViewTemplateBinder(response, binderId, binder.getEntityType().name());
+				} else {
+					setupViewBinder(response, binderId, binder.getEntityType().name());
+				}
 			}
 
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
