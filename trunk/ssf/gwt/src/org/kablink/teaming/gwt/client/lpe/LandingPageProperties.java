@@ -16,13 +16,16 @@ public class LandingPageProperties
 {
 	public final String ROOT_ELEMENT_NAME = "landingPageData";
 	public final String BACKGROUND_ELEMENT_NAME = "background";
+	public final String PAGE_LAYOUT_ELEMENT_NAME = "pageLayout";
 	public final String COLOR_ATTRIBUTE_NAME = "color";
 	public final String IMAGE_NAME_ATTRIBUTE_NAME = "imgName";
 	public final String REPEAT_ATTRIBUTE_NAME = "repeat";
+	public final String HIDE_MENU_ATTRIBUTE_NAME = "hideMenu";
 	
 	private String m_backgroundColor;
 	private String m_backgroundImageName;
 	private String m_backgroundRepeat;
+	private boolean m_hideMenu;
 	
 	/**
 	 * 
@@ -32,6 +35,7 @@ public class LandingPageProperties
 		m_backgroundColor = null;
 		m_backgroundImageName = null;
 		m_backgroundRepeat = null;
+		m_hideMenu = false;
 		
 		if ( propertiesXML != null )
 		{
@@ -54,6 +58,17 @@ public class LandingPageProperties
 					m_backgroundImageName = backgroundElement.getAttribute( IMAGE_NAME_ATTRIBUTE_NAME );
 					m_backgroundRepeat = backgroundElement.getAttribute( REPEAT_ATTRIBUTE_NAME );
 				}
+				
+				// Get the <pageLayout ...> element
+				nodeList = doc.getElementsByTagName( PAGE_LAYOUT_ELEMENT_NAME );
+				if ( nodeList != null && nodeList.getLength() == 1 )
+				{
+					Element pageLayoutElement;
+					
+					pageLayoutElement = (Element) nodeList.item( 0 );
+					
+					m_hideMenu = Boolean.parseBoolean( pageLayoutElement.getAttribute( HIDE_MENU_ATTRIBUTE_NAME ) );
+				}
 			}
 			catch (DOMParseException ex)
 			{
@@ -69,6 +84,7 @@ public class LandingPageProperties
 		m_backgroundColor = lpProperties.getBackgroundColor();
 		m_backgroundImageName = lpProperties.getBackgroundImageName();
 		m_backgroundRepeat = lpProperties.getBackgroundRepeat();
+		m_hideMenu = lpProperties.getHideMenu();
 	}
 	
 	/**
@@ -96,10 +112,19 @@ public class LandingPageProperties
 	}
 
 	/**
+	 * 
+	 */
+	public boolean getHideMenu()
+	{
+		return m_hideMenu;
+	}
+	
+	/**
 	 * Return the properties as an xml string that looks like the following:
-	 * <landingPageData>
-	 * 	<background color="" imgName="" />
-	 * </landingPageData>
+	 *	<landingPageData>
+	 * 		<background color="" imgName="" />
+	 * 		<pageLayout hideMenu="true | false" />
+	 * 	</landingPageData>
 	 */
 	public String getPropertiesAsXMLString()
 	{
@@ -131,6 +156,17 @@ public class LandingPageProperties
 			rootElement.appendChild( backgroundElement );
 		}
 		
+		// Add the <pageLayout hideMenu="true | false" /> element
+		{
+			Element pgLayoutElement;
+			
+			pgLayoutElement = doc.createElement( PAGE_LAYOUT_ELEMENT_NAME );
+			
+			pgLayoutElement.setAttribute( HIDE_MENU_ATTRIBUTE_NAME, String.valueOf( m_hideMenu ) );
+			
+			rootElement.appendChild( pgLayoutElement );
+		}
+		
 		return doc.toString();
 	}
 	
@@ -156,5 +192,13 @@ public class LandingPageProperties
 	public void setBackgroundRepeat( String repeat )
 	{
 		m_backgroundRepeat = repeat;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHideMenu( boolean hide )
+	{
+		m_hideMenu = hide;
 	}
 }

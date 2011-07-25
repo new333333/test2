@@ -34,8 +34,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.EditLandingPagePropertiesEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -44,7 +44,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -55,21 +54,16 @@ import com.google.gwt.user.client.ui.Widget;
 public class Canvas extends Composite
 {
 	DropZone m_dropZone;
-	LandingPageProperties m_landingPageProperties;
-	LandingPagePropertiesDlgBox m_lpPropertiesDlg;
-	String m_binderId;
 	
 	/**
 	 * 
 	 */
-	public Canvas( LandingPageEditor lpe, String propertiesXML )
+	public Canvas( LandingPageEditor lpe )
 	{
 		FlowPanel mainPanel;
 		
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "lpeCanvasWrapperPanel" );
-		
-		m_binderId = lpe.getBinderId();
 		
 		// Create an "edit" image
 		{
@@ -98,9 +92,9 @@ public class Canvas extends Composite
 					
 					// Get the anchor the user clicked on.
 					img = (Widget) event.getSource();
-
-					// Invoke the "edit landing page properties" dialog.
-					invokeEditLandingPagePropertiesDlg( img.getAbsoluteLeft(), img.getAbsoluteTop() );
+					
+					// Fire the EditLandingPageProperties event
+				     EditLandingPagePropertiesEvent.fireOne();
 				}
 			};
 			editImg.addClickHandler( clickHandler );
@@ -137,10 +131,6 @@ public class Canvas extends Composite
 		m_dropZone.setParentDropZone( null );
 		mainPanel.add( m_dropZone );
 		
-		m_landingPageProperties = new LandingPageProperties( propertiesXML );
-		
-		m_lpPropertiesDlg = null;
-		
 		initWidget( mainPanel );
 	}
 
@@ -162,17 +152,6 @@ public class Canvas extends Composite
 	}
 	
 	/**
-	 * Return the landing page properties as an xml string.
-	 */
-	public String getLandingPageProperties()
-	{
-		if ( m_landingPageProperties != null )
-			return m_landingPageProperties.getPropertiesAsXMLString();
-		
-		return "";
-	}
-	
-	/**
 	 * Return how much this drop zone has been scrolled vertically.
 	 */
 	public int getScrollY()
@@ -186,50 +165,5 @@ public class Canvas extends Composite
 	public ArrayList<DropWidget> getWidgets()
 	{
 		return m_dropZone.getWidgets();
-	}
-	
-	/**
-	 * Invoke the "edit landing page properties" dialog.
-	 */
-	private void invokeEditLandingPagePropertiesDlg( final int x, final int y )
-	{
-		PopupPanel.PositionCallback posCallback;
-
-		if ( m_lpPropertiesDlg == null )
-		{
-			EditSuccessfulHandler successHandler;
-			
-			successHandler = new EditSuccessfulHandler()
-			{
-				/**
-				 * This method gets called when user user presses ok in the "Edit Landing Page Properties" dialog.
-				 */
-				public boolean editSuccessful( Object obj )
-				{
-					if ( obj instanceof LandingPageProperties )
-					{
-						m_landingPageProperties.copy( (LandingPageProperties) obj );
-					}
-					
-					return true;
-				}
-			};
-
-			m_lpPropertiesDlg = new LandingPagePropertiesDlgBox( successHandler, null, false, true, x, y );
-		}
-		
-		m_lpPropertiesDlg.init( m_landingPageProperties, m_binderId );
-
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				m_lpPropertiesDlg.setPopupPosition( x - offsetWidth, y );
-			}
-		};
-		m_lpPropertiesDlg.setPopupPositionAndShow( posCallback );
 	}
 }

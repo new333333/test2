@@ -955,6 +955,32 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * See if the user has rights to modify the given binder.
+	 */
+	public static Boolean canModifyBinder( AllModulesInjected bs, String binderId )
+	{
+		try
+		{
+			Binder binder;
+			
+			binder = bs.getBinderModule().getBinder( Long.parseLong( binderId ) );
+			return new Boolean( bs.getBinderModule().testAccess( binder, BinderOperation.modifyBinder ) );
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
+		
+		// If we get here the user does not have rights to modify the binder.
+		return Boolean.FALSE;
+	}
+	
+	/**
 	 * Delete the given tag from the given entry.
 	 */
 	public static void deleteEntryTag( FolderModule fm, Long entryId, TagInfo tagInfo )

@@ -196,6 +196,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
+
+		case CAN_MODIFY_BINDER:
+		{
+			CanModifyBinderCmd cmbCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			cmbCmd = (CanModifyBinderCmd) cmd;
+			result = GwtServerHelper.canModifyBinder( this, cmbCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
 		
 		case COLLAPSE_SUBTASKS:
 		{
