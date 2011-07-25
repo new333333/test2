@@ -166,11 +166,9 @@ function ss_checkIfNumberValid(s) {
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
           ><ssf:nlt tag="smallWords.days"/>
           <br/>
-		  <span class="ss_smallprint" style="padding:6px 0px 0px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint1" /></span>
-		  <br/>
-		  <span class="ss_smallprint" style="padding:6px 0px 0px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint2" /></span>
-		  <br/>
-		  <span class="ss_smallprint" style="padding:6px 0px 0px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint3" /></span>
+		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint1" /></div>
+		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint2" /></div>
+		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint3" /></div>
        </div>
 	 </fieldset>
      <br/>
@@ -226,6 +224,7 @@ function ss_checkIfNumberValid(s) {
 <br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
+<input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" />" >
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
   onClick="ss_cancelButtonCloseWindow();return false;">
 </form>
