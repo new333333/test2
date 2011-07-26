@@ -4061,6 +4061,7 @@
 			<property name="team" caption="__team" type="checkbox" /> 
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
+			<property name="disallowReplies" caption="__disallowReplies" type="checkbox" /> 
 		</properties>
 	</item>
 	

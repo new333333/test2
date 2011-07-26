@@ -1217,6 +1217,8 @@ public static void resumeTimers(WorkflowSupport entry) {
 			} else if ("entryCreator".equals(name) && GetterUtil.getBoolean(value, false)) {
 				//	add special owner to allow list
 				result.addPrincipalId(ObjectKeys.OWNER_USER_ID);
+			} else if ("disallowReplies".equals(name) && GetterUtil.getBoolean(value, false)) {
+				result.setDisallowReplies(GetterUtil.getBoolean(value, false));
 			}
 		}
 		//see if nothing was actually set

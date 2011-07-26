@@ -39,6 +39,7 @@ import java.util.Set;
  */
 public class WfAcl {
 	private boolean useDefault=false;
+	private boolean disallowReplies=false;
 	private Set ids;
 	private AccessType type;
     public enum AccessType {
@@ -74,5 +75,11 @@ public class WfAcl {
 	}
 	public boolean isUseDefault() {
 		return useDefault;
+	}	
+	public void setDisallowReplies(boolean disallowReplies) {
+		this.disallowReplies = disallowReplies;
+	}
+	public boolean isDisallowReplies() {
+		return disallowReplies;
 	}	
 }
