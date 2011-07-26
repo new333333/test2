@@ -70,32 +70,35 @@
 <div class="ss_mashup_element">
   <c:if test="${!empty mashupBinder}">
   <div class="ss_mashup_round_top"><div></div></div>
-	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
-	  <c:set var="divClass" value="ss_mashup_folder_header_form" />
-	  <c:if test="${ssConfigJspStyle != 'form'}">
-		<c:set var="divClass" value="ss_mashup_folder_header_view" />
-	  </c:if>
-	  <div class="${divClass}">
-		<c:if test="${ssConfigJspStyle == 'form'}">
-		  <span><ssf:nlt tag="mashup.type.folder"/>: </span>
-		</c:if>
-		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_permalink" 
-		  binderId="${mashupBinder.id}">
-		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
-		  <ssf:param name="seen_by_gwt" value="1" />
-		  </ssf:url>"><span>${mashupBinder.title}</span></a>
-		<c:if test="${ssConfigJspStyle == 'form'}">
-		  <span class="ss_italic ss_smallprint ss_normal">(${mashupBinder.parentBinder.pathName})</span>
-		</c:if>
-		<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showFolderDescription']}">
-		  <div class="ss_mashup_folder_description">
-			<ssf:markup entity="${mashupBinder}">${mashupBinder.description.text}</ssf:markup>
-			<div class="ss_clear"></div>
-		  </div>
+
+	  <!-- Should we show the title or the description? -->
+	  <c:if test="${ssConfigJspStyle != 'form' && (!empty mashup_attributes['showTitle'] || !empty mashup_attributes['showFolderDescription'])}">
+	  	  <!-- Yes -->
+		  <c:set var="divClass" value="ss_mashup_folder_header_view" />
+		  <div class="${divClass}">
+		  	<!-- Should we show the title? -->
+			<c:if test="${!empty mashup_attributes['showTitle']}">
+				<!-- Yes -->
+				<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+				  action="view_permalink" 
+				  binderId="${mashupBinder.id}">
+				  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+				  <ssf:param name="seen_by_gwt" value="1" />
+				  </ssf:url>"><span>${mashupBinder.title}</span>
+				</a>
+			</c:if>
+			
+			<!--  Should we show the description? -->
+			<c:if test="${!empty mashup_attributes['showFolderDescription']}">
+				<!--  Yes -->
+				<div class="ss_mashup_folder_description">
+					<ssf:markup entity="${mashupBinder}">${mashupBinder.description.text}</ssf:markup>
+					<div class="ss_clear"></div>
+			  	</div>
+			</c:if>
 		</c:if>
 	  </div>
-	</c:if>
+
 	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened']}">
 	<div class="ss_mashup_folder_list_closed">
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
