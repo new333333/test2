@@ -2774,6 +2774,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 					//We have the element name, see if it has option values
 					if (itemName.equals("selectbox")) {
+						String multipleAllowed = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
+						if ("true".equals(multipleAllowed)) {
+							itemData.put("multipleAllowed", Boolean.TRUE);
+						}
 						Map valueMap = new LinkedHashMap();
 						Iterator itSelectionItems = nextItem.selectNodes("item[@name='selectboxSelection']").iterator();
 						while (itSelectionItems.hasNext()) {

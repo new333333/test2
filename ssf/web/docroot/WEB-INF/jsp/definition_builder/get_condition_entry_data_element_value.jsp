@@ -120,8 +120,11 @@
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'selectbox'}">
 	   		 <span class="ss_bold"><ssf:nlt tag="definition.selectEntryNewValue"/></span><br/>
-		     <select
-		     name="conditionElementValue">
+		     <select name="conditionElementValue"
+		       <c:if test="${ssEntryDefinitionElementData[conditionElementName].multipleAllowed}">
+		         multiple="multiple"
+		       </c:if>
+		     >
 		     <option value="" selected="selected"><ssf:nlt 
 		       tag="workflow.condition.selectValue" text="--select a value--"/></option>
 		       <c:forEach var="elementValue" items="${ssEntryDefinitionElementData[conditionElementName].values}">
