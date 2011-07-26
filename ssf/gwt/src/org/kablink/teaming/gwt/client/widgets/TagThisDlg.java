@@ -1742,7 +1742,21 @@ public class TagThisDlg extends DlgBox
 			m_findCtrl.hideSearchResults();
 
 			// Clear what the user has typed.
-			m_findCtrl.clearText();
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					/**
+					 * 
+					 */
+					public void execute()
+					{
+						m_findCtrl.clearText();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
 		}
 	}
 	
