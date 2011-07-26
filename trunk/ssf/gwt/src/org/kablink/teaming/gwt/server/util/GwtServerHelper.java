@@ -873,7 +873,7 @@ public class GwtServerHelper {
 			folderEntry = folderModule.getEntry( null, entryIdL );
 	        
 			// Check to see if the user can manage personal tags on this entry.
-			folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
+			folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
 
 			// If we get here the action is valid.
 			return Boolean.TRUE;
@@ -4132,15 +4132,17 @@ public class GwtServerHelper {
 						folderModule.checkAccess( folderEntry, FolderOperation.addReply );
 					else if ( teamingEvent.equals( TeamingEvents.INVOKE_TAG ))
 					{
-						// Tag is valid if the user can manage public tags or can modify the entry.
+						// Tag is valid if the user can manage public tags or can read the entry.
 						if ( canManagePublicEntryTags( bs, entryId ) == true )
 						{
 							// Nothing to do.
 						}
-						else
+						else if ( canManagePersonalEntryTags( bs, entryId ) )
 						{
-							folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
+							// Nothing to do.
 						}
+						else
+							throw new AccessControlException();
 					}
 					else if ( teamingEvent.equals( TeamingEvents.INVOKE_SHARE ))
 						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
