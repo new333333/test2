@@ -189,6 +189,9 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, getBinderModule().getBinderMaxFileSize(binder));
 		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.isFileEncryptionEnabled());
 
+		Long fileVersionMaxAge = getAdminModule().getFileVersionsMaxAge();
+		model.put(WebKeys.FILE_VERSION_MAXIMUM_AGE, fileVersionMaxAge);
+
 		//Set up navigation beans
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
