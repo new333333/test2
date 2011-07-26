@@ -99,6 +99,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean versionsEnabled;
 	protected Long versionsToKeep;
 	protected Long versionAgingDays;
+    protected Boolean versionAgingEnabled;
     protected Long maxFileSize;	//MB
     protected Boolean fileEncryptionEnabled;
     public Binder() {
@@ -802,7 +803,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
     /*****************File Related Stuff***********/	
     public Boolean isVersionsEnabled() {
-    	if (versionsEnabled == null) return true;		//Default is that versions are enabled
+    	if (versionsEnabled == null) return Boolean.TRUE;		//Default is that versions are enabled
     	return versionsEnabled;
 	}
 	public void setVersionsInherited() {
@@ -827,6 +828,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	public void setVersionAgingDays(Long versionAgingDays) {
 		this.versionAgingDays = versionAgingDays;
+	}
+	public Boolean getVersionAgingEnabled() {
+		return versionAgingEnabled;
+	}
+	public Boolean isVersionAgingEnabled() {
+		if (versionAgingEnabled == null) return Boolean.TRUE;	//Default is that aging is enabled
+		return versionAgingEnabled;
+	}
+	public void setVersionAgingEnabled(Boolean versionAgingEnabled) {
+		this.versionAgingEnabled = versionAgingEnabled;
 	}
 	public Long getMaxFileSize() {
 		return maxFileSize;
