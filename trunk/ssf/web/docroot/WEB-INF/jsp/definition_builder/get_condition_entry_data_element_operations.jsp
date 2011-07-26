@@ -69,7 +69,7 @@
 		         <option value="decrement"><ssf:nlt tag="definition.operation_decrement"/></option>
 		     </c:if>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date_time'}">
-		         <option value="set"><ssf:nlt tag="definition.operation_set"/></option>
+		         <option value="setCurrentDate"><ssf:nlt tag="definition.operation_setCurrentDate"/></option>
 		         <option value="increment"><ssf:nlt tag="definition.operation_increment"/></option>
 		         <option value="decrement"><ssf:nlt tag="definition.operation_decrement"/></option>
 		     </c:if>

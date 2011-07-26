@@ -42,7 +42,9 @@ package org.kablink.teaming.module.workflow;
  */
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +68,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
@@ -447,10 +450,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 		    			String operation = wsedv.attributeValue("operation", "");
 		    			String duration = wsedv.attributeValue("duration", "");
 		    			String durationType = wsedv.attributeValue("durationType", "");
-		    			String dataValue = "";
-		    			Element wsedvValueEle = (Element)wsedv.selectSingleNode("value");
-		    			if (wsedvValueEle != null) {
-		    				dataValue = wsedvValueEle.getText();
+		    			List<Element> wsedvValueEles = (List<Element>)wsedv.selectNodes("value");
+		    			String[] dataValue = new String[wsedvValueEles.size()];
+		    			for (int i = 0; i < wsedvValueEles.size(); i++) {
+			    			dataValue[i] = wsedvValueEles.get(i).getText();
 		    			}
 		    			//Is the entry type one that we are dealing with?
 		    			if (!dataName.equals("") && entry.getEntryDefId().equals(defId)) {
@@ -458,6 +461,55 @@ public class EnterExitEvent extends AbstractActionHandler {
 		    				Map updates = new HashMap();
 		    				if (operation.equals("set")) {
 		    					updates.put(dataName, dataValue);
+		    				} else if (operation.equals("setCurrentDate")) {
+		    					Date now = new Date();
+		    					updates.put(dataName, now);
+		    				} else if (operation.equals("setCurrentDateStart")) {
+		    					//This is an event. Get the event
+		    					CustomAttribute ca = entry.getCustomAttribute(dataName);
+		    					if (ca.getValue() instanceof org.kablink.teaming.domain.Event) {
+		    						org.kablink.teaming.domain.Event e = (org.kablink.teaming.domain.Event)ca.getValue();
+		    						Calendar now = new GregorianCalendar();
+			    					e.setDtStart(now);
+			    					updates.put(dataName, e);
+		    					}
+		    				} else if (operation.equals("setCurrentDateEnd")) {
+		    					//This is an event. Get the event
+		    					CustomAttribute ca = entry.getCustomAttribute(dataName);
+		    					if (ca.getValue() instanceof org.kablink.teaming.domain.Event) {
+		    						org.kablink.teaming.domain.Event e = (org.kablink.teaming.domain.Event)ca.getValue();
+		    						Calendar now = new GregorianCalendar();
+			    					e.setDtEnd(now);
+			    					updates.put(dataName, e);
+		    					}
+		    				} else if (operation.equals("increment") || operation.equals("decrement")) {
+		    					CustomAttribute ca = entry.getCustomAttribute(dataName);
+	    						try {
+			    					if (ca.getValue() instanceof String && dataValue.length >= 1) {
+			    						//This must be a number
+			    						Double number = Double.valueOf((String)ca.getValue());
+			    						Double amount = Double.valueOf(dataValue[0]);
+			    						if (operation.equals("decrement")) {
+			    							amount = amount * -1;
+			    						}
+		    							updates.put(dataName, String.valueOf(number + amount));
+			    					} else if (ca.getValue() instanceof Date) {
+			    						Date d = (Date)ca.getValue();
+			    						Long amount = Long.valueOf(duration);
+			    						if ("days".equals(durationType)) {
+			    							amount = amount * 24*60*60*1000;
+			    						} else if ("hours".equals(durationType)) {
+			    							amount = amount * 60*60*1000;
+			    						} else if ("munutes".equals(durationType)) {
+			    							amount = amount * 60*1000;
+			    						}
+		    							if (operation.equals("decrement")) {
+		    								amount = amount * -1;
+		    							}
+			    						d.setTime(d.getTime() + amount);
+			    						updates.put(dataName, d);
+			    					}
+	    						} catch(Exception e) {}
 		    				}
 		    				
 			    			//Are there any changes to be made?
