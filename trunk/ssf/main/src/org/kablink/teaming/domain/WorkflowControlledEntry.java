@@ -161,6 +161,20 @@ public abstract class WorkflowControlledEntry extends Entry
 	       }
        return false;
 	}
+
+	public boolean isAddRepliesDisallowed() {
+	    Set states = getWorkflowStates();
+	    if ((states == null) || states.isEmpty()) return false; 
+	     //If any state uses parent, use it
+	    for (Iterator iter=states.iterator(); iter.hasNext();) {
+	    	WorkflowState state = (WorkflowState)iter.next();
+	    	WfAcl a = state.getAcl(WfAcl.AccessType.read);
+	    	//See if replies disallowed
+	    	if ((a != null) && a.isDisallowReplies()) return true;
+	    }
+       return false;
+	}
+
 	public Set getStateMembers(WfAcl.AccessType type) {
 	   	Set result = new HashSet();
 	   	Set states = getWorkflowStates();

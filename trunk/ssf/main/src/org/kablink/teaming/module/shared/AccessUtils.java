@@ -577,6 +577,10 @@ public class AccessUtils  {
 		if (WorkAreaOperation.READ_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.read;
 		if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.write;
 		if (WorkAreaOperation.DELETE_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.delete; 
+		if (WorkAreaOperation.ADD_REPLIES.equals(operation)) {
+			//See if workflow is disallowing Add Reply. Then do normal check
+			checkIfAddRepliesAllowed(user, binder, entry);
+		}
  		if (accessType == null || !entry.hasAclSet()) {
 			//This entry does not have a workflow ACL set or this check is not covered by workflow access checks, 
  			//  so just go check for entry level access
@@ -610,14 +614,22 @@ public class AccessUtils  {
   		}
 	}
 
-     public static void modifyFieldCheck(Entry entry) throws AccessControlException {
- 		modifyFieldCheck(RequestContextHolder.getRequestContext().getUser(), entry);
-     }
-     public static void modifyFieldCheck(User user, Entry entry) throws AccessControlException {
-    	 if (user.isSuper()) return;
-    	 if (entry instanceof WorkflowSupport)
+	public static void checkIfAddRepliesAllowed(User user, Binder binder, WorkflowSupport entry) 
+			throws AccessControlException {
+		if (entry.isAddRepliesDisallowed()) {
+			//Adding replies has been disallowed
+			throw new AccessControlException();
+		}
+	}
+	
+	public static void modifyFieldCheck(Entry entry) throws AccessControlException {
+		modifyFieldCheck(RequestContextHolder.getRequestContext().getUser(), entry);
+	}
+	public static void modifyFieldCheck(User user, Entry entry) throws AccessControlException {
+    	if (user.isSuper()) return;
+    	if (entry instanceof WorkflowSupport)
     		 modifyFieldCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
-    	 else 
+    	else 
     		 modifyFieldCheck(user, entry.getParentBinder(), (Entry)entry);
     }
      private static void modifyFieldCheck(User user, Binder binder, Entry entry) {

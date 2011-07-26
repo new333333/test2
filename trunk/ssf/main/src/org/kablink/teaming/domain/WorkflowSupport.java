@@ -43,6 +43,7 @@ public interface WorkflowSupport  {
     public void addWorkflowState(WorkflowState workflowState);
 	public boolean hasAclSet();
 	public boolean isWorkAreaAccess(WfAcl.AccessType type);
+	public boolean isAddRepliesDisallowed();
 	public Long getOwnerId();
 	public Set<WorkflowResponse> getWorkflowResponses();
 	public Set getStateMembers(WfAcl.AccessType type);
