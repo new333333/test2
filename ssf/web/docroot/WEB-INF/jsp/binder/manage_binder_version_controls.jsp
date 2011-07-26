@@ -168,7 +168,16 @@ function ss_checkIfNumberValid(s) {
           <br/>
 		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint1" /></div>
 		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint2" /></div>
-		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint3" /></div>
+		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;">
+		    <span><ssf:nlt tag="binder.versions.agingDays.hint3" /></span>
+		    <c:if test="${empty ss_fileVersionMaximumAge}">
+		       <span><ssf:nlt tag="binder.versions.agingDays.hint4" /></span>
+		    </c:if>
+		    <c:if test="${!empty ss_fileVersionMaximumAge}">
+		       <span><ssf:nlt tag="binder.versions.agingDays.hint5"><ssf:param 
+		         name="value" value="${ss_fileVersionMaximumAge}"/></ssf:nlt></span>
+		    </c:if>
+		  </div>
        </div>
 	 </fieldset>
      <br/>
