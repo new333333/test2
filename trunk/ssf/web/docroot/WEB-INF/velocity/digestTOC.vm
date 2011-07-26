@@ -44,18 +44,16 @@
  #foreach ($folder in ${ssDocument.selectNodes("//folder")})
  	${folder.attributeValue("title")}<br/>
  	#foreach ($entry in $folder.selectNodes("./folderEntry"))
- 		#if (${entry.attributeValue("docLevel")} == '1' || ${entry.attributeValue("hasChanges")} == 'true')
- 		#if (${entry.attributeValue("docLevel")} != '1')
- 			&nbsp;&nbsp;&nbsp;&nbsp;
- 		#end
- 		&nbsp;&nbsp;&nbsp;&nbsp;<a href="#$entry.attributeValue("name")">${entry.attributeValue("docNumber")}&nbsp;$esc.html(${entry.attributeValue("title")})
- 		#if (${entry.attributeValue("hasChanges")} == 'true')
- 			($ssVisitor.getNLT(${entry.attributeValue("notifyType")}))
- 		#end
- 		</a>
- 		<br/>
- 		#end
- 	#end
+	  #if (${entry.attributeValue("docLevel")} != '1')
+		&nbsp;&nbsp;&nbsp;&nbsp;
+	  #end
+	  &nbsp;&nbsp;&nbsp;&nbsp;<a href="#$entry.attributeValue("name")">${entry.attributeValue("docNumber")}&nbsp;$esc.html(${entry.attributeValue("title")})
+	  #if (${entry.attributeValue("hasChanges")} == 'true')
+		($ssVisitor.getNLT(${entry.attributeValue("notifyType")}))
+	  #end
+	  </a>
+	  <br/>
+   #end
  #end
  </div>
  <br/>

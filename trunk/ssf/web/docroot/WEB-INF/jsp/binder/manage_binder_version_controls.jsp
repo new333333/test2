@@ -156,14 +156,23 @@ function ss_checkIfNumberValid(s) {
     <c:if test="${ssBinder.entityType == 'folder'}">
      <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
-	    <span class="ss_bold"><ssf:nlt tag="binder.file.versionAging" /></span>
+	    <input type="checkbox" name="enableBinderVersionAging" 
+		  <c:if test="${ss_binder_version_aging_enabled}">checked=checked</c:if>
+		/>
+	    <span class="ss_bold"><ssf:nlt tag="binder.file.versionAgingEnable" /></span>
 	  </legend>
        <div style="padding:10px 10px 0px 10px;">
+          <c:if test="${!ss_binder_version_aging_enabled}">
+          <div style="padding:0px 0px 6px 0px;">
+            <span><ssf:nlt tag="binder.file.versionAgingDisabled"/></span>
+          </div>
+          </c:if>
           <span class="ss_bold"><ssf:nlt tag="binder.versions.agingDays"/></span>
           <input type="text" name="versionAgingDays" 
             value="${ss_binder_version_aging_days}"
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+            <c:if test="${!ss_binder_version_aging_enabled}">disabled="disabled"</c:if>
           ><ssf:nlt tag="smallWords.days"/>
           <br/>
 		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint1" /></div>

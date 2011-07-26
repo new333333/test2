@@ -53,6 +53,7 @@ public class FileUtils {
 				!entity.getEntityType().equals(EntityType.applicationGroup)) {
 			binder = (Binder)entity;
 		}
+		Boolean versionAgingEnabled = binder.getVersionAgingEnabled();
 		Long versionAgingDays = binder.getVersionAgingDays();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
     	for (FileAttachment fa : atts) {
@@ -68,7 +69,7 @@ public class FileUtils {
     				};
     			} else {
     				//This is a minor version that is not the highest in its major class. It is subject to aging
-    				if (va.getAgingEnabled() == null || !va.isAgingEnabled()) {
+    				if (versionAgingEnabled && (va.getAgingEnabled() == null || !va.isAgingEnabled())) {
     					va.setAgingEnabled(Boolean.TRUE);
     				}
     				//Calculate the binder aging date (if any)

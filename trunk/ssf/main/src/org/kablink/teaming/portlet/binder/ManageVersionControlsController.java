@@ -110,6 +110,11 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					}
 				}
 				
+				//Save the settings
+				//Is version aging enabled
+				Boolean originalAgingEnabled = getBinderModule().getBinderVersionAgingEnabled(binder);
+				Boolean enableBinderVersionAging = PortletRequestUtils.getBooleanParameter(request, "enableBinderVersionAging", Boolean.FALSE);
+				getBinderModule().setBinderVersionAgingEnabled(binderId, enableBinderVersionAging);
 				// Get the aging days.
 				String s_agingDays;
 				Long agingDays = null;
@@ -123,7 +128,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					agingDays = getBinderModule().getBinderVersionAgingDays(binder);
 				}
 				Long originalAgingDays = getBinderModule().getBinderVersionAgingDays(binder);
-				if (originalAgingDays != agingDays) {
+				if (originalAgingDays != agingDays || !originalAgingEnabled.equals(enableBinderVersionAging) ) {
 					//Store the new value, then fix up the entries in this binder to have the correct agingDate
 					getBinderModule().setBinderVersionAgingDays(binderId, agingDays);
 					getBinderModule().setBinderFileAgingDates(binder);
@@ -185,6 +190,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		}
 		model.put(WebKeys.BINDER_VERSIONS_ENABLED, getBinderModule().getBinderVersionsEnabled(binder));
 		model.put(WebKeys.BINDER_VERSIONS_TO_KEEP, getBinderModule().getBinderVersionsToKeep(binder));
+		model.put(WebKeys.BINDER_VERSION_AGING_ENABLED, getBinderModule().getBinderVersionAgingEnabled(binder));
 		model.put(WebKeys.BINDER_VERSION_AGING_DAYS, getBinderModule().getBinderVersionAgingDays(binder));
 		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, getBinderModule().getBinderMaxFileSize(binder));
 		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.isFileEncryptionEnabled());

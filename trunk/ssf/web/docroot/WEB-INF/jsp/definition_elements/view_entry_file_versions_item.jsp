@@ -253,7 +253,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    </ssf:title>
 						><%= vfnBr %></a>
 					<c:if test="${fileVersion.agingEnabled}">
-					  <c:if test="${!empty ssBinder.versionAgingDays || !empty ss_zoneVersionAgingDays}">
+					  <c:if test="${ssBinder.versionAgingEnabled && (!empty ssBinder.versionAgingDays || !empty ss_zoneVersionAgingDays)}">
 					    <sup>*</sup>
 					    <c:set var="ss_fileVersionAgingEnabledSeen" value="true" scope="request"/>
 					  </c:if>

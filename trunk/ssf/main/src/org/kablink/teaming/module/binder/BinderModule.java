@@ -579,6 +579,12 @@ public interface BinderModule {
     //Get the versionAgingDays setting from the binder
     public Long getBinderVersionAgingDays(Binder binder);
     
+    //Get the versionAgingDays setting from the binder
+    public Boolean getBinderVersionAgingEnabled(Binder binder);
+    
+    //Set the versionAgingEnabled setting from the binder
+    public void setBinderVersionAgingEnabled(Long binderId, Boolean enabled);
+    
     //Routine to calculate the aging date for each file in a binder
     public void setBinderFileAgingDates(Binder binder);
 	

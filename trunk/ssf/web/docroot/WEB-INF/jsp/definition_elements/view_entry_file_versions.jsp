@@ -149,7 +149,7 @@ function ss_selectFileVersions(formName, isToBeSet) {
 </table>
 <c:if test="${ss_fileVersionAgingEnabledSeen}">
   <div style="padding-left:16px;"><ssf:nlt tag="file.versions.subjectToAgingDeletion"/></div>
-  <c:if test="${!empty ssBinder.versionAgingDays}">
+  <c:if test="${ssBinder.versionAgingEnabled && !empty ssBinder.versionAgingDays}">
     <div style="padding-left:16px;">
      <c:if test="${ssBinder.versionAgingDays == 1}">
       <ssf:nlt tag="file.versions.binderAgingDay">
@@ -163,7 +163,7 @@ function ss_selectFileVersions(formName, isToBeSet) {
      </c:if>
     </div>
   </c:if>
-  <c:if test="${empty ssBinder.versionAgingDays && !empty ss_zoneVersionAgingDays}">
+  <c:if test="${ssBinder.versionAgingEnabled && (empty ssBinder.versionAgingDays && !empty ss_zoneVersionAgingDays)}">
     <div style="padding-left:16px;">
       <ssf:nlt tag="file.versions.zoneAgingDays">
         <ssf:param name="value" value="${ss_zoneVersionAgingDays}"/>

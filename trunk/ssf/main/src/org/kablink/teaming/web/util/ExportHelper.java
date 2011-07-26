@@ -118,6 +118,9 @@ import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -1001,6 +1004,20 @@ public class ExportHelper {
 				value.addAttribute("definitionName", viewDefinitions.get(i).getName());
 			}
 		}
+		
+		//Access control settings
+		Element accessControls = settingsEle.addElement("accessControls");
+		WorkArea workArea = (WorkArea)binder;
+		if (!workArea.isFunctionMembershipInherited()) {
+			List<WorkAreaFunctionMembership> membership = adminModule.getWorkAreaFunctionMemberships(workArea);
+			for (WorkAreaFunctionMembership wfm : membership) {
+				//Get the function (aka role)
+				Function f = adminModule.getFunction(wfm.getFunctionId());
+				f.getName();
+				wfm.getMemberIds();
+			}
+		}
+
 
 		// entries
 		List<Definition> entryDefinitions = binder.getEntryDefinitions();
@@ -1023,6 +1040,10 @@ public class ExportHelper {
 		Long versionsToKeep = binder.getVersionsToKeep();
 		if (versionsToKeep != null) {
 			versionControls.addAttribute("versionsToKeep", versionsToKeep.toString());
+		}
+		Boolean versionAgingEnabled = binder.getVersionAgingEnabled();
+		if (versionAgingEnabled != null) {
+			versionControls.addAttribute("versionAgingEnabled", versionAgingEnabled.toString());
 		}
 		Long versionAgingDays = binder.getVersionAgingDays();
 		if (versionAgingDays != null) {
@@ -2520,6 +2541,10 @@ public class ExportHelper {
 			String versionsToKeep = versionControls.attributeValue("versionsToKeep", null);
 			if (versionsToKeep != null) {
 				binder.setVersionsToKeep(Long.valueOf(versionsToKeep));
+			}
+			String versionAgingEnabled = versionControls.attributeValue("versionAgingEnabled", null);
+			if (versionAgingEnabled != null) {
+				binder.setVersionAgingEnabled(Boolean.valueOf(versionAgingEnabled));
 			}
 			String versionAgingDays = versionControls.attributeValue("versionAgingDays", null);
 			if (versionAgingDays != null) {

@@ -2450,6 +2450,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		});
 	}
 
+	//Get the versionsEnabled setting from the first binder it is set in up the ancestor chain
+	public Boolean getBinderVersionAgingEnabled(Binder binder) {
+		Boolean result = binder.getVersionAgingEnabled();
+		if (result == null) {
+			//This value has never been set anywhere, so default to true
+			result = Boolean.TRUE;
+		}
+		return result;
+	}
+
+	// no transaction
+	public void setBinderVersionAgingEnabled(Long binderId, final Boolean enabled)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setVersionAgingEnabled(enabled);
+				return enabled;
+			}
+		});
+	}
+
 	//Get the versionAgingDays setting from the binder
     public Long getBinderVersionAgingDays(Binder binder) {
     	return binder.getVersionAgingDays();

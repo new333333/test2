@@ -735,6 +735,7 @@ public class WebKeys {
 	public static final String BINDER_VERSIONS_ENABLED = "ss_binder_versions_enabled";
 	public static final String BINDER_VERSIONS_ENABLED_INHERITED = "ss_binder_versions_enabled_inherited";
 	public static final String BINDER_VERSIONS_TO_KEEP = "ss_binder_versions_to_keep";
+	public static final String BINDER_VERSION_AGING_ENABLED = "ss_binder_version_aging_enabled";
 	public static final String BINDER_VERSION_AGING_DAYS = "ss_binder_version_aging_days";
 	public static final String BINDER_VERSIONS_MAX_FILE_SIZE = "ss_binder_versions_max_file_size";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
