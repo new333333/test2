@@ -231,7 +231,7 @@ public class TaskDueDateDlg extends DlgBox
 		m_taskDueDateTable = new FlexTable();
 		m_taskDueDateTable.addStyleName("taskDueDateDlg_Table");
 		m_taskDueDateTable.setCellPadding(0);
-		m_taskDueDateTable.setCellSpacing(0);
+		m_taskDueDateTable.setCellSpacing(3);
 
 		// ...populate the grid...
 		renderAllDayRow();

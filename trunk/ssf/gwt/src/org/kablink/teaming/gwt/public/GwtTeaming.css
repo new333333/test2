@@ -2893,6 +2893,7 @@ top:100px;
 {
 	width: 400px;
 	margin-top: 5px;
+	font-weight: bold;
 }
 
 /* Start:  GWT Task Folder Listing styles. */
@@ -3295,13 +3296,24 @@ a.gwtTaskList_task-icon:hover
 {
 	background: none !important;
 }
-.gwtTaskList_task-nameAnchor
+.gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
 {
-	display:      inline-block !important;
-	white-space:  normal       !important;
+	color:        #135c8f !important;
+	white-space:  normal  !important;
+	position:     absolute;
+}
+.gwtTaskList_task-nameAnchor:hover
+{
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 .gwtTaskList_task-nameCell
 {
+}
+.gwtTaskList_task-namePanel
+{
+	position: relative;
 }
 /* End:  GWT Task Folder Listing styles. */
 
