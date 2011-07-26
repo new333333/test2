@@ -493,7 +493,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 				    						Double number = Double.valueOf(oldValue);
 				    						Double amount = Double.valueOf(dataValue[0]);
 				    						if (operation.equals("decrement")) {
-				    							amount = amount * -1;
+				    							amount = -amount;
 				    						}
 				    						String newValue = String.valueOf(number + amount);
 				    						if (newValue.endsWith(".0") && !oldValue.contains(".")) {
@@ -505,17 +505,19 @@ public class EnterExitEvent extends AbstractActionHandler {
 			    					} else if (ca.getValue() instanceof Date) {
 			    						Date d = (Date)ca.getValue();
 			    						Long amount = Long.valueOf(duration);
+		    							if (operation.equals("decrement")) amount = -amount;
 			    						if ("days".equals(durationType)) {
-			    							amount = amount * 24*60*60*1000;
+			    							Integer iDays = Integer.valueOf(duration);
+			    							if (operation.equals("decrement")) iDays = -iDays;
+			    							d = EventHelper.adjustDate(d, iDays);
 			    						} else if ("hours".equals(durationType)) {
 			    							amount = amount * 60*60*1000;
+			    							d.setTime(d.getTime() + amount);
 			    						} else if ("munutes".equals(durationType)) {
 			    							amount = amount * 60*1000;
+			    							d.setTime(d.getTime() + amount);
 			    						}
-		    							if (operation.equals("decrement")) {
-		    								amount = amount * -1;
-		    							}
-			    						d.setTime(d.getTime() + amount);
+			    						
 			    						updates.put(dataName, d);
 			    					}
 	    						} catch(Exception e) {}
@@ -525,27 +527,20 @@ public class EnterExitEvent extends AbstractActionHandler {
 			    					if (ca.getValue() instanceof org.kablink.teaming.domain.Event) {
 			    						org.kablink.teaming.domain.Event e = (org.kablink.teaming.domain.Event)ca.getValue();
 			    						Long amount = Long.valueOf(duration);
+			    						if (operation.equals("decrementStart")) amount = -amount;
 		    							Calendar cal = e.getDtStart();
 			    						if ("days".equals(durationType)) {
 			    							if (cal != null) {
 			    								Integer iDays = Integer.valueOf(duration);
-			    								if (operation.equals("decrementStart")) {
-			    									iDays = iDays * -1;
-			    								}
+			    								if (operation.equals("decrementStart")) iDays = -iDays;
 				    							Date newDate = EventHelper.adjustDate(cal.getTime(), iDays);
 				    							cal.setTime(newDate);
 			    							}
 			    						} else if ("hours".equals(durationType)) {
 			    							amount = amount * 60*60*1000;
-			    							if (operation.equals("decrementStart")) {
-			    								amount = amount * -1;
-			    							}
 			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
 			    						} else if ("munutes".equals(durationType)) {
 			    							amount = amount * 60*1000;
-			    							if (operation.equals("decrementStart")) {
-			    								amount = amount * -1;
-			    							}
 			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
 			    						}
 				    					e.setDtStart(cal);
@@ -558,27 +553,20 @@ public class EnterExitEvent extends AbstractActionHandler {
 			    					if (ca.getValue() instanceof org.kablink.teaming.domain.Event) {
 			    						org.kablink.teaming.domain.Event e = (org.kablink.teaming.domain.Event)ca.getValue();
 			    						Long amount = Long.valueOf(duration);
+			    						if (operation.equals("decrementEnd")) amount = -amount;
 		    							Calendar cal = e.getDtEnd();
 			    						if ("days".equals(durationType)) {
 			    							if (cal != null) {
 			    								Integer iDays = Integer.valueOf(duration);
-			    								if (operation.equals("decrementEnd")) {
-			    									iDays = iDays * -1;
-			    								}
+			    								if (operation.equals("decrementEnd")) iDays = -iDays;
 				    							Date newDate = EventHelper.adjustDate(cal.getTime(), iDays);
 				    							cal.setTime(newDate);
 			    							}
 			    						} else if ("hours".equals(durationType)) {
 			    							amount = amount * 60*60*1000;
-			    							if (operation.equals("decrementEnd")) {
-			    								amount = amount * -1;
-			    							}
 			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
 			    						} else if ("munutes".equals(durationType)) {
 			    							amount = amount * 60*1000;
-			    							if (operation.equals("decrementEnd")) {
-			    								amount = amount * -1;
-			    							}
 			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
 			    						}
 				    					e.setDtEnd(cal);
