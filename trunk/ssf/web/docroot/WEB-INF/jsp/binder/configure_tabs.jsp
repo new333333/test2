@@ -42,7 +42,14 @@
 					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
 						name="binderId" value="${ssBinder.id}"/><ssf:param 
 						name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-					  >${ss_windowTitle}</a>
+					  >
+					  <c:if test="${ssBinder.entityType != 'folder'}">
+					    <span><ssf:nlt tag="binder.configure.definitions.workspace"/></span>
+					  </c:if>
+					  <c:if test="${ssBinder.entityType == 'folder'}">
+					    <span><ssf:nlt tag="binder.configure.definitions.folder"/></span>
+					  </c:if>
+					  </a>
 				  </div>
 			  </td>
 			  <td>
