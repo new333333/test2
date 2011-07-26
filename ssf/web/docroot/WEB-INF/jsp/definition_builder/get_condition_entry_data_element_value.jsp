@@ -54,7 +54,9 @@
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
 		     <c:if test="${conditionElementOperation == 'incrementStart' || 
-		                   conditionElementOperation == 'incrementEnd'}">
+		                   conditionElementOperation == 'incrementEnd' ||
+		                   conditionElementOperation == 'decrementStart' || 
+		                   conditionElementOperation == 'decrementEnd'}">
 		       <table>
 		        <tbody>
 		         <tr>

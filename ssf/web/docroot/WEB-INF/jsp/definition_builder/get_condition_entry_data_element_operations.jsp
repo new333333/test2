@@ -60,8 +60,10 @@
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
 		         <option value="setCurrentDateStart"><ssf:nlt tag="definition.operation_setCurrentDateStart"/></option>
 		         <option value="incrementStart"><ssf:nlt tag="definition.operation_incrementStart"/></option>
+		         <option value="decrementStart"><ssf:nlt tag="definition.operation_decrementStart"/></option>
 		         <option value="setCurrentDateEnd"><ssf:nlt tag="definition.operation_setCurrentDateEnd"/></option>
 		         <option value="incrementEnd"><ssf:nlt tag="definition.operation_incrementEnd"/></option>
+		         <option value="decrementEnd"><ssf:nlt tag="definition.operation_decrementEnd"/></option>
 		     </c:if>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date'}">
 		         <option value="setCurrentDate"><ssf:nlt tag="definition.operation_setCurrentDate"/></option>

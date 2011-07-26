@@ -105,6 +105,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -487,12 +488,20 @@ public class EnterExitEvent extends AbstractActionHandler {
 	    						try {
 			    					if (ca.getValue() instanceof String && dataValue.length >= 1) {
 			    						//This must be a number
-			    						Double number = Double.valueOf((String)ca.getValue());
-			    						Double amount = Double.valueOf(dataValue[0]);
-			    						if (operation.equals("decrement")) {
-			    							amount = amount * -1;
+			    						String oldValue = (String)ca.getValue();
+			    						if (!oldValue.equals("")) {
+				    						Double number = Double.valueOf(oldValue);
+				    						Double amount = Double.valueOf(dataValue[0]);
+				    						if (operation.equals("decrement")) {
+				    							amount = amount * -1;
+				    						}
+				    						String newValue = String.valueOf(number + amount);
+				    						if (newValue.endsWith(".0") && !oldValue.contains(".")) {
+				    							//There weren't any decimal levels, don't add any
+				    							newValue = newValue.substring(0, newValue.length()-2);
+				    						}
+			    							updates.put(dataName, newValue);
 			    						}
-		    							updates.put(dataName, String.valueOf(number + amount));
 			    					} else if (ca.getValue() instanceof Date) {
 			    						Date d = (Date)ca.getValue();
 			    						Long amount = Long.valueOf(duration);
@@ -508,6 +517,72 @@ public class EnterExitEvent extends AbstractActionHandler {
 		    							}
 			    						d.setTime(d.getTime() + amount);
 			    						updates.put(dataName, d);
+			    					}
+	    						} catch(Exception e) {}
+		    				} else if (operation.equals("incrementStart") || operation.equals("decrementStart")) {
+		    					CustomAttribute ca = entry.getCustomAttribute(dataName);
+	    						try {
+			    					if (ca.getValue() instanceof org.kablink.teaming.domain.Event) {
+			    						org.kablink.teaming.domain.Event e = (org.kablink.teaming.domain.Event)ca.getValue();
+			    						Long amount = Long.valueOf(duration);
+		    							Calendar cal = e.getDtStart();
+			    						if ("days".equals(durationType)) {
+			    							if (cal != null) {
+			    								Integer iDays = Integer.valueOf(duration);
+			    								if (operation.equals("decrementStart")) {
+			    									iDays = iDays * -1;
+			    								}
+				    							Date newDate = EventHelper.adjustDate(cal.getTime(), iDays);
+				    							cal.setTime(newDate);
+			    							}
+			    						} else if ("hours".equals(durationType)) {
+			    							amount = amount * 60*60*1000;
+			    							if (operation.equals("decrementStart")) {
+			    								amount = amount * -1;
+			    							}
+			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
+			    						} else if ("munutes".equals(durationType)) {
+			    							amount = amount * 60*1000;
+			    							if (operation.equals("decrementStart")) {
+			    								amount = amount * -1;
+			    							}
+			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
+			    						}
+				    					e.setDtStart(cal);
+			    						updates.put(dataName, e);
+			    					}
+	    						} catch(Exception e) {}
+		    				} else if (operation.equals("incrementEnd") || operation.equals("decrementEnd")) {
+		    					CustomAttribute ca = entry.getCustomAttribute(dataName);
+	    						try {
+			    					if (ca.getValue() instanceof org.kablink.teaming.domain.Event) {
+			    						org.kablink.teaming.domain.Event e = (org.kablink.teaming.domain.Event)ca.getValue();
+			    						Long amount = Long.valueOf(duration);
+		    							Calendar cal = e.getDtEnd();
+			    						if ("days".equals(durationType)) {
+			    							if (cal != null) {
+			    								Integer iDays = Integer.valueOf(duration);
+			    								if (operation.equals("decrementEnd")) {
+			    									iDays = iDays * -1;
+			    								}
+				    							Date newDate = EventHelper.adjustDate(cal.getTime(), iDays);
+				    							cal.setTime(newDate);
+			    							}
+			    						} else if ("hours".equals(durationType)) {
+			    							amount = amount * 60*60*1000;
+			    							if (operation.equals("decrementEnd")) {
+			    								amount = amount * -1;
+			    							}
+			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
+			    						} else if ("munutes".equals(durationType)) {
+			    							amount = amount * 60*1000;
+			    							if (operation.equals("decrementEnd")) {
+			    								amount = amount * -1;
+			    							}
+			    							cal.setTimeInMillis(cal.getTime().getTime() + amount);
+			    						}
+				    					e.setDtEnd(cal);
+			    						updates.put(dataName, e);
 			    					}
 	    						} catch(Exception e) {}
 		    				}
