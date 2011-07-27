@@ -93,8 +93,13 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -120,6 +125,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -150,6 +156,9 @@ public class TaskTable extends Composite
 	private EventHandler			m_expanderClickHandler;		//
 	private EventHandler			m_newTaskClickHandler;		//
 	private EventHandler			m_taskOptionClickHandler;	//
+	private EventHandler			m_taskOrderBlurHandler;		//
+	private EventHandler			m_taskOrderClickHandler;	//
+	private EventHandler			m_taskOrderKeyPressHandler;	//
 	private EventHandler			m_taskSeenClickHandler;		//
 	private EventHandler			m_taskViewClickHandler;		//
 	private FlexCellFormatter		m_flexTableCF;				//
@@ -474,6 +483,8 @@ public class TaskTable extends Composite
 		private int 		m_taskOrder = (-1);			//
 		private int 		m_taskRow;					//
 		private Label		m_taskNameAnchor;			//
+		private Label		m_taskOrderAnchor;			//
+		private TextBox		m_taskOrderTextBox;			//
 		private Widget      m_taskPercentDoneWidget;	//
 		
 		/**
@@ -514,6 +525,8 @@ public class TaskTable extends Composite
 		public int         getTaskOrder()             {return m_taskOrder;            }
 		public int         getTaskRow()               {return m_taskRow;              }
 		public Label       getTaskNameAnchor()        {return m_taskNameAnchor;       }
+		public Label       getTaskOrderAnchor()       {return m_taskOrderAnchor;      }
+		public TextBox     getTaskOrderTextBox()      {return m_taskOrderTextBox;     }
 		public Widget      getTaskPercentDoneWidget() {return m_taskPercentDoneWidget;}
 
 		public void setTaskSelected(         boolean     taskSelected)          {m_taskSelected          = taskSelected;         }
@@ -530,6 +543,8 @@ public class TaskTable extends Composite
 		public void setTaskOrder(            int         taskOrder)             {m_taskOrder             = taskOrder;            }
 		public void setTaskRow(              int         taskRow)               {m_taskRow               = taskRow;              }
 		public void setTaskNameAnchor(       Label       taskNameAnchor)        {m_taskNameAnchor        = taskNameAnchor;       }
+		public void setTaskOrderAnchor(      Label       taskOrderAnchor)       {m_taskOrderAnchor       = taskOrderAnchor;      }
+		public void setTaskOrderTextBox(     TextBox     taskOrderTextBox)      {m_taskOrderTextBox      = taskOrderTextBox;     }
 		public void setTaskPercentDoneWidget(Widget      taskPercentDoneWidget) {m_taskPercentDoneWidget = taskPercentDoneWidget;}
 		
 		/**
@@ -1192,6 +1207,33 @@ public class TaskTable extends Composite
 			}
 		};
 		
+		// Event handler used when the focus leave a task's order
+		// number edit widget.
+		m_taskOrderBlurHandler = new BlurHandler() {
+			@Override
+			public void onBlur(BlurEvent event) {
+				handleTaskOrderBlur(getTaskFromEventWidget((Widget) event.getSource()));
+			}
+		};
+		
+		// Event handler used when the user clicks on a task's order
+		// number link edit the tasks order.
+		m_taskOrderClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				handleTaskOrderEdit(getTaskFromEventWidget((Widget) event.getSource()));
+			}
+		};
+		
+		// Event handler used when the user types into a task's order
+		// number edit widget.
+		m_taskOrderKeyPressHandler = new KeyPressHandler() {
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				handleTaskOrderKeyPress(getTaskFromEventWidget((Widget) event.getSource()), event);
+			}
+		};
+		
 		// Event handler used when the user clicks on a task's unseen
 		// star burst.
 		m_taskSeenClickHandler = new ClickHandler() {
@@ -1830,6 +1872,131 @@ public class TaskTable extends Composite
 	}
 	
 	/*
+	 * Called to order number edit widget looses the focus.
+	 */
+	private void handleTaskOrderBlur(TaskListItem task) {
+		// Hide the task order edit widget...
+		UIData uid = getUIData(task);
+		TextBox tb = uid.getTaskOrderTextBox();		
+		tb.setVisible(false);
+
+		// ...and show the task order anchor.
+		uid.getTaskOrderAnchor().setVisible(true);		
+	}
+	
+	/*
+	 * Called to edit the order number on the given task.
+	 */
+	private void handleTaskOrderEdit(TaskListItem task) {
+		// Hide the task order anchor...
+		UIData uid = getUIData(task);
+		uid.getTaskOrderAnchor().setVisible(false);
+
+		// ...and show the edit widget.
+		TextBox tb = uid.getTaskOrderTextBox();		
+		tb.setVisible(true);
+		tb.setSelectionRange(0, tb.getValue().length());
+		tb.setFocus(true);
+	}
+
+	/*
+	 * Called for each key press event in a  task order edit widget.
+	 */
+	private void handleTaskOrderKeyPress(TaskListItem task, KeyPressEvent event) {
+        // Get the key the user pressed.
+		UIData uid = getUIData(task);
+		TextBox tb = uid.getTaskOrderTextBox();		
+        int keyCode = event.getNativeEvent().getKeyCode();
+
+        // Can we do something with this key?
+        if ((!(Character.isDigit(event.getCharCode()))) &&
+        		(KeyCodes.KEY_TAB       != keyCode)     &&
+        		(KeyCodes.KEY_BACKSPACE != keyCode)     &&
+        		(KeyCodes.KEY_DELETE    != keyCode)     &&
+        		(KeyCodes.KEY_ENTER     != keyCode)     &&
+        		(KeyCodes.KEY_HOME      != keyCode)     &&
+        		(KeyCodes.KEY_END       != keyCode)     &&
+        		(KeyCodes.KEY_LEFT      != keyCode)     &&
+        		(KeyCodes.KEY_RIGHT     != keyCode)) {
+       		// No!  Suppress it.
+       		tb.cancelKey();
+        }
+
+        // Did the user press the enter key?
+        if (KeyCodes.KEY_ENTER == keyCode) {
+        	// Yes!  Kill the focus to hide/show the order widgets as
+        	// appropriate...
+        	tb.setFocus(false);
+        	
+    		// ...and put the new value into affect.  Do we have a new,
+        	// ...valid order number for this task?
+    		int    origOrder = uid.getTaskOrder();
+    		int    newOrder  = 0;
+    		String newOrderS = tb.getValue();
+    		if (null == newOrderS) {
+    			newOrderS = "";
+    		}
+    		if (0 < newOrderS.length()) {
+    			try                  {newOrder  = Integer.parseInt(newOrderS);}
+    			catch (Exception ex) {newOrderS = "";                      }
+    		}
+    		if ((0 == newOrderS.length() || (0 > newOrder))) {
+    			// No!  Set the original order number back into the edit
+    			// widget and bail.
+    			tb.setValue(String.valueOf(origOrder));
+    			return;
+    		}
+    		
+    		// If the user didn't change the task's order number...
+    		if (0 == newOrder) newOrder = 1;
+    		if (newOrder == origOrder) {
+    			// ...we don't have anything to do.  Bail.
+    			return;
+    		}
+    		
+    		// Put the new order number into effect.  Is the new order
+    		// beyond the end of the task list?
+    		List<TaskListItem> tasks = m_taskBundle.getTasks();
+    		int count = tasks.size();
+    		if (newOrder >= count) {
+    			// Yes!  Remove it from its current position and append it
+    			// to the end of the list.
+    			tasks.remove(task);
+    			tasks.add(   task);
+    		}
+    		
+    		else {
+    			// No, the new order number is not beyond the end of the
+    			// task list!  Find the task to it before...
+    			TaskListItem insertBefore = tasks.get(newOrder - 1);
+    			
+    			// ...and move it there.
+    			tasks.remove(task);
+    			tasks.add(tasks.indexOf(insertBefore), task);
+    		}
+
+    		// Finally, after processing the move, we need to persist the
+    		// linkage change and force the task list to refresh.
+    		final ProcessActive pa = buildProcessActive(m_messages.taskProcess_move());
+    		selectAllTasksNow(null, false);
+    		uid.setTaskSelected(             true);
+    		uid.getTaskSelectorCB().setValue(true);
+    		persistLinkageChangeNow(
+    			new ScheduledCommand() {
+    				@Override
+    				public void execute() {
+    					// Refreshing the TaskTable will reread the tasks
+    					// and display them in the appropriate hierarchy.
+    					refreshTaskTableAsync(
+    						pa,
+    						true,	// true  -> Preserve checks.
+    						false);	// false -> Don't persist the task linkage again AFTER rereading the tasks.
+    				}
+    		});
+        }
+	}
+	
+	/*
 	 * Does what's necessary after a task is moved to put the change
 	 * into affect.
 	 */
@@ -1849,7 +2016,6 @@ public class TaskTable extends Composite
 			taskId = null;
 		}
 		persistLinkageChangeAsync(
-			task,
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
@@ -1896,13 +2062,13 @@ public class TaskTable extends Composite
 		// we need to persist it and then use it to refresh the
 		// TaskTable.
 		persistLinkageChangeNow(
-			null,	// null  -> No task.  We don't need one when not updating the calculated dates.
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
 					// Refreshing the TaskTable will reread the tasks
 					// and display them in the appropriate hierarchy. 
 					refreshTaskTableAsync(
+						null,	// null  -> No ProcessActive.
 						false,	// false -> Don't preserve checks.
 						true);	// true  -> Persist the task linkage again AFTER rereading the tasks.
 				}
@@ -2415,13 +2581,24 @@ public class TaskTable extends Composite
 	 * Asynchronously handle a resize event.
 	 */
 	private void onResizeAsync(final List<TaskListItem> tasks) {
-		ScheduledCommand resizer = new ScheduledCommand() {
+		// The nested scheduling is required to give the process active
+		// message a chance to display before we dive into the actual
+		// processing.
+		ScheduledCommand resizeStep1 = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onResizeNow(tasks);
+				final ProcessActive pa = buildProcessActive(m_messages.taskProcess_resize(), 0);
+				ScheduledCommand resizeStep2 = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						onResizeNow(tasks);
+						pa.killIt();
+					}
+				};
+				Scheduler.get().scheduleDeferred(resizeStep2);
 			}
 		};
-		Scheduler.get().scheduleDeferred(resizer);
+		Scheduler.get().scheduleDeferred(resizeStep1);
 	}
 	
 	/*
@@ -2520,17 +2697,17 @@ public class TaskTable extends Composite
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
-	private void persistLinkageChangeAsync(final TaskListItem task, final ScheduledCommand postChangeCommand) {
+	private void persistLinkageChangeAsync(final ScheduledCommand postChangeCommand) {
 		ScheduledCommand persistor = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				persistLinkageChangeNow(task, postChangeCommand);
+				persistLinkageChangeNow(postChangeCommand);
 			}
 		};
 		Scheduler.get().scheduleDeferred(persistor);
 	}
 	
-	private void persistLinkageChangeNow(final TaskListItem task, final ScheduledCommand postChangeCommand) {
+	private void persistLinkageChangeNow(final ScheduledCommand postChangeCommand) {
 		// If we're not in a state were link changes can be saved...
 		if (!(canPersistLinkage())) {
 			// ...bail.
@@ -2622,21 +2799,28 @@ public class TaskTable extends Composite
 	/*
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
-	private void refreshTaskTableAsync(final boolean preserveChecks, final boolean persistLinkage) {
+	private void refreshTaskTableAsync(final ProcessActive pa, final boolean preserveChecks, final boolean persistLinkage) {
 		ScheduledCommand refresher = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				refreshTaskTableNow(preserveChecks, persistLinkage);
+				refreshTaskTableNow(pa, preserveChecks, persistLinkage);
 			}
 		};
 		Scheduler.get().scheduleDeferred(refresher);
 	}
 	
-	private void refreshTaskTableNow(final boolean preserveChecks, final boolean persistLinkage) {
+	private void refreshTaskTableNow(final ProcessActive pa, final boolean preserveChecks, final boolean persistLinkage) {
 		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode());
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				// If we were given a ProcessActive...
+				if (null != pa) {
+					// ...kill it.
+					pa.killIt();
+				}
+
+				// Tell the user about the failure.
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					m_messages.rpcFailure_GetTaskList());
@@ -2644,10 +2828,17 @@ public class TaskTable extends Composite
 
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
+				// If we were given a ProcessActive...
+				if (null != pa) {
+					// ...Kill it.
+					pa.killIt();
+				}
+
+				// Extract the TaskBundle from the response data...
 				TaskBundleRpcResponseData responseData = ((TaskBundleRpcResponseData) result.getResponseData());
 				TaskBundle taskBundle = responseData.getTaskBundle();
 				
-				// Preserve the tasks that are currently checked...
+				// ...preserve the tasks that are currently checked...
 				List<Long> checkedTaskIds;
 				if (preserveChecks)
 				     checkedTaskIds = getTaskIdsChecked();
@@ -2664,9 +2855,7 @@ public class TaskTable extends Composite
 				if (persistLinkage) {
 					// ...persist the current state of things as the
 					// ...new task linkage.
-					persistLinkageChangeAsync(
-						null,	// null  -> No task.  We don't need one when not updating the calculated dates.
-						null);	// null  -> No post change commands.
+					persistLinkageChangeAsync(null);	// null  -> No post change commands.
 				}
 			}			
 		});
@@ -2881,13 +3070,67 @@ public class TaskTable extends Composite
 			// task.
 			UIData uid = getUIData(task);
 
+			// What should we display in the column?
 			int order = uid.getTaskOrder();
 			String orderHTML;
-			if ((0 == uid.getTaskDepth()) && ((-1) != order))
+			boolean hasOrderNumber = ((0 == uid.getTaskDepth()) && ((-1) != order));
+			if (hasOrderNumber)
 			     orderHTML = String.valueOf(order);
 			else orderHTML = "&nbsp;";
 			int colIndex = getColumnIndex(Column.ORDER);
-			m_flexTable.setHTML(                 row, colIndex, orderHTML);
+
+			// Do we have an order number that the user can edit?
+			if (hasOrderNumber && m_taskBundle.getCanModifyTaskLinkage()) {
+				// Yes!  Create a panel that can hold the text and an
+				// edit widget...
+				FlowPanel fp = new FlowPanel();
+				
+				// ...create an anchor the user can click to edit the
+				// ...the order number...
+				Label ta = buildAnchorLabel();
+				ta.setText(orderHTML);
+				ta.addStyleName("gwtTaskList_task-orderAnchor");
+				Element taE = ta.getElement();
+				String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
+				taE.setAttribute(ATTR_ENTRY_ID, entryId);
+				EventWrapper.addHandler(ta, m_taskOrderClickHandler);
+				fp.add(ta);
+				uid.setTaskOrderAnchor(ta);
+
+				// ...create an initially hidden TextBox the user can
+				// ...use to edit the order number when the click on
+				// ...the order number anchor...
+				int tasks = m_taskBundle.getTasks().size();
+				int vl = 2;
+				while (true ){
+					tasks = (tasks / 10);
+					if (0 == tasks) {
+						break;
+					}
+					vl += 1;
+				}
+				TextBox tb = new TextBox();
+				tb.setVisibleLength(vl);
+				tb.setMaxLength(    vl);
+				tb.setText(orderHTML);
+				tb.setVisible(false);
+				tb.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
+				EventWrapper.addHandler(tb, m_taskOrderKeyPressHandler);
+				EventWrapper.addHandler(tb, m_taskOrderBlurHandler    );
+				fp.add(tb);				
+				uid.setTaskOrderTextBox(tb);
+
+				// ...and add the panel to the table.
+				m_flexTable.setWidget(row, colIndex, fp);
+			}
+			
+			else {
+				// No, we don't have an order number or the user can't
+				// edit it!  Add the order to the table as a simple
+				// chunk of text.
+				m_flexTable.setHTML(row, colIndex, orderHTML);
+			}			
+			
 			m_flexTableCF.setHorizontalAlignment(row, colIndex, HasHorizontalAlignment.ALIGN_CENTER);
 			m_flexTableCF.setWidth(              row, colIndex, (SPACER_SIZE + "px"));
 		}
@@ -3328,7 +3571,7 @@ public class TaskTable extends Composite
 	/*
 	 * Renders the tasks in the List<TaskListItem>.
 	 */
-	private void renderTaskList(List<TaskListItem> tasks) {
+	private void renderTaskListImpl(List<TaskListItem> tasks, boolean topLevelTasks) {
 		// Scan the tasks in the list...
 		boolean hasQuickFilter = (null != m_quickFilter);
 		for (TaskListItem task:  tasks) {
@@ -3343,13 +3586,20 @@ public class TaskTable extends Composite
 			
 				// ...and their subtasks.
 				if (task.getExpandSubtasks()) {
-					renderTaskList(task.getSubtasks());
+					renderTaskListImpl(task.getSubtasks(), false);
 				}
 			}
 		}
-		
+
 		// Force any final sizing to occur at once.
-		onResizeAsync(tasks);
+		if (topLevelTasks) {
+			onResizeAsync(tasks);
+		}
+	}
+	
+	private void renderTaskList(List<TaskListItem> tasks) {
+		// Always use the implementation form of the method.
+		renderTaskListImpl(tasks, true);
 	}
 
 	/*
