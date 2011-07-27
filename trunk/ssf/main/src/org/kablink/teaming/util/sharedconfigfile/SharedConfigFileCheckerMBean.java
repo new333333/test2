@@ -32,48 +32,9 @@
  */
 package org.kablink.teaming.util.sharedconfigfile;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+public interface SharedConfigFileCheckerMBean {
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.util.Constants;
-import org.kablink.util.PropsUtil;
-
-public abstract class PropertiesFileModificationListener implements FileModificationListener {
-
-	private static Log logger = LogFactory.getLog(PropertiesFileModificationListener.class);
+	public String getConfigFilePath();
 	
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.util.sharedconfigfile.ModificationListener#fileModified(java.io.File)
-	 */
-	@Override
-	public void fileModified(File file) {
-		InputStream is = null;
-		try {
-			is = new BufferedInputStream(new FileInputStream(file));
-			Properties props = new Properties();
-			props.load(is);
-			logger.info("Notifying listener '" + getClass().getName() + "' with the following properties"
-					+ Constants.NEWLINE + 
-					PropsUtil.toStringML(props));
-			propertiesFileModified(props);
-		} catch (IOException e) {
-			logger.error("Cannot load file '" + file.getAbsolutePath() + "'", e);
-		}
-		finally {
-			if(is != null) {
-				try {
-					is.close();
-				}
-				catch(IOException ignore){}
-			}
-		}
-	}
-
-	public abstract void propertiesFileModified(Properties props);
+	public void check();
 }

@@ -123,7 +123,7 @@
 	<bean id="zoneInterceptor" class="org.kablink.teaming.dao.interceptor.ZoneInterceptor"/>
 
 	<!-- Hibernate session factory -->
-	<bean id="sessionFactory" class="org.kablink.teaming.spring.orm.hibernate3.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="org.kablink.teaming.spring.orm.hibernate3.LocalSessionFactoryBean" depends-on="sPropsUtil">
 		<property name="lobHandler"><ref bean="lobHandler"/></property>
 		<property name="configFiles">
 			<list>
@@ -1369,24 +1369,5 @@ text/calendar											  ics
 		<property name="binderModule"><ref bean="binderModule"/></property>
 	</bean>
 	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl" depends-on="zoneConfig"/>
-	
-	<!-- =========================== Timer-based scheduler for non-stateful jobs ====================== -->
-	<bean id="timer" class="org.springframework.scheduling.timer.TimerFactoryBean">
-		<property name="scheduledTimerTasks">
-			<list>
-				<!-- Extension hot-deploy listener -->
-				<bean class="org.springframework.scheduling.timer.ScheduledTimerTask">	
-					<!-- period between invocations (ms) 5mins -->
-					<property name="period" value="300000" />
-					<property name="timerTask">
-						<bean class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
-							<property name="targetObject" ref="extDeployer" />
-							<property name="targetMethod" value="check" />
-						</bean>
-					</property>
-				</bean>
-			</list>
-		</property>
-	</bean>
 	
 </beans>
