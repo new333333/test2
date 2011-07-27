@@ -1007,7 +1007,7 @@ text/calendar											  ics
 		<property name="archiveStore"><ref bean="archiveStore"/></property>
 	</bean>
 
-	<!-- <bean id="jackrabbitRepository" class="org.kablink.teaming.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
+	<bean id="jackrabbitRepository" class="org.kablink.teaming.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">	
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 		<property name="repositoryRootDir"><value>${data.jackrabbitrepository.root.dir}/jackrabbit</value></property>
@@ -1018,7 +1018,7 @@ text/calendar											  ics
 		<property name="password"><value>none</value></property>
 		<property name="versionDeletionAllowed"><value>true</value></property>
 		<property name="archiveStore"><ref bean="archiveStore"/></property>
-	</bean>-->
+	</bean>
 	
 	<!-- Uncomment this to use Slide-based WebDAV server as a repository.
 	     Also uncomment related properties in the properties file and set 
@@ -1315,9 +1315,9 @@ text/calendar											  ics
 			<entry key="Vibe:type=Repository,name=simpleFileRepository">
 	          <ref bean="simpleFileRepository"/>
 	        </entry>
-	        <!-- <entry key="Vibe:type=Repository,name=jackrabbitRepository">
+	        <entry key="Vibe:type=Repository,name=jackrabbitRepository">
 	          <ref bean="jackrabbitRepository"/>
-	        </entry>-->
+	        </entry>
 	        <!--<entry key="Vibe:type=Repository,name=webdavRepository">
 	          <ref bean="webdavRepository"/>
 	        </entry>-->
