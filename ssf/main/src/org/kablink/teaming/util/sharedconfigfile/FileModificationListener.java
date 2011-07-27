@@ -38,3 +38,4 @@ public interface FileModificationListener {
 
 	public void fileModified(File file);
 }
+
