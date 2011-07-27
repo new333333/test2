@@ -473,6 +473,7 @@ public class TaskTable extends Composite
 		private Anchor		m_taskUnseenAnchor;			//
 		private CheckBox	m_taskSelectorCB;			//
 		private FlowPanel	m_taskNamePanel;			//
+		private FlowPanel	m_taskOrderPanel;			//
 		private Image		m_taskNewTaskMenuImage;		//
 		private Image		m_taskPercentDoneImage;		//
 		private Image		m_taskPriorityImage;		//
@@ -515,6 +516,7 @@ public class TaskTable extends Composite
 		public Anchor      getTaskUnseenAnchor()      {return m_taskUnseenAnchor;     }
 		public CheckBox    getTaskSelectorCB()        {return m_taskSelectorCB;       }
 		public FlowPanel   getTaskNamePanel()         {return m_taskNamePanel;        }
+		public FlowPanel   getTaskOrderPanel()        {return m_taskOrderPanel;       }
 		public Image       getTaskNewTaskMenuImage()  {return m_taskNewTaskMenuImage; }
 		public Image       getTaskPercentDoneImage()  {return m_taskPercentDoneImage; }
 		public Image       getTaskPriorityImage()     {return m_taskPriorityImage;    }
@@ -533,6 +535,7 @@ public class TaskTable extends Composite
 		public void setTaskUnseenAnchor(     Anchor      taskUnseenAnchor)      {m_taskUnseenAnchor      = taskUnseenAnchor;     }
 		public void setTaskSelectorCB(       CheckBox    taskSelectorCB)        {m_taskSelectorCB        = taskSelectorCB;       }
 		public void setTaskNamePanel(        FlowPanel   taskNamePanel)         {m_taskNamePanel         = taskNamePanel;        }
+		public void setTaskOrderPanel(       FlowPanel   taskOrderPanel)        {m_taskOrderPanel        = taskOrderPanel;       }
 		public void setTaskNewTaskMenuImage( Image       taskNewTaskMenuImage)  {m_taskNewTaskMenuImage  = taskNewTaskMenuImage; }
 		public void setTaskPercentDoneImage( Image       taskPercentDoneImage)  {m_taskPercentDoneImage  = taskPercentDoneImage; }
 		public void setTaskPriorityImage(    Image       taskPriorityImage)     {m_taskPriorityImage     = taskPriorityImage;    }
@@ -1888,12 +1891,37 @@ public class TaskTable extends Composite
 	 * Called to edit the order number on the given task.
 	 */
 	private void handleTaskOrderEdit(TaskListItem task) {
-		// Hide the task order anchor...
+		// Hide the task order anchor.
 		UIData uid = getUIData(task);
-		uid.getTaskOrderAnchor().setVisible(false);
+		Label ta = uid.getTaskOrderAnchor();
+		ta.setVisible(false);
 
-		// ...and show the edit widget.
-		TextBox tb = uid.getTaskOrderTextBox();		
+		// Have we create the TextBox to edit this task's order
+		// number yet? 
+		TextBox tb = uid.getTaskOrderTextBox();
+		if (null == tb) {
+			// No!  Create it now.
+			int tasks = m_taskBundle.getTasks().size();
+			int vl = 2;
+			while (true ){
+				tasks = (tasks / 10);
+				if (0 == tasks) {
+					break;
+				}
+				vl += 1;
+			}
+			tb = new TextBox();
+			tb.setVisibleLength(vl);
+			tb.setMaxLength(    vl);
+			tb.setText(String.valueOf(uid.getTaskOrder()));
+			tb.getElement().setAttribute(ATTR_ENTRY_ID, ta.getElement().getAttribute(ATTR_ENTRY_ID));
+			EventWrapper.addHandler(tb, m_taskOrderKeyPressHandler);
+			EventWrapper.addHandler(tb, m_taskOrderBlurHandler    );
+			uid.getTaskOrderPanel().add(tb);				
+			uid.setTaskOrderTextBox(tb);
+		}
+		
+		// Finally, show the edit widget.
 		tb.setVisible(true);
 		tb.setSelectionRange(0, tb.getValue().length());
 		tb.setFocus(true);
@@ -3082,8 +3110,9 @@ public class TaskTable extends Composite
 			// Do we have an order number that the user can edit?
 			if (hasOrderNumber && m_taskBundle.getCanModifyTaskLinkage()) {
 				// Yes!  Create a panel that can hold the text and an
-				// edit widget...
+				// edit widgets...
 				FlowPanel fp = new FlowPanel();
+				uid.setTaskOrderPanel(fp);
 				
 				// ...create an anchor the user can click to edit the
 				// ...the order number...
@@ -3096,29 +3125,10 @@ public class TaskTable extends Composite
 				EventWrapper.addHandler(ta, m_taskOrderClickHandler);
 				fp.add(ta);
 				uid.setTaskOrderAnchor(ta);
-
-				// ...create an initially hidden TextBox the user can
-				// ...use to edit the order number when the click on
-				// ...the order number anchor...
-				int tasks = m_taskBundle.getTasks().size();
-				int vl = 2;
-				while (true ){
-					tasks = (tasks / 10);
-					if (0 == tasks) {
-						break;
-					}
-					vl += 1;
-				}
-				TextBox tb = new TextBox();
-				tb.setVisibleLength(vl);
-				tb.setMaxLength(    vl);
-				tb.setText(orderHTML);
-				tb.setVisible(false);
-				tb.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
-				EventWrapper.addHandler(tb, m_taskOrderKeyPressHandler);
-				EventWrapper.addHandler(tb, m_taskOrderBlurHandler    );
-				fp.add(tb);				
-				uid.setTaskOrderTextBox(tb);
+				
+				// ...note that the TextBox to edit the order is
+				// ...created the first time the user selects the task
+				// ...order number anchor...
 
 				// ...and add the panel to the table.
 				m_flexTable.setWidget(row, colIndex, fp);
