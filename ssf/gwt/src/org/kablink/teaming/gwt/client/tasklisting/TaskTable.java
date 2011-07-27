@@ -2298,9 +2298,9 @@ public class TaskTable extends Composite
 		// styles, ...  We can do that by simply re-rendering the
 		// 'Task Name', 'Due Date' and 'Assigned To' columns.
 		int row = uid.getTaskRow();
-		renderColumnTaskName(  task, row);
-		renderColumnDueDate(   task, row);
-		renderColumnAssignedTo(task, row);
+		renderColumnTaskName(  task, row, true);	// true -> Finalize sizes immediately.
+		renderColumnDueDate(   task, row      );
+		renderColumnAssignedTo(task, row      );
 	}
 	
 	/*
@@ -2408,24 +2408,30 @@ public class TaskTable extends Composite
 	public void onResize(ResizeEvent event) {
 		// Trigger a resizing to occur AFTER the resize event completes
 		// its processing.
+		onResizeAsync(m_taskBundle.getTasks());
+	}
+
+	/*
+	 * Asynchronously handle a resize event.
+	 */
+	private void onResizeAsync(final List<TaskListItem> tasks) {
 		ScheduledCommand resizer = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onResizeNow();
+				onResizeNow(tasks);
 			}
 		};
 		Scheduler.get().scheduleDeferred(resizer);
 	}
-
+	
 	/*
 	 * Synchronously handle a resize event.
 	 */
-	private void onResizeNow() {
-		for (TaskListItem task:  m_taskBundle.getTasks()) {
+	private void onResizeNow(List<TaskListItem> tasks) {
+		for (TaskListItem task:  tasks) {
 			handleResize(task);
 		}
 	}
-	
 	
 	/**
 	 * Handles TaskDeleteEvent's received by this class.
@@ -2669,18 +2675,18 @@ public class TaskTable extends Composite
 	/*
 	 * Renders a column of a row based on a task into the TaskTable.
 	 */
-	private void renderColumn(TaskListItem task, int row, Column col) {
+	private void renderColumn(TaskListItem task, int row, Column col, boolean finalizeSizes) {
 		switch(col) {
-		case CLOSED_PERCENT_DONE:  renderColumnClosedPercentDone(task, row); break;
-		case ASSIGNED_TO:          renderColumnAssignedTo(       task, row); break;		
-		case DUE_DATE:             renderColumnDueDate(          task, row); break;		
-		case TASK_NAME:            renderColumnTaskName(         task, row); break;
-		case NEW_TASK_MENU:        renderColumnNewTaskMenuLink(  task, row); break;
-		case ORDER:                renderColumnOrder(            task, row); break;
-		case PRIORITY:             renderColumnPriority(         task, row); break;		
-		case SELECTOR:             renderColumnSelectCB(         task, row); break;
-		case STATUS:               renderColumnStatus(           task, row); break;
-		case LOCATION:             renderColumnLocation(         task, row); break;
+		case CLOSED_PERCENT_DONE:  renderColumnClosedPercentDone(task, row               ); break;
+		case ASSIGNED_TO:          renderColumnAssignedTo(       task, row               ); break;		
+		case DUE_DATE:             renderColumnDueDate(          task, row               ); break;		
+		case TASK_NAME:            renderColumnTaskName(         task, row, finalizeSizes); break;
+		case NEW_TASK_MENU:        renderColumnNewTaskMenuLink(  task, row               ); break;
+		case ORDER:                renderColumnOrder(            task, row               ); break;
+		case PRIORITY:             renderColumnPriority(         task, row               ); break;		
+		case SELECTOR:             renderColumnSelectCB(         task, row               ); break;
+		case STATUS:               renderColumnStatus(           task, row               ); break;
+		case LOCATION:             renderColumnLocation(         task, row               ); break;
 		}
 	}
 	
@@ -2971,12 +2977,12 @@ public class TaskTable extends Composite
 	/*
 	 * Renders the 'Task Name' column.
 	 */
-	private void renderColumnTaskName(final TaskListItem task, int row) {
+	private void renderColumnTaskName(final TaskListItem task, int row, boolean finalizeSizes) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
 		// Define a panel to contain the task name widgets.
-		final FlowPanel fp = new FlowPanel();
+		FlowPanel fp = new FlowPanel();
 		fp.addStyleName("gwtTaskList_task-namePanel");
 
 		// If this is a subtask...
@@ -3004,7 +3010,7 @@ public class TaskTable extends Composite
 			marker = i;
 		}
 		else if (ti.isTaskUnseen()) {
-			final Anchor a = buildAnchor();
+			Anchor a = buildAnchor();
 			uid.setTaskUnseenAnchor(a);
 			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
 			Element aE = a.getElement();
@@ -3026,7 +3032,7 @@ public class TaskTable extends Composite
 		taLeftOffset += m_markerSize;
 		
 		// Add the appropriately styled task name Anchor to the panel.
-		final Label ta = buildAnchorLabel();
+		Label ta = buildAnchorLabel();
 		ta.addStyleName("gwtTaskList_task-nameAnchor");
 		Element taE = ta.getElement();
 		Style taeStyle = taE.getStyle();
@@ -3043,13 +3049,15 @@ public class TaskTable extends Composite
 		fp.add(ta);
 		uid.setTaskNamePanel(fp);
 		uid.setTaskNameAnchor(ta);
-		ScheduledCommand resizer = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				fp.getElement().getStyle().setHeight(ta.getOffsetHeight(), Unit.PX);
-			}
-		};
-		Scheduler.get().scheduleDeferred(resizer);
+		if (finalizeSizes) {
+			ScheduledCommand resizer = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					handleResize(task);
+				}
+			};
+			Scheduler.get().scheduleDeferred(resizer);
+		}
 
 		// Finally, put the FlowPanel in the table.
 		int col = getColumnIndex(Column.TASK_NAME);
@@ -3302,7 +3310,7 @@ public class TaskTable extends Composite
 	/*
 	 * Renders a TaskListItem into the TaskTable.
 	 */
-	private void renderTaskItem(final TaskListItem task) {		
+	private void renderTaskItem(final TaskListItem task, boolean finalizeSizes) {		
 		// Add the style to the row...
 		int row = m_flexTable.getRowCount();
 		m_flexTableRF.addStyleName(row, "regrow");
@@ -3313,7 +3321,7 @@ public class TaskTable extends Composite
 		
 		// ...and render the columns.
 		for (Column col:  Column.values()) {
-			renderColumn(task, row, col);
+			renderColumn(task, row, col, finalizeSizes);
 		}		
 	}
 
@@ -3326,12 +3334,12 @@ public class TaskTable extends Composite
 		for (TaskListItem task:  tasks) {
 			if (hasQuickFilter) {
 				if (isTaskInQuickFilter(task)) {
-					renderTaskItem(task);
+					renderTaskItem(task, false);	// false -> Delay final sizing.  See below.
 				}
 			}
 			else {
 				// ..rendering each one...
-				renderTaskItem(task);
+				renderTaskItem(task, false);		// false -> Delay final sizing.  See below.
 			
 				// ...and their subtasks.
 				if (task.getExpandSubtasks()) {
@@ -3339,6 +3347,9 @@ public class TaskTable extends Composite
 				}
 			}
 		}
+		
+		// Force any final sizing to occur at once.
+		onResizeAsync(tasks);
 	}
 
 	/*
@@ -3598,7 +3609,7 @@ public class TaskTable extends Composite
 							// ...track that fact and redisplay the
 							// ...task's name...
 							ti.setOverdue(overdue);
-							renderColumnTaskName(task, row);
+							renderColumnTaskName(task, row, true);	// true -> Finalize sizes immediately.
 						}
 						
 						// ...and redisplay the task's due date.
