@@ -51,5 +51,17 @@
    </span>
  </c:if>
  <div class="ss_clear"></div>
+ <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+   <div align="right">
+     <a href='<ssf:url adapter="true" portletName="ss_mobile" 
+					folderId="${ssBinder.id}" 
+					entryId="${ssDefinitionEntry.id}"
+					action="__ajax_mobile" 
+					operation="mobile_modify_entry" 
+					actionUrl="true" />'>
+       <span class="smalltext">[<ssf:nlt tag="Edit"/>]</span>
+	</a>
+   </div>
+ </c:if>
 </div>
 </c:if>
