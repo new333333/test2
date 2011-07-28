@@ -45,18 +45,28 @@ public class SharedConfigFileChecker implements SharedConfigFileCheckerMBean, In
 
 	private static Log logger = LogFactory.getLog(SharedConfigFileChecker.class);
 	
+	private String configFileName;
+	private boolean enabled = false;
 	private SharedConfigFile sharedConfigFile;
 	private long lastKnownModifiedTime;
 	private List<FileModificationListener> modificationListeners = new ArrayList<FileModificationListener>();
 	
 	public void setConfigFileName(String configFileName) throws FileNotFoundException {
-		this.sharedConfigFile = new SharedConfigFile(configFileName);
+		this.configFileName = configFileName;
 	}
 
 	public String getConfigFilePath(){
 		return sharedConfigFile.getFile().getAbsolutePath();
 	}
 	
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public void setModificationListeners(List<FileModificationListener> modificationListeners) {
 		this.modificationListeners = modificationListeners;
 	}
@@ -73,11 +83,19 @@ public class SharedConfigFileChecker implements SharedConfigFileCheckerMBean, In
 		// Since we allow both static (via application context file) and dynamic 
 		// (i.e., programmatic) registration of listeners with this object, the
 		// lister list may or may not contain anything at this time.
-		this.lastKnownModifiedTime = sharedConfigFile.getFile().lastModified();
-		logger.info("Last known modified time is initialized to " + lastKnownModifiedTime + " for file '" + sharedConfigFile.getFile().getAbsolutePath() + "'");
+		if(enabled) {
+			this.sharedConfigFile = new SharedConfigFile(configFileName);
+			this.lastKnownModifiedTime = sharedConfigFile.getFile().lastModified();
+			logger.info("Last known modified time is initialized to " + lastKnownModifiedTime + " for file '" + sharedConfigFile.getFile().getAbsolutePath() + "'");			
+		}
+		else {
+			logger.info("Checking is disabled on the shared config file '" + configFileName + "'");
+		}
+		
 	}
 
 	public void check() {
+		if(!enabled) return;
 		File file = sharedConfigFile.getFile();
 		long lastModified = file.lastModified();
 		if(logger.isDebugEnabled())

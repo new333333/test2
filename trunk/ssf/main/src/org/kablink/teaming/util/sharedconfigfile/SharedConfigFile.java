@@ -41,7 +41,7 @@ public class SharedConfigFile {
 	private File file;
 	
 	public SharedConfigFile(String configFileName) throws FileNotFoundException {
-		String filePath = SPropsUtil.getDirPath("data.extension.root.dir") + "conf" + File.separator + configFileName;
+		String filePath = SPropsUtil.getDirPath("data.root.dir") + "conf" + File.separator + configFileName;
 		this.file = new File(filePath);
 		if(!file.exists())
 			throw new FileNotFoundException("Shared config file '" + file.getAbsolutePath() + "' does not exist");
