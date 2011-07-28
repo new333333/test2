@@ -83,6 +83,14 @@ public class TaskSorter {
 			if (m_ascending)
 			     reply = GwtClientHelper.safeSColatedCompare(assigned1, assigned2);
 			else reply = GwtClientHelper.safeSColatedCompare(assigned2, assigned1);
+			
+			// If the assignees are equals...
+			if (0 == reply) {
+				// ...compare the order numbers as a secondary sort.
+				OrderComparator oc = new OrderComparator(m_ascending);
+				reply = oc.compare(task1, task2);
+			}
+			
 			return reply;
 		}
 
@@ -135,6 +143,14 @@ public class TaskSorter {
 			if (m_ascending)
 			     reply = GwtClientHelper.safeSColatedCompare(c1, c2);
 			else reply = GwtClientHelper.safeSColatedCompare(c2, c1);
+			
+			// If the percent done values are equals...
+			if (0 == reply) {
+				// ...compare the order numbers as a secondary sort.
+				OrderComparator oc = new OrderComparator(m_ascending);
+				reply = oc.compare(task1, task2);
+			}
+			
 			return reply;
 		}
 
@@ -191,6 +207,14 @@ public class TaskSorter {
 			if (m_ascending)
 			     reply = d1.getDate().compareTo(d2.getDate());
 			else reply = d2.getDate().compareTo(d1.getDate());
+			
+			// If the due dates are equals...
+			if (0 == reply) {
+				// ...compare the order numbers as a secondary sort.
+				OrderComparator oc = new OrderComparator(m_ascending);
+				reply = oc.compare(task1, task2);
+			}
+			
 			return reply;
 		}
 	}
@@ -229,6 +253,7 @@ public class TaskSorter {
 			if (m_ascending)
 			     reply = GwtClientHelper.safeSColatedCompare(loc1, loc2);
 			else reply = GwtClientHelper.safeSColatedCompare(loc2, loc1);
+			
 			return reply;
 		}
 	}
@@ -343,6 +368,14 @@ public class TaskSorter {
 			if (m_ascending)
 			     reply = GwtClientHelper.safeSColatedCompare(p1, p2);
 			else reply = GwtClientHelper.safeSColatedCompare(p2, p1);
+
+			// If the priorities are equals...
+			if (0 == reply) {
+				// ...compare the order numbers as a secondary sort.
+				OrderComparator oc = new OrderComparator(m_ascending);
+				reply = oc.compare(task1, task2);
+			}
+			
 			return reply;
 		}
 	}
@@ -381,6 +414,14 @@ public class TaskSorter {
 			if (m_ascending)
 			     reply = GwtClientHelper.safeSColatedCompare(s1, s2);
 			else reply = GwtClientHelper.safeSColatedCompare(s2, s1);
+			
+			// If the statuses are equals...
+			if (0 == reply) {
+				// ...compare the order numbers as a secondary sort.
+				OrderComparator oc = new OrderComparator(m_ascending);
+				reply = oc.compare(task1, task2);
+			}
+			
 			return reply;
 		}
 	}
