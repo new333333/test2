@@ -1981,6 +1981,17 @@ public class TaskTable extends Composite
     			// ...we don't have anything to do.  Bail.
     			return;
     		}
+
+    		// Are we moving a task down in the list?
+    		if (newOrder > origOrder) {
+    			// Yes!  As per a comment from Lynn on the Firestone
+    			// task to edit ordering, we want the task to have
+    			// the order number given.  This adjustment takes care
+    			// of that in the event the task is being moved down.
+    			// Note that no adjustment is necessary if we're moving
+    			// the task up.
+    			newOrder += 1;
+    		}
     		
     		// Put the new order number into effect.  Is the new order
     		// beyond the end of the task list?
