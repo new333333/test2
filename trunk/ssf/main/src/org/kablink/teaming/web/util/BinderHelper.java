@@ -1363,6 +1363,69 @@ public class BinderHelper {
 		return (Map)accessControlMap.get(entity.getId());
 	}
 
+	static public void setRepliesAccessControl(AllModulesInjected bs, Map model, FolderEntry entry) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
+		HashMap entryAccessMap = new HashMap();
+		if (accessControlMap.containsKey(entry.getId())) {
+			entryAccessMap = (HashMap) accessControlMap.get(entry.getId());
+		}
+		
+		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
+		if (replies != null)  {
+			for (int i=0; i<replies.size(); i++) {
+				FolderEntry reply = (FolderEntry)replies.get(i);
+				Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, reply);
+				boolean reserveAccessCheck = false;
+				boolean isUserBinderAdministrator = false;
+				boolean isEntryReserved = false;
+				boolean isLockedByAndLoginUserSame = false;
+
+				if (bs.getFolderModule().testAccess(reply, FolderOperation.reserveEntry)) {
+					reserveAccessCheck = true;
+				}
+				if (bs.getFolderModule().testAccess(reply, FolderOperation.overrideReserveEntry)) {
+					isUserBinderAdministrator = true;
+				}
+				
+				HistoryStamp historyStamp = reply.getReservation();
+				if (historyStamp != null) isEntryReserved = true;
+
+				if (isEntryReserved) {
+					Principal lockedByUser = historyStamp.getPrincipal();
+					if (lockedByUser.getId().equals(user.getId())) {
+						isLockedByAndLoginUserSame = true;
+					}
+				}
+				if (bs.getFolderModule().testAccess(reply, FolderOperation.addReply)) {
+					accessControlEntryMap.put("addReply", new Boolean(true));
+				} else {
+					accessControlEntryMap.remove("addReply");
+				}
+				if (bs.getFolderModule().testAccess(reply, FolderOperation.modifyEntry)) {
+					if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+						accessControlEntryMap.remove("modifyEntry");
+					} else {
+						accessControlEntryMap.put("modifyEntry", new Boolean(true));
+					}
+				} else {
+					accessControlEntryMap.remove("modifyEntry");
+				}
+				if (bs.getFolderModule().testAccess(reply, FolderOperation.deleteEntry)) {
+					if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+						accessControlEntryMap.remove("deleteEntry");
+					} else {
+						accessControlEntryMap.put("deleteEntry", new Boolean(true));
+					}
+				} else {
+					accessControlEntryMap.remove("deleteEntry");
+				}
+			}
+		}
+		
+	}
+	
+
 	/**
 	 * Finds the nearest containing Binder of binder that's a workspace.
 	 * 

@@ -1486,6 +1486,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
+		BinderHelper.setRepliesAccessControl(bs, model, entry);
+
 		model.put("ss_actions", actions);
 		model.put("ss_new_actions", new_actions);
 		model.put("ss_modify_actions", modify_actions);
