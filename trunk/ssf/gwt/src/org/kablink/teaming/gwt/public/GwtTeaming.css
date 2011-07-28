@@ -3276,7 +3276,7 @@ a.sort-column:hover
 }
 .gwtTaskList_task-strike
 {
-	background:url(images/strike_marker_blue.png) no-repeat 15px 2px;
+	background:url(images/strike_marker_blue_repeat.png) repeat-y 18px 2px;
 }
 .gwtTaskList_task-overdue
 {
