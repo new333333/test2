@@ -632,6 +632,11 @@ public class ExportHelper {
 		// workflows
 		addWorkflows(doc.getRootElement(), entry);
 
+		//Access control settings
+		WorkArea workArea = (WorkArea)entry;
+		Element settingsEle = doc.getRootElement().addElement("settings");
+		addAccessControls(workArea, settingsEle);
+
 		return doc;
 	}
 
@@ -1006,31 +1011,8 @@ public class ExportHelper {
 		}
 		
 		//Access control settings
-		Element accessControls = settingsEle.addElement("accessControls");
 		WorkArea workArea = (WorkArea)binder;
-		if (!workArea.isFunctionMembershipInherited()) {
-			List<WorkAreaFunctionMembership> membership = adminModule.getWorkAreaFunctionMemberships(workArea);
-			for (WorkAreaFunctionMembership wfm : membership) {
-				Element functionEle = accessControls.addElement("function");
-				//Get the function (aka role)
-				Function f = adminModule.getFunction(wfm.getFunctionId());
-				functionEle.addAttribute("id", f.getId().toString());
-				functionEle.addAttribute("name", f.getName());
-				Element membersEle = functionEle.addElement("members");
-	    		Set<Long> ids = wfm.getMemberIds();
-	    		for (Long id : ids) {
-	    			if (id < 0) {
-	    				//This is a special id, add it as such
-	    				Element memberEle = membersEle.addElement("specialId");
-	    				memberEle.addAttribute("id", id.toString());
-	    			}
-	    		}
-	    		List<UserPrincipal> members = profileDao.loadUserPrincipals(ids, binder.getZoneId(), true);
-				for (UserPrincipal p : members) {
-					addPrincipalToDocument(membersEle, p);
-				}
-			}
-		}
+		addAccessControls(workArea, settingsEle);
 
 		// entries
 		List<Definition> entryDefinitions = binder.getEntryDefinitions();
@@ -1079,6 +1061,43 @@ public class ExportHelper {
 		}
 	}
 
+	private static void addAccessControls(WorkArea workArea, Element settingsElement) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		Element accessControls = settingsElement.addElement("accessControls");
+		if (!workArea.isFunctionMembershipInherited()) {
+			List<WorkAreaFunctionMembership> membership = adminModule.getWorkAreaFunctionMemberships(workArea);
+			for (WorkAreaFunctionMembership wfm : membership) {
+				Element functionEle = accessControls.addElement("function");
+				//Get the function (aka role)
+				Function f = adminModule.getFunction(wfm.getFunctionId());
+				functionEle.addAttribute("id", f.getId().toString());
+				functionEle.addAttribute("name", f.getName());
+				Element membersEle = functionEle.addElement("members");
+	    		Set<Long> ids = wfm.getMemberIds();
+	    		for (Long id : ids) {
+	    			if (id < 0) {
+	    				//This is a special id, add it as such
+	    				Element memberEle = membersEle.addElement("specialId");
+	    				memberEle.addAttribute("id", id.toString());
+	    			}
+	    		}
+	    		List<UserPrincipal> members = profileDao.loadUserPrincipals(ids, zoneId, true);
+				for (UserPrincipal p : members) {
+					addPrincipalToDocument(membersEle, p);
+				}
+			}
+			//See if this is an entry
+			if (workArea instanceof FolderEntry) {
+				if (((FolderEntry) workArea).hasEntryAcl()) {
+					accessControls.addAttribute("hasEntryAcl", "true");
+					if (((FolderEntry) workArea).isIncludeFolderAcl()) {
+						accessControls.addAttribute("includeFolderAcl", "true");
+					}
+				}
+			}
+		}
+	}
+	
 	private static void addBinderDefinitions(ZipOutputStream zipOut, Binder binder, 
 			Set defListAlreadyAdded, Map reportMap) {
 		List<Definition> defListToAdd = new ArrayList<Definition>();
@@ -1749,6 +1768,10 @@ public class ExportHelper {
 					}
 				});
 			} catch(Exception e) {}
+			
+			//Access controls
+			WorkArea workArea = (WorkArea)entry;
+			addAccessControls(workArea, doc, reportMap, nameCache);
 
 			// Index the entry only once
 			if(logger.isDebugEnabled())
@@ -1864,6 +1887,88 @@ public class ExportHelper {
 		} catch (DocumentException e) {
 			logger.error(e);
 			throw new IllegalArgumentException(e.toString());
+		}
+	}
+	
+	//Access control settings
+	private static void addAccessControls(WorkArea workArea, Document entityDoc, 
+			Map reportMap, Map<String, Principal> nameCache) {
+		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
+		Element accessControls = (Element)entityDoc.getRootElement().selectSingleNode("//settings//accessControls");
+		List<Element> functions = entityDoc.selectNodes("//settings//accessControls//function");
+		if (!functions.isEmpty()) {
+			//There is an access control setting for this binder or entry. Go set it.
+			List<Function> zoneFunctions;
+			if (workArea instanceof FolderEntry) {
+				zoneFunctions = adminModule.getFunctions(ObjectKeys.ROLE_TYPE_ENTRY);
+			} else {
+				zoneFunctions = adminModule.getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
+			}
+			workArea.setFunctionMembershipInherited(false);
+			Map functionMemberships = new HashMap();
+			
+			for (Element functionEle : functions) {
+				String fId = functionEle.attributeValue("id", "");
+				String fName = functionEle.attributeValue("name", "");
+				//Try to match the functions on this system with those from the export system
+				Function f = null;
+				for (Function zoneF : zoneFunctions) {
+					if (zoneF.getName().equals(fName)) {
+						f = zoneF;
+						break;
+					}
+				}
+				if (f != null) {
+					if (!functionMemberships.containsKey(f.getId())) {
+						functionMemberships.put(f.getId(), new HashSet());
+					}
+					//Get the membership (specialIds and principals)
+					Set members = (Set)functionMemberships.get(f.getId());
+					List<Element> specialIds = functionEle.selectNodes("members//specialId");
+					for (Element specialIdEle : specialIds) {
+						String specialId = specialIdEle.attributeValue("id", "");
+						if (!specialId.equals("")) members.add(Long.valueOf(specialId));
+					}
+					List<Element> principalEles = functionEle.selectNodes("members//principal");
+					for (Element principalEle : principalEles) {
+						String name = principalEle.attributeValue("name", "");
+						String emailAdr = principalEle.attributeValue("emailAddress", "");
+						Principal p = matchPrincipal(name, emailAdr, zoneUUID, nameCache);
+						if (p != null) {
+							members.add(p.getId());
+						} else {
+							//This user or group wasn't found, let people know
+							Integer c = (Integer)reportMap.get(errors);
+							reportMap.put(errors, ++c);
+							String[] eArgs = new String[2];
+							eArgs[0] = name;
+							eArgs[1] = emailAdr;
+							String errStr = NLT.get("export.error.settingAccessControl.principalNotFound", eArgs);
+							((List)reportMap.get(errorList)).add(errStr);
+						}
+					}
+				} else {
+					//Could not match the function with any on this system. Report this
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					String[] eArgs = new String[1];
+					eArgs[0] = fName;
+					String errStr = NLT.get("export.error.settingAccessControl.functionNotFound", eArgs);
+					((List)reportMap.get(errorList)).add(errStr);
+				}
+			}
+			//See if this is an entry
+			String hasEntryAcl = accessControls.attributeValue("hasEntryAcl", "");
+			String includeFolderAcl = accessControls.attributeValue("includeFolderAcl", "");
+			if (workArea instanceof FolderEntry && "true".equals(hasEntryAcl)) {
+				if (workArea instanceof FolderEntry && "true".equals(includeFolderAcl)) {
+					adminModule.setEntryHasAcl(workArea, Boolean.TRUE, Boolean.TRUE);
+				} else {
+					adminModule.setEntryHasAcl(workArea, Boolean.TRUE, Boolean.FALSE);
+				}
+			}
+			//Now, the functions are set up with all the memberships, set it as the ACL
+			adminModule.setWorkAreaFunctionMemberships(workArea, functionMemberships);
 		}
 	}
 
@@ -2530,68 +2635,8 @@ public class ExportHelper {
 		}
 
 		//Access control settings
-		xPath = "//settings//accessControls//function";
-		List<Element> functions = entityDoc.selectNodes(xPath);
-		if (!functions.isEmpty()) {
-			//There is an access control setting for this folder. Go set it.
-			List<Function> zoneFunctions = adminModule.getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
-			WorkArea workArea = (WorkArea)binder;
-			workArea.setFunctionMembershipInherited(false);
-			Map functionMemberships = new HashMap();
-			
-			for (Element functionEle : functions) {
-				String fId = functionEle.attributeValue("id", "");
-				String fName = functionEle.attributeValue("name", "");
-				//Try to match the functions on this system with those from the export system
-				Function f = null;
-				for (Function zoneF : zoneFunctions) {
-					if (zoneF.getName().equals(fName)) {
-						f = zoneF;
-						break;
-					}
-				}
-				if (f != null) {
-					if (!functionMemberships.containsKey(f.getId())) {
-						functionMemberships.put(f.getId(), new HashSet());
-					}
-					//Get the membership (specialIds and principals)
-					Set members = (Set)functionMemberships.get(f.getId());
-					List<Element> specialIds = functionEle.selectNodes("members//specialId");
-					for (Element specialIdEle : specialIds) {
-						String specialId = specialIdEle.attributeValue("id", "");
-						if (!specialId.equals("")) members.add(Long.valueOf(specialId));
-					}
-					List<Element> principalEles = functionEle.selectNodes("members//principal");
-					for (Element principalEle : principalEles) {
-						String name = principalEle.attributeValue("name", "");
-						String emailAdr = principalEle.attributeValue("emailAddress", "");
-						Principal p = matchPrincipal(name, emailAdr, zoneUUID, nameCache);
-						if (p != null) {
-							members.add(p.getId());
-						} else {
-							//This user or group wasn't found, let people know
-							Integer c = (Integer)reportMap.get(errors);
-							reportMap.put(errors, ++c);
-							String[] eArgs = new String[2];
-							eArgs[0] = name;
-							eArgs[1] = emailAdr;
-							String errStr = NLT.get("export.error.settingAccessControl.principalNotFound", eArgs);
-							((List)reportMap.get(errorList)).add(errStr);
-						}
-					}
-				} else {
-					//Could not match the function with any on this system. Report this
-					Integer c = (Integer)reportMap.get(errors);
-					reportMap.put(errors, ++c);
-					String[] eArgs = new String[1];
-					eArgs[0] = fName;
-					String errStr = NLT.get("export.error.settingAccessControl.functionNotFound", eArgs);
-					((List)reportMap.get(errorList)).add(errStr);
-				}
-			}
-			//Now, the functions are set up with all the memberships, set it as the ACL
-			adminModule.setWorkAreaFunctionMemberships(workArea, functionMemberships);
-		}
+		WorkArea workArea = (WorkArea)binder;
+		addAccessControls(workArea, entityDoc, reportMap, nameCache);
 
 		// entries
 		xPath = "//settings//entries//entry";
