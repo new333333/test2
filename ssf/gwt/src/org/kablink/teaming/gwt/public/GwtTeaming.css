@@ -3334,38 +3334,72 @@ a.gwtTaskList_task-icon:hover
 	width: 17px;
 	height: 18px;
 	margin-left: 1px;
+	margin-right: 4px;
 }
 .gwt-ValueSpinner .textBox
 {
+	font-size: 12px;
+	padding: 2px 0px;
 	border: 0px;
-	text-align: right;
+	text-align: center;
 	font-family: sans-serif;
 	font-weight: bold;
-	border: 1px solid #7F9DB9;
+	border: 1px solid #949494;
 }
 .gwt-TimePicker
 {
 	padding: 1px;
 }
+.datePickerWeekendLabel, .datePickerWeekdayLabel {
+	color: #fff;
+	font-weight: bold;
+	background-color: #949494;
+	padding: 2px;
+	}
+.datePickerDay {
+	padding: 5px;
+	font-size: 11px;
+	}	
 .gwt-TimePicker .textBox
 {
 	border: 0px;
 	width: 22px;
+	padding: 3px 0;
 	text-align: center;
 	font-family: sans-serif;
-	font-weight: bold;
-	font-size: 11px;
-	color: #506374;
-	border: 1px solid #7F9DB9;
-	background: url('%background%') repeat-x;
+	font-weight: normal;
+	font-size: 12px;
+	color: #1f1f1f;
+	border: 1px solid #949494;
+	background: #fff url('%background%') repeat-x;
 }
 /* End:  Spinner styles. */
 
+.gwt-DatePicker {
+	border: 0px;
+	padding: 6px;
+	background: url(images/trans30_black.png) repeat;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	}
 .dateBoxPopup
 {
 	z-index:  1002;
 }
 
+td.datePickerMonth {
+	color: #1f1f1f;
+	font-size: 1em;
+	}
+.datePickerMonthSelector {
+	background:url(images/blends/gray_blend8_28.png) repeat-x;
+	background-position:bottom;
+	}
+.datePickerPreviousButton,
+.datePickerNextButton {
+	padding: 0 5px;
+	color: #1f1f1f;
+	}
 
 /* The following styles are used with an object list table. */
 .oltHeader
