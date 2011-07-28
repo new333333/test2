@@ -36,5 +36,7 @@ public interface SharedConfigFileCheckerMBean {
 
 	public String getConfigFilePath();
 	
+	public boolean isEnabled();
+
 	public void check();
 }
