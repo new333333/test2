@@ -157,7 +157,7 @@ public class TZDateBox extends Composite implements HasValue<Long>, HasValueChan
      * @param fireEvents
      */
     public void setValue(Long value, boolean fireEvents) {
-        m_datebox.setValue(tz2date(value), fireEvents);
+        m_datebox.setValue(((null == value) ? null : tz2date(value)), fireEvents);
     }
 
     /*
