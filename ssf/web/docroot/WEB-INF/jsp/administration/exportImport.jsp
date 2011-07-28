@@ -137,9 +137,6 @@ function ss_getOperationStatus()
 		if (ss_statusSeen != 0) {
 			ss_exportingDone();
 			return
-		} else {
-			var obj = self.document.getElementById("ss_operation_status");
-			if (obj != null) obj.innerHTML = "";
 		}
 	}
 	if (typeof self.document.getElementById("ss_operation_status") != "undefined" && 
