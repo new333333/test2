@@ -194,7 +194,7 @@ public class TaskTable extends Composite
 	// The following defines the number of entries we show before
 	// adding an ellipse to show more.
 	private final static int MEMBERSHIP_ELLIPSE_COUNT	= 10;
-
+	
 	// The following defines the number of milliseconds before a
 	// process active message will be delayed for those operations that
 	// display one.
@@ -2611,8 +2611,8 @@ public class TaskTable extends Composite
 	 * @param event
 	 */
 	public void onResize(ResizeEvent event) {
-		// Trigger a resizing to occur AFTER the resize event completes
-		// its processing.
+		// Trigger a resizing to occur asynchronously (i.e., AFTER the
+		// resize event completes its processing.)
 		onResizeAsync(m_taskBundle.getTasks());
 	}
 
@@ -2620,32 +2620,39 @@ public class TaskTable extends Composite
 	 * Asynchronously handle a resize event.
 	 */
 	private void onResizeAsync(final List<TaskListItem> tasks) {
-		// The nested scheduling is required to give the process active
-		// message a chance to display before we dive into the actual
-		// processing.
-		ScheduledCommand resizeStep1 = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				final ProcessActive pa = buildProcessActive(m_messages.taskProcess_resize(), 0);
-				ScheduledCommand resizeStep2 = new ScheduledCommand() {
-					@Override
-					public void execute() {
-						onResizeNow(tasks);
-						pa.killIt();
-					}
-				};
-				Scheduler.get().scheduleDeferred(resizeStep2);
-			}
-		};
-		Scheduler.get().scheduleDeferred(resizeStep1);
+		// Are we enabling task name wrapping?
+		if (m_taskBundle.enableTaskNameWrapping()) {
+			// Yes!  The nested scheduling is required to give the
+			// process active message a chance to display before we
+			// dive into the actual processing.
+			ScheduledCommand resizeStep1 = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					final ProcessActive pa = buildProcessActive(m_messages.taskProcess_resize(), 0);
+					ScheduledCommand resizeStep2 = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							onResizeNow(tasks);
+							pa.killIt();
+						}
+					};
+					Scheduler.get().scheduleDeferred(resizeStep2);
+				}
+			};
+			Scheduler.get().scheduleDeferred(resizeStep1);
+		}
 	}
 	
 	/*
 	 * Synchronously handle a resize event.
 	 */
 	private void onResizeNow(List<TaskListItem> tasks) {
-		for (TaskListItem task:  tasks) {
-			handleResize(task);
+		// Are we enabling task name wrapping?
+		if (m_taskBundle.enableTaskNameWrapping()) {
+			// Yes!  Resize the tasks.
+			for (TaskListItem task:  tasks) {
+				handleResize(task);
+			}
 		}
 	}
 	
@@ -3296,32 +3303,46 @@ public class TaskTable extends Composite
 		taLeftOffset += m_markerSize;
 		
 		// Add the appropriately styled task name Anchor to the panel.
-		Label ta = buildAnchorLabel();
-		ta.addStyleName("gwtTaskList_task-nameAnchor");
-		Element taE = ta.getElement();
-		Style taeStyle = taE.getStyle();
-		taeStyle.setTop( 0,          Unit.PX);
-		taeStyle.setLeft(taLeftOffset, Unit.PX);
-		taE.setAttribute(ATTR_ENTRY_ID, entryId);
-		EventWrapper.addHandler(ta, m_taskViewClickHandler);
+		boolean enableTaskNameWrapping = m_taskBundle.enableTaskNameWrapping();
+		Element taE;
+		Widget taW;
+		if (enableTaskNameWrapping) {
+			Label ta = buildAnchorLabel();
+			taW = ta;
+			taE = ta.getElement();
+			ta.addStyleName("gwtTaskList_task-nameAnchor gwtTaskList_task-nameAnchor_Wrap");
+			Style taeStyle = taE.getStyle();
+			taeStyle.setTop( 0,            Unit.PX);
+			taeStyle.setLeft(taLeftOffset, Unit.PX);
+			taE.setAttribute(ATTR_ENTRY_ID, entryId);
+			EventWrapper.addHandler(ta, m_taskViewClickHandler);
+			uid.setTaskNamePanel(fp);
+			uid.setTaskNameAnchor(ta);
+			if (finalizeSizes) {
+				ScheduledCommand resizer = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						handleResize(task);
+					}
+				};
+				Scheduler.get().scheduleDeferred(resizer);
+			}
+		}
+		else {
+			Anchor ta = buildAnchor();
+			taW = ta;
+			taE = ta.getElement();
+			ta.addStyleName("gwtTaskList_task-nameAnchor gwtTaskList_task-nameAnchor_NoWrap");
+			ta.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
+			EventWrapper.addHandler(ta, m_taskViewClickHandler);
+		}
 		InlineLabel taskLabel = new InlineLabel(task.getTask().getTitle());
 		uid.setTaskLabel(taskLabel);
 		if (ti.isTaskUnseen())    taskLabel.addStyleName(             "bold"   );	// Unseen:     Bold.
 		if (ti.isTaskCancelled()) m_flexTableRF.addStyleName(   row, "disabled");	// Cancelled:  Gray.
 		else                      m_flexTableRF.removeStyleName(row, "disabled");
 		taE.appendChild(taskLabel.getElement());
-		fp.add(ta);
-		uid.setTaskNamePanel(fp);
-		uid.setTaskNameAnchor(ta);
-		if (finalizeSizes) {
-			ScheduledCommand resizer = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					handleResize(task);
-				}
-			};
-			Scheduler.get().scheduleDeferred(resizer);
-		}
+		fp.add(taW);
 
 		// Finally, put the FlowPanel in the table.
 		int col = getColumnIndex(Column.TASK_NAME);

@@ -97,6 +97,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -233,6 +234,14 @@ public class GwtTaskHelper {
 		// Allocate a new TaskBundle. 
 		TaskBundle reply = new TaskBundle();
 		reply.setIsDebug(TaskHelper.TASK_DEBUG_ENABLED);
+
+		// Store the number of tasks at which will stop word wrapping
+		// long task names.
+		int nameWrapCutoff = SPropsUtil.getInt("task.namewrap.cutoff", 500);
+		if (0 > nameWrapCutoff) {
+			nameWrapCutoff = Integer.MAX_VALUE; 
+		}
+		reply.setNameWrapCutoff(nameWrapCutoff);
 		
 		// Store information about the Binder.
 		reply.setBinderId(        binder.getId()     );
