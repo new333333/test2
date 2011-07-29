@@ -59,6 +59,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource add_btn();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/admin_console.png")
+	public ImageResource adminMenuImg();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/administration1.png")
 	public ImageResource administration1();
 
@@ -141,6 +145,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/entry_task.png")
 	public ImageResource entry_task();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/help.png")
+	public ImageResource helpMenuImg();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/help1.png")
@@ -239,6 +247,14 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource management16();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/masthead_actions.png")
+	public ImageResource mastheadActions();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/actions.png")
+	public ImageResource mastheadActions2();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/mast_head_kablink_graphic.png")
 	public ImageResource mastHeadKablinkGraphic();
 
@@ -267,6 +283,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource myWorkspace2();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/news_feed.png")
+	public ImageResource newsFeedMenuImg();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/arrow_right.png")
 	public ImageResource next16();
 
@@ -278,6 +298,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/pause.png")
 	public ImageResource pauseActivityStream();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/personal_prefs.png")
+	public ImageResource personalPrefsMenuImg();
+
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/personal_prefs1.png")
 	public ImageResource personalPrefs1();
@@ -322,6 +346,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/report_16b.gif")
 	public ImageResource report16();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/resource_library.png")
+	public ImageResource resourceLibMenuImg();
+
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/resourceLib1.png")
 	public ImageResource resourceLib1();

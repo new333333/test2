@@ -2287,7 +2287,7 @@ body, table td, select
 .mastheadGlobalActionsPanel
 {
 	color: #FFFFFF;
-	right: 20px;
+	right: 0px;
 	position: absolute;
 	top: 15px;
 	white-space: nowrap;
@@ -2312,23 +2312,19 @@ body, table td, select
 {
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 0.85em;
-	left: -5px;
-	letter-spacing: 0.05em;
-	position: relative;
+	font-weight: bold;
+	letter-spacing: 0.03em;
 	text-align: right;
-	top: -10px;
 }
 
-/* Style used with the panel that holds the logged-in user's name in the masthead. */
-.mastheadUserName-mouseOut
+.mastheadActionsSeparator
 {
-	cursor: default;
+	color: black;
 }
 
-/* Style used with the panel that holds the logged-in user's name in the masthead. */
-.mastheadUserName-mouseOver
+.mastheadMenuPanel
 {
-	cursor: pointer;
+	display: inline;
 }
 
 /* Style used for the branding panel. */
@@ -2371,10 +2367,18 @@ body, table td, select
 /* Style used for links in the branding area. */
 .brandingLink
 {
-	color: #3e6978;
 	cursor: pointer;
-	margin-left: 4px;
+	font-size: 0.75em;
+	letter-spacing: 0.03em;
+	padding: 3px 8px;
 	text-decoration: none;
+}
+
+.brandingLink:hover
+{
+	background: url(images/blends/teal_slice.png) repeat scroll center center #81B2BD;
+	border-radius: 3px 3px 3px 3px;
+	color: #135C8F;
 }
 
 /* Style used to add padding-top: 2px; */
@@ -2838,6 +2842,11 @@ top:100px;
 	color: #81B2BD !important;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+}
+
+.popupMenuItemImg
+{
+	margin-right: 5px;
 }
 
 /* Styles for the task disposition dialog. */

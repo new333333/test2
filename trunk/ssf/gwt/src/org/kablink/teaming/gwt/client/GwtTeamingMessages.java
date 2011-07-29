@@ -409,13 +409,18 @@ public interface GwtTeamingMessages extends Messages
 	String eventHandling_Validation_NoValidator(   String eventName                  );
 	
 	// Strings used with the MastHead
+	String adminMenuItem();
 	String administrationHint();
 	String guest();
+	String helpMenuItem();
 	String helpHint();
 	String loginHint();
 	String logoutHint();
 	String myWorkspaceHint();
+	String newsFeedMenuItem();
+	String personalPrefsMenuItem();
 	String personalPreferencesHint();
+	String resourceLibMenuItem();
 	String resourceLibraryHint();
 	String teamingFeedHint();
 	

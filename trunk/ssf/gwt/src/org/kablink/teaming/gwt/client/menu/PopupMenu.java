@@ -332,7 +332,11 @@ public class PopupMenu extends TeamingPopupPanel
 		{
 			int i;
 			
-			// Yes, we need to have all menu items that don't have an image, to leave room as if they had an image.
+			// Yes
+		    img.addStyleName( "popupMenuItemImg" );
+			img.getElement().setAttribute( "align", "absmiddle" );
+
+			// We need to have all menu items that don't have an image, to leave room as if they had an image.
 			for (i = 0; i < m_menuItemsTable.getRowCount(); ++i)
 			{
 				Widget widget;
