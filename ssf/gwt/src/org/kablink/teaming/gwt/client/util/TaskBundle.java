@@ -53,6 +53,7 @@ public class TaskBundle implements IsSerializable {
 	private boolean				m_isDebug;				//
 	private boolean				m_isFiltered;			//
 	private boolean				m_isFromFolder;			//
+	private int					m_nameWrapCutoff;		// Number of tasks beyond which task name word wrapping is disabled.
 	private int					m_totalTasks;			//
 	private List<TaskListItem>	m_tasks;				//
 	private Long				m_binderId;				//
@@ -85,6 +86,7 @@ public class TaskBundle implements IsSerializable {
 	public boolean            getIsDebug()              {return m_isDebug;             }
 	public boolean            getIsFiltered()           {return m_isFiltered;          }
 	public boolean            getIsFromFolder()         {return m_isFromFolder;        }
+	public int                getNameWrapCutoff()		{return m_nameWrapCutoff;      }
 	public int                getTotalTasks()			{return m_totalTasks;          }
 	public List<TaskListItem> getTasks()                {return m_tasks;               }
 	public Long               getBinderId()             {return m_binderId;            }
@@ -108,6 +110,7 @@ public class TaskBundle implements IsSerializable {
 	public void setIsDebug(             boolean            isDebug)              {m_isDebug              = isDebug;             }
 	public void setIsFiltered(          boolean            isFiltered)           {m_isFiltered           = isFiltered;          }
 	public void setIsFromFolder(        boolean            isFromFolder)         {m_isFromFolder         = isFromFolder;        }
+	public void setNameWrapCutoff(      int                nameWrapCutoff)       {m_nameWrapCutoff       = nameWrapCutoff;      }
 	public void setTotalTasks(          int                totalTasks)           {m_totalTasks           = totalTasks;          }
 	public void setTasks(               List<TaskListItem> tasks)                {m_tasks                = tasks;               }
 	public void setBinderId(            Long               binderId)             {m_binderId             = binderId;            }
@@ -116,6 +119,14 @@ public class TaskBundle implements IsSerializable {
 	public void setNewTaskUrl(          String             newTaskUrl)           {m_newTaskUrl           = newTaskUrl;          }
 	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
 
+	/*
+	 * Returns true, if based on the content of the task bundle, long
+	 * task names should be word wrapped and false otherwise.
+	 */
+	public boolean enableTaskNameWrapping() {
+		return (m_nameWrapCutoff >= m_totalTasks);
+	}
+	
 	/**
 	 * Returns true if based on the information in the TaskBundle, the
 	 * UI should respect the linkage information and false otherwise.

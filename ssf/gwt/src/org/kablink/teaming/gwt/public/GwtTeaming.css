@@ -3308,14 +3308,21 @@ a.gwtTaskList_task-icon:hover
 .gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
 {
 	color:        #135c8f !important;
-	white-space:  normal  !important;
-	position:     absolute;
 }
 .gwtTaskList_task-nameAnchor:hover
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+}
+.gwtTaskList_task-nameAnchor_Wrap
+{
+	position:    absolute;
+	white-space: normal !important;
+}
+.gwtTaskList_task-nameAnchor_NoWrap
+{
+	white-space: nowrap !important;
 }
 .gwtTaskList_task-nameCell
 {
