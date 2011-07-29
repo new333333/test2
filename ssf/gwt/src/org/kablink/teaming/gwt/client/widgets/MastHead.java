@@ -33,28 +33,20 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.event.AdministrationEvent;
-import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
-import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
-import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
-import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -64,14 +56,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -83,7 +69,7 @@ import com.google.gwt.user.client.ui.Widget;
  * This widget will display the MastHead 
  */
 public class MastHead extends Composite
-	implements ClickHandler, MouseOutHandler, MouseOverHandler,
+	implements ClickHandler,
 	// Event handlers implemented by this class.
 		ContextChangedEvent.Handler,
 		MastheadHideEvent.Handler,
@@ -95,29 +81,11 @@ public class MastHead extends Composite
 	private String m_mastheadBinderId = null;
 	private FlowPanel m_mainMastheadPanel = null;
 	private FlowPanel m_globalActionsPanel = null;
-	private Image m_adminImg1 = null;
-	private Image m_adminImg2 = null;
-	private Image m_personalPrefsImg1 = null;
-	private Image m_personalPrefsImg2 = null;
-	private Image m_teamingFeedImg1 = null;
-	private Image m_teamingFeedImg2 = null;
-	private Image m_logoutImg1 = null;
-	private Image m_logoutImg2 = null;
-	private Image m_loginImg1 = null;
-	private Image m_loginImg2 = null;
-	private Image m_helpImg1 = null;
-	private Image m_helpImg2 = null;
-	private Image m_resourceLibImg1 = null;
-	private Image m_resourceLibImg2 = null;
-	private Anchor m_adminLink = null;
-	private Anchor m_personalPrefsLink = null;
-	private Anchor m_teamingFeedLink = null;
-	private Anchor m_logoutLink = null;
-	private Anchor m_loginLink = null;
-	private Anchor m_helpLink = null;
-	private Anchor m_resourceLibLink = null;
+	private InlineLabel m_logoutLink = null;
+	private InlineLabel m_loginLink = null;
 	private InlineLabel m_userName = null;
 	private Label m_betaLabel = null;
+	private MastheadPopupMenu m_popupMenu = null;
 
 	private GwtBrandingData m_siteBrandingData = null;
 	private GwtBrandingData m_binderBrandingData = null;
@@ -192,21 +160,60 @@ public class MastHead extends Composite
 			{
 				m_userName = new InlineLabel( requestInfo.getUserName() );
 				m_userName.setStylePrimaryName( "mastheadUserName" );
+				m_userName.addStyleName( "brandingLink" );
 				m_userName.addClickHandler( this );
-				m_userName.addMouseOverHandler( this );
-				m_userName.addMouseOutHandler( this );
 				m_userName.getElement().setId( "mhUserName" );
 				m_globalActionsPanel.add( m_userName );
 			}
 			
-			
-			// Add the global actions to the masthead.
-			addAdministrationAction();
-			addPersonalPreferencesAction();
-			addTeamingFeedAction();
+			// Add Login or Logout to the masthead.
 			addLoginLogoutAction();
-			addResourceLibAction();
-			addHelpAction();
+
+			// Create the actions popup menu.
+			m_popupMenu = new MastheadPopupMenu( m_mastheadBinderId, m_requestInfo.isUserLoggedIn(), true, true );
+			
+			// Add an image for the user to click on to pop up the actions menu
+			{
+				ClickHandler clickHandler;
+				final FlowPanel panel;
+				Image img;
+				
+				// Add a separator
+				{
+					InlineLabel separator;
+					
+					separator = new InlineLabel( "|" );
+					separator.addStyleName( "mastheadActionsSeparator" );
+					m_globalActionsPanel.add( separator );
+				}
+				
+				panel = new FlowPanel();
+				panel.addStyleName( "mastheadMenuPanel" );
+				panel.addStyleName( "brandingLink" );
+				
+				clickHandler = new ClickHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onClick( ClickEvent event )
+					{
+						m_popupMenu.showRelativeTo( panel );
+					}
+				};
+
+				img = new Image( GwtTeaming.getImageBundle().mastheadActions() );
+				img.addClickHandler( clickHandler );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				panel.add( img );
+				
+				img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
+				img.addClickHandler( clickHandler );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				panel.add( img );
+				
+				m_globalActionsPanel.add( panel );
+			}
 			
 			m_mainMastheadPanel.add( m_globalActionsPanel );
 		}
@@ -311,364 +318,47 @@ public class MastHead extends Composite
 
 
 	/**
-	 * Add the "administration" action to the global actions part of the masthead.
-	 */
-	private void addAdministrationAction()
-	{
-		ImageResource imgResource;
-		Element linkElement;
-
-		// Currently don't need the url to invoke the "site administration" page because that page is
-		// going to be reworked in GWT.  If that work does not get done we can use the url to invoke
-		// the jsp-based "site administration" page.
-		m_adminLink = new Anchor();
-		m_adminLink.addStyleName( "brandingLink" );
-		m_adminLink.addClickHandler( this );
-		m_adminLink.addMouseOutHandler( this );
-		m_adminLink.addMouseOverHandler( this );
-		m_adminLink.setTitle( GwtTeaming.getMessages().administrationHint() );
-		linkElement = m_adminLink.getElement();
-		linkElement.setId( "mhAdminAction" );
-		
-		// Add the mouse-out image to the link.
-		imgResource = GwtTeaming.getImageBundle().administration1();
-		m_adminImg1 = new Image( imgResource );
-		linkElement.appendChild( m_adminImg1.getElement() );
-		
-		// Add the mouse-over image to the link.
-		imgResource = GwtTeaming.getImageBundle().administration2();
-		m_adminImg2 = new Image( imgResource );
-		m_adminImg2.setVisible( false );
-		linkElement.appendChild( m_adminImg2.getElement() );
-		
-		// Set the "administration" link to not be visible.
-		m_adminLink.setVisible( false );
-		
-		// Issue an ajax request to see if the user has the rights to run the "site administration" page.
-		{
-			AsyncCallback<VibeRpcResponse> rpcCallback;
-
-			// No
-			rpcCallback = new AsyncCallback<VibeRpcResponse>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
-					// Note:  We don't pass a string here such as
-					//   rpcFailure_GetSiteAdminUrl() because it would
-					//   get displayed for guest, and all other
-					//   non-admin users.  Not passing a string here
-					//   allows the proper exception handling to occur
-					//   but will NOT display an error to the user.
-					GwtClientHelper.handleGwtRPCFailure( t );
-					
-					// The user does not have the rights to run the "site administration" page.
-					m_adminLink.setVisible( false );
-				}// end onFailure()
-		
-				/**
-				 * 
-				 * @param result
-				 */
-				public void onSuccess( VibeRpcResponse response )
-				{
-					String url;
-					StringRpcResponseData responseData;
-					
-					responseData = (StringRpcResponseData) response.getResponseData();
-					url = responseData.getStringValue();
-					
-					// Did we get a url for the "site administration" action?
-					if ( url != null && url.length() > 0 )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						// Yes
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							/**
-							 * 
-							 */
-							public void execute()
-							{
-								m_adminLink.setVisible( true );
-
-								// Since the user has administration rights, show them a list of
-								// upgrade tasks that still need to be performed.
-								// Sent event to check for tasks
-								AdministrationUpgradeCheckEvent.fireOne();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				}// end onSuccess()
-			};
-			
-			// Issue an ajax request to get the url for the "site administration" action.
-			if ( m_mastheadBinderId != null && m_mastheadBinderId.length() > 0 )
-			{
-				GetSiteAdminUrlCmd cmd;
-
-				cmd = new GetSiteAdminUrlCmd( m_mastheadBinderId );
-				GwtClientHelper.executeCommand( cmd, rpcCallback );
-			}
-			
-		}
-		
-		m_globalActionsPanel.add( m_adminLink );
-	}// end addAdministrationAction()
-	
-	
-	/**
-	 * Add the "help" action to the global actions part of the masthead.
-	 */
-	private void addHelpAction()
-	{
-		ImageResource imgResource;
-		Element linkElement;
-
-		m_helpLink = new Anchor();
-		m_helpLink.addStyleName( "brandingLink" );
-		m_helpLink.addClickHandler( this );
-		m_helpLink.addMouseOutHandler( this );
-		m_helpLink.addMouseOverHandler( this );
-		m_helpLink.setTitle( GwtTeaming.getMessages().helpHint() );
-		linkElement = m_helpLink.getElement();
-		linkElement.setId( "mhHelpAction" );
-		
-		// Add the mouse-out image to the link.
-		imgResource = GwtTeaming.getImageBundle().help1();
-		m_helpImg1 = new Image( imgResource );
-		linkElement.appendChild( m_helpImg1.getElement() );
-		
-		// Add the mouse-over image to the link.
-		imgResource = GwtTeaming.getImageBundle().help2();
-		m_helpImg2 = new Image( imgResource );
-		m_helpImg2.setVisible( false );
-		linkElement.appendChild( m_helpImg2.getElement() );
-		
-		m_globalActionsPanel.add( m_helpLink );
-	}// end addHelpAction()
-	
-	
-	/**
 	 * Add the "login" or "logout" action to the global actions part of the masthead.
 	 */
 	private void addLoginLogoutAction()
 	{
-		ImageResource imgResource;
 		Element linkElement;
+
+		// Add a separator
+		{
+			InlineLabel separator;
+			
+			separator = new InlineLabel( "|" );
+			separator.addStyleName( "mastheadActionsSeparator" );
+			m_globalActionsPanel.add( separator );
+		}
 
 		// Is the user logged in?
 		if ( m_requestInfo.isUserLoggedIn() )
 		{
 			// Yes, add the "logout" action.
-			m_logoutLink = new Anchor();
+			m_logoutLink = new InlineLabel( GwtTeaming.getMessages().logoutHint() );
 			m_logoutLink.addStyleName( "brandingLink" );
 			m_logoutLink.addClickHandler( this );
-			m_logoutLink.addMouseOutHandler( this );
-			m_logoutLink.addMouseOverHandler( this );
 			m_logoutLink.setTitle( GwtTeaming.getMessages().logoutHint() );
 			linkElement = m_logoutLink.getElement();
 			linkElement.setId( "mhLogoutAction" );
-			
-			// Add the mouse-out image to the link.
-			imgResource = GwtTeaming.getImageBundle().logout1();
-			m_logoutImg1 = new Image( imgResource );
-			linkElement.appendChild( m_logoutImg1.getElement() );
-			
-			// Add the mouse-over image to the link.
-			imgResource = GwtTeaming.getImageBundle().logout2();
-			m_logoutImg2 = new Image( imgResource );
-			m_logoutImg2.setVisible( false );
-			linkElement.appendChild( m_logoutImg2.getElement() );
 			
 			m_globalActionsPanel.add( m_logoutLink );
 		}
 		else
 		{
 			// No, add the "login" action.
-			m_loginLink = new Anchor();
+			m_loginLink = new InlineLabel( GwtTeaming.getMessages().loginHint() );
 			m_loginLink.addStyleName( "brandingLink" );
 			m_loginLink.addClickHandler( this );
-			m_loginLink.addMouseOutHandler( this );
-			m_loginLink.addMouseOverHandler( this );
 			m_loginLink.setTitle( GwtTeaming.getMessages().loginHint() );
 			linkElement = m_loginLink.getElement();
 			linkElement.setId( "mhLoginAction" );
 			
-			// Add the mouse-out image to the link.
-			imgResource = GwtTeaming.getImageBundle().login1();
-			m_loginImg1 = new Image( imgResource );
-			linkElement.appendChild( m_loginImg1.getElement() );
-			
-			// Add the mouse-over image to the link.
-			imgResource = GwtTeaming.getImageBundle().login2();
-			m_loginImg2 = new Image( imgResource );
-			m_loginImg2.setVisible( false );
-			linkElement.appendChild( m_loginImg2.getElement() );
-			
 			m_globalActionsPanel.add( m_loginLink );
 		}
-	}// end addLogoutAction()
-	
-	
-	/**
-	 * If the user is logged in, add the "personal preferences" link to the global actions panel.
-	 */
-	private void addPersonalPreferencesAction()
-	{
-		// Is the user logged in?
-		if ( m_requestInfo.isUserLoggedIn() )
-		{
-			ImageResource imgResource;
-			Element linkElement;
-
-			// Yes, add the "personal preferences" action.
-			m_personalPrefsLink = new Anchor();
-			m_personalPrefsLink.addStyleName( "brandingLink" );
-			m_personalPrefsLink.addClickHandler( this );
-			m_personalPrefsLink.addMouseOutHandler( this );
-			m_personalPrefsLink.addMouseOverHandler( this );
-			m_personalPrefsLink.setTitle( GwtTeaming.getMessages().personalPreferencesHint() );
-			linkElement = m_personalPrefsLink.getElement();
-			linkElement.setId( "mhPersonalPrefsAction" );
-			
-			// Add the mouse-out image to the link.
-			imgResource = GwtTeaming.getImageBundle().personalPrefs1();
-			m_personalPrefsImg1 = new Image( imgResource );
-			linkElement.appendChild( m_personalPrefsImg1.getElement() );
-			
-			// Add the mouse-over image to the link.
-			imgResource = GwtTeaming.getImageBundle().personalPrefs2();
-			m_personalPrefsImg2 = new Image( imgResource );
-			m_personalPrefsImg2.setVisible( false );
-			linkElement.appendChild( m_personalPrefsImg2.getElement() );
-			
-			m_globalActionsPanel.add( m_personalPrefsLink );
-		}
-	}// end addPersonalPreferencesAction()
-	
-	
-	/**
-	 * Add the "Resource Library" action to the global actions part of the masthead.
-	 */
-	private void addResourceLibAction()
-	{
-		ImageResource imgResource;
-		Element linkElement;
-
-		m_resourceLibLink = new Anchor();
-		m_resourceLibLink.addStyleName( "brandingLink" );
-		m_resourceLibLink.addClickHandler( this );
-		m_resourceLibLink.addMouseOutHandler( this );
-		m_resourceLibLink.addMouseOverHandler( this );
-		m_resourceLibLink.setTitle( GwtTeaming.getMessages().resourceLibraryHint() );
-		linkElement = m_resourceLibLink.getElement();
-		linkElement.setId( "mhResourceLibAction" );
-		
-		// Add the mouse-out image to the link.
-		imgResource = GwtTeaming.getImageBundle().resourceLib1();
-		m_resourceLibImg1 = new Image( imgResource );
-		linkElement.appendChild( m_resourceLibImg1.getElement() );
-		
-		// Add the mouse-over image to the link.
-		imgResource = GwtTeaming.getImageBundle().resourceLib2();
-		m_resourceLibImg2 = new Image( imgResource );
-		m_resourceLibImg2.setVisible( false );
-		linkElement.appendChild( m_resourceLibImg2.getElement() );
-		
-		m_globalActionsPanel.add( m_resourceLibLink );
 	}
-	
-	
-	/**
-	 * If the user is logged in, add the "Teaming Feed" link to the global actions panel.
-	 */
-	private void addTeamingFeedAction()
-	{
-		// Is the user logged in?
-		if ( m_requestInfo.isUserLoggedIn() )
-		{
-			ImageResource imgResource;
-			Element linkElement;
-
-			// Yes, add the "Teaming Feed" action.
-			m_teamingFeedLink = new Anchor();
-			m_teamingFeedLink.addStyleName( "brandingLink" );
-			m_teamingFeedLink.addClickHandler( this );
-			m_teamingFeedLink.addMouseOutHandler( this );
-			m_teamingFeedLink.addMouseOverHandler( this );
-			m_teamingFeedLink.setTitle( GwtTeaming.getMessages().teamingFeedHint() );
-			linkElement = m_teamingFeedLink.getElement();
-			linkElement.setId( "mhTeamingFeedAction" );
-			
-			// Add the mouse-out image to the link.
-			imgResource = GwtTeaming.getImageBundle().teamingFeed1();
-			m_teamingFeedImg1 = new Image( imgResource );
-			linkElement.appendChild( m_teamingFeedImg1.getElement() );
-			
-			// Add the mouse-over image to the link.
-			imgResource = GwtTeaming.getImageBundle().teamingFeed2();
-			m_teamingFeedImg2 = new Image( imgResource );
-			m_teamingFeedImg2.setVisible( false );
-			linkElement.appendChild( m_teamingFeedImg2.getElement() );
-			
-			m_globalActionsPanel.add( m_teamingFeedLink );
-		}
-	}// end addPersonalPreferencesAction()
-	
-	
-	/**
-	 * Display the mouse-out image for the give widget and remove the mouse-over hint.
-	 */
-	private void doMouseOutActions( Widget eventSource )
-	{
-		// Display the mouse-out image for the appropriate link.
-		if ( eventSource == m_adminLink )
-		{
-			m_adminImg1.setVisible( true );
-			m_adminImg2.setVisible( false );
-		}
-		else if ( eventSource == m_personalPrefsLink )
-		{
-			m_personalPrefsImg1.setVisible( true );
-			m_personalPrefsImg2.setVisible( false );
-		}
-		else if ( eventSource == m_teamingFeedLink )
-		{
-			m_teamingFeedImg1.setVisible( true );
-			m_teamingFeedImg2.setVisible( false );
-		}
-		else if ( eventSource == m_logoutLink )
-		{
-			m_logoutImg1.setVisible( true );
-			m_logoutImg2.setVisible( false );
-		}
-		else if ( eventSource == m_loginLink )
-		{
-			m_loginImg1.setVisible( true );
-			m_loginImg2.setVisible( false );
-		}
-		else if ( eventSource == m_helpLink )
-		{
-			m_helpImg1.setVisible( true );
-			m_helpImg2.setVisible( false );
-		}
-		else if ( eventSource == m_resourceLibLink )
-		{
-			m_resourceLibImg1.setVisible( true );
-			m_resourceLibImg2.setVisible( false );
-		}
-		else if ( eventSource == m_userName )
-		{
-			m_userName.removeStyleDependentName( "mouseOver" );
-			m_userName.addStyleDependentName( "mouseOut" );
-		}
-
-	}// end doMouseOutActions()
 	
 	
 	/**
@@ -768,37 +458,14 @@ public class MastHead extends Composite
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
 
-		// Display the mouse out-image for the link that was clicked on and hide the hint.
-		doMouseOutActions( eventSource );
-		
 		// Send Appropriate event
-		if ( eventSource == m_adminLink )
-		{
-			AdministrationEvent.fireOne();
-		}
-		else if ( eventSource == m_personalPrefsLink )
-		{
-			EditPersonalPreferencesEvent.fireOne();
-		}
-		else if ( eventSource == m_teamingFeedLink )
-		{
-			ViewTeamingFeedEvent.fireOne();
-		}
-		else if ( eventSource == m_logoutLink )
+		if ( eventSource == m_logoutLink )
 		{
 			LogoutEvent.fireOne();
 		}
 		else if ( eventSource == m_loginLink )
 		{
 			LoginEvent.fireOne();
-		}
-		else if ( eventSource == m_helpLink )
-		{
-			InvokeHelpEvent.fireOne();
-		}
-		else if ( eventSource == m_resourceLibLink )
-		{
-			ViewResourceLibraryEvent.fireOne();
 		}
 		else if ( eventSource == m_userName )
 		{
@@ -807,75 +474,6 @@ public class MastHead extends Composite
 	}// end onClick()
 	
 	
-	/**
-	 * This method gets called when the user mouses out of something in the branding panel
-	 */
-	public void onMouseOut( MouseOutEvent event )
-	{
-		Widget eventSource;
-		
-		// Get the widget that was clicked on.
-		eventSource = (Widget) event.getSource();
-		
-		// Display the mouse-out image for the link that mouse left and hide the hint.
-		doMouseOutActions( eventSource );
-	}// onMouseOut()
-	
-	
-	/**
-	 * This method gets called when the user mouses over something in the branding panel
-	 */
-	public void onMouseOver( MouseOverEvent event )
-	{
-		Widget eventSource;
-		
-		// Get the widget that was clicked on.
-		eventSource = (Widget) event.getSource();
-		
-		// Display the mouse-over image for the appropriate link.
-		if ( eventSource == m_adminLink )
-		{
-			m_adminImg1.setVisible( false );
-			m_adminImg2.setVisible( true );
-		}
-		else if ( eventSource == m_personalPrefsLink )
-		{
-			m_personalPrefsImg1.setVisible( false );
-			m_personalPrefsImg2.setVisible( true );
-		}
-		else if ( eventSource == m_teamingFeedLink )
-		{
-			m_teamingFeedImg1.setVisible( false );
-			m_teamingFeedImg2.setVisible( true );
-		}
-		else if ( eventSource == m_logoutLink )
-		{
-			m_logoutImg1.setVisible( false );
-			m_logoutImg2.setVisible( true );
-		}
-		else if ( eventSource == m_loginLink )
-		{
-			m_loginImg1.setVisible( false );
-			m_loginImg2.setVisible( true );
-		}
-		else if ( eventSource == m_helpLink )
-		{
-			m_helpImg1.setVisible( false );
-			m_helpImg2.setVisible( true );
-		}
-		else if ( eventSource == m_resourceLibLink )
-		{
-			m_resourceLibImg1.setVisible( false );
-			m_resourceLibImg2.setVisible( true );
-		}
-		else if ( eventSource == m_userName )
-		{
-			m_userName.removeStyleDependentName( "mouseOut" );
-			m_userName.addStyleDependentName( "mouseOver" );
-		}
-	}// onMouseOver()
-	
-
 	/**
 	 * Refresh the binder branding by issuing an ajax request to get the binder branding data . 
 	 */
