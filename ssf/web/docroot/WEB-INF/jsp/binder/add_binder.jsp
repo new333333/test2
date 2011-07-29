@@ -262,10 +262,8 @@ function ss_checkForm(obj) {
       <c:if test="${ssOperation != 'add_folder' && ssOperation != 'add_subFolder' && config.internalId == ss_workspaceId}">
         <c:set var="checkedConfig" value="${config.id}"/>
       </c:if>
-      <c:if test="${(ssOperation == 'add_folder' || ssOperation == 'add_subFolder') && config.internalId == ss_stdConfigId_desc}">
-        <c:set var="checkedConfig" value="${config.id}"/>
-      </c:if>
-      <c:if test="${(ssOperation == 'add_folder' || ssOperation == 'add_subFolder') && ssBinder.mirrored && config.internalId == ss_stdConfigId_mirrored_file}">
+      <c:if test="${(ssOperation == 'add_folder' || ssOperation == 'add_subFolder') && 
+      		ssBinder.entityType == 'folder' && ssBinder.entryDefId == config.entryDefId}">
         <c:set var="checkedConfig" value="${config.id}"/>
       </c:if>
   </c:forEach>
