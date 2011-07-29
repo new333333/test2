@@ -70,7 +70,7 @@
 		 */
 		function handleLandingPageOptions()
 		{
-			<c:if test="${ !empty ss_mashupHideMasthead && !empty ss_mashupHideSidebar && !empty ss_mashupShowBranding }">
+			<c:if test="${ !empty ss_mashupHideMasthead && !empty ss_mashupHideSidebar && !empty ss_mashupShowBranding && !empty ss_mashupHideMenu}">
 				var hideMasthead;
 				var hideSidebar;
 				var showBranding;
