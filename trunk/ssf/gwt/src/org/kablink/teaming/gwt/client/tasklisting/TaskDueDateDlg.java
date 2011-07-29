@@ -718,7 +718,7 @@ public class TaskDueDateDlg extends DlgBox
 		String baseId = (isStart ? IDSTART : IDEND);
 		TZDateBox db = m_dateBoxMap.get(baseId);
 		db.setTZOffset(isAllDayEvent() ? GwtClientHelper.getTimeZoneOffsetMillis() : 0);
-		db.setValue(pickerDate.getTime());
+		db.setValue((null == pickerDate) ? (-1) : pickerDate.getTime());
 
 		// ...and time picker.
 		TimePicker tp = m_timePickerMap.get(baseId);
