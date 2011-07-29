@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -81,6 +82,7 @@ public class AccessControlController extends AbstractBinderController {
 	throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
+		response.setRenderParameters(request.getParameterMap());
 		//navigation links still use binderId
 		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
@@ -150,8 +152,6 @@ public class AccessControlController extends AbstractBinderController {
 				setupCloseWindow(response);
 			}
 			
-		} else {
-			response.setRenderParameters(request.getParameterMap());
 		}
 	}
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
@@ -164,49 +164,64 @@ public class AccessControlController extends AbstractBinderController {
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");	
 		WorkArea wArea=null;
 		Map model = new HashMap();
-		if (EntityIdentifier.EntityType.zone.name().equals(type)) {
-			ZoneConfig zone = getZoneModule().getZoneConfig(workAreaId);
-			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(zone.getZoneId()));
-			wArea = zone;
-			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
-					getAdminModule().testAccess(zone, AdminOperation.manageFunctionMembership));
-		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
-			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
-			model.put(WebKeys.ENTRY_HAS_ENTRY_ACL, entry.hasEntryAcl());
-			wArea = entry;
-			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
-			Boolean configureAccess = false;
-			if (entry.hasEntryAcl()) {
-				configureAccess = getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership);
-				if (!configureAccess && entry.isIncludeFolderAcl()) {
-					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.setEntryAcl);
+		Map formData = request.getParameterMap();
+		try {
+			if (EntityIdentifier.EntityType.zone.name().equals(type)) {
+				ZoneConfig zone = getZoneModule().getZoneConfig(workAreaId);
+				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(zone.getZoneId()));
+				wArea = zone;
+				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+						getAdminModule().testAccess(zone, AdminOperation.manageFunctionMembership));
+			} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
+				FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
+				model.put(WebKeys.ENTRY_HAS_ENTRY_ACL, entry.hasEntryAcl());
+				wArea = entry;
+				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
+				Boolean configureAccess = false;
+				if (entry.hasEntryAcl()) {
+					configureAccess = getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership);
+					if (!configureAccess && entry.isIncludeFolderAcl()) {
+						configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.setEntryAcl);
+					}
+					if (!configureAccess && entry.isIncludeFolderAcl() && entry.getOwnerId().equals(user.getId())) {
+						configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.entryOwnerSetAcl);
+					}
+				} else {
+					if (!configureAccess) {
+						configureAccess = getAdminModule().testAccess(entry.getParentFolder(), AdminOperation.manageFunctionMembership);
+					}
+					if (!configureAccess) {
+						configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.setEntryAcl);
+					}
+					if (!configureAccess && entry.getOwnerId().equals(user.getId())) {
+						configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.entryOwnerSetAcl);
+					}
 				}
-				if (!configureAccess && entry.isIncludeFolderAcl() && entry.getOwnerId().equals(user.getId())) {
-					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.entryOwnerSetAcl);
-				}
+				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, configureAccess);
+				model.put(WebKeys.DEFINITION_ENTRY, entry);
+				
 			} else {
-				if (!configureAccess) {
-					configureAccess = getAdminModule().testAccess(entry.getParentFolder(), AdminOperation.manageFunctionMembership);
-				}
-				if (!configureAccess) {
-					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.setEntryAcl);
-				}
-				if (!configureAccess && entry.getOwnerId().equals(user.getId())) {
-					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.entryOwnerSetAcl);
-				}
+				Binder binder = getBinderModule().getBinder(workAreaId);			
+				//Build the navigation beans
+				BinderHelper.buildNavigationLinkBeans(this, binder, model);
+				wArea = binder;
+				model.put(WebKeys.BINDER, binder);
+				model.put(WebKeys.DEFINITION_ENTRY, binder);
+				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
+				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+						getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership));
 			}
-			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, configureAccess);
-			
-		} else {
-			Binder binder = getBinderModule().getBinder(workAreaId);			
-			//Build the navigation beans
-			BinderHelper.buildNavigationLinkBeans(this, binder, model);
-			wArea = binder;
-			model.put(WebKeys.BINDER, binder);
-			model.put(WebKeys.DEFINITION_ENTRY, binder);
-			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
-			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
-					getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership));
+		} catch(AccessControlException e) {
+			model.put(WebKeys.ACCESS_CONTROL_EXCEPTION, Boolean.TRUE);
+			return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_NO_MORE, model);
+		}
+		if (formData.containsKey("okBtn") || formData.containsKey("inheritanceBtn") ||
+				formData.containsKey("aclSelectionBtn") || formData.containsKey("delBtn")) {
+			//A form was submitted, make sure the user can still perform an access control change
+			if (!(Boolean)model.get(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED)) {
+				//The user no longer has access, give an appropriat error message'
+				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_NO_MORE, model);
+			}
 		}
 		
 		setupAccess(this, request, response, wArea, model);

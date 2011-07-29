@@ -663,6 +663,7 @@ public class WebKeys {
 	public static final String ACCESS_BRANDING = "ss_accessBranding";
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_CONTROL_CONFIGURE_ALLOWED = "ss_accessControlConfigureAllowed";
+	public static final String ACCESS_CONTROL_EXCEPTION = "ss_accessControlException";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
@@ -1490,6 +1491,7 @@ public class WebKeys {
     public static final String VIEW_ACCESS_TO_BINDER = "binder/view_access";
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
     public static final String VIEW_ACCESS_CONTROL_ENTRY = "binder/access_control_entry";
+    public static final String VIEW_ACCESS_CONTROL_NO_MORE = "binder/access_control_no_more";
     public static final String VIEW_ACCESS_DENIED = "forum/access_not_allowed";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_USER_ACCOUNT = "administration/manage_users_add_entry";
