@@ -108,6 +108,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                        	.add(Expression.eq(ZONE_ID, zoneId))
 	                        	.setFetchMode("operationNames", FetchMode.JOIN)
 	                        	.setCacheable(true)
+	                        	.setCacheRegion("query.ReferenceQueryCache")
 	                        	.addOrder(Order.asc("name"))
 	                        	.list();
 	                    	//since we eagerly fetch, results are not unique
@@ -148,7 +149,8 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        return session.createCriteria(Condition.class)
 	                        	.add(Expression.eq(ZONE_ID, zoneId))
-	                        	//.setCacheable(true)
+	                        	.setCacheable(true)
+	                        	.setCacheRegion("query.ReferenceQueryCache")
 	                        	.addOrder(Order.asc("title"))
 	                        	.list();
 	                    }
@@ -175,6 +177,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                               			.add(Expression.eq(FUNCTION_ID, functionId))
 	                               		)
 	                               	.setFetchMode("memberIds", FetchMode.JOIN)
+	                               	.setCacheable(true)
 	                               	.list();
 	                    	//since we eagerly fetch, results are not unique
 	                    	if(results == null || results.size() == 0)
@@ -201,6 +204,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                               			.add(Expression.eq(ZONE_ID, zoneId))
 	                               			.add(Expression.eq(FUNCTION_ID, functionId))
 	                               		)
+	                               	.setCacheable(true)
 	                               	.list();
 	                    }
 	                }

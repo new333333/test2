@@ -36,7 +36,7 @@
     <defaultCache
         maxElementsInMemory="5000"
         eternal="false"
-        timeToIdleSeconds="600"
+        timeToIdleSeconds="3600"
         timeToLiveSeconds="86400"
         overflowToDisk="false">
 	</defaultCache>
@@ -61,15 +61,15 @@
 	    name="org.hibernate.cache.StandardQueryCache"
 	    maxElementsInMemory="3000"
 	    eternal="false"
-	    timeToLiveSeconds="3600"
+	    timeToLiveSeconds="86400"
 	    overflowToDisk="false">
 	</cache>
 	
 	<cache 
-	    name="query.findAllZoneInfo"
+	    name="query.ReferenceQueryCache"
 	    maxElementsInMemory="3000"
 	    eternal="false"
-	    timeToLiveSeconds="86400"
+	    timeToLiveSeconds="604800"
 	    overflowToDisk="false">
 	</cache>
 	
@@ -77,8 +77,8 @@
     	name="org.kablink.teaming.domain.Definition"
         maxElementsInMemory="3000"
         eternal="false"
-        timeToIdleSeconds="1800"
-        timeToLiveSeconds="86400"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="604800"
         overflowToDisk="false">
         <cacheEventListenerFactory
 			class="org.kablink.teaming.ehcache.DefinitionCacheEventListenerFactory" />

@@ -6,6 +6,7 @@
       <param name="encryptorRegisteredName">hibernateStringEncryptor</param>
     </typedef>
   <class dynamic-update="true" table="SS_Postings" name="org.kablink.teaming.domain.PostingDef">
+    <cache usage="read-write"/>
     <id unsaved-value="null" name="id" node="@id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>

@@ -3,6 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class discriminator-value="N" dynamic-update="true" lazy="false" table="SS_Attachments" name="org.kablink.teaming.domain.Attachment">
+    <cache usage="read-write"/>
     <id unsaved-value="null" name="id" node="@id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>
@@ -66,6 +67,7 @@
       <property name="agingDate" column="agingDate" type="timestamp"/>
 
       <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
+        <cache usage="read-write"/>
         <key column="parentAttachment"/>
         <one-to-many class="org.kablink.teaming.domain.VersionAttachment"/>
       </bag>

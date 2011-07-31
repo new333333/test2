@@ -3,6 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" table="SS_Tags" dynamic-insert="true" name="org.kablink.teaming.domain.Tag">
+    <cache usage="read-write"/>
     <id unsaved-value="null" name="id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>

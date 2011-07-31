@@ -749,6 +749,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	              			)
 	              			.addOrder(Order.asc("entityIdentifier.entityId"))
 	                 		.addOrder(Order.asc("name"))
+	                 		.setCacheable(true)
 		                 	.list();
 		    	   		}
 		    	   	}

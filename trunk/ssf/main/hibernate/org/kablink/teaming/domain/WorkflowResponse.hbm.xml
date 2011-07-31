@@ -3,6 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" lazy="false" table="SS_WorkflowResponses" name="org.kablink.teaming.domain.WorkflowResponse">
+    <cache usage="read-write"/>
     <id unsaved-value="null" name="id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>

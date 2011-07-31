@@ -1279,6 +1279,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                             		.add(Expression.eq("internalId", reservedId))
 	                             		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                             		.setCacheable(true)
+	                             		.setCacheRegion("query.ReferenceQueryCache")
 	                             		.list();
 	                        if (results.isEmpty()) {
 	                            throw new NoDefinitionByTheIdException(reservedId); 
@@ -1318,6 +1319,8 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq("name", name));
 	                 		if (binder != null) crit.add(Expression.eq("binderId", binder.getId()));
 	                 		else crit.add(Expression.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
+	                 		crit.setCacheable(true)
+	                 		.setCacheRegion("query.ReferenceQueryCache");
 	                		Definition def = (Definition)crit.uniqueResult();
 		                    if (def == null) {throw new NoDefinitionByTheIdException(name);}
 		                    return def;
@@ -1382,6 +1385,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.addOrder(Order.asc("definitionType"))
 	                 		.addOrder(Order.asc("templateTitle"));
 		                 	criteria = filterCriteriaForTemplates(criteria);
+		                 	criteria.setCacheable(true);
 		                 	return criteria.list();
 		                }
 		            }
@@ -1403,6 +1407,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq("definitionType", type))
 	                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE));
 		                 	criteria = filterCriteriaForTemplates(criteria);
+		                 	criteria.setCacheable(true);
 		                 	return criteria.list();
 		                }
 		            }
@@ -1444,6 +1449,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                  		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
 	                		.add(Expression.eq(ObjectKeys.FIELD_BINDER_NAME, name))
+	                		.setCacheable(true)
 	                		.uniqueResult();
 		                    if (template == null) {throw new NoBinderByTheNameException(name);}
 		                    return template;
@@ -1635,6 +1641,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			            public Object doInHibernate(Session session) throws HibernateException {
 		               		return session.createCriteria(PostingDef.class)
 		               						.add(Expression.eq("emailAddress", emailAddress))
+		               						.setCacheable(true)
 		               						.uniqueResult();
 			            }
 			        }
@@ -1843,6 +1850,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.in("entityIdentifier.entityId", ids))
 	       					.add(Expression.eq("entityIdentifier.type", savedId.getEntityType().getValue()))
 	                 		.addOrder(Order.asc("entityIdentifier.entityId"))
+	                 		.setCacheable(true)
 		                 	.list();
 		                }
 		            }
@@ -1879,6 +1887,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		                 	return session.createCriteria(Tag.class)
 	                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
 	       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
+	       					.setCacheable(true)
 	 	                 	.list();
 		                }
 		            }
@@ -1900,6 +1909,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
 	       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
 	       					.add(Expression.eq("public", true))
+	       					.setCacheable(true)
 	 	                 	.list();
 		                }
 		            }
@@ -1922,6 +1932,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
 	       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
 	       					.add(Expression.eq("public",false))
+	       					.setCacheable(true)
 		                 	.list();
 		                }
 		            }
@@ -1942,6 +1953,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
 	       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
 	       					.add(Expression.eq("public",false))
+	       					.setCacheable(true)
 		                 	.list();
 		                }
 		            }
@@ -1969,6 +1981,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	              							.add(Expression.eq("ownerIdentifier.type", ownerIdentifier.getEntityType().getValue()))
 	              					)
 	              			)
+	              			.setCacheable(true)
 		                 	.list();
 		    	   		}
 		    	   	}
@@ -1989,6 +2002,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		                 	return session.createCriteria(Subscription.class)
 	                 		.add(Expression.eq("id.entityId", entityId.getEntityId()))
 	       					.add(Expression.eq("id.entityType", entityId.getEntityType().getValue()))
+	       					.setCacheable(true)
 		                 	.list();
 		                }
 		            }
@@ -2356,6 +2370,8 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			            public Object doInHibernate(Session session) throws HibernateException {
 		               		return session.createCriteria(IndexNode.class)
 		               						.add(Expression.eq("name", new IndexNode.Name(nodeName, indexName)))
+		               						.setCacheable(true)
+		               						.setCacheRegion("query.ReferenceQueryCache")
 		               						.uniqueResult();
 			            }
 			        }
@@ -2392,6 +2408,8 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		    	   		public Object doInHibernate(Session session) throws HibernateException {
 		                       return session.createCriteria(LdapConnectionConfig.class)
 		                       .add(Expression.eq("zoneId", zoneId))
+		                       .setCacheable(true)
+		                       .setCacheRegion("query.ReferenceQueryCache")
 		                       .list();
 	 	       	   		}
 		       	   	}
