@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
 	<class dynamic-update="true" table="SS_Extensions" name="org.kablink.teaming.domain.ExtensionInfo">
-	<cache usage="nonstrict-read-write"/>
+	<cache usage="read-write"/>
 	<id unsaved-value="null" name="id" node="@id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>

@@ -41,7 +41,7 @@ import java.io.Serializable;
  */
 public class UserEntityPK implements Serializable {
 	private final static long serialVersionUID=1;
-	private EntityIdentifier entityIdentifier;
+	private transient EntityIdentifier entityIdentifier;
 	private Long entityId,principalId;
 	private int entityType;
 	
@@ -101,6 +101,10 @@ public class UserEntityPK implements Serializable {
 		return false;
 	}
 	public int hashCode() {
-		return 31*entityId.hashCode() + principalId.hashCode() + entityType;
+		int result = 17;
+		result = 37 * result + entityId.hashCode();
+		result = 37 * result + principalId.hashCode();
+		result = 37 * result + entityType;
+		return result;
 	}
 }

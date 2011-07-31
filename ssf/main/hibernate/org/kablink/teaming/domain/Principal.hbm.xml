@@ -12,15 +12,18 @@
     <discriminator type="string" column="type" length="16"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <map inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" lazy="true" name="customAttributes">
+      <cache usage="read-write"/>
       <key column="principal"/>
       <map-key type="string" column="name"/>
       <one-to-many class="org.kablink.teaming.domain.CustomAttribute"/>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
+      <cache usage="read-write"/>
       <key column="principal"/>
       <one-to-many class="org.kablink.teaming.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
+      <cache usage="read-write"/>
       <key column="principal" on-delete="cascade"/>
       <one-to-many class="org.kablink.teaming.domain.Event"/>
     </set>
@@ -42,14 +45,14 @@
     <property name="foreignName" length="128" />
     <property name="ldapGuid" length="128" index="ldapGuid_principal"/>
 	<property name="theme" length="64"/>
-<properties name="nameKey" unique="true" update="false" insert="false">
-<property name="zoneId" update="false" insert="false"/>
-<property name="name" update="false" insert="false"/>
-</properties>
-<properties name="foreignKey" unique="true" update="false" insert="false">
-<property name="zoneId" update="false" insert="false"/>
-<property name="foreignName" update="false" insert="false"/>
-</properties>
+    <properties name="nameKey" unique="true" update="false" insert="false">
+      <property name="zoneId" update="false" insert="false"/>
+      <property name="name" update="false" insert="false"/>
+    </properties>
+    <properties name="foreignKey" unique="true" update="false" insert="false">
+      <property name="zoneId" update="false" insert="false"/>
+      <property name="foreignName" update="false" insert="false"/>
+    </properties>
     <many-to-one name="parentBinder"/>
     <component name="description">
  <!-- use length to force medium blog in mysql -->
@@ -85,6 +88,7 @@
 	    </bag>
 	    <subclass name="org.kablink.teaming.domain.Group" discriminator-value="group" dynamic-update="true">
 	      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
+	        <cache usage="read-write"/>
 	        <key column="groupId"/>
 	        <many-to-many fetch="join" class="org.kablink.teaming.domain.UserPrincipal" column="userId"/>
 	      </bag>
@@ -121,6 +125,7 @@
 	    </bag>
 	    <subclass name="org.kablink.teaming.domain.ApplicationGroup" discriminator-value="applicationGroup" dynamic-update="true">
 	      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
+	        <cache usage="read-write"/>
 	        <key column="groupId"/>
 	        <many-to-many fetch="join" class="org.kablink.teaming.domain.ApplicationPrincipal" column="userId"/>
 	      </bag>

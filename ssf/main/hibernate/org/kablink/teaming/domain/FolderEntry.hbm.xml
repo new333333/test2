@@ -19,20 +19,24 @@
 	<property name="hasEntryAcl" access="field"/>
 	<property name="checkFolderAcl" access="field"/>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="customAttributes">
+      <cache usage="read-write"/>
       <key column="folderEntry"/>
       <map-key type="string" column="name"/>
       <one-to-many class="org.kablink.teaming.domain.CustomAttribute"/>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
+      <cache usage="read-write"/>
       <key column="folderEntry"/>
       <one-to-many class="org.kablink.teaming.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
+      <cache usage="read-write"/>
       <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="org.kablink.teaming.domain.Event"/>
     </set>
     <!-- exclude evict, refresh -->
     <bag inverse="true" access="field" cascade="persist,merge,delete,save-update,replicate,lock,delete-orphan" optimistic-lock="false" lazy="true" name="replies">
+      <cache usage="read-write"/>
       <key column="parentEntry"/>
       <one-to-many class="org.kablink.teaming.domain.FolderEntry"/>
     </bag>
@@ -43,10 +47,12 @@
       </many-to-one>
     </component>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowStates">
+      <cache usage="read-write"/>
       <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="org.kablink.teaming.domain.WorkflowState"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowResponses">
+      <cache usage="read-write"/>
       <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="org.kablink.teaming.domain.WorkflowResponse"/>
     </set>

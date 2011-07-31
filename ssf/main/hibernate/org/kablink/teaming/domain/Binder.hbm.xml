@@ -32,11 +32,13 @@
         <one-to-many class="org.kablink.teaming.domain.Binder"/>
     </bag>
     <map inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" lazy="true" name="customAttributes">
+      <cache usage="read-write"/>
       <key column="binder"/>
       <map-key type="string" column="name"/>
       <one-to-many class="org.kablink.teaming.domain.CustomAttribute"/>
     </map>
     <map inverse="false" table="SS_WorkflowMap" access="field" cascade="all" lazy="true" name="workflowAssociations">
+      <cache usage="read-write"/>
       <key column="binder"/>
       <map-key type="string" column="entryDefinition" length="32"/>
       <many-to-many class="org.kablink.teaming.domain.Definition">
@@ -44,15 +46,17 @@
       </many-to-many>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
+      <cache usage="read-write"/>
       <key column="binder"/>
       <one-to-many class="org.kablink.teaming.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
+      <cache usage="read-write"/>
       <key column="binder" on-delete="cascade"/>
       <one-to-many class="org.kablink.teaming.domain.Event"/>
     </set>
     <list inverse="false" access="field" cascade="all" lazy="true" table="SS_DefinitionMap" name="definitions">
-      <cache usage="nonstrict-read-write"/>
+      <cache usage="read-write"/>
       <key column="binder"/>
       <index type="integer" column="position"/>
       <many-to-many fetch="join" class="org.kablink.teaming.domain.Definition">
@@ -66,8 +70,8 @@
       <property name="style" column="notify_style"/>
 	  <bag inverse="false" access="field" cascade="all" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
       	<key column="binderId" />
- 	     <many-to-many fetch="join" class="org.kablink.teaming.domain.UserPrincipal" column="principalId"/>
-    	</bag>
+ 	    <many-to-many fetch="join" class="org.kablink.teaming.domain.UserPrincipal" column="principalId"/>
+       </bag>
        <property name="emailAddress" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
       <property name="subject" length="128" column="notify_subject"/>
