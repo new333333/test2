@@ -503,7 +503,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                 	   User user = (User)session.getNamedQuery("find-User-Company")
 	                             		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
 	                             		.setLong(ParameterNames.ZONE_ID, zoneId)
-	                             		.setCacheable(true)
+	                             		.setCacheable(isPrincipalQueryCacheable())
 	                             		.uniqueResult();
 	                        //query ensures user is not deleted and not disabled
 	                 	   if (user == null) {
@@ -541,7 +541,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                  	   User user = (User)session.getNamedQuery( "find-User-By-LdapGuid-Company" )
                              		.setString( ParameterNames.LDAP_UGID, ldapGuid )
                              		.setLong( ParameterNames.ZONE_ID, zoneId )
-                             		.setCacheable( true )
+                             		.setCacheable( isPrincipalQueryCacheable() )
                              		.uniqueResult();
                  	   
                         //query ensures user is not deleted and not disabled
@@ -585,7 +585,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		                    	Principal p= (Principal)session.getNamedQuery("find-Principal-Company")
 		                             		.setString(ParameterNames.USER_NAME, name.toLowerCase())
 		                             		.setLong(ParameterNames.ZONE_ID, zoneId)
-		                             		.setCacheable(true)
+		                             		.setCacheable(isPrincipalQueryCacheable())
 		                             		.uniqueResult();
 		                        //query ensures user is not deleted and not disabled
 		                 	   if (p == null) {
@@ -1873,7 +1873,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                  	   User user = (User)session.getNamedQuery("find-User-Company-DeadOrAlive")
                              		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
                              		.setLong(ParameterNames.ZONE_ID, zoneId)
-                             		.setCacheable(true)
+                             		.setCacheable(isPrincipalQueryCacheable())
                              		.uniqueResult();
                         //this query doesn't care if user is deleted or disabled
                  	   if (user == null) {

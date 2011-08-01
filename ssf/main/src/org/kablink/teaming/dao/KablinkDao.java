@@ -59,4 +59,17 @@ public abstract class KablinkDao extends HibernateDaoSupport {
 			inited = true;
 		}
 	}
+	
+	protected boolean isBinderQueryCacheable() {
+		return SPropsUtil.getBoolean("binder.query.cacheable", true);
+	}
+	
+	protected boolean isPrincipalQueryCacheable() {
+		return SPropsUtil.getBoolean("principal.query.cacheable", true);
+	}
+	
+	protected boolean isWorkAreaFunctionMembershipQueryCacheable() {
+		return SPropsUtil.getBoolean("workAreaFunctionMembership.query.cacheable", true);
+	}
+	
 }

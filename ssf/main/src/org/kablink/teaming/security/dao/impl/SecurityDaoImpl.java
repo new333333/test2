@@ -177,7 +177,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                               			.add(Expression.eq(FUNCTION_ID, functionId))
 	                               		)
 	                               	.setFetchMode("memberIds", FetchMode.JOIN)
-	                               	.setCacheable(true)
+	                               	.setCacheable(isWorkAreaFunctionMembershipQueryCacheable())
 	                               	.list();
 	                    	//since we eagerly fetch, results are not unique
 	                    	if(results == null || results.size() == 0)
@@ -204,7 +204,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                               			.add(Expression.eq(ZONE_ID, zoneId))
 	                               			.add(Expression.eq(FUNCTION_ID, functionId))
 	                               		)
-	                               	.setCacheable(true)
+	                               	.setCacheable(isWorkAreaFunctionMembershipQueryCacheable())
 	                               	.list();
 	                    }
 	                }
@@ -229,7 +229,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
 	                               		)
 	                               	.setFetchMode("memberIds", FetchMode.JOIN)
-	                               	.setCacheable(true) //cache for use during indexing, each entry will make this call
+	                               	.setCacheable(isWorkAreaFunctionMembershipQueryCacheable()) //cache for use during indexing, each entry will make this call
 	                               	.list();
 	                    	//since we eagerly fetch, results are not unique
 	                    	return new ArrayList(new HashSet(results));
@@ -289,7 +289,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                        	.setParameterList(PRINCIPAL_IDS, membersToLookup)
 	                        	// 1/22/2011 - We need to get back the ids of ALL functions that matched the query.
 	                        	//.setMaxResults(1) // Fetching the first matching row is enough for us
-	                         	.setCacheable(true)
+	                         	.setCacheable(isWorkAreaFunctionMembershipQueryCacheable())
 	                         	.list();
 	                    }
 	                }
@@ -317,7 +317,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		                            .setLong(WORK_AREA_ID, workAreaId.longValue())
 		                        	.setString(WORK_AREA_TYPE, workAreaType)
 		                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
-		                         	.setCacheable(true)
+		                         	.setCacheable(isWorkAreaFunctionMembershipQueryCacheable())
 		                         	.list();
 		                    }
 		                }
@@ -366,6 +366,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                       		.setLong(ZONE_ID, zoneId)
 	                         	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
 	                         	.setParameterList(PRINCIPAL_IDS, membersToLookup)
+	                         	.setCacheable(isWorkAreaFunctionMembershipQueryCacheable())
 	                        	.list();
 	                    }
 	                }
