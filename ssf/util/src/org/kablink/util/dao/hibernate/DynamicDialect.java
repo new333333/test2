@@ -56,6 +56,19 @@ import org.kablink.util.dao.DataAccess;
  */
 public class DynamicDialect extends Dialect {
 
+	public enum DatabaseType {
+		mysql,
+		oracle,
+		sqlserver,
+		other
+	}
+	
+	private static DatabaseType databaseType;
+	
+	public static DatabaseType getDatabaseType() {
+		return databaseType;
+	}
+	
 	public DynamicDialect() {
 
 		// Instantiate the proper dialect
@@ -99,6 +112,16 @@ public class DynamicDialect extends Dialect {
 			throw new DynamicDialectException("No dialect found");
 		}
 
+		String dialectName = _dialect.getClass().getSimpleName().toLowerCase();
+		if(dialectName.startsWith("mysql"))
+			databaseType = DatabaseType.mysql;
+		else if(dialectName.startsWith("oracle"))
+			databaseType = DatabaseType.oracle;
+		else if(dialectName.startsWith("sqlserver"))
+			databaseType = DatabaseType.sqlserver;
+		else 
+			databaseType = DatabaseType.other;
+		
 		// Synchorize default properties
 
 		Properties dynamicDefaultProps = getDefaultProperties();
