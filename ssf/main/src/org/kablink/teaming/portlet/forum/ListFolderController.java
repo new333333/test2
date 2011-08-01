@@ -131,7 +131,7 @@ public class ListFolderController extends  SAbstractController {
 			}
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
-			if (formData.containsKey("okBtn")) {
+			if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 				Map columns = new LinkedHashMap();
 				Map columnsText = new LinkedHashMap();
 				String columnOrder = PortletRequestUtils.getStringParameter(request, "columns__order", "");
@@ -174,7 +174,7 @@ public class ListFolderController extends  SAbstractController {
 			   	values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
 				getProfileModule().setUserProperties(user.getId(), binderId, values);
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
-			} else if (formData.containsKey("defaultBtn")) {
+			} else if (formData.containsKey("defaultBtn") && WebHelper.isMethodPost(request)) {
 				Map values = new HashMap();
 				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, null);
 				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, null);
