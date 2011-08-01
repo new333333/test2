@@ -1187,7 +1187,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			        public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Workspace.class)
 	             				.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
-	             				.setCacheable(true)
+	             				.setCacheable(isBinderQueryCacheable())
 	             				.list();
 	               }
 	            }
@@ -1206,7 +1206,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                        List results = session.createCriteria(Workspace.class)
 	                             		.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
 	                             		.add(Expression.eq("name", zoneName))
-	                             		.setCacheable(true)
+	                             		.setCacheable(isBinderQueryCacheable())
 	                             		.list();
 	                        if (results.isEmpty()) {
 	                            throw new NoWorkspaceByTheNameException(zoneName); 
@@ -1254,7 +1254,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                        List results = session.createCriteria(Binder.class)
 	                             		.add(Expression.eq("internalId", reservedId))
 	                             		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-	                             		.setCacheable(true)
+	                             		.setCacheable(isBinderQueryCacheable())
 	                             		.list();
 	                        if (results.isEmpty()) {
 	                            throw new NoBinderByTheNameException(reservedId); 
@@ -1385,7 +1385,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.addOrder(Order.asc("definitionType"))
 	                 		.addOrder(Order.asc("templateTitle"));
 		                 	criteria = filterCriteriaForTemplates(criteria);
-		                 	criteria.setCacheable(true);
+		                 	criteria.setCacheable(isBinderQueryCacheable());
 		                 	return criteria.list();
 		                }
 		            }
@@ -1407,7 +1407,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq("definitionType", type))
 	                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE));
 		                 	criteria = filterCriteriaForTemplates(criteria);
-		                 	criteria.setCacheable(true);
+		                 	criteria.setCacheable(isBinderQueryCacheable());
 		                 	return criteria.list();
 		                }
 		            }
@@ -1449,7 +1449,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                  		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
 	                		.add(Expression.eq(ObjectKeys.FIELD_BINDER_NAME, name))
-	                		.setCacheable(true)
+	                		.setCacheable(isBinderQueryCacheable())
 	                		.uniqueResult();
 		                    if (template == null) {throw new NoBinderByTheNameException(name);}
 		                    return template;
@@ -2369,7 +2369,11 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			        new HibernateCallback() {
 			            public Object doInHibernate(Session session) throws HibernateException {
 		               		return session.createCriteria(IndexNode.class)
-		               						.add(Expression.eq("name", new IndexNode.Name(nodeName, indexName)))
+		               						// Use of the component wrapper causes IllegalArgumentException within
+		               						// Hibernate cache. So, use individual fields instead.
+		               						//.add(Expression.eq("name", new IndexNode.Name(nodeName, indexName)))
+		               						.add(Expression.eq("name.nodeName", nodeName))
+		               						.add(Expression.eq("name.indexName", indexName))
 		               						.setCacheable(true)
 		               						.setCacheRegion("query.ReferenceQueryCache")
 		               						.uniqueResult();
