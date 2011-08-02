@@ -46,6 +46,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Group;
@@ -57,6 +58,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.ChainedInputData;
 import org.kablink.teaming.module.shared.EmptyInputData;
@@ -73,6 +75,7 @@ import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.model.UserBrief;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
@@ -489,5 +492,50 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 				);
 		return groupBrief;
 	}
-	
+
+	public BinderBrief[] profile_getFollowedPlaces(String accessToken, Long userId, String[] families, Boolean library) {
+		if(userId == null)
+			userId = RequestContextHolder.getRequestContext().getUserId();
+		List<String> trackedPlacesIds = SearchUtils.getTrackedPlacesIds(this, userId);
+		List<BinderBrief> binders = new ArrayList<BinderBrief>();
+		if(trackedPlacesIds != null) {
+			for(String id:trackedPlacesIds) {
+				org.kablink.teaming.domain.Binder binder = getBinder(Long.valueOf(id));
+				binder = filterBinder(binder, families, library);
+				if(binder != null){
+					BinderBrief brief = new BinderBrief();
+					fillBinderBriefModel(brief, binder);
+					binders.add(brief);
+				}
+			}
+		}
+		BinderBrief[] ret = null;
+		if(binders.size() > 0) {
+			ret = new BinderBrief[binders.size()];
+			binders.toArray(ret);
+		}
+		return ret;
+	}
+
+	private org.kablink.teaming.domain.Binder filterBinder(org.kablink.teaming.domain.Binder binder, String[] families, Boolean library) {
+		if(binder == null) return null;
+		if(library != null) {
+			if(library.booleanValue() != binder.isLibrary()) return null;
+		}
+		if(families != null && families.length > 0) {
+			String f = null;
+	    	org.dom4j.Document def = binder.getEntryDefDoc();
+	    	if(def != null)
+		    	f = DefinitionUtils.getFamily(def);
+	    	if(f == null) return null;
+	    	for(String family:families) {
+	    		if(f.equals(family))
+	    			return binder;
+	    	}
+	    	return null;
+		}
+		else {
+			return binder;
+		}
+	}
 }

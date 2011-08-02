@@ -581,6 +581,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getProfileService().profile_getFavorites(accessToken);
 	}
 
+	public BinderBrief[] profile_getFollowedPlaces(String accessToken, Long userId,
+			String[] families, Boolean library) {
+		return getProfileService().profile_getFollowedPlaces(accessToken, userId, families, library);
+	}
+	
 	// Search Service
 	
 	/*
