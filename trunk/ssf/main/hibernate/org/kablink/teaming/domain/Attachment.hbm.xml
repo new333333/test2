@@ -65,6 +65,7 @@
       <property name="fileStatus" column="fileStatus"/>
       <property name="agingEnabled" column="agingEnabled"/>
       <property name="agingDate" column="agingDate" type="timestamp"/>
+      <property name="encrypted" column="encrypted"/>
 
       <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
         <cache usage="read-write"/>

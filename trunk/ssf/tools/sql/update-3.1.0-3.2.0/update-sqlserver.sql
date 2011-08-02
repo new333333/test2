@@ -13,5 +13,8 @@ alter table SS_ZoneConfig add fileSizeLimitUserDefault numeric(19,0);
 
 alter table SS_Forums add versionAgingDays numeric(19,0);
 alter table SS_Attachments add agingDate datetime null;
+alter table SS_Forums add versionAgingEnabled tinyint null;
 
-INSERT INTO SS_SchemaInfo values (25);
+alter table SS_Attachments add encrypted tinyint null;
+
+INSERT INTO SS_SchemaInfo values (27);

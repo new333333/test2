@@ -108,3 +108,9 @@ Version 24:
 Version 25:
   Add SS_Forums column for the version aging days (versionAgingDays)
   Add SS_Attachments column for the version aging date (agingDate)
+  
+Version 26:
+  Add SS_Forums column for enabling the version aging (versionAgingEnabled)
+  
+Version 27:
+  Add SS_Attachments column for marking a file as encrypted (encrypted)
