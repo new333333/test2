@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.Constants;
 import org.springframework.dao.DataAccessException;
@@ -867,8 +868,14 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                	List<Long> result = new ArrayList<Long>();
 	                	List readObjs = new ArrayList();
-	                	List objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.WorkflowState WHERE state='" + stateValue + "' AND definition='" + defId + "' AND ownerType='folderEntry' AND zoneId='" + thisZoneId + "'")
-				   			.list();
+	                	// "SELECT owner From org.kablink.teaming.domain.WorkflowState WHERE state='" + stateValue + "' AND definition='" + defId + "' AND ownerType='folderEntry' AND zoneId='" + thisZoneId + "'"
+	                	Criteria crit = session.createCriteria(WorkflowState.class)
+	                	.setProjection(Projections.property("owner"))
+	                	.add(Restrictions.eq("state", stateValue))
+	                	.add(Restrictions.eq("definition", defId))
+	                	.add(Restrictions.eq("ownerType", "folderEntry"))
+	                	.add(Restrictions.eq("zoneId", thisZoneId));
+	                	List objs = crit.list();
 	                	readObjs.add(objs);
 				      	HashMap tMap;
 				       	for (int i=0; i < objs.size(); ++i) {
