@@ -862,7 +862,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     public List<Long> findFolderIdsFromWorkflowState(final String defId, final String stateValue) {
 		long begin = System.nanoTime();
 		try {
-	       	final String thisZoneId = String.valueOf(RequestContextHolder.getRequestContext().getZoneId());
+	       	final Long thisZoneId = RequestContextHolder.getRequestContext().getZoneId();
 	       	return (List<Long>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
@@ -872,8 +872,8 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                	Criteria crit = session.createCriteria(WorkflowState.class)
 	                	.setProjection(Projections.property("owner"))
 	                	.add(Restrictions.eq("state", stateValue))
-	                	.add(Restrictions.eq("definition", defId))
-	                	.add(Restrictions.eq("ownerType", "folderEntry"))
+	                	.add(Restrictions.eq("definition.id", defId))
+	                	.add(Restrictions.eq("owner.ownerType", "folderEntry"))
 	                	.add(Restrictions.eq("zoneId", thisZoneId));
 	                	List objs = crit.list();
 	                	readObjs.add(objs);
