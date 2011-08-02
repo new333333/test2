@@ -13,5 +13,8 @@ alter table SS_ZoneConfig add column fileSizeLimitUserDefault bigint;
 
 alter table SS_Forums add column versionAgingDays bigint;
 alter table SS_Attachments add column agingDate datetime;
+alter table SS_Forums add column versionAgingEnabled bit;
 
-INSERT INTO SS_SchemaInfo values (25);
+alter table SS_Attachments add column encrypted bit;
+
+INSERT INTO SS_SchemaInfo values (27);
