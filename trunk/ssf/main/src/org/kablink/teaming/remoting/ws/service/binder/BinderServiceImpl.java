@@ -453,12 +453,18 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return getFolders(folderSearcher, firstRecord);
 	}
 	
-	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, final long startingBinderId, final String[] families, final int firstRecord, final int maxRecords) {
+	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, final long[] startingBinderIds, final String[] families, final int firstRecord, final int maxRecords) {
 		FolderSearcher folderSearcher = new FolderSearcher() {
 			public Map searchFolders() {	
 		    	Criteria crit = new Criteria()
-				.add(eq(Constants.ENTRY_ANCESTRY, String.valueOf(startingBinderId)))
 				.add(eq(Constants.ENTITY_FIELD, "folder"));
+		    	
+		    	if(startingBinderIds != null && startingBinderIds.length > 0) {
+		    		Disjunction disj = disjunction();
+		    		for(long startingBinderId:startingBinderIds) 
+		    			disj.add(eq(Constants.ENTRY_ANCESTRY, String.valueOf(startingBinderId)));
+		    		crit.add(disj);
+		    	}
 
 		    	if(families != null && families.length > 0) {
 		    		Disjunction disj = disjunction();
