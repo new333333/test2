@@ -236,8 +236,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getBinderService().binder_getFolders(accessToken, binderId, firstRecord, maxRecords);
 	}
 	
-	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, long startingBinderId, String[] families, int firstRecord, int maxRecords) {
-		return getBinderService().binder_getAllFoldersOfMatchingFamily(accessToken, startingBinderId, families, firstRecord, maxRecords);
+	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, long[] startingBinderIds, String[] families, int firstRecord, int maxRecords) {
+		return getBinderService().binder_getAllFoldersOfMatchingFamily(accessToken, startingBinderIds, families, firstRecord, maxRecords);
 	}
 	
 	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
