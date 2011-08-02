@@ -44,6 +44,8 @@ package org.kablink.teaming.dao.impl;
  */
 public class ParameterNames {
     public static final String USER_NAME = "userName";
+    public static final String LOWER_USER_NAME = "lowerUserName";
+    public static final String UPPER_USER_NAME = "upperUserName";
     public static final String INTERNAL_ID = "internalId";
     public static final String ZONE_ID="zoneId";
     public static final String NAME="name";

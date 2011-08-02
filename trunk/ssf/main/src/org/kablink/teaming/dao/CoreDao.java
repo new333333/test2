@@ -247,4 +247,6 @@ public interface CoreDao {
 
 	public BinderQuota loadBinderQuota(Long zoneId, Long binderId) throws NoObjectByTheIdException;
 
+	public List<Binder> loadBindersByPathName(final String pathName, final Long zoneId);
+
 }

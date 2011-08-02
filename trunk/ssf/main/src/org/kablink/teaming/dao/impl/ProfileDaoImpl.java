@@ -100,6 +100,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateSystemException;
@@ -499,14 +500,23 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       User user = (User)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-	                 	   //only returns active users
-	                 	   User user = (User)session.getNamedQuery("find-User-Company")
-	                             		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
+	                 	   	//only returns active users
+	                    	Query query;
+	                    	if(lookupByRange()) {
+	                    		query = session.getNamedQuery("find-User-Company-By-Range")
+                         		.setString(ParameterNames.LOWER_USER_NAME, userName.toLowerCase())
+                         		.setString(ParameterNames.UPPER_USER_NAME, userName.toUpperCase());
+	                    	}
+	                    	else {
+	                    		query = session.getNamedQuery("find-User-Company")
+                         		.setString(ParameterNames.USER_NAME, userName.toLowerCase());
+	                    	}
+	                 	   	User user = (User)query
 	                             		.setLong(ParameterNames.ZONE_ID, zoneId)
 	                             		.setCacheable(isPrincipalQueryCacheable())
 	                             		.uniqueResult();
 	                        //query ensures user is not deleted and not disabled
-	                 	   if (user == null) {
+	                 	   	if (user == null) {
 	                            throw new NoUserByTheNameException(userName); 
 	                        }
 	                        return user;
@@ -582,8 +592,17 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		                new HibernateCallback() {
 		                    public Object doInHibernate(Session session) throws HibernateException {
 		                 	   //only returns active users
-		                    	Principal p= (Principal)session.getNamedQuery("find-Principal-Company")
-		                             		.setString(ParameterNames.USER_NAME, name.toLowerCase())
+		                    	Query query;
+		                    	if(lookupByRange()) {
+		                    		query = session.getNamedQuery("find-Principal-Company-By-Range")
+                         			.setString(ParameterNames.LOWER_USER_NAME, name.toLowerCase())
+                         			.setString(ParameterNames.UPPER_USER_NAME, name.toUpperCase());
+		                    	}
+		                    	else {
+		                    		query = session.getNamedQuery("find-Principal-Company")
+                             		.setString(ParameterNames.USER_NAME, name.toLowerCase());
+		                    	}
+		                    	Principal p= (Principal)query
 		                             		.setLong(ParameterNames.ZONE_ID, zoneId)
 		                             		.setCacheable(isPrincipalQueryCacheable())
 		                             		.uniqueResult();
@@ -697,12 +716,25 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	        List result = (List)getHibernateTemplate().execute(
 	               	new HibernateCallback() {
 	                		public Object doInHibernate(Session session) throws HibernateException {
-	                			String queryStr = "select x.principal from org.kablink.teaming.domain.EmailAddress x where " +
-	          					"lower(x.address)=:address";
-	                			if(Validator.isNotNull(emailType))
-	                				queryStr += " and x.type=:type";
-	    	                  	Query q = session.createQuery(queryStr);
-	    	                  	q.setParameter("address", email.toLowerCase());
+	                			Query q;
+	                			if(lookupByRange()) {
+		                			String queryStr = "select x.principal from org.kablink.teaming.domain.EmailAddress x where " +
+		                			"x.address>=:lowerAddress and x.address<=:upperAddress";
+		                			if(Validator.isNotNull(emailType))
+		                				queryStr += " and x.type=:type";
+		    	                  	q = session.createQuery(queryStr);
+		    	                  	q.setParameter("lowerAddress", email.toLowerCase());
+		    	                  	q.setParameter("upperAddress", email.toUpperCase());
+	                			}
+	                			else {
+		                			String queryStr = "select x.principal from org.kablink.teaming.domain.EmailAddress x where " +
+		          					"lower(x.address)=:address";
+		                			if(Validator.isNotNull(emailType))
+		                				queryStr += " and x.type=:type";
+		    	                  	q = session.createQuery(queryStr);
+		    	                  	q.setParameter("address", email.toLowerCase());
+	                			}
+	    	                  	q.setCacheable(true);	                			
 	                			if(Validator.isNotNull(emailType))
 	                				q.setParameter("type", emailType);
 	    	                  	List result = q.list();
@@ -1869,9 +1901,18 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
         return (User)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                 	   //only returns active users
-                 	   User user = (User)session.getNamedQuery("find-User-Company-DeadOrAlive")
-                             		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
+                 	   	//only returns active users
+                    	Query query;
+                    	if(lookupByRange()) {
+                    		query = session.getNamedQuery("find-User-Company-DeadOrAlive-By-Range")
+                         	.setString(ParameterNames.LOWER_USER_NAME, userName.toLowerCase())
+                         	.setString(ParameterNames.UPPER_USER_NAME, userName.toUpperCase());
+                    	}
+                    	else {
+                    		query = session.getNamedQuery("find-User-Company-DeadOrAlive")
+                     		.setString(ParameterNames.USER_NAME, userName.toLowerCase());
+                    	}
+                 	   	User user = (User)query
                              		.setLong(ParameterNames.ZONE_ID, zoneId)
                              		.setCacheable(isPrincipalQueryCacheable())
                              		.uniqueResult();

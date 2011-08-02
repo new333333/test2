@@ -1600,8 +1600,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public Binder getBinderByPathName(String pathName)
 			throws AccessControlException {
-		List<Binder> binders = getCoreDao().loadObjectsCacheable(Binder.class,
-				new FilterControls("lower(pathName)", pathName.toLowerCase()),
+		List<Binder> binders = getCoreDao().loadBindersByPathName(pathName, 
 				RequestContextHolder.getRequestContext().getZoneId());
 
 		// only maximum of one matching non-deleted binder

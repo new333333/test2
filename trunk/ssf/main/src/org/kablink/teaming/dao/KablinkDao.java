@@ -35,6 +35,7 @@ package org.kablink.teaming.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public abstract class KablinkDao extends HibernateDaoSupport {
@@ -72,4 +73,8 @@ public abstract class KablinkDao extends HibernateDaoSupport {
 		return SPropsUtil.getBoolean("workAreaFunctionMembership.query.cacheable", true);
 	}
 	
+	protected boolean lookupByRange() {
+		return SPropsUtil.getBoolean("case.insensitive.by.range." + DynamicDialect.getDatabaseType().name(), false);
+	}
+
 }
