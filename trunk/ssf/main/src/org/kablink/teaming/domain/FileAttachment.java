@@ -69,6 +69,7 @@ public class FileAttachment extends Attachment {
     private Integer minorVersion;
     private Boolean agingEnabled = Boolean.FALSE;
     private Date agingDate;
+    private Boolean encrypted = Boolean.FALSE;
     private Integer fileStatus = FileStatus.valueOf(FileStatus.not_set);
     private boolean fileExists = true;
    
@@ -137,6 +138,22 @@ public class FileAttachment extends Attachment {
 
 	public boolean isAgingEnabled() {
 		if (this.agingEnabled == null || !this.agingEnabled) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public Boolean getEncrypted() {
+		return this.encrypted;	//This can be null if it has never been initialized
+	}
+
+	public void setEncrypted(Boolean encrypted) {
+		this.encrypted = encrypted;
+	}
+
+	public boolean isEncrypted() {
+		if (this.encrypted == null || !this.encrypted) {
 			return false;
 		} else {
 			return true;
