@@ -101,4 +101,7 @@ public interface ProfileService {
 	public BinderBrief[] profile_getFavorites(String accessToken);
 
 	public GroupCollection profile_getUserGroups(String accessToken, long userId);
+	
+	public BinderBrief[] profile_getFollowedPlaces(String accessToken, Long userId, String[] families, Boolean library);
+
 }
