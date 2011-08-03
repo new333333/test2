@@ -137,6 +137,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_addUserToGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("getFavorites")) {
 				wsClient.fetchAndPrintBBArray("TeamingServiceV1", "profile_getFavorites", new Object[] {null});
+			} else if(args[0].equals("getFollowedPlaces")) {
+				wsClient.fetchAndPrintBBArray("TeamingServiceV1", "profile_getFollowedPlaces", new Object[] {null, Long.parseLong(args[1]), null, null});
 			} else if(args[0].equals("getFolderTitle")) {
 				wsClient.fetchAndPrintString("TeamingServiceV1", "folder_getFolderTitle", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("addZone")) {
@@ -338,6 +340,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("addUserToGroup <user id> <group id>");
 		System.out.println("getFavorites");
+		System.out.println("getFollowedPlaces <user id>");
 		System.out.println("-- BEGIN: The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getFolderTitle <folder id>");
 		System.out.println("-- END:");
