@@ -29,6 +29,7 @@
 		<!-- Use EHCache as second-level cache in a single server environment -->
 		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
 		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
+		<property name="hibernate.memcached.cacheTimeSeconds">3600</property>
  		<property name="hibernate.cache.use_query_cache">true</property>
  		<property name="hibernate.cache.use_second_level_cache">true</property>
  		<property name="hibernate.cache.use_minimal_puts">true</property>
