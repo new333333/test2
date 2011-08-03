@@ -50,7 +50,7 @@
 	</extensionConfiguration>
 	<licenseConfiguration/>
 	<workflowConfiguration>
-		<property name="timeout.seconds">300</property>
+		<property name="timeout.seconds">60</property>
 	</workflowConfiguration>
 	<!-- You can specify zone-specific settings by creating a separate nested element 
 	     with the name "zone" as shown here. This example illustrates a set of configuration 

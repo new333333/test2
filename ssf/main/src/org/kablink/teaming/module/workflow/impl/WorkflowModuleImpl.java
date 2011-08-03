@@ -92,6 +92,7 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -735,11 +736,13 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     	JbpmContext jContext = WorkflowFactory.getContext();
    		HashSet<Long>timers = new HashSet();
    	   	try {
+    		SimpleProfiler.start("findTimers");
     		SchedulerSession schedulerSession = jContext.getSchedulerSession();
     	      
     		logger.debug("checking for timers");
     		//collect timer info and close context,
     		//otherwise something messes up with closing the iterator.
+    		//timers returned from "findTimersByDueDate" are sorted by due date, so we can stop the iteration early
     		Iterator iter = schedulerSession.findTimersByDueDate(SPropsUtil.getInt("workflow.timer.max.result.count", 10000));
     		boolean isDueDateInPast=true; 
     		while( (iter.hasNext()) && (isDueDateInPast)) {
@@ -759,6 +762,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
    	      	}
     	} finally {
     		jContext.close();
+    		SimpleProfiler.stop("findTimers");
     	}
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		for (Long timerId:timers) {
