@@ -452,11 +452,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			}
 		}
 		
-		BinderBrief[] ret = null;
-		if(binders.size() > 0) {
-			ret = new BinderBrief[binders.size()];
-			binders.toArray(ret);
-		}
+		BinderBrief[] ret = new BinderBrief[binders.size()];
+		binders.toArray(ret);
 		return ret;
 	}
 
@@ -509,11 +506,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 				}
 			}
 		}
-		BinderBrief[] ret = null;
-		if(binders.size() > 0) {
-			ret = new BinderBrief[binders.size()];
-			binders.toArray(ret);
-		}
+		BinderBrief[] ret = new BinderBrief[binders.size()];
+		binders.toArray(ret);
 		return ret;
 	}
 
