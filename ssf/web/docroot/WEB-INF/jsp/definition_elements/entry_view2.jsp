@@ -56,14 +56,12 @@
 	    </c:otherwise>
 	  </c:choose>
 	</td>
-	<c:if test="${ss_parentFolderViewStyle != 'wiki'}">
 	  <td valign="top" style="white-space: nowrap">
-	  	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
-	      alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+	  	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img style="vertical-align:middle;" 
+	  	  border="0" alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
 	      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" /></a>&nbsp;&nbsp;
 	    <ssf:showHelp className="ss_actions_bar13_pane_none" guideName="user" pageId="entry" />
 	  </td>
-	</c:if>
 	</tr>
 	</table>
 	<table cellspacing="0" cellpadding="0" width="100%">
