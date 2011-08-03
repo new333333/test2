@@ -117,6 +117,7 @@ import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.GetterUtil;
+import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
@@ -371,9 +372,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	doc.getRootElement().addAttribute("name", def.getName());
    		Element newPropertiesEle = (Element)doc.getRootElement().selectSingleNode("./properties/property[@name='name']");
    		if (newPropertiesEle != null) newPropertiesEle.addAttribute("value", def.getName());
-   		doc.getRootElement().addAttribute("caption", def.getTitle());
+   		doc.getRootElement().addAttribute("caption", Html.replaceSpecialChars(def.getTitle()));
    		newPropertiesEle = (Element)doc.getRootElement().selectSingleNode("./properties/property[@name='caption']");
-   		if (newPropertiesEle != null) newPropertiesEle.addAttribute("value", def.getTitle());
+   		if (newPropertiesEle != null) newPropertiesEle.addAttribute("value", Html.replaceSpecialChars(def.getTitle()));
 
     	//Write out the new definition file
     	def.setDefinition(doc);
@@ -669,7 +670,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			if (inputData.exists("propertyId_caption")) {
 				String definitionCaption = inputData.getSingleValue("propertyId_caption");
-				if (Validator.isNotNull(definitionCaption)) def.setTitle(definitionCaption);
+				if (Validator.isNotNull(definitionCaption)) {
+					def.setTitle(Html.replaceSpecialChars(definitionCaption));
+				}
 			}
 
 			String type = String.valueOf(def.getType());
@@ -913,7 +916,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Document newTree = DocumentHelper.createDocument();
 		Element ntRoot = newTree.addElement("definition");
 		ntRoot.addAttribute("name", name);
-		ntRoot.addAttribute("caption", title);
+		ntRoot.addAttribute("caption", Html.replaceSpecialChars(title));
 		ntRoot.addAttribute("type", String.valueOf(type));
 		int id = 1;
 		id = populateNewDefinitionTree(definition, ntRoot, this.configRoot, id, true);
@@ -1122,7 +1125,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						//just copy name and value
 						newPropertyEle.addAttribute("name", attrName);
 						if (type.equals("text") || type.equals("remoteApp") || type.equals("subProcess")) {
-							newPropertyEle.addAttribute("value", value);
+							newPropertyEle.addAttribute("value", Html.replaceSpecialChars(value));
 						} else if (type.equals("textarea")) {
 							newPropertyEle.setText(value);
 						} else if (type.equals("integer")) {
@@ -1161,7 +1164,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							for (int j=0; j<workflowStateNames.length; ++j) {
 								if (Validator.isNull(workflowStateNames[j])) continue;
 								Element workflowCondition = newPropertyEle.addElement("workflowState");
-								workflowCondition.addAttribute("name", workflowStateNames[j].trim());
+								workflowCondition.addAttribute("name", Html.replaceSpecialChars(workflowStateNames[j].trim()));
 							}
 						}
 					}
@@ -1192,7 +1195,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							String[] conditionValues = (String[])inputData.getValues("conditionElementValue");
 							for (int j = 0; j < conditionValues.length; j++) {
 								String conditionValue = conditionValues[j];
-								workflowCondition.addElement("value").setText(conditionValue);
+								workflowCondition.addElement("value").setText(Html.replaceSpecialChars(conditionValue));
 							}
 						}
 					} else if (inputData.exists("conditionDefinitionId") && 
@@ -1221,7 +1224,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								String[] conditionValues = (String[])inputData.getValues("previous_conditionElementValue");
 								for (int j = 0; j < conditionValues.length; j++) {
 									String conditionValue = conditionValues[j];
-									workflowCondition.addElement("value").setText(conditionValue);
+									workflowCondition.addElement("value").setText(Html.replaceSpecialChars(conditionValue));
 								}
 							}
 						}
@@ -1253,7 +1256,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							String[] conditionValues = (String[])inputData.getValues("conditionElementValue");
 							for (int j = 0; j < conditionValues.length; j++) {
 								String conditionValue = conditionValues[j];
-								workflowSetEntryDataValue.addElement("value").setText(conditionValue);
+								workflowSetEntryDataValue.addElement("value").setText(Html.replaceSpecialChars(conditionValue));
 							}
 						}
 					} else if (inputData.exists("conditionDefinitionId") && 
@@ -1282,7 +1285,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								String[] conditionValues = (String[])inputData.getValues("previous_conditionElementValue");
 								for (int j = 0; j < conditionValues.length; j++) {
 									String conditionValue = conditionValues[j];
-									workflowSetEntryDataValue.addElement("value").setText(conditionValue);
+									workflowSetEntryDataValue.addElement("value").setText(Html.replaceSpecialChars(conditionValue));
 								}
 							}
 						}
@@ -1331,7 +1334,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						String value = "false";
 						Element newPropertyEle = newPropertiesEle.addElement("property");
 						newPropertyEle.addAttribute("name", attrName);
-						newPropertyEle.addAttribute("value", value);
+						newPropertyEle.addAttribute("value", Html.replaceSpecialChars(value));
 					}
 				}
 			}
@@ -2769,7 +2772,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					itemData.put("name", nameValue);
 
 					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");
-					if (Validator.isNull(captionValue)) captionValue = nameValue;
+					if (Validator.isNull(captionValue)) captionValue = Html.replaceSpecialChars(nameValue);
 					itemData.put("caption", NLT.getDef(captionValue).replaceAll("&", "&amp;"));
 
 					//We have the element name, see if it has option values
@@ -2786,7 +2789,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
 							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
 							if (Validator.isNotNull(selectionNameValue)) {
-								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
+								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = Html.replaceSpecialChars(selectionNameValue);}
 								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue).replaceAll("&", "&amp;"));
 							}
 						}
@@ -2803,7 +2806,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
 							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
 							if (Validator.isNotNull(selectionNameValue)) {
-								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
+								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = Html.replaceSpecialChars(selectionNameValue);}
 								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue).replaceAll("&", "&amp;"));
 							}
 						}
@@ -2858,7 +2861,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (Validator.isNull(nameValue)) nameValue = itemName;
 
 				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");
-				if (Validator.isNull(captionValue)) captionValue = nameValue;
+				if (Validator.isNull(captionValue)) captionValue = Html.replaceSpecialChars(nameValue);
 				itemData.put("caption", NLT.getDef(captionValue).replaceAll("&", "&amp;"));
 
 				//Add this state to the results
