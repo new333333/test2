@@ -138,7 +138,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getFavorites")) {
 				wsClient.fetchAndPrintBBArray("TeamingServiceV1", "profile_getFavorites", new Object[] {null});
 			} else if(args[0].equals("getFollowedPlaces")) {
-				wsClient.fetchAndPrintBBArray("TeamingServiceV1", "profile_getFollowedPlaces", new Object[] {null, Long.parseLong(args[1]), null, null});
+				wsClient.fetchAndPrintBBArray("TeamingServiceV1", "profile_getFollowedPlaces", new Object[] {null, stringToLongOrNull(args[1]), split(args[2]), stringToBooleanOrNull(args[3])});
 			} else if(args[0].equals("getFolderTitle")) {
 				wsClient.fetchAndPrintString("TeamingServiceV1", "folder_getFolderTitle", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("addZone")) {
@@ -235,7 +235,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getFolders")) {
 				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("getAllFoldersOfMatchingFamily")) {
-				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getAllFoldersOfMatchingFamily", new Object[] {null, Long.parseLong(args[1]), split(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])});
+				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getAllFoldersOfMatchingFamily", new Object[] {null, splitLong(args[1]), split(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])});
 			} else if(args[0].equals("getTrashEntries")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTrashEntries", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("preDeleteBinder")) {
@@ -340,7 +340,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("addUserToGroup <user id> <group id>");
 		System.out.println("getFavorites");
-		System.out.println("getFollowedPlaces <user id>");
+		System.out.println("getFollowedPlaces <user id> \"family1, family2,...\" <is library>");
 		System.out.println("-- BEGIN: The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getFolderTitle <folder id>");
 		System.out.println("-- END:");
@@ -362,7 +362,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("synchronize <mirrored folder id>");
 		System.out.println("getFolders <binder id> <first> <max>");
-		System.out.println("getAllFoldersOfMatchingFamily <starting binder id> \"family1, family2,....\" <first> <max>");
+		System.out.println("getAllFoldersOfMatchingFamily \"starting-binder-id1, starting-binder-id2,...\" \"family1, family2,...\" <first> <max>");
 		System.out.println("preDeleteBinder <binder id>");
 		System.out.println("restoreBinder <binder id>");
 		System.out.println("preDeleteEntry <entry id>");
@@ -392,10 +392,4 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		// deleteZoneUnderPortal fake-bestbuy
 	}
 	
-	private static String[] split(String s) {
-		String[] ss = s.split(",");
-		if(ss.length == 1 && ss[0].length() == 0)
-			ss = new String[0];
-		return ss;
-	}
 }
