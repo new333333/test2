@@ -707,5 +707,42 @@ public abstract class WSClientBase {
 	Object fetch(String serviceName, String operation, Object[] args, String filename) throws Exception {
 		return invokeWithCall(serviceName, operation, args, ((filename != null)? new File(filename) : null), null);
 	}
+
+	protected static String[] split(String s) {
+		String[] ss = s.split(",");
+		if(ss.length == 1 && ss[0].length() == 0)
+			ss = new String[0];
+		return ss;
+	}
 	
+	protected static long[] splitLong(String s) {
+		String[] ss = split(s);
+		long[] l = new long[ss.length];
+		for(int i = 0; i < ss.length; i++)
+			l[i] = Long.valueOf(ss[i]).longValue();
+		return l;
+	}
+
+	protected static Long stringToLongOrNull(String str) {
+		try {
+			return Long.valueOf(str);
+		}
+		catch(NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	protected static Boolean stringToBooleanOrNull(String str) {
+		try {
+			if(str.equalsIgnoreCase("true"))
+				return Boolean.TRUE;
+			else if(str.equalsIgnoreCase("false"))
+				return Boolean.FALSE;
+			else
+				return null;
+		}
+		catch(NumberFormatException e) {
+			return null;
+		}
+	}
 }
