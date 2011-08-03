@@ -401,4 +401,19 @@ public class Html {
 		
 		return summary;
 	}
+	
+	//Routine to quote all special characters in a string ("<>&)
+	public static String replaceSpecialChars( String s ) {
+		s = s.replaceAll( "&quot;", "\"" );
+		s = s.replaceAll( "&lt;", "<" );
+		s = s.replaceAll( "&gt;", ">" );
+		s = s.replaceAll( "&amp;", "&" );
+		
+		s = s.replaceAll( "&", "&amp;" );
+		s = s.replaceAll( "\"", "&quot;" );
+		s = s.replaceAll( "<", "&lt;" );
+		s = s.replaceAll( ">", "&gt;" );
+		return s;
+	}
+
 }
