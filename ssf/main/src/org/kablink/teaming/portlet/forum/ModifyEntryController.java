@@ -179,8 +179,8 @@ public class ModifyEntryController extends SAbstractController {
 					if (TaskHelper.isTaskFolderType(folder)) {
 						// ...mark it so that the task listing knows
 						// ...something changed.
-						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, ObjectKeys.BINDER_PROPERTY_TASK_MODIFIED);
-						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     String.valueOf(entryId));
+						getProfileModule().setUserProperty(user.getId(), folderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, ObjectKeys.BINDER_PROPERTY_TASK_MODIFIED);
+						getProfileModule().setUserProperty(user.getId(), folderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     String.valueOf(entryId));
 					}
 				}
 				catch (Exception ex) {}
