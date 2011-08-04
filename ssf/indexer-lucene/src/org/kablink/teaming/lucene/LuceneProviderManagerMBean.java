@@ -53,4 +53,6 @@ public interface LuceneProviderManagerMBean {
 	public String getIndexRootDirPath();
 	
 	public boolean getCommitCheckForWorkInCallingThread();
+
+	public void setCommitCheckForWorkInCallingThread(boolean commitCheckForWorkInCallingThread);
 }
