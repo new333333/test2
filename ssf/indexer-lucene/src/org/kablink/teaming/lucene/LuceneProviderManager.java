@@ -72,6 +72,7 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 	private static final String SLASH = "/";
 
 	private String indexRootDirPath;
+	private String mbeanNamePrefix;
 	private String mbeanObjectName;
 	
     private volatile int commitNumberOps;
@@ -104,8 +105,12 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		return indexRootDirPath;
 	}
 	
-	public void setMbeanObjectName(String mbeanObjectName) {
-		this.mbeanObjectName = mbeanObjectName;
+	public void setServerType(String serverType) {
+		
+	}
+	public void setMbeanNamePrefix(String mbeanNamePrefix) {
+		this.mbeanNamePrefix = mbeanNamePrefix;
+		this.mbeanObjectName = mbeanNamePrefix + "name=luceneProviderManager";
 	}
 	
 	public void initialize() throws LuceneException {
@@ -204,6 +209,16 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 	private LuceneProvider createProvider(String indexName) throws LuceneException {
 		LuceneProvider provider = new LuceneProvider(indexName, getIndexDirPath(indexName), this);
 		provider.initialize();
+		
+		String mbeanName = mbeanNamePrefix + "name:luceneProvider-" + indexName;
+		try {
+			MBeanUtil.register(provider, mbeanName);
+			if(logger.isDebugEnabled())
+				logger.debug("MBean with name " + mbeanName + " is registered");
+		} catch (Exception e) {
+			logger.warn("Error registering MBean with name " + mbeanName, e);
+		}
+
 		return provider;
 	}
 	
