@@ -4056,7 +4056,9 @@
 	<item name="readAccess" caption="__readAccess" category="accessControlsLayout" 
 		  multipleAllowedInParent="false">
 		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" >
+			  <help>ihelp.designers.readAccess</help>
+			</property>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" /> 
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
