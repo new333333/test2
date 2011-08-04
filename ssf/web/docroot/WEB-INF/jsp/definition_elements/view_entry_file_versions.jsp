@@ -97,7 +97,8 @@ function ss_selectFileVersions(formName, cbObj) {
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <tr class="ss_tab_table_columnhead">
   <th>
-    <input type="checkbox" onClick="ss_selectFileVersions('ss_deleteFilesForm', this);"/>
+    <input type="checkbox" onClick="ss_selectFileVersions('ss_deleteFilesForm', this);"
+    title="<ssf:nlt tag='file.command.deleteVersionsSelectAll'/>" />
   </th>
   <th><ssf:nlt tag="file.name"/></th>
   <th><ssf:nlt tag="entry.Version"/></th>
