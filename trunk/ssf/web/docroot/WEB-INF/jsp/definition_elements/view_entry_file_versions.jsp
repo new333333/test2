@@ -60,7 +60,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <script type="text/javascript">
 var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersions.confirm'/>\n<ssf:nlt tag='file.deleteConfirm2'/>";
 
-function ss_selectFileVersions(formName, isToBeSet) {
+function ss_selectFileVersions(formName, cbObj) {
+	var isToBeSet = cbObj.checked;
 	var formObj = document.forms[formName];
     for (i = 0; i < formObj.elements.length; i++) {
         if (formObj.elements[i].name.indexOf("delete_version_") == 0) {
@@ -87,16 +88,6 @@ function ss_selectFileVersions(formName, isToBeSet) {
 	      <span><ssf:nlt tag="file.command.deleteVersions"/></span>
 	    </a>
 	  </li>
-	  <li style="float:right; padding:0px 20px 6px 0px;">
-	    <a href="javascript: ;" onClick="ss_selectFileVersions('ss_deleteFilesForm', false);return false;">
-	      <span><ssf:nlt tag="file.command.deleteVersionsSelectNone"/></span>
-	    </a>
-	  </li>
-	  <li style="float:right; padding:0px 20px 6px 0px;">
-	    <a href="javascript: ;" onClick="ss_selectFileVersions('ss_deleteFilesForm', true);return false;">
-	      <span><ssf:nlt tag="file.command.deleteVersionsSelectAll"/></span>
-	    </a>
-	  </li>
 	</ul>
 	<div class="ss_clear"></div>
 </div>
@@ -105,7 +96,9 @@ function ss_selectFileVersions(formName, isToBeSet) {
 <tbody>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <tr class="ss_tab_table_columnhead">
-  <th>&nbsp;</th>
+  <th>
+    <input type="checkbox" onClick="ss_selectFileVersions('ss_deleteFilesForm', this);"/>
+  </th>
   <th><ssf:nlt tag="file.name"/></th>
   <th><ssf:nlt tag="entry.Version"/></th>
   <th><ssf:nlt tag="file.status"/></th>
