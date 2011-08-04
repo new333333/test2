@@ -5,6 +5,7 @@
 <hibernate-configuration>
 	<session-factory name="ssf">
 		
+		<!-- +++++++++++++++++++++++++++++++++ General properties ++++++++++++++++++++++++++++++++ -->
 		<!-- Set the JNDI location of the SiteScape datasource. -->
 		<property name="hibernate.connection.datasource">jdbc/SiteScapePool</property>
 		<!-- Use the SIteScape connection provider to lookup JNDI datasource
@@ -25,19 +26,28 @@
 		<property name="hibernate.jdbc.batch_size">0</property>
 		<property name="hibernate.jdbc.use_scrollable_resultset">true</property>
 		<property name="hibernate.bytecode.use_reflection_optimizer">true</property>
-		<!-- Cache properties -->
-		<!-- Use EHCache as second-level cache in a single server environment -->
+		
+		<!-- +++++++++++++++++++++++++++++++++ Cache properties +++++++++++++++++++++++++++++++++++ -->
+		<!-- Use EhCache as second-level cache in a single server environment -->
 		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
+		<!-- Ehcache configuration file --> 
 		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
+		<!-- memcached cache timeout -->
 		<property name="hibernate.memcached.cacheTimeSeconds">3600</property>
+		<!-- Enable query cache -->
  		<property name="hibernate.cache.use_query_cache">true</property>
+ 		<!-- Enable second-level cache -->
  		<property name="hibernate.cache.use_second_level_cache">true</property>
  		<property name="hibernate.cache.use_minimal_puts">true</property>
  		<property name="hibernate.cache.use_structured_entries">false</property>
+ 		
+ 		<!-- +++++++++++++++++++++++++++++++ Logging & Statistics +++++++++++++++++++++++++++++++ -->
  		<!-- Do not set the following property to true on a production system since it significantly affects performance -->
 		<property name="hibernate.show_sql">false</property>
 		<property name="hibernate.generate_statistics">false</property>
-		<!-- Sitescape Mappings -->
+		
+		<!-- ++++++++++++++++++++++++++++++++++ Mapping files +++++++++++++++++++++++++++++++++++ -->
+		<!-- sitescape mappings -->
 		<mapping resource="org/kablink/teaming/security/accesstoken/impl/TokenInfo.hbm.xml"/>
 		<mapping resource="org/kablink/teaming/security/function/Function.hbm.xml"/>
 		<mapping resource="org/kablink/teaming/security/function/FunctionCondition.hbm.xml"/>
@@ -78,11 +88,13 @@
 	    <mapping resource="org/kablink/teaming/domain/SchemaInfo.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/EmailLog.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/BinderQuota.hbm.xml"/>
+	    
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
+	    
 	    <!-- hql queries and type defs -->
    		<mapping resource="org/jbpm/db/hibernate.queries.hbm.xml"/>
-	 
+   		
 	    <!-- graph.def mapping files -->
 	    <mapping resource="org/jbpm/graph/def/ProcessDefinition.hbm.xml"/>
 	    <mapping resource="org/jbpm/graph/def/Node.hbm.xml"/>
@@ -131,6 +143,7 @@
 	    <mapping resource="org/jbpm/graph/exe/ProcessInstance.hbm.xml"/>
 	    <mapping resource="org/jbpm/graph/exe/Token.hbm.xml"/>
 	    <mapping resource="org/jbpm/graph/exe/RuntimeAction.hbm.xml"/>
+	    
 	    <!-- module.exe mapping files -->
 	    <mapping resource="org/jbpm/module/exe/ModuleInstance.hbm.xml"/>
 	        
@@ -162,7 +175,8 @@
 	    <mapping resource="org/jbpm/taskmgmt/exe/SwimlaneInstance.hbm.xml"/>
 	
 	    <!-- scheduler.exe mapping files -->
-	    <mapping resource="org/jbpm/scheduler/exe/Timer.hbm.xml"/>		    
+	    <mapping resource="org/jbpm/scheduler/exe/Timer.hbm.xml"/>	
+	    	    
 		<!-- logging support that we don't use -->
 	    <mapping resource="org/jbpm/logging/log/ProcessLog.hbm.xml"/>
 	    <mapping resource="org/jbpm/logging/log/MessageLog.hbm.xml"/>
@@ -194,5 +208,61 @@
 	    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneLog.hbm.xml"/>
 	    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneCreateLog.hbm.xml"/>
 	    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneAssignLog.hbm.xml"/> 
+	    
+		<!-- +++++++++++++++++++++++++++++++++ Cache mappings +++++++++++++++++++++++++++++++++++ -->
+ 		<class-cache class="org.kablink.teaming.domain.Attachment" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Binder" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.BinderQuota" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.CustomAttribute" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Dashboard" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Definition" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.EmailAddress" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Event" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ExtensionInfo" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.FolderEntry" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.IndexNode" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.LdapConnectionConfig" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Membership" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.PostingDef" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Principal" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Subscription" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Tag" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.UserProperties" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.WorkflowResponse" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.WorkflowState" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ZoneConfig" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ZoneInfo" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.accesstoken.impl.TokenInfo" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.Function" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.Condition" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.WorkAreaFunctionMembership" usage="read-write"/>
+ 		
+ 		<collection-cache collection="org.kablink.teaming.domain.FileAttachment.fileVersions" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.binders" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.customAttributes" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.workflowAssociations" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.attachments" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.events" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.definitions" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.CustomAttribute.values" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.customAttributes" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.attachments" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.events" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.replies" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.workflowStates" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.workflowResponses" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Principal.customAttributes" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Principal.attachments" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Principal.events" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Principal.emailAddresses" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.UserPrincipal.memberOf" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Group.members" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.ApplicationPrincipal.memberOf" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.ApplicationGroup.members" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.Function.operationNames" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.Function.conditionalClauses" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.WorkAreaFunctionMembership.memberIds" usage="read-write"/>
+ 		
 	</session-factory>
 </hibernate-configuration>

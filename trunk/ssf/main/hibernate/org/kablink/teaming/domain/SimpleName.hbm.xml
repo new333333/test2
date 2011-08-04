@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
     <class dynamic-update="true" table="SS_SimpleName" lazy="false" name="org.kablink.teaming.domain.SimpleName">
-    	<cache usage="read-write"/>
+    	<!--<cache usage="read-write"/>-->
 	    <composite-id name="id" class="org.kablink.teaming.domain.SimpleName$SimpleNamePK">
 	      <key-property name="zoneId"/>
 	      <key-property name="name" length="128"/>

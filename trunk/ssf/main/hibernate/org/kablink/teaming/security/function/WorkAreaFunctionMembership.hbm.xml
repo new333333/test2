@@ -3,13 +3,13 @@
 
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" lazy="false" table="SS_WorkAreaFunctionMemberships" name="org.kablink.teaming.security.function.WorkAreaFunctionMembership">
-    <cache usage="read-write"/>
+    <!--<cache usage="read-write"/>-->
     <id unsaved-value="null" name="id" type="long">
       <generator class="native"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" type="long"/>
     <set cascade="all" lazy="false" table="SS_WorkAreaFunctionMembers" name="memberIds">
-      <cache usage="read-write"/>
+      <!--<cache usage="read-write"/>-->
       <key column="workAreaFunctionMembershipId"/>
       <element not-null="true" type="long" column="memberId"/>
     </set>

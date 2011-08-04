@@ -3,7 +3,7 @@
 
 <hibernate-mapping>
   <class dynamic-update="true" table="SS_WorkflowStates" name="org.kablink.teaming.domain.WorkflowState">
-    <cache usage="read-write"/>
+    <!--<cache usage="read-write"/>-->
     <id name="tokenId">
       <generator class="assigned"/>
     </id>

@@ -12,7 +12,7 @@
         select-before-update="false"
         optimistic-lock="dirty"
     >
-        <cache usage="read-write" />
+        <!--<cache usage="read-write"/>-->
 
 	<composite-id>
 	<key-property name="userId" column="userId" type="java.lang.Long"/>
