@@ -135,10 +135,34 @@ function ss_getOperationStatus()
 	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 }
 
-function ss_submitIndexingForm( formName, callbackName ) {
+function ss_submitIndexingForm( indexing, formName, callbackName ) {
 	var formObj = document.forms[formName];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
+		// Is the form being submitted to do a re-index?
+		if (indexing) {
+			// Yes!  Has anything been selected to re-index?
+			var haveChecks = false;
+			var inputs = formObj.getElementsByTagName("input");
+			var c = ((null == inputs) ? 0 : inputs.length);
+			for (var i = 0; i < c; i += 1) {
+				var input = inputs[i];
+				if (input.type != "checkbox") {
+					continue;
+				}
+				if (input.checked) {
+					haveChecks = true;
+					break;
+				}
+			}			
+			if (!haveChecks) {
+				// No!  Tell the user and bail.
+				ss_stopSpinner();
+				alert("<ssf:escapeJavaScript><ssf:nlt tag="administration.configure.error.nochecks"/></ssf:escapeJavaScript>");
+				return false;			
+			}
+		}
+		
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
 		ss_submitFormViaAjax(formName, callbackName );
 		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
@@ -209,7 +233,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	method="post" 
 	name="${renderResponse.namespace}fm"
 	id="${renderResponse.namespace}fm"
-	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm', 'ss_indexingDone' );" >
+	onSubmit="return ss_submitIndexingForm( true, '${renderResponse.namespace}fm', 'ss_indexingDone' );" >
 <input type="hidden" name="operation" value="index"/>
 
 <div class="margintop3 ss_buttonBarRight">
@@ -270,7 +294,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	method="post" 
 	name="${renderResponse.namespace}fm2"
 	id="${renderResponse.namespace}fm2"
-	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm2', 'ss_optimizationDone' );" >
+	onSubmit="return ss_submitIndexingForm( false, '${renderResponse.namespace}fm2', 'ss_optimizationDone' );" >
 <input type="hidden" name="operation" value="optimize"/>
 <br>
 <br>
