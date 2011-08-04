@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" table="SS_ZoneConfig" name="org.kablink.teaming.domain.ZoneConfig">
-    <cache usage="read-write"/>
+    <!--<cache usage="read-write"/>-->
     <id unsaved-value="null" name="zoneId">
       <generator class="assigned"/>
 	</id>

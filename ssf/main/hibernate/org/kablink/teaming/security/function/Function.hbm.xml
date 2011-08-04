@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" lazy="false" table="SS_Functions" name="org.kablink.teaming.security.function.Function">
-    <cache usage="read-write"/>
+    <!--<cache usage="read-write"/>-->
     <id unsaved-value="null" name="id" type="long">
       <generator class="native"/>
     </id>
@@ -18,12 +18,12 @@
 		<property name="name" update="false" insert="false"/>
 	</properties>
     <set inverse="false" cascade="all" lazy="false" table="SS_FunctionOperations" name="operationNames">
-      <cache usage="read-write"/>
+      <!--<cache usage="read-write"/>-->
       <key column="functionId"/>
       <element not-null="true" type="string" column="operationName" length="128"/>
     </set>
     <bag inverse="false" access="field" cascade="all" lazy="false" table="SS_FunctionConditionMap" name="conditionalClauses">
-      <cache usage="read-write"/>
+      <!--<cache usage="read-write"/>-->
       <key column="functionId"/>
       <composite-element class="org.kablink.teaming.security.function.ConditionalClause">
         <property name="meetStr" column="meet" length="16"/>

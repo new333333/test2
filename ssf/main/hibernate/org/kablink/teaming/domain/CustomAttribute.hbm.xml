@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class discriminator-value="A" dynamic-update="true" lazy="false" table="SS_CustomAttributes" name="org.kablink.teaming.domain.CustomAttribute">
-    <cache usage="read-write"/>
+    <!--<cache usage="read-write"/>-->
     <id unsaved-value="null" name="id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>
@@ -45,7 +45,7 @@
     <property name="xmlValue" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
     <property name="booleanValue" />
     <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="values" order-by="position asc">
-      <cache usage="read-write"/>
+      <!--<cache usage="read-write"/>-->
       <key column="parent"/>
       <one-to-many class="org.kablink.teaming.domain.CustomAttributeListElement"/>
     </set>

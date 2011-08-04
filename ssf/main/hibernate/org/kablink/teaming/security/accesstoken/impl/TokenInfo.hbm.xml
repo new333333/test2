@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
     <class discriminator-value="N" dynamic-update="true" table="SS_TokenInfo" lazy="false" name="org.kablink.teaming.security.accesstoken.impl.TokenInfo">
-    	<cache usage="read-write"/>
+    	<!--<cache usage="read-write"/>-->
 	    <id unsaved-value="null" name="id">
 	      <column name="id" sql-type="char(32)"/>
 	      <generator class="uuid.hex"/>
