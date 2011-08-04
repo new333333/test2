@@ -447,7 +447,7 @@
 			<bean class="org.kablink.teaming.lucene.LuceneProviderManager" 
 				depends-on="sPropsUtil" init-method="initialize" destroy-method="close">
 				<property name="indexRootDirPath"><value>${data.luceneindex.root.dir}/lucene</value></property>
-				<property name="mbeanObjectName"><value>Vibe:type=Indexing,name=luceneProviderManager</value></property>
+				<property name="mbeanNamePrefix"><value>Vibe:type=Indexing,</value></property>
 			</bean>
 		</property>
 	</bean>

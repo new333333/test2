@@ -32,48 +32,7 @@
  */
 package org.kablink.teaming.lucene;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.kablink.util.Validator;
-
-public class IndexSupport {
-	
-	protected Log logger = LogFactory.getLog(getClass());
-	
-	protected String indexName;
-	
-	public IndexSupport(String indexName) {
-		if(Validator.isNull(indexName))
-			throw new IllegalArgumentException("Index name must be specified");
-		this.indexName = indexName;
-	}
-	
-	public String getIndexName() {
-		return indexName;
-	}
-	
-	protected void logError(String msg, Throwable t) {
-		logger.error("(" + indexName + ") " + msg, t);
-	}
-	
-	protected void logWarn(String msg) {
-		logger.warn("(" + indexName + ") " + msg);
-	}
-	
-	protected void logWarn(String msg, Throwable t) {
-		logger.warn("(" + indexName + ") " + msg, t);
-	}
-	
-	protected void logInfo(String msg) {
-		logger.info("(" + indexName + ") " + msg);
-	}
-	
-	protected void logDebug(String msg) {
-		logger.debug("(" + indexName + ") " + msg);
-	}
-	
-	protected void logTrace(String msg) {
-		logger.trace("(" + indexName + ") " + msg);
-	}
-	
+public interface LuceneProviderMBean {
+	public String getIndexName();
+	public String getIndexDirPath();
 }

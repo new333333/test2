@@ -70,7 +70,7 @@ import org.kablink.util.PropsUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
-public class LuceneProvider extends IndexSupport {
+public class LuceneProvider extends IndexSupport implements LuceneProviderMBean {
 	
 	private static final int UNSPECIFIED_INT = -1;
 	
@@ -147,6 +147,10 @@ public class LuceneProvider extends IndexSupport {
 		logDebug("Commit thread started");
 		
 		logInfo("Lucene provider initialized");
+	}
+	
+	public String getIndexDirPath() {
+		return this.indexDirPath;
 	}
 	
 	private Analyzer getDefaultAnalyzer() {
