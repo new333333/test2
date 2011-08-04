@@ -205,23 +205,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				
 			} else if (WebKeys.OPERATION_SAVE_FOLDER_COLUMNS.equals(operation)) {
 				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-				Map columns = new LinkedHashMap();
-				String[] columnNames = ListFolderHelper.folderColumns;
-				for (int i = 0; i < columnNames.length; i++) {
-					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
-				}
-				Iterator itFormData = formData.entrySet().iterator();
-				while (itFormData.hasNext()) {
-					Map.Entry me = (Map.Entry) itFormData.next();
-					if (me.getKey().toString().startsWith("customCol_", 0)) {
-						String colName = me.getKey().toString().substring(10, me.getKey().toString().length());
-						columns.put(colName, "on");
-					}
-				}
-				getBinderModule().setProperty(configId, ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
-					
-				//Reset the column positions to the default
-				getProfileModule().setUserProperty(null, configId, WebKeys.FOLDER_COLUMN_POSITIONS, "");
+				BinderHelper.saveFolderColumnSettings(this, request, response, configId);					
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			} else {
