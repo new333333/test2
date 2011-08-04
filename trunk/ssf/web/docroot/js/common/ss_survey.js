@@ -227,10 +227,12 @@ if (!window.ssSurvey) {
 					totalQC++;
 				}
 			}
+			var questionNum = 1;
 			for (var j=0; j<ss_orderArray.length; j++) {
 				var index = ss_orderArray[j];
 				if (ss_questionsArray[index].type && ss_questionsArray[index].type != 'undefined') {
-					dojo.byId(prefix + "questionHeaderLabel"+index).innerHTML = that.locale.questionHeader+" "+(j+1)+"/"+totalQC;
+					dojo.byId(prefix + "questionHeaderLabel"+index).innerHTML = that.locale.questionHeader+" "+(questionNum)+"/"+totalQC;
+					questionNum++;
 				}
 			}
 		}
