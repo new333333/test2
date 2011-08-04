@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,6 +58,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -4231,6 +4233,55 @@ public class BinderHelper {
 		}
 		
 		return entryId;
+	}
+	
+	public static void saveFolderColumnSettings(AllModulesInjected bs, ActionRequest request, 
+			ActionResponse response, Long binderId) {
+		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		Map formData = request.getParameterMap();
+		Map columns = new LinkedHashMap();
+		Map columnsText = new LinkedHashMap();
+		String columnOrder = PortletRequestUtils.getStringParameter(request, "columns__order", "");
+		String[] columnNames;
+		if (showTrash) {
+			columnNames = TrashHelper.trashColumns;
+		}
+		else {
+			columnNames = ListFolderHelper.folderColumns;
+		}
+		for (int i = 0; i < columnNames.length; i++) {
+			columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
+			columnsText.put(columnNames[i], PortletRequestUtils.getStringParameter(request, "ss_col_text_"+columnNames[i], null));
+		}
+		Iterator itFormData = formData.entrySet().iterator();
+		while (itFormData.hasNext()) {
+			Map.Entry me = (Map.Entry) itFormData.next();
+			if (me.getKey().toString().startsWith("customCol_", 0)) {
+				String colName = me.getKey().toString().substring(10, me.getKey().toString().length());
+				columns.put(colName, "on");
+				columnsText.put(colName, PortletRequestUtils.getStringParameter(request, "ss_col_text_"+colName, null));
+			}
+		}
+		
+		//See if this request was to set the folder default
+		if (formData.containsKey("setFolderDefaultColumns") || binder instanceof TemplateBinder) {
+			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
+				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
+				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
+			}
+		}
+		
+		Map values = new HashMap();
+		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
+		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
+		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
+		//Reset the column positions to the default
+	   	values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
+	   	bs.getProfileModule().setUserProperties(user.getId(), binderId, values);
+
 	}
 	
 	public static void buildWorkflowSupportBeans(AllModulesInjected bs, List entryList, Map model) {

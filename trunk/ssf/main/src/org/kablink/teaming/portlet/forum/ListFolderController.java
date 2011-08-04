@@ -132,47 +132,7 @@ public class ListFolderController extends  SAbstractController {
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-				Map columns = new LinkedHashMap();
-				Map columnsText = new LinkedHashMap();
-				String columnOrder = PortletRequestUtils.getStringParameter(request, "columns__order", "");
-				String[] columnNames;
-				if (showTrash) {
-					columnNames = TrashHelper.trashColumns;
-				}
-				else {
-					columnNames = ListFolderHelper.folderColumns;
-				}
-				for (int i = 0; i < columnNames.length; i++) {
-					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
-					columnsText.put(columnNames[i], PortletRequestUtils.getStringParameter(request, "ss_col_text_"+columnNames[i], null));
-				}
-				Iterator itFormData = formData.entrySet().iterator();
-				while (itFormData.hasNext()) {
-					Map.Entry me = (Map.Entry) itFormData.next();
-					if (me.getKey().toString().startsWith("customCol_", 0)) {
-						String colName = me.getKey().toString().substring(10, me.getKey().toString().length());
-						columns.put(colName, "on");
-						columnsText.put(colName, PortletRequestUtils.getStringParameter(request, "ss_col_text_"+colName, null));
-					}
-				}
-				
-				//See if this request was to set the folder default
-				if (formData.containsKey("setFolderDefaultColumns")) {
-					Binder binder = getBinderModule().getBinder(binderId);
-					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
-					}
-				}
-				
-				Map values = new HashMap();
-				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
-				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
-				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
-				//Reset the column positions to the default
-			   	values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
-				getProfileModule().setUserProperties(user.getId(), binderId, values);
+				BinderHelper.saveFolderColumnSettings(this, request, response, binderId);
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 			} else if (formData.containsKey("defaultBtn") && WebHelper.isMethodPost(request)) {
 				Map values = new HashMap();

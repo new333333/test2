@@ -86,10 +86,17 @@
   	</c:forEach>
 </c:forEach>
 
+<script type="text/javascript">
+var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
+		binderId="${ssBinder.id}"><ssf:param 
+		name="operation" value="save_folder_columns"/></ssf:url>";
+</script>
+
 <div class="ss_popup teamingDlgBox" style="width: 400px;">
    	<div class="teamingDlgBoxHeader"><ssf:nlt tag="misc.configureColumns"/></div>
 	<div class="ss_popup_body">
-	<form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);" id="saveColumnsForm" name="saveColumnsForm">
+	<form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);return true;" 
+	  id="saveColumnsForm" name="saveColumnsForm">
 	<div class="gray3" style="font-size: 12px !important; width: 270px;"><ssf:nlt tag="folder.selectColumns"/></div>
 	<table cellpadding="4" class="ss_table_rounded">
 	 <tbody>
