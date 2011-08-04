@@ -43,6 +43,7 @@
 <jsp:useBean id="ssCurrentFolderModeType" type="org.kablink.teaming.web.util.ListFolderHelper.ModeType" scope="request" />
 <jsp:useBean id="ss_searchTotalHits"      type="java.lang.Integer"                                      scope="request" />
 <jsp:useBean id="ssBinder"                type="org.kablink.teaming.domain.Binder"                      scope="request" />
+<jsp:useBean id="ssUserFolderPropertyObj" type="org.kablink.teaming.domain.UserProperties"              scope="request" />
 <%
 	// Is the GWT based subtasks feature enabled?
 	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", true);
@@ -54,11 +55,13 @@
 			 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", Integer.MAX_VALUE)));
 	}
 	
-	String taskChange = ((String) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGE));
+	String taskChange = ((String) ssUserFolderPropertyObj.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGE));
+//	String taskChange = ((String) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGE));
 	if (null == taskChange) taskChange = "";
 	boolean updateCalculatedDates = (0 < taskChange.length());
-	
-	String taskId = ((String) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_ID));
+
+	String taskId = ((String) ssUserFolderPropertyObj.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_ID));
+//	String taskId = ((String) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_ID));
 	if (null == taskId) taskId = "";
 %>
 
