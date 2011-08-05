@@ -1527,6 +1527,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//This is a workflow state. Make sure no entries are using that state
 					String state = DefinitionUtils.getPropertyValue(item, "name");
 					if (checkStateInUse(def, state)) throw new DefinitionInvalidException("definition.error.cannotModifyState", new Object[] {def.getId()});
+				} else if (itemType.equals("transitionOnElapsedTime") && 
+						"transitions".equals(item.getParent().attributeValue("name")) &&
+						"state".equals(item.getParent().getParent().attributeValue("name")) &&
+						"workflowProcess".equals(item.getParent().getParent().getParent().attributeValue("name"))) {
+					//This is a timer transition in a workflow state. Make sure no entries are using that state
+					String state = DefinitionUtils.getPropertyValue(item.getParent().getParent(), "name");
+					if (checkStateInUse(def, state)) throw new DefinitionInvalidException("definition.error.cannotModifyState", new Object[] {def.getId()});
 				}
 				if (itemType.equals("parallelThread") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
 					//This is a workflow state. Make sure no entries are using that state
