@@ -210,7 +210,7 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		LuceneProvider provider = new LuceneProvider(indexName, getIndexDirPath(indexName), this);
 		provider.initialize();
 		
-		String mbeanName = mbeanNamePrefix + "name:luceneProvider-" + indexName;
+		String mbeanName = mbeanNamePrefix + "name=luceneProvider-" + indexName;
 		try {
 			MBeanUtil.register(provider, mbeanName);
 			if(logger.isDebugEnabled())
