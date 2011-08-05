@@ -51,7 +51,7 @@ public class InvocationStatisticsInterceptor implements MethodInterceptor {
 		try {
 			// To prevent possible NPE, first copy the reference.
 			EventsStatistics es = eventsStatistics;
-			if(es != null)
+			if(es != null && es.isEnabled())
 				es.addEvent(getInvocationName(invocation), System.nanoTime()-startTime);
 		}
 		catch(Exception ignore) {}

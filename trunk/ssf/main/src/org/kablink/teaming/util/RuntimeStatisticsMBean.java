@@ -39,15 +39,7 @@ public interface RuntimeStatisticsMBean {
 	 */
 	public boolean isSimpleProfilerEnabled();
 	
-	/*
-	 * Enable simple profiler.
-	 */
-	public void enableSimpleProfiler();
-	
-	/*
-	 * Disable simple profiler.
-	 */
-	public void disableSimpleProfiler();
+	public void setSimpleProfilerEnabled(boolean simpleProfilerEnabled);
 	
 	/*
 	 * Clear simple profiler.
@@ -107,16 +99,8 @@ public interface RuntimeStatisticsMBean {
 	 */
 	public boolean isMethodInvocationStatisticsEnabled();
 	
-	/*
-	 * Enable method invocation statistics.
-	 */
-	public void enableMethodInvocationStatistics();
-	
-	/*
-	 * Disable method invocation statistics.
-	 */
-	public void disableMethodInvocationStatistics();
-	
+	public void setMethodInvocationStatisticsEnabled(boolean methodInvocationStatisticsEnabled);
+		
 	/*
 	 * Clear method invocation statistics.
 	 */

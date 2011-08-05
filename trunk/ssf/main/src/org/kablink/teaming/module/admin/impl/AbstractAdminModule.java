@@ -1514,13 +1514,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	public void enableSimpleProfiler() {
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
-		rs.enableSimpleProfiler();
+		rs.setSimpleProfilerEnabled(true);
 	}
 	
 	public void disableSimpleProfiler() {
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
-		rs.disableSimpleProfiler();
+		rs.setSimpleProfilerEnabled(false);
 	}
 
 }

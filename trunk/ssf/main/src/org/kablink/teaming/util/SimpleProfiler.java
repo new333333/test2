@@ -109,7 +109,6 @@ public class SimpleProfiler {
     
     public static void disable() {
     	enabled = false;
-    	clear();
     }
 
     public static void start(String eventName) {
@@ -141,7 +140,7 @@ public class SimpleProfiler {
     }
     
     public static void dumpToLog(Log logger) {
-    	if(enabled && logger.isInfoEnabled()) {
+    	if(logger.isInfoEnabled()) {
 			try {
 				logger.info("Simple Profiler" + Constants.NEWLINE + dumpAsString());
 			}
@@ -150,23 +149,18 @@ public class SimpleProfiler {
     }
     
     public static String dumpAsString() {
-    	if(enabled) {
-        	StringBuilder sb = new StringBuilder();
-    		try {
-    			int i = 0;
-	    		for(SimpleProfiler sp:profilers.values()) {
-	    			if(i > 0)
-	    				sb.append(Constants.NEWLINE).append(Constants.NEWLINE);
-	    			sb.append(sp.toString());
-	    			i++;
-	    		}
+    	StringBuilder sb = new StringBuilder();
+		try {
+			int i = 0;
+    		for(SimpleProfiler sp:profilers.values()) {
+    			if(i > 0)
+    				sb.append(Constants.NEWLINE).append(Constants.NEWLINE);
+    			sb.append(sp.toString());
+    			i++;
     		}
-    		catch(Exception ignore) {}
-        	return sb.toString();
-    	}
-    	else {
-    		return "";
-    	}
+		}
+		catch(Exception ignore) {}
+    	return sb.toString();
     }
     
     /*

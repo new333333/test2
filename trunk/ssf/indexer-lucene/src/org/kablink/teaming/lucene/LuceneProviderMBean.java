@@ -35,4 +35,9 @@ package org.kablink.teaming.lucene;
 public interface LuceneProviderMBean {
 	public String getIndexName();
 	public String getIndexDirPath();
+	public boolean isStatisticsEnabled();
+	public void setStatisticsEnabled(boolean statisticsEnabled);
+	public void clearStatistics();
+	public void dumpStatisticsToLog();
+	public String dumpStatisticsAsString();
 }
