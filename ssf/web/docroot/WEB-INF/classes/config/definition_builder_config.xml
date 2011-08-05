@@ -3453,6 +3453,26 @@
 			<property name="name" caption="__name" type="text"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
+			<property name="align1" caption="__col1align" type="selectbox" default="left">
+			  <option name="left" caption="__colalignLeft"/>
+			  <option name="center" caption="__colalignCenter"/>
+			  <option name="right" caption="__colalignRight"/>
+			</property>
+			<property name="align2" caption="__col2align" type="selectbox" default="left">
+			  <option name="left" caption="__colalignLeft"/>
+			  <option name="center" caption="__colalignCenter"/>
+			  <option name="right" caption="__colalignRight"/>
+			</property>
+			<property name="valign1" caption="__col1valign" type="selectbox" default="top">
+			  <option name="top" caption="__colvalignTop"/>
+			  <option name="middle" caption="__colvalignMiddle"/>
+			  <option name="bottom" caption="__colvalignBottom"/>
+			</property>
+			<property name="valign2" caption="__col2valign" type="selectbox" default="top">
+			  <option name="top" caption="__colvalignTop"/>
+			  <option name="middle" caption="__colvalignMiddle"/>
+			  <option name="bottom" caption="__colvalignBottom"/>
+			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -3528,6 +3548,36 @@
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 			<property name="width3" caption="__col3width" type="text"/>
+			<property name="align1" caption="__col1align" type="selectbox" default="left">
+			  <option name="left" caption="__colalignLeft"/>
+			  <option name="center" caption="__colalignCenter"/>
+			  <option name="right" caption="__colalignRight"/>
+			</property>
+			<property name="align2" caption="__col2align" type="selectbox" default="left">
+			  <option name="left" caption="__colalignLeft"/>
+			  <option name="center" caption="__colalignCenter"/>
+			  <option name="right" caption="__colalignRight"/>
+			</property>
+			<property name="align3" caption="__col3align" type="selectbox" default="left">
+			  <option name="left" caption="__colalignLeft"/>
+			  <option name="center" caption="__colalignCenter"/>
+			  <option name="right" caption="__colalignRight"/>
+			</property>
+			<property name="valign1" caption="__col1valign" type="selectbox" default="top">
+			  <option name="top" caption="__colvalignTop"/>
+			  <option name="middle" caption="__colvalignMiddle"/>
+			  <option name="v" caption="__colvalignBottom"/>
+			</property>
+			<property name="valign2" caption="__col2valign" type="selectbox" default="top">
+			  <option name="top" caption="__colvalignTop"/>
+			  <option name="middle" caption="__colvalignMiddle"/>
+			  <option name="bottom" caption="__colvalignBottom"/>
+			</property>
+			<property name="valign3" caption="__col3valign" type="selectbox" default="top">
+			  <option name="top" caption="__colvalignTop"/>
+			  <option name="middle" caption="__colvalignMiddle"/>
+			  <option name="bottom" caption="__colvalignBottom"/>
+			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />

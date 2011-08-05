@@ -717,8 +717,10 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
-						sb.append(propertyConfigCaption);
 						if (type.equals("selectbox")) {
+							sb.append("<table>\n<tbody>\n<tr>\n<td>\n");
+							sb.append(propertyConfigCaption);
+							sb.append("\n</td>\n<td>\n");
 							//See if multiple selections are allowed
 							String multipleText = "";
 							String sizeText = "";
@@ -727,6 +729,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
 							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
 						} else if (type.equals("radio")) {
+							sb.append(propertyConfigCaption);
 							sb.append("<table><tbody>");
 						}
 						//See if there are any built-in options
@@ -843,7 +846,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								//No options were output, show something to avoid having an empty select box
 								sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
 							}
-							sb.append("</select><br/><br/>\n");
+							sb.append("</select>\n</td>\n</tr>\n</tbody>\n</table>\n<br/>\n");
 						} else if (type.equals("radio")) {
 							sb.append("</tbody></table><br/>\n");
 						}

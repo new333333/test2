@@ -51,7 +51,11 @@
 				//Output the first <td>
 				Element tdItem1 = (Element) itItems.next();
 %>
-<td valign="top" <c:if test="${!empty property_width1}"> width="${property_width1}" </c:if> >
+<c:set var="align" value="left"/>
+<c:if test="${!empty propertyValues_align1[0]}"><c:set var="align" value="${propertyValues_align1[0]}"/></c:if>
+<c:set var="valign" value="top"/>
+<c:if test="${!empty propertyValues_valign1[0]}"><c:set var="valign" value="${propertyValues_valign1[0]}"/></c:if>
+<td align="${align}" valign="${valign}" <c:if test="${!empty property_width1}"> width="${property_width1}" </c:if> >
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem1 %>" 
@@ -64,7 +68,11 @@
 				if (itItems.hasNext()) {
 					Element tdItem2 = (Element) itItems.next();
 %>
-<td valign="top" <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >
+<c:set var="align" value="left"/>
+<c:if test="${!empty propertyValues_align2[0]}"><c:set var="align" value="${propertyValues_align2[0]}"/></c:if>
+<c:set var="valign" value="top"/>
+<c:if test="${!empty propertyValues_valign2[0]}"><c:set var="valign" value="${propertyValues_valign2[0]}"/></c:if>
+<td align="${align}" valign="${valign}" <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem2 %>" 
@@ -75,7 +83,11 @@
 <%
 				} else {
 %>
-<td valign="top" <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >&nbsp;</td>
+<c:set var="align" value="left"/>
+<c:if test="${!empty propertyValues_align2[0]}"><c:set var="align" value="${propertyValues_align2[0]}"/></c:if>
+<c:set var="valign" value="top"/>
+<c:if test="${!empty propertyValues_valign2[0]}"><c:set var="valign" value="${propertyValues_valign2[0]}"/></c:if>
+<td align="${align}" valign="${valign}" <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >&nbsp;</td>
 <%
 				}
 %>
