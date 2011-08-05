@@ -48,13 +48,11 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
-	private InvocationStatisticsInterceptor invocationStatisticsInterceptor;
-	
-	private volatile EventsStatistics eventsStatistics;
+	private EventsStatistics eventsStatistics = new EventsStatistics();
 	
 	public void setInvocationStatisticsInterceptor(
 			InvocationStatisticsInterceptor invocationStatisticsInterceptor) {
-		this.invocationStatisticsInterceptor = invocationStatisticsInterceptor;
+		invocationStatisticsInterceptor.setEventsStatistics(eventsStatistics);
 	}
 
 	/* (non-Javadoc)
@@ -65,11 +63,7 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		SimpleProfiler.clear();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.util.RuntimeHelperMBean#disableSimpleProfiler()
-	 */
-	@Override
-	public void disableSimpleProfiler() {
+	private void disableSimpleProfiler() {
 		SimpleProfiler.disable();
 	}
 
@@ -85,11 +79,7 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		return SimpleProfiler.dumpAsString();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.util.RuntimeHelperMBean#enableSimpleProfiler()
-	 */
-	@Override
-	public void enableSimpleProfiler() {
+	private void enableSimpleProfiler() {
 		SimpleProfiler.enable();
 	}
 
@@ -99,6 +89,14 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	@Override
 	public boolean isSimpleProfilerEnabled() {
 		return SimpleProfiler.isEnabled();
+	}
+
+	@Override
+	public void setSimpleProfilerEnabled(boolean simpleProfilerEnabled) {
+		if(simpleProfilerEnabled)
+			enableSimpleProfiler();
+		else
+			disableSimpleProfiler();
 	}
 
 	/* (non-Javadoc)
@@ -133,10 +131,10 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	public String dumpAllAsString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(propertiesAsString());
-		if(isSimpleProfilerEnabled())
-			sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSimpleProfilerAsString());
-		if(isMethodInvocationStatisticsEnabled())
-			sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
+		String s = dumpSimpleProfilerAsString();
+		if(s.length() > 0)
+			sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(s);
+		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
 		return sb.toString();
 	}
 	
@@ -183,32 +181,17 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		return sb.toString();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#isMethodInvocationStatisticsEnabled()
-	 */
 	@Override
 	public boolean isMethodInvocationStatisticsEnabled() {
-		return (eventsStatistics != null);
+		return eventsStatistics.isEnabled();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#enableMethodInvocationStatistics()
-	 */
 	@Override
-	public void enableMethodInvocationStatistics() {
-		if(eventsStatistics == null) {
-			eventsStatistics = new EventsStatistics();
-			invocationStatisticsInterceptor.setEventsStatistics(eventsStatistics);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#disableMethodInvocationStatistics()
-	 */
-	@Override
-	public void disableMethodInvocationStatistics() {
-		eventsStatistics = null;
-		invocationStatisticsInterceptor.setEventsStatistics(null);
+	public void setMethodInvocationStatisticsEnabled(boolean methodInvocationStatisticsEnabled) {
+		if(methodInvocationStatisticsEnabled)
+			eventsStatistics.enable();
+		else
+			eventsStatistics.disable();
 	}
 
 	/* (non-Javadoc)
@@ -216,10 +199,7 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public void clearMethodInvocationStatistics() {
-		if(eventsStatistics != null) {
-			eventsStatistics = new EventsStatistics();
-			invocationStatisticsInterceptor.setEventsStatistics(eventsStatistics);
-		}
+		eventsStatistics.clear();
 	}
 
 	/* (non-Javadoc)
@@ -227,9 +207,8 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public void dumpMethodInvocationStatisticsToLog() {
-		EventsStatistics es = eventsStatistics;
-		if(es != null && logger.isInfoEnabled())
-			logger.info("Method Invocation Statistics" + Constants.NEWLINE + es.asString());
+		if(logger.isInfoEnabled())
+			logger.info("Method Invocation Statistics" + Constants.NEWLINE + eventsStatistics.asString());
 	}
 
 	/* (non-Javadoc)
@@ -237,10 +216,6 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public String dumpMethodInvocationStatisticsAsString() {
-		EventsStatistics es = eventsStatistics;
-		if(es != null)
-			return "Method Invocation Statistics, " + es.asString();
-		else
-			return "";
+		return "Method Invocation Statistics, " + eventsStatistics.asString();
 	}
 }

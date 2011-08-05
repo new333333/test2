@@ -36,17 +36,40 @@ import java.util.TreeMap;
 
 public class EventsStatistics {
 
+	// protected by "this"
 	private TreeMap<String, EventStatistics> stats = new TreeMap<String, EventStatistics>();
 	
 	private long startTimeMillis; // The time this object is instantiated
+	
+	private volatile boolean enabled;
 
 	public EventsStatistics() {
+		startTimeMillis = System.currentTimeMillis();
+		enabled = false;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public void enable() {
+		enabled = true;
+	}
+	
+	public void disable() {
+		enabled = false;
+	}
+	
+	public synchronized void clear() {
+		stats.clear();
 		startTimeMillis = System.currentTimeMillis();
 	}
 	
 	public void addEvent(String eventName, long eventTimeNanos) {
-		EventStatistics es = getEventStatistics(eventName);
-		es.add(eventTimeNanos);
+		if(enabled) {
+			EventStatistics es = getEventStatistics(eventName);
+			es.add(eventTimeNanos);
+		}
 	}
 	
 	public synchronized String asString() {

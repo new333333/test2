@@ -38,15 +38,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -62,10 +59,10 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.kablink.teaming.lucene.ChineseAnalyzer;
-import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
+import org.kablink.util.EventsStatistics;
 import org.kablink.util.PropsUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -88,6 +85,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	
 	// access protected by "this"
 	private IndexingResource indexingResource;
+	
+	private EventsStatistics statistics;
 
 	public LuceneProvider(String indexName, String indexDirPath, LuceneProviderManager luceneProviderManager) throws LuceneException {
 		super(indexName);
@@ -97,6 +96,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		this.indexDirPath = indexDirPath;
 		
 		this.luceneProviderManager = luceneProviderManager;
+		
+		this.statistics = new EventsStatistics();
 		
 		logDebug("Lucene provider instantiated");
 	}
@@ -235,7 +236,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		
 		commitThread.someDocsProcessed();
 		
-		end(startTime, "addDocuments", docs.size());
+		end(startTime, "addDocuments()", docs.size());
 	}
 
 	public void deleteDocuments(Term term) throws LuceneException {
@@ -303,19 +304,25 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		getIndexingResource().getCommitStat().update(docsToAddOrDelete.size());
 		commitThread.someDocsProcessed();
 
-		end(startTime, "addDeleteDocuments", docsToAddOrDelete.size());
+		end(startTime, "addDeleteDocuments()", docsToAddOrDelete.size());
 	}
 
 	public void optimize() throws LuceneException {
+		long startTime = System.nanoTime();
 		getIndexingResource().optimize();
+		endStat(startTime, "optimize()");
 	}
 			
 	public void expungeDeletes() throws LuceneException {
+		long startTime = System.nanoTime();
 		getIndexingResource().expungeDeletes();
+		endStat(startTime, "expungeDeletes()");
 	}
 			
 	public void optimize(int maxNumSegments) throws LuceneException {
+		long startTime = System.nanoTime();
 		getIndexingResource().optimize(maxNumSegments);
+		endStat(startTime, "optimize(int)");
 	}
 			
 	private void closeIndexingResource() {
@@ -360,6 +367,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		// Open a new index writer overwriting the existing index
 		openIndexingResource(true);
 				
+		endStat(startTime, "clearIndex()");
 		logInfo("clearIndex completed. It took " + elapsedTimeInMs(startTime) + " milliseconds");
 	}
 
@@ -545,7 +553,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			resultTags.add(((TagObject)iter.next()).getTagName());
 		}
 		
-		end(startTime, "getTags", query, resultTags.size());
+		end(startTime, "getTags(Query,String,String,String,boolean)", query, resultTags.size());
 		
 		return resultTags;
 	}	
@@ -656,7 +664,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 		resultTags.addAll(results);
 
-		end(startTime, "getTagsWithFrequency", query, tagOrig, tag, resultTags.size());
+		end(startTime, "getTagsWithFrequency(Query,String,String,String,boolean)", query, tagOrig, tag, resultTags.size());
 
 		return resultTags;
 	}
@@ -759,7 +767,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		String[] retArray = new String[titles.size()];
 		retArray = titles.toArray(retArray);
 	    
-	    end(startTime, "getNormTitles", query, retArray.length);
+	    end(startTime, "getNormTitles(Query,String,String,int)", query, retArray.length);
 		
 		return retArray;
 
@@ -786,7 +794,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	public void commit() throws LuceneException {
+		long startTime = System.nanoTime();
 		getIndexingResource().commit();
+		endStat(startTime, "commit()");
 	}
 
 	public void close() {
@@ -811,22 +821,31 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			logError("Error closing directory", e);
 		}
 		
+		endStat(startTime, "close()");
 		logInfo("Closed. It took " + elapsedTimeInMs(startTime) + " milliseconds");
 	}
 	
+	private void endStat(long begin, String methodName) {
+		if(statistics.isEnabled())
+			statistics.addEvent(methodName, System.nanoTime()-begin);		
+	}
+	
 	private void end(long begin, String methodName) {
+		endStat(begin, methodName);
 		if(logger.isDebugEnabled()) {
 			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName);
 		}
 	}
 	
 	private void end(long begin, String methodName, int length) {
+		endStat(begin, methodName);
 		if(logger.isDebugEnabled()) {
 			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", input=" + length);
 		}
 	}
 	
 	private void end(long begin, String methodName, Query query, int length) {
+		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
 			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
 					", query=[" + ((query==null)? "" : query.toString()) + "]");			
@@ -837,6 +856,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private void end(long begin, String methodName, Query query, String tagBefore, String tagAfter, int length) {
+		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
 			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
 					", query=[" + ((query==null)? "" : query.toString()) + 
@@ -1084,6 +1104,50 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		SearcherManager getSearcherManager() {
 			return manager;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.lucene.LuceneProviderMBean#isStatisticsEnabled()
+	 */
+	@Override
+	public boolean isStatisticsEnabled() {
+		return statistics.isEnabled();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.lucene.LuceneProviderMBean#setStatisticsEnabled(boolean)
+	 */
+	@Override
+	public void setStatisticsEnabled(boolean statisticsEnabled) {
+		if(statisticsEnabled)
+			statistics.enable();
+		else
+			statistics.disable();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.lucene.LuceneProviderMBean#clearStatistics()
+	 */
+	@Override
+	public void clearStatistics() {
+		statistics.clear();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.lucene.LuceneProviderMBean#dumpStatisticsToLog()
+	 */
+	@Override
+	public void dumpStatisticsToLog() {
+		if(logger.isInfoEnabled())
+			logger.info("Indexing and Search Statistics (" + indexName + ")" + System.getProperty("line.separator") + statistics.asString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.lucene.LuceneProviderMBean#dumpStatisticsAsString()
+	 */
+	@Override
+	public String dumpStatisticsAsString() {
+		return "Indexing and Search Statistics (" + indexName +"), " + statistics.asString();
 	}
 
 }
