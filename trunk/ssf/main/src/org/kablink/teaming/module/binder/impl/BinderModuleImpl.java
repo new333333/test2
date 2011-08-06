@@ -2176,7 +2176,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * testHits.getTotalHits(); if (totalHits > maxBucketSize) { skipLength =
 	 * testHits.getTotalHits() / maxBucketSize; if (skipLength < maxBucketSize)
 	 * skipLength = maxBucketSize; } } if (totalHits > skipLength) results =
-	 * luceneSession.getNormTitles(soQuery, tuple1, tuple2, skipLength); if
+	 * luceneSession.getSortedTitles(soQuery, tuple1, tuple2, skipLength); if
 	 * (results == null || results.size() <= 1) { //We must be at the end of the
 	 * buckets; now get the real entries if ("".equals(tuple1) &&
 	 * "".equals(tuple2)) { singleBucketSO.setSortBy(fieldsFinal); soQueryFinal
@@ -2272,7 +2272,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.debug("Query is: " + searchObject.toString());
 				}
 				// no order here
-				results = luceneSession.getNormTitles(query, tuple1, tuple2,
+				results = luceneSession.getSortedTitles(query, null, tuple1, tuple2,
 						skipLength);
 			}
 			if (results == null || results.size() <= 1) {

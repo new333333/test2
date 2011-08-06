@@ -133,14 +133,14 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	// i.e. results[0] = {a, c}
 	//      results[1] = {d, g}
 	
-	public ArrayList getNormTitles(Query query, String start, String end, int skipsize)
+	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException {
-		SimpleProfiler.start("LocalLuceneReadSession.getNormTitles()");
+		SimpleProfiler.start("LocalLuceneReadSession.getSortedTitles()");
 		try {
-			return luceneProvider.getNormTitlesAsList(query, start, end, skipsize);
+			return luceneProvider.getSortedTitlesAsList(query, sortTitleFieldName, start, end, skipsize);
 		}
 		finally {
-			SimpleProfiler.stop("LocalLuceneReadSession.getNormTitles()");	
+			SimpleProfiler.stop("LocalLuceneReadSession.getSortedTitles()");	
 		}
 	}	
 

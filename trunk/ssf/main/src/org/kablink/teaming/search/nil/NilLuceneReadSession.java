@@ -42,7 +42,7 @@ import org.kablink.teaming.search.LuceneReadSession;
 
 public class NilLuceneReadSession implements LuceneReadSession {
 
-	public ArrayList getNormTitles(Query query, String start, String end,
+	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end,
 			int skipsize) throws LuceneException {
 		return new ArrayList();
 	}

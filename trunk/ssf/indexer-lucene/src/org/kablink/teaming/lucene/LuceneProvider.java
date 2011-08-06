@@ -673,6 +673,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * Get all the sort titles that this user can see, and return a skip list
 	 * 
 	 * @param query can be null for superuser
+	 * @param sortTitleFieldName
 	 * @param start
 	 * @param end
 	 * @return
@@ -683,7 +684,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	// i.e. results[0] = {a, c}
 	//      results[1] = {d, g}
 	
-	public String[] getNormTitles(Query query, String start, String end, int skipsize)
+	public String[] getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException {
 		long startTime = System.nanoTime();
 		
@@ -702,9 +703,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					userDocIds.set(doc);
 				}
 			});
-			String field = Constants.NORM_TITLE;
+			if(sortTitleFieldName == null)
+				sortTitleFieldName = Constants.NORM_TITLE; // default
 				TermEnum enumerator = indexSearcherHandle.getIndexSearcher().getIndexReader().terms(new Term(
-						field, start));
+						sortTitleFieldName, start));
 
 				TermDocs termDocs = indexSearcherHandle.getIndexSearcher().getIndexReader().termDocs();
 				if (enumerator.term() == null) {
@@ -715,7 +717,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					Term term = enumerator.term();
 					// stop when the field is no longer the field we're
 					// looking for, or, when the term is beyond the end term
-					if (term.field().compareTo(field) != 0)
+					if (term.field().compareTo(sortTitleFieldName) != 0)
 						break;
 					if ((!"".equalsIgnoreCase(end)) && (term.text().compareTo(end) > 0)) {
 						break; // no longer in '_tagField' field
@@ -767,15 +769,15 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		String[] retArray = new String[titles.size()];
 		retArray = titles.toArray(retArray);
 	    
-	    end(startTime, "getNormTitles(Query,String,String,int)", query, retArray.length);
+	    end(startTime, "getSortedTitles(Query,String,String,int)", query, retArray.length);
 		
 		return retArray;
 
 	}
 	
-	public ArrayList getNormTitlesAsList(Query query, String start, String end,
+	public ArrayList getSortedTitlesAsList(Query query, String sortTitleFieldName, String start, String end,
 			int skipsize) throws LuceneException {
-		String[] normResults = getNormTitles(query, start, end, skipsize);
+		String[] normResults = getSortedTitles(query, sortTitleFieldName, start, end, skipsize);
 		
 		ArrayList<ArrayList> resultTitles = new ArrayList<ArrayList>();
 		ArrayList titles =  new ArrayList<String>(Arrays.asList(normResults));
