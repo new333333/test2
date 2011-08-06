@@ -126,6 +126,8 @@ public class EntityIndexUtils {
                 	
         	        Field extendedTitleField = new Field(Constants.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.ANALYZED);
         	        doc.add(extendedTitleField);
+        	        Field binderSortTitleField = new Field(Constants.BINDER_SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	        doc.add(binderSortTitleField);
                 }
             }
     	}

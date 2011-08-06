@@ -149,6 +149,6 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getNormTitles(Query query, String start, String end, int skipsize)
+	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException;
 }
