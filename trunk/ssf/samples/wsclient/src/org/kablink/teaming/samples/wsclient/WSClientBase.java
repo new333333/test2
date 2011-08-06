@@ -437,6 +437,7 @@ public abstract class WSClientBase {
 			for(FolderEntryBrief feb:febs) {
 				System.out.println();
 				System.out.println("ID: " + feb.getId());
+				System.out.println("Modification date: " + feb.getModification().getDate().getTime().toString());
 				System.out.println("Definition ID: " + feb.getDefinitionId());
 				System.out.println("Doc Level: " + feb.getDocLevel());
 				System.out.println("Doc Number: " + feb.getDocNumber());
