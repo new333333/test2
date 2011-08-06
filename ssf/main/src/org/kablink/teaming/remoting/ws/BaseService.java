@@ -147,7 +147,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("binderId", (String) entry.get(Constants.BINDER_ID_FIELD));
 		entryElem.addAttribute("definitionId", (String) entry.get(Constants.COMMAND_DEFINITION_FIELD));
 		entryElem.addAttribute("title", (String) entry.get(Constants.TITLE_FIELD));
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		entryElem.addAttribute("creationDate", sdFormat.format((Date)entry.get(Constants.CREATION_DATE_FIELD)));
 		entryElem.addAttribute("creatorName", (String)entry.get(Constants.CREATOR_NAME_FIELD));
 		entryElem.addAttribute("creatorTitle", (String)entry.get(Constants.CREATOR_TITLE_FIELD));

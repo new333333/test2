@@ -133,6 +133,10 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				String s = readText(args[1]);
 				System.out.println("XML: " + s);
 				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_search", new Object[] {null, s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+			} else if(args[0].equals("searchFolderEntries")) {
+				String s = readText(args[1]);
+				System.out.println("XML: " + s);
+				wsClient.fetchAndPrintFEC("TeamingServiceV1", "search_getFolderEntries", new Object[] {null, s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("addUserToGroup")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_addUserToGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("getFavorites")) {
@@ -338,6 +342,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("uploadFileStaged  <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath>");
 		System.out.println("uploadCalendar <folder id> <xmlFilename> [<iCalFilename>]");
 		System.out.println("search <xmlFilename> <offset> <maxResults>");
+		System.out.println("searchFolderEntries <xmlFilename> <offset> <maxResults>");
 		System.out.println("addUserToGroup <user id> <group id>");
 		System.out.println("getFavorites");
 		System.out.println("getFollowedPlaces <user id> \"family1, family2,...\" <is library>");
