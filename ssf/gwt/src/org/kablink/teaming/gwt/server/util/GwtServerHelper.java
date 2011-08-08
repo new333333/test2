@@ -174,7 +174,6 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.util.PropertyNotFoundException;
-import org.kablink.util.search.Constants;
 
 
 /**
@@ -184,16 +183,6 @@ import org.kablink.util.search.Constants;
  */
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
-
-	// The following is used to control how workspace trees are
-	// sorted and displayed.  The value meanings are:
-	//    0 -> First Middle Last	(uses the Binder's plain  title)
-	//    1 -> Last, First Middle	(uses the Binder's search title)
-	// Any other value or undefined uses the default of 0.  Note that
-	// the traditional UI would equate to 1 for this.
-	private static       int     TREE_TITLE_FORMAT         = (-1);
-	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
-	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
 
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
@@ -746,7 +735,7 @@ public class GwtServerHelper {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
 		reply.setBinderInfo(getBinderInfo(binder));
-		reply.setBinderTitle(treeBinderTitle(binder));
+		reply.setBinderTitle(GwtUIHelper.getTreeBinderTitle(binder));
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
 		reply.setBinderPermalink(binderPermalink);
@@ -3991,30 +3980,6 @@ public class GwtServerHelper {
 		return results;
 	}
 
-	/*
-	 * Returns the field we use for sorting a workspace tree.
-	 */
-	@SuppressWarnings("unused")
-	private static String treeBinderSortField() {
-		String reply;
-		if (useSearchTitles())
-		     reply = Constants.NORM_TITLE_FIELD;
-		else reply = Constants.SORT_TITLE_FIELD;		
-		return reply;
-	}
-	
-	/*
-	 * Given a binder, returns the string to display for it in a
-	 * workspace tree.
-	 */
-	private static String treeBinderTitle(Binder binder) {
-		String reply;
-		if (useSearchTitles())
-		     reply = binder.getSearchTitle();
-		else reply = binder.getTitle();
-		return reply;
-	}
-	
 	/**
 	 * Update the tags for the given binder.
 	 */
@@ -4069,33 +4034,6 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 	
-	/*
-	 * Returns the bucket size to use when displaying binders in
-	 * buckets in the workspace trees.
-	 */
-	private static boolean useSearchTitles() {
-		// If we haven't read which format to display workspace tree
-		// titles in yet...
-		if ((-1) == TREE_TITLE_FORMAT) {
-			// ...read it now.
-			TREE_TITLE_FORMAT = SPropsUtil.getInt( 
-				TREE_TITLE_FORMAT_KEY,
-				TREE_TITLE_FORMAT_DEFAULT);
-
-			// If what we read is out of range, use the default.
-			switch (TREE_TITLE_FORMAT) {
-			case 0:
-			case 1:                                                  break;
-			default:  TREE_TITLE_FORMAT = TREE_TITLE_FORMAT_DEFAULT; break;
-			}
-		}
-		
-		// Return true if we should use search titles and false
-		// otherwise.
-		return (1 == TREE_TITLE_FORMAT);
-	}
-	
-
 	/**
 	 * Validate the list of TeamingEvents to see if the user has rights to perform the events
 	 */
