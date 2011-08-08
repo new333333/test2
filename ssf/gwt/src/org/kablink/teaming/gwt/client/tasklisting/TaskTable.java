@@ -104,8 +104,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
@@ -136,7 +134,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TaskTable extends Composite
-	implements ResizeHandler,
+	implements
 	// Event handlers implemented by this class.
 		TaskDeleteEvent.Handler,
 		TaskMoveDownEvent.Handler,
@@ -472,7 +470,6 @@ public class TaskTable extends Composite
 		private boolean		m_taskSelected;				//
 		private Anchor		m_taskUnseenAnchor;			//
 		private CheckBox	m_taskSelectorCB;			//
-		private FlowPanel	m_taskNamePanel;			//
 		private FlowPanel	m_taskOrderPanel;			//
 		private Image		m_taskNewTaskMenuImage;		//
 		private Image		m_taskPercentDoneImage;		//
@@ -483,7 +480,6 @@ public class TaskTable extends Composite
 		private int			m_taskDepth;				//
 		private int 		m_taskOrder = (-1);			//
 		private int 		m_taskRow;					//
-		private Label		m_taskNameAnchor;			//
 		private Label		m_taskOrderAnchor;			//
 		private TextBox		m_taskOrderTextBox;			//
 		private Widget      m_taskPercentDoneWidget;	//
@@ -515,7 +511,6 @@ public class TaskTable extends Composite
 		public boolean     getTaskSelected()          {return m_taskSelected;         }
 		public Anchor      getTaskUnseenAnchor()      {return m_taskUnseenAnchor;     }
 		public CheckBox    getTaskSelectorCB()        {return m_taskSelectorCB;       }
-		public FlowPanel   getTaskNamePanel()         {return m_taskNamePanel;        }
 		public FlowPanel   getTaskOrderPanel()        {return m_taskOrderPanel;       }
 		public Image       getTaskNewTaskMenuImage()  {return m_taskNewTaskMenuImage; }
 		public Image       getTaskPercentDoneImage()  {return m_taskPercentDoneImage; }
@@ -526,7 +521,6 @@ public class TaskTable extends Composite
 		public int         getTaskDepth()             {return m_taskDepth;            }
 		public int         getTaskOrder()             {return m_taskOrder;            }
 		public int         getTaskRow()               {return m_taskRow;              }
-		public Label       getTaskNameAnchor()        {return m_taskNameAnchor;       }
 		public Label       getTaskOrderAnchor()       {return m_taskOrderAnchor;      }
 		public TextBox     getTaskOrderTextBox()      {return m_taskOrderTextBox;     }
 		public Widget      getTaskPercentDoneWidget() {return m_taskPercentDoneWidget;}
@@ -534,7 +528,6 @@ public class TaskTable extends Composite
 		public void setTaskSelected(         boolean     taskSelected)          {m_taskSelected          = taskSelected;         }
 		public void setTaskUnseenAnchor(     Anchor      taskUnseenAnchor)      {m_taskUnseenAnchor      = taskUnseenAnchor;     }
 		public void setTaskSelectorCB(       CheckBox    taskSelectorCB)        {m_taskSelectorCB        = taskSelectorCB;       }
-		public void setTaskNamePanel(        FlowPanel   taskNamePanel)         {m_taskNamePanel         = taskNamePanel;        }
 		public void setTaskOrderPanel(       FlowPanel   taskOrderPanel)        {m_taskOrderPanel        = taskOrderPanel;       }
 		public void setTaskNewTaskMenuImage( Image       taskNewTaskMenuImage)  {m_taskNewTaskMenuImage  = taskNewTaskMenuImage; }
 		public void setTaskPercentDoneImage( Image       taskPercentDoneImage)  {m_taskPercentDoneImage  = taskPercentDoneImage; }
@@ -545,7 +538,6 @@ public class TaskTable extends Composite
 		public void setTaskDepth(            int         taskDepth)             {m_taskDepth             = taskDepth;            }
 		public void setTaskOrder(            int         taskOrder)             {m_taskOrder             = taskOrder;            }
 		public void setTaskRow(              int         taskRow)               {m_taskRow               = taskRow;              }
-		public void setTaskNameAnchor(       Label       taskNameAnchor)        {m_taskNameAnchor        = taskNameAnchor;       }
 		public void setTaskOrderAnchor(      Label       taskOrderAnchor)       {m_taskOrderAnchor       = taskOrderAnchor;      }
 		public void setTaskOrderTextBox(     TextBox     taskOrderTextBox)      {m_taskOrderTextBox      = taskOrderTextBox;     }
 		public void setTaskPercentDoneWidget(Widget      taskPercentDoneWidget) {m_taskPercentDoneWidget = taskPercentDoneWidget;}
@@ -575,7 +567,6 @@ public class TaskTable extends Composite
 		m_taskListing = taskListing;
 		
 		// ..register the events to be handled by this class...
-		Window.addResizeHandler(this);
 		EventHelper.registerEventHandlers(
 			GwtTeaming.getEventBus(),
 			m_registeredEvents,
@@ -1594,27 +1585,6 @@ public class TaskTable extends Composite
 	}
 
 	/*
-	 * Called when the task table resizes to resize a task in the
-	 * table.
-	 */
-	private void handleResize(TaskListItem task) {
-		// If we have the task name widgets that need to be resized...
-		UIData uid = getUIData(task);
-		FlowPanel fp = uid.getTaskNamePanel();
-		Label ta = uid.getTaskNameAnchor();
-		if ((null != fp) && (null != ta)) {
-			// ...resize them.
-			fp.getElement().getStyle().setHeight(ta.getOffsetHeight(), Unit.PX);
-		}
-
-		// Scan this task's subtasks...
-		for (TaskListItem subtask:  task.getSubtasks()) {
-			// ...resizing each of them.
-			handleResize(subtask);
-		}
-	}
-	
-	/*
 	 * Called when the user clicks the select all checkbox.
 	 */
 	private void handleSelectAll(Boolean checked) {
@@ -2604,59 +2574,6 @@ public class TaskTable extends Composite
 	}
 
 	/**
-	 * This method gets called when the browser gets resized.
-	 * 
-	 * Implements the ResizeHandler.onResize() method.
-	 * 
-	 * @param event
-	 */
-	public void onResize(ResizeEvent event) {
-		// Trigger a resizing to occur asynchronously (i.e., AFTER the
-		// resize event completes its processing.)
-		onResizeAsync(m_taskBundle.getTasks());
-	}
-
-	/*
-	 * Asynchronously handle a resize event.
-	 */
-	private void onResizeAsync(final List<TaskListItem> tasks) {
-		// Are we enabling task name wrapping?
-		if (m_taskBundle.enableTaskNameWrapping()) {
-			// Yes!  The nested scheduling is required to give the
-			// process active message a chance to display before we
-			// dive into the actual processing.
-			ScheduledCommand resizeStep1 = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					final ProcessActive pa = buildProcessActive(m_messages.taskProcess_resize(), 0);
-					ScheduledCommand resizeStep2 = new ScheduledCommand() {
-						@Override
-						public void execute() {
-							onResizeNow(tasks);
-							pa.killIt();
-						}
-					};
-					Scheduler.get().scheduleDeferred(resizeStep2);
-				}
-			};
-			Scheduler.get().scheduleDeferred(resizeStep1);
-		}
-	}
-	
-	/*
-	 * Synchronously handle a resize event.
-	 */
-	private void onResizeNow(List<TaskListItem> tasks) {
-		// Are we enabling task name wrapping?
-		if (m_taskBundle.enableTaskNameWrapping()) {
-			// Yes!  Resize the tasks.
-			for (TaskListItem task:  tasks) {
-				handleResize(task);
-			}
-		}
-	}
-	
-	/**
 	 * Handles TaskDeleteEvent's received by this class.
 	 * 
 	 * Implements the TaskDeleteEvent.Handler.onTaskDelete() method.
@@ -3252,33 +3169,35 @@ public class TaskTable extends Composite
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
-		// Define a panel to contain the task name widgets.
+		// If we're running in IE, there's some style hacks we need
+		// to put in place.
+		boolean isIE = GwtClientHelper.jsIsIE();
+		String namePanelStyles  =         "gwtTaskList_task-namePanel ";
+		namePanelStyles        += (isIE ? "gwtTaskList_task-namePanel_IE" : "gwtTaskList_task-namePanel_NonIE");
+		String nameMarkerStyles =         "gwtTaskList_task-nameMarker ";
+		nameMarkerStyles       += (isIE ? "gwtTaskList_task-nameMarker_IE" : "gwtTaskList_task-nameMarker_NonIE");
+		
+		// Define a panel that contains the task name widgets.
+		int col = getColumnIndex(Column.TASK_NAME);
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("gwtTaskList_task-namePanel");
+		m_flexTable.setWidget(row, col, fp);
+		String taStyles = "";	// The styles for the panel are built up as we determine what it's going to display.
 
-		// If this is a subtask...
-		int taLeftOffset;
-		int taskDepth = uid.getTaskDepth();
-		if (0 < taskDepth) {
-			// ...add a spacer to indent it proportional to its depth.
-			taLeftOffset = (SPACER_SIZE * taskDepth);
-			Image spacer = buildSpacer(taLeftOffset);
-			spacer.addStyleName("icon-spacer");
-			fp.add(spacer);
-		}
-		else {
-			// ...otherwise, there's no indentation.
-			taLeftOffset = 0;
-		}
+		// Account for any subtask indentation.
+		int taskDepth    = uid.getTaskDepth();
+		int taLeftOffset = ((0 < taskDepth) ? (SPACER_SIZE * taskDepth) : 0);
 
 		// Add the closed/unseen marker Widget to the panel.
+		FlowPanel markerPanel = new FlowPanel();
+		markerPanel.addStyleName(nameMarkerStyles);
 		Widget marker;
 		TaskInfo ti = task.getTask();
 		String entryId = String.valueOf(ti.getTaskId().getEntryId());
 		if (ti.isTaskClosed()) {
-			fp.addStyleName("gwtTaskList_task-strike");
-			Image i = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
-			marker = i;
+			taStyles        += " gwtTaskList_task-strike_Inner";
+			namePanelStyles += " gwtTaskList_task-strike_Outer";
+			Image i          = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
+			marker           = i;
 		}
 		else if (ti.isTaskUnseen()) {
 			Anchor a = buildAnchor();
@@ -3294,61 +3213,35 @@ public class TaskTable extends Composite
 			marker = buildSpacer();
 		}
 		if (ti.isTaskOverdue()) {
-			fp.addStyleName("gwtTaskList_task-overdue");
+			namePanelStyles += " gwtTaskList_task-overdue";
 		}
 		marker.addStyleName("gwtTaskList_task-icon");
-		fp.add(marker);
+		markerPanel.add(marker);
+		markerPanel.getElement().getStyle().setLeft(taLeftOffset, Unit.PX);
+		fp.add(markerPanel);
 		
 		// Add the calculated marker size to the left offset.
 		taLeftOffset += m_markerSize;
 		
 		// Add the appropriately styled task name Anchor to the panel.
-		boolean enableTaskNameWrapping = m_taskBundle.enableTaskNameWrapping();
-		Element taE;
-		Widget taW;
-		if (enableTaskNameWrapping) {
-			Label ta = buildAnchorLabel();
-			taW = ta;
-			taE = ta.getElement();
-			ta.addStyleName("gwtTaskList_task-nameAnchor gwtTaskList_task-nameAnchor_Wrap");
-			Style taeStyle = taE.getStyle();
-			taeStyle.setTop( 0,            Unit.PX);
-			taeStyle.setLeft(taLeftOffset, Unit.PX);
-			taE.setAttribute(ATTR_ENTRY_ID, entryId);
-			EventWrapper.addHandler(ta, m_taskViewClickHandler);
-			uid.setTaskNamePanel(fp);
-			uid.setTaskNameAnchor(ta);
-			if (finalizeSizes) {
-				ScheduledCommand resizer = new ScheduledCommand() {
-					@Override
-					public void execute() {
-						handleResize(task);
-					}
-				};
-				Scheduler.get().scheduleDeferred(resizer);
-			}
-		}
-		else {
-			Anchor ta = buildAnchor();
-			taW = ta;
-			taE = ta.getElement();
-			ta.addStyleName("gwtTaskList_task-nameAnchor gwtTaskList_task-nameAnchor_NoWrap");
-			ta.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
-			EventWrapper.addHandler(ta, m_taskViewClickHandler);
-		}
+		Anchor ta = buildAnchor();
+		ta.addStyleName(taStyles + " gwtTaskList_task-nameAnchor");
+		ta.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
+		EventWrapper.addHandler(ta, m_taskViewClickHandler);
 		InlineLabel taskLabel = new InlineLabel(task.getTask().getTitle());
 		uid.setTaskLabel(taskLabel);
 		if (ti.isTaskUnseen())    taskLabel.addStyleName(             "bold"   );	// Unseen:     Bold.
 		if (ti.isTaskCancelled()) m_flexTableRF.addStyleName(   row, "disabled");	// Cancelled:  Gray.
 		else                      m_flexTableRF.removeStyleName(row, "disabled");
-		taE.appendChild(taskLabel.getElement());
-		fp.add(taW);
+		Element taElement = ta.getElement();
+		taElement.appendChild(taskLabel.getElement());
+		fp.addStyleName(namePanelStyles);		
+		Style fpStyle = fp.getElement().getStyle();
+		fpStyle.setPaddingLeft(taLeftOffset, Unit.PX);
+		fp.add(ta);
 
-		// Finally, put the FlowPanel in the table.
-		int col = getColumnIndex(Column.TASK_NAME);
 		m_flexTableCF.addStyleName(row, col, "gwtTaskList_task-nameCell");
 		m_flexTableCF.setWidth(    row, col, "100%");
-		m_flexTable.setWidget(row, col, fp);
 	}
 
 	/*
@@ -3631,11 +3524,6 @@ public class TaskTable extends Composite
 					renderTaskListImpl(task.getSubtasks(), false);
 				}
 			}
-		}
-
-		// Force any final sizing to occur at once.
-		if (topLevelTasks) {
-			onResizeAsync(tasks);
 		}
 	}
 	
