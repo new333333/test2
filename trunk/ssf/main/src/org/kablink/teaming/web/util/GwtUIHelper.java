@@ -134,6 +134,16 @@ public class GwtUIHelper {
 	// If we don't, an NPE is generated when we try to convert it. 
 	public final static String URLFIXUP_PATCH = ".urlAsString";
 
+	// The following are used to control how workspace trees are
+	// sorted and displayed.  The value meanings are:
+	//    0 -> First Middle Last	(uses the Binder's plain  title)
+	//    1 -> Last, First Middle	(uses the Binder's search title)
+	// Any other value or undefined uses the default of 0.  Note that
+	// the traditional UI would equate to 1 for this.
+	private static       int     TREE_TITLE_FORMAT         = (-1);
+	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
+	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
+
 	// Inner class used exclusively by addTrackBinderToToolbar() to
 	// assist in building the toolbar items to support tracking.
 	private static class TrackInfo {
@@ -1272,5 +1282,49 @@ public class GwtUIHelper {
 		String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
 		boolean showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
 		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));		
+	}
+	
+	/**
+	 * Given a binder, returns the string to display for it in a
+	 * workspace tree.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static String getTreeBinderTitle(Binder binder) {
+		String reply;
+		if (useSearchTitles())
+		     reply = binder.getSearchTitle();
+		else reply = binder.getTitle();
+		return reply;
+	}
+	
+	/**
+	 * Returns the bucket size to use when displaying binders in
+	 * buckets in the workspace trees.
+	 * 
+	 * @return
+	 */
+	public static boolean useSearchTitles() {
+		// If we haven't read which format to display workspace tree
+		// titles in yet...
+		if ((-1) == TREE_TITLE_FORMAT) {
+			// ...read it now.
+			TREE_TITLE_FORMAT = SPropsUtil.getInt( 
+				TREE_TITLE_FORMAT_KEY,
+				TREE_TITLE_FORMAT_DEFAULT);
+
+			// If what we read is out of range, use the default.
+			switch (TREE_TITLE_FORMAT) {
+			case 0:
+			case 1:                                                  break;
+			default:  TREE_TITLE_FORMAT = TREE_TITLE_FORMAT_DEFAULT; break;
+			}
+		}
+		
+		// Return true if we should use search titles and false
+		// otherwise.
+		return (1 == TREE_TITLE_FORMAT);
 	}
 }

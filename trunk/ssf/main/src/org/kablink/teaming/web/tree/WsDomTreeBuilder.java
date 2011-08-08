@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.web.tree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,17 +43,18 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 
 
+@SuppressWarnings("unchecked")
 public class WsDomTreeBuilder implements DomTreeBuilder {
 	static protected Log logger = LogFactory.getLog(WsDomTreeBuilder.class);
 	static DomTreeHelper defaultHelper = new WsActionTreeHelper();
@@ -142,7 +142,6 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 	public boolean supportsType(int type, Object source) {
 		return helper.supportsType(type, source);
 	}
-	@SuppressWarnings("unchecked")
 	public Element setupDomElement(int type, Object source, Element element) {
 		if (!helper.supportsType(type, source)) return null;
 		if (type == DomTreeBuilder.TYPE_SKIPLIST) {
@@ -168,7 +167,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("displayOnly", "true");
 		} else {
 			Binder binder = (Binder) source;
-			element.addAttribute("title", binder.getSearchTitle());
+			element.addAttribute("title", GwtUIHelper.getTreeBinderTitle(binder));
 			if (getPage().equals("")) {
 				element.addAttribute("id", binder.getId().toString());
 			} else {

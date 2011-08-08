@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,18 +32,9 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,29 +44,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipOutputStream;
-import org.dom4j.Attribute;
-import org.dom4j.Branch;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
 import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -90,7 +69,6 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -103,14 +81,11 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.VersionAttachment;
-import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
@@ -119,26 +94,14 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
-import org.kablink.teaming.module.definition.DefinitionModule;
-import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.definition.export.ElementBuilder;
-import org.kablink.teaming.module.definition.export.ElementBuilderUtil;
-import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
-import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
-import org.kablink.teaming.module.workflow.WorkflowModule;
-import org.kablink.teaming.module.workspace.WorkspaceModule;
-import org.kablink.teaming.remoting.RemotingException;
-import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
@@ -156,17 +119,11 @@ import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.util.TempFileUtil;
-import org.kablink.teaming.util.XmlFileUtil;
-import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
-import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.ExportException;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.TrashHelper;
-import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -175,7 +132,6 @@ import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.kablink.util.search.Restrictions.between;
@@ -186,6 +142,7 @@ import static org.kablink.util.search.Restrictions.in;
  * @author Janet McCann
  * 
  */
+@SuppressWarnings("unchecked")
 public class BinderModuleImpl extends CommonDependencyInjection implements
 		BinderModule {
 
@@ -1867,7 +1824,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Comparator c = new BinderComparator(user.getLocale(),
-				BinderComparator.SortByField.searchTitle);
+				GwtUIHelper.useSearchTitles() ? BinderComparator.SortByField.searchTitle : BinderComparator.SortByField.title);
 		Document wsTree = DocumentHelper.createDocument();
 		Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
 		buildBinderDomTree(rootElement, top, c, domTreeHelper, levels);
@@ -1893,7 +1850,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			throw new InternalException("Top is not a parent");
 		ancestors.add(parent);
 		Comparator c = new BinderComparator(user.getLocale(),
-				BinderComparator.SortByField.searchTitle);
+				GwtUIHelper.useSearchTitles() ? BinderComparator.SortByField.searchTitle : BinderComparator.SortByField.title);
 		Document wsTree = DocumentHelper.createDocument();
 		Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
 		for (int i = ancestors.size() - 1; i >= 0; --i) {
@@ -2217,6 +2174,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				skipLength = maxBucketSize;
 		}
 
+		String bucketSortKey;
+		String straightSortKey;
+		if (GwtUIHelper.useSearchTitles())
+		     {bucketSortKey = null;                              straightSortKey = Constants.NORM_TITLE;             }
+		else {bucketSortKey = Constants.BINDER_SORT_TITLE_FIELD; straightSortKey = Constants.BINDER_SORT_TITLE_FIELD;}
+		
 		// See if this has a page already set
 		List tuple = domTreeHelper.getTuple();
 		String tuple1 = "";
@@ -2237,8 +2200,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 							.toString())).add(
 					eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
 			if (totalHits == 0) {
-				crit.add(between(Constants.NORM_TITLE, tuple1, tuple2))
-						.addOrder(new Order(Constants.NORM_TITLE, true));
+				crit.add(between(straightSortKey, tuple1, tuple2))
+						.addOrder(new Order(straightSortKey, true));
 
 				// Create the Lucene query
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
@@ -2272,17 +2235,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.debug("Query is: " + searchObject.toString());
 				}
 				// no order here
-				results = luceneSession.getSortedTitles(query, null, tuple1, tuple2,
+				results = luceneSession.getSortedTitles(query, bucketSortKey, tuple1, tuple2,
 						skipLength);
 			}
 			if (results == null || results.size() <= 1) {
 				// We must be at the end of the buckets; now get the real
 				// entries
 				if ("".equals(tuple1) && "".equals(tuple2)) {
-					crit.addOrder(new Order(Constants.NORM_TITLE, true));
+					crit.addOrder(new Order(straightSortKey, true));
 				} else {
-					crit.add(between(Constants.NORM_TITLE, tuple1, tuple2))
-							.addOrder(new Order(Constants.NORM_TITLE, true));
+					crit.add(between(straightSortKey, tuple1, tuple2))
+							.addOrder(new Order(straightSortKey, true));
 
 				}
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
