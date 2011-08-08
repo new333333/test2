@@ -215,27 +215,27 @@
  		<class-cache class="org.kablink.teaming.domain.BinderQuota" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.CustomAttribute" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Dashboard" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.Definition" usage="nonstrict-read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.EmailAddress" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Definition" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.EmailAddress" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Event" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.ExtensionInfo" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ExtensionInfo" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.FolderEntry" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.IndexNode" usage="nonstrict-read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.LdapConnectionConfig" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.IndexNode" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.LdapConnectionConfig" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Membership" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.PostingDef" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Principal" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="nonstrict-read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.Subscription" usage="nonstrict-read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.Tag" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Subscription" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Tag" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.UserProperties" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.WorkflowResponse" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.WorkflowState" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.ZoneConfig" usage="nonstrict-read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.ZoneInfo" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ZoneConfig" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ZoneInfo" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.security.accesstoken.impl.TokenInfo" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.security.function.Function" usage="nonstrict-read-write"/>
- 		<class-cache class="org.kablink.teaming.security.function.Condition" usage="nonstrict-read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.Function" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.security.function.Condition" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.security.function.WorkAreaFunctionMembership" usage="read-write"/>
  		
  		<collection-cache collection="org.kablink.teaming.domain.FileAttachment.fileVersions" usage="read-write"/>
@@ -244,7 +244,7 @@
  		<collection-cache collection="org.kablink.teaming.domain.Binder.workflowAssociations" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.Binder.attachments" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.Binder.events" usage="read-write"/>
- 		<collection-cache collection="org.kablink.teaming.domain.Binder.definitions" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.domain.Binder.definitions" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.CustomAttribute.values" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.customAttributes" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.FolderEntry.attachments" usage="read-write"/>
@@ -260,8 +260,8 @@
  		<collection-cache collection="org.kablink.teaming.domain.Group.members" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.ApplicationPrincipal.memberOf" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.ApplicationGroup.members" usage="read-write"/>
- 		<collection-cache collection="org.kablink.teaming.security.function.Function.operationNames" usage="nonstrict-read-write"/>
- 		<collection-cache collection="org.kablink.teaming.security.function.Function.conditionalClauses" usage="nonstrict-read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.Function.operationNames" usage="read-write"/>
+ 		<collection-cache collection="org.kablink.teaming.security.function.Function.conditionalClauses" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.security.function.WorkAreaFunctionMembership.memberIds" usage="read-write"/>
  		
 	</session-factory>
