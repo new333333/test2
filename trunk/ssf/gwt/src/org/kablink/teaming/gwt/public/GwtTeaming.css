@@ -3283,7 +3283,10 @@ a.sort-column:hover
 {
 	display: inline;
 }
-.gwtTaskList_task-strike
+.gwtTaskList_task-strike_Inner
+{
+}
+.gwtTaskList_task-strike_Outer
 {
 	background:url(images/strike_marker_blue_repeat.png) repeat-y 18px 2px;
 }
@@ -3307,7 +3310,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
 {
-	color:        #135c8f !important;
+	color: #135c8f !important;
 }
 .gwtTaskList_task-nameAnchor:hover
 {
@@ -3315,19 +3318,30 @@ a.gwtTaskList_task-icon:hover
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
-.gwtTaskList_task-nameAnchor_Wrap
-{
-	position:    absolute;
-	white-space: normal !important;
-}
-.gwtTaskList_task-nameAnchor_NoWrap
-{
-	white-space: nowrap !important;
-}
 .gwtTaskList_task-nameCell
 {
+	white-space: normal !important;
+}
+.gwtTaskList_task-nameMarker
+{
+	left: 0px;
+	top: 0px;
+}
+.gwtTaskList_task-nameMarker_IE
+{
+	display: inline;
+}
+.gwtTaskList_task-nameMarker_NonIE
+{
+	position: absolute;
 }
 .gwtTaskList_task-namePanel
+{
+}
+.gwtTaskList_task-namePanel_IE
+{
+}
+.gwtTaskList_task-namePanel_NonIE
 {
 	position: relative;
 }
