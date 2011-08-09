@@ -135,11 +135,11 @@ public class AccessControlController extends AbstractBinderController {
 					//SimpleProfiler.done(logger);
 				} else if (aclType.equals("entry")) {
 					//Set the entry acl
-					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", true);
+					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
 					Map functionMemberships = new HashMap();
 					getAccessResults(request, functionMemberships);
-					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
+					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
 					//SimpleProfiler.done(logger);
 				}
 			}
