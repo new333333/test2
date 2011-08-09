@@ -16,7 +16,7 @@ alter table SS_Attachments add column agingDate datetime;
 alter table SS_Forums add column versionAgingEnabled bit;
 
 alter table SS_Attachments add column encrypted bit;
-alter table SS_Attachments add column encryptionKey tinyblob;
+alter table SS_Attachments add column encryptionKey blob;
 
 alter table SS_Principals modify foreignName varchar(255); 
 
