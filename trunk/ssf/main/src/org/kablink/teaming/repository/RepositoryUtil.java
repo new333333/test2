@@ -200,11 +200,6 @@ public class RepositoryUtil {
 
 		try {
 			session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName, out);
-			if (fa.isEncrypted()) {
-				try {
-					out.close();
-				} catch (IOException e) {}
-			}
 		} finally {
 			session.close();
 		}
