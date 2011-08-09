@@ -69,7 +69,7 @@ public class FileUtils {
     				};
     			} else {
     				//This is a minor version that is not the highest in its major class. It is subject to aging
-    				if (versionAgingEnabled != null && versionAgingEnabled && (va.getAgingEnabled() == null || !va.isAgingEnabled())) {
+    				if (versionAgingEnabled != null && versionAgingEnabled.booleanValue() && (va.getAgingEnabled() == null || !va.isAgingEnabled())) {
     					va.setAgingEnabled(Boolean.TRUE);
     				}
     				//Calculate the binder aging date (if any)
