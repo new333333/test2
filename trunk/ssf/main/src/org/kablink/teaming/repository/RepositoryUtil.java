@@ -46,6 +46,8 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.impl.SessionWrappedInputStream;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
@@ -183,27 +185,45 @@ public class RepositoryUtil {
 		}
 	}
 
-	public static void readVersioned(String repositoryName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath, String versionName, 
+	public static void readVersioned(FileAttachment fa, Binder binder, 
+			DefinableEntity entry, String versionName, 
 			String latestVersionName, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
+		String repositoryName = fa.getRepositoryName();
+		String relativeFilePath = fa.getFileItem().getName();
+		if (fa.isEncrypted()) {
+			CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
+			out = cfe.getEncryptionOutputDecryptedStream(out);
+		}
+
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName, out);
+			if (fa.isEncrypted()) {
+				try {
+					out.close();
+				} catch (IOException e) {}
+			}
 		} finally {
 			session.close();
 		}
 	}
 
-	public static InputStream readVersioned(String repositoryName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath, String versionName, String latestVersionName)
+	public static InputStream readVersioned(FileAttachment fa, Binder binder, 
+			DefinableEntity entry, String versionName, String latestVersionName)
 			throws RepositoryServiceException, UncheckedIOException {
+		String repositoryName = fa.getRepositoryName();
+		String relativeFilePath = fa.getFileItem().getName();
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		InputStream in = null;
 		try {
 			in = session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName);
+			if (fa.isEncrypted()) {
+				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
+				in = cfe.getEncryptionInputDecryptedStream(in);
+			}
 			return new SessionWrappedInputStream(in, session);
 		} finally {
 			if(in == null)
