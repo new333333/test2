@@ -18,4 +18,6 @@ alter table SS_Forums add column versionAgingEnabled bit;
 alter table SS_Attachments add column encrypted bit;
 alter table SS_Attachments add column encryptionKey tinyblob;
 
-INSERT INTO SS_SchemaInfo values (28);
+alter table SS_Principals modify foreignName varchar(255); 
+
+INSERT INTO SS_SchemaInfo values (29);

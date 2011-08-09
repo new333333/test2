@@ -118,3 +118,5 @@ Version 27:
 Version 28:
   Add SS_Attachments column for file encryption key (encryptionKey)
   
+Version 29:
+  alter table SS_Principals modify foreignName varchar(255);

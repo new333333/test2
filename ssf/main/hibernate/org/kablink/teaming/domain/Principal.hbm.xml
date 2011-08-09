@@ -42,7 +42,7 @@
       <one-to-many class="org.kablink.teaming.domain.EmailAddress"/>
     </map>
     <property name="name" length="128"/>
-    <property name="foreignName" length="128" />
+    <property name="foreignName" length="255" />
     <property name="ldapGuid" length="128" index="ldapGuid_principal"/>
 	<property name="theme" length="64"/>
     <properties name="nameKey" unique="true" update="false" insert="false">
