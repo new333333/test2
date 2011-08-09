@@ -16,7 +16,7 @@ alter table SS_Attachments add agingDate datetime null;
 alter table SS_Forums add versionAgingEnabled tinyint null;
 
 alter table SS_Attachments add encrypted tinyint null;
-alter table SS_Attachments add encryptionKey varbinary(255) null;
+alter table SS_Attachments add encryptionKey varbinary(256) null;
 
 alter table SS_Principals alter column foreignName varchar(255); 
 
