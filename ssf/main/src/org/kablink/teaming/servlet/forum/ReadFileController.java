@@ -33,6 +33,7 @@
 package org.kablink.teaming.servlet.forum;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -238,8 +239,11 @@ public class ReadFileController extends AbstractReadFileController {
 					response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
 					try {
 						Binder parent = getBinder(entity);
-						response.setHeader("Content-Length", 
+						if (!fa.isEncrypted()) {
+							//The file length cannot be guaranteed if the file is encrypted. It is better to leave this field off in that case.
+							response.setHeader("Content-Length", 
 								String.valueOf(FileHelper.getLength(parent, entity, fa)));
+						}
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
 						if (args[WebUrlUtil.FILE_URL_VERSION].equals(WebKeys.READ_FILE_LAST_VIEW)) {
 							//This is a real file download, so mark it in the audit trail

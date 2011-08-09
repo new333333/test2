@@ -289,8 +289,11 @@ public class ViewFileController extends SAbstractController {
 					}
 				} else {
 					try {
-						response.setHeader("Content-Length", 
+						if (!fa.isEncrypted()) {
+							//The file length may be wrong if the file is encrypted. Don't give the wrong length, it confuses the browser
+							response.setHeader("Content-Length", 
 								String.valueOf(FileHelper.getLength(parent, entity, fa)));
+						}
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
 						getReportModule().addFileInfo(AuditType.download, fa);
 					}
