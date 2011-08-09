@@ -39,9 +39,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.mail.MessagingException;
 
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.module.mail.impl.DefaultEmailPoster.FileHandler;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,6 +87,8 @@ public class FileUploadItem {
 	
 	private File file;
 	private boolean isTempFile = false;
+	private boolean isEncrypted = false;
+	private byte[] encryptionKey;
 	
 	private boolean synchToRepository = true; // can be false only for mirrored entries/files
 	
@@ -114,6 +119,23 @@ public class FileUploadItem {
 	public void setIsSquareThumbnail(boolean isSquareThumbnail) {
 		this.isSquareThumbnail = isSquareThumbnail;
 	}
+
+	public boolean getIsEncrypted() {
+		return isEncrypted;
+	}
+
+	public void setIsEncrypted(boolean isEncrypted) {
+		this.isEncrypted = isEncrypted;
+	}
+
+	public byte[] getEncryptionKey() {
+		return encryptionKey;
+	}
+
+	public void setEncryptionKey(byte[] encryptionKey) {
+		this.encryptionKey = encryptionKey;
+	}
+
 
 	public void setMaxHeight(int maxHeight) {
 		this.maxHeight = maxHeight;
@@ -234,10 +256,25 @@ public class FileUploadItem {
 	}
 	
 	public InputStream getInputStream() throws IOException  {
-		if(file != null)
-			return new BufferedInputStream(new FileInputStream(file));
-		else 
-			return mf.getInputStream();
+		if (file != null) {
+			if (isEncrypted) {
+				InputStream bis = new BufferedInputStream(new FileInputStream(file));
+				
+				//Initialize the crypto session
+				CryptoFileEncryption cfe = new CryptoFileEncryption(encryptionKey);
+				return cfe.getEncryptionInputEncryptedStream(bis);
+				
+			} else {
+				return new BufferedInputStream(new FileInputStream(file));
+			}
+		} else {
+			if (isEncrypted) {
+				CryptoFileEncryption cfe = new CryptoFileEncryption(encryptionKey);
+				return cfe.getEncryptionInputEncryptedStream(mf.getInputStream());
+			} else {
+				return mf.getInputStream();
+			}
+		}
 	}
 	
 	public void delete() throws IOException {

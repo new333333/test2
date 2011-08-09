@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.crypto.SecretKey;
+
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
@@ -70,6 +72,7 @@ public class FileAttachment extends Attachment {
     private Boolean agingEnabled = Boolean.FALSE;
     private Date agingDate;
     private Boolean encrypted = Boolean.FALSE;
+    private byte[] encryptionKey;
     private Integer fileStatus = FileStatus.valueOf(FileStatus.not_set);
     private boolean fileExists = true;
    
@@ -158,6 +161,18 @@ public class FileAttachment extends Attachment {
 		} else {
 			return true;
 		}
+	}
+
+	public byte[] getEncryptionKey() {
+		return this.encryptionKey;	//This can be null if it has never been initialized
+	}
+
+	public void setEncryptionKey(byte[] encryptionKey) {
+		this.encryptionKey = encryptionKey;
+	}
+
+	public void setEncryptionKey(SecretKey encryptionKey) {
+		this.encryptionKey = encryptionKey.getEncoded();
 	}
 
     /**

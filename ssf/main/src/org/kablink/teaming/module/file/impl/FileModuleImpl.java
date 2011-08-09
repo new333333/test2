@@ -54,6 +54,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
@@ -398,8 +401,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
-				fa.getFileItem().getName(), versionName, latestVersionName, out);			
+		RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, out);			
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
@@ -422,8 +424,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		return RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
-				fa.getFileItem().getName(), versionName, latestVersionName);
+		return RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName);
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
@@ -1589,6 +1590,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	/// step1: write primary file
     	/// step2: update metadata in database
     	
+    	if (binder.isFileEncryptionEnabled()) {
+    		//This binder requires that all files be encrypted, so mark that it should be encrypted
+    		try {
+				//Get the key to use when encrypting and decrypting
+				SecretKey key = KeyGenerator.getInstance("DES").generateKey();
+				fui.setEncryptionKey(key.getEncoded());
+	    		fui.setIsEncrypted(true);
+    		} catch(Exception e) {
+    			errors.addProblem(new FilesErrors.Problem
+    					(fui.getRepositoryName(), fui.getOriginalFilename(), 
+    							FilesErrors.Problem.PROBLEM_FILE_EXISTS));
+    			return false;
+    		}
+
+    	}
+    	
 		int type = fui.getType();
 		if(type != FileUploadItem.TYPE_FILE && 
 				type != FileUploadItem.TYPE_ATTACHMENT && 
@@ -1757,6 +1774,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		versionName = createVersionedFile(session, binder, entry, fui);
     		long fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
 			fAtt.getFileItem().setLength(fsize);
+			fAtt.setEncrypted(fui.getIsEncrypted());
+			fAtt.setEncryptionKey(fui.getEncryptionKey());
 			createVersionAttachment(fAtt, versionName);	    		
 			if(logger.isDebugEnabled())
 				logger.debug("Updating existing file " + relativeFilePath + " with initial version");
@@ -1788,6 +1807,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// forgiving or self-curing. This part of code implements that.
 	    		versionName = createVersionedFile(session, binder, entry, fui);
 	    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
+    			fAtt.setEncrypted(fui.getIsEncrypted());
+    			fAtt.setEncryptionKey(fui.getEncryptionKey());
 	    	}
 	    	else {
 	    		throw new InternalException();
@@ -2147,6 +2168,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	fAtt.setRepositoryName(fui.getRepositoryName());
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());
+    	fAtt.setEncrypted(fui.getIsEncrypted());
+    	fAtt.setEncryptionKey(fui.getEncryptionKey());
     	FileItem fItem = new FileItem();
     	fItem.setName(relativeFilePath);
     	// Optimization: Do NOT try to get the file size directly from the 
