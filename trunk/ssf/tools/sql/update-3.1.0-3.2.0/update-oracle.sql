@@ -18,4 +18,6 @@ alter table SS_Forums add versionAgingEnabled number(1,0);
 alter table SS_Attachments add encrypted number(1,0);
 alter table SS_Attachments add encryptionKey raw(255);
 
-INSERT INTO SS_SchemaInfo values (28);
+alter table SS_Principals modify foreignName varchar2(255);
+
+INSERT INTO SS_SchemaInfo values (29);
