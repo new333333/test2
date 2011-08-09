@@ -114,3 +114,7 @@ Version 26:
   
 Version 27:
   Add SS_Attachments column for marking a file as encrypted (encrypted)
+  
+Version 28:
+  Add SS_Attachments column for file encryption key (encryptionKey)
+  
