@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,20 +45,16 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
@@ -79,6 +75,7 @@ import org.springframework.web.portlet.ModelAndView;
  * @author Peter Hurley
  *
  */
+@SuppressWarnings("unchecked")
 public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	
 	
@@ -163,6 +160,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	private void ajaxSaveTrackThisBinder(AllModulesInjected bs, ActionRequest request, 
 			ActionResponse response, String type) throws Exception {
 		//The list of tracked binders and shared binders are kept in the user' user workspace user folder properties
+		@SuppressWarnings("unused")
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		BinderHelper.trackThisBinder(bs, binderId, type);
@@ -207,7 +205,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
 		String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
-		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink((ActionRequest) null, entity) +
+		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalinkForEmail(entity) +
 				"\">" + title + "</a><br/><br/>" + addedComments);
 		try {
 			String mailTitle = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())});
@@ -236,6 +234,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 				}
 			}
 			
+			@SuppressWarnings("unused")
 			MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
 			response.setRenderParameter(WebKeys.EMAIL_FAILED_ACCESS, noAccessPrincipals.toArray(new String[noAccessPrincipals.size()]));
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);

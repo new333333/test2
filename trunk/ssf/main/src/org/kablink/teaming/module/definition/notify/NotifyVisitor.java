@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,18 +53,13 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.file.ConvertedFileModule;
-import org.kablink.teaming.module.file.FileModule;
-import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
+@SuppressWarnings("unchecked")
 public class NotifyVisitor {
 	protected Log logger = LogFactory.getLog(getClass());
 	DefinableEntity entity;
@@ -156,10 +151,10 @@ public class NotifyVisitor {
 		return NLT.getDef(tag, notifyDef.getLocale());
 	}
 	public String getPermaLink(DefinableEntity entity) {
-		return PermaLinkUtil.getPermalink(entity);
+		return PermaLinkUtil.getPermalinkForEmail(entity);
 	}
 	public String getFileLink(FileAttachment attachment) {
-		return PermaLinkUtil.getFilePermalink(attachment);
+		return PermaLinkUtil.getFilePermalinkForEmail(attachment);
 	}
 	public String getUserTitle(Principal p) {
 		if (this.notifyDef.isRedacted()) {
