@@ -40,7 +40,7 @@
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="administration.configure_mail">
+<ssf:form titleTag="administration.configure_file_version_aging">
 <br/>
 
 <script type="text/javascript">
