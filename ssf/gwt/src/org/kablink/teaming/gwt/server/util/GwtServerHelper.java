@@ -3898,7 +3898,7 @@ public class GwtServerHelper {
 				title = entry.getParentBinder().getPathName() + "/" + title;
 
 			// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
-			desc = "<a href=\"" + PermaLinkUtil.getPermalink( (ActionRequest) null, entry ) + "\">" + title + "</a><br/><br/>" + addedComments;
+			desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( entry ) + "\">" + title + "</a><br/><br/>" + addedComments;
 			body = new Description( desc );
 
 			mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( user )} );

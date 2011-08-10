@@ -37,6 +37,8 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -44,12 +46,16 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
 
 public class PermaLinkUtil {
+	private static final Log m_logger = LogFactory.getLog(PermaLinkUtil.class);
+
 	//userId may be placeholder
 	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams) {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
@@ -75,6 +81,13 @@ public class PermaLinkUtil {
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
+	}
+	public static String getPermalinkForEmail(DefinableEntity entity) {
+		String reply = getPermalink(entity);
+		if (forceSecureLinksInEmail()) {
+			reply = forceHTTPSInUrl(reply);
+		}
+		return reply;
 	}
 	public static String getPermalink(DefinableEntity entity) {
 		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
@@ -159,6 +172,13 @@ public class PermaLinkUtil {
 		} 
 
 	}
+	public static String getFilePermalinkForEmail(FileAttachment attachment) {
+		String reply = getFilePermalink(attachment);
+		if (forceSecureLinksInEmail()) {
+			reply = forceHTTPSInUrl(reply);
+		}
+		return reply;
+	}
 	public static String getFilePermalink(FileAttachment attachment) {
 		return getFilePermalink(attachment.getOwner().getEntity(), attachment.getFileItem().getName());
 		
@@ -204,5 +224,70 @@ public class PermaLinkUtil {
 	@SuppressWarnings("unused")
 	private static ProfileModule getProfileModule() {
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
+	}
+
+	/*
+	 * Returns true if we're to force links in outgoing email messages
+	 * to be HTTPS and false if we just use Vibe's default.
+	 */
+	private static boolean forceSecureLinksInEmail() {
+		return SPropsUtil.getBoolean("ssf.secure.links.in.email", false);
+	}
+
+	/*
+	 * Forces the URL passed as a parameter to always be HTTPS using
+	 * the configured ssf*.properties values.
+	 */
+	private static String forceHTTPSInUrl(String url) {
+		// If we weren't give a URL to fix...
+		if (null == url) {
+			// ...bail.
+			return url;
+		}
+		url = url.trim();
+		if (0 == url.length()) {
+			// ...bail.
+			return url;
+		}
+
+		// If the URL we were given is already HTTPS...
+		String lcURL = url.toLowerCase();
+		if (lcURL.startsWith("https")) {
+			// ...bail.
+			return url;
+		}
+
+		// To fixup the URL we we're given, what do we need to fix?
+		int    ssfHTTPPort   = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
+		String ssfHost       = SPropsUtil.getDefaultHost();
+		String fixThisNoPort = ("http://" + ssfHost.toLowerCase());
+		String fixThisPorted = (fixThisNoPort + ":" + ssfHTTPPort);
+		String fixThis;
+		if (lcURL.startsWith(fixThisPorted)) {
+			fixThis = fixThisPorted;
+		}
+		else if (lcURL.startsWith(fixThisNoPort)) {
+			fixThis = fixThisNoPort;
+		}
+		else {
+			fixThis = null;
+			m_logger.warn("PermaLinkUtil.forceHTTPSInUrl( '" + url + "' ):  Fixup failed.");
+			return url;
+		}
+
+		// Fixup the URL...
+		int    ssfHTTPSPort = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
+		String fixedUrl     = "https://" + ssfHost + ":" + ssfHTTPSPort + url.substring(fixThis.length());
+		
+		if (m_logger.isDebugEnabled()) {
+			// ..and trace what we did.
+			m_logger.debug("PermaLinkUtil.forceHTTPSInUrl():");
+			m_logger.debug("...Received:  '" + url      + "'");
+			m_logger.debug("...Fixed:  '"    + fixedUrl + "'");
+		}
+
+		// If we get here, fixedUrl refers to the final, HTTPS version
+		// of the URL we were passed.  Return it.
+		return fixedUrl;
 	}
 }
