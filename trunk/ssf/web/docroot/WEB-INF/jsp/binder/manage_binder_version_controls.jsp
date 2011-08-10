@@ -210,6 +210,17 @@ function ss_checkIfNumberValid(s) {
 		<span class="ss_smallprint" style="padding-left:16px;">
 		  <ssf:nlt tag="binder.versions.leaveBlankToInherit"/>
 		</span>
+		<br/>
+		<span class="ss_smallprint" style="padding-left:16px;">
+		  <ssf:nlt tag="binder.file.uploadSizeLimit.hint1"/>
+		</span>
+		<c:if test="${!empty ss_fileSizeLimitUserDefault}">
+		  <br/>
+		  <span class="ss_smallprint" style="padding-left:16px;">
+		    <ssf:nlt tag="binder.file.uploadSizeLimit.hint2"><ssf:param 
+		    name="value" value="${ss_fileSizeLimitUserDefault}"/></ssf:nlt>
+		  </span>
+		</c:if>
        </div>
 	</fieldset>
 <br/>
