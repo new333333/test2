@@ -962,6 +962,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltDelete();
 	String taskAltFilterOff();
 	String taskAltFilterOn();
+	String taskAltHierarchyDisabled();
 	String taskAltMoveDown();
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
@@ -998,6 +999,13 @@ public interface GwtTeamingMessages extends Messages
 	String taskConfirmPurge();
 	String taskDebug_times(String taskCount, String readTime, String showTime, String totalTime);
 	String taskFilter_empty();
+	String taskHierarchyDisabled();
+	String taskHierarchyDisabled_Filter();
+	String taskHierarchyDisabled_Rights();
+	String taskHierarchyDisabled_Sort();
+	String taskHierarchyDisabled_Virtual();
+	String taskHierarchyDisabledDlgBanner();
+	String taskHierarchyDisabledDlgHeader();
 	String taskInternalError_FilteredOrVirtual(String operation);
 	String taskInternalError_UnexpectedEvent(String event);
 	String taskInternalError_UnexpectedViewOption(String viewOption);

@@ -2940,6 +2940,22 @@ top:100px;
 {
 	position: relative;
 }
+.taskHierarchyDisabledDlg_VP
+{
+}
+.taskHierarchyDisabledDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+}
+.taskHierarchyDisabledDlg_LI
+{
+}
+.taskHierarchyDisabledDlg_UL
+{
+}
 .gwtTaskTools
 {
 	background-color:#cccccc;
@@ -2954,19 +2970,42 @@ top:100px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
+.gwtTaskTools_ButtonDIV
+{
+	display:       inline-block;
+	padding-top:    2px;
+	padding-bottom: 2px;
+	vertical-align: middle;
+}
+.gwtTaskTools_LeftDIV
+{
+}
+.gwtTaskTools_LinkageDIV
+{
+	display:        inline-block;
+	vertical-align: middle;
+}
+.gwtTaskTools_WarningDIV
+{
+	display:       inline-block;
+	padding-top:    2px;
+	padding-bottom: 2px;
+	vertical-align: middle;
+}
+.gwtTaskTools_WarningAnchor, .gwtTaskTools_WarningAnchor:visited
+{
+	font-size: .9em !important;
+	color: #135c8f;
+}
+.gwtTaskTools_WarningAnchor:hover
+{
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
 .gwtTaskTools_Span
 {
 	padding-right: 10px;
-}
-.gwtTaskTools_HintSpan
-{
-	padding-left:  10px;
-	font-size:  .75em;
-	color: #666;  /* gray */
-}
-.gwtTaskTools_HintSpan_Hidden
-{
-	display:  none;
 }
 .gwtTaskTools_ViewMenuAnchor
 {

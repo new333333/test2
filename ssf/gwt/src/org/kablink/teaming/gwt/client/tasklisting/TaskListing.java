@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
@@ -73,6 +74,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -90,6 +92,8 @@ public class TaskListing extends Composite {
 	private FlowPanel		m_taskListingDIV;			// The <DIV> in the content pane that's to contain the task listing.
 	private FlowPanel		m_taskRootDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
 	private FlowPanel		m_taskToolsDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
+	private FlowPanel		m_taskToolsLinkageDIV;		//
+	private FlowPanel		m_taskToolsWarningDIV;		//
 	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
 	private RootPanel		m_taskFilterRoot;			//
@@ -361,6 +365,8 @@ public class TaskListing extends Composite {
 	public FlowPanel   getTaskListingDIV()        {return m_taskListingDIV;       }
 	public FlowPanel   getTaskRootDIV()           {return m_taskRootDIV;          }
 	public FlowPanel   getTaskToolsDIV()          {return m_taskToolsDIV;         }
+	public FlowPanel   getTaskToolsLinkageDIV()   {return m_taskToolsLinkageDIV;  }
+	public FlowPanel   getTaskToolsWarningDIV()   {return m_taskToolsWarningDIV;  }
 	public Long        getBinderId()              {return m_binderId;             }
 	public RequestInfo getRequestInfo()           {return m_requestInfo;          }
 	public String      getFilterType()            {return m_filterType;           }
@@ -535,43 +541,69 @@ public class TaskListing extends Composite {
 		// Remove anything currently in the task tools DIV...
 		m_taskToolsDIV.clear();
 
-		// ...create the order span...
+		// Create a panel to hold everything...
 		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("gwtTaskTools_LeftDIV");
+		
+		// ...create the linkage panel...
+		m_taskToolsLinkageDIV = new FlowPanel();
+		m_taskToolsLinkageDIV.addStyleName("gwtTaskTools_LinkageDIV");
+		
+		// ...create the order buttons...
 		m_moveUpButton   = new TaskButton(m_images.arrowUp(),   m_images.arrowUpDisabled(),   m_images.arrowUpMouseOver(),   false, m_messages.taskAltMoveUp(),   TeamingEvents.TASK_MOVE_UP);
 		m_moveDownButton = new TaskButton(m_images.arrowDown(), m_images.arrowDownDisabled(), m_images.arrowDownMouseOver(), false, m_messages.taskAltMoveDown(), TeamingEvents.TASK_MOVE_DOWN);
 		m_moveDownButton.addStyleName("gwtTaskTools_Span");
 		InlineLabel il   = new InlineLabel(m_messages.taskLabelOrder());
 		il.addStyleName("mediumtext");
-		fp.add(il);
-		fp.add(m_moveUpButton);
-		fp.add(m_moveDownButton);
+		m_taskToolsLinkageDIV.add(il);
+		m_taskToolsLinkageDIV.add(m_moveUpButton);
+		m_taskToolsLinkageDIV.add(m_moveDownButton);
 
-		// ...create the subtask span...
+		// ...create the subtask buttons...
 		m_moveLeftButton  = new TaskButton(m_images.arrowLeft(),  m_images.arrowLeftDisabled(),  m_images.arrowLeftMouseOver(),  false, m_messages.taskAltMoveLeft(),  TeamingEvents.TASK_MOVE_LEFT);
 		m_moveRightButton = new TaskButton(m_images.arrowRight(), m_images.arrowRightDisabled(), m_images.arrowRightMouseOver(), false, m_messages.taskAltMoveRight(), TeamingEvents.TASK_MOVE_RIGHT);
 		m_moveRightButton.addStyleName("gwtTaskTools_Span");
 		il = new InlineLabel(m_messages.taskLabelSubtask());
 		il.addStyleName("mediumtext");
-		fp.add(il);
-		fp.add(m_moveLeftButton);
-		fp.add(m_moveRightButton);
+		m_taskToolsLinkageDIV.add(il);
+		m_taskToolsLinkageDIV.add(m_moveLeftButton);
+		m_taskToolsLinkageDIV.add(m_moveRightButton);
+		fp.add(m_taskToolsLinkageDIV);
 
-		// ...create the delete button...
+		// ...create the warning panel...
+		m_taskToolsWarningDIV = new FlowPanel();
+		m_taskToolsWarningDIV.addStyleName("gwtTaskTools_WarningDIV gwtTaskTools_Span");
+		m_taskToolsWarningDIV.setVisible(false);
+		Label button = new Label(m_messages.taskHierarchyDisabled());
+		button.setTitle(m_messages.taskAltHierarchyDisabled());
+		button.addStyleName("cursorPointer");
+		button.addStyleName("gwtTaskTools_WarningAnchor");
+		EventWrapper.addHandler(button, new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				TaskHierarchyDisabledEvent.fireOne();
+			}
+		});
+		m_taskToolsWarningDIV.add(button);
+		fp.add(m_taskToolsWarningDIV);
+		
+		// ...create the delete and purge button panel...
+		FlowPanel buttonDIV = new FlowPanel();
+		buttonDIV.addStyleName("gwtTaskTools_ButtonDIV");
 		m_deleteButton = new TaskButton(
 			m_messages.taskLabelDelete(),
 			m_messages.taskAltDelete(),
-			false,
+			false,	// false -> Disabled by default.
 			TeamingEvents.TASK_DELETE);
 		m_deleteButton.addStyleName("marginright2px");
-		fp.add(m_deleteButton);
-
-		// ...create the purge button...
+		buttonDIV.add(m_deleteButton);
 		m_purgeButton = new TaskButton(
 			m_messages.taskLabelPurge(),
 			m_messages.taskAltPurge(),
-			false,
+			false,	// false -> Disabled by default.
 			TeamingEvents.TASK_PURGE);
-		fp.add(m_purgeButton);
+		buttonDIV.add(m_purgeButton);
+		fp.add(buttonDIV);
 		m_taskToolsDIV.add(fp);
 
 		// ...create a popup menu for the view options...
@@ -719,6 +751,22 @@ public class TaskListing extends Composite {
 		}
 	}
 
+	/**
+	 * Hides the warning panel and shows the linkage panel.
+	 */
+	public void showTaskToolsLinkage() {
+		m_taskToolsWarningDIV.setVisible(false);
+		m_taskToolsLinkageDIV.setVisible(true );
+	}
+	
+	/**
+	 * Hides the linkage panel and shows the warning panel.
+	 */
+	public void showTaskToolsWarning() {
+		m_taskToolsLinkageDIV.setVisible(false);
+		m_taskToolsWarningDIV.setVisible(true );
+	}
+	
 	/**
 	 * Callback interface to interact with the task listing
 	 * asynchronously after it loads. 
