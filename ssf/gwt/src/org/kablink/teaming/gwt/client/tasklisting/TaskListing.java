@@ -545,9 +545,14 @@ public class TaskListing extends Composite {
 		FlowPanel fp = new FlowPanel();
 		fp.addStyleName("gwtTaskTools_LeftDIV");
 		
+		String displayStyle;
+		if (GwtClientHelper.jsIsIE())
+		     displayStyle = " displayInline";
+		else displayStyle = " displayInlineBlock";
+		
 		// ...create the linkage panel...
 		m_taskToolsLinkageDIV = new FlowPanel();
-		m_taskToolsLinkageDIV.addStyleName("gwtTaskTools_LinkageDIV");
+		m_taskToolsLinkageDIV.addStyleName("gwtTaskTools_LinkageDIV" + displayStyle);
 		
 		// ...create the order buttons...
 		m_moveUpButton   = new TaskButton(m_images.arrowUp(),   m_images.arrowUpDisabled(),   m_images.arrowUpMouseOver(),   false, m_messages.taskAltMoveUp(),   TeamingEvents.TASK_MOVE_UP);
@@ -572,12 +577,12 @@ public class TaskListing extends Composite {
 
 		// ...create the warning panel...
 		m_taskToolsWarningDIV = new FlowPanel();
-		m_taskToolsWarningDIV.addStyleName("gwtTaskTools_WarningDIV gwtTaskTools_Span");
+		m_taskToolsWarningDIV.addStyleName("gwtTaskTools_WarningDIV gwtTaskTools_Span" + displayStyle);
 		m_taskToolsWarningDIV.setVisible(false);
 		Label button = new Label(m_messages.taskHierarchyDisabled());
 		button.setTitle(m_messages.taskAltHierarchyDisabled());
 		button.addStyleName("cursorPointer");
-		button.addStyleName("gwtTaskTools_WarningAnchor");
+		button.addStyleName("gwtTaskTools_WarningAnchor" + displayStyle);
 		EventWrapper.addHandler(button, new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -589,7 +594,7 @@ public class TaskListing extends Composite {
 		
 		// ...create the delete and purge button panel...
 		FlowPanel buttonDIV = new FlowPanel();
-		buttonDIV.addStyleName("gwtTaskTools_ButtonDIV");
+		buttonDIV.addStyleName("gwtTaskTools_ButtonDIV" + displayStyle);
 		m_deleteButton = new TaskButton(
 			m_messages.taskLabelDelete(),
 			m_messages.taskAltDelete(),
