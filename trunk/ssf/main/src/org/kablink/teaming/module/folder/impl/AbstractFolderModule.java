@@ -102,6 +102,7 @@ import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -149,7 +150,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractFolderModule extends CommonDependencyInjection 
-implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
+		implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
 	protected String[] entryTypes = {Constants.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
@@ -187,6 +188,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
+	}
+	
+	protected AdminModule getAdminModule() {
+		// Can't use IoC due to circular dependency
+		return (AdminModule) SpringContextUtil.getBean("adminModule");
 	}
 	
 	private TransactionTemplate transactionTemplate;
@@ -901,7 +907,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         long fileSize = 0;
         for (Attachment att : entry.getAttachments()) {
         	if (att instanceof FileAttachment) {
-        		fileSize += ((FileAttachment)att).getFileItem().getLength();
+        		long attFileSize = ((FileAttachment)att).getFileItem().getLength();
+        		fileSize += attFileSize;
+        		
+        		//While in here, check the file size to see if it is within the upload size limit
+        		checkFileUploadSizeLimit(destination, attFileSize, ((FileAttachment) att).getFileItem().getName());
         	}
         }
 		if (!processor.checkMoveEntryQuota(entry.getParentBinder(), destination, entry)) {
@@ -911,6 +921,43 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
         processor.moveEntry(folder, entry, destination, options);
     }
+    
+	private void checkFileUploadSizeLimit(Binder binder, Long fileSize, String fileName) 
+			throws DataQuotaException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		//Check that the file isn't too big
+		//If there is a binder setting, it must match irrespective of user settings
+		Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
+		if (maxFileSize != null) {
+			//There is a file size limit, go check it
+			if (fileSize > maxFileSize * 1000000) {
+				throw new DataQuotaException("file.maxSizeExceeded", 
+						new Object[]{fileName});
+			}
+		}
+		//Check the system default and the user limits
+		Long userMaxFileSize = user.getFileSizeLimit();
+		Long userMaxGroupsFileSize = user.getMaxGroupsFileSizeLimit();
+		Long fileSizeLimit = null;
+		if (userMaxGroupsFileSize != null) {
+			//Start with the group setting (if any)
+			fileSizeLimit = userMaxGroupsFileSize;
+		}
+		if (userMaxFileSize != null) {
+			//If there is a user setting, use that (even if it is less than the group setting)
+			fileSizeLimit = userMaxFileSize;
+		}
+		if (fileSizeLimit == null) {
+			//There aren't any per-user or per-group settings, so see if there is a site default
+			fileSizeLimit = getAdminModule().getFileSizeLimitUserDefault();
+		}
+		//Now check to see if the file size is above the limit
+		if (fileSizeLimit != null && fileSize > fileSizeLimit * 1000000) {
+			throw new DataQuotaException("file.maxSizeExceeded", 
+					new Object[]{fileName});
+		}
+	}
+
     //inside write transaction    
     public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
@@ -925,7 +972,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         long fileSize = 0;
         for (Attachment att : entry.getAttachments()) {
         	if (att instanceof FileAttachment) {
-        		fileSize += ((FileAttachment)att).getFileItem().getLength();
+        		long attFileSize = ((FileAttachment)att).getFileItem().getLength();
+        		fileSize += attFileSize;
+        		
+        		//While in here, check the file size to see if it is within the upload size limit
+        		checkFileUploadSizeLimit(destination, attFileSize, ((FileAttachment) att).getFileItem().getName());
         	}
         }
 		if (!getBinderModule().isBinderDiskQuotaOk(destination, fileSize)) {
