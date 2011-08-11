@@ -45,6 +45,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.FileCharsetDetectorUtil;
 import org.kablink.teaming.util.FileHelper;
@@ -142,7 +143,13 @@ public abstract class Converter<T>
 				shortenConvertedFile(convertedFile.getPath(), maxTextLength);
 				convertedFile = cacheFileStore.getFile(convertedFilePath);
 			} 
-			return new FileInputStream(convertedFile);
+			InputStream fis =  new FileInputStream(convertedFile);
+			if (fa.isEncrypted()) {
+				//This cached file is encrypted, so add a decryptor to it
+				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
+				fis = cfe.getEncryptionInputDecryptedStream(fis);
+			}
+			return fis;
 		}	
 		else
 			throw new DocConverterException("Conversion failed");
