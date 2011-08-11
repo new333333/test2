@@ -59,6 +59,7 @@ import org.kablink.teaming.docconverter.impl.TextOpenOfficeConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -104,7 +105,11 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		File intermediateFile = cacheFileStore.getFile(iPath);
 		try {
 			super.createCachedFile(intermediateFile, binder, entry, fa, filePath, relativeFilePath, parameters);
-			FileOutputStream fos = new FileOutputStream(convertedFile);
+			OutputStream fos = new FileOutputStream(convertedFile);
+			if (fa.isEncrypted()) {
+				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
+				fos = cfe.getEncryptionOutputEncryptedStream(fos);
+			}
 			try {
 				getTextFromXML(intermediateFile, getNullTransformFile(), fos);
 			}
