@@ -104,6 +104,7 @@ public enum TeamingEvents implements IsSerializable {
 	SIZE_CHANGED,						// The size of something changed.
 	
 	TASK_DELETE,						// Delete the Selected Tasks.
+	TASK_HIERARCHY_DISABLED,			// Shows the reasons why task hierarchy manipulation is disabled.
 	TASK_MOVE_DOWN,						// Move the Selected Task Down in the Ordering.
 	TASK_MOVE_LEFT,						// Move the Selected Task Left (i.e., Decrease its Subtask Level.)
 	TASK_MOVE_RIGHT,					// Move the Selected Task Right (i.e., Increase its Subtask Level.)

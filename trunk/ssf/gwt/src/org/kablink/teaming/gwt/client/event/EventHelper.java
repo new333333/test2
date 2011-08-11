@@ -117,6 +117,7 @@ public class EventHelper {
 		case SIDEBAR_SHOW:                      reply = new SidebarShowEvent();                  break;
 		case SIZE_CHANGED:                      reply = new SizeChangedEvent();                  break;
 		case TASK_DELETE:                       reply = new TaskDeleteEvent();                   break;
+		case TASK_HIERARCHY_DISABLED:			reply = new TaskHierarchyDisabledEvent();        break;
 		case TASK_MOVE_DOWN:                    reply = new TaskMoveDownEvent();                 break;
 		case TASK_MOVE_LEFT:                    reply = new TaskMoveLeftEvent();                 break;
 		case TASK_MOVE_RIGHT:                   reply = new TaskMoveRightEvent();                break;
@@ -572,6 +573,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case TASK_HIERARCHY_DISABLED:
+				// A TaskHierarchyDisabledEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof TaskHierarchyDisabledEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TaskHierarchyDisabledEvent.registerEvent(eventBus, ((TaskHierarchyDisabledEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case TASK_MOVE_DOWN:
 				// A TaskMoveDownEvent!  Can the event handler we were
 				// given handle that?
@@ -919,6 +929,7 @@ public class EventHelper {
 			case SIZE_CHANGED:                      hasHandler = (eventHandler instanceof SizeChangedEvent.Handler);                  break;
 			
 			case TASK_DELETE:                       hasHandler = (eventHandler instanceof TaskDeleteEvent.Handler);                   break;
+			case TASK_HIERARCHY_DISABLED:           hasHandler = (eventHandler instanceof TaskHierarchyDisabledEvent.Handler);        break;
 			case TASK_MOVE_DOWN:                    hasHandler = (eventHandler instanceof TaskMoveDownEvent.Handler);                 break;
 			case TASK_MOVE_LEFT:                    hasHandler = (eventHandler instanceof TaskMoveLeftEvent.Handler);                 break;
 			case TASK_MOVE_RIGHT:                   hasHandler = (eventHandler instanceof TaskMoveRightEvent.Handler);                break;

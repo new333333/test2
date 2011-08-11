@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
+import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveDownEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveLeftEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveRightEvent;
@@ -137,6 +138,7 @@ public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
 		TaskDeleteEvent.Handler,
+		TaskHierarchyDisabledEvent.Handler,
 		TaskMoveDownEvent.Handler,
 		TaskMoveLeftEvent.Handler,
 		TaskMoveRightEvent.Handler,
@@ -208,6 +210,7 @@ public class TaskTable extends Composite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.TASK_DELETE,
+		TeamingEvents.TASK_HIERARCHY_DISABLED,
 		TeamingEvents.TASK_MOVE_DOWN,
 		TeamingEvents.TASK_MOVE_LEFT,
 		TeamingEvents.TASK_MOVE_RIGHT,
@@ -1321,6 +1324,21 @@ public class TaskTable extends Composite
 			getTasksCheckedImpl(task.getSubtasks(), checkedTasks);
 		}
 	}
+
+	/*
+	 * Returns a List<String> of the reasons why task hierarchy
+	 * manipulation is disabled.
+	 */
+	private List<String> getToolWarnings() {
+		List<String> reasons = new ArrayList<String>();
+		
+		if (m_taskBundle.getIsFiltered())                         reasons.add(m_messages.taskHierarchyDisabled_Filter());
+		if (!(m_taskBundle.getCanModifyTaskLinkage()))            reasons.add(m_messages.taskHierarchyDisabled_Rights());
+		if ((Column.ORDER != m_sortColumn) || (!m_sortAscending)) reasons.add(m_messages.taskHierarchyDisabled_Sort());
+		if (!(m_taskBundle.getIsFromFolder()))                    reasons.add(m_messages.taskHierarchyDisabled_Virtual());
+		
+		return reasons;
+	}
 	
 	/*
 	 * Returns the UIData from the TaskListItem.
@@ -1735,6 +1753,33 @@ public class TaskTable extends Composite
 				}
 			});
 		}
+	}
+	
+	/*
+	 * Called when the user wants to know why task hierarchy
+	 * manipulation has been disabled.
+	 * 
+	 * Shows the dialog asynchronously.
+	 */
+	private void handleTaskHierarchyDisabledAsync() {
+		ScheduledCommand reasonShower = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				handleTaskHierarchyDisabledNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(reasonShower);
+	}
+	
+	/*
+	 * Called when the user wants to know why task hierarchy
+	 * manipulation has been disabled.
+	 * 
+	 * Shows the dialog synchronously.
+	 */
+	private void handleTaskHierarchyDisabledNow() {
+		TaskHierarchyDisabledDlg dlg = new TaskHierarchyDisabledDlg(getToolWarnings());
+		dlg.showRelativeTo(m_taskListing.getTaskToolsWarningDIV());
 	}
 	
 	/*
@@ -2583,6 +2628,18 @@ public class TaskTable extends Composite
 	@Override
 	public void onTaskDelete(TaskDeleteEvent event) {
 		handleTaskDelete();
+	}
+
+	/**
+	 * Handles TaskHierarchyDisabledEvent's received by this class.
+	 * 
+	 * Implements the TaskHierarchyDisabledEvent.Handler.onTaskHierarchyDisabled() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTaskHierarchyDisabled(TaskHierarchyDisabledEvent event) {
+		handleTaskHierarchyDisabledAsync();
 	}
 
 	/**
@@ -3592,6 +3649,19 @@ public class TaskTable extends Composite
 	private boolean shouldShowStructure() {
 		return (m_taskBundle.respectLinkage() && (Column.ORDER == m_sortColumn));
 	}
+
+	/*
+	 * Returns true if the hierarchy manipulation warning should be
+	 * shown on the tool bar and false otherwise.
+	 */
+	private boolean shouldShowToolWarning() {
+		boolean byFilter  = m_taskBundle.getIsFiltered();
+		boolean byRights  = (!(m_taskBundle.getCanModifyTaskLinkage()));
+		boolean bySort    = ((Column.ORDER != m_sortColumn) || (!m_sortAscending));
+		boolean byVirtual = (!(m_taskBundle.getIsFromFolder()));
+		// Window.alert("f:" + byFilter + ", r:" + byRights + ", s:" + bySort + ", v:" + byVirtual);
+		return (bySort || byVirtual || byFilter || byRights);
+	}
 	
 	/*
 	 * Returns true if we should show the order column and false
@@ -3898,6 +3968,10 @@ public class TaskTable extends Composite
 			moveStates = new MoveStates();
 			arrowHint = m_messages.taskCantMove_Rights();
 		}
+
+		if (shouldShowToolWarning())
+		     m_taskListing.showTaskToolsWarning();
+		else m_taskListing.showTaskToolsLinkage();
 		
 		// Enabled/disable the buttons as calculated.
 		m_taskListing.getDeleteButton().setEnabled(   enableTrash                        );
