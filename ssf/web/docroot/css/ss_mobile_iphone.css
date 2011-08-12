@@ -3,7 +3,7 @@
 */
 
 body { 
-	background-color: #b8b8b8; 
+	background-color: #353838; 
 	margin: 0; 
 	}
 
@@ -69,7 +69,12 @@ span.pad-left20 select {
 	padding-top: 10px;
 	background-color: #72AEB6;
 	font-weight: bold; 
-	width: 100%; 
+	width: 100%;
+	background-image: -moz-linear-gradient(top, #81b2bd, #3e6978);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#81b2bd), to(#3e6978));
+	box-shadow: 1px 1px 35px #949494;
+	-moz-box-shadow: 1px 1px 35px #949494;
+	-webkit-box-shadow: 1px 1px 35px #949494;
 	}
 		
 .search { 
@@ -285,13 +290,48 @@ span.pad-left20 select {
 	}
 
 /*  my links styles */
+.home-grid-row {
+	clear: both;
+
+}
+
+.home-grid-cell {
+	width: 33%;
+	float: left;
+	border-right: 1px solid #000;
+}
+
+.home-grid-cell .main-item {
+	height:55px;
+	padding: 25% 10px 35%;
+	text-align:center;
+}
+
+.main-item {
+	color: #f6f6f6;
+	font-size: 12px;
+	font-weight: bold;
+   	text-shadow: 0 1px 0 #000000;
+	background-color: #505354;
+	border-bottom: 1px solid #000000;
+}
+.main-item img { 
+	vertical-align: middle;
+	margin-right: 5px;
+	border:0px;
+}
+
+.main-item-label {
+	margin-top: 5px;
+	}
+
 .my-item {
-	font-size: 1.2em;
+	font-weight: normal;
+   	text-shadow: 0 1px 0 #000000;
 	background-color: #fff;
-	padding: 3px 10px 3px 20px;
 	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
 	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
-	}
+}
 
 .my-item img { 
 	vertical-align: middle;

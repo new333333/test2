@@ -49,33 +49,39 @@
 <div class="folders">
 <c:if test="${operation2 != 'whatsnew'}">
   <div class="folder-content">
+    <div style="clear:left">
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
 				    binderId="${ssUser.workspaceId}" />">
 		<div class="my-item myws-a">
-		  <img src="<html:rootPath/>images/mobile/iphone_teaming_workspace1.png"/>
-		  <ssf:nlt tag="navigation.myWorkspace"/>
+		  <div><img src="<html:rootPath/>images/mobile/iphone_teaming_workspace1.png"/></div>
+		  <div><ssf:nlt tag="navigation.myWorkspace"/></div>
 		</div>
 	</a>
+	</div>
+	<div style="float:left">
     <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
 							binderId="${ssBinder.id}"
 							operation="mobile_show_favorites" />">
 		<div class="my-item myfavorites-a">
-		  <img src="<html:rootPath/>images/mobile/iphone_teaming_favorite1.png"/>
-		  <ssf:nlt tag="navigation.myFavorites"/>
+		  <div><img src="<html:rootPath/>images/mobile/iphone_teaming_favorite1.png"/></div>
+		  <div><ssf:nlt tag="navigation.myFavorites"/></div>
 		</div>
 	</a>
+	</div>
+	<div>
     <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
 							binderId="${ssBinder.id}"
 							operation="mobile_show_teams" />">
 		<div class="my-item myteams-a">
-		  <img src="<html:rootPath/>images/mobile/iphone_teaming_teams1.png"/>
-		  <ssf:nlt tag="navigation.myTeams"/>
+		  <div><img src="<html:rootPath/>images/mobile/iphone_teaming_teams1.png"/></div>
+		  <div><ssf:nlt tag="navigation.myTeams"/></div>
 		</div>    
     </a>
+    </div>
   </div>
 </c:if>
 
