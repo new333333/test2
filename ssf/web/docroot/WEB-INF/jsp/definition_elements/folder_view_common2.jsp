@@ -820,12 +820,14 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
  <c:if test="${columnName == 'date' && !empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
-  	<% if (MiscUtil.isEntryReserved(e1BinderId, e1DocId)) { %><img
+    <c:if test="${!empty entry1._reservedbyId}">
+      <img
 		style="margin-right: 1px;"
 		align="absmiddle" 
 		src="<html:imagesPath/>pics/sym_s_caution.gif"
 		<ssf:alt tag="entry.reservedBy"/><ssf:title tag="entry.reservedBy"/>
-	/><% } %>
+	  />
+	</c:if>
     <span class="ss_nowrap" <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${entry1._lastActivity}" type="both" 
 	 timeStyle="short" dateStyle="short" /></span>

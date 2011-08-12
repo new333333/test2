@@ -86,6 +86,8 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
+import com.liferay.portal.tools.Entity;
+
 
 import static org.kablink.util.search.Constants.*;
 
@@ -372,6 +374,17 @@ public class EntityIndexUtils {
             Field modificationTitleField = new Field(MODIFICATION_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(modificationTitleField);
         }   
+   } 
+     
+    public static void addReserved(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+    	if (entry instanceof FolderEntry) {
+			HistoryStamp historyStamp = ((FolderEntry)entry).getReservation();
+			if (historyStamp != null) {
+				Principal lockedByUser = historyStamp.getPrincipal();
+	        	Field reservedField = new Field(RESERVEDBY_ID_FIELD, lockedByUser.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	            doc.add(reservedField);
+			}
+    	}
    } 
      
     public static void addOwner(Document doc, Principal owner, boolean fieldsOnly) {
