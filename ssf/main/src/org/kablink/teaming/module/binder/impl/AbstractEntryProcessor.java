@@ -1398,6 +1398,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	// Not in common part, cause files use different dates
         EntityIndexUtils.addCreation(indexDoc, entry.getCreation(), fieldsOnly);
         EntityIndexUtils.addModification(indexDoc, entry.getModification(), fieldsOnly);
+        
+        //Add a field indicating if the entry is reserved
+        EntityIndexUtils.addReserved(indexDoc, entry, fieldsOnly);
  
         // Add document type
         BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_ENTRY, fieldsOnly);
