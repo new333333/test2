@@ -106,6 +106,7 @@ public class WebKeys {
     public static final String URL_AJAX_LABEL_ID = "ss_ajaxLabelId";
     public static final String URL_AJAX_MESSAGE_ID = "ss_ajaxMsgId";
     public static final String URL_ADD_DEFAULT_ENTRY = "addDefaultEntryURL";
+    public static final String URL_ADD_REPLY_URL = "ss_addReplyUrl";
     public static final String URL_ADD_ENTRY = "ss_addEntryUrl";
     public static final String URL_ADD_ENTRIES = "ss_addEntryUrls";
     public static final String URL_ADD_FOLDER = "ss_addFolderUrl";

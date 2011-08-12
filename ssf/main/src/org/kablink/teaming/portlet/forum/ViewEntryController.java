@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -94,7 +94,6 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -107,6 +106,7 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 
 
+@SuppressWarnings("unchecked")
 public class ViewEntryController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
@@ -656,10 +656,10 @@ public class ViewEntryController extends  SAbstractController {
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				model.put(WebKeys.ENTRY_REPLY_STYLES, replyStyles);
 				if (!replyStyles.isEmpty()) {
+					// Is there only one reply style?
 					if (replyStyles.size() == 1) {
-						//There is only one reply style, so show it not as a drop down menu
+						// Yes!  So don't show it as a drop down menu.
 						String replyStyleId = (String)replyStyles.get(0);
-						
 						if (Validator.isNotNull(replyStyleId)) {
 							AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 							adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
@@ -670,10 +670,17 @@ public class ViewEntryController extends  SAbstractController {
 							Map qualifiers = new HashMap();
 							qualifiers.put("nosort", true);
 							qualifiers.put("popup", new Boolean(true));
+							// Note that for the single case, we push
+							// the add reply URL for the 'Add
+							// Comment...' button on the comment tab.
+							String addReplyUrl = adapterUrl.toString();
+							model.put(WebKeys.URL_ADD_REPLY_URL, addReplyUrl);
 							toolbar.addToolbarMenu("1_reply", replyText, 
-									adapterUrl.toString(), qualifiers);
+									addReplyUrl, qualifiers);
 						}
 					} else {
+						// No, there's more than one reply style!  Show
+						// it as a drop down menu.
 						toolbar.addToolbarMenu("1_reply", replyText);
 						Map qualifiers = new HashMap();
 						qualifiers.put("nosort", true);
@@ -689,12 +696,17 @@ public class ViewEntryController extends  SAbstractController {
 								adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 								toolbar.addToolbarMenuItem("1_reply", "replies", NLT.getDef(replyDef.getTitle()), 
 										adapterUrl.toString(), qualifiers);
+								
+								// Note that for the multiple case, we
+								// don't push an add reply URL so no
+								// 'Add Comment...' button will appear
+								// on the comment tab.
 							} catch (NoDefinitionByTheIdException e) {
 								logger.debug("ViewEntryController.buildEntryToolbar(NoDefinitionByTheIdException):  Ignored");
 								continue;
 							}
 						}
-					} 
+					}
 				}
 			}
 		    
