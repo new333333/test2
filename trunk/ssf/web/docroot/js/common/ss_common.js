@@ -9630,6 +9630,18 @@ function intRequiredBlur(eWidget, mode, sFixupMsg) {
 }
 
 /*
+ * If a checkbox element is checked, confirms with the user if they
+ * want to proceed.
+ */
+function ss_confirmIfCBChecked(cbId, confirmation) {
+	var reply;
+	if (document.getElementById(cbId).checked)
+         reply = confirm(confirmation);
+	else reply = true;
+	return reply;
+}
+
+/*
  * WebKit Pasting Bug Cleanup.
  * 
  * The problem is that when pasting plain text into a WebKit based
