@@ -127,6 +127,7 @@ public class Constants {
 	public static final String MODIFICATIONID_FIELD = "_modificationId";
 	public static final String MODIFICATION_NAME_FIELD = "_modificationName";
 	public static final String MODIFICATION_TITLE_FIELD = "_modificationTitle";
+	public static final String RESERVEDBY_ID_FIELD = "_reservedbyId";
 	public static final String OWNERID_FIELD = "_ownerId";
 	public static final String OWNER_NAME_FIELD = "_ownerName";
 	public static final String OWNER_TITLE_FIELD = "_ownerTitle";

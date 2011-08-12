@@ -623,6 +623,9 @@ public final class MiscUtil
 	/**
 	 * Returns true if the FolderEntry is reserved and false otherwise.
 	 * 
+	 * Be careful when using this call from a jsp. It may do a database operation.
+	 * Don't call this from places where the entry isn't already fetched (such as from a folder listing jsp).
+	 * 
 	 * @param binderId
 	 * @param entryId
 	 * 
