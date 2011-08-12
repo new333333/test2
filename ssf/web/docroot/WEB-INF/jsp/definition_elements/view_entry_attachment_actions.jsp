@@ -113,7 +113,7 @@
 		<%  }  %>
 	  </div>
 
-      <c:if test="${!ss_attachedFileIsVersion && !ss_pseudoEntity}">
+      <c:if test="${!ss_attachedFile.encrypted && !ss_attachedFileIsVersion && !ss_pseudoEntity}">
 	  <ssf:ifSupportsViewAsHtml relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">
 		<div class="ss_inline_menu">
 		  <a target="_blank" style="text-decoration: none;" href="<ssf:url 

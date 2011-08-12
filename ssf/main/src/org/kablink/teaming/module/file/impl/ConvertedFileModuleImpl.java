@@ -186,6 +186,10 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		try
 		{
 			is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
+			if (fa.isEncrypted()) {
+				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
+				out = cfe.getEncryptionOutputDecryptedStream(out);
+			}
 			
 			boolean injectNovellTag = SPropsUtil.getBoolean("file.html.view.inject.novell.tag", true);
 			

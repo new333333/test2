@@ -52,6 +52,7 @@ import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.FileCopyUtils;
@@ -232,7 +233,11 @@ public abstract class HtmlConverter extends Converter<String>
 	public InputStream convert(String url, Binder binder, DefinableEntity entry, FileAttachment fa)
 		throws IOException
 	{
-		return super.convert(binder, entry, fa, url, HTML_SUBDIR, HTML_FILE_SUFFIX);
+		if (fa.isEncrypted()) {
+			throw new DocConverterException(NLT.get("html.converterError.encrypted"));
+		} else {
+			return super.convert(binder, entry, fa, url, HTML_SUBDIR, HTML_FILE_SUFFIX);
+		}
 	}
 	
 	public void deleteCacheHtmlFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
