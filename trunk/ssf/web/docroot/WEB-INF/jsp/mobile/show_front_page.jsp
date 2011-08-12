@@ -38,6 +38,6 @@
 <c:set var="ss_pageTitle" value="${ssUser.title}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
+<%@ include file="/WEB-INF/jsp/mobile/home.jsp" %>
 </body>
 </html>

@@ -40,7 +40,7 @@
 <br/>
 <script type="text/javascript">
 <c:if test="${ss_mobileIsLoggedIn}">
-self.location.href="${ssMobileWhatsNewUrl}";
+	self.location.href="${ssMobileUrl}";
 </c:if>
 <c:if test="${!ss_mobileIsLoggedIn}">
 	Android.doAppLogin("${operation2}");
