@@ -1869,6 +1869,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			vAtt.setMinorVersion(fAtt.getMinorVersion());
 			vAtt.setVersionName(versionName);
 			vAtt.setRepositoryName(fAtt.getRepositoryName());
+			vAtt.setEncrypted(fAtt.getEncrypted());
+			vAtt.setEncryptionKey(fAtt.getEncryptionKey());
 			fAtt.addFileVersion(vAtt);
 		}
 		FileUtils.setFileVersionAging(fAtt.getOwner().getEntity());
@@ -2207,6 +2209,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		vAtt.setAgingEnabled(Boolean.FALSE);
 		vAtt.setVersionName(versionName);
 		vAtt.setRepositoryName(fAtt.getRepositoryName());
+		vAtt.setEncrypted(fAtt.getEncrypted());
+		vAtt.setEncryptionKey(fAtt.getEncryptionKey());
 		fAtt.addFileVersion(vAtt);
 	}
 	
