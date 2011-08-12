@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -327,43 +327,46 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     width="400px" singleItem="true"/> 
   </div>
 </div>
-
-<div id="ss_addApplicationGroupsMenu${renderResponse.namespace}" 
-  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
-  <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationGroupsMenu${renderResponse.namespace}');return false;">
-      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
-    </a>
-  </div>
-  <div style="padding:0px 10px 10px 10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addApplicationGroup"/></span><br/>
-  <ssf:find formName="${renderResponse.namespace}rolesForm" 
-    formElement="addPrincipalText${renderResponse.namespace}" 
-    type="applicationGroup"
-    leaveResultsVisible="false"
-    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/> 
-  </div>
-</div>
-
-<div id="ss_addApplicationsMenu${renderResponse.namespace}" 
-  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
-  <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationsMenu${renderResponse.namespace}');return false;">
-      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
-    </a>
-  </div>
-  <div style="padding:0px 10px 10px 10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addApplication"/></span><br/>
-  <ssf:find formName="${renderResponse.namespace}rolesForm" 
-    formElement="addPrincipalText${renderResponse.namespace}" 
-    type="application"
-    leaveResultsVisible="false"
-    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/>
-  </div>
-</div>
-
+<c:if test="${ssWorkArea.workAreaType == 'zone'}">
+	<c:set var="ss_hideApplications" value='true' scope="request"/>
+</c:if>
+<c:if test="${ssWorkArea.workAreaType != 'zone'}">
+	<div id="ss_addApplicationGroupsMenu${renderResponse.namespace}" 
+	  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+	  <div align="right">
+	    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationGroupsMenu${renderResponse.namespace}');return false;">
+	      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+	    </a>
+	  </div>
+	  <div style="padding:0px 10px 10px 10px;">
+	  <span class="ss_bold"><ssf:nlt tag="access.addApplicationGroup"/></span><br/>
+	  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+	    formElement="addPrincipalText${renderResponse.namespace}" 
+	    type="applicationGroup"
+	    leaveResultsVisible="false"
+	    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+	    width="250px" singleItem="true"/> 
+	  </div>
+	</div>
+	
+	<div id="ss_addApplicationsMenu${renderResponse.namespace}" 
+	  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+	  <div align="right">
+	    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationsMenu${renderResponse.namespace}');return false;">
+	      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+	    </a>
+	  </div>
+	  <div style="padding:0px 10px 10px 10px;">
+	  <span class="ss_bold"><ssf:nlt tag="access.addApplication"/></span><br/>
+	  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+	    formElement="addPrincipalText${renderResponse.namespace}" 
+	    type="application"
+	    leaveResultsVisible="false"
+	    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+	    width="250px" singleItem="true"/>
+	  </div>
+	</div>
+</c:if>
 <c:if test="${ss_accessControlConfigureAllowed}">
 <div style="padding:4px;">
 <span class="ss_bold">
