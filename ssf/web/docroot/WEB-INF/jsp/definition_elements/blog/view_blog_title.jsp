@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -112,24 +112,26 @@
 	}
 %>
 <div class="ss_blog_title">
-<%
-	if (!seen) {
-		%>
-		
-		<a id="ss_sunburstDiv${ssFolder.id}_${docId}" href="javascript: ;" 
-		  title="<ssf:nlt tag="sunburst.click"/>"
-		  onClick="ss_hideSunburst('${docId}', '${ssFolder.id}');return false;"
-		><span 
-		  style="display:${ss_sunburstVisibilityHide};"
-		  id="ss_sunburstShow${renderResponse.namespace}" 
-		  class="ss_fineprint">
-		  	<img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.png">
-		  </span>
-		  </a>
-		
-		<%
-	}
-%>
+<!-- 20110812 (DRF):  Eliminated as per bug#703285.
+	<%
+		if (!seen) {
+			%>
+			
+			<a id="ss_sunburstDiv${ssFolder.id}_${docId}" href="javascript: ;" 
+			  title="<ssf:nlt tag="sunburst.click"/>"
+			  onClick="ss_hideSunburst('${docId}', '${ssFolder.id}');return false;"
+			><span 
+			  style="display:${ss_sunburstVisibilityHide};"
+			  id="ss_sunburstShow${renderResponse.namespace}" 
+			  class="ss_fineprint">
+			  	<img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.png">
+			  </span>
+			  </a>
+			
+			<%
+		}
+	%>
+-->
 <div class="ss_header_bar_title_text">
   <span class="ss_header_bar_title_text">
 	<%= docNumber %>
