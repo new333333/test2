@@ -34,10 +34,10 @@
 %>
 <% //Date view %>
 <div class="entry-content">
- <div class="entry-caption"><c:out value="${property_caption}" /></div>
  <div class="entry-element">
    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" 
 				      type="both" dateStyle="medium" timeStyle="short" />
  </div>
+ <div class="entry-caption"><c:out value="${property_caption}" /></div>
 </div>

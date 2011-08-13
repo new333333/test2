@@ -99,10 +99,10 @@
 				    operation="mobile_show_workspace"
 				    binderId="${entryFol._principal.workspaceId}" />"
 				  ><c:out value="${entryFol._principal.title}" escapeXml="true"/></a></span>
-				<div class="entry-date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				<span class="entry-date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		          	value="${entryFol._modificationDate}" type="both" 
 			      	timeStyle="short" dateStyle="medium" />
-			    </div>
+			    </span>
 			  </div>
 		 
 		  	  
@@ -122,7 +122,7 @@
 	    </div>
 	  </c:if>
 	  <c:if test="${empty ssFolderEntries}">
-		<div style="padding:20px;"><ssf:nlt tag="folder.NoResults"/></div>
+		<div style="padding:20px; color: #c4c4c4;"><ssf:nlt tag="folder.NoResults"/></div>
 	  </c:if>
 
   </div>
