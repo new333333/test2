@@ -34,6 +34,9 @@ package org.kablink.teaming.util;
 
 import java.io.File;
 
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.web.util.MiscUtil;
+
 public class DirPath {
 	
 	public static String getXsltDirPath() {
@@ -80,7 +83,8 @@ public class DirPath {
     }
     
 	private static String getImagesDirPath() {
-		return getWebappDirPathVisible("images");
+		String staticPath = ObjectKeys.STATIC_DIR + File.separator + SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "xxx") + File.separator;
+		return getWebappDirPathVisible(staticPath + "images");
 	}
 	
 }

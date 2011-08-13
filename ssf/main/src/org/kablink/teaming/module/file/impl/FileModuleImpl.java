@@ -1793,6 +1793,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		UpdateInfo updateInfo = updateVersionedFile(session, binder, entry, fui, lock);
 	    		versionName = updateInfo.versionName;
 	    		fileSize = updateInfo.fileLength;
+				fAtt.setEncrypted(fui.getIsEncrypted());
+				fAtt.setEncryptionKey(fui.getEncryptionKey());
 	    	}
 	    	else if(fileInfo == RepositorySession.NON_EXISTING_FILE) {
 				// For some reason the file doesn't exist in the repository.
