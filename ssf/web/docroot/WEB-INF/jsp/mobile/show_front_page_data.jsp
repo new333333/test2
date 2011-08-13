@@ -226,11 +226,11 @@
 				  ><c:out value="${entryWn._principal.title}" escapeXml="true"/></a>
 				</span>
 	
-			  	<div class="entry-date">
+			  	<span class="entry-date">
 			    	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		          	value="${entryWn._modificationDate}" type="both" 
 			      	timeStyle="short" dateStyle="medium" />
-			  	</div>
+			  	</span>
 		  	  </div>
 		  
 		  	  <div class="entry-type">

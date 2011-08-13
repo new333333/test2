@@ -72,9 +72,6 @@ span.pad-left20 select {
 	width: 100%;
 	background-image: -moz-linear-gradient(top, #81b2bd, #3e6978);
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#81b2bd), to(#3e6978));
-	box-shadow: 1px 1px 35px #949494;
-	-moz-box-shadow: 1px 1px 35px #949494;
-	-webkit-box-shadow: 1px 1px 35px #949494;
 	}
 		
 .search { 
@@ -140,7 +137,7 @@ span.pad-left20 select {
 	background-image: url(images/mobile/level_one_pattern4.gif);
 	background-repeat: repeat-x;
 	background-position: top;
-	border-bottom: 1px solid #1C5894;
+	border-bottom: 1px solid #949494;
 	white-space: nowrap;
 	vertical-align: middle;
 	}
@@ -295,30 +292,37 @@ span.pad-left20 select {
 
 }
 
-.home-grid-cell {
-	width: 33%;
+.home-grid-cell-1 {
+	width: 32.3%;
 	float: left;
-	border-right: 1px solid #000;
+	border-right: 2px solid #353838;
+	border-left: 1px solid #949494;
+}
+.home-grid-cell {
+	width: 32.3%;
+	float: left;
+	border-right: 2px solid #353838;
+	border-left: 1px solid #888888;
+	border-top: 1px solid #888888;
 }
 
-.home-grid-cell .main-item {
-	height:55px;
-	padding: 25% 10px 35%;
+.home-grid-cell .main-item,
+.home-grid-cell-1 .main-item {
+	padding: 20% 5px 20%;
 	text-align:center;
 }
 
 .main-item {
 	color: #f6f6f6;
-	font-size: 12px;
-	font-weight: bold;
+	font-size: 13px;
    	text-shadow: 0 1px 0 #000000;
 	background-color: #505354;
 	border-bottom: 1px solid #000000;
 }
 .main-item img { 
 	vertical-align: middle;
-	margin-right: 5px;
 	border:0px;
+	width: 60%;
 }
 
 .main-item-label {
@@ -344,20 +348,19 @@ span.pad-left20 select {
 	position: relative;
 	}
 .folder-content {
-	background-color: #fff;
+	background-color: #353838;
 	}
 	
 .folder-head {
 	clear: both; 
-	color: #fff;
+	color: #fafafa;
 	font-size: .95em;
+	text-align: center;
 	font-weight: bold;
 	vertical-align: middle;
-	padding: 5px 5px 5px 10px;
+	padding: 5px 10px;
 	letter-spacing: 1px;
-	background-color: #71bfde;
-	background: url(images/mobile/blue_slice40.png) repeat-x;
-	background-position: center;
+	background:#b8b8b8 url(images/mobile/trans10_black_blend.png) repeat-x top;
 	}
 
 .folder-item {
@@ -382,16 +385,16 @@ span.pad-left20 select {
 .entry {
 	position: relative;
 	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
-	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
+	background:#fff url(images/mobile/putty_blend4.png) repeat-x bottom;
 	min-height: 30px;
 	}
 .entry-title {
-	font-size: 18px;
+	font-size: 1.2em;
 	line-height: 19px;
 	font-weight: bold;
-	padding-top: 6px;
+	padding-top: 5px;
 	padding-right: 34px;
-	padding-left: 15px;
+	padding-left: 10px;
 	}
 
 .entry-title div.doc-number {
@@ -406,7 +409,7 @@ span.pad-left20 select {
 	padding-right: 15px;
 	padding-top: 5px;
 	padding-bottom: 10px;
-	padding-left: 15px;
+	padding-left: 10px;
 	}
 .entry-element {
 	font-size: 14px;
@@ -421,16 +424,15 @@ span.pad-left20 select {
 	padding-top: 4px;
 	}
 .entry-signature {
-	padding-top: 5px;
+	margin-left: 10px;
 	}
 .entry-author {
 	font-size: 14px;
-	padding-left: 15px;
 	}
 .entry-date {
 	font-size: 12px;
 	color: #666;
-	padding-left: 15px;
+	padding-left: 5px;
 	}
 .entry-type {
 	font-size: 12px;
@@ -448,10 +450,10 @@ span.pad-left20 select {
 	}
 .entry-comment-label {
 	position: absolute;
-	right: 6px;
-	top: 10px;
+	right: 8px;
+	top: 2px;
 	color: #000;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: bold;
 	text-align: center;
 	padding: 5px 8px;
@@ -474,7 +476,7 @@ span.pad-left20 select {
 	}
 
 .comment .entry-title, .comment2 .entry-title {
-	font-size: 16px;
+	font-size: .97em;
 	color: #666;
 	padding-top: 5px;
 	white-space: nowrap;

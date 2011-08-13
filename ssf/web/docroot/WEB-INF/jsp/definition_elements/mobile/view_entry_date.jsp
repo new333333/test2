@@ -34,9 +34,10 @@
 %>
 <% //Entry creation date view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div>
-<span class="entry-caption"><c:out value="${property_caption}" /></span>
 <span class="entry-date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
-	 timeStyle="short" dateStyle="medium" /></span>
+	 timeStyle="short" dateStyle="medium" />
+</span>
+<div>
+<span class="entry-caption"><c:out value="${property_caption}" /></span>
 </div>

@@ -47,7 +47,7 @@
   <div class="folders">
     <div class="folder-content">
 
-	  <div style="padding:20px;">
+	  <div style="padding:20px; color: #c4c4c4;">
   		<span><ssf:nlt tag="entry.noEntryByThisTitle"/></span>
 	  </div>
 
