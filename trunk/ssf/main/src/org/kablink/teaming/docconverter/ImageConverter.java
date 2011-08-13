@@ -32,15 +32,22 @@
  */
 package org.kablink.teaming.docconverter;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.DocumentException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
+import org.kablink.util.FileUtil;
 import org.springframework.util.FileCopyUtils;
 
 
@@ -88,7 +95,40 @@ public abstract class ImageConverter extends Converter<ImageConverter.Parameters
 		public int getWidth() { return width; }
 		public int getHeight() { return height; }
 	}
-	
+
+	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,
+			String filePath, String relativeFilePath, ImageConverter.Parameters parameters)
+		throws IOException
+	{
+		//If the file attachment is encrypted, we have to do this in two steps
+		if (!fa.isEncrypted()) {
+			super.createCachedFile(convertedFile, binder, entry, fa, filePath, relativeFilePath, parameters);
+		} else {
+			String iPath = filePath + "._convert_.jpg";
+			File intermediateFile = cacheFileStore.getFile(iPath);
+			try {
+				super.createCachedFile(intermediateFile, binder, entry, fa, filePath, relativeFilePath, parameters);
+				OutputStream fos = new FileOutputStream(convertedFile);
+				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
+				fos = cfe.getEncryptionOutputEncryptedStream(fos);
+				try {
+					InputStream fis = new FileInputStream(intermediateFile);
+					FileCopyUtils.copy(fis, fos);
+					fis.close();
+				}
+				finally {
+					fos.close();
+				}
+			}
+			finally
+			{
+				if(intermediateFile != null && intermediateFile.exists()) {
+					intermediateFile.delete();
+				}
+			}
+		}
+	}
+
 	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {
 		FileCopyUtils.copy(new File(_defaultImage), convertedFile);
 	}
