@@ -54,7 +54,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import org.apache.commons.logging.Log;
@@ -1594,13 +1593,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		//This binder requires that all files be encrypted, so mark that it should be encrypted
     		try {
 				//Get the key to use when encrypting and decrypting
-				SecretKey key = KeyGenerator.getInstance("DES").generateKey();
+    			CryptoFileEncryption cfe = new CryptoFileEncryption();
+				SecretKey key = cfe.getSecretKey();
+				if (key == null) {
+	    			errors.addProblem(new FilesErrors.Problem
+	    					(fui.getRepositoryName(), fui.getOriginalFilename(), 
+	    							FilesErrors.Problem.PROBLEM_ENCRYPTION_FAILED));
+	    			return false;
+				}
 				fui.setEncryptionKey(key.getEncoded());
 	    		fui.setIsEncrypted(true);
     		} catch(Exception e) {
     			errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryName(), fui.getOriginalFilename(), 
-    							FilesErrors.Problem.PROBLEM_FILE_EXISTS));
+    							FilesErrors.Problem.PROBLEM_ENCRYPTION_FAILED));
     			return false;
     		}
 

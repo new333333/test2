@@ -36,6 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
@@ -43,6 +44,7 @@ import java.security.spec.InvalidKeySpecException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
@@ -53,29 +55,40 @@ import javax.crypto.spec.SecretKeySpec;
 import org.kablink.teaming.module.file.FileEncryption;
 
 public class CryptoFileEncryption implements FileEncryption {
-    Cipher ecipher;
-    Cipher dcipher;
+    protected Cipher ecipher;
+    protected Cipher dcipher;
+    protected KeyGenerator kgen;
+    protected SecretKey key;
 
+    public CryptoFileEncryption() {
+		//Get the key to use when encrypting and decrypting
+    	try {
+    		kgen = KeyGenerator.getInstance("AES");
+	    	kgen.init(128); 
+    	} catch(NoSuchAlgorithmException e) {
+    		return;
+    	} catch(InvalidParameterException e) {
+        	return;
+    	}
+    	key = kgen.generateKey();
+    }
     public CryptoFileEncryption(byte[] raw) {
-    	SecretKeySpec skeySpec = new SecretKeySpec(raw, "DES");
-        // Create an 8-byte initialization vector
-        byte[] iv = new byte[]{
-            (byte)0x8E, 0x12, 0x39, (byte)0x9C,
-            0x07, 0x72, 0x6F, 0x5A
-        };
-        AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
+    	SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
         try {
-            ecipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-            dcipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            ecipher = Cipher.getInstance("AES");
+            dcipher = Cipher.getInstance("AES");
 
             // CBC requires an initialization vector
-            ecipher.init(Cipher.ENCRYPT_MODE, skeySpec, paramSpec);
-            dcipher.init(Cipher.DECRYPT_MODE, skeySpec, paramSpec);
-        } catch (java.security.InvalidAlgorithmParameterException e) {
+            ecipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+            dcipher.init(Cipher.DECRYPT_MODE, skeySpec);
         } catch (javax.crypto.NoSuchPaddingException e) {
         } catch (java.security.NoSuchAlgorithmException e) {
         } catch (java.security.InvalidKeyException e) {
         }
+    }
+    
+    public SecretKey getSecretKey() {
+    	return key;
     }
 
     public InputStream getEncryptionInputEncryptedStream(InputStream in) {
