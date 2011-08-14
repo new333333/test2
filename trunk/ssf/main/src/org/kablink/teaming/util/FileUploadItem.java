@@ -39,8 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.mail.MessagingException;
 
 import org.kablink.teaming.domain.Description;
