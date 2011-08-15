@@ -241,6 +241,8 @@ function ss_confirmEncryption(cbObj) {
 	</fieldset>
 <br/>
 
+<%
+/**  This is turned off until file encryption is implemented
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -268,6 +270,8 @@ function ss_confirmEncryption(cbObj) {
 	</fieldset>
 <br/>
 </c:if>
+*/
+%>
 
 <br/>
 
