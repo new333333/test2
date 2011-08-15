@@ -76,26 +76,31 @@ span.pad-left20 select {
 		
 .search { 
 	position: relative;
-	top: -6px;
+	top: -5px;
 	right: 4px;
 	font-size: .8em;
 	font-weight: bold; 
 	padding: 6px;
-	background-color: #54919a;
+	padding: 2px 8px;
+	background-image: url(images/mobile/trans15_black.png);
+	background-repeat: repeat;
 	white-space:nowrap;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 7px;
 	}
 
 .homelink { 
 	position: relative;
-	top: -6px;
+	top: -5px;
 	left: 4px;
 	font-size: .8em;
 	font-weight: bold; 
-	padding: 6px;
-	background-color: #54919a;
+	padding: 2px 8px;
+	background-image: url(images/mobile/trans15_black.png);
+	background-repeat: repeat;
 	white-space:nowrap;
-	-webkit-border-radius: 7px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 
 .backlink { 
@@ -389,8 +394,8 @@ span.pad-left20 select {
 	min-height: 30px;
 	}
 .entry-title {
-	font-size: 1.1em;
-	line-height: 1.1em;
+	font-size: 1em;
+	line-height: 1em;
 	font-weight: bold;
 	padding-top: 5px;
 	padding-right: 34px;
@@ -799,9 +804,9 @@ div.ss_mobile_calendar_no_entries_content span {
 	vertical-align: middle;
 	padding: 5px 5px 5px 10px;
 	letter-spacing: 1px;
-	background-color: #71bfde;
-	background: url(images/mobile/blue_slice40.png) repeat-x;
-	background-position: center;
+	background-color: #f0f1ef;
+	background: url(images/mobile/level_one_pattern4.gif) repeat-x;
+	background-position: bottom	;
 	}
 .ss_form_subhead {
 	 font-weight: bold;

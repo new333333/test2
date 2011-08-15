@@ -54,7 +54,6 @@
  <%-- This is a user workspace --%>
 
 <c:set var="ssProfileUser" value="${ssWorkspaceCreator}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/mobile/user_profile.jsp" %>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/mobile/workspace_binder_list.jsp" %>
 

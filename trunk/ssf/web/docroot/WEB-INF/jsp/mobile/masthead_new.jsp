@@ -40,11 +40,11 @@
   <div class="homelink">
 	<c:if test="${!ss_hideMiniBlog}">
 		  <a href="javascript: ;" 
-		    onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
+		    onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><img src="<html:rootPath/>css/images/mobile/blog_but.png" border="0"></a>
 	</c:if>
   </div>
 </td>
-<td valign="top" align="center">
+<td valign="middle" align="center">
   <div class="masthead-title">
   Novell Vibe
   </div>
@@ -52,7 +52,7 @@
 <td valign="top" align="right" width="1%">
   <div class="search">
 	<a href="javascript: ;" 
-      onClick="ss_toggleDivVisibility('search-dialog');return false;"><ssf:nlt tag="navigation.search"/></a>
+      onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>css/images/mobile/search_but.png" border="0"></a>
   </div>
 </td>
 </tr>
