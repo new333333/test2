@@ -75,6 +75,8 @@ import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.ServerTaskLinkage;
+import org.kablink.teaming.web.util.ServerTaskLinkage.ServerTaskLink;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.search.Constants;
@@ -785,7 +787,61 @@ public class TaskHelper {
 			task.addCustomAttribute(TASK_COMPLETED_DATE_ATTRIBUTE, new Date());
 		}		
 	}
-	
+
+	/**
+	 * Called from the JSP controller's when a task is removed so that
+	 * the folder's linkage can be fixed up.
+	 * 
+	 * @param bs
+	 * @param folder
+	 * @param entryId
+	 */
+	@SuppressWarnings("unchecked")
+	public static void removeTaskFromLinkage(AllModulesInjected bs, Folder folder, Long entryId) {
+		// If the current user can't modify the binder linkage...
+		if (!(canModifyTaskLinkageImpl(bs, folder))) {
+			// ...don't even try.
+			return;
+		}
+		
+		// If the folder doesn't have a task linkage serialization map
+		// stored on it...
+		Map serializationMap = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
+		if ((null == serializationMap) || serializationMap.isEmpty()) {
+			// ...there's nothing to remove from.
+			return;
+		}
+
+		// Parse the serialized task linkage...
+		ServerTaskLinkage tl = ServerTaskLinkage.loadSerializationMap(serializationMap);
+
+		// ...find the task list and task that's being removed...
+		List<ServerTaskLink> fixList = ServerTaskLinkage.findTaskList(tl,      entryId);
+		ServerTaskLink       task    = ServerTaskLinkage.findTask(    fixList, entryId);
+		int taskIndex = fixList.indexOf(task);
+		
+		// ...scan the subtasks of the task being removed...
+		List<ServerTaskLink> subtaskList = task.getSubtasks();
+		int count = subtaskList.size();
+		for (int i = (count - 1); i >= 0; i -= 1) {
+			// ...moving each subtask into the hierarchy where it's
+			// ...parent task was... 
+			ServerTaskLink subtask = subtaskList.get(i);
+			subtaskList.remove(i);
+			fixList.add(taskIndex, subtask);
+		}
+		
+		// ...remove the task being removed from its list...
+		fixList.remove(task);
+
+		// ...and finally, store the modified linkage back to the task
+		// ...folder.
+		bs.getBinderModule().setProperty(
+			folder.getId(),
+			ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE,
+			tl.getSerializationMap());
+	}
+
 	/**
 	 * Saves given type in session or default type if given is
 	 * <code>null</code> or unknown.
