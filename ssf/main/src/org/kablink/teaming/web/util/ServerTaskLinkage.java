@@ -137,6 +137,105 @@ public class ServerTaskLinkage {
 		// Nothing to do.
 	}
 
+	/**
+	 * Returns the ServerTaskLink with the given ID from this ServerTaskLinkage.
+	 * 
+	 * @param taskList
+	 * @param entryId
+	 * 
+	 * @return
+	 */	
+	public static ServerTaskLink findTask(List<ServerTaskLink> taskList, Long entryId) {
+		// Scan the ServerTaskLink's in this ServerTaskLinkage.
+		for (ServerTaskLink taskScan:  taskList) {
+			// Is this the ServerTaskLink in question?
+			if (taskScan.getEntryId().equals(entryId)) {
+				// Yes!  Return it.
+				return taskScan;
+			}
+
+			// Is this ID for a subtask of this ServerTaskLink?
+			ServerTaskLink reply = findSubtask(taskScan, entryId);
+			if (null != reply) {
+				// Yes!  Return it.
+				return reply;
+			}
+		}
+
+		// If we get here, we couldn't find a ServerTaskLink with the given
+		// ID.  Return null.
+		return null;
+	}
+	
+	/**
+	 * Returns the List<ServerTaskLink> containing the given ID from this
+	 * ServerTaskLinkage.
+	 * 
+	 * @param tb
+	 * @param entryId
+	 * 
+	 * @return
+	 */	
+	public static List<ServerTaskLink> findTaskList(ServerTaskLinkage tl, Long entryId) {
+		// Scan the ServerTaskLink's in this ServerTaskLinkage.
+		for (ServerTaskLink taskScan:  tl.getTaskOrder()) {
+			// Is this the ServerTaskLink in question?
+			if (taskScan.getEntryId().equals(entryId)) {
+				// Yes!  Return it.
+				return tl.getTaskOrder();
+			}
+
+			// Is this ID for a subtask of this ServerTaskList?
+			List<ServerTaskLink> reply = findSubtaskList(taskScan, entryId);
+			if (null != reply) {
+				// Yes!  Return it.
+				return reply;
+			}
+		}
+
+		// If we get here, we couldn't find a ServerTaskLink with the given
+		// ID.  Return null.
+		return null;
+	}
+	
+	/*
+	 * Searches a task's subtasks for the given ID.
+	 */
+	private static ServerTaskLink findSubtask(ServerTaskLink task, Long entryId) {
+		for (ServerTaskLink taskScan:  task.getSubtasks()) {
+			if (entryId.equals(taskScan.getEntryId())) {
+				return taskScan;
+			}
+			
+			ServerTaskLink reply = findSubtask(taskScan, entryId);
+			if (null != reply) {
+				return reply;
+			}
+		}
+		
+		return null;
+	}
+
+	/*
+	 * Searches a task's subtasks for the given ID and returns
+	 * the List<ServerTaskLink> that contains it.  Returns null if the
+	 * ServerTaskLink cannot be found.
+	 */
+	private static List<ServerTaskLink> findSubtaskList(ServerTaskLink task, Long entryId) {
+		for (ServerTaskLink taskScan:  task.getSubtasks()) {
+			if (entryId.equals(taskScan.getEntryId())) {
+				return task.getSubtasks();
+			}
+			
+			List<ServerTaskLink> reply = findSubtaskList(taskScan, entryId);
+			if (null != reply) {
+				return reply;
+			}
+		}
+		
+		return null;
+	}
+
 	/*
 	 * Given a binder ID and a mapping between old entry IDs and new
 	 * entry IDs, fixes the old entry ID references in the
@@ -211,12 +310,13 @@ public class ServerTaskLinkage {
 		}
 	}
 	
-	/*
+	/**
 	 * Returns a Map that that represents the serialization of a
 	 * ServerTaskLinkage.
+	 * 
 	 * @return
 	 */
-	private Map getSerializationMap() {
+	public Map getSerializationMap() {
 		// Simply serialize the List<ServerTaskLink> order list.
 		return getSerializationMapImpl(m_taskOrder);
 	}

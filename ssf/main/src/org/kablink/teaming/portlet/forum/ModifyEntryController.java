@@ -100,14 +100,21 @@ public class ModifyEntryController extends SAbstractController {
 			Binder parentBinder = entry.getParentBinder();
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
-			String purgeImmediately = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PURGE_IMMEDIATELY, "false");
-			if (parentBinder.isMirrored() || Boolean.parseBoolean(purgeImmediately)) {
-				getFolderModule().deleteEntry(folderId, entryId);
-			}
-			else {
-				TrashHelper.preDeleteEntry(this, folderId, entryId);
-			}
+			String  purgeImmediately   = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PURGE_IMMEDIATELY, "false");
+			boolean doPurgeImmediately = parentBinder.isMirrored() || Boolean.parseBoolean(purgeImmediately);
+			if (doPurgeImmediately)
+			     getFolderModule().deleteEntry(   folderId, entryId);
+			else TrashHelper.preDeleteEntry(this, folderId, entryId);
 			setupViewFolder(response, folderId);
+			
+			// If we just deleted or purged an entry from a task
+			// folder...
+			Folder folder = ((Folder) getBinderModule().getBinder(folderId));
+			if (TaskHelper.isTaskFolderType(folder)) {
+				// ...we need to update the task folder's linkage to
+				// ...reflect the change.
+				TaskHelper.removeTaskFromLinkage(this, folder, entryId);
+			}
 			
 			//Force the user's status to be updated.
 			BinderHelper.updateUserStatus(folderId, user);
@@ -177,8 +184,8 @@ public class ModifyEntryController extends SAbstractController {
 					// If we just modified an entry in a task folder...
 					Folder folder = ((Folder) getBinderModule().getBinder(folderId));
 					if (TaskHelper.isTaskFolderType(folder)) {
-						// ...mark it so that the task listing knows
-						// ...something changed.
+						// ...mark it so that task management knows
+						// ...what changed.
 						getProfileModule().setUserProperty(user.getId(), folderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, ObjectKeys.BINDER_PROPERTY_TASK_MODIFIED);
 						getProfileModule().setUserProperty(user.getId(), folderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     String.valueOf(entryId));
 					}
