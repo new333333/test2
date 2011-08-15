@@ -50,4 +50,9 @@
     </span>
   </c:if>
 </c:if>
+<span class="entry-date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+     value="${ssDefinitionEntry.creation.date}" type="both" 
+	 timeStyle="short" dateStyle="medium" />
+</span>
+
 </div>

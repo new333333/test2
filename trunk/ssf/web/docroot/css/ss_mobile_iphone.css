@@ -389,8 +389,8 @@ span.pad-left20 select {
 	min-height: 30px;
 	}
 .entry-title {
-	font-size: 1.2em;
-	line-height: 19px;
+	font-size: 1.1em;
+	line-height: 1.1em;
 	font-weight: bold;
 	padding-top: 5px;
 	padding-right: 34px;
@@ -424,6 +424,7 @@ span.pad-left20 select {
 	padding-top: 4px;
 	}
 .entry-signature {
+	margin-top: 2px;
 	margin-left: 10px;
 	}
 .entry-author {
