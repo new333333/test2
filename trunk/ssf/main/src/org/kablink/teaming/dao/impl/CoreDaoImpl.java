@@ -451,6 +451,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				   				.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 				   				.executeUpdate();
 			   				
+		    	   			//delete folderentrystats associated with those affected entries
+		    	   			String sql = "DELETE fes FROM SS_FolderEntryStats fes INNER JOIN SS_FolderEntries fe ON fes.id=fe.id WHERE fe.parentBinder=" + binder.getId();
+		    	   			session.createSQLQuery(sql).executeUpdate();
+		    	   			
 			   				//finally delete the entries
 			   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
 			       	   				.setEntity("parent", binder)

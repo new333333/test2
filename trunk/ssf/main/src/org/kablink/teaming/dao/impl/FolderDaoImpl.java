@@ -115,7 +115,8 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                         	.add(Expression.eq("HKey.sortKey", sortKey))  
 	                         	//.setFetchMode("entryDef", FetchMode.SELECT)	
 	                         	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
-	                         	.setFetchMode("topEntry", FetchMode.SELECT);	
+	                         	.setFetchMode("topEntry", FetchMode.SELECT)	
+	                            .setCacheable(isFolderEntryQueryCacheable());
 	                         List objs = crit.list();
 	                         if (objs.isEmpty()) throw new NoFolderEntryByTheIdException(sortKey);
 	                         return (FolderEntry)objs.get(0);
@@ -241,6 +242,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                            	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
 	                            	.setFetchMode("topEntry", FetchMode.SELECT)	
 	                            	.addOrder(Order.asc("HKey.sortKey"))
+	                            	.setCacheable(isFolderEntryQueryCacheable())
 	                            	.list();
 	                        }
 	                  }
@@ -306,6 +308,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                     crit.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT);	
 	                     crit.setFetchMode("topEntry", FetchMode.SELECT);	
 	                     crit.addOrder(Order.asc("HKey.sortKey"));
+	                     crit.setCacheable(isFolderEntryQueryCacheable());
 	                     return crit.list();
 	                 }
 	             }
@@ -592,9 +595,12 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	    		   			session.createQuery("Update org.kablink.teaming.domain.FolderEntry set parentEntry = null, topEntry=null where id in (:pList)")
 	    	   				.setParameterList("pList", ids)
 	    	   				.executeUpdate();
+	     		   			session.createQuery("Delete org.kablink.teaming.domain.FolderEntryStats where id in (:pList)")
+        	   				.setParameterList("pList", ids)
+        	   				.executeUpdate();
 	     		   			session.createQuery("Delete org.kablink.teaming.domain.FolderEntry where id in (:pList)")
-	        	   				.setParameterList("pList", ids)
-	        	   				.executeUpdate();
+        	   				.setParameterList("pList", ids)
+        	   				.executeUpdate();
 	           	  			//if these are ever cached in secondary cache, clear them out.      	   				
 	           	   		return null;
 	        	   		}
