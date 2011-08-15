@@ -103,8 +103,8 @@ Date nextDate = calendarNextDate.getTime();
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr class="ss_mobile_calendar_monthyear">
-  <td align="center" valign="middle" width="10%">
-	<a class="ss_calDateDownButton" 
+  <td align="center" valign="middle">
+	<a class="ss_calDateDownButton"
 	  href="<ssf:url adapter="true" portletName="ss_forum" 
           folderId="${ssBinder.id}" action="__ajax_mobile" 
           operation="mobile_show_folder" actionUrl="false">
@@ -116,11 +116,8 @@ Date nextDate = calendarNextDate.getTime();
 			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>" >
 		<img <ssf:alt tag="alt.viewCalPrev"/> title="<ssf:nlt tag="alt.viewCalPrev"/>"
-		border="0" src="<html:imagesPath/>pics/nl_left_noborder_20.png" />
+		border="0" src="<html:imagesPath/>pics/nl_left_noborder_20.png" align="absbottom" />
 	</a>
-  </td>
-  
-  <td align="center" valign="middle" width="80%">	
 	<a href="<ssf:url adapter="true" portletName="ss_forum" 
           folderId="${ssBinder.id}" action="__ajax_mobile" 
           operation="mobile_show_folder" actionUrl="false">
@@ -135,10 +132,7 @@ Date nextDate = calendarNextDate.getTime();
 		<%= strMonthName %>&nbsp;<fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}" />
 	  </span>
 	</a>
-  </td>
-	
-  <td align="center" valign="middle" width="10%">	
-	<a class="ss_calDateUpButton" 
+	<a class="ss_calDateUpButton"
 	  href="<ssf:url adapter="true" portletName="ss_forum" 
           folderId="${ssBinder.id}" action="__ajax_mobile" 
           operation="mobile_show_folder" actionUrl="false">
@@ -150,11 +144,10 @@ Date nextDate = calendarNextDate.getTime();
 			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>">
 		<img <ssf:alt tag="alt.viewCalNext"/> title="<ssf:nlt tag="alt.viewCalNext"/>"
-		border="0" src="<html:imagesPath/>pics/nl_right_noborder_20.png" />
+		border="0" src="<html:imagesPath/>pics/nl_right_noborder_20.png" align="absbottom" />
 	</a>
   </td>
   </tr>
-
 </table>
 
 <table class="ss_mobile_calendar_month" border="0" cellspacing="0" cellpadding="0" width="100%">

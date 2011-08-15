@@ -43,7 +43,7 @@
   <div class="folder-content">
     <div class="home-grid-row">
 	    <div class="home-grid-cell-1">
-			<a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+			<a id="myworkspace-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 								action="__ajax_mobile" actionUrl="false" 
 								binderId="${ssBinder.id}"
 								operation="mobile_show_workspace" />">
@@ -54,7 +54,7 @@
 			</a>
 	    </div>
 		<div class="home-grid-cell-1">
-		    <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+		    <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									binderId="${ssBinder.id}"
 									operation="mobile_show_favorites" />">
@@ -79,7 +79,7 @@
 
 	<div class="home-grid-row">
     	<div class="home-grid-cell">
-		    <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+		    <a id="myprofile-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									entryId="${ssUser.id}"
 									operation="mobile_show_user" />">
@@ -90,7 +90,7 @@
 		    </a>
     	</div>
 		<div class="home-grid-cell">
-		    <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+		    <a id="following-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									binderId="${ssBinder.id}"
 									operation="mobile_show_following" />">
@@ -126,18 +126,18 @@
 		    </a>
 		</div>
 		<div class="home-grid-cell">
-		    <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+		    <a id="mymicroblog-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									binderId="${ssBinder.id}"
-									operation="mobile_show_favorites" />">
+									operation="mobile_show_miniblog" />">
 				<div class="main-item myfavorites-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_unread_128.png"/></div>
-				  <div class="main-item-label">Unread Items</div>
+				  <div><img src="<html:rootPath/>images/mobile/main_blog_128.png"/></div>
+				  <div class="main-item-label">Micro-Blog</div>
 				</div>
 			</a>
 		</div>
 	    <div class="home-grid-cell">
-		    <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+		    <a id="settings-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									binderId="${ssBinder.id}"
 									operation="mobile_show_teams" />">
