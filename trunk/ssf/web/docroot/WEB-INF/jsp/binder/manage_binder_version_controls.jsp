@@ -77,7 +77,8 @@ function ss_confirmEncryption(cbObj) {
 		<c:if test="${!ss_binder_file_encryption_enabled}">
 		  if (confirm("<ssf:escapeQuotes><ssf:nlt tag="binder.fileEncryptionInheritanceHint2"/></ssf:escapeQuotes>")) {
 			  var formObj = document.forms['form1'];
-			  formObj.applyBtn.click();
+			  ss_startSpinner(cbObj);
+			  setTimeout("document.forms['form1'].applyBtn.click();", 100);
 			  return true;
 		  } else {
 			  cbObj.checked = false;
