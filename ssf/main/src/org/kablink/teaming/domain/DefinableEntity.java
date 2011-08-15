@@ -69,7 +69,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String iconName="";
     protected Integer definitionType=null;
     protected AverageRating rating=null;
-    protected Long popularity=null;
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Set iEvents,iAttachments;
     protected Map iCustomAttributes;
@@ -213,16 +212,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
     public void setAverageRating(AverageRating rating) {
    	 	this.rating = rating;
-    }
-    /**
-     * @hibernate.property
-     * @return
-     */
-    public Long getPopularity() {
-   	 	return popularity;
-    }
-    public void setPopularity(Long popularity) {
-   	 	this.popularity = popularity;
     }
     /**
      * @hibernate.property length="64"

@@ -68,6 +68,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	protected Boolean preDeleted;
 	protected Long preDeletedWhen;
 	protected Long preDeletedBy;
+    protected Long popularity;
+    protected FolderEntryStats folderEntryStats;
     public FolderEntry() {
         super();
     }
@@ -451,4 +453,41 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
  	public void setOwner(Principal owner) {
  	}
      /*****************End WorkArea interface stuff***********/
+ 	
+    public Long getPopularity() {
+    	if(folderEntryStats != null) {
+    		// Corresponding stats object exists, which means that the 'popularity' data 
+    		// was already migrated from FolderEntry into FolderEntryStats.
+    		return folderEntryStats.getPopularity();
+    	}
+    	else {
+    		// The 'popularity' data has not been migrated from FolderEntry into FolderEntryStats yet.
+    		return popularity;
+    	}
+    }
+    
+    public void setPopularity(Long popularity) {
+    	if(popularity == null)
+    		throw new IllegalArgumentException("Popularity must not be null");
+    	if(folderEntryStats == null) {
+    		// The 'popularity' data has not been migrated from FolderEntry into FolderEntryStats yet. Let's do it now.
+    		folderEntryStats = new FolderEntryStats();
+    		folderEntryStats.setFolderEntry(this); // bidirectional
+    		folderEntryStats.setPopularity(popularity);
+        	// Null out this field since it will no longer be used.
+       	 	this.popularity = null;
+    	}
+    	else {
+    		// The 'popularity' data has already been migrated from FolderEntry into FolderEntryStats
+    		folderEntryStats.setPopularity(popularity);
+    	}
+    }
+    
+	public FolderEntryStats getFolderEntryStats() {
+		return folderEntryStats;
+	}
+	public void setFolderEntryStats(FolderEntryStats folderEntryStats) {
+		this.folderEntryStats = folderEntryStats;
+	}
+    
 }

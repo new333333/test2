@@ -89,7 +89,6 @@
       <property name="average" column="ratings_average" />
       <property name="count" column="ratings_count"/>
     </component>
-    <property name="popularity" optimistic-lock="false"/>
     <component name="description">
  <!-- use length to force medium blog in mysql -->
       <property name="HDescription"  length="2000000" column="description_text" type="org.kablink.teaming.dao.util.SSClobStringType"/>
