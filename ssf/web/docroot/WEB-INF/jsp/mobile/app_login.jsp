@@ -43,7 +43,17 @@
 	self.location.href="${ssMobileUrl}";
 </c:if>
 <c:if test="${!ss_mobileIsLoggedIn}">
+<%
+	if(isIPhone) {
+%>
+	document.location = "NovellVibe:" + "doAppLogin:" + "${operation2}:";
+<%
+	} else {
+%>
 	Android.doAppLogin("${operation2}");
+<%
+	}
+%>
 </c:if>
 </script>
 
