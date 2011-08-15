@@ -72,6 +72,21 @@ function ss_checkIfNumberValid(s) {
 	return false;
 }
 
+function ss_confirmEncryption(cbObj) {
+	if (cbObj.checked) {
+		<c:if test="${!ss_binder_file_encryption_enabled}">
+		  if (confirm("<ssf:escapeQuotes><ssf:nlt tag="binder.fileEncryptionInheritanceHint2"/></ssf:escapeQuotes>")) {
+			  var formObj = document.forms['form1'];
+			  formObj.applyBtn.click();
+			  return true;
+		  } else {
+			  cbObj.checked = false;
+		  }
+		</c:if>
+	}
+	return false;
+}
+
 </script>
 
 <div class="ss_style ss_portlet">
@@ -89,7 +104,7 @@ function ss_checkIfNumberValid(s) {
 <%@ include file="/WEB-INF/jsp/binder/configure_tabs.jsp" %>
 
 <div style="display:block;" class="wg-tab-content marginbottom3">
-<form class="ss_form" method="post" 
+<form class="ss_form" method="post" name="form1"
 	action="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 <br/>
@@ -225,12 +240,12 @@ function ss_checkIfNumberValid(s) {
 	</fieldset>
 <br/>
 
-<%
-/**  This is turned off until file encryption is implemented
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
-	    <input type="checkbox" name="enableFileEncryption" 
+	    <input type="checkbox" 
+	      name="enableFileEncryption" 
+	      onChange="return ss_confirmEncryption(this);"
 		  <c:if test="${ss_binder_file_encryption_enabled}">checked=checked</c:if>
 		/><span class="ss_bold"><ssf:nlt tag="binder.enableFileEncryption" /></span>
 	  </legend>
@@ -239,16 +254,19 @@ function ss_checkIfNumberValid(s) {
 	      <span><ssf:nlt tag="binder.fileEncryptionEnabled"/></span>
 	      <br/>
 	      <br/>
+	      <div class="ss_smallprint">
+	        <ssf:nlt tag="binder.fileEncryptionInheritanceHint"/>
+	      </div>
 	    </c:if>
-	    <div class="ss_smallprint">
-	      <ssf:nlt tag="binder.fileEncryptionInheritanceHint"/>
-	    </div>
+		<c:if test="${!ss_binder_file_encryption_enabled}">
+	      <span><ssf:nlt tag="binder.fileEncryptionEnabled2"/></span>
+	      <br/>
+	      <br/>
+	    </c:if>
 	  </div>
 	</fieldset>
 <br/>
 </c:if>
-*/
-%>
 
 <br/>
 
