@@ -36,10 +36,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -59,6 +62,9 @@ public class CryptoFileEncryption implements FileEncryption {
     protected Cipher dcipher;
     protected KeyGenerator kgen;
     protected SecretKey key;
+    private String SALT = "The Secret Salt";
+    private boolean initialized = false;
+
 
     public CryptoFileEncryption() {
 		//Get the key to use when encrypting and decrypting
@@ -74,13 +80,32 @@ public class CryptoFileEncryption implements FileEncryption {
     }
     public CryptoFileEncryption(byte[] raw) {
     	SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+    	initCipher(skeySpec);
+    }
+    
+    public CryptoFileEncryption(String password) {
+    	byte[] key;
+		try {
+			key = (SALT + password).getBytes("UTF-8");
+	    	MessageDigest sha = MessageDigest.getInstance("SHA-1");
+	    	key = sha.digest(key);
+	    	key = Arrays.copyOf(key, 16); // use only first 128 bit
+		} catch (UnsupportedEncodingException e) {
+			return;
+		} catch (NoSuchAlgorithmException e) {
+			return;
+		}
+    	SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+    	initCipher(skeySpec);
+    }
+    
+    private void initCipher(SecretKeySpec skeySpec) {
         try {
             ecipher = Cipher.getInstance("AES");
             dcipher = Cipher.getInstance("AES");
-
-            // CBC requires an initialization vector
             ecipher.init(Cipher.ENCRYPT_MODE, skeySpec);
             dcipher.init(Cipher.DECRYPT_MODE, skeySpec);
+            initialized = true;
         } catch (javax.crypto.NoSuchPaddingException e) {
         } catch (java.security.NoSuchAlgorithmException e) {
         } catch (java.security.InvalidKeyException e) {
@@ -89,6 +114,10 @@ public class CryptoFileEncryption implements FileEncryption {
     
     public SecretKey getSecretKey() {
     	return key;
+    }
+    
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public InputStream getEncryptionInputEncryptedStream(InputStream in) {
