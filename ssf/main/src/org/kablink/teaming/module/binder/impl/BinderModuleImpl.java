@@ -1153,9 +1153,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
-			Binder binder = loadBinderProcessor(child).copyBinder(child,
-					destinationParent, params);
-			doCopyChildren(child, binder);
+			// If the binder is not in the trash...
+			if (!(TrashHelper.isBinderPredeleted(child))) {
+				// ...recursively copy that too.
+				Binder binder = loadBinderProcessor(child).copyBinder(child,
+						destinationParent, params);
+				doCopyChildren(child, binder);
+			}
 		}
 	}
 	

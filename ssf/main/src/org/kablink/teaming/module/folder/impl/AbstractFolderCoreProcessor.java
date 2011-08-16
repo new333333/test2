@@ -780,7 +780,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		       			}
 		       			Map<EntityIdentifier, List<Tag>> tags = getCoreDao().loadAllTagsByEntity(ids);
 		       			for (int i=0; i<batch.size(); ++i) {
+		       				// If the entry is in the trash...
 		       				FolderEntry sEntry = (FolderEntry)batch.get(i);
+		       				if (sEntry.isPreDeleted()) {
+		       					// ...skip it.
+		       					continue;
+		       				}
 		       				FolderEntry dEntry = new FolderEntry(sEntry);
 		       				
 		       				if (sEntry.isTop()) {
@@ -864,7 +869,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	public void setFileAgingDates(final Binder binder) { 
 		if (binder instanceof Folder) {
 	 		//now update the entries in the binder
-	 		final Folder folder = (Folder)binder;
+	 		@SuppressWarnings("unused")
+			final Folder folder = (Folder)binder;
 	 		getTransactionTemplate().execute(new TransactionCallback() {
 	 			public Object doInTransaction(TransactionStatus status) {
 	 				FilterControls filter = new FilterControls();
