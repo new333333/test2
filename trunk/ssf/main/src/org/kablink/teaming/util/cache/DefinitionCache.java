@@ -51,6 +51,8 @@ public class DefinitionCache {
 	private static Log logger = LogFactory.getLog(DefinitionCache.class);
 	private static Boolean enabled;
 	private static Long resetIntervalInSecond;
+	private static Boolean memcachedConfigFileCheckEnabled;
+	private static Long freshnessSeconds;
 	
 	private static ConcurrentMap<String,CacheEntry> cache = new ConcurrentHashMap<String,CacheEntry>();
 	// Guarded by this class.
@@ -62,81 +64,16 @@ public class DefinitionCache {
 		// of constructing the intermediary form of the data (= definition 
 		// domain object). The more we can switch the caller of this to using
 		// getDocumentWithId method instead, the more efficient it would be.
-		CacheEntry ce = null;
-		Document doc;
 		if(isEnabled()) { // cache enabled
 			if(getResetIntervalInSecond() > 0) {
 				// Periodic reset is enabled.
 				checkAndReset();
 			}
-			if(definition.getId() != null) {
-				// This cache only deals with persistent definition
-				ce = cache.get(definition.getId());
-				if(ce == null) {
-					// Not yet cached
-					doc = generateDocument(definition);
-					if(doc != null) {
-						// This cache only deals with valid definition
-						cache.put(definition.getId(), new CacheEntry(doc, getLastModTime(definition)));
-						if(logger.isDebugEnabled())
-							logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache miss, generated doc");
-					}
-					else {
-						if(logger.isDebugEnabled())
-							logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache miss, unable to generate doc");	
-					}
-				}
-				else {
-					// Cache entry found. 
-					// Check if the entry is valid or stale with regard to the definition domain object.
-					// This is done by comparing the last modification times. This technique works 
-					// regardless of the type of cache provider used for Hibernate second-level cache.
-					if(ce.isStale(getLastModTime(definition))) {
-						// This cache entry is stale. We need to update the cache.
-						doc = generateDocument(definition);
-						if(doc != null) {
-							// This cache only deals with valid definition
-							cache.put(definition.getId(), new CacheEntry(doc, getLastModTime(definition)));
-							if(logger.isDebugEnabled())
-								logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache hit (stale), generated doc");
-						}
-						else {
-							// Failed to update the cache. Remove the entry.
-							cache.remove(definition.getId());
-							if(logger.isDebugEnabled())
-								logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache hit (stale), unable to generate doc");	
-						}
-					}
-					else {
-						// This cache entry is valid.
-						doc = ce.doc;
-						if(logger.isDebugEnabled())
-							logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache hit (valid)");	
-					}
-				}
-			}	
-			else {
-				// For transient definition, generated document isn't cached.
-				doc = generateDocument(definition);
-				logger.debug("getDocumentWithDefinition [NO ID] - generated doc");	
-			}
+			return doGetDocumentWithDefinition(definition);
 		}
 		else { // cache disabled - falls back to old mechanism
-			doc = generateDocument(definition);
-			if(doc != null) {
-				if(logger.isDebugEnabled())
-					logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache disabled, generated doc");
-			}
-			else {
-				if(logger.isDebugEnabled())
-					logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache disabled, unable to generate doc");
-			}
+			return getDocumentWithoutCache(definition);
 		}
-		// Under error condition, the return value may be null, which seems bad at first. 
-		// But I'm not changing this behavior since that's how the Definition.getDefinition() 
-		// method was originally implemented (meaning this doesn't make anything worse
-		// than before).
-		return doc;
 	}
 	
 	public static Document getDocumentWithId(String definitionId) throws NoDefinitionByTheIdException {
@@ -145,65 +82,22 @@ public class DefinitionCache {
 		// form of the data (= definition domain object).
 		if(definitionId == null)
 			throw new IllegalArgumentException("definition ID must be specified");
-		if(SPropsUtil.getBoolean("memcached.config.file.check.enabled", false)) {
-			// This signals that memcached is in use instead of ehcache.
-			// In this case, we need to rely on the latest modification time of the definition
-			// object in order to determine if cache entry is stale or not. So, we need to
-			// load the definition and call the regular method.
-			Definition definition = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-			return getDocumentWithDefinition(definition);
+		
+		if(isEnabled()) { // cache enabled
+			if(getResetIntervalInSecond() > 0) {
+				// Periodic reset is enabled.
+				checkAndReset();
+			}
+			return doGetDocumentWithId(definitionId);
 		}
-		else {
-			// ehcache is in use. In this case, cache validation is performed asynchronously
-			// by a listener using a hook in ehcache implementation. So, we don't have to 
-			// check the latest modification time of the definition, which means that we
-			// do not have to load it. 
-			CacheEntry ce = null;
-			Document doc;
-			if(isEnabled()) { // cache enabled
-				if(getResetIntervalInSecond() > 0) {
-					// Periodic reset is enabled.
-					checkAndReset();
-				}
-				ce = cache.get(definitionId);
-				if(ce == null) {
-					// Not in cache
-					Definition definition = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-					doc = generateDocument(definition);
-					if(doc != null) {
-						// This cache only deals with valid definition
-						cache.put(definitionId, new CacheEntry(doc, getLastModTime(definition)));
-						if(logger.isDebugEnabled())
-							logger.debug("getDocumentWithId [" + definitionId + "] - cache miss, loaded definition, generated doc");
-					}
-					else {
-						if(logger.isDebugEnabled())
-							logger.debug("getDocumentWithId [" + definitionId + "] - cache miss, loaded definition, unable to generate doc");	
-					}					
-				}
-				else {
-					// Found in cache. In this case, we don't have to worry about stale entry.
-					doc = ce.doc;
-					if(logger.isDebugEnabled())
-						logger.debug("getDocumentWithId [" + definitionId + "] - cache hit");
-				}
-			}
-			else { // cache disabled
-				Definition definition = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-				doc = generateDocument(definition);	
-				if(doc != null) {
-					if(logger.isDebugEnabled())
-						logger.debug("getDocumentWithId [" + definitionId + "] - cache disabled, loaded definition, generated doc");
-				}
-				else {
-					if(logger.isDebugEnabled())
-						logger.debug("getDocumentWithId [" + definitionId + "] - cache disabled, loaded definition, unable to generate doc");	
-				}					
-			}
-			return doc;
+		else { // cache disabled - falls back to old mechanism
+			if(logger.isDebugEnabled())
+				logger.debug("getDocumentWithId [" + definitionId + "] - cache disabled, loading definition object");
+			Definition definition = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+			return getDocumentWithoutCache(definition);
 		}
 	}
-		
+
 	/*
 	 * Return whether the specified document is identical (via reference identity) 
 	 * to the document, if any, cached for the specified definition ID.
@@ -229,6 +123,151 @@ public class DefinitionCache {
 	
 	public static int size() {
 		return cache.size();
+	}
+	
+	private static Document doGetDocumentWithId(String definitionId) throws NoDefinitionByTheIdException {
+		if(isMemcachedConfigFileCheckEnabled()) {
+			// This signals that memcached is in use instead of ehcache.
+			// In this case, we need to rely on the latest modification time of the definition
+			// object in order to determine if cache entry is stale or not. So, we need to
+			// load the definition and call the other method.
+			CacheEntry ce = cache.get(definitionId);
+			if(ce != null) { // Cache entry found.
+				// To reduce the cost associated with repeatedly fetching definition object
+				// from Hibernate's second-level cache every time application asks for 
+				// definition document (which happens VERY frequently and repeatedly in our 
+				// application), we define what is acceptable level of freshness required for 
+				// definition cache and use it to determine whether it is necessary to check
+				// the source for cache entry staleness.
+				// Note: In reality, however, this additional smart may not make as much
+				// difference due to Hibernate's session cache.
+				long currentTime = System.currentTimeMillis();
+				if(currentTime - ce.lastUpdateTime > getFreshnessSeconds()*1000L) {
+					// Allowed freshness threshold exceeded - We have to check definition object
+					if(logger.isDebugEnabled())
+						logger.debug("doGetDocumentWithId [" + definitionId + "] - cache hit (not fresh enough), " + String.valueOf((currentTime-ce.lastUpdateTime)/1000) + " seconds passed since last update, loading definition object");
+					return doGetDocumentWithDefinition(getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId()));
+				}
+				else {
+					// Allowed freshness threshold hasn't exceeded. So, this cache entry is still good.
+					if(logger.isDebugEnabled())
+						logger.debug("doGetDocumentWithId [" + definitionId + "] - cache hit (fresh)");					
+					return ce.doc;
+				}
+			}
+			else { // Cache entry not found. 
+				if(logger.isDebugEnabled())
+					logger.debug("doGetDocumentWithId [" + definitionId + "] - cache miss, loading definition object");
+				return doGetDocumentWithDefinition(getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId()));				
+			}
+		}
+		else {
+			// ehcache is in use. In this case, cache validation is performed asynchronously
+			// by a listener using a hook in ehcache implementation. So, we don't have to 
+			// check the latest modification time of the definition, which means that we
+			// do not have to load it. 
+			CacheEntry ce = null;
+			Document doc;
+			ce = cache.get(definitionId);
+			if(ce == null) {
+				// Not in cache
+				Definition definition = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+				doc = generateDocument(definition);
+				if(doc != null) {
+					// This cache only deals with valid definition
+					cache.put(definitionId, new CacheEntry(doc, getLastModTime(definition)));
+					if(logger.isDebugEnabled())
+						logger.debug("doGetDocumentWithId [" + definitionId + "] - cache miss, loaded definition, generated doc");
+				}
+				else {
+					if(logger.isDebugEnabled())
+						logger.debug("doGetDocumentWithId [" + definitionId + "] - cache miss, loaded definition, unable to generate doc");	
+				}					
+			}
+			else {
+				// Found in cache. In this case, we don't have to worry about stale entry.
+				doc = ce.doc;
+				if(logger.isDebugEnabled())
+					logger.debug("doGetDocumentWithId [" + definitionId + "] - cache hit");
+			}
+			return doc;
+		}
+	}
+		
+	private static Document doGetDocumentWithDefinition(Definition definition) {
+		CacheEntry ce = null;
+		Document doc;
+		if(definition.getId() != null) {
+			// This cache only deals with persistent definition
+			ce = cache.get(definition.getId());
+			if(ce == null) {
+				// Not yet cached
+				doc = generateDocument(definition);
+				if(doc != null) {
+					// This cache only deals with valid definition
+					cache.put(definition.getId(), new CacheEntry(doc, getLastModTime(definition)));
+					if(logger.isDebugEnabled())
+						logger.debug("doGetDocumentWithDefinition [" + definition.getId() + "] - cache miss, generated doc");
+				}
+				else {
+					if(logger.isDebugEnabled())
+						logger.debug("doGetDocumentWithDefinition [" + definition.getId() + "] - cache miss, unable to generate doc");	
+				}
+			}
+			else {
+				// Cache entry found. 
+				// Check if the entry is valid or stale with regard to the definition domain object.
+				// This is done by comparing the last modification times. This technique works 
+				// regardless of the type of cache provider used for Hibernate second-level cache.
+				if(ce.isStale(getLastModTime(definition))) {
+					// This cache entry is stale. We need to update the cache.
+					doc = generateDocument(definition);
+					if(doc != null) {
+						// This cache only deals with valid definition
+						ce.update(doc, getLastModTime(definition));
+						if(logger.isDebugEnabled())
+							logger.debug("doGetDocumentWithDefinition [" + definition.getId() + "] - cache hit (stale), generated doc");
+					}
+					else {
+						// Failed to update the cache. Remove the entry.
+						cache.remove(definition.getId());
+						if(logger.isDebugEnabled())
+							logger.debug("doGetDocumentWithDefinition [" + definition.getId() + "] - cache hit (stale), unable to generate doc");	
+					}
+				}
+				else {
+					// This cache entry is valid.
+					ce.update(); // Indicate that this cache entry is in synch with the definition object
+					doc = ce.doc;
+					if(logger.isDebugEnabled())
+						logger.debug("doGetDocumentWithDefinition [" + definition.getId() + "] - cache hit (valid)");	
+				}
+			}
+		}	
+		else {
+			// For transient definition, generated document isn't cached.
+			doc = generateDocument(definition);
+			logger.debug("doGetDocumentWithDefinition [NO ID] - generated doc");	
+		}
+		
+		// Under error condition, the return value may be null, which seems bad at first. 
+		// But I'm not changing this behavior since that's how the Definition.getDefinition() 
+		// method was originally implemented (meaning this doesn't make anything worse
+		// than before).
+		return doc;
+	}
+	
+	private static Document getDocumentWithoutCache(Definition definition) {
+		Document doc = generateDocument(definition);
+		if(doc != null) {
+			if(logger.isDebugEnabled())
+				logger.debug("getDocumentWithoutCache [" + definition.getId() + "] - cache disabled, generated doc");
+		}
+		else {
+			if(logger.isDebugEnabled())
+				logger.debug("getDocumentWithoutCache [" + definition.getId() + "] - cache disabled, unable to generate doc");
+		}
+		return doc;
 	}
 	
 	private static Document generateDocument(Definition def) {
@@ -275,6 +314,28 @@ public class DefinitionCache {
 		return resetIntervalInSecond.longValue();
 	}
 	
+	private static boolean isMemcachedConfigFileCheckEnabled() {
+		if(memcachedConfigFileCheckEnabled == null) {
+			memcachedConfigFileCheckEnabled = Boolean.valueOf(SPropsUtil.getBoolean("memcached.config.file.check.enabled", false));
+			if(logger.isDebugEnabled())
+				logger.debug("memcached.config.file.check.enabled: " + memcachedConfigFileCheckEnabled.toString());
+		}
+		return memcachedConfigFileCheckEnabled.booleanValue();
+	}
+	
+	private static long getFreshnessSeconds() {
+		if(freshnessSeconds == null) {
+			// Due to Hibernate's session cache, it doesn't make much difference how often
+			// the same definition object is asked for as long as the requests are made
+			// within the same session. For that reason, I will use zero as the default
+			// value indicating that cache entry has to be completely up-to-date.
+			freshnessSeconds = Long.valueOf(SPropsUtil.getLong("definition.cache.freshness.seconds", 0));
+			if(logger.isDebugEnabled())
+				logger.debug("definition.cache.freshness.seconds: " + freshnessSeconds.toString());
+		}
+		return freshnessSeconds.longValue();
+	}
+	
 	private static long getLastModTime(Definition def) {
 		if(def.getModification() == null) return 0;
 		if(def.getModification().getDate() == null) return 0;
@@ -287,10 +348,18 @@ public class DefinitionCache {
 	
 	static class CacheEntry {
 		private Document doc;
-		private long lastModTime;
+		private long lastModTime; // last known modification time of the definition represented by this cache entry
+		private long lastUpdateTime; // last time this cache entry was updated
 		CacheEntry(Document doc, long lastModTime) {
+			this.update(doc, lastModTime);
+		}
+		void update(Document doc, long lastModTime) {
 			this.doc = doc;
 			this.lastModTime = lastModTime;
+			this.update();
+		}
+		void update() {
+			this.lastUpdateTime = System.currentTimeMillis();			
 		}
 		boolean isStale(long lmt) {
 			return lmt > this.lastModTime;
