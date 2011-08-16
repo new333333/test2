@@ -51,7 +51,7 @@ public class DefinitionCache {
 	private static Log logger = LogFactory.getLog(DefinitionCache.class);
 	private static Boolean enabled;
 	private static Long resetIntervalInSecond;
-	private static Boolean memcachedConfigFileCheckEnabled;
+	private static String hibernateCacheProvider;
 	private static Long freshnessSeconds;
 	
 	private static ConcurrentMap<String,CacheEntry> cache = new ConcurrentHashMap<String,CacheEntry>();
@@ -126,7 +126,7 @@ public class DefinitionCache {
 	}
 	
 	private static Document doGetDocumentWithId(String definitionId) throws NoDefinitionByTheIdException {
-		if(isMemcachedConfigFileCheckEnabled()) {
+		if(getHibernateCacheProvider().equals("memcached")) {
 			// This signals that memcached is in use instead of ehcache.
 			// In this case, we need to rely on the latest modification time of the definition
 			// object in order to determine if cache entry is stale or not. So, we need to
@@ -314,13 +314,13 @@ public class DefinitionCache {
 		return resetIntervalInSecond.longValue();
 	}
 	
-	private static boolean isMemcachedConfigFileCheckEnabled() {
-		if(memcachedConfigFileCheckEnabled == null) {
-			memcachedConfigFileCheckEnabled = Boolean.valueOf(SPropsUtil.getBoolean("memcached.config.file.check.enabled", false));
+	private static String getHibernateCacheProvider() {
+		if(hibernateCacheProvider == null) {
+			hibernateCacheProvider = SPropsUtil.getString("hibernate.cache.provider", "ehcache");
 			if(logger.isDebugEnabled())
-				logger.debug("memcached.config.file.check.enabled: " + memcachedConfigFileCheckEnabled.toString());
+				logger.debug("hibernate.cache.provider: " + hibernateCacheProvider);
 		}
-		return memcachedConfigFileCheckEnabled.booleanValue();
+		return hibernateCacheProvider;
 	}
 	
 	private static long getFreshnessSeconds() {
