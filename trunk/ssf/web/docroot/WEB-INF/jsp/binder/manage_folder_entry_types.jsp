@@ -84,18 +84,19 @@ function confirmChangeTypes() {
 	name="operation" value="change_entry_type_binder"/></ssf:url>"
 	onSubmit="return confirmChangeTypes();"
 >
-<br/>
-<span><ssf:nlt tag="access.currentFolder"/></span>
-<% //need to check tags for templates %>
-<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-<div align="right">
-  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-  <input type="submit" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+
+<div class="marginbottom3">
+	<span><ssf:nlt tag="access.currentFolder"/></span>
+	<% //need to check tags for templates %>
+	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+	<div align="right">
+	  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
+	  <input type="submit" class="ss_submit" name="closeBtn" 
+		value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+	</div>
 </div>
 
-<br/>
-	
+
 <fieldset class="ss_fieldset">
   <legend class="ss_legend">
     <span class="ss_bold"><ssf:nlt tag="binder.changeEntryTypes" /></span>

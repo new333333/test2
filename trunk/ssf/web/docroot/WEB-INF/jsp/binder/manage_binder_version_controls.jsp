@@ -108,23 +108,24 @@ function ss_confirmEncryption(cbObj) {
 <form class="ss_form" method="post" name="form1"
 	action="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/></ssf:url>">
-<br/>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <span><ssf:nlt tag="access.currentFolder"/></span>
-</c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
-  <span><ssf:nlt tag="access.currentWorkspace"/></span>
-</c:if>
-<% //need to check tags for templates %>
-<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-<div align="right">
-  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-  <input type="submit" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+
+<div class="marginbottom3">
+	<c:if test="${ssBinder.entityType == 'folder'}">
+	  <span><ssf:nlt tag="access.currentFolder"/></span>
+	</c:if>
+	<c:if test="${ssBinder.entityType != 'folder'}">
+	  <span><ssf:nlt tag="access.currentWorkspace"/></span>
+	</c:if>
+	<% //need to check tags for templates %>
+	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+	
+	<div align="right">
+	  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
+	  <input type="submit" class="ss_submit" name="closeBtn" 
+		value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+	</div>
 </div>
 
-<br/>
-	
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
 	    <input type="checkbox" name="enableBinderVersions" 
@@ -132,28 +133,22 @@ function ss_confirmEncryption(cbObj) {
 		  <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
 		/>
 		<span class="ss_bold"><ssf:nlt tag="binder.versions.enableVersionsForFolder" /></span>
-		<c:if test="${ss_binder_versions_inherited}">
-		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
-		</c:if>
 	  </legend>
       
        <div style="padding:10px 10px 0px 10px;">
-          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsToKeep"/></span>
+	   	<div><ssf:nlt tag="binder.versions.versionsToKeep1"/></div>
+	   	<div class="marginbottom2"><ssf:nlt tag="binder.versions.versionsToKeep2"/></div>
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsToKeep3"/></span>
           <input type="text" name="versionsToKeep" value="${ss_binder_versions_to_keep}" 
-            style="width:80px; text-align:right;"
+            style="width:40px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
 		    <c:if test="${ss_binder_versions_inherited || !ss_binder_versions_enabled}">disabled=disabled</c:if>
           >
         <c:if test="${ss_binder_versions_inherited}">
 		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
-		<br/>
-		<span class="ss_smallprint" style="padding-left:16px;">
-		  <ssf:nlt tag="binder.versions.leaveBlankForNoLimit"/>
-		</span>
-       </div>
       
-       <div style="padding:10px 10px 0px 10px;">
+       <span style="padding-left:10px;">
 		<c:if test="${ss_binder_versions_inherited}">
 		  <input type="submit" name="stopInheritBtn" 
 		    value="<ssf:nlt tag='binder.versions.inheritVersionControlsStop'/>"
@@ -164,7 +159,8 @@ function ss_confirmEncryption(cbObj) {
 		    value="<ssf:nlt tag='binder.versions.inheritVersionControls'/>"
 		  />
 		</c:if>
-       </div>
+       </span>
+	   </div>
       
     </fieldset>
     <br/>
@@ -180,29 +176,28 @@ function ss_confirmEncryption(cbObj) {
        <div style="padding:10px 10px 0px 10px;">
           <c:if test="${!ss_binder_version_aging_enabled}">
           <div style="padding:0px 0px 6px 0px;">
-            <span><ssf:nlt tag="binder.file.versionAgingDisabled"/></span>
+            <span class="ss_bold"><ssf:nlt tag="binder.file.versionAgingDisabled1"/></span>
+            <span><ssf:nlt tag="binder.file.versionAgingDisabled2"/></span>
           </div>
           </c:if>
-          <span class="ss_bold"><ssf:nlt tag="binder.versions.agingDays"/></span>
-          <input type="text" name="versionAgingDays" 
-            value="${ss_binder_version_aging_days}"
-            style="width:80px; text-align:right;"
-            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-            <c:if test="${!ss_binder_version_aging_enabled}">disabled="disabled"</c:if>
-          ><ssf:nlt tag="smallWords.days"/>
-          <br/>
-		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint1" /></div>
-		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;"><ssf:nlt tag="binder.versions.agingDays.hint2" /></div>
-		  <div class="ss_smallprint" style="padding:6px 0px 6px 16px;">
-		    <span><ssf:nlt tag="binder.versions.agingDays.hint3" /></span>
+		  <div><ssf:nlt tag="binder.versions.agingDays.hint1" />&nbsp;<ssf:nlt tag="binder.versions.agingDays.hint2" />&nbsp;<ssf:nlt tag="binder.versions.agingDays.hint3" />
 		    <c:if test="${empty ss_fileVersionMaximumAge}">
-		       <span><ssf:nlt tag="binder.versions.agingDays.hint4" /></span>
+		       <div><b><ssf:nlt tag="binder.versions.agingDays.hint4" /></b></div>
 		    </c:if>
 		    <c:if test="${!empty ss_fileVersionMaximumAge}">
-		       <span><ssf:nlt tag="binder.versions.agingDays.hint5"><ssf:param 
-		         name="value" value="${ss_fileVersionMaximumAge}"/></ssf:nlt></span>
+		       <div><b><ssf:nlt tag="binder.versions.agingDays.hint5"></b><ssf:param 
+		         name="value" value="${ss_fileVersionMaximumAge}"/></ssf:nlt></div>
 		    </c:if>
 		  </div>
+		  <div class="margintop3">
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.agingDays"/>&nbsp;</span>
+          <input type="text" name="versionAgingDays" 
+            value="${ss_binder_version_aging_days}"
+            style="width:40px; text-align:right;"
+            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+            <c:if test="${!ss_binder_version_aging_enabled}">disabled="disabled"</c:if>
+          >&nbsp;<ssf:nlt tag="smallWords.days"/>
+		</div>
        </div>
 	 </fieldset>
      <br/>
@@ -212,31 +207,28 @@ function ss_confirmEncryption(cbObj) {
 	  <legend class="ss_legend">
 	    <span class="ss_bold"><ssf:nlt tag="binder.file.uploadSizeLimit" /></span>
 	  </legend>
+	    <div style="padding:10px 10px 0px 10px;">
+        	<span><ssf:nlt tag="binder.versions.versionsMaxFileSize1"/></span>
+			<div><ssf:nlt tag="binder.versions.leaveBlankToInherit"/></div>
+			<div><ssf:nlt tag="binder.file.uploadSizeLimit.hint1"/></div>
+		<c:if test="${!empty ss_fileSizeLimitUserDefault}">
+		  <div class="margintop2">
+		    <ssf:nlt tag="binder.file.uploadSizeLimit.hint2"><ssf:param 
+		    name="value" value="${ss_fileSizeLimitUserDefault}"/></ssf:nlt>
+		  </div>
+		</c:if>
+  		</div>
        <div style="padding:10px 10px 0px 10px;">
-          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsMaxFileSize"/></span>
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsMaxFileSize2"/></span>
           <input type="text" name="maxFileSize" 
             value="${ss_binder_versions_max_file_size}"
-            style="width:80px; text-align:right;"
+            style="width:50px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-          ><ssf:nlt tag="file.sizeMB"/>
+          >&nbsp;<ssf:nlt tag="file.sizeMB"/>
         <c:if test="${ss_binder_file_size_limit_inherited}">
 		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
 		</c:if>
 		<br/>
-		<span class="ss_smallprint" style="padding-left:16px;">
-		  <ssf:nlt tag="binder.versions.leaveBlankToInherit"/>
-		</span>
-		<br/>
-		<span class="ss_smallprint" style="padding-left:16px;">
-		  <ssf:nlt tag="binder.file.uploadSizeLimit.hint1"/>
-		</span>
-		<c:if test="${!empty ss_fileSizeLimitUserDefault}">
-		  <br/>
-		  <span class="ss_smallprint" style="padding-left:16px;">
-		    <ssf:nlt tag="binder.file.uploadSizeLimit.hint2"><ssf:param 
-		    name="value" value="${ss_fileSizeLimitUserDefault}"/></ssf:nlt>
-		  </span>
-		</c:if>
        </div>
 	</fieldset>
 <br/>

@@ -33,7 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-		<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+		<div style="text-align: left; margin: 0px 15px 0px 0px; border: 0pt none;" 
 		  class="wg-tabs margintop3 marginbottom2">
 		  <table>
 		    <tr>
