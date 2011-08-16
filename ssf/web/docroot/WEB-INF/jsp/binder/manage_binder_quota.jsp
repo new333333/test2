@@ -101,7 +101,7 @@ function ss_checkIfQuotaValid(s) {
   <span><ssf:nlt tag="access.currentWorkspace"/></span>
 </c:if>
 <% //need to check tags for templates %>
-<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 <div align="right">
 <form class="ss_form" method="post" style="display:inline;" 
 	action="<ssf:url action="manage_binder_quota" actionUrl="true"><ssf:param 
@@ -179,7 +179,7 @@ function ss_checkIfQuotaValid(s) {
           <input type="text" name="quota" value="" 
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfQuotaValid(this.value)){this.value="";}'
-          ><ssf:nlt tag="file.sizeMB"/>
+          >&nbsp;<ssf:nlt tag="file.sizeMB"/>
         </c:if>
         <c:if test="${!empty ss_binderQuota.diskQuota}">
           <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>

@@ -60,16 +60,16 @@
 <c:choose>
 <c:when test="${ssWorkArea.workAreaType == 'folder'}">
   <span><ssf:nlt tag="access.currentFolder"/></span>
-<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
+<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
 </c:when>
 <c:when test="${ssWorkArea.workAreaType == 'folderEntry'}">
   <span><ssf:nlt tag="access.currentEntry"/></span>
-<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
+<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
 </c:when>
 <c:otherwise>
   <span><ssf:nlt tag="access.currentWorkspace"/></span>
 	<% //need to check tags for templates %>
-	<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
+	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
 </c:otherwise>
 </c:choose>
 <br/>

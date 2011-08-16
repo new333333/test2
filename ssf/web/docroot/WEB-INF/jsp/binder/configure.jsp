@@ -82,28 +82,24 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <%@ include file="/WEB-INF/jsp/binder/configure_tabs.jsp" %>
 
 <div style="display:block;" class="wg-tab-content marginbottom3">
-<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
-<div style="margin:6px; width:100%;">
-
-
-<br/>
-<br/>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <span><ssf:nlt tag="access.currentFolder"/></span>
-</c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
-  <span><ssf:nlt tag="access.currentWorkspace"/></span>
-</c:if>
-<% //need to check tags for templates %>
-<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-<div align="right">
-<form class="ss_form" method="post" style="display:inline;" 
-	action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param 
-	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
-  <input type="submit" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close" text="Close"/>">
-</form>
+<div class="ss_style ss_form" style="margin:0px;">
+<div style="width:100%;">
+	<c:if test="${ssBinder.entityType == 'folder'}">
+	  <span><ssf:nlt tag="access.currentFolder"/></span>
+	</c:if>
+	<c:if test="${ssBinder.entityType != 'folder'}">
+	  <span><ssf:nlt tag="access.currentWorkspace"/></span>
+	</c:if>
+	<% //need to check tags for templates %>
+	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+	<div align="right">
+	<form class="ss_form" method="post" style="display:inline;" 
+		action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+		name="binderId" value="${ssBinder.id}"/><ssf:param 
+		name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
+	  <input type="submit" class="ss_submit" name="closeBtn" 
+		value="<ssf:nlt tag="button.close" text="Close"/>">
+	</form>
 </div>
 
 <c:set var="ss_breadcrumbsShowIdRoutine" 
@@ -119,90 +115,100 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		name="binderId" value="${ssBinder.id}"/><ssf:param 
 	name="operation" value="simpleUrls"/></ssf:url>" >
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/>  
+    <legend class="ss_legend"><span class="ss_bold"><ssf:nlt tag="binder.configure.defineSimpleUrl"/></span>
     	<ssf:showHelp guideName="user" pageId="workspace_mnggeneral" sectionId="workspace_mnggeneral_simpleurl" />
     </legend>
-
-    <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.currentlyDefinedUrls"/></span>
-    <c:if test="${!empty ssSimpleUrlNames}">
-      <c:forEach var="name" items="${ssSimpleUrlNames}">
-        <input type="checkbox" name="delete_${name.name}"/><span style="padding-left:6px;">${ssSimpleUrlPrefix}${name.name}</span><br/>
-      </c:forEach>
-    </c:if>
-    <input type="submit" class="ss_submit" name="deleteUrlBtn" 
-      value="<ssf:nlt tag="simpleUrl.deleteSelectedUrls"/>"
-      onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>')){return true}else{return false};"
-    />
-    <br/>
-    <br/>
-    <c:if test="${ss_simpleUrlNameExistsError}">
-    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameAlreadyExists"/></span><br/><br/>
-    </c:if>
-    <c:if test="${ss_simpleUrlNameNotAllowedError}">
-    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameNotAllowed"/></span><br/><br/>
-    </c:if>
-    <c:if test="${ss_simpleUrlInvalidCharactersError}">
-    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.invalidCharacters"/></span><br/><br/>
-    </c:if>
-    
-    <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.addUrl"/></span> 
-    <table cellspacing="0" cellpadding="0">
-    <tr>
-    <td valign="top">
-      <span class="ss_bold">${ssSimpleUrlPrefix}&nbsp;</span>
-    </td>
-    <td valign="top">
-      <label for="prefix">&nbsp;</label>
-      <select name="prefix" id="prefix">
-        <c:if test="${ss_isSiteAdmin}">
-          <option value="" selected>--<ssf:nlt tag="simpleUrl.leaveBlank"/>--</option>
-        </c:if>
-        <option value="${ssUser.urlSafeName}" selected>${ssUser.urlSafeName}</option>
-        <c:if test="${ssBinder.owner.name != ssUser.name}">
-          <option value="${ssBinder.owner.urlSafeName}">${ssBinder.owner.urlSafeName}</option>
-        </c:if>
-        <c:forEach var="item" items="${ssSimpleUrlGlobalKeywords}">
-          <option value="${item}">${item}</option>
-        </c:forEach>
-      </select>
-    </td>
-    <td valign="top">
-      <span class="ss_bold">&nbsp;/&nbsp;</span>
-    </td>
-    <td valign="top">
-      <input type="text" name="name" id="name" size="60"/>
-      <label for="name">&nbsp;</label>
-    </td>
-    </tr>
-    </table>
-    <br>
-    <input type="submit" class="ss_submit" name="addUrlBtn" value="<ssf:nlt tag="button.add"/>"> 
-	<c:if test="${ssSimpleEmailEnabled}">
-		<br/><br/>
-	    <table cellspacing="0" cellpadding="0">
-	      <tr>
-	      	<td>
-		  <c:choose>
-			<c:when test="${ssBinder.postingEnabled}">
-	    	  <input type="checkbox" id="enableCB" name="allow_simple_email" checked/>
-	    	</c:when>
-	    	<c:otherwise>
-	    	  <input type="checkbox" id="enableCB" name="allow_simple_email"/>
-	    	</c:otherwise>
-	      </c:choose>
-	      	</td>
-	      	<td><label for="enableCB"><span style="padding-left:6px;"><ssf:nlt tag="simpleEmail.title"/></span></label></td>
-	      </tr>
-		  <c:forEach var="name" items="${ssSimpleUrlNames}">
-			<tr>
-		  	  <td>&nbsp;</td>
-			  <td><span style="padding-left:6px;">${name.emailAddress}@${ssSimpleEmailHostname}</span></td>
-			</tr>
-		  </c:forEach>
+	
+	<% //define a URL control %>
+	<div class="margintop2">
+	<table cellspacing="0" cellpadding="0">
+		<tr>
+		<td valign="middle">
+		  <span>${ssSimpleUrlPrefix}&nbsp;</span>
+		</td>
+		<td valign="middle">
+		  <label for="prefix">&nbsp;</label>
+		  <select name="prefix" id="prefix">
+			<c:if test="${ss_isSiteAdmin}">
+			  <option value="" selected>--<ssf:nlt tag="simpleUrl.leaveBlank"/>--</option>
+			</c:if>
+			<option value="${ssUser.urlSafeName}" selected>${ssUser.urlSafeName}</option>
+			<c:if test="${ssBinder.owner.name != ssUser.name}">
+			  <option value="${ssBinder.owner.urlSafeName}">${ssBinder.owner.urlSafeName}</option>
+			</c:if>
+			<c:forEach var="item" items="${ssSimpleUrlGlobalKeywords}">
+			  <option value="${item}">${item}</option>
+			</c:forEach>
+		  </select>
+		</td>
+		<td valign="middle">
+		  <span class="ss_bold">&nbsp;/&nbsp;</span>
+		</td>
+		<td valign="middle">
+		  <input type="text" name="name" id="name" size="20"/>
+		  <label for="name">&nbsp;</label>
+		</td>
+		<td valign="middle">
+			<input type="submit" class="ss_submit" name="addUrlBtn" value="<ssf:nlt tag="button.add"/>">
+		</td>
+		</tr>
 		</table>
-		<br>
-		<input type="submit" class="ss_submit" name="updateEmailButton" value="<ssf:nlt tag="button.apply"/>"> 
-	</c:if>
+    </div>
+	<div class="margintop2">
+		<c:if test="${ss_simpleUrlNameExistsError}">
+			<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameAlreadyExists"/></span><br/><br/>
+		</c:if>
+		<c:if test="${ss_simpleUrlNameNotAllowedError}">
+			<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameNotAllowed"/></span><br/><br/>
+		</c:if>
+		<c:if test="${ss_simpleUrlInvalidCharactersError}">
+			<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.invalidCharacters"/></span><br/><br/>
+		</c:if>
+	</div>
+	<div>
+		<span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.currentlyDefinedUrls"/></span>
+		<c:if test="${empty ssSimpleUrlNames}">
+			<div style="padding: 10px;"><ssf:nlt tag="simpleUrl.none"/></div>
+		</c:if>
+		<c:if test="${!empty ssSimpleUrlNames}">
+		  <c:forEach var="name" items="${ssSimpleUrlNames}">
+			<input type="checkbox" name="delete_${name.name}"/><span style="padding-left:6px; letter-spacing: 1px;">${ssSimpleUrlPrefix}${name.name}</span><br/>
+		  </c:forEach>
+		<div class="margintop2 marginbottom3">
+			<input type="submit" class="ss_submit" name="deleteUrlBtn" 
+			  value="<ssf:nlt tag="simpleUrl.deleteSelectedUrls"/>"
+			  onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>')){return true}else{return false};"
+			/>
+		</div>
+		</c:if>
+		
+		<c:if test="${ssSimpleEmailEnabled}">
+			
+			<table cellspacing="0" cellpadding="0" class="margintop2">
+			  <tr>
+				<td>
+			  <c:choose>
+				<c:when test="${ssBinder.postingEnabled}">
+				  <input type="checkbox" id="enableCB" name="allow_simple_email" checked/>
+				</c:when>
+				<c:otherwise>
+				  <input type="checkbox" id="enableCB" name="allow_simple_email"/>
+				</c:otherwise>
+			  </c:choose>
+				</td>
+				<td><label for="enableCB"><span style="padding-left:6px;"><ssf:nlt tag="simpleEmail.title"/></span></label></td>
+			  </tr>
+			  <c:forEach var="name" items="${ssSimpleUrlNames}">
+				<tr>
+				  <td>&nbsp;</td>
+				  <td><span style="padding-left:20px; letter-spacing: 1px;">${name.emailAddress}@${ssSimpleEmailHostname}</span></td>
+				</tr>
+			  </c:forEach>
+			</table>
+			<br>
+			<input type="submit" class="ss_submit" name="updateEmailButton" value="<ssf:nlt tag="button.apply"/>"> 
+		</c:if>
+	</div>
   </fieldset>
   <br>
 <div class="ss_formBreak"/>
