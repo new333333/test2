@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,11 +33,7 @@
 package org.kablink.teaming.servlet.forum;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.activation.FileTypeMap;
@@ -51,7 +47,6 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
@@ -62,6 +57,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
+
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -69,8 +65,12 @@ public class ReadFileController extends AbstractReadFileController {
 	
 	private FileTypeMap mimeTypes = new ConfigurableMimeFileTypeMap();
 	
+	@SuppressWarnings("unused")
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+		boolean zipEncodeFilenames  = SPropsUtil.getBoolean("encode.zip.download.filenames",         false  );
+		String  zipFilenameEncoding = SPropsUtil.getString( "encode.zip.download.filename.encoding", "cp437");
+		
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/entityType/entryId/fileTime/fileVersion/filename.ext
 		// the following call returns "/readFile/entityType/entryId/fileId/fileTime/fileVersion/filename.ext" portion of the URL.
 		String pathInfo = request.getPathInfo();
@@ -100,13 +100,16 @@ public class ReadFileController extends AbstractReadFileController {
 				ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());		
 			
 				//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
-				zipOut.setEncoding("cp437");
+				zipOut.setEncoding(zipFilenameEncoding);
 				Integer fileCounter = 1;
 				for (Attachment attachment : attachments) {
 					if (attachment instanceof FileAttachment) {
 						String attExt = EntityIndexUtils.getFileExtension(((FileAttachment) attachment).getFileItem().getName());
-						String attName = getBinderModule().filename8BitSingleByteOnly(((FileAttachment) attachment).getFileItem().getName(), 
-								"__file"+fileCounter.toString(), singleByte); //Note: do not translate this name
+						String attName = ((FileAttachment) attachment).getFileItem().getName();	//Note: do not translate this name
+						if (!zipEncodeFilenames) {
+							attName = getBinderModule().filename8BitSingleByteOnly(attName, 
+									"__file"+fileCounter.toString(), singleByte);	//Note: do not translate this name
+						}
 						fileCounter++;
 						try {
 							if (entity.getEntityType().equals(EntityType.folderEntry)) {
@@ -170,10 +173,13 @@ public class ReadFileController extends AbstractReadFileController {
 					ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());		
 				
 					//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
-					zipOut.setEncoding("cp437");
+					zipOut.setEncoding(zipFilenameEncoding);
 					String attExt = EntityIndexUtils.getFileExtension(fileAtt.getFileItem().getName());
-					String attName = getBinderModule().filename8BitSingleByteOnly(fileAtt.getFileItem().getName(), 
-							"file", singleByte); //Note: do not translate this name
+					String attName = fileAtt.getFileItem().getName();	//Note: do not translate this name
+					if (!zipEncodeFilenames) {
+						attName = getBinderModule().filename8BitSingleByteOnly(attName, 
+								"file", singleByte);	//Note: do not translate this name
+					}
 					try {
 						if (entity.getEntityType().equals(EntityType.folderEntry)) {
 							fileStream = getFileModule().readFile(entity.getParentBinder(), entity, fileAtt);
