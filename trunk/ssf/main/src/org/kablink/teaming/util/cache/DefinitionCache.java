@@ -329,6 +329,14 @@ public class DefinitionCache {
 			// the same definition object is asked for as long as the requests are made
 			// within the same session. For that reason, I will use zero as the default
 			// value indicating that cache entry has to be completely up-to-date.
+			// Important: If you decide to expose this property and allow non-zero value,
+			// then you may need to re-work how cache entry is invalidated when definition
+			// object is modified witihin the same node. Specifically, you will have to move 
+			// call to DefinitionCache.invalidate found in DefinitionModuleImpl.setDefinition
+			// out of a transaction context to make sure that the cache invalidation does
+			// not occur until after the transaction complete. Otherwise, there might be
+			// small window of vulnerability (at least in theory) where old definition is 
+			// loaded into memory again due to race condition.
 			freshnessSeconds = Long.valueOf(SPropsUtil.getLong("definition.cache.freshness.seconds", 0));
 			if(logger.isDebugEnabled())
 				logger.debug("definition.cache.freshness.seconds: " + freshnessSeconds.toString());
