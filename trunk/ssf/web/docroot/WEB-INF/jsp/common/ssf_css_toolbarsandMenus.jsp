@@ -93,12 +93,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 .ss_diagDivContent {
 	padding: 10px;
+	background-color: #fff;
 	}		
 .ss_diagDivFooter {
 	position: relative;
 	background-color: #efeeec;
 	text-align: right;
-	margin-top: 1em;
 	padding: 0.5em;
 	border-top: 1px solid #babdb6;
 	}	
@@ -943,8 +943,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	font-family: Arial,Helvetica,sans-serif;
 	background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
 	padding: 5px;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
 	z-index: 1001;
 	}
 .teamingDlgBox_Glass {

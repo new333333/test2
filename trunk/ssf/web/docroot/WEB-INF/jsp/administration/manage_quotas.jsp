@@ -250,7 +250,6 @@ function ss_checkForAllUsersGroup() {
 <ssf:form titleTag="administration.manage.quotas">
 
 <div style="padding:10px;" id="ss_manageQuotas">
-<br>
 
 <c:if test="${!empty ssException}">
   <font color="red">
@@ -344,13 +343,13 @@ function ss_checkForAllUsersGroup() {
 	</table>
 			
 	<div style="margin: 10px">
-	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
-		<input type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
-		  onClick="showAddGroupsDiv();return false;"/>
+	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
+		<span style="paddong-right: 5px;"><input type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
+		  onClick="showAddGroupsDiv();return false;"/></span>
 	</div>  
 	<!--Add Group DIV dialog-->
 	<div class="ss_relDiv">
- 	  	<div class="ss_diagSmallDiv" id="addGroupDiv" style="display: none;">
+ 	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addGroupDiv" style="display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.quotas.addGroupQuota"/>
 			</div>
@@ -401,7 +400,7 @@ function ss_checkForAllUsersGroup() {
 	          <a href="javascript: ;" onClick="ss_showModifyDiv('${group.id}');return false;">${group.name}</a>
 			  	<!--Edit Group DIV dialog-->
 				<div class="ss_relDiv">
-					<div class="ss_diagSmallDiv" id="ss_modifyQuotaDiv${group.id}" style="display: none;">
+					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyQuotaDiv${group.id}" style="display: none;">
 						<div class="ss_diagDivTitle">
 							<ssf:nlt tag="administration.quotas.quotaModify"/>
 						</div>
@@ -441,22 +440,22 @@ function ss_checkForAllUsersGroup() {
 	        </td>
 	      </tr>
 	    </c:forEach>
-		  <tr class="ends footrow">
-		    <td colspan="5">
-    <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
-			  </td>
-			</tr>
-		  </table>
+		  <tr class="footrow ends">
+		    <td colspan="6" style="padding: 3px;">
+				<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
+		  			title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
+			</td>
+		  </tr>		
+	  </table>
 	</c:if>
 	
-	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
+	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
 		<input type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
 	  onClick="showAddUsersDiv();return false;"/>
 	</div>  
 	<!--Add User DIV dialog-->
 	<div class="ss_relDiv">
-	  	<div class="ss_diagSmallDiv" id="addUserDiv" style="display: none;">
+	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addUserDiv" style="display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.quotas.addUserQuota"/>
 			</div>
@@ -507,7 +506,7 @@ function ss_checkForAllUsersGroup() {
 
 			  	<!--Edit User DIV dialog-->
 				<div class="ss_relDiv">
-					<div class="ss_diagSmallDiv" id="ss_modifyQuotaDiv${user.id}" style="display: none;">
+					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyQuotaDiv${user.id}" style="display: none;">
 						<div class="ss_diagDivTitle">
 							<ssf:nlt tag="administration.quotas.quotaModify"/>
 						</div>
@@ -551,7 +550,7 @@ function ss_checkForAllUsersGroup() {
 	      </tr>
 	    </c:forEach>
 		  <tr class="footrow ends">
-		    <td colspan="6">
+		    <td colspan="6" style="padding: 3px;">
     <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
 		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
 
@@ -568,8 +567,6 @@ function ss_checkForAllUsersGroup() {
 	</div>
 </fieldset>
 
-	
-	<br/>
 	<br/>
 			
 <fieldset class="ss_fieldset">
@@ -592,13 +589,13 @@ function ss_checkForAllUsersGroup() {
 	</table>
 			
 	<div style="margin: 10px">
-	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
+	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
 		<input type="button" class="ss_submit" name="addFSLGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
 		  onClick="showAddFSLGroupsDiv();return false;"/>
 	</div>  
 	<!--Add Group DIV dialog-->
 	<div class="ss_relDiv">
- 	  	<div class="ss_diagSmallDiv" id="addFSLGroupDiv" style="display: none;">
+ 	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addFSLGroupDiv" style="display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.quotas.addGroupQuota"/>
 			</div>
@@ -649,7 +646,7 @@ function ss_checkForAllUsersGroup() {
 	          <a href="javascript: ;" onClick="ss_showModifyFSLDiv('${group.id}');return false;">${group.name}</a>
 			  	<!--Edit Group DIV dialog-->
 				<div class="ss_relDiv">
-					<div class="ss_diagSmallDiv" id="ss_modifyFSLDiv${group.id}" style="display: none;">
+					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyFSLDiv${group.id}" style="display: none;">
 						<div class="ss_diagDivTitle">
 							<ssf:nlt tag="administration.quotas.quotaModify"/>
 						</div>
@@ -690,7 +687,7 @@ function ss_checkForAllUsersGroup() {
 	      </tr>
 	    </c:forEach>
 		  <tr class="ends footrow">
-		    <td colspan="5">
+		    <td colspan="5" style="padding: 3px;">
     <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
 		  title="<ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/>"/>
 			  </td>
@@ -698,13 +695,13 @@ function ss_checkForAllUsersGroup() {
 		  </table>
 	</c:if>
 	
-	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
+	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
 		<input type="button" class="ss_submit" name="addFSLUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
 	  onClick="showAddFSLUsersDiv();return false;"/>
 	</div>  
 	<!--Add User DIV dialog-->
 	<div class="ss_relDiv">
-	  	<div class="ss_diagSmallDiv" id="addFSLUserDiv" style="display: none;">
+	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addFSLUserDiv" style="display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.quotas.addUserQuota"/>
 			</div>
@@ -754,7 +751,7 @@ function ss_checkForAllUsersGroup() {
 
 			  	<!--Edit User DIV dialog-->
 				<div class="ss_relDiv">
-					<div class="ss_diagSmallDiv" id="ss_modifyFSLDiv${user.id}" style="display: none;">
+					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyFSLDiv${user.id}" style="display: none;">
 						<div class="ss_diagDivTitle">
 							<ssf:nlt tag="administration.quotas.quotaModifyFSL"/>
 						</div>
@@ -795,7 +792,7 @@ function ss_checkForAllUsersGroup() {
 	      </tr>
 	    </c:forEach>
 		  <tr class="footrow ends">
-		    <td colspan="6">
+		    <td colspan="6" style="padding: 3px;">
     <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
 		  title="<ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/>"/>
 
