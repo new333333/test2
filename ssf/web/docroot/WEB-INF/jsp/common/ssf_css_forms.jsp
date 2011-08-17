@@ -97,15 +97,18 @@ td.ss_cellvalign {
 	white-space: normal;
 	}
 .objlist tr.title td  	 /* apply to the first row in table */
-	 { color: #5691A6; 
+	 { color: #353838; 
 	 font-size: 1.1em;
 	 font-weight: bold;
-	 background-color: #e9f1f1;
+	 background-color: #ccc;
 	 text-align: left; 
 	 text-indent: 0.15em;
 	 letter-spacing: 1px; 
-	 padding: 3px; 
-	 border-top: 1px solid #5691A6;
+	 padding: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 	}
 	 
 .objlist tr.menu td	/* apply to the row after the title */ 
@@ -346,8 +349,9 @@ fieldset{
   	margin-bottom: 40px !important;
     margin-top: 6px !important;
     margin-bottom: 4px !important;
-    padding: 4px 8px 9px 8px !important;
+    padding: 10px !important;
     border: 1px solid ${ss_style_border_color_light} !important;
+	background-color: #f6f6f6;
 	} 
 .ss_fieldset_login {
   	margin-top: 80px;
@@ -375,6 +379,7 @@ fieldset a:hover {
 	}
 .ss_legend {
   	font-size:12px !important;
+	font-weight: bold;
   	}
  /**********LOGIN SCREEN*******/
 .ss_legend_login {
