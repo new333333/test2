@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,12 +32,8 @@
  */
 package org.kablink.teaming.portlet.binder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -45,11 +41,9 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -61,6 +55,7 @@ import org.springframework.web.portlet.ModelAndView;
  * @author Peter Hurley
  * 
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class ManageVersionControlsController extends AbstractBinderController {
 
 	public void handleActionRequestAfterValidation(ActionRequest request,
@@ -96,7 +91,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					String s_versionsToKeep;
 					Long versionsToKeep = null;
 					try {
-						s_versionsToKeep = PortletRequestUtils.getStringParameter(request, "versionsToKeep", "");
+						s_versionsToKeep = PortletRequestUtils.getStringParameter(request, "versionsToKeep", "").trim();
 						if (!enableBinderVersions) {
 							//If versions are disabled, then set the versions to keep to 0
 							s_versionsToKeep = "0";
@@ -119,7 +114,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 				String s_agingDays;
 				Long agingDays = null;
 				try {
-					s_agingDays = PortletRequestUtils.getStringParameter(request, "versionAgingDays", "");
+					s_agingDays = PortletRequestUtils.getStringParameter(request, "versionAgingDays", "").trim();
 					if (!s_agingDays.equals("")) {
 						agingDays = Long.valueOf(s_agingDays);
 					}
@@ -139,9 +134,9 @@ public class ManageVersionControlsController extends AbstractBinderController {
 				Long maxFileSize = null;
 				try {
 					//The file size is specified in GB on the form and translated to bytes for the database
-					s_maxFileSize = PortletRequestUtils.getStringParameter(request, "maxFileSize", "");
-					if (!s_maxFileSize.trim().equals("")) {
-						maxFileSize = Long.valueOf(s_maxFileSize.trim());
+					s_maxFileSize = PortletRequestUtils.getStringParameter(request, "maxFileSize", "").trim();
+					if (!s_maxFileSize.equals("")) {
+						maxFileSize = Long.valueOf(s_maxFileSize);
 					}
 					getBinderModule().setBinderMaxFileSize(binderId, maxFileSize);
 				} catch (Exception ex) {
