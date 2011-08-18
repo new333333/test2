@@ -46,6 +46,6 @@
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
+<%@ include file="/WEB-INF/jsp/mobile/home.jsp" %>
 </body>
 </html>
