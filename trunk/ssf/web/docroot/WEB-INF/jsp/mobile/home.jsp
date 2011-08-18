@@ -39,7 +39,6 @@
 
 <div style="height:512px; position:relative" class="content">
 <div class="folders">
-<c:if test="${operation2 != 'whatsnew'}">
   <div class="folder-content">
     <div class="home-grid-row">
 	    <div class="home-grid-cell-1">
@@ -118,7 +117,7 @@
 		    <a id="whatsnew-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									binderId="${ssBinder.id}"
-									operation="mobile_show_whatsnew" />">
+									operation="mobile_whats_new" />">
 				<div class="main-item myteams-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_whatsnew_128.png"/></div>
 				  <div class="main-item-label">What's New</div>
@@ -151,7 +150,6 @@
     <div class="home-grid-row">
     </div>
   </div>
-</c:if>
 </div>
 
 </div>
