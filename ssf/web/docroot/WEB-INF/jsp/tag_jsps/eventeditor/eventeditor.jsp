@@ -634,13 +634,14 @@
 					// Bugzilla 682430:
 					//    If the start, end and duration are all blank,
 					//    supply a default duration days of 1.
-					if ((!hasStart) && (0 == eStartTime.value.length) &&
+					if ((!hasStart) && (0 == eStartTime.value.length) &&	
 						(!hasEnd)   && (0 == eEndTime.value.length)   &&
 							(!hasDurationDays)) {
 						eDurationDays.value = "1";
 						hasDurationDays     = true;
 						return true;
 					}
+					
 					// As per the Task Improvements for Evergreen
 					// design document, the following items must be
 					// supplied:
@@ -648,8 +649,8 @@
 					// 2) Both a 'Start' and an End' date and time; or
 					// 3) A 'Start' date and time and a 'Duration' (in days); or
 					// 4) A 'Duration' (in days.)
-					hasEnd   = (hasEnd   && (0 < eEndTime.value.length));
-					hasStart = (hasStart && (0 < eStartTime.value.length));
+					hasEnd   = (hasEnd   && true)	// (0 < eEndTime.value.length));		// Commented out and leave it to the defaults...
+					hasStart = (hasStart && true)	// (0 < eStartTime.value.length));		// ...as per Bugzilla 712328.
 					if (hasStart && (!hasEnd) && (!hasDurationDays)) {
 						// Condition 1 has been met.
 						return true;
