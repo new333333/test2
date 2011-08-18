@@ -107,6 +107,7 @@ import org.springframework.transaction.support.TransactionCallback;
  * Add entries to the binder
  * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractEntryProcessor extends AbstractBinderProcessor 
 	implements EntryProcessor {
     
@@ -583,6 +584,28 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	SimpleProfiler.start("modifyEntry_indexRemoveFiles");
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
 	    	SimpleProfiler.stop("modifyEntry_indexRemoveFiles");
+
+	    	// Can the entry be running a workflow?
+	    	if (entry instanceof WorkflowSupport) {
+	    		// Yes!  Could have a ACLs set in the workflow?
+	    		WorkflowSupport wfs = ((WorkflowSupport) entry);
+	    		if (wfs.hasAclSet()) {
+	    			// Yes!  Then before indexing, we need to make sure
+	    			// the workflow states don't have any member IDs
+	    			// cached.
+	    			//
+	    			// Bugzilla 712550 (DRF):
+	    			//    This is done so that when modifying an entry,
+	    			//    the IDs associated with any workflow ACLs
+	    			//    that may be modified by the entry
+	    			//    modification are re-read BEFORE indexing.
+	    			//    Without this, if ACL checks had been made
+	    			//    prior to the modify, the modify would use
+	    			//    the previous IDs, not those that may have
+	    			//    been set as part of the modify.
+	    			wfs.clearStateMembersCache();
+	    		}
+	    	}
 	    	
 	    	SimpleProfiler.start("modifyEntry_indexAdd");
 	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
