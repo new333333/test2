@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+ <transport name="http" pivot="java:org.apache.axis.transport.http.CommonsHTTPSender"/>
+  <globalConfiguration >
+   <requestFlow >
+    <!-- WSS4J Axis handler for WS-Security. This handler must not be used/specified 
+         if the application wishes to use HTTP Basic Authentication. -->
+    <handler type="java:org.apache.ws.axis.security.WSDoAllSender" >
+     <parameter name="action" value="UsernameToken"/>
+     <!-- Our sample program sets username programmatically. 
+          However, you can use the following parameter to specify the username
+          in config file instead. If both are specified and they are different,
+          the value in the config file is used. -->
+     <!--<parameter name="user" value="admin"/>-->
+     <!-- Using PasswordText allows client to send a cleartext password.
+          Our sample program sets these settings programmatically.
+          However, it is also possible to specify them in config file using
+          the following parameters. -->
+     <!--<parameter name="passwordType" value="PasswordText"/>
+     <parameter name="passwordCallbackClass" value="org.kablink.teaming.samples.remoting.client.ws.security.PWCallbackText"/>-->
+     <!-- With PasswordDigest, a password digest value is sent to the server. 
+          In this case, WS client must first encrypt the cleartext password using
+          the encryption method org.kablink.util.PasswordEncryptor.encrypt()
+          before passing it to the WS-Security tool for subsequent digest 
+          computation. Consequently the password is double hashed.
+          Our sample program sets these settings programmatically.
+          However, it is also possible to specify them in config file using
+          the following parameters. -->
+     <!--<parameter name="passwordType" value="PasswordDigest"/>
+     <parameter name="passwordCallbackClass" value="org.kablink.teaming.samples.remoting.client.ws.security.PWCallbackDigest"/>-->
+    </handler>
+   </requestFlow >
+  </globalConfiguration >
+</deployment> 

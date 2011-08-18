@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+	<!-- Extended Controllers -->
+	<bean id="listFolderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.samples.extendedcontroller.ExtendedListFolderController" />
+	<bean id="workspaceTreeController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.samples.extendedcontroller.ExtendedWorkspaceTreeController" />
+</beans>
