@@ -1042,7 +1042,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void encryptVersion(Binder binder, final DefinableEntity entity, 
 			final VersionAttachment va, FilesErrors errors) {
 		
-		//Take the versionAttachment and copy it to the fornt of the list encrypted.
+		//Take the versionAttachment and copy it to the front of the list encrypted.
 		//Then delete the old one
 		revertFileVersion(entity, va, false, ChangeLog.FILEMODIFY_ENCRYPT);
 		deleteVersion(binder, entity, va);
