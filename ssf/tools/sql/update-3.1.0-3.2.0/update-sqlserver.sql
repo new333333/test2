@@ -18,7 +18,7 @@ alter table SS_Forums add versionAgingEnabled tinyint null;
 alter table SS_Attachments add encrypted tinyint null;
 alter table SS_Attachments add encryptionKey varbinary(256) null;
 
-alter table SS_Principals alter column foreignName varchar(255); 
+alter table SS_Principals alter column foreignName nvarchar(255); 
 
 alter table SS_Forums drop column popularity;
 create table SS_FolderEntryStats (id numeric(19,0) not null, zoneId numeric(19,0) null, popularity numeric(19,0) null, primary key (id));
