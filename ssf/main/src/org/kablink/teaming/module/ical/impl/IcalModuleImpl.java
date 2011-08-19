@@ -74,6 +74,7 @@ import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
@@ -1532,9 +1533,17 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			for(Object comp : cal.getComponents("VEVENT")) {
 				VEvent eventComponent = (VEvent) comp;
 
-				event = parseEvent(eventComponent.getStartDate(), eventComponent.getEndDate(), null, 
-									eventComponent.getDuration(), (RRule) eventComponent.getProperty("RRULE"),
-									eventComponent.getRecurrenceId(), eventComponent.getUid(), timeZones);
+				DtStart eventStart = eventComponent.getStartDate(); fixupFloatingDT(eventStart);
+				DtEnd   eventEnd   = eventComponent.getEndDate();   fixupFloatingDT(eventEnd  );
+				event = parseEvent(
+					eventStart,
+					eventEnd,
+					null,	// null -> No due date. 
+					eventComponent.getDuration(),
+					((RRule) eventComponent.getProperty("RRULE")),
+					eventComponent.getRecurrenceId(),
+					eventComponent.getUid(),
+					timeZones);
 				
 				String description = null;
 				if(eventComponent.getDescription() != null) {
@@ -1598,6 +1607,36 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		} catch(ParserException e) {
 			logger.debug("ParserException while parsing iCal stream", e);
 			throw e;
+		}
+	}
+
+	/*
+	 * If a DateProperty is 'floating' (i.e., it doesn't have a TZ
+	 * specification and is not in GMT), adjust it into the user's
+	 * TZ if we have a non-system user to adjust it with.
+	 */
+	private void fixupFloatingDT(DateProperty dp) {
+		// Does this DateProperty require some adjustment with the
+		// user's timezone?
+		Parameter tzId = dp.getParameter(Parameter.TZID);
+		if ((null == tzId) && (!(dp.isUtc()))) {
+			// Yes!  Do we have a non-system user to work with?
+			User user = RequestContextHolder.getRequestContext().getUser();
+			if ((null != user) && user.isPerson()) {
+				// Yes  Does that user have a timezone set in their
+				// profile?
+				java.util.TimeZone userTZ = user.getTimeZone();
+				if (null != userTZ) {
+					// Yes!  Is it at a non-0 offset from GMT?
+					long dpTime = dp.getDate().getTime();
+					int tzOffset = userTZ.getOffset(dpTime);
+					if (0 != tzOffset) {
+						// Yes!  Adjust it as appropriate.
+						dp.setDate(new DateTime(dpTime - tzOffset));	// Adjust the date/time into the user's TZ...
+						dp.setTimeZone(getTimeZone(userTZ, null));		// ...and store the user's TZ on it.
+					}
+				}
+			}
 		}
 	}
 
@@ -2762,7 +2801,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 					if (6 == dayPos) {
 						dayPos = (-1);
 					}
-					recur.getDayList().add(new WeekDay(day, dayPos));
+					recur.getDayList().add(new WeekDay(new WeekDay(day), dayPos));
 				}
 			}
 
