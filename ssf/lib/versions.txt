@@ -39,7 +39,7 @@ groovy 1.7.8
 gwt 2.3.0 (Google Web Toolkit)
 Hibernate 3.6.0.Final
 hibernate memcached 1.2.2 (Apache License 2.0; http://code.google.com/p/hibernate-memcached)
-ical4j 1.0
+ical4j 1.0-rc1
 icu4j 4.0.1 (needed by jasypt.jar)
 Jackrabbit API 1.4
 Jackrabbit JCR Commons 1.4.2
