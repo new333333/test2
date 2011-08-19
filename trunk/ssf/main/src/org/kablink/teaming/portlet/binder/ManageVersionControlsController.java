@@ -44,6 +44,9 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.file.FilesErrors;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -76,6 +79,24 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
 				getBinderModule().setBinderVersionsEnabled(binderId, Boolean.TRUE);
 			}
+		} else if (formData.containsKey("inheritEncryptionBtn") && WebHelper.isMethodPost(request)) {
+			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
+					getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				getBinderModule().setBinderFileEncryptionInherited(binderId, Boolean.TRUE);
+			}
+		} else if (formData.containsKey("stopInheritEncryptionBtn") && WebHelper.isMethodPost(request)) {
+			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
+					getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				FilesErrors errors = new FilesErrors();
+				getBinderModule().setBinderFileEncryptionEnabled(binderId, Boolean.TRUE, errors);
+	         	if(errors.getProblems().size() > 0) {
+	        		// At least one error occured during the operation. 
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, errors.toString());
+		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		    		return;
+	        	}
+			}
+
 		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && 
 				WebHelper.isMethodPost(request)) {
 			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
@@ -145,7 +166,14 @@ public class ManageVersionControlsController extends AbstractBinderController {
 				
 				//Is encryption enabled
 				Boolean fileEncryptionEnabled = PortletRequestUtils.getBooleanParameter(request, "enableFileEncryption", Boolean.FALSE);
-				getBinderModule().setBinderFileEncryptionEnabled(binderId, fileEncryptionEnabled);
+				FilesErrors errors = new FilesErrors();
+				getBinderModule().setBinderFileEncryptionEnabled(binderId, fileEncryptionEnabled, errors);
+	         	if(errors.getProblems().size() > 0) {
+	        		// At least one error occured during the operation. 
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, errors.toString());
+		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		    		return;
+	        	}
 				
 			}
 			if (formData.containsKey("okBtn")) {
@@ -188,7 +216,8 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		model.put(WebKeys.BINDER_VERSION_AGING_ENABLED, getBinderModule().getBinderVersionAgingEnabled(binder));
 		model.put(WebKeys.BINDER_VERSION_AGING_DAYS, getBinderModule().getBinderVersionAgingDays(binder));
 		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, getBinderModule().getBinderMaxFileSize(binder));
-		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.isFileEncryptionEnabled());
+		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.getFileEncryptionEnabled());
+		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED_INHERITED, getBinderModule().isBinderFileEncryptionEnabled(binder));
 		model.put(WebKeys.FILE_SIZE_LIMIT_USER_DEFAULT, getAdminModule().getFileSizeLimitUserDefault());
 
 		Long fileVersionMaxAge = getAdminModule().getFileVersionsMaxAge();

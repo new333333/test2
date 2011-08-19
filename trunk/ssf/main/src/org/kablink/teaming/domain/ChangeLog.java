@@ -75,6 +75,7 @@ public class ChangeLog extends ZonedObject {
 	public static final String FILEADD="addFile";
 	public static final String FILEMODIFY="modifyFile";
 	public static final String FILEMODIFY_INCR_MAJOR_VERSION="modifyFile.incrMajorVersion";
+	public static final String FILEMODIFY_ENCRYPT="modifyFile.encrypt";
 	public static final String FILEMODIFY_REVERT="modifyFile.revert";
 	public static final String FILEMODIFY_SET_COMMENT="modifyFile.setComment";
 	public static final String FILEMODIFY_SET_STATUS="modifyFile.setStatus";

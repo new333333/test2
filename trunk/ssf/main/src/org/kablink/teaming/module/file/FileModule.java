@@ -470,4 +470,12 @@ public interface FileModule {
 	 * @param fileName
 	 */
 	public boolean checkIfQuotaWouldBeExceeded(Binder binder, long fileSize, String fileName);
+	
+	/**
+	 * Encrypt a file attachment.
+	 *  
+	 * @param entity
+	 * @param fileAttachment
+	 */
+	public void encryptVersion(Binder binder, DefinableEntity entity, VersionAttachment va, FilesErrors errors);
 }	

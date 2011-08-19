@@ -34,6 +34,7 @@ package org.kablink.teaming.dao;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
@@ -132,4 +133,10 @@ public interface FolderDao {
      */
 	public List<Long> findFolderIdsFromWorkflowState(String id,	String stateValue);
     
+    /**
+     * Used to find the folder entries that have un-encrypted attached files
+     * @param binder 
+     * @return List of folder entry ids
+     */
+	public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds);
 }

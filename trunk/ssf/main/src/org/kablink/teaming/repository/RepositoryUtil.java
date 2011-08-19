@@ -208,6 +208,12 @@ public class RepositoryUtil {
 	public static InputStream readVersioned(FileAttachment fa, Binder binder, 
 			DefinableEntity entry, String versionName, String latestVersionName)
 			throws RepositoryServiceException, UncheckedIOException {
+		return readVersioned(fa, binder, entry, versionName, latestVersionName, false);
+	}
+	
+	public static InputStream readVersioned(FileAttachment fa, Binder binder, 
+			DefinableEntity entry, String versionName, String latestVersionName, boolean readRawFile)
+			throws RepositoryServiceException, UncheckedIOException {
 		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
@@ -215,7 +221,7 @@ public class RepositoryUtil {
 		InputStream in = null;
 		try {
 			in = session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName);
-			if (fa.isEncrypted()) {
+			if (!readRawFile && fa.isEncrypted()) {
 				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
 				in = cfe.getEncryptionInputDecryptedStream(in);
 			}

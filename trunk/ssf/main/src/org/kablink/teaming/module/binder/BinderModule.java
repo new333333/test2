@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
@@ -616,9 +617,11 @@ public interface BinderModule {
      * @param fileEncryptionEnabled
      * @throws AccessControlException
      */
-    public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled)
+    public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled,
+    		FilesErrors errors) throws AccessControlException;
+    public Boolean isBinderFileEncryptionEnabled(Binder binder);
+    public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited)
 		throws AccessControlException;
-
     /**
      * Set the postingEnabled flag.
      * 

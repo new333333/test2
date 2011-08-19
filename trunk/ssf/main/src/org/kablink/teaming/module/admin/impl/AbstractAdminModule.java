@@ -34,12 +34,16 @@ package org.kablink.teaming.module.admin.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -585,13 +589,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	public ScheduleInfo getFileVersionAgingSchedule() {
 		ScheduleInfo info = getFileVersionAgingObject().getScheduleInfo(
 				RequestContextHolder.getRequestContext().getZoneId());
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Date now = new Date();
+		int offsetHour = user.getTimeZone().getOffset(now.getTime()) / (60 * 60 * 1000);
+		String hours = SPropsUtil.getString("version.aging.schedule.hours", "0");
+		String minutes = SPropsUtil.getString("version.aging.schedule.minutes", "30");
+		int iHours = Integer.valueOf(hours);
+		iHours -= offsetHour;
+		hours = String.valueOf((iHours + 24) % 24);
 		info.getSchedule().setDaily(true);
-		info.getSchedule().setHours("0");
-		info.getSchedule().setMinutes("30");
-		//Testing values - trigger every 5 minutes (Don't forget to comment this out before checking it back in)
-		//info.getSchedule().setDaily(true);
-		//info.getSchedule().setHours("*");
-		//info.getSchedule().setMinutes("0/5");
+		info.getSchedule().setHours(hours);
+		info.getSchedule().setMinutes(minutes);
     	return info;
 	}
 	    
@@ -1237,6 +1245,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			   || log.getOperation().equals(ChangeLog.FILEADD)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION)
+			   || log.getOperation().equals(ChangeLog.FILEMODIFY_ENCRYPT)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY_REVERT)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY_SET_COMMENT)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY_SET_STATUS)
