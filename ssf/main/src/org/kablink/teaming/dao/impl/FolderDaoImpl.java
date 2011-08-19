@@ -61,6 +61,7 @@ import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HKey;
@@ -884,6 +885,44 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                	List objs = crit.list();
 	                	readObjs.add(objs);
 				      	HashMap tMap;
+				       	for (int i=0; i < objs.size(); ++i) {
+				       		AnyOwner owner = (AnyOwner) objs.get(i);
+				       		result.add(owner.getEntity().getId());
+				       	}
+				       	return result;
+	                }
+	            }
+			);  
+    	}
+    	finally {
+    		end(begin, "findFolderIdsFromWorkflowState(String,String)");
+    	}	        
+	}	
+	
+    /**
+     * Used to find the folder entries that have un-encrypted attached files
+     * @param binder 
+     * @return List of folder entry ids
+     */
+    public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds) {
+		long begin = System.nanoTime();
+		try {
+	       	final Long thisZoneId = RequestContextHolder.getRequestContext().getZoneId();
+	       	return (Set<Long>)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                	Set<Long> result = new HashSet<Long>();
+	                	List readObjs = new ArrayList();
+	                	Criteria crit = session.createCriteria(FileAttachment.class)
+	                	.setProjection(Projections.property("owner"))
+						.add(Restrictions.in("owner.owningBinderId", binderIds))
+						.add(Restrictions.disjunction()
+								.add(Restrictions.isNull("encrypted"))
+								.add(Restrictions.eq("encrypted", false)))
+	                	.add(Restrictions.eq("owner.ownerType", "folderEntry"))
+	                	.add(Restrictions.eq("zoneId", thisZoneId));
+	                	List objs = crit.list();
+	                	readObjs.add(objs);
 				       	for (int i=0; i < objs.size(); ++i) {
 				       		AnyOwner owner = (AnyOwner) objs.get(i);
 				       		result.add(owner.getEntity().getId());

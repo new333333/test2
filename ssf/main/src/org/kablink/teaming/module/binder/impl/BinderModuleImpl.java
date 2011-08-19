@@ -86,14 +86,18 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -163,6 +167,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public void setRunAsyncManager(RunAsyncManager runAsyncManager) {
 		this.runAsyncManager = runAsyncManager;
+	}
+
+	protected FileModule getFileModule() {
+		// Can't use IoC due to circular dependency
+		return (FileModule) SpringContextUtil.getBean("fileModule");
 	}
 
 	/*
@@ -2487,8 +2496,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// no transaction
-	public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled)
+	public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited)
 			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		if (binderEncryptionInherited) {
+			getTransactionTemplate().execute(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					binder.setFileEncryptionInherited();
+					return binderEncryptionInherited;
+				}
+			});
+		}
+	}
+	// no transaction
+	public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled, 
+			FilesErrors errors) throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
@@ -2497,7 +2520,72 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				return fileEncryptionEnabled;
 			}
 		});
+		
+		//Now, check to see if there are any files that need to be encrypted.
+		//First, get the list of sub-binders plus this binder
+		if (binder.isFileEncryptionEnabled()) {
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			List folderIds = new ArrayList();
+			folderIds.add(binder.getId().toString());
+			Criteria crit = new Criteria();
+			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+				.add(in(Constants.ENTRY_ANCESTRY, folderIds));
+			crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
+			Map binderMap = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+	
+			List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+			List binderIdList = new ArrayList();
+	      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+	      		Map entryMap = (Map) iter.next();
+	      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+	      	}
+	      	SortedSet<Binder> binderList = getBinders(binderIdList);
+	      	List<Long> binderIds = new ArrayList<Long>();
+	      	for (Binder b : binderList) {
+	      		if (b.isFileEncryptionEnabled()) {
+	      			binderIds.add(b.getId());
+	      		}
+	      	}
+	      	//Now get the list of entries in those folders where there is an attached file that is not encrypted
+	      	Set<Long> entryIds = getFolderDao().findFolderUnEncryptedEntries(binderIds);
+	      	for (Long id : entryIds) {
+	      		FolderEntry entry = getFolderDao().loadFolderEntry(id, zoneId);
+	      		Set<Attachment> atts = entry.getAttachments();
+	      		for (Attachment att : atts) {
+	      			if (att instanceof FileAttachment) {
+	      				FileAttachment fAtt = (FileAttachment)att;
+	      				Set<VersionAttachment> vAtts = fAtt.getFileVersions();
+	      				List<VersionAttachment> reverseVAtts = new ArrayList<VersionAttachment>();
+	      				for (VersionAttachment vAtt : vAtts) {
+	      					//Reverse the order of this set
+	      					reverseVAtts.add(0, vAtt);
+	      				}
+	      				for (VersionAttachment vAtt : reverseVAtts) {
+		      				if (!vAtt.isEncrypted()) {
+		      					getFileModule().encryptVersion(binder, entry, vAtt, errors);
+		      				}
+	      				}
+	      			}
+	      		}
+	      	}
+		}
 	}
+
+	//Get the fileEncryption setting from the first folder it is set in up the ancestor chain
+	public Boolean isBinderFileEncryptionEnabled(Binder binder) {
+		Boolean result = binder.isFileEncryptionEnabled();
+		if (!result && binder.getFileEncryptionEnabled() == null) {
+			//The current binder isn't explicitly enabled or disabled for file encryption, check for inheritance
+			Binder parent = binder.getParentBinder();
+			while (parent != null && parent instanceof Folder) {
+				result = parent.isFileEncryptionEnabled();
+				if (result) break;
+				parent = parent.getParentBinder();
+			}
+		}
+		return result;
+	}
+
 
 	// no transaction
 	public void setPostingEnabled(Long binderId, final Boolean postingEnabled)

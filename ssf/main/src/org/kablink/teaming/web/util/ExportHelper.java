@@ -1048,7 +1048,7 @@ public class ExportHelper {
 		if (versionsMaxFileSize != null) {
 			versionControls.addAttribute("versionsMaxFileSize", versionsMaxFileSize.toString());
 		}
-		Boolean fileEncryptionEnabled = binder.isFileEncryptionEnabled();
+		Boolean fileEncryptionEnabled = binderModule.isBinderFileEncryptionEnabled(binder);
 		if (fileEncryptionEnabled != null) {
 			versionControls.addAttribute("fileEncryptionEnabled", fileEncryptionEnabled.toString());
 		}

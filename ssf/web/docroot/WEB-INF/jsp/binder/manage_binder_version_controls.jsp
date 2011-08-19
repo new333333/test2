@@ -36,6 +36,8 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="tag" value="folder.manageFolderVersionControls"/>
 <jsp:useBean id="tag" type="String" />
+<c:set var="binder" value="${ssBinder}"/>
+<jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
 <c:set var="ss_windowTitle" value='<%= NLT.get(tag) %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
@@ -110,20 +112,20 @@ function ss_confirmEncryption(cbObj) {
 	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 
 <div class="marginbottom3">
-	<c:if test="${ssBinder.entityType == 'folder'}">
-	  <span><ssf:nlt tag="access.currentFolder"/></span>
-	</c:if>
-	<c:if test="${ssBinder.entityType != 'folder'}">
-	  <span><ssf:nlt tag="access.currentWorkspace"/></span>
-	</c:if>
-	<% //need to check tags for templates %>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <span><ssf:nlt tag="access.currentFolder"/></span>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <span><ssf:nlt tag="access.currentWorkspace"/></span>
+</c:if>
+<% //need to check tags for templates %>
 	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 	
-	<div align="right">
-	  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-	  <input type="submit" class="ss_submit" name="closeBtn" 
-		value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
-	</div>
+<div align="right">
+  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
+  <input type="submit" class="ss_submit" name="closeBtn" 
+    value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+</div>
 </div>
 
     <fieldset class="ss_fieldset">
@@ -160,7 +162,7 @@ function ss_confirmEncryption(cbObj) {
 		  />
 		</c:if>
        </span>
-	   </div>
+       </div>
       
     </fieldset>
     <br/>
@@ -197,7 +199,7 @@ function ss_confirmEncryption(cbObj) {
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
             <c:if test="${!ss_binder_version_aging_enabled}">disabled="disabled"</c:if>
           >&nbsp;<ssf:nlt tag="smallWords.days"/>
-		</div>
+		  </div>
        </div>
 	 </fieldset>
      <br/>
@@ -207,7 +209,7 @@ function ss_confirmEncryption(cbObj) {
 	  <legend class="ss_legend">
 	    <span class="ss_bold"><ssf:nlt tag="binder.file.uploadSizeLimit" /></span>
 	  </legend>
-	    <div style="padding:10px 10px 0px 10px;">
+       <div style="padding:10px 10px 0px 10px;">
         	<span><ssf:nlt tag="binder.versions.versionsMaxFileSize1"/></span>
 			<div><ssf:nlt tag="binder.versions.leaveBlankToInherit"/></div>
 			<div><ssf:nlt tag="binder.file.uploadSizeLimit.hint1"/></div>
@@ -241,11 +243,18 @@ function ss_confirmEncryption(cbObj) {
 	    <input type="checkbox" 
 	      name="enableFileEncryption" 
 	      onChange="return ss_confirmEncryption(this);"
-		  <c:if test="${ss_binder_file_encryption_enabled}">checked=checked</c:if>
+		  <c:if test="${ss_binder_file_encryption_enabled_inherited || ss_binder_file_encryption_enabled}">
+		    checked=checked
+		  </c:if>
 		/><span class="ss_bold"><ssf:nlt tag="binder.enableFileEncryption" /></span>
+		<% if (binder.getFileEncryptionEnabled() == null) { %>
+	    <c:if test="${ss_binder_file_encryption_enabled_inherited}">
+		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		</c:if>
+		<% } %>
 	  </legend>
 	  <div style="padding:10px;">
-		<c:if test="${ss_binder_file_encryption_enabled}">
+		<c:if test="${ss_binder_file_encryption_enabled || ss_binder_file_encryption_enabled_inherited}">
 	      <span><ssf:nlt tag="binder.fileEncryptionEnabled"/></span>
 	      <br/>
 	      <br/>
@@ -253,12 +262,32 @@ function ss_confirmEncryption(cbObj) {
 	        <ssf:nlt tag="binder.fileEncryptionInheritanceHint"/>
 	      </div>
 	    </c:if>
-		<c:if test="${!ss_binder_file_encryption_enabled}">
+		<c:if test="${!ss_binder_file_encryption_enabled && !ss_binder_file_encryption_enabled_inherited}">
 	      <span><ssf:nlt tag="binder.fileEncryptionEnabled2"/></span>
-	      <br/>
 	      <br/>
 	    </c:if>
 	  </div>
+  <%
+  		if (binder.getParentBinder() != null && 
+  			binder.getParentBinder() instanceof org.kablink.teaming.domain.Folder) {
+  %>
+       <div style="padding:4px 10px 0px 10px;">
+		<% if (binder.getFileEncryptionEnabled() == null) { %>
+		  <c:if test="${ss_binder_file_encryption_enabled_inherited}">
+		    <input type="submit" name="stopInheritEncryptionBtn" 
+		      value="<ssf:nlt tag='binder.versions.inheritVersionControlsStop'/>"
+		    />
+		  </c:if>
+		<% } %>
+		<% if (binder.getFileEncryptionEnabled() != null) { %>
+		  <input type="submit" name="inheritEncryptionBtn" 
+		    value="<ssf:nlt tag='binder.versions.inheritVersionControls'/>"
+		  />
+		<% } %>
+       </div>
+   <%
+		} 
+   %>
 	</fieldset>
 <br/>
 </c:if>

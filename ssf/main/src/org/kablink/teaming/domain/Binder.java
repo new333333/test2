@@ -100,7 +100,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	protected Long versionsToKeep;
 	protected Long versionAgingDays;
     protected Boolean versionAgingEnabled;
-    protected Long maxFileSize;	//MB
+    protected Long maxFileSize;	//MB (stored as the maximum number of mega-bytes)
     protected Boolean fileEncryptionEnabled;
     public Binder() {
     }
@@ -848,8 +848,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public Boolean isFileEncryptionEnabled() {
 		return fileEncryptionEnabled != null && fileEncryptionEnabled;
 	}
+	public Boolean getFileEncryptionEnabled() {
+		return fileEncryptionEnabled;	//Can be null if no value is set for this binder
+	}
 	public void setFileEncryptionEnabled(Boolean fileEncryptionEnabled) {
 		this.fileEncryptionEnabled = fileEncryptionEnabled;
+	}
+	public void setFileEncryptionInherited() {
+		this.fileEncryptionEnabled = null;
 	}
 	/*****************End File Related Stuff***********/
 

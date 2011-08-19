@@ -129,6 +129,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.KeyValuePair;
@@ -404,6 +405,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
+		return readFile(binder, entry, fa, false);
+	}
+	protected InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa, boolean readRawFile) { 
 		String versionName = null;
 		String latestVersionName = null;
 		
@@ -423,7 +427,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		return RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName);
+		return RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, readRawFile);
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
@@ -733,6 +737,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	public void revertFileVersion(DefinableEntity entity, VersionAttachment va, Boolean prune) 
 			throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
+		revertFileVersion(entity, va, Boolean.TRUE, ChangeLog.FILEMODIFY_REVERT);
+	}
+	public void revertFileVersion(DefinableEntity entity, VersionAttachment va, Boolean prune, String changeLogCause) 
+			throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
 		//First, check to see if there is quota enough for this
 		User user = RequestContextHolder.getRequestContext().getUser();
 		checkQuota(user, va.getFileItem().getLength(), va.getFileItem().getName());
@@ -785,7 +793,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
     	setEntityModification(entity);
     	entity.incrLogVersion();
-    	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_REVERT);
+    	ChangeLog changes = new ChangeLog(entity, changeLogCause);
 		ChangeLogUtils.buildLog(changes, newTopVa.getParentAttachment());
 		saveChangeLogTransactional(changes);
 	}
@@ -1029,6 +1037,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		catch(IOException ignore) {}
 	    	}
     	}
+	}
+	
+	public void encryptVersion(Binder binder, final DefinableEntity entity, 
+			final VersionAttachment va, FilesErrors errors) {
+		
+		//Take the versionAttachment and copy it to the fornt of the list encrypted.
+		//Then delete the old one
+		revertFileVersion(entity, va, false, ChangeLog.FILEMODIFY_ENCRYPT);
+		deleteVersion(binder, entity, va);
 	}
 
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
@@ -1589,7 +1606,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	/// step1: write primary file
     	/// step2: update metadata in database
     	
-    	if (binder.isFileEncryptionEnabled()) {
+    	if (getBinderModule().isBinderFileEncryptionEnabled(binder)) {
     		//This binder requires that all files be encrypted, so mark that it should be encrypted
     		try {
 				//Get the key to use when encrypting and decrypting

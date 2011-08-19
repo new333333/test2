@@ -459,7 +459,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 destination.setVersionAgingDays(source.getVersionAgingDays());
 		 }
 		 destination.setMaxFileSize(source.getMaxFileSize());
-		 destination.setFileEncryptionEnabled(source.isFileEncryptionEnabled());
+		 destination.setFileEncryptionEnabled(getBinderModule().isBinderFileEncryptionEnabled(source));
 		 return destination;		
 	}
 	 protected TemplateBinder addTemplate(TemplateBinder parentConfig, TemplateBinder srcConfig) {
