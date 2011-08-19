@@ -2561,9 +2561,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	      					reverseVAtts.add(0, vAtt);
 	      				}
 	      				for (VersionAttachment vAtt : reverseVAtts) {
-		      				if (!vAtt.isEncrypted()) {
-		      					getFileModule().encryptVersion(binder, entry, vAtt, errors);
-		      				}
+		      				getFileModule().encryptVersion(binder, entry, vAtt, errors);
 	      				}
 	      			}
 	      		}

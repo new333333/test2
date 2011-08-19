@@ -144,7 +144,6 @@ function ss_confirmEncryption(cbObj) {
           <input type="text" name="versionsToKeep" value="${ss_binder_versions_to_keep}" 
             style="width:40px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-		    <c:if test="${ss_binder_versions_inherited || !ss_binder_versions_enabled}">disabled=disabled</c:if>
           >
         <c:if test="${ss_binder_versions_inherited}">
 		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
@@ -197,7 +196,6 @@ function ss_confirmEncryption(cbObj) {
             value="${ss_binder_version_aging_days}"
             style="width:40px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-            <c:if test="${!ss_binder_version_aging_enabled}">disabled="disabled"</c:if>
           >&nbsp;<ssf:nlt tag="smallWords.days"/>
 		  </div>
        </div>
@@ -235,8 +233,7 @@ function ss_confirmEncryption(cbObj) {
 	</fieldset>
 <br/>
 
-<%
-/**  This is turned off until file encryption is implemented
+<c:if test="${1 == 0}">
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -291,8 +288,7 @@ function ss_confirmEncryption(cbObj) {
 	</fieldset>
 <br/>
 </c:if>
-*/
-%>
+</c:if>
 
 <br/>
 
