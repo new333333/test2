@@ -217,6 +217,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.CREATE_WORKSPACES);
 				break;
+			case deleteEntries:
+				getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.DELETE_ENTRIES);
+				break;
 			case restoreBinder:
 			case preDeleteBinder:
 			case deleteBinder:

@@ -39,8 +39,54 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+
+<c:set var="ss_showDeleteCheckboxes" value="true"/>
+
 <script type="text/javascript">
 var ss_showingFolder = true;
+
+/*
+ * Called when the user checks/unchecks the 'Select All' delete entries checkbox in
+ * the folder view's menu bar.
+ */
+function ss_deleteSelectAll(eCBox) {
+	var bChecked = eCBox.checked;
+	var inputTags = document.getElementsByTagName("input");
+    for (i = 0; i < inputTags.length; i++) {
+    	var inputTag = inputTags.item(i);
+        if (inputTag.name.indexOf("delete_selectOneCB_") == 0) {
+        	inputTag.checked = bChecked;
+        }
+	}
+}
+
+/*
+ * Called when the user clicks the "delete selected entries" button
+ */
+var ss_deleteEntryConfirmText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.deleteEntries.confirm'/></ssf:escapeQuotes>";
+function ss_deleteSelectedEntries() {
+	var inputTags = document.getElementsByTagName("input");
+	var deleteList = "";
+    for (i = 0; i < inputTags.length; i++) {
+    	var inputTag = inputTags.item(i);
+        if (inputTag.name.indexOf("delete_selectOneCB_") == 0) {
+        	var entryId = inputTag.name.substring(19, inputTag.name.length);
+        	if (inputTag.checked) {
+        		if (deleteList != "") deleteList = deleteList + ",";
+        		deleteList = deleteList + entryId;
+        	}
+        }
+	}
+    if (deleteList != "") {
+    	if (confirm(ss_deleteEntryConfirmText)) {
+    		//Submit the request to delete selected entries
+    		var formObj = document.forms['delete_entries_form'];
+    		formObj.delete_entries_list.value = deleteList;
+    		return true;
+    	}
+    }
+    return false;
+}
 </script>
 <c:if test="${empty ss_entryViewStyle}">
   <c:set var="ss_entryViewStyle" value="" scope="request"/>
@@ -105,11 +151,22 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   		<c:set var="slidingTableRowEvenStyle" value="ss_fixed_even_TR"/>
   		<c:set var="slidingTableColStyle" value="ss_fixed_TD"/>
 	</ssf:ifaccessible>
-
+	
 	<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
  	  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}" tableStyle="${slidingTableTableStyle}">
 	<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
 
+  	<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+		<!-- Delete Entries Header Column:  Select All -->
+		<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="4%">
+			<div class="ss_title_menu" id="delete_selectAllCB_DIV">
+			  <input type="checkbox" class="ss_sliding_table_checkbox" name="delete_selectAllCB"
+			    onClick="ss_deleteSelectAll(this); return(true);"
+			    onMouseOver="return(true);" onMouseOut="return(true);"/>
+			</div>
+		</ssf:slidingTableColumn>
+  	</c:if>
+  	
 	<c:if test="${slidingTableStyle == 'fixed'}">
       <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
         <img src="<html:imagesPath/>pics/discussion/pin_gray.png" width="16" height="16" 
@@ -118,6 +175,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	</c:if>
 
   	<c:forEach var="columnName" items="${ssFolderColumnsSortOrder}" >
+  	
   	<c:if test="${columnName == 'number' && !empty ssFolderColumns['number']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.number") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['number']}">
@@ -604,6 +662,19 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <ssf:slidingTableRow style="${slidingTableRowStyle}" 
   oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}" id="${folderLineId}" >
 
+   	<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+		<!-- Delete entry  -->
+		<ssf:slidingTableColumn  style="ss_sliding_table_checkbox">
+			<div class="ss_title_menu">
+			  <input type="checkbox" name="delete_selectOneCB_${entry1._docId}" 
+			    id="delete_selectOneCB_${entry1._docId}" 
+			    onMouseOver="return(true);" onMouseOut="return(true);"
+			    class="ss_sliding_table_checkbox" />
+			</div>
+		</ssf:slidingTableColumn>
+  	</c:if>
+ 
+
  <c:if test="${slidingTableStyle == 'fixed'}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
      <a href="javascript: ;" onClick="ss_pinEntry(this,'${entry1._binderId}','${entry1._docId}');return false;">
@@ -621,6 +692,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
 
  <c:forEach var="columnName" items="${ssFolderColumnsSortOrder}" >
+ 
  <c:if test="${columnName == 'number' && !empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <a href="<ssf:url     
@@ -1092,6 +1164,15 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </c:forEach>
 </ssf:slidingTable>
 </div>
+<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+ <div>
+  <form method="post" name="delete_entries_form" >
+  <input type="submit" onClick="return(ss_deleteSelectedEntries());" name="deleteEntriesBtn"
+    value="<ssf:nlt tag="file.command.deleteEntries"/>" />
+  <input type="hidden" name="delete_entries_list"/>
+  </form>
+ </div>
+</c:if>
 
 <c:if test="${ssBinder.mirrored && empty ssBinder.resourceDriverName}">
 	<div class="ss_style ss_portlet" style="padding:10px;"><span class="ss_errorLabel"><ssf:nlt tag="binder.mirrored.incomplete"/></span></div>

@@ -293,6 +293,10 @@ public class ListFolderHelper {
 			model.put(WebKeys.FOLDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
 			//model.put(WebKeys.ENTRY, binder);
+			Map accessControlBinderMap = BinderHelper.getAccessControlEntityMapBean(model, binder);
+			if (bs.getBinderModule().testAccess(binder, BinderOperation.deleteEntries)) {
+				accessControlBinderMap.put("deleteEntries", new Boolean(true));
+			}
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
