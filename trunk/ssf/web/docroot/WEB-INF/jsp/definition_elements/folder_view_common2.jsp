@@ -161,7 +161,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="4%">
 			<div class="ss_title_menu" id="delete_selectAllCB_DIV">
 			  <input type="checkbox" class="ss_sliding_table_checkbox" name="delete_selectAllCB"
-			    onClick="ss_deleteSelectAll(this); return(true);"
+			    onClick="ss_deleteSelectAll(this); return(true);" 
+			    title="<ssf:nlt tag='file.command.deleteEntriesSelectAll'/>"
 			    onMouseOver="return(true);" onMouseOut="return(true);"/>
 			</div>
 		</ssf:slidingTableColumn>
@@ -668,7 +669,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<div class="ss_title_menu">
 			  <input type="checkbox" name="delete_selectOneCB_${entry1._docId}" 
 			    id="delete_selectOneCB_${entry1._docId}" 
-			    onMouseOver="return(true);" onMouseOut="return(true);"
+			    onMouseOver="return(true);" 
+			    onMouseOut="return(true);"
+			    title="<ssf:nlt tag='file.command.deleteEntry'/>"
 			    class="ss_sliding_table_checkbox" />
 			</div>
 		</ssf:slidingTableColumn>
