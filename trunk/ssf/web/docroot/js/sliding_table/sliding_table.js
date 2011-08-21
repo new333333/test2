@@ -109,6 +109,10 @@ function ss_showMouseOverInfo(obj) {
 	
 	
 	if (obj != ss_slidingTableMosueOverObj) {
+		if (obj.getElementsByTagName("input").length > 0 ) {
+			//If there is an input tag in this, don't show the hover over because it obscures the real input element
+			return;
+		}
 		ss_moveObjectToBody(document.getElementById('ss_info_popup'))
 		var ihtml = obj.innerHTML;
 		if (ihtml != "" && ihtml != "&nbsp;" && ihtml != "&nbsp;&nbsp;" && 

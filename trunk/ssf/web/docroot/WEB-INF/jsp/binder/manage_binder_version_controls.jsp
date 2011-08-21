@@ -40,6 +40,7 @@
 <jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
 <c:set var="ss_windowTitle" value='<%= NLT.get(tag) %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:set var="ss_showFileEncryption" value="false" />
 
 <body class="ss_style_body tundra">
 
@@ -233,7 +234,7 @@ function ss_confirmEncryption(cbObj) {
 	</fieldset>
 <br/>
 
-<c:if test="${1 == 0}">
+<c:if test="${ss_showFileEncryption}">
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">

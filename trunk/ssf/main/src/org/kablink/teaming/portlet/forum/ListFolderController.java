@@ -218,6 +218,21 @@ public class ListFolderController extends  SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_CLEAR_UNSEEN)) {
 			Set<Long> ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_IDS));
 			getProfileModule().setSeenIds(null, ids);
+		} else if (formData.containsKey("deleteEntriesBtn") && WebHelper.isMethodPost(request)) {
+			String deleteEntriesList = PortletRequestUtils.getStringParameter(request, "delete_entries_list", "");
+			if (!deleteEntriesList.equals("")) {
+				String[] entryIds = deleteEntriesList.split(",");
+				for (int i=0; i < entryIds.length; i++) {
+					Long delId = null;
+					try {
+						delId = Long.valueOf(entryIds[i]);
+						FolderEntry delEntry = getFolderModule().getEntry(binderId, delId);
+						TrashHelper.preDeleteEntry(this, binderId, delId);
+					} catch(Exception e) {
+						continue;
+					}
+				}
+			}
 		}
 
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
