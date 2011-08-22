@@ -162,6 +162,13 @@ function ss_submitIndexingForm( indexing, formName, callbackName ) {
 				return false;			
 			}
 		}
+		//Is this a request to optimize?
+		if (callbackName == 'ss_optimizationDone') {
+			//See if this was really just scheduling optimization
+			if (!formObj['runnow'].checked && formObj['enabled'].checked) {
+				callbackName = 'ss_optimizationScheduled'
+			}
+		}
 		
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
 		ss_submitFormViaAjax(formName, callbackName );
@@ -184,16 +191,27 @@ function ss_indexingDone() {
 /**
  * Display the "Optimization has finished" div.
  */
-function ss_optimizationDone()
-{
-	if ( ss_indexTimeout )
-	{
-		clearTimeout(ss_indexTimeout);
-	}
+ function ss_optimizationDone()
+ {
+ 	if ( ss_indexTimeout )
+ 	{
+ 		clearTimeout(ss_indexTimeout);
+ 	}
 
-	ss_stopSpinner();
-	ss_showPopupDivCentered( 'ss_optimization_done_div' );
-}// end ss_optimizationDone()
+ 	ss_stopSpinner();
+ 	ss_showPopupDivCentered( 'ss_optimization_done_div' );
+ }// end ss_optimizationDone()
+
+ function ss_optimizationScheduled()
+ {
+ 	if ( ss_indexTimeout )
+ 	{
+ 		clearTimeout(ss_indexTimeout);
+ 	}
+
+ 	ss_stopSpinner();
+ 	ss_showPopupDivCentered( 'ss_optimization_scheduled_div' );
+ }// end ss_optimizationScheduled()
 
 
 function <%= wsTreeName %>_showId(id, obj, action) {
@@ -372,6 +390,13 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <div id="ss_optimization_done_div" class="teamingDlgBox" style="position:absolute; display:none;">
 	<div class="popupContent" style="padding: 20px;">
 		<span><ssf:nlt tag="index.optimization.finished"/></span>
+		<div class="margintop3" style="text-align: center;"><input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" /></div>
+	</div>
+</div>
+
+<div id="ss_optimization_scheduled_div" class="teamingDlgBox" style="position:absolute; display:none;">
+	<div class="popupContent" style="padding: 20px;">
+		<span><ssf:nlt tag="index.optimization.scheduled"/></span>
 		<div class="margintop3" style="text-align: center;"><input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" /></div>
 	</div>
 </div>
