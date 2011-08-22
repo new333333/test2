@@ -799,6 +799,9 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	font-family: ${ss_style_title_font_family};
 	padding: 0px 3px;
 	}
+.ss_toolbarDeleteBtnDisabled {
+    background-color: #cecece !important;
+    }
 
 /* Description region */
 .wg-description-content {

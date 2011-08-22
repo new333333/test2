@@ -1566,7 +1566,29 @@ public class ListFolderHelper {
 							adapterUrl.toString(), qualifiers);
 				}
 			}
-		}		
+		}
+		if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION) || 
+				viewType.equals(Definition.VIEW_STYLE_FILE)) {
+			//Add the Delete and Purge buttons
+			if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries)) {
+				Map qualifiers = new HashMap();
+				String onClickPhrase = "ss_deleteSelectedEntries('delete');return false;";
+				qualifiers.put("title", NLT.get("file.command.deleteEntries"));
+				qualifiers.put("onClick", onClickPhrase);
+				qualifiers.put("linkclass", "ss_toolbarDeleteBtnDisabled");
+				qualifiers.put("textId", "ss_toolbarDeleteBtn");
+				entryToolbar.addToolbarMenu("1_deleteSelected", NLT.get("toolbar.delete"), 
+						"#", qualifiers);
+				qualifiers = new HashMap();
+				onClickPhrase = "ss_deleteSelectedEntries('purge');return false;";
+				qualifiers.put("title", NLT.get("file.command.deleteEntriesPurge"));
+				qualifiers.put("onClick", onClickPhrase);
+				qualifiers.put("linkclass", "ss_toolbarDeleteBtnDisabled");
+				qualifiers.put("textId", "ss_toolbarPurgeBtn");
+				entryToolbar.addToolbarMenu("1_purgeSelected", NLT.get("toolbar.menu.trash.purge"), 
+						"#", qualifiers);
+			}
+		}
 	}
 	protected static void buildFolderToolbars(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Folder folder, String forumId, Map model, String viewType) {

@@ -63,11 +63,45 @@ function ss_deleteSelectAll(eCBox) {
 	}
 }
 
+function ss_showDeleteButtons(cbObj) {
+	var inputTags = document.getElementsByTagName("input");
+	var deleteList = "";
+    for (i = 0; i < inputTags.length; i++) {
+    	var inputTag = inputTags.item(i);
+        if (inputTag.name.indexOf("delete_selectOneCB_") == 0) {
+        	var entryId = inputTag.name.substring(19, inputTag.name.length);
+        	if (inputTag.checked) {
+        		if (deleteList != "") deleteList = deleteList + ",";
+        		deleteList = deleteList + entryId;
+        	}
+        }
+	}
+    var delBtn = document.getElementById('ss_toolbarDeleteBtn');
+    if (delBtn != null) {
+    	if (deleteList == "") {
+        	//There are no entries selected, gray out the buttons
+    		delBtn.parentNode.style.backgroundColor = "#cecece !important;"
+    	} else {
+    		delBtn.parentNode.style.backgroundColor = "#949494 !important;"
+    	}
+    }
+    var purgeBtn = document.getElementById('ss_toolbarPurgeBtn');
+    if (purgeBtn != null) {
+    	if (deleteList == "") {
+        	//There are no entries selected, gray out the buttons
+    		purgeBtn.parentNode.style.backgroundColor = "#cecece !important;"
+    	} else {
+    		purgeBtn.parentNode.style.backgroundColor = "#949494 !important;"
+    	}
+    }
+}
+
 /*
  * Called when the user clicks the "delete selected entries" button
  */
 var ss_deleteEntryConfirmText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.deleteEntries.confirm'/></ssf:escapeQuotes>";
-function ss_deleteSelectedEntries() {
+var ss_deleteEntryPurgeConfirmText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.deleteEntriesPurge.confirm'/></ssf:escapeQuotes>";
+function ss_deleteSelectedEntries(operation) {
 	var inputTags = document.getElementsByTagName("input");
 	var deleteList = "";
     for (i = 0; i < inputTags.length; i++) {
@@ -81,14 +115,18 @@ function ss_deleteSelectedEntries() {
         }
 	}
     if (deleteList != "") {
-    	if (confirm(ss_deleteEntryConfirmText)) {
+    	var confirmText = ss_deleteEntryConfirmText;
+    	if (operation == 'purge') {
+    		confirmText = ss_deleteEntryPurgeConfirmText;
+    	}
+    	if (confirm(confirmText)) {
     		//Submit the request to delete selected entries
     		var formObj = document.forms['delete_entries_form'];
     		formObj.delete_entries_list.value = deleteList;
-    		return true;
+    		formObj.delete_operation.value = operation;
+    		formObj.submit();
     	}
     }
-    return false;
 }
 </script>
 <c:if test="${empty ss_entryViewStyle}">
@@ -674,6 +712,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			    id="delete_selectOneCB_${entry1._docId}" 
 			    onMouseOver="return(true);" 
 			    onMouseOut="return(true);"
+			    onChange="ss_showDeleteButtons(this);"
 			    title="<ssf:nlt tag='file.command.deleteEntry'/>"
 			    class="ss_sliding_table_checkbox" />
 			</div>
@@ -1173,9 +1212,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
  <div>
   <form method="post" name="delete_entries_form" >
-  <input type="submit" onClick="return(ss_deleteSelectedEntries());" name="deleteEntriesBtn"
-    value="<ssf:nlt tag="file.command.deleteEntries"/>" />
+  <input type="hidden" name="deleteEntriesBtn"
+    value="deleteEntriesBtn" />
   <input type="hidden" name="delete_entries_list"/>
+  <input type="hidden" name="delete_operation"/>
   </form>
  </div>
 </c:if>
