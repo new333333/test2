@@ -906,6 +906,9 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      */
     public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds) {
 		long begin = System.nanoTime();
+		if (binderIds.isEmpty()) {
+			return new HashSet<Long>();
+		}
 		try {
 	       	final Long thisZoneId = RequestContextHolder.getRequestContext().getZoneId();
 	       	return (Set<Long>)getHibernateTemplate().execute(

@@ -731,10 +731,13 @@ public class WebKeys {
 	public static final String BINDER_PATH_NAME="binderPathName";
 	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
+	public static final String FILE_ENCRYPTION_ENABLED_ALL = "ss_file_encryption_enabled_all";
+	public static final String BINDER_FILE_ENCRYPTION_ALLOWED = "ss_binder_file_encryption_allowed";
 	public static final String BINDER_FILE_ENCRYPTION_ENABLED = "ss_binder_file_encryption_enabled";
 	public static final String BINDER_FILE_ENCRYPTION_ENABLED_INHERITED = "ss_binder_file_encryption_enabled_inherited";
 	public static final String BINDER_VERSIONS_INHERITED = "ss_binder_versions_inherited";
 	public static final String BINDER_FILE_SIZE_LIMIT_INHERITED = "ss_binder_file_size_limit_inherited";
+	public static final String BINDER_FILES_NOT_ENCRYPTED = "ss_binder_files_not_encrypted";
 	public static final String BINDER_VERSIONS_ENABLED = "ss_binder_versions_enabled";
 	public static final String BINDER_VERSIONS_ENABLED_INHERITED = "ss_binder_versions_enabled_inherited";
 	public static final String BINDER_VERSIONS_TO_KEEP = "ss_binder_versions_to_keep";
