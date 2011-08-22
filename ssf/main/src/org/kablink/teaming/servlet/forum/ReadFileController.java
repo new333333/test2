@@ -192,7 +192,17 @@ public class ReadFileController extends AbstractReadFileController {
 						}
 
 						zipOut.putNextEntry(new ZipEntry(attName));
+						String loggerText = "Copying an unencrypted file of length ";
+						if (fileAtt.isEncrypted()) {
+							loggerText = "Copying an encrypted file of length ";
+						}
+						long startTime = System.nanoTime();
 						FileUtil.copy(fileStream, zipOut);
+						/*
+						 * This was used to measure the time degradation for encrypted files
+						logger.info(loggerText + fileAtt.getFileItem().getLengthKB() + 
+								"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
+						*/
 						zipOut.closeEntry();
 
 						fileStream.close();
