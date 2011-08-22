@@ -34,6 +34,7 @@ package org.kablink.teaming.portlet.binder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -47,6 +48,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -73,6 +75,18 @@ public class ManageVersionControlsController extends AbstractBinderController {
 			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
 				getBinderModule().setBinderVersionsInherited(binderId, Boolean.TRUE);
+			}
+		} else if (formData.containsKey("encryptAllFiles") && WebHelper.isMethodPost(request)) {
+			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
+					getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				FilesErrors errors = new FilesErrors();
+				getBinderModule().setBinderFileEncryptionEnabled(binderId, true, errors);
+	         	if(errors.getProblems().size() > 0) {
+	        		// At least one error occured during the operation. 
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, errors.toString());
+		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		    		return;
+	        	}
 			}
 		} else if (formData.containsKey("stopInheritBtn") && WebHelper.isMethodPost(request)) {
 			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
@@ -219,7 +233,13 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.getFileEncryptionEnabled());
 		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED_INHERITED, getBinderModule().isBinderFileEncryptionEnabled(binder));
 		model.put(WebKeys.FILE_SIZE_LIMIT_USER_DEFAULT, getAdminModule().getFileSizeLimitUserDefault());
-
+		Boolean encryptAllFiles = SPropsUtil.getBoolean("file.encryption.encryptAll", false);
+		model.put(WebKeys.FILE_ENCRYPTION_ENABLED_ALL, encryptAllFiles);
+		Boolean allowBinderFilesEncryption = SPropsUtil.getBoolean("file.encryption.allowPerFolderEncryption", false);
+		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ALLOWED, allowBinderFilesEncryption);
+		Set<Long> entryIds = getBinderModule().getUnEncryptedBinderEntryIds(binderId, false);
+		model.put(WebKeys.BINDER_FILES_NOT_ENCRYPTED, Integer.valueOf(entryIds.size()));
+		
 		Long fileVersionMaxAge = getAdminModule().getFileVersionsMaxAge();
 		model.put(WebKeys.FILE_VERSION_MAXIMUM_AGE, fileVersionMaxAge);
 

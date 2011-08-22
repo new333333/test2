@@ -620,6 +620,7 @@ public interface BinderModule {
      */
     public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled,
     		FilesErrors errors) throws AccessControlException;
+    public Set<Long> getUnEncryptedBinderEntryIds(Long binderId, boolean onlyCheckEncryptedFolders);
     public Boolean isBinderFileEncryptionEnabled(Binder binder);
     public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited)
 		throws AccessControlException;

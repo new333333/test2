@@ -2513,10 +2513,40 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			});
 		}
 	}
+	
+	public Set<Long> getUnEncryptedBinderEntryIds(Long binderId, boolean onlyCheckEncryptedFolders) {
+		final Binder binder = loadBinder(binderId);
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		List folderIds = new ArrayList();
+		folderIds.add(binder.getId().toString());
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
+		crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
+		Map binderMap = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+
+		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+		List binderIdList = new ArrayList();
+      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+      		Map entryMap = (Map) iter.next();
+      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      	}
+      	SortedSet<Binder> binderList = getBinders(binderIdList);
+      	List<Long> binderIds = new ArrayList<Long>();
+      	for (Binder b : binderList) {
+      		if (!onlyCheckEncryptedFolders || b.isFileEncryptionEnabled()) {
+      			binderIds.add(b.getId());
+      		}
+      	}
+      	//Now get the list of entries in those folders where there is an attached file that is not encrypted
+      	return getFolderDao().findFolderUnEncryptedEntries(binderIds);
+	}
+	
 	// no transaction
 	public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled, 
 			FilesErrors errors) throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
@@ -2528,30 +2558,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		//Now, check to see if there are any files that need to be encrypted.
 		//First, get the list of sub-binders plus this binder
 		if (binder.isFileEncryptionEnabled()) {
-			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			List folderIds = new ArrayList();
-			folderIds.add(binder.getId().toString());
-			Criteria crit = new Criteria();
-			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
-				.add(in(Constants.ENTRY_ANCESTRY, folderIds));
-			crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
-			Map binderMap = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
-	
-			List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
-			List binderIdList = new ArrayList();
-	      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
-	      		Map entryMap = (Map) iter.next();
-	      		binderIdList.add(new Long((String)entryMap.get("_docId")));
-	      	}
-	      	SortedSet<Binder> binderList = getBinders(binderIdList);
-	      	List<Long> binderIds = new ArrayList<Long>();
-	      	for (Binder b : binderList) {
-	      		if (b.isFileEncryptionEnabled()) {
-	      			binderIds.add(b.getId());
-	      		}
-	      	}
-	      	//Now get the list of entries in those folders where there is an attached file that is not encrypted
-	      	Set<Long> entryIds = getFolderDao().findFolderUnEncryptedEntries(binderIds);
+	      	//Get the list of entries in those folders where there is an attached file that is not encrypted
+	      	Set<Long> entryIds = getUnEncryptedBinderEntryIds(binderId, true);
 	      	for (Long id : entryIds) {
 	      		FolderEntry entry = getFolderDao().loadFolderEntry(id, zoneId);
 	      		Set<Attachment> atts = entry.getAttachments();

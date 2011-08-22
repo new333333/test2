@@ -40,7 +40,6 @@
 <jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
 <c:set var="ss_windowTitle" value='<%= NLT.get(tag) %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="ss_showFileEncryption" value="false" />
 
 <body class="ss_style_body tundra">
 
@@ -87,6 +86,16 @@ function ss_confirmEncryption(cbObj) {
 			  cbObj.checked = false;
 		  }
 		</c:if>
+	}
+	return false;
+}
+
+function ss_confirmEncryptAll() {
+	if (confirm("<ssf:escapeQuotes><ssf:nlt tag="binder.fileEncryptionInheritanceHint2"/></ssf:escapeQuotes>")) {
+		var formObj = document.forms['form1'];
+		ss_startSpinner(cbObj);
+		setTimeout("document.forms['form1'].applyBtn.click();", 100);
+		return true;
 	}
 	return false;
 }
@@ -234,7 +243,8 @@ function ss_confirmEncryption(cbObj) {
 	</fieldset>
 <br/>
 
-<c:if test="${ss_showFileEncryption}">
+<c:if test="${(ss_binder_file_encryption_enabled || ss_binder_file_encryption_allowed) && 
+		!ss_file_encryption_enabled_all}">
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -286,6 +296,53 @@ function ss_confirmEncryption(cbObj) {
    <%
 		} 
    %>
+	</fieldset>
+<br/>
+</c:if>
+</c:if>
+
+<c:if test="${ss_file_encryption_enabled_all}">
+<c:if test="${ss_binder_files_not_encrypted == 0}">
+    <fieldset class="ss_fieldset">
+	  <legend class="ss_legend">
+		<span class="ss_bold"><ssf:nlt tag="binder.fileEncryption" /></span>
+	  </legend>
+	  <div style="padding:10px;">
+	      <span>
+	        <ssf:nlt tag="binder.fileEncryptionEnabledAllHint"/>
+	      </span>
+	      <br/>
+	      <br/>
+	  </div>
+	</fieldset>
+</c:if>
+<c:if test="${ssBinder.entityType == 'folder' && ss_binder_files_not_encrypted > 0}">
+    <fieldset class="ss_fieldset">
+	  <legend class="ss_legend">
+		<span class="ss_bold"><ssf:nlt tag="binder.enableFileEncryption" /></span>
+	  </legend>
+	  <div style="padding:10px;">
+	      <span>
+	        <ssf:nlt tag="binder.fileEncryptionEnabledAllHint"/>
+	      </span>
+	      <br/>
+	      <br/>
+	      <span>
+	        <c:if test="${ss_binder_files_not_encrypted == 1}">
+	          <ssf:nlt tag="binder.fileNeedsToBeEncrypted"/>
+	        </c:if>
+	        <c:if test="${ss_binder_files_not_encrypted > 1}">
+	          <ssf:nlt tag="binder.filesNeedToBeEncrypted">
+	            <ssf:param name="value" value="${ss_binder_files_not_encrypted}"/>
+	          </ssf:nlt>
+	        </c:if>
+	      </span>
+	      <br/>
+	      <br/>
+	      <input type="submit" name="encryptAllFiles" 
+		    value="<ssf:nlt tag='binder.filesEncryptNow'/>" 
+		    onClick="return(ss_confirmEncryptAll());" />
+	  </div>
 	</fieldset>
 <br/>
 </c:if>

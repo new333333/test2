@@ -41,6 +41,9 @@
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <c:set var="ss_showDeleteCheckboxes" value="true"/>
+<c:if test="${ssBinder.mirrored}">
+  <c:set var="ss_showDeleteCheckboxes" value="false"/>
+</c:if>
 
 <script type="text/javascript">
 var ss_showingFolder = true;
