@@ -61,9 +61,10 @@ function ss_deleteSelectAll(eCBox) {
         	inputTag.checked = bChecked;
         }
 	}
+    ss_showDeleteButtons();
 }
 
-function ss_showDeleteButtons(cbObj) {
+function ss_showDeleteButtons() {
 	var inputTags = document.getElementsByTagName("input");
 	var deleteList = "";
     for (i = 0; i < inputTags.length; i++) {
@@ -712,7 +713,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			    id="delete_selectOneCB_${entry1._docId}" 
 			    onMouseOver="return(true);" 
 			    onMouseOut="return(true);"
-			    onChange="ss_showDeleteButtons(this);"
+			    onChange="ss_showDeleteButtons();"
 			    title="<ssf:nlt tag='file.command.deleteEntry'/>"
 			    class="ss_sliding_table_checkbox" />
 			</div>
