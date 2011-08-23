@@ -47,6 +47,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -64,44 +65,78 @@ public class DefaultUserTitleChange extends SimpleTriggerJob implements UserTitl
 	   	CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
 	    BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
     	List<Long> binderIds = (List)jobDataMap.get("binderIds");
-    	List<Long>retryBinderIds = new ArrayList();
-    	for (Long id:binderIds) {
+    	List<Long> tryBinderIds = new ArrayList<Long>();
+    	List<Integer> binderTryCounts = (List)jobDataMap.get("binderTryCounts");
+    	List<Integer> tryBinderTryCounts = new ArrayList<Integer>();
+    	for(int i = 0; i < binderIds.size(); i++) {
+    		Long id = binderIds.get(i);
     		//index binder only
 			try {
 				binderModule.indexBinder(id, false);
 			} catch (NoObjectByTheIdException ex) {
 				//gone, skip it
+				if(logger.isDebugEnabled())
+					logger.debug("The binder " + id + " is no longer found.");
 			} catch (Exception ex) {
-				//try again
-				logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") " +
-						ex.toString());
-				retryBinderIds.add(id);
+				int tryCount = 0;
+				if(binderTryCounts != null && binderTryCounts.get(i) != null)
+					tryCount = binderTryCounts.get(i).intValue();
+				if(++tryCount < getTryMaxCount()) {
+					//try again
+					logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") " +
+							ex.toString());
+					tryBinderIds.add(id);
+					tryBinderTryCounts.add(Integer.valueOf(tryCount));
+				}
+				else {
+					//tried enough. Log the problem and discard this item.
+					logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") - Discarding the item", ex);
+				}
 			}
     	}
     	
       	FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
       	List<Long> entryIds = (List)jobDataMap.get("entryIds");
-    	List<Long>retryEntryIds = new ArrayList();
-    	for (Long id:entryIds) {
+    	List<Long>tryEntryIds = new ArrayList();
+    	List<Integer> entryTryCounts = (List)jobDataMap.get("entryTryCounts");
+    	List<Integer> tryEntryTryCounts = new ArrayList<Integer>();
+    	for(int i = 0; i < entryIds.size(); i++) {
+    		Long id = entryIds.get(i);
 			try {
 				//get entry directly, don't have parent folder
 				FolderEntry entry = (FolderEntry)coreDao.load(FolderEntry.class, id);
 				if (entry != null) folderModule.indexEntry(entry, false);
 			} catch (NoObjectByTheIdException ex) {
 				//gone, skip it
+				if(logger.isDebugEnabled())
+					logger.debug("The entry " + id + " is no longer found.");
 			} catch (Exception ex) {
-				logger.error(NLT.get("profile.titlechange.index.error") + " (entry " + id.toString() + ") " +
-						ex.toString());
-				//try again
-				retryEntryIds.add(id);
+				int tryCount = 0;
+				if(entryTryCounts != null && entryTryCounts.get(i) != null)
+					tryCount = entryTryCounts.get(i).intValue();
+				if(++tryCount < getTryMaxCount()) {
+					//try again
+					logger.error(NLT.get("profile.titlechange.index.error") + " (entry " + id.toString() + ") " +
+							ex.toString());
+					tryEntryIds.add(id);
+					tryEntryTryCounts.add(Integer.valueOf(tryCount));
+				}
+				else {
+					//tried enough. Log the problem and discard this item.
+					logger.error(NLT.get("profile.titlechange.index.error") + " (entry " + id.toString() + ") - Discarding the item", ex);
+				}
 			}
     	}
-    	if (retryBinderIds.isEmpty() && retryEntryIds.isEmpty()) {
+    	if (tryBinderIds.isEmpty() && tryEntryIds.isEmpty()) {
     		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
     		context.setResult("Success");
     	} else {
-    		jobDataMap.put("binderIds", retryBinderIds);
-    		jobDataMap.put("entryIds", retryEntryIds);
+    		jobDataMap.put("binderIds", tryBinderIds);
+    		if(!tryBinderTryCounts.isEmpty())
+    			jobDataMap.put("binderTryCounts", tryBinderTryCounts);
+    		jobDataMap.put("entryIds", tryEntryIds);
+    		if(!tryEntryTryCounts.isEmpty())
+    			jobDataMap.put("entryTryCounts", tryEntryTryCounts);
     		//will be rescheduled
     		context.setResult("Failed");
     	}
@@ -154,4 +189,7 @@ public class DefaultUserTitleChange extends SimpleTriggerJob implements UserTitl
 		
 	}    
 
+	private int getTryMaxCount() {
+		return SPropsUtil.getInt("default.user.title.change.try.max.count", 3);
+	}
 }
