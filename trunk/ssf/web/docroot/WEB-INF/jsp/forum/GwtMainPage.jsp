@@ -70,7 +70,7 @@
 			accessibility_focus : true,
 			entities :  "39,#39,34,quot,38,amp,60,lt,62,gt",
 			gecko_spellcheck : true,
-			plugins : "compat2x,pdw,table,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
+			plugins : "compat2x,pdw,table,preelementfix,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
 			theme_advanced_toolbar_location : "top",
 			theme_advanced_toolbar_align : "left", 
 			theme_advanced_statusbar_location : "bottom", 

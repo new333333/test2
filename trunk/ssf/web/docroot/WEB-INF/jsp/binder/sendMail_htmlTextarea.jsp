@@ -65,7 +65,7 @@ tinyMCE.init({
   remove_script_host: false,
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
-  plugins: "table,preview,paste", 
+  plugins: "table,preelementfix,preview,paste", 
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 

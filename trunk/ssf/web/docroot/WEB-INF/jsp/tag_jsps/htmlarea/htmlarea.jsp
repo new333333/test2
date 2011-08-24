@@ -123,7 +123,7 @@ tinyMCE.init({
   accessibility_focus: true,
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
-  plugins: "compat2x,pdw,table,<%--
+  plugins: "compat2x,pdw,table,preelementfix,<%--
   --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
   --%>preview,paste,ss_wikilink<c:if test="${isShowYouTube}">,ss_youtube</c:if>",
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
@@ -182,7 +182,7 @@ tinyMCE.init({
 	  accessibility_focus: true,
 	  entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
 	  gecko_spellcheck : true,
-	  plugins: "compat2x,table,<%--
+	  plugins: "compat2x,table,preelementfix,<%--
 	  --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
 	  --%>preview,paste,ss_wikilink<c:if test="${isShowYouTube}">,ss_youtube</c:if>",
 	  theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
