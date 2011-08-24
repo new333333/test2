@@ -206,7 +206,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalinkForEmail(entity) +
-				"\">" + title + "</a><br/><br/>" + addedComments);
+				"\">" + title + "</a>\n<br/><br/>\n" + addedComments);
 		try {
 			String mailTitle = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())});
 			mailTitle += " (" + shortTitle +")";
