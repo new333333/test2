@@ -103,10 +103,10 @@
 		    <a id="settings-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									binderId="${ssBinder.id}"
-									operation="mobile_show_teams" />">
+									operation="mobile_show_recent_places" />">
 				<div class="main-item myws-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_recent_128.png"/></div>
-				  <div class="main-item-label">Recent</div>
+				  <div class="main-item-label">Recent Places</div>
 				</div>    
 		    </a>  
     	</div>
