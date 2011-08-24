@@ -1675,6 +1675,11 @@ public class ExportHelper {
 			final Map fNameCache = nameCache;
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
+			// Bug #701024 - Flush out all uncommitted changes and clear the session to
+			// prevent NonUniqueObjectException from occurring during import of workflows.
+			coreDao.flush();
+			coreDao.clear();
+
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the binder " + newBinderId);
 			transactionTemplate.execute(new TransactionCallback() {
