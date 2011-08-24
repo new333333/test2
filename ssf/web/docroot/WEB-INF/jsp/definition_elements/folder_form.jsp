@@ -109,11 +109,10 @@
 					<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
 				</c:if>
 
-				<c:if test="${ssDefinitionEntry.mirrored && empty ssDefinitionEntry.resourceDriver}" >
-					<span class="ss_errorLabel"><ssf:nlt tag="folder.resource.driver.select"/></span><br><br>
-				</c:if>
-
-				<c:if test="${!ssDefinitionEntry.mirrored || empty ssDefinitionEntry.resourceDriver}" >
+				<c:if test="${ssDefinitionEntry.mirrored && empty ssDefinitionEntry.resourceDriver && !empty resourceDrivers}" >
+					<span class="ss_errorLabel"><ssf:nlt tag="folder.resource.driver.select"/></span>
+					<br>
+					<br>
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
 					<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
 					<select name="resourceDriverName" onchange="updateResourceRootPath();">
@@ -122,6 +121,9 @@
 							<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
 						</c:forEach>
 					</select>
+				</c:if>				
+				<c:if test="${ssDefinitionEntry.mirrored && empty ssDefinitionEntry.resourceDriver && empty resourceDrivers}" >
+					<span class="ss_errorLabel"><ssf:nlt tag="folder.resource.driver.configuration.missing"/></span>
 				</c:if>				
 				<br/>
 	
