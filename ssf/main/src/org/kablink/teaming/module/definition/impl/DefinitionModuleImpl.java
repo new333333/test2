@@ -2001,8 +2001,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				
 				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
 				List<Element> itItems = entryFormItem.selectNodes(".//item[@type='data']");
+				boolean attachFilesSeen = false;
 				for (Element nextItem: itItems) {
 					itemName = (String) nextItem.attributeValue("name", "");
+					if (itemName.equals("attachFiles")) attachFilesSeen = true;
 										
 					//Get the form element name (property name)
 					nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
@@ -2011,6 +2013,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//Process the data item depending on its item name
 					processInputDataItem(itemName, nameValue, inputData, entryData,
 				    		fileItems, fileData, entryDataErrors, nextItem, titleGenerated, titleSource);
+				}
+				//After processing the definition items, process any attributes that were missed
+				if (!attachFilesSeen) {
+					//Always try to make sure any files attached get saved. They might be from the "addImage" widget
+					itemName = "attachFiles";
+					nameValue = "ss_attachFile";
+					//Process this special value
+					processInputDataItem(itemName, nameValue, inputData, entryData,
+				    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
 				}
 			}
 		}
