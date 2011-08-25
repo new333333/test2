@@ -239,7 +239,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		return groupModel;
 	}
 	public org.kablink.teaming.remoting.ws.model.User profile_getUserByName(String accessToken, String userName, boolean includeAttachments) {
-		User user = getProfileModule().getUser(userName);
+		User user = getProfileModule().getUserDeadOrAlive(userName);
 		return profile_getUser(accessToken, user.getId(), includeAttachments);
 	}
 	public org.kablink.teaming.remoting.ws.model.User profile_getUser(String accessToken, long userId, boolean includeAttachments) {
