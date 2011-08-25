@@ -71,7 +71,7 @@
 	<table class="ss_style" border="0" cellspacing="3" cellpadding="3" width="100%">
 	<tr><td valign="top">
 	<hr shade=noshade size=1/>
-		<input type="checkbox" name="enableDeferredUpdateLog${node.nodeName}" <c:if test="${node.enableDeferredUpdateLog}">checked</c:if> <span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.deferredupdatelog.enable"/></span>
+		<input type="checkbox" name="enableDeferredUpdateLog${node.nodeName}" <c:if test="${node.enableDeferredUpdateLog}">checked</c:if> /> <span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.deferredupdatelog.enable"/></span>
 	<br/>
 	</td></tr>
 	</table>
