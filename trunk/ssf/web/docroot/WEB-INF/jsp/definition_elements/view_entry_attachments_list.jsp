@@ -41,10 +41,10 @@
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <tr class="ss_tab_table_columnhead">
   <th>&nbsp;</th>
-  <th><ssf:nlt tag="file.name"/></th>
+  <th><ssf:nlt tag="file.nameNC"/></th>
   <th><ssf:nlt tag="entry.Version"/></th>
   <th><ssf:nlt tag="file.status"/></th>
-  <th><ssf:nlt tag="file.date"/></th>
+  <th><ssf:nlt tag="file.dateNC"/></th>
   <th><ssf:nlt tag="file.size"/></th>
   <th><ssf:nlt tag="entry.modifiedBy"/></th>
   <th><ssf:nlt tag="toolbar.actions"/></th>

@@ -2415,6 +2415,8 @@ public class BinderHelper {
 					FileAttachment fAtt = (FileAttachment) att;
 					if (fa.getFileItem().getName().equals(fAtt.getFileItem().getName())) {
 						attFound = true;
+						fa.setEncrypted(fAtt.getEncrypted());
+						fa.setEncryptionKey(fAtt.getEncryptionKey());
 						break;
 					}
 				}

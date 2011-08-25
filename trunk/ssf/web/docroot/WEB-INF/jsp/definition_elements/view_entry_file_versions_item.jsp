@@ -107,6 +107,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
 				    </ssf:title>
 					><%= fnBr %></a>
+					<c:if test="${selection.encrypted}">
+				        <img src="<html:imagesPath/>pics/encrypted.png" 
+				          title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+					</c:if>
 		  <%  }
 			if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
 		  %>
@@ -126,6 +130,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					      <ssf:param name="value" value="${selection.fileItem.name}" />
 				    	</ssf:title>
 					><%= fnBr %></a>
+					<c:if test="${selection.encrypted}">
+				        <img src="<html:imagesPath/>pics/encrypted.png" 
+				          title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+					</c:if>
 				</ssf:isFileEditorConfiguredForOS>
 			</ssf:editorTypeToUseForEditInPlace>
 			
@@ -135,6 +143,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						entity="${ssDefinitionEntry}"
 						fileAttachment="${selection}"/>"
 				><%= fnBr %></a>
+					<c:if test="${selection.encrypted}">
+				        <img src="<html:imagesPath/>pics/encrypted.png" 
+				          title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+					</c:if>
 			</ssf:editorTypeToUseForEditInPlace>
 		  <%  }  %>
 
@@ -252,6 +264,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						    <ssf:param name="value" value="${fileVersion.fileItem.name}" />
 					    </ssf:title>
 						><%= vfnBr %></a>
+					<c:if test="${fileVersion.encrypted}">
+				        <img src="<html:imagesPath/>pics/encrypted.png" 
+				          title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+					</c:if>
 					<c:if test="${fileVersion.agingEnabled}">
 					  <c:if test="${ssBinder.versionAgingEnabled && (!empty ssBinder.versionAgingDays || !empty ss_zoneVersionAgingDays)}">
 					    <sup>*</sup>

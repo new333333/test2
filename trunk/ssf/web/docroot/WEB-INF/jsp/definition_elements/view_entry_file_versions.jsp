@@ -100,10 +100,10 @@ function ss_selectFileVersions(formName, cbObj) {
     <input type="checkbox" onClick="ss_selectFileVersions('ss_deleteFilesForm', this);"
     title="<ssf:nlt tag='file.command.deleteVersionsSelectAll'/>" />
   </th>
-  <th><ssf:nlt tag="file.name"/></th>
+  <th><ssf:nlt tag="file.nameNC"/></th>
   <th><ssf:nlt tag="entry.Version"/></th>
   <th><ssf:nlt tag="file.status"/></th>
-  <th><ssf:nlt tag="file.date"/></th>
+  <th><ssf:nlt tag="file.dateNC"/></th>
   <th><ssf:nlt tag="file.size"/></th>
   <th><ssf:nlt tag="entry.modifiedBy"/></th>
   <th><ssf:nlt tag="toolbar.actions"/></th>
