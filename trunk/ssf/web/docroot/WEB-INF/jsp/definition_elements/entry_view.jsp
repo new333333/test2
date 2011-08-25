@@ -41,9 +41,11 @@
 <%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
 <c:set var="ss_commentsAndAttachmentsSectionRequested" value="false" scope="request"/>
 <c:set var="ss_delayShowingCommentsAndAttachments" value="false" scope="request"/>
-<c:set var="ss_seenHistoryTab" value="" scope="request"/>
-<c:set var="ss_pseudoEntity" value="" scope="request"/>
-<c:set var="ss_pseudoEntityRevert" value="" scope="request"/>
+<c:if test="${!ss_pseudoEntity}">
+  <c:set var="ss_seenHistoryTab" value="" scope="request"/>
+  <c:set var="ss_pseudoEntity" value="" scope="request"/>
+  <c:set var="ss_pseudoEntityRevert" value="" scope="request"/>
+</c:if>
 <c:set var="ss_seenTagView" value="false" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)
