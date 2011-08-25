@@ -564,6 +564,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 				return pm.authenticate(authentication);
 			}
 			catch(AuthenticationException e) {
+				if(logger.isDebugEnabled())	
+					logger.debug("External authentication failed: " + e.toString());
 				exc = e;
 				if(authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException)) 
 					mustSkipLocalAuthentication = true;
