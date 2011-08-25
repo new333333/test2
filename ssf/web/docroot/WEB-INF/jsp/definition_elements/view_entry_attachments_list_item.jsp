@@ -287,6 +287,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						    <ssf:param name="value" value="${fileVersion.fileItem.name}" />
 					    </ssf:title>
 						><%= vfnBr %></a>
+						<c:if test="${fileVersion.encrypted}">
+					        <img src="<html:imagesPath/>pics/encrypted.png" 
+					          title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+						</c:if>
 				</c:if>
 				</td>
 				<td class="ss_att_meta" style="border: 0px;"><ssf:nlt tag="file.versionNumber"><ssf:param

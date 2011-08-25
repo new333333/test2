@@ -58,6 +58,10 @@ if (isIECheck) strBrowserType = "ie";
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
 				    </ssf:title>
 					><c:out value="${selection.fileItem.name} "/></a>
+					<c:if test="${selection.encrypted}">
+				        <img src="<html:imagesPath/>pics/encrypted.png" 
+				          title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+					</c:if>
 					<c:if test="${selection.currentlyLocked}">
 					  <br/>
 					  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>

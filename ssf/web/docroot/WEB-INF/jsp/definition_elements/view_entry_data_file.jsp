@@ -53,6 +53,10 @@ if (isIECheck) strBrowserType = "ie";
   href="<ssf:fileUrl file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
 >${selection.fileItem.name}
 </a>
+<c:if test="${selection.encrypted}">
+       <img src="<html:imagesPath/>pics/encrypted.png" 
+         title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+</c:if>
 <br>
 </c:forEach>
 </span>
@@ -72,6 +76,10 @@ if (isIECheck) strBrowserType = "ie";
 	  href="<ssf:fileUrl file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
 	>${selection.fileItem.name}
 	</a>
+	<c:if test="${selection.encrypted}">
+        <img src="<html:imagesPath/>pics/encrypted.png" 
+          title="<%= NLT.get("file.encrypted").replaceAll("\"", "&QUOT;") %>" />
+	</c:if>
 	<br>
 	</c:forEach>
 	</span>
