@@ -102,8 +102,7 @@ public class PreAuthenticatedSpringSecurityLdapTemplate extends SpringSecurityLd
 	                                        new DistinguishedName(dnStr), ctxBaseDn));                            		                            	
 	                            }
 	                            else {
-	                            	if(logger.isDebugEnabled())
-	                            		logger.debug("Discarding [" + dnStr + "] because it does not match domain " + domainname);	                            	
+	                            	logger.info("Discarding [" + dnStr + "] because it does not match domain " + domainname);	                            	
 	                            }
                             }
                             else {
