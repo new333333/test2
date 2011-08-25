@@ -101,6 +101,9 @@ public interface FileModule {
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
 			boolean deleteMirroredSource, FilesErrors errors);
 
+	public void deleteCachedFiles(Binder binder, DefinableEntity entry);
+	
+	
 	/**
 	 * Deletes the specified file. If applicable, also delete generated files
 	 * (scaled file and thumbnail file) associated with the primary file. 

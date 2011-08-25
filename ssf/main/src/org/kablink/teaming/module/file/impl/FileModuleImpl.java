@@ -350,6 +350,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
 	}
 	
+	public void deleteCachedFiles(Binder binder, DefinableEntity entry) {
+		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
+		try {
+			cacheFileStore.deleteDirectory(entityPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the entry's cache directory [" +
+					cacheFileStore.getAbsolutePath(entityPath) + "]", e);
+		}
+	}
+	
 	public FilesErrors deleteFile(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, FilesErrors errors) {
 		if(errors == null)

@@ -89,9 +89,7 @@ public class DefaultFileVersionAgingDelete extends SSCronTriggerJob
     			}
     		}
     	}
-    	if (totalDelCount > 0) {
-    		logger.info("Old versions deleted: " + String.valueOf(totalDelCount));
-    	}
+    	logger.info("Old versions deleted via aging: " + String.valueOf(totalDelCount));
     }
 
 	public ScheduleInfo getScheduleInfo(Long zoneId) {

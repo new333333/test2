@@ -594,9 +594,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		int offsetHour = user.getTimeZone().getOffset(now.getTime()) / (60 * 60 * 1000);
 		String hours = SPropsUtil.getString("version.aging.schedule.hours", "0");
 		String minutes = SPropsUtil.getString("version.aging.schedule.minutes", "30");
-		int iHours = Integer.valueOf(hours);
-		iHours -= offsetHour;
-		hours = String.valueOf((iHours + 24) % 24);
+		try {
+			int iHours = Integer.valueOf(hours);
+			iHours -= offsetHour;
+			hours = String.valueOf((iHours + 24) % 24);
+		} catch(Exception e) {
+			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
+		}
 		info.getSchedule().setDaily(true);
 		info.getSchedule().setHours(hours);
 		info.getSchedule().setMinutes(minutes);
