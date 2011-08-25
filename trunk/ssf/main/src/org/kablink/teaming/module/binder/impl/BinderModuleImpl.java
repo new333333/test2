@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -2373,7 +2374,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Boolean getBinderVersionsEnabled(Binder binder) {
 		Boolean result = binder.getVersionsEnabled();
 		Binder parent = binder;
-		while (parent.getParentBinder() != null) {
+		while (parent != null) {
 			if (result != null) break;
 			result = parent.getVersionsEnabled();
 			parent = parent.getParentBinder();
@@ -2410,7 +2411,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	}
     	Long result = binder.getVersionsToKeep();
 		Binder parent = binder;
-		while (parent.getParentBinder() != null) {
+		while (parent != null) {
 			if (result != null) break;
 			result = parent.getVersionsToKeep();
 			parent = parent.getParentBinder();
@@ -2479,7 +2480,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Long getBinderMaxFileSize(Binder binder) {
 		Long result = binder.getMaxFileSize();
 		Binder parent = binder;
-		while (parent.getParentBinder() != null) {
+		while (parent != null) {
 			if (result != null) break;
 			result = parent.getMaxFileSize();
 			parent = parent.getParentBinder();
@@ -2562,6 +2563,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	      	Set<Long> entryIds = getUnEncryptedBinderEntryIds(binderId, true);
 	      	for (Long id : entryIds) {
 	      		FolderEntry entry = getFolderDao().loadFolderEntry(id, zoneId);
+	      		
+	      		//Delete any cached files for this entry
+	      		getFileModule().deleteCachedFiles(binder, entry);
+	      		
 	      		Set<Attachment> atts = entry.getAttachments();
 	      		for (Attachment att : atts) {
 	      			if (att instanceof FileAttachment) {
