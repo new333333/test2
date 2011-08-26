@@ -3,7 +3,7 @@
 */
 
 body { 
-	background-color: #353838; 
+	background-color: #505354; 
 	margin: 0; 
 	}
 
@@ -380,9 +380,9 @@ span.pad-left20 select {
 	}
 
 /*  footer styles */
-.footerbar				{ position: relative; left: 0px; bottom: 0px; height: 40px; background-color:#eceeec; width: 100%; margin: 10px 0 0 0; }
+.footerbar				{ position: relative; left: 0px; bottom: 0px; height: 40px; width: 100%; margin: 20px 0 0 0; }
 .footerbar #logo		{ position: relative; top: 8px; left: 8px; }
-.footerbar .copyright	{ position: relative; top: -8px; left: 40px; width: 250px; color: #666; }
+.footerbar .copyright	{ position: relative; top: -8px; left: 40px; width: 250px; color: #cccccc; }
 
 
 /* Entry styles - Blog, Recent, etc */
