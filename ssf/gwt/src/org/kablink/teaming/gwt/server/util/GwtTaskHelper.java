@@ -1085,34 +1085,35 @@ public class GwtTaskHelper {
 	private static TaskEvent getEventFromMap(Map m, boolean clientBundle) {
 		TaskEvent reply = new TaskEvent();
 
+		// Extract the event's 'All Day Event' flag from the Map.
+		String tz = getStringFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
+		boolean allDayEvent = (!(MiscUtil.hasString(tz)));
+		reply.setAllDayEvent(allDayEvent);
+
 		// Are we reading the information for the client?
-		TaskDate calcEnd = getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_END_DATE), true);
+		TaskDate calcEnd = getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_END_DATE), allDayEvent, true);
 		if (!clientBundle) {
 			// No!  Extract the event's actual and calculated start and
 			// end dates.
 			ServerDates sd = new ServerDates();
-			sd.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE     ), true));
-			sd.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE       ), true));
-			sd.setCalcStart(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_START_DATE), true));
+			sd.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE     ), allDayEvent, true));
+			sd.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE       ), allDayEvent, true));
+			sd.setCalcStart(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_START_DATE), allDayEvent, true));
 			sd.setCalcEnd(    calcEnd                                                                                );
 			reply.setServerData(sd);
 		}
 		
 		// Extract the event's actual start and end...
-		reply.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE), false ));		
-		reply.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE  ), false ));
+		reply.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE), allDayEvent, false ));		
+		reply.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE  ), allDayEvent, false ));
 		
 		// ...extract the event's logical start and end...
-		reply.setLogicalStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE), false ));		
-		reply.setLogicalEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  ), false ));
+		reply.setLogicalStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE), allDayEvent, false ));		
+		reply.setLogicalEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  ), allDayEvent, false ));
 		
 		// ...pass through an indicator of whether it's using a
 		// ...calculated end date...
 		reply.setEndIsCalculated(null != calcEnd);
-
-		// ...extract the event's 'All Day Event' flag from the Map...
-		String tz = getStringFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
-		reply.setAllDayEvent(!(MiscUtil.hasString(tz)));
 
 		// ...and extract the event's duration fields from the Map.
 		TaskDuration taskDuration = new TaskDuration();
@@ -1349,7 +1350,7 @@ public class GwtTaskHelper {
 	 * Reads a Date from a Map and constructs a TaskDate from it.
 	 */
 	@SuppressWarnings("unchecked")
-	private static TaskDate getTaskDateFromMap(Map m, String key, boolean nullIfNotThere) {
+	private static TaskDate getTaskDateFromMap(Map m, String key, boolean allDayEvent, boolean nullIfNotThere) {
 		TaskDate reply;
 		Date date = getDateFromMap(m, key);
 		if ((null == date) && nullIfNotThere) {
@@ -1357,8 +1358,8 @@ public class GwtTaskHelper {
 		}
 		else {
 			reply = new TaskDate();
-			reply.setDate(                                     date );
-			reply.setDateDisplay(EventHelper.getDateTimeString(date));
+			reply.setDate(                                     date              );
+			reply.setDateDisplay(EventHelper.getDateTimeString(date, allDayEvent));
 		}
 		return reply;
 	}
@@ -1389,10 +1390,10 @@ public class GwtTaskHelper {
 	/*
 	 * Returns the TaskDate equivalent of a Calendar. 
 	 */
-	private static TaskDate getTDFromC(Calendar c) {
+	private static TaskDate getTDFromC(Calendar c, boolean allDayEvent) {
 		Date date = ((null == c) ? null : c.getTime());
 		TaskDate reply = new TaskDate(date);
-		reply.setDateDisplay(EventHelper.getDateTimeString(date));
+		reply.setDateDisplay(EventHelper.getDateTimeString(date, allDayEvent));
 		return reply;
 	}
 
@@ -1733,6 +1734,7 @@ public class GwtTaskHelper {
 				getTaskDateFromMap(
 					taskEntry,
 					Constants.TASK_COMPLETED_DATE_FIELD,
+					ti.getEvent().getAllDayEvent(),
 					false));	// false -> Don't return a null entry.
 			
 			reply.add(ti);
@@ -1955,8 +1957,8 @@ public class GwtTaskHelper {
 			// reflects the Event stored as it stands AFTER it was
 			// modified.
 			reply = new TaskEvent(true);
-			reply.setActualStart(getTDFromC(     event.getDtStart() )); reply.setLogicalStart(getTDFromC(event.getLogicalStart()));
-			reply.setActualEnd(  getTDFromC(     event.getDtEnd()   )); reply.setLogicalEnd(  getTDFromC(event.getLogicalEnd()  ));			
+			reply.setActualStart(getTDFromC(     event.getDtStart(), event.isAllDayEvent())); reply.setLogicalStart(getTDFromC(event.getLogicalStart(), event.isAllDayEvent()));
+			reply.setActualEnd(  getTDFromC(     event.getDtEnd(),   event.isAllDayEvent())); reply.setLogicalEnd(  getTDFromC(event.getLogicalEnd(),   event.isAllDayEvent()));			
 			reply.setDuration(   getTDurFromEDur(event.getDuration()));				
 			reply.setAllDayEvent(event.isAllDayEvent());
 			
@@ -2466,7 +2468,7 @@ public class GwtTaskHelper {
 							TaskDate calcTD = new TaskDate();
 							if (!removeCalcStart) {
 								calcTD.setDate(newCalcStart);
-								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcStart));
+								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcStart, tiE.getAllDayEvent()));
 							}
 							tiE.setLogicalStart(calcTD);
 						}
@@ -2476,8 +2478,8 @@ public class GwtTaskHelper {
 							// ...update it in the task...
 							TaskDate calcTD = new TaskDate();
 							if (!removeCalcEnd) {
-								calcTD.setDate(                                     newCalcEnd);
-								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcEnd));
+								calcTD.setDate(                                     newCalcEnd                       );
+								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcEnd, tiE.getAllDayEvent()));
 							}
 							tiE.setLogicalEnd(calcTD);
 							
