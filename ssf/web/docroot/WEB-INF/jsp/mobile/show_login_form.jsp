@@ -41,38 +41,41 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<div>
-  <img height="225" width="320" src="<html:rootPath/>images/mobile/login_MobileTeaming.png"/>
-</div>
-
-<div>
   <div id="contentDetail" style="display: block;">
     <div class="loginDetail">
       <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" 
         <c:if test="<%= !isAutoComplete %>"> autocomplete="off" </c:if>
       >
-        <table border="0" cellspacing="5">
-          <tr>
+        <table border="0" cellspacing="3" style="margin-left: 20px;">
+		<tr>
+			<td>
+			  <img height="180" width="130" src="<html:rootPath/>images/mobile/login_MobileTeaming.png"/>
+			</td>
+		</tr>
+        <tr>
             <td>
-              <label for="j_username"><span><ssf:nlt tag="login.name"/></span></label>
+              <label for="j_username"><span class="login-label"><ssf:nlt tag="login.name"/></span></label>
             </td>
-            <td valign="top">
-               <input type="text" style="width:160px;" name="j_username" id="j_username"/>
+		</tr>	
+        <tr>
+		    <td>
+               <input type="text" style="width:180px; font-size: 14px;" name="j_username" id="j_username"/>
             </td>
-          </tr>
-          <tr>
+        </tr>
+        <tr>
+            <td style="padding-top: 10px;">
+              <label for="j_password"><span class="login-label"><ssf:nlt tag="login.password"/></span></label>
+            </td>
+		</td>
+		<tr>	
             <td>
-              <label for="j_password"><span><ssf:nlt tag="login.password"/></span></label>
+              <input type="password" style="width:180px; font-size: 14px;" name="j_password" id="j_password"/>
             </td>
-            <td valign="top">
-              <input type="password" style="width:160px;" name="j_password" id="j_password"/>
-            </td>
-          </tr>
+        </tr>
 
 <!-- If there was an error logging in, show the error. -->
 <c:if test="${!empty ss_loginError}">
 		       		<tr>
-				 		<td>&nbsp;</td>
 		         		<td style="color: red;" colspan="2" align="right">
 		           			<div id="errorcode.login.failed"><ssf:nlt tag="errorcode.login.failed"/></div>
 	<c:if test="${!empty showLoginFailureDetails}">
@@ -87,7 +90,7 @@
 	<c:if test="${!empty showLoginFailureDetails}">
 					<!-- This row will hold the details of the login failure. -->
 					<tr>
-						<td style="color: red;" colspan="2">
+						<td style="color: red;">
 							<div id="login-failure-details" style="display: none;">${ss_loginError}</div>
 						</td>
 					</tr>
@@ -95,9 +98,7 @@
 </c:if>
 
           <tr>
-            <td>
-            </td>
-            <td>
+            <td align="right" style="padding-top: 10px;">
               <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="login"/>"/>
             </td>
           </tr>
@@ -107,10 +108,8 @@
       </form>
     </div>
   </div>
-</div>
   
 <div class="footerbar">
-<img id="logo" src="<html:rootPath/>images/mobile/N_logo_22.png"/>
 <div class="copyright"><ssf:nlt tag="mobile.copyright"/></div>
 </div>  
   
