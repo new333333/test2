@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -50,11 +51,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -142,7 +141,6 @@ public class WorkspaceTreeControl extends Composite
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
 		
-		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
 		switch (m_tm) {
 		case HORIZONTAL:
 		{
@@ -242,11 +240,11 @@ public class WorkspaceTreeControl extends Composite
 	 * Called when activity stream mode is to be exited on the sidebar
 	 * tree
 	 */
-	public void exitActivityStreamMode() {
+	public void exitActivityStreamMode(ExitMode exitMode) {
 		// If we're displaying a sidebar tree...
 		if (isSidebarTree() && (null != m_treeDisplay)) {
 			// ...tell it to exit activity stream mode.
-			m_treeDisplay.exitActivityStreamMode();
+			m_treeDisplay.exitActivityStreamMode(exitMode);
 		}
 	}
 	
@@ -328,7 +326,7 @@ public class WorkspaceTreeControl extends Composite
 	 */
 	@Override
 	public void onActivityStreamExit(ActivityStreamExitEvent event) {
-		exitActivityStreamMode();
+		exitActivityStreamMode(event.getExitMode());
 	}
 
 	/**
