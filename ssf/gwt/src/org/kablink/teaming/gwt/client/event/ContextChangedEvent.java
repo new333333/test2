@@ -40,8 +40,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ContextChangedEvent tells the UI when the user changes the
- * selected context somewhere.
+ * The ContextChangedEvent tells the UI that a context change has just
+ * completed.
  * 
  * @author drfoster@novell.com
  */

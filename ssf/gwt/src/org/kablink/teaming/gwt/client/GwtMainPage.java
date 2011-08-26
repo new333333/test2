@@ -1864,7 +1864,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onGotoContentUrl( GotoContentUrlEvent event )
 	{
-		ContextChangingEvent.fireOne();
+		fireContextChanging();
 		gotoUrlNow( event.getContentUrl() );
 	}// end onGotoContentUrl()
 	
@@ -1887,7 +1887,7 @@ public class GwtMainPage extends Composite
 		
 		// Change the browser's URL.
 		ActivityStreamExitEvent.fireOne();
-		ContextChangingEvent.fireOne();
+		fireContextChanging();
 		gotoUrlNow( m_requestInfo.getMyWorkspaceUrl() );
 	}// end onGotoMyWorkspace()
 	
@@ -2103,7 +2103,7 @@ public class GwtMainPage extends Composite
 	public void onSearchAdvanced( SearchAdvancedEvent event )
 	{
 		ActivityStreamExitEvent.fireOne();
-		ContextChangingEvent.fireOne();
+		fireContextChanging();
 		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
 		GwtClientHelper.loadUrlInContentFrame(searchUrl);
 	}// end onSearchAdvanced()
@@ -2119,7 +2119,7 @@ public class GwtMainPage extends Composite
 	public void onSearchRecentPlace( SearchRecentPlaceEvent event )
 	{
 		// Tell everybody that a context switch is about to happen...
-		ContextChangingEvent.fireOne();
+		fireContextChanging();
 
 		// ...and perform the search.
 		Integer searchFor = event.getSearchTabId();
@@ -2138,7 +2138,7 @@ public class GwtMainPage extends Composite
 	public void onSearchSaved( SearchSavedEvent event )
 	{
 		ActivityStreamExitEvent.fireOne();
-		ContextChangingEvent.fireOne();
+		fireContextChanging();
 
 		// What's the name of the saved search?
 		String searchFor = event.getSavedSearchName();
@@ -2158,7 +2158,7 @@ public class GwtMainPage extends Composite
 	public void onSearchSimple( SearchSimpleEvent event )
 	{
 		ActivityStreamExitEvent.fireOne();
-		ContextChangingEvent.fireOne();
+		fireContextChanging();
 		
 		// What are we searching for?
 		String searchFor = event.getSimpleSearchString();
@@ -2186,7 +2186,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchTag( SearchTagEvent event )
 	{
-		ContextChangingEvent.fireOne();
+		fireContextChanging();
 		
 		// What's the tag to be searched?
 		String tagName = event.getTagName();

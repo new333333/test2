@@ -638,7 +638,10 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onContextChanging(final ContextChangingEvent event) {
-		clearContextMenus();
+		// Now handled by direct call via
+		// EventHelper.fireContextChanging()
+		//
+		// clearContextMenus();
 	}
 	
 	/**

@@ -36,7 +36,7 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -54,10 +54,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -569,7 +566,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.PROFILE_QUICK_VIEW_SELECT );
 					
 					//Fire event to notify that a selection has changed
-					GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
+					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 					
 					hide();
 				}// end onSuccess()
@@ -651,8 +648,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			}
 		};
 		
-		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-			
 		// Issue an ajax request to save the user status to the db.  rpcCallback will
 		// be called when we get the response back.
 		cmd = new GetUserStatusCmd( binderId );

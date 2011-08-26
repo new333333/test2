@@ -33,42 +33,47 @@
 
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ContextChaingingEvent tells the UI that a context change is
- * about take place, but is not yet in process.
+ * The ChangeContextEvent tells the UI that a context change is in the
+ * process of occurring.
  * 
  * @author drfoster@novell.com
  */
-public class ContextChangingEvent extends VibeEventBase<ContextChangingEvent.Handler> {
+public class ChangeContextEvent extends VibeEventBase<ChangeContextEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
+
+	private OnSelectBinderInfo m_osbi;
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onContextChanging(ContextChangingEvent event);
+		void onChangeContext(ChangeContextEvent event);
 	}
 	
-	/*
-	 * Class constructor.
+	/**
+	 * Constructor methods.
 	 * 
-	 * Note:  This constructor is private to prevent it from being
-	 * instantiated outside this class.  The ONLY way it should be
-	 * used is via its static fireOne() method.  See that method for
-	 * why that's the case.
+	 * @param osbi
 	 */
-	private ContextChangingEvent() {
+	public ChangeContextEvent(OnSelectBinderInfo osbi) {
 		super();
+		m_osbi = osbi;
 	}
 	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public OnSelectBinderInfo getOnSelectBinderInfo() {return m_osbi;}
+
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
@@ -78,32 +83,7 @@ public class ContextChangingEvent extends VibeEventBase<ContextChangingEvent.Han
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onContextChanging(this);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		// We'll never been in activity steam mode if we change
-		// context.  Exit it if we're in it.
-		ActivityStreamExitEvent.fireOne();
-		
-		// Fire the event.
-		GwtTeaming.fireEvent(new ContextChangingEvent());
-		
-		// Do we have access to the main menu off the main page?
-		GwtMainPage mp = GwtTeaming.getMainPage();
-		MainMenuControl mmc = ((null == mp) ? null : mp.getMainMenu());
-		if (null != mmc) {
-			// Yes!  Tell it to clear its context menus.  Note that we
-			// do this directly (synchronously) rather than off the
-			// ContextChangingEvent because that event is handled
-			// asynchronously and may not happen until too late in
-			// the flow to effectively clear the context menus BEFORE
-			// the context switch actually occurs.
-			mmc.clearContextMenus();
-		}
+		handler.onChangeContext(this);
 	}
 	
 	/**
@@ -128,7 +108,7 @@ public class ContextChangingEvent extends VibeEventBase<ContextChangingEvent.Han
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.CONTEXT_CHANGING;
+		return TeamingEvents.CONTEXT_CHANGED;
 	}
 		
 	/**

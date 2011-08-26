@@ -38,7 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -119,7 +119,7 @@ public abstract class TreeDisplayBase {
 					// WorkspaceTreeControl to handle it.
 					selectBinder(m_ti);
 					GwtTeaming.fireEvent(
-						new ContextChangedEvent(
+						new ChangeContextEvent(
 							buildOnSelectBinderInfo(
 								m_ti)));
 				}
