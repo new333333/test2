@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -230,8 +231,10 @@ public abstract class TreeDisplayBase {
 	 *
 	 * The vertical subclass of TreeDisplayBase overrides this to
 	 * implement exiting activity stream mode.
+	 * 
+	 * @param exitMode
 	 */
-	public void exitActivityStreamMode() {
+	public void exitActivityStreamMode(ExitMode exitMode) {
 		// By default, we ignore this.
 	}
 	

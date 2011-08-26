@@ -38,6 +38,7 @@ import java.util.Iterator;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
@@ -439,7 +440,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		closePBAnchor.addStyleName("workspaceTreeControlHeader_closeA");
 		closePBAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				ActivityStreamExitEvent.fireOne();
+				GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.SIMPLE_EXIT));
 			}
 		});
 		
@@ -581,14 +582,16 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * tree.
 	 *
 	 * Overrides TreeDisplayBase.exitActivityStreamMode().
+	 * 
+	 * @param exitMode
 	 */
 	@Override
-	public void exitActivityStreamMode() {
+	public void exitActivityStreamMode(ExitMode exitMode) {
 		// Are we currently in activity streams mode?
 		if (isInActivityStreamMode()) { 
 			// Yes!  Reload the workspace tree control.
 			m_selectedActivityStream = null;
-			reRootTree(String.valueOf(m_selectedBinderId), m_selectedBinderId, true);
+			reRootTree(String.valueOf(m_selectedBinderId), m_selectedBinderId, exitMode);
 		}
 	}
 	
@@ -1085,14 +1088,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private void reloadTree() {
 		// To reload it, simply re-root it at the same point that it's
 		// currently rooted, reselecting the previously selected binder.
-		reRootTree(getRootTreeInfo().getBinderInfo().getBinderId(), m_selectedBinderId, false);
+		reRootTree(getRootTreeInfo().getBinderInfo().getBinderId(), m_selectedBinderId, ExitMode.SIMPLE_EXIT);
 	}
 	
 	/*
 	 * Re-roots the WorkspaceTreeControl to a new Binder and optionally
 	 * selects a binder.
 	 */
-	private void reRootTree(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode) {
+	private void reRootTree(final String newRootBinderId, final Long selectedBinderId, final ExitMode exitingActivityStreamMode) {
 		GetVerticalTreeCmd cmd;
 		
 		// Read the TreeInfo for the selected Binder.
@@ -1121,14 +1124,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	
 	private void reRootTree(final String newRootBinderId) {
 		// Always use the initial form of the method.
-		reRootTree(newRootBinderId, null, false);
+		reRootTree(newRootBinderId, null, ExitMode.SIMPLE_EXIT);
 	}
 	
 	/*
 	 * Asynchronously re-roots the WorkspaceTreeControl to a new Binder
 	 * and optionally selects a binder.
 	 */
-	private void reRootTreeAsync(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode, final TreeInfo rootTI) {
+	private void reRootTreeAsync(final String newRootBinderId, final Long selectedBinderId, final ExitMode exitingActivityStreamMode, final TreeInfo rootTI) {
 		ScheduledCommand treeRooter = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -1146,7 +1149,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Synchronously re-roots the WorkspaceTreeControl to a new Binder
 	 * and optionally selects a binder.
 	 */
-	private void reRootTreeNow(String newRootBinderId, Long selectedBinderId, boolean exitingActivityStreamMode, TreeInfo rootTI) {
+	private void reRootTreeNow(String newRootBinderId, Long selectedBinderId, ExitMode exitingActivityStreamMode, TreeInfo rootTI) {
 		// Update the display with the TreeInfo.
 		setRootTreeInfo(rootTI);
 		m_rootPanel.clear();
@@ -1165,7 +1168,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// If we re-rooted the tree to exit activity stream
 		// mode...
-		if (exitingActivityStreamMode) {
+		if (ExitMode.SIMPLE_EXIT == exitingActivityStreamMode) {
 			// ...reset the menu so that it display what's
 			// ...appropriate for navigation mode.
 			resetMenuContext();

@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -47,6 +45,13 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
+	private ExitMode m_exitMode;	//
+
+	public enum ExitMode {
+		SIMPLE_EXIT,				// Simply exiting activity stream mode to whatever content was there.
+		EXIT_FOR_CONTEXT_SWITCH,	// Exiting in preperation for a context switch.
+	}
+	
 	/**
 	 * Handler interface for this event.
 	 */
@@ -56,9 +61,12 @@ public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEve
 	
 	/**
 	 * Class constructor.
+	 * 
+	 * @param exitMode
 	 */
-	public ActivityStreamExitEvent() {
+	public ActivityStreamExitEvent(ExitMode exitMode) {
 		super();
+		m_exitMode = exitMode;
 	}
 	
 	/**
@@ -74,13 +82,6 @@ public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEve
 	}
 
 	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new ActivityStreamExitEvent());
-	}
-	
-	/**
 	 * Returns the GwtEvent.Type of this event.
 	 *
 	 * Implements GwtEvent.getAssociatedType()
@@ -92,6 +93,15 @@ public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEve
 		return TYPE;
 	}
 
+	/**
+	 * Returns the exit mode for why the activity stream is being exited.
+	 * 
+	 * @return
+	 */
+	public ExitMode getExitMode() {
+		return m_exitMode;
+	}
+	
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
@@ -116,5 +126,14 @@ public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEve
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
+	}
+
+	/**
+	 * Stores an exit mode on the event.
+	 * 
+	 * @param exitMode
+	 */
+	public void setExitMode(ExitMode exitMode) {
+		m_exitMode = exitMode;
 	}
 }

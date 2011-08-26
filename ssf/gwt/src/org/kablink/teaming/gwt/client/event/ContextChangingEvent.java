@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.event;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 
 import com.google.gwt.event.shared.EventHandler;
@@ -87,7 +88,7 @@ public class ContextChangingEvent extends VibeEventBase<ContextChangingEvent.Han
 	public static void fireOne() {
 		// We'll never been in activity steam mode if we change
 		// context.  Exit it if we're in it.
-		ActivityStreamExitEvent.fireOne();
+		GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.EXIT_FOR_CONTEXT_SWITCH));
 		
 		// Fire the event.
 		GwtTeaming.fireEvent(new ContextChangingEvent());

@@ -35,9 +35,7 @@ package org.kablink.teaming.gwt.client.event;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -94,7 +92,6 @@ public class EventHelper {
 		VibeEventBase<?> reply;
 		
 		switch (eventEnum) {
-		case ACTIVITY_STREAM_EXIT:              reply = new ActivityStreamExitEvent();           break;
 		case ADMINISTRATION:                    reply = new AdministrationEvent();               break;
 		case ADMINISTRATION_EXIT:               reply = new AdministrationExitEvent();           break;
 		case ADMINISTRATION_UPGRADE_CHECK:      reply = new AdministrationUpgradeCheckEvent();   break;

@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
@@ -1653,7 +1654,7 @@ public class GwtMainPage extends Composite
 		if (GwtClientHelper.validateOSBI( osbInfo ))
 		{
 			// ...put it into effect.
-			ActivityStreamExitEvent.fireOne();
+			GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.EXIT_FOR_CONTEXT_SWITCH));
 			m_selectedBinderId = osbInfo.getBinderId().toString();			
 		}
 	}// end onContextChanged()
@@ -1886,7 +1887,6 @@ public class GwtMainPage extends Composite
 		}
 		
 		// Change the browser's URL.
-		ActivityStreamExitEvent.fireOne();
 		fireContextChanging();
 		gotoUrlNow( m_requestInfo.getMyWorkspaceUrl() );
 	}// end onGotoMyWorkspace()
@@ -2102,7 +2102,6 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchAdvanced( SearchAdvancedEvent event )
 	{
-		ActivityStreamExitEvent.fireOne();
 		fireContextChanging();
 		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
 		GwtClientHelper.loadUrlInContentFrame(searchUrl);
@@ -2137,7 +2136,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchSaved( SearchSavedEvent event )
 	{
-		ActivityStreamExitEvent.fireOne();
+		// Tell everybody that we're about to change contexts.
 		fireContextChanging();
 
 		// What's the name of the saved search?
@@ -2157,7 +2156,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchSimple( SearchSimpleEvent event )
 	{
-		ActivityStreamExitEvent.fireOne();
+		// Tell everybody that we're about to change contexts.
 		fireContextChanging();
 		
 		// What are we searching for?
@@ -2186,6 +2185,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchTag( SearchTagEvent event )
 	{
+		// Tell everybody that we're about to change contexts.
 		fireContextChanging();
 		
 		// What's the tag to be searched?
@@ -2629,7 +2629,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void fireGotoContentUrl( String url )
 	{
-		ActivityStreamExitEvent.fireOne();
+		fireContextChanging();
 		GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
 	}// end fireGotoContentUrl()
 		
