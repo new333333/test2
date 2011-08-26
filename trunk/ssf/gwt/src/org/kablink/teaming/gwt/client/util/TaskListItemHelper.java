@@ -573,8 +573,8 @@ public class TaskListItemHelper {
 			}
 		}
 
-		// If we get here, we couldn't find tliList2Find in
-		// tlList2Search.  Return null.
+		// If we get here, we couldn't find tli2Find in tlList2Search.
+		// Return null.
 		return null;
 	}
 
