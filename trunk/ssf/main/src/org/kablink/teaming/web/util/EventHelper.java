@@ -448,10 +448,11 @@ public class EventHelper {
 	 * based on the current user's locale and time zone.
 	 * 
 	 * @param date
+	 * @param dateOnly
 	 * 
 	 * @return
 	 */
-	public static String getDateTimeString(Date date) {
+	public static String getDateTimeString(Date date, boolean dateOnly) {
 		String reply;
 		if (null == date) {
 			reply = "";
@@ -459,12 +460,20 @@ public class EventHelper {
 		else {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+			DateFormat df;
+			if (dateOnly)
+			     df = DateFormat.getDateInstance(    DateFormat.SHORT,                   user.getLocale());
+			else df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
 			df.setTimeZone(user.getTimeZone());
 			
 			reply = df.format(date);
 		}
 		return reply;
+	}
+	
+	public static String getDateTimeString(Date date) {
+		// Always use the initial form of the method.
+		return getDateTimeString(date, false);
 	}
 	
     /**
