@@ -1523,10 +1523,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (item != null) {
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
-				if (itemType.equals("state") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
+				if (def.getType() == Definition.WORKFLOW && itemType.equals("state") && 
+						"workflowProcess".equals(item.getParent().attributeValue("name"))) {
 					//This is a workflow state. Make sure no entries are using that state
 					String state = DefinitionUtils.getPropertyValue(item, "name");
 					if (checkStateInUse(def, state)) throw new DefinitionInvalidException("definition.error.cannotModifyState", new Object[] {def.getId()});
+
 				} else if (itemType.equals("transitionOnElapsedTime") && 
 						"transitions".equals(item.getParent().attributeValue("name")) &&
 						"state".equals(item.getParent().getParent().attributeValue("name")) &&
@@ -1559,6 +1561,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							if (itemTypeEle2 != null && itemTypeEle2.attributeValue("canBeDeleted", "true").equalsIgnoreCase("false")) {
 								//This item cannot be deleted. Add it back on the parent
 								parent.add(item2.detach());
+							}
+						}
+					}
+					if (def.getType() == Definition.WORKFLOW && "state".equals(itemType)) {
+						//This is a workflow state. Delete any transitions to this state
+						String state = DefinitionUtils.getPropertyValue(item, "name");
+						List<Element> transitions = root.selectNodes("//item[@type='transition']");
+						for (Element transitionEle : transitions) {
+							String toState = DefinitionUtils.getPropertyValue(transitionEle, "toState");
+							if (toState != null && toState.equals(state)) {
+								//This is a transition to the state that is being deleted, so delete it.
+								transitionEle.detach();
 							}
 						}
 					}
