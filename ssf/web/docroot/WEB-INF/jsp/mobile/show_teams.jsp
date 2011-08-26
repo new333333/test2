@@ -39,16 +39,15 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("navigation.myTeams") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
+<c:set var="ss_pageTitle" value='<%= NLT.get("navigation.myTeams") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div class="content">
 
 <c:set var="ss_hideMiniBlog" value="true" scope="request" />
-<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folders">
     <div class="folder-content">
-	  <div class="folder-head"><ssf:nlt tag="navigation.myTeams"/></div>
 	  <c:forEach var="binder" items="${ss_mobileTeamsList}">
 			<jsp:useBean id="binder" type="java.util.Map" />
 			  <a 
