@@ -63,6 +63,7 @@
 			  </c:if>
 			  >
   			<div class="folder-item">
+              <img class="margin5r" src="<html:rootPath/>images/mobile/team_18.png" align="absmiddle" />
 			  ${binder.title}
 			</div>
 			</a>
