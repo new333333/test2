@@ -34,14 +34,14 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
@@ -65,7 +65,7 @@ public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
-		ContextChangedEvent.Handler,
+		ChangeContextEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
@@ -80,7 +80,7 @@ public class ContentControl extends Composite
 		TeamingEvents.ADMINISTRATION_EXIT,
 
 		// Context events.
-		TeamingEvents.CONTEXT_CHANGED,
+		TeamingEvents.CHANGE_CONTEXT,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -236,35 +236,25 @@ public class ContentControl extends Composite
 	}// end onAdministrationExit()
 	
 	/**
-	 * Handles ContextChangedEvent's received by this class.
+	 * Handles ChangeContextEvent's received by this class.
 	 * 
 	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onContextChanged( final ContextChangedEvent event )
-	{
+	public void onChangeContext( final ChangeContextEvent event )
+	{		
 		// Is the event data is valid?
 		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
-		if (GwtClientHelper.validateOSBI( osbInfo, false ))
+		if ( GwtClientHelper.validateOSBI( osbInfo, false ))
 		{
-			// Yes!  Are we handling a context change instigated by
-			// something new being loaded in the content area?
-			Instigator instigator = osbInfo.getInstigator();
-			if ( Instigator.CONTENT_AREA_CHANGED != instigator )
-			{
-				// No, we aren't handling something new being loaded in
-				// the content area! Tell the content panel to view the
-				// selected binder.
-				//
-				// Note that we stop this from loading are a content
-				// area change so that we don't get into an infinite
-				// loop of content area changes.
-				setUrl( osbInfo.getBinderUrl() );
-			}
+			// Yes!  Tell everybody the context is about to be
+			// changed and put the change into affect.
+			ContextChangingEvent.fireOne();			
+			setUrl( osbInfo.getBinderUrl() );
 		}
-	}// end onContextChanged()
+	}// end onChangeContext()
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.

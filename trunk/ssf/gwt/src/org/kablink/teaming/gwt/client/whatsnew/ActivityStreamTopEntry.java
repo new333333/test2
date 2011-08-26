@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -353,7 +353,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		if ( m_parentBinderId != null && m_parentBinderPermalink != null )
 		{
 			binderInfo = new OnSelectBinderInfo( m_parentBinderId, m_parentBinderPermalink, false, Instigator.ACTIVITY_STREAM_BINDER_SELECT );
-			GwtTeaming.fireEvent( new ContextChangedEvent( binderInfo ) );
+			GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
 		}
 	}
 	

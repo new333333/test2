@@ -35,7 +35,9 @@ package org.kablink.teaming.gwt.client.event;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -97,7 +99,6 @@ public class EventHelper {
 		case ADMINISTRATION_EXIT:               reply = new AdministrationExitEvent();           break;
 		case ADMINISTRATION_UPGRADE_CHECK:      reply = new AdministrationUpgradeCheckEvent();   break;
 		case BROWSE_HIERARCHY_EXIT:             reply = new BrowseHierarchyExitEvent();          break;
-		case CONTEXT_CHANGING:                  reply = new ContextChangingEvent();              break;
 		case EDIT_CURRENT_BINDER_BRANDING:      reply = new EditCurrentBinderBrandingEvent();    break;
 		case EDIT_LANDING_PAGE_PROPERTIES:		reply = new EditLandingPagePropertiesEvent();	 break;
 		case EDIT_PERSONAL_PREFERENCES:         reply = new EditPersonalPreferencesEvent();      break;
@@ -255,6 +256,15 @@ public class EventHelper {
 				if (eventHandler instanceof BrowseHierarchyExitEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = BrowseHierarchyExitEvent.registerEvent(eventBus, ((BrowseHierarchyExitEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CHANGE_CONTEXT:
+				// A ChangeContextEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof ChangeContextEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ChangeContextEvent.registerEvent(eventBus, ((ChangeContextEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -881,6 +891,7 @@ public class EventHelper {
 			case BROWSE_HIERARCHY:                  hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);              break;
 			case BROWSE_HIERARCHY_EXIT:             hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);          break;
 			
+			case CHANGE_CONTEXT:                    hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                break;
 			case CONTEXT_CHANGED:                   hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);               break;
 			case CONTEXT_CHANGING:                  hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);              break;
 			
