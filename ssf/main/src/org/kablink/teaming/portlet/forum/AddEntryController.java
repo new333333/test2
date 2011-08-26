@@ -152,14 +152,14 @@ public class AddEntryController extends SAbstractController {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		return;
 				}
-				//Get the entry that was just created
-				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+				//Get the entry that was just created (Don't use the folderId since the entry may have moved to some place else.)
+				FolderEntry entry = getFolderModule().getEntry(null, entryId);
 				//Mark this entry as having been seen by the current user
 				getProfileModule().setSeen(null, entry);
 				
-				setupReloadBinder(request, response, folderId);
+				setupReloadBinder(request, response, entry.getParentBinder().getId());
 				if (!addEntryFromIFrame.equals("")) {
-					setupReloadOpener(response, folderId, null);
+					setupReloadOpener(response, entry.getParentBinder().getId(), null);
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 					response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "1");
 				}

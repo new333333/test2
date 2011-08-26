@@ -184,9 +184,15 @@ public class EnterExitEvent extends AbstractActionHandler {
 		   				//since permalinks no longer contain binderIds, this can be done at any time (doesn't have to worry about a move
 		   				doNotification(item, executionContext, entry, ws);	   			
 		   			} else if ("moveEntry".equals(name)) {
-		   				moveEntry(item, executionContext, entry, ws);	   				
+		   				Boolean moveNotAllowed = (Boolean)executionContext.getContextInstance().getTransientVariable(WorkflowModule.DISALLOW_MOVE);
+		   				if (moveNotAllowed == null || !moveNotAllowed) {
+		   					moveEntry(item, executionContext, entry, ws);
+		   				}
 		   			} else if ("copyEntry".equals(name)) {
-		   				copyEntry(item, executionContext, entry, ws);	   				
+		   				Boolean copyNotAllowed = (Boolean)executionContext.getContextInstance().getTransientVariable(WorkflowModule.DISALLOW_COPY);
+		   				if (copyNotAllowed == null || !copyNotAllowed) {
+		   					copyEntry(item, executionContext, entry, ws);
+		   				}
 		   			} else if ("startParallelThread".equals(name)) {
 		   				startThread(item, executionContext, entry, ws);
 		   			} else if ("stopParallelThread".equals(name)) {
