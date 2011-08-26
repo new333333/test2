@@ -45,7 +45,7 @@
 	<a href="javascript: //"
 	onclick="ss_toggleShowDiv('ss_show_team_${ss_showTeamInstanceCount}'); return false;" 
 	class="ss_smallprint ss_nowrap">
-		<img style="margin: 1px 3px 0" border="0" src="<html:imagesPath/>pics/team_small.png" align="absmiddle" />
+		<img style="margin: 1px 3px 0" border="0" src="<html:imagesPath/>pics/team_16.png" align="absmiddle" />
 		<span class="${ss_showTeamTitleStyle}"><c:out value="${ss_showTeamTeam.title}" /></span>
 		<ssf:nlt tag="showTeam.team.members"><ssf:param 
 		name="value" value="${fn:length(ss_showTeamTeamMembers)}"/></ssf:nlt></a>

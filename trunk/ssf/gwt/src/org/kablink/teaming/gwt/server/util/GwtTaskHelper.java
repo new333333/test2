@@ -546,7 +546,7 @@ public class GwtTaskHelper {
 				// ...setting each one's title and membership count.
 				if (setAITitle(  ai, teamTitles)) {
 					setAIMembers(ai, teamCounts );
-					ai.setPresenceDude("pics/team_small.png");
+					ai.setPresenceDude("pics/team_16.png");
 				}
 				else {
 					removeList.add(ai);

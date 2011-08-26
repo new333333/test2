@@ -238,7 +238,7 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource task_opener();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/team_small.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/team_16.png")
 	public ImageResource team();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

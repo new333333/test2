@@ -48,7 +48,7 @@
 
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
-		  src="<html:brandedImagesPath/>icons/team_small.png"/> 
+		  src="<html:brandedImagesPath/>icons/team_16.png"/> 
 		  <span>${ssBinder.title}</span> 
     </div>
 
