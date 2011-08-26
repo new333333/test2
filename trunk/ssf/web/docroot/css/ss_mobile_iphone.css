@@ -76,7 +76,7 @@ span.pad-left20 select {
 		
 .search { 
 	position: relative;
-	top: -5px;
+	top: -7px;
 	right: 5px;
 	font-size: .8em;
 	font-weight: bold; 
@@ -91,7 +91,7 @@ span.pad-left20 select {
 
 .homelink { 
 	position: relative;
-	top: -5px;
+	top: -7px;
 	left: 5px;
 	font-size: .8em;
 	font-weight: bold; 
@@ -476,12 +476,12 @@ span.pad-left20 select {
 .comment {
 	position: relative;
 	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
-	padding: 5px 5px 5px 40px;
+	padding: 5px 5px 5px 30px;
 	}
 .comment2 {
 	position: relative;
 	border-bottom: 1px solid #e2e5e1;
-	padding: 5px 5px 5px 65px;
+	padding: 5px 5px 5px 55px;
 	}
 
 .comment .entry-title, .comment2 .entry-title {
