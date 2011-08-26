@@ -593,6 +593,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 					cI.setVariable(WorkflowModule.ENTRY_TYPE, id.getEntityType().name(), token);
 					//If initial state is specified, assume starting in the middle on an import entry.
 					cI.setTransientVariable(WorkflowModule.FORCE_STATE, startState);
+					cI.setTransientVariable(WorkflowModule.DISALLOW_COPY, Boolean.TRUE);
 					//doesn't exist, add a new one
 					WorkflowState ws = new WorkflowState();
 					if (Validator.isNotNull(startState) && options != null && options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)) { 
