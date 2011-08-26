@@ -39,6 +39,7 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("navigation.favorites") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
+<c:set var="ss_pageTitle" value='<%= NLT.get("navigation.myFavorites") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div class="content">
@@ -48,7 +49,6 @@
 
   <div class="folders">
     <div class="folder-content">
-	  <div class="folder-head"><ssf:nlt tag="navigation.favorites"/></div>
 	  <c:forEach var="favorite" items="${ss_mobileFavoritesList}">
 		 <jsp:useBean id="favorite" type="net.sf.json.JSONObject" />
 		 <% try { %><c:set var="f_eletype" value='<%= favorite.get("eletype") %>'/><% } catch(Exception e) {} %>
@@ -59,6 +59,7 @@
 		 <% try { %><c:set var="f_value" value='<%= favorite.get("value") %>'/><% } catch(Exception e) {} %>
 		 <c:if test="${f_eletype == 'favorite'}">
 		  <div class="folder-item">
+              <img class="margin5r" src="<html:rootPath/>images/mobile/Favorite_star_16.png" align="absmiddle" />
 			<c:if test="${f_type == 'binder' && f_action == 'view_folder_listing'}">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
 							action="__ajax_mobile" actionUrl="false" 

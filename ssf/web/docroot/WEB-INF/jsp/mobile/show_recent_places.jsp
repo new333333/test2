@@ -51,7 +51,6 @@
 
   <div class="folders">
     <div class="folder-content">
-      <div class="folder-head"><ssf:nlt tag="sidebar.history"/></div>
 	  <c:forEach var="tab" items="${ss_tabs.tabList}">
 		<jsp:useBean id="tab" type="org.kablink.teaming.web.util.Tabs.TabEntry" />
 		<c:set var="numTabs" value="${numTabs + 1}"/>

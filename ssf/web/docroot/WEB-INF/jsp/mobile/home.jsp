@@ -37,7 +37,7 @@
 
 <%@ include file="/WEB-INF/jsp/mobile/masthead_new.jsp" %>
 
-<div style="height:512px; position:relative" class="content">
+<div style="height:512px; position:relative" class="content" style="background-color: #353838;">
 <div class="folders">
   <div class="folder-content">
     <div class="home-grid-row">

@@ -43,20 +43,18 @@
 
   <c:if test="${!empty ssFolders}">
   <div class="folders">
-    <div class="folder-head">
-      <ssf:nlt tag="mobile.folders"/>
-    </div>
 	<c:forEach var="folder" items="${ssFolders}" >
-      <div class="folder-item">
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${folder.id}" 
 				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
+	      <div class="folder-item">
+            <img class="margin5r" src="<html:rootPath/>images/mobile/folder.png" align="absmiddle" />
 		  <c:if test="${empty folder.title}">
 		    (<ssf:nlt tag="folder.noTitle"/>)
 		  </c:if>
 		  <c:out value="${folder.title}" escapeXml="true"/>
+		</div>
 		</a>
-	  </div>
 	</c:forEach>
 	
   </div>
