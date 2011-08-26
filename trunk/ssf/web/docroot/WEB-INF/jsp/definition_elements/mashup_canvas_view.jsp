@@ -63,10 +63,10 @@ document.body.style.backgroundRepeat = '${ss_mashupBGImgRepeat}';
 
 </script>
 
-<div class="ss_mashup_canvas_view" style="background-color: ${ss_mashupBGColor};">
+<div class="ss_mashup_canvas_view" style="background-color: #fff;">
 	<div id="ss_mashup_canvas_print" style="position: relative;">
 		&nbsp;
-		<a style="position: absolute; right: 10px;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
+		<a style="position: absolute; right: 10px; top: 2px;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
 			<img border="0" 
 	      		 alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
 	      		 src="<html:rootPath/>images/pics/masthead/masthead_printer.png" border="0" align="absmiddle" />

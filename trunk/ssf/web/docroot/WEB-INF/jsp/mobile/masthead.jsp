@@ -44,7 +44,7 @@
 	><img src="<html:rootPath/>css/images/mobile/home_but.png" border="0"></a>
   </div>
 </td>
-<td valign="top" align="center">
+<td valign="center" align="center">
   <div class="masthead-title">
   <c:if test="${!empty ssEntry && ssEntry.entityType == 'folderEntry'}">
     <div class="masthead-title2">${ssEntry.parentFolder.parentBinder.title}</div>

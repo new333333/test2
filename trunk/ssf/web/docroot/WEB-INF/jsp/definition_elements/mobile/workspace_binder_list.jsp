@@ -34,17 +34,13 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${!empty ssWorkspaces}">
-  <div class="folders">
-    <div class="folder-head">
-      <img class="margin5r" src="<html:rootPath/>images/mobile/workspace_top.png" align="absmiddle" />
-      <ssf:nlt tag="mobile.workspaces"/>
-    </div>
-    
+  <div class="folders">    
 	<c:forEach var="workspace" items="${ssWorkspaces}" >
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${workspace.id}" 
 				action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-	      <div class="folder-item">
+	      <div class="folder-item folder-item-ws">
+		    <img class="margin5r" src="<html:rootPath/>images/mobile/workspace_top.png" align="absmiddle" />
 		  <c:if test="${empty workspace.title}">
 		    (<ssf:nlt tag="workspace.noTitle"/>)
 		  </c:if>
@@ -57,15 +53,12 @@
 	
 <c:if test="${!empty ssFolders}">
   <div class="folders">
-    <div class="folder-head">
-      <img class="margin5r" src="<html:rootPath/>images/mobile/folder.png" align="absmiddle" />
-      <ssf:nlt tag="mobile.folders"/>
-    </div>
 	<c:forEach var="folder" items="${ssFolders}" >
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${folder.id}" 
 				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 	      <div class="folder-item">
+            <img class="margin5r" src="<html:rootPath/>images/mobile/folder.png" align="absmiddle" />
 		  <c:if test="${empty folder.title}">
 		    (<ssf:nlt tag="folder.noTitle"/>)
 		  </c:if>
@@ -73,7 +66,6 @@
 		  </div>
 		</a>
 	</c:forEach>
-	
   </div>
 </c:if>
 <c:set var="ss_mobileBinderListShown" value="true" scope="request"/>
