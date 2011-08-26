@@ -481,7 +481,8 @@ public class TaskTable extends Composite
 		private InlineLabel m_taskCompletedLabel;		//
 		private InlineLabel	m_taskLabel;				//
 		private int			m_taskDepth;				//
-		private int 		m_taskOrder = (-1);			//
+		private int 		m_taskOrder    = (-1);		//
+		private int 		m_taskTopOrder = (-1);		//
 		private int 		m_taskRow;					//
 		private Label		m_taskOrderAnchor;			//
 		private TextBox		m_taskOrderTextBox;			//
@@ -523,6 +524,7 @@ public class TaskTable extends Composite
 		public InlineLabel getTaskLabel()             {return m_taskLabel;            }
 		public int         getTaskDepth()             {return m_taskDepth;            }
 		public int         getTaskOrder()             {return m_taskOrder;            }
+		public int         getTaskTopOrder()          {return m_taskTopOrder;         }
 		public int         getTaskRow()               {return m_taskRow;              }
 		public Label       getTaskOrderAnchor()       {return m_taskOrderAnchor;      }
 		public TextBox     getTaskOrderTextBox()      {return m_taskOrderTextBox;     }
@@ -540,6 +542,7 @@ public class TaskTable extends Composite
 		public void setTaskLabel(            InlineLabel taskLabel)             {m_taskLabel             = taskLabel;            }
 		public void setTaskDepth(            int         taskDepth)             {m_taskDepth             = taskDepth;            }
 		public void setTaskOrder(            int         taskOrder)             {m_taskOrder             = taskOrder;            }
+		public void setTaskTopOrder(         int         taskTopOrder)          {m_taskTopOrder          = taskTopOrder;         }
 		public void setTaskRow(              int         taskRow)               {m_taskRow               = taskRow;              }
 		public void setTaskOrderAnchor(      Label       taskOrderAnchor)       {m_taskOrderAnchor       = taskOrderAnchor;      }
 		public void setTaskOrderTextBox(     TextBox     taskOrderTextBox)      {m_taskOrderTextBox      = taskOrderTextBox;     }
@@ -1297,13 +1300,25 @@ public class TaskTable extends Composite
 	
 	/**
 	 * Returns the order number from the given TaskListItem.
-	 * 
+	 *
 	 * @param task
 	 * 
 	 * @return
 	 */
 	public static int getTaskOrder(TaskListItem task) {
-		return getUIData(task).m_taskOrder;
+		return getUIData(task).getTaskOrder();
+	}
+
+	/**
+	 * Returns the order number from the top most task containing the
+	 * given TaskListItem.
+	 *
+	 * @param task
+	 * 
+	 * @return
+	 */
+	public static int getTaskTopOrder(TaskListItem task) {
+		return getUIData(task).getTaskTopOrder();
 	}
 
 	/*
@@ -1384,35 +1399,38 @@ public class TaskTable extends Composite
 	 * (Re)initializes the UIData objects on the tasks.
 	 */
 	private void initializeUIData(boolean updateOrder) {
-		initializeUIDataImpl(m_taskBundle.getTasks(), 0, updateOrder);
+		initializeUIDataImpl(
+			m_taskBundle.getTasks(),
+			1,	// Order starts at 1...
+			0,	// ...at depth 0.
+			updateOrder);
 	}
 	
-	private void initializeUIData() {
-		// Always use the initial form of the method.
-		initializeUIData(true);
-	}
-	
-	private void initializeUIDataImpl(List<TaskListItem> tasks, int taskDepth, boolean updateOrder) {
-		int     taskOrder    = 1;
-		boolean baseTask     = (0 == taskDepth);
-		int     subtaskDepth = (taskDepth + 1);
+	private void initializeUIDataImpl(List<TaskListItem> tasks, int taskOrder, int taskDepth, boolean updateOrder) {
+		boolean topTask = (0 == taskDepth);
 		for (TaskListItem task:  tasks) {
 			// Build a UIData object for this TaskListItem...
 			UIData newUID = new UIData(((UIData) task.getUIData()));
 			task.setUIData(newUID);
 			newUID.setTaskDepth(taskDepth);
 			if (updateOrder) {
-				if (baseTask) {
-					newUID.setTaskOrder(taskOrder);
+				if (topTask) {
+					newUID.setTaskTopOrder(taskOrder);
+					newUID.setTaskOrder(   taskOrder);
 					taskOrder += 1;
 				}
 				else {
-					newUID.setTaskOrder(-1);
+					newUID.setTaskTopOrder(taskOrder - 1);	// Net effect is to store the order from top most task containing this subtask.
+					newUID.setTaskOrder(             - 1);	// A subtask's order is always -1.
 				}
 			}
 
 			// ...and build the UIData's for any subtasks.
-			initializeUIDataImpl(task.getSubtasks(), subtaskDepth, updateOrder);
+			initializeUIDataImpl(
+				task.getSubtasks(),
+				taskOrder,
+				(taskDepth + 1),
+				updateOrder);
 		}
 	}
 	
@@ -1726,7 +1744,7 @@ public class TaskTable extends Composite
 					// ...and mark the task as having its subtasks
 					// ...collapsed and redisplay the TaskTable. 
 					task.setExpandedSubtasks(false);
-					initializeUIData();	// Forces the referenced widgets to be reset.
+					initializeUIData(true);	// true -> Forces the order and depths to be reset.
 					renderTaskBundle(m_taskBundle);
 				}
 			});
@@ -1748,7 +1766,7 @@ public class TaskTable extends Composite
 					// ...and mark the task as having its subtasks
 					// ...expanded and redisplay the TaskTable. 
 					task.setExpandedSubtasks(true);
-					initializeUIData();	// Forces the referenced widgets to be reset.
+					initializeUIData(true);	// true -> Forces the order and depths to be reset.
 					renderTaskBundle(m_taskBundle);
 				}
 			});
@@ -2055,7 +2073,7 @@ public class TaskTable extends Composite
 	 * into affect.
 	 */
 	private void handleTaskPostMove(final ProcessActive pa, List<TaskListItem> taskList) {	
-		initializeUIData();	// Forces the order and depths to be reset.
+		initializeUIData(true);	// true -> Forces the order and depths to be reset.
 		renderTaskBundle(m_taskBundle);		
 
 		// Persist whatever changed in the linkage information.
@@ -2206,7 +2224,7 @@ public class TaskTable extends Composite
 			if (hasQuickFilter)
 			     TaskListItemHelper.flattenTaskList(m_taskBundle);
 			else TaskListItemHelper.applyTaskLinkage(m_taskBundle);
-			initializeUIData(false);	// Forces the depths, ... to be reset.
+			initializeUIData(false);	// false -> Forces the depths, but not the order to be reset.
 			sortByColumnImpl();
 		}
 		
@@ -3480,7 +3498,7 @@ public class TaskTable extends Composite
 		m_taskBundle = taskBundle;
 		if (m_newTaskTable) {
 			m_newTaskTable = false;
-			initializeUIData();
+			initializeUIData(true);	// true -> Forces the order and depths to be reset.
 			initializeSorting();
 		}
 
@@ -3767,7 +3785,7 @@ public class TaskTable extends Composite
 				// Yes!  Then we have to flatten the task list before
 				// sorting.  Thanks Tracy !!!  :-)
 				TaskListItemHelper.flattenTaskList(m_taskBundle);
-				initializeUIData(false);	// Forces the depths, ... to be reset.
+				initializeUIData(false);	// false -> Forces the depths, but not the order to be reset.
 			}
 			
 			// No, we didn't have to flatten the list!  Are we sorting
@@ -3777,7 +3795,7 @@ public class TaskTable extends Composite
 				// Yes!  Then we have to restructure the list before
 				// sorting.  Thanks Tracy !!!  :-)
 				TaskListItemHelper.applyTaskLinkage(m_taskBundle);
-				initializeUIData();	// Forces the depths, ... to be reset.
+				initializeUIData(true);		// true -> Forces the order and depths to be reset.
 			}
 		}
 

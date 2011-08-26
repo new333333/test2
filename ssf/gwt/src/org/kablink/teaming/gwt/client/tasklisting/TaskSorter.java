@@ -323,8 +323,8 @@ public class TaskSorter {
 		 */
 		@Override
 		public int compare(TaskListItem task1, TaskListItem task2) {
-			Integer id1 = TaskTable.getTaskOrder(task1);
-			Integer id2 = TaskTable.getTaskOrder(task2);
+			Integer id1 = TaskTable.getTaskTopOrder(task1);
+			Integer id2 = TaskTable.getTaskTopOrder(task2);
 
 			int reply;
 			if (m_ascending)
