@@ -32,20 +32,28 @@
  */
 package org.kablink.teaming.util.aopalliance;
 
+import java.lang.reflect.Method;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.util.EventsStatistics;
 
 public class LoggingInterceptor implements MethodInterceptor {
 
 	protected Log logger = LogFactory.getLog(getClass());
+	
+	private EventsStatistics eventsStatistics;
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		try {
 			long startTime = System.nanoTime();
 			
 			Object result = invocation.proceed();
+			
+			if(eventsStatistics.isEnabled())
+				eventsStatistics.addEvent(getInvocationName(invocation), System.nanoTime()-startTime);
 			
 			if(logger.isDebugEnabled())
 				logger.debug("(" + ((System.nanoTime()-startTime)/1000000.0) + " ms) " + invocation.toString());
@@ -59,6 +67,19 @@ public class LoggingInterceptor implements MethodInterceptor {
 				logger.warn(invocation.toString() + org.kablink.teaming.util.Constants.NEWLINE + t.toString());
 			throw t;
 		}
+	}
+
+	public void setEventsStatistics(EventsStatistics es) {
+		this.eventsStatistics = es;
+	}
+
+	private String getInvocationName(MethodInvocation invocation) {
+		StringBuilder sb = new StringBuilder();
+		Method method = invocation.getMethod();
+		Class clazz = method.getDeclaringClass();
+		sb.append(clazz.getName());
+		sb.append('.').append(method.getName());
+		return sb.toString();
 	}
 
 }

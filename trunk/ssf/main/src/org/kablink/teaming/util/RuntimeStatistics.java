@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.report.impl.ReportModuleImpl;
 import org.kablink.teaming.util.aopalliance.InvocationStatisticsInterceptor;
+import org.kablink.teaming.util.aopalliance.LoggingInterceptor;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.servlet.listener.SessionListener.ActiveSessionCounter;
@@ -48,13 +49,30 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
-	private EventsStatistics eventsStatistics = new EventsStatistics();
+	private EventsStatistics methodInvocationStatistics = new EventsStatistics();
+	private EventsStatistics soapInvocationStatistics = new EventsStatistics();
+	private EventsStatistics webdavInvocationStatistics = new EventsStatistics();
 	
 	public void setInvocationStatisticsInterceptor(
 			InvocationStatisticsInterceptor invocationStatisticsInterceptor) {
-		invocationStatisticsInterceptor.setEventsStatistics(eventsStatistics);
+		invocationStatisticsInterceptor.setEventsStatistics(methodInvocationStatistics);
+	}
+	
+	public void setWsLoggingInterceptor(LoggingInterceptor loggingInterceptor) {
+		loggingInterceptor.setEventsStatistics(soapInvocationStatistics);
 	}
 
+	public void setSsfsLoggingInterceptor(LoggingInterceptor loggingInterceptor) {
+		loggingInterceptor.setEventsStatistics(webdavInvocationStatistics);
+	}
+
+	public void clearAll() {
+		clearSimpleProfiler();
+		clearMethodInvocationStatistics();
+		clearSoapInvocationStatistics();
+		clearWebdavInvocationStatistics();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.util.RuntimeHelperMBean#clearSimpleProfiler()
 	 */
@@ -135,6 +153,8 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		if(s.length() > 0)
 			sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(s);
 		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
+		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpWebdavInvocationStatisticsAsString());
+		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSoapInvocationStatisticsAsString());
 		return sb.toString();
 	}
 	
@@ -183,15 +203,15 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
 	@Override
 	public boolean isMethodInvocationStatisticsEnabled() {
-		return eventsStatistics.isEnabled();
+		return methodInvocationStatistics.isEnabled();
 	}
 
 	@Override
 	public void setMethodInvocationStatisticsEnabled(boolean methodInvocationStatisticsEnabled) {
 		if(methodInvocationStatisticsEnabled)
-			eventsStatistics.enable();
+			methodInvocationStatistics.enable();
 		else
-			eventsStatistics.disable();
+			methodInvocationStatistics.disable();
 	}
 
 	/* (non-Javadoc)
@@ -199,7 +219,7 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public void clearMethodInvocationStatistics() {
-		eventsStatistics.clear();
+		methodInvocationStatistics.clear();
 	}
 
 	/* (non-Javadoc)
@@ -208,7 +228,7 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	@Override
 	public void dumpMethodInvocationStatisticsToLog() {
 		if(logger.isInfoEnabled())
-			logger.info("Method Invocation Statistics" + Constants.NEWLINE + eventsStatistics.asString());
+			logger.info("Method Invocation Statistics" + Constants.NEWLINE + methodInvocationStatistics.asString());
 	}
 
 	/* (non-Javadoc)
@@ -216,6 +236,82 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 */
 	@Override
 	public String dumpMethodInvocationStatisticsAsString() {
-		return "Method Invocation Statistics, " + eventsStatistics.asString();
+		return "Method Invocation Statistics, " + methodInvocationStatistics.asString();
+	}
+
+	@Override
+	public boolean isSoapInvocationStatisticsEnabled() {
+		return soapInvocationStatistics.isEnabled();
+	}
+
+	@Override
+	public void setSoapInvocationStatisticsEnabled(boolean soapInvocationStatisticsEnabled) {
+		if(soapInvocationStatisticsEnabled)
+			soapInvocationStatistics.enable();
+		else
+			soapInvocationStatistics.disable();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#clearSoapInvocationStatistics()
+	 */
+	@Override
+	public void clearSoapInvocationStatistics() {
+		soapInvocationStatistics.clear();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpSoapInvocationStatisticsToLog()
+	 */
+	@Override
+	public void dumpSoapInvocationStatisticsToLog() {
+		if(logger.isInfoEnabled())
+			logger.info("SOAP Invocation Statistics" + Constants.NEWLINE + soapInvocationStatistics.asString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpSoapInvocationStatisticsAsString()
+	 */
+	@Override
+	public String dumpSoapInvocationStatisticsAsString() {
+		return "SOAP Invocation Statistics, " + soapInvocationStatistics.asString();
+	}
+	
+	@Override
+	public boolean isWebdavInvocationStatisticsEnabled() {
+		return webdavInvocationStatistics.isEnabled();
+	}
+
+	@Override
+	public void setWebdavInvocationStatisticsEnabled(boolean webdavInvocationStatisticsEnabled) {
+		if(webdavInvocationStatisticsEnabled)
+			webdavInvocationStatistics.enable();
+		else
+			webdavInvocationStatistics.disable();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#clearWebdavInvocationStatistics()
+	 */
+	@Override
+	public void clearWebdavInvocationStatistics() {
+		webdavInvocationStatistics.clear();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpWebdavInvocationStatisticsToLog()
+	 */
+	@Override
+	public void dumpWebdavInvocationStatisticsToLog() {
+		if(logger.isInfoEnabled())
+			logger.info("WebDAV Invocation Statistics" + Constants.NEWLINE + webdavInvocationStatistics.asString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpWebdavInvocationStatisticsAsString()
+	 */
+	@Override
+	public String dumpWebdavInvocationStatisticsAsString() {
+		return "WebDAV Invocation Statistics, " + webdavInvocationStatistics.asString();
 	}
 }

@@ -917,6 +917,7 @@
 		</property>
 		<property name="interceptorNames">
 			<list>
+				<value>aopallianceSsfsLoggingInterceptor</value>
 				<!-- Setting up of request context is done by the cross-context
 				     dispatcher server/servlet. The same servlet also takes care
 				     of logging. -->
@@ -928,7 +929,9 @@
 		</property>
 	</bean>
 	
-	<bean id="aopallianceLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
+	<bean id="aopallianceWsLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
+	
+	<bean id="aopallianceSsfsLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
 	
 	<bean id="aopallianceOpenSessionInViewInterceptor" class="org.kablink.teaming.util.aopalliance.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
@@ -1096,7 +1099,7 @@ text/calendar											  ics
 	<bean id="wsProxyTemplate" class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
 		<property name="interceptorNames">
 			<list>
-				<value>aopallianceLoggingInterceptor</value>
+				<value>aopallianceWsLoggingInterceptor</value>
 				<!-- When a user request is served, typically one of the very first 
 				     interceptors we define is one that sets up request context for 
 				     the serving thread. In the case of Web request, typically this
@@ -1282,6 +1285,8 @@ text/calendar											  ics
 	
 	<bean id="runtimeStatistics" class="org.kablink.teaming.util.RuntimeStatistics">
 		<property name="invocationStatisticsInterceptor"><ref bean="invocationStatisticsInterceptor"/></property>
+		<property name="wsLoggingInterceptor"><ref bean="aopallianceWsLoggingInterceptor"/></property>
+		<property name="ssfsLoggingInterceptor"><ref bean="aopallianceSsfsLoggingInterceptor"/></property>
 	</bean>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
