@@ -41,6 +41,8 @@ public interface RuntimeStatisticsMBean {
 	
 	public void setSimpleProfilerEnabled(boolean simpleProfilerEnabled);
 	
+	public void clearAll();
+	
 	/*
 	 * Clear simple profiler.
 	 */
@@ -115,5 +117,49 @@ public interface RuntimeStatisticsMBean {
 	 * Dump a snapshot of method invocation statistics as string.
 	 */
 	public String dumpMethodInvocationStatisticsAsString();
+	
+	/*
+	 * Returns whether SOAP invocation statistics is enabled or not.
+	 */
+	public boolean isSoapInvocationStatisticsEnabled();
+	
+	public void setSoapInvocationStatisticsEnabled(boolean soapInvocationStatisticsEnabled);
+		
+	/*
+	 * Clear SOAP invocation statistics.
+	 */
+	public void clearSoapInvocationStatistics();
+	
+	/*
+	 * Dump a snapshot of SOAP invocation statistics to logger.
+	 */
+	public void dumpSoapInvocationStatisticsToLog();
+	
+	/*
+	 * Dump a snapshot of SOAP invocation statistics as string.
+	 */
+	public String dumpSoapInvocationStatisticsAsString();
+	
+	/*
+	 * Returns whether SOAP invocation statistics is enabled or not.
+	 */
+	public boolean isWebdavInvocationStatisticsEnabled();
+	
+	public void setWebdavInvocationStatisticsEnabled(boolean webdavInvocationStatisticsEnabled);
+		
+	/*
+	 * Clear SOAP invocation statistics.
+	 */
+	public void clearWebdavInvocationStatistics();
+	
+	/*
+	 * Dump a snapshot of SOAP invocation statistics to logger.
+	 */
+	public void dumpWebdavInvocationStatisticsToLog();
+	
+	/*
+	 * Dump a snapshot of SOAP invocation statistics as string.
+	 */
+	public String dumpWebdavInvocationStatisticsAsString();
 
 }
