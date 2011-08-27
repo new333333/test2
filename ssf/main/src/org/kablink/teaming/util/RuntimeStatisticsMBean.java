@@ -162,4 +162,25 @@ public interface RuntimeStatisticsMBean {
 	 */
 	public String dumpWebdavInvocationStatisticsAsString();
 
+	/*
+	 * Returns whether SOAP invocation statistics is enabled or not.
+	 */
+	public boolean isDaoInvocationStatisticsEnabled();
+	
+	public void setDaoInvocationStatisticsEnabled(boolean daoInvocationStatisticsEnabled);
+		
+	/*
+	 * Clear SOAP invocation statistics.
+	 */
+	public void clearDaoInvocationStatistics();
+	
+	/*
+	 * Dump a snapshot of SOAP invocation statistics to logger.
+	 */
+	public void dumpDaoInvocationStatisticsToLog();
+	
+	/*
+	 * Dump a snapshot of SOAP invocation statistics as string.
+	 */
+	public String dumpDaoInvocationStatisticsAsString();
 }

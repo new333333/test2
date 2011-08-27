@@ -35,6 +35,7 @@ package org.kablink.teaming.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.EventsStatistics;
 import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -44,9 +45,16 @@ public abstract class KablinkDao extends HibernateDaoSupport {
 	
 	private boolean inited = false;
 	private long floor = 0; // in milliseconds
+	
+	private static EventsStatistics eventsStatistics; // set by external code
 
 	protected void end(long beginInNanoseconds, String methodName) {
 		init();
+		
+		EventsStatistics es = eventsStatistics; // copy reference first
+		if(es != null && es.isEnabled())
+			es.addEvent(methodName, System.nanoTime()-beginInNanoseconds);
+		
 		if(debugEnabled) {
 			double diff = (System.nanoTime() - beginInNanoseconds)/1000000.0;
 			if(diff >= (double) floor)
@@ -81,4 +89,7 @@ public abstract class KablinkDao extends HibernateDaoSupport {
 		return SPropsUtil.getBoolean("case.insensitive.by.range." + DynamicDialect.getDatabaseType().name(), false);
 	}
 
+	public static void setEventsStatistics(EventsStatistics es) {
+		eventsStatistics = es;
+	}
 }

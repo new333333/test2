@@ -37,6 +37,7 @@ import java.lang.reflect.Modifier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.module.report.impl.ReportModuleImpl;
 import org.kablink.teaming.util.aopalliance.InvocationStatisticsInterceptor;
 import org.kablink.teaming.util.aopalliance.LoggingInterceptor;
@@ -44,14 +45,16 @@ import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.servlet.listener.SessionListener.ActiveSessionCounter;
 import org.kablink.util.EventsStatistics;
+import org.springframework.beans.factory.InitializingBean;
 
-public class RuntimeStatistics implements RuntimeStatisticsMBean {
+public class RuntimeStatistics implements InitializingBean, RuntimeStatisticsMBean {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
 	private EventsStatistics methodInvocationStatistics = new EventsStatistics();
 	private EventsStatistics soapInvocationStatistics = new EventsStatistics();
 	private EventsStatistics webdavInvocationStatistics = new EventsStatistics();
+	private EventsStatistics daoInvocationStatistics = new EventsStatistics();
 	
 	public void setInvocationStatisticsInterceptor(
 			InvocationStatisticsInterceptor invocationStatisticsInterceptor) {
@@ -66,11 +69,20 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		loggingInterceptor.setEventsStatistics(webdavInvocationStatistics);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		KablinkDao.setEventsStatistics(daoInvocationStatistics);
+	}
+	
 	public void clearAll() {
 		clearSimpleProfiler();
 		clearMethodInvocationStatistics();
 		clearSoapInvocationStatistics();
 		clearWebdavInvocationStatistics();
+		clearDaoInvocationStatistics();
 	}
 	
 	/* (non-Javadoc)
@@ -155,6 +167,7 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
 		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpWebdavInvocationStatisticsAsString());
 		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSoapInvocationStatisticsAsString());
+		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpDaoInvocationStatisticsAsString());
 		return sb.toString();
 	}
 	
@@ -314,4 +327,43 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	public String dumpWebdavInvocationStatisticsAsString() {
 		return "WebDAV Invocation Statistics, " + webdavInvocationStatistics.asString();
 	}
+
+	@Override
+	public boolean isDaoInvocationStatisticsEnabled() {
+		return daoInvocationStatistics.isEnabled();
+	}
+
+	@Override
+	public void setDaoInvocationStatisticsEnabled(boolean daoInvocationStatisticsEnabled) {
+		if(daoInvocationStatisticsEnabled)
+			daoInvocationStatistics.enable();
+		else
+			daoInvocationStatistics.disable();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#clearDaoInvocationStatistics()
+	 */
+	@Override
+	public void clearDaoInvocationStatistics() {
+		daoInvocationStatistics.clear();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpDaoInvocationStatisticsToLog()
+	 */
+	@Override
+	public void dumpDaoInvocationStatisticsToLog() {
+		if(logger.isInfoEnabled())
+			logger.info("DAO Invocation Statistics" + Constants.NEWLINE + daoInvocationStatistics.asString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeStatisticsMBean#dumpDaoInvocationStatisticsAsString()
+	 */
+	@Override
+	public String dumpDaoInvocationStatisticsAsString() {
+		return "DAO Invocation Statistics, " + daoInvocationStatistics.asString();
+	}
+
 }
