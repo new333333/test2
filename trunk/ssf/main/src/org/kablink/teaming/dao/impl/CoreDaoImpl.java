@@ -1782,6 +1782,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		long begin = System.nanoTime();
 		try {
 	    	if (Validator.isNull(zoneUUID)) return new ArrayList<Long>();
+	    	if (zoneUUID.matches("[^a-zA-Z0-9.]")) {
+	    		//If the zoneUUID contains anything other than letters, numbers and a "." then it is bogus and can't be used
+	    		return new ArrayList<Long>();
+	    	}
 	    	//Load customAttributes
 	     	//Cannot criteria query, cause different order-by is specified in mapping files and it appears to take precedence
 	       	final String id = zoneUUID + "." + entityId;
