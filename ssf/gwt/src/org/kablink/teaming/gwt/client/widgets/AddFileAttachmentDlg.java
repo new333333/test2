@@ -255,13 +255,56 @@ public class AddFileAttachmentDlg extends DlgBox
 							String part2;
 							String msg;
 						
+							// The html that we received should look like the following:
+							/*
+								<script type="text/javascript">
+									var ss_error_msg = "Some error message." ;
+									var ss_error_code = 1;
+								</script>
+								
+								<div class="ss_style ss_portlet">
+									<h1>Error</h1>
+								
+									<p>Some error message.<br></p>
+								
+									<br>
+									<input value="Back" class="ss_submit" onclick="setTimeout('self.window.history.back();', 2000);" type="button">
+								</div>
+							 */
+							msg = GwtTeaming.getMessages().unknownFileUploadError( result );
 							beginIndex = result.indexOf( "ss_error_msg" );
-							endIndex = result.indexOf( "ss_error_code" );
-							part1 = result.substring( beginIndex, endIndex );
-							beginIndex = part1.indexOf( '\'' );
-							part2 = part1.substring( beginIndex+1 );
-							endIndex = part2.indexOf( '\'' );
-							msg = part2.substring( 0, endIndex );
+							if ( beginIndex > 0 )
+							{
+								endIndex = result.indexOf( ";" );
+								if ( endIndex > 0 )
+								{
+									part1 = result.substring( beginIndex, endIndex );
+									
+									// Find the starting quote of the error message.
+									beginIndex = part1.indexOf( '\'' );
+									if ( beginIndex == -1 )
+									{
+										// Find the starting double quote of the error message.
+										beginIndex = part1.indexOf( '"' );
+									}
+									
+									if ( beginIndex >= 0 )
+									{
+										part2 = part1.substring( beginIndex+1 );
+										
+										// Find the ending quote of the error message.
+										endIndex = part2.indexOf( '\'' );
+										if ( endIndex == -1 )
+										{
+											// Find the ending double quote of the error message
+											endIndex = part2.indexOf( '"' );
+										}
+										
+										if ( endIndex >= 0 )
+											msg = part2.substring( 0, endIndex );
+									}
+								}
+							}
 							Window.alert (msg );
 						}
 						else
