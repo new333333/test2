@@ -223,6 +223,7 @@ public interface GwtTeamingMessages extends Messages
 	String showBorder();
 	String showTitle();
 	String title();
+	String unknownFileUploadError( String error);
 	String vibeInsideLandingPage();
 	String close();
 	
