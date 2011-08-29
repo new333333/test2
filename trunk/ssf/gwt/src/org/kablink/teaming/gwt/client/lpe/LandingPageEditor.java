@@ -131,6 +131,9 @@ public class LandingPageEditor extends Composite
 
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers( GwtTeaming.getEventBus(), registeredEvents, this );
+		
+		// Create a JavaScript function that will be invoked when the "Edit Workspace" form is submitted.
+		initAddLandingPageEditorDataToFormJS( this );
 
 		// Get the RequestInfo object that is a JavaScript object.
 		m_requestInfo = jsGetRequestInfo();
@@ -219,75 +222,6 @@ public class LandingPageEditor extends Composite
 		// All composites must call initWidget() in their constructors.
 		initWidget( vPanel );
 
-		Event.addNativePreviewHandler( new Event.NativePreviewHandler() {
-			/**
-			 * This handler looks for when the user clicks on the Ok button.  When we detect this
-			 * we will create a configuration string based on the widgets that have been added to
-			 * the canvas.  We will then put the configuration string in a hidden input control
-			 * and it will be sent with the other data.
-			 */
-			public void onPreviewNativeEvent( Event.NativePreviewEvent previewEvent )
-			{
-				NativeEvent nativeEvent;
-				EventTarget eventTarget;
-				InputElement inputElement;
-				Element targetElement;
-				String name;
-				int eventType;
-
-				eventType = previewEvent.getTypeInt();
-				
-				// We are only interested in mouse-up events.
-				if ( eventType != Event.ONMOUSEUP )
-					return;
-
-				// Get the target for the mouse-up event
-				nativeEvent = previewEvent.getNativeEvent();
-				eventTarget = nativeEvent.getEventTarget();
-				
-				if ( eventTarget != null && Element.is( eventTarget ) )
-				{
-					targetElement = Element.as( eventTarget );
-					if ( targetElement instanceof InputElement )
-					{
-						inputElement = (InputElement) targetElement;
-						name = inputElement.getName();
-						if ( name != null && name.equalsIgnoreCase( "okBtn" ) )
-						{
-							String configStr;
-							
-							// Get the configuration string for the mashup.
-							configStr = createConfigString();
-							
-							// Put the configuration string in a hidden input control.
-							m_configResultsInputCtrl.setValue( configStr );
-							
-							// Save away the properties xml string in a hidden input control.
-							{
-								Element element;
-								InputElement ckboxElement;
-								
-								// Add the "hide menu" setting to the landing page properties.
-								try
-								{
-									element = Document.get().getElementById( m_lpeConfig.getMashupPropertyName() + "__hideMenu" );
-									ckboxElement = InputElement.as( element );
-								
-									m_landingPageProperties.setHideMenu( ckboxElement.isChecked() );
-								}
-								catch (Exception ex)
-								{
-									
-								}
-								
-								m_propertiesHiddenInput.setValue( m_landingPageProperties.getPropertiesAsXMLString() );
-							}
-						}
-					}
-				}
-			}// end onPreviewNativeEvent()
-		});
-		
 		// Adjust the height of all the tables we added.  We can't do this right now because the browser hasn't
 		// rendered anything yet.  So set a timer to do the work later.
 		{
@@ -309,6 +243,43 @@ public class LandingPageEditor extends Composite
 		}
 	}// end LandingPageEditor()
 	
+	
+	/**
+	 * Create a configuration string based on the widgets that have been added to the canvas.
+	 * We will then put the configuration string in a hidden input control and it will
+	 * be submitted with the other data in the form. 
+	 */
+	private void addLandingPageEditorDataToForm()
+	{
+		String configStr;
+		
+		// Get the configuration string for the mashup.
+		configStr = createConfigString();
+		
+		// Put the configuration string in a hidden input control.
+		m_configResultsInputCtrl.setValue( configStr );
+		
+		// Save away the properties xml string in a hidden input control.
+		{
+			Element element;
+			InputElement ckboxElement;
+			
+			// Add the "hide menu" setting to the landing page properties.
+			try
+			{
+				element = Document.get().getElementById( m_lpeConfig.getMashupPropertyName() + "__hideMenu" );
+				ckboxElement = InputElement.as( element );
+			
+				m_landingPageProperties.setHideMenu( ckboxElement.isChecked() );
+			}
+			catch (Exception ex)
+			{
+				
+			}
+			
+			m_propertiesHiddenInput.setValue( m_landingPageProperties.getPropertiesAsXMLString() );
+		}
+	}
 	
 	/**
 	 * Method to add mouse up handlers to this landing page editor.
@@ -599,6 +570,18 @@ public class LandingPageEditor extends Composite
 		}
 	}// end handleMouseMove()
 	
+	/*
+	 * The LandingPageEditor lives inside a jsp form.  We need a JavaScript method that can
+	 * be called by an onSubmit handler to add the landing page editor data to the form.
+	 */
+	private native void initAddLandingPageEditorDataToFormJS( LandingPageEditor lpe ) /*-{
+		$wnd.ss_addLandingPageEditorDataToForm = function()
+		{
+			lpe.@org.kablink.teaming.gwt.client.lpe.LandingPageEditor::addLandingPageEditorDataToForm()();
+		}
+	}-*/;
+
+
 	/**
 	 * Initialize a tinyMCE configuration
 	 */

@@ -125,6 +125,24 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 		return false;
 	}
 }
+
+// Create an onSubmit handler that will get called when this form gets submitted.
+ss_createOnSubmitObj( "addLandingPageEditorDataToFormOnSubmit", "${formName}", addLandingPageEditorDataToFormOnSubmit );
+
+/**
+ * This form will call into the GWT Landing Page Editor so that it can add its data to the form.
+ */
+function addLandingPageEditorDataToFormOnSubmit()
+{
+	// Call the function that will add the landing page editor data to the form
+	if ( window.ss_addLandingPageEditorDataToForm )
+	{
+		window.ss_addLandingPageEditorDataToForm();
+	}
+	
+	return true;
+}
+
 </script>
   <table style="padding: 20px 0px 20px 0px;">
   	<tr>
