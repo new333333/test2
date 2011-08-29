@@ -127,8 +127,8 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 		if (Utils.testSendMailAttachmentsSize(fileAttachments)) {
 			for (FileAttachment fAtt: fileAttachments) {
 				FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-				DataSource ds = RepositoryUtil.getDataSourceVersioned(fAtt.getRepositoryName(), entry.getParentFolder(), 
-							entry, fAtt.getFileItem().getName(), fAtt.getHighestVersion().getVersionName(), helper.getFileTypeMap());
+				DataSource ds = RepositoryUtil.getDataSourceVersioned(fAtt, entry.getParentFolder(), 
+							entry, helper.getFileTypeMap());
 				//See if this file attachment is too large to send
 				if (Utils.testSendMailAttachmentSize(fAtt)) {
 					//Files size is ok to send

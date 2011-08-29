@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.impl.SessionWrappedInputStream;
+import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
@@ -259,13 +260,18 @@ public class RepositoryUtil {
 		}
 	}
 	
-	public static DataSource getDataSourceVersioned(String repositoryName, Binder binder, 
-			DefinableEntity entity, String relativeFilePath, String versionName,
-			FileTypeMap fileTypeMap) throws RepositoryServiceException,
+	public static DataSource getDataSourceVersioned(FileAttachment fa, Binder binder, 
+			DefinableEntity entity, FileTypeMap fileTypeMap) throws RepositoryServiceException,
 			UncheckedIOException {
+		String repositoryName = fa.getRepositoryName();
+		String relativeFilePath = fa.getFileItem().getName();
+		String versionName = fa.getHighestVersion().getVersionName();
+		Boolean isEncrypted = fa.isEncrypted();
+		byte[] encryptionKey = fa.getEncryptionKey();
 		RepositorySessionFactory factory = RepositorySessionFactoryUtil.getRepositorySessionFactory(repositoryName);
 		
-		return factory.getDataSourceVersioned(binder, entity, relativeFilePath, versionName, fileTypeMap);
+		return factory.getDataSourceVersioned(binder, entity, relativeFilePath, versionName, 
+				isEncrypted, encryptionKey, fileTypeMap);
 	}
 	
 	public static void checkout(String repositoryName, Binder binder, 

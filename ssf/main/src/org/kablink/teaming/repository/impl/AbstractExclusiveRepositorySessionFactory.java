@@ -45,8 +45,9 @@ public abstract class AbstractExclusiveRepositorySessionFactory
 
 	public abstract class AbstractExclusiveRepositoryDataSource extends AbstractRepositoryDataSource {
 		public AbstractExclusiveRepositoryDataSource(Binder binder, DefinableEntity entity, 
-				String relativeFilePath, String versionName, FileTypeMap fileMap) {
-			super(binder, entity, relativeFilePath, versionName, fileMap);
+				String relativeFilePath, String versionName, 
+				Boolean isEncrypted, byte[] encryptionKey, FileTypeMap fileMap) {
+			super(binder, entity, relativeFilePath, versionName, isEncrypted, encryptionKey, fileMap);
 		}
 		
 		protected RepositorySession createSessionForDataSource() {

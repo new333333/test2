@@ -46,8 +46,9 @@ public abstract class AbstractFIRepositorySessionFactoryAdapter
 	
 	public abstract class AbstractFIRepositoryDataSource extends AbstractRepositoryDataSource {
 		public AbstractFIRepositoryDataSource(Binder binder, DefinableEntity entity, 
-				String relativeFilePath, String versionName, FileTypeMap fileMap) {
-			super(binder, entity, relativeFilePath, versionName, fileMap);
+				String relativeFilePath, String versionName, 
+				Boolean isEncrypted, byte[] encryptionKey, FileTypeMap fileMap) {
+			super(binder, entity, relativeFilePath, versionName, isEncrypted, encryptionKey, fileMap);
 		}
 		
 		protected RepositorySession createSessionForDataSource() {
