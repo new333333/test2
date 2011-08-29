@@ -1017,7 +1017,8 @@ public interface GwtTeamingMessages extends Messages
 	String taskMemberCount(String count);
 	String taskNewAbove();
 	String taskNewBelow();
-	String TaskNewSubtask();
+	String taskNewSubtask();
+	String taskNoDueDate();
 	String taskNoTasks();
 	String taskPleaseWait_Loading();
 	String taskPleaseWait_Rendering();
