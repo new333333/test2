@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -60,6 +59,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -324,7 +324,6 @@ public class TaskHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param response
 	 * @param binder
 	 * @param model
 	 * @param options
@@ -337,7 +336,6 @@ public class TaskHelper {
 	public static Map findTaskEntries(
 			AllModulesInjected	bs,
 			RenderRequest		request, 
-			RenderResponse		response,
 			Binder				binder,
 			Map					model,
 			Map					options)
@@ -345,8 +343,6 @@ public class TaskHelper {
 		// Read the requested task entries.
 		Map taskEntries = findTaskEntriesImpl(
 			bs,
-			WebHelper.getRequiredPortletSession(request),
-			null,
 			binder,
 			model,
 			PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null),
@@ -368,10 +364,22 @@ public class TaskHelper {
 		return taskEntries;
 	}
 	
+	/**
+	 * Called to read task entries.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * @param filterType
+	 * @Param modeType
+	 * @param options
+	 * 
+	 * @return
+	 * 
+	 * @throws PortletRequestBindingException
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map findTaskEntries(
 			AllModulesInjected	bs,
-			HttpSession			session, 
 			Binder				binder,
 			String				filterType,
 			String				modeType,
@@ -380,8 +388,6 @@ public class TaskHelper {
 		return
 			findTaskEntriesImpl(
 				bs,
-				null,
-				session,
 				binder,
 				new HashMap(),	// The model is not used with the GWT UI.
 				filterType,
@@ -396,8 +402,6 @@ public class TaskHelper {
 	@SuppressWarnings("unchecked")
 	private static Map findTaskEntriesImpl(
 			AllModulesInjected	bs,
-			PortletSession		pSession,
-			HttpSession			hSession, 
 			Binder				binder,
 			Map					model,
 			String				filterTypeParam,
@@ -413,8 +417,7 @@ public class TaskHelper {
 
 		// What are we filtering for?  (Closed, Today, Week, ...)
 		FilterType filterType = ((filterTypeParam != null) ? FilterType.valueOf(filterTypeParam) : null);
-		if (null != pSession) filterType = setTaskFilterType(pSession, filterType);
-		else                  filterType = setTaskFilterType(hSession, filterType);
+		filterType = setTaskFilterType(bs, userId, binderId, filterType);
 		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 
 		// Are we producing a physical or virtual listing?
@@ -510,16 +513,15 @@ public class TaskHelper {
 	/**
 	 * Returns a filter type stored in the session cache.
 	 * 
-	 * @param session
+	 * @param bs
+	 * @param userId
+	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public static FilterType getTaskFilterType(PortletSession session) {
-		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
-	}
-	
-	public static FilterType getTaskFilterType(HttpSession session) {
-		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
+	public static FilterType getTaskFilterType(AllModulesInjected bs, Long userId, Long binderId) {
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(userId, binderId);
+		return ((FilterType) userFolderProperties.getProperty(WebKeys.TASK_CURRENT_FILTER_TYPE));
 	}
 	
 	/**
@@ -846,35 +848,25 @@ public class TaskHelper {
 	 * Saves given type in session or default type if given is
 	 * <code>null</code> or unknown.
 	 * 
-	 * @param session
+	 * @param bs
+	 * @param userId
+	 * @param binderId
 	 * @param filterType
 	 * 
 	 * @return
 	 */
-	public static FilterType setTaskFilterType(PortletSession session, FilterType filterType) {
+	public static FilterType setTaskFilterType(AllModulesInjected bs, Long userId, Long binderId, FilterType filterType) {
 		if (null == filterType) {
-			filterType = getTaskFilterType(session);
+			filterType = getTaskFilterType(bs, userId, binderId);
 			if (null == filterType) {
 				filterType = FILTER_TYPE_DEFAULT;
 			}
 		}
 		
-		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 		return filterType;
 	}
 	
-	public static FilterType setTaskFilterType(HttpSession session, FilterType filterType) {
-		if (null == filterType) {
-			filterType = getTaskFilterType(session);
-			if (null == filterType) {
-				filterType = FILTER_TYPE_DEFAULT;
-			}
-		}
-		
-		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
-		return filterType;
-	}
-
 	/**
 	 * Saves given folder mode in session or default mode if given is
 	 * <code>null</code> or unknown.
