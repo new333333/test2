@@ -386,6 +386,15 @@ public class GwtTaskHelper {
 		return (Constants.EVENT_FIELD_START_END + BasicIndexUtils.DELIMITER + fieldName);
 	}
 
+	/*
+	 * Clears the flags from a binder telling us we've got a change
+	 * pending.
+	 */
+	private static void clearTaskChanged(AllModulesInjected bs, Long userId, Long binderId) {
+		bs.getProfileModule().setUserProperty(userId, binderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, "");
+		bs.getProfileModule().setUserProperty(userId, binderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     "");
+	}
+	
 	/**
 	 * Marks the given task in the given binder as having its subtask
 	 * display collapsed.
@@ -1313,6 +1322,14 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException 
 	 */
 	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+		// Clear any previously stored reason for the tasks being
+		// read.  By the time this is called, TaskListing.java will
+		// have already made use of that information.
+		clearTaskChanged(
+			bs,
+			GwtServerHelper.getCurrentUser().getId(),
+			binder.getId());
+		
 		return
 			getTaskBundleImpl(
 				request,
@@ -2301,20 +2318,12 @@ public class GwtTaskHelper {
 		
 		else {
 			// No, we're not updating a specific task!  Update
-			// everything...
+			// everything.
 			updateCalculatedDatesImpl(
 				bs,
 				tb,
 				reply,
 				tb.getTasks());
-
-			// ...and clear any flag from the binder telling us we've
-			// ...go a change pending.
-			Long userId   = GwtServerHelper.getCurrentUser().getId();
-			Long binderId = tb.getBinderId();
-			bs.getProfileModule().setUserProperty(userId, binderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, "");
-			bs.getProfileModule().setUserProperty(userId, binderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     "");
-			
 		}
 		
 		// If we get here, reply refers to a Map<Long, TaskDate>

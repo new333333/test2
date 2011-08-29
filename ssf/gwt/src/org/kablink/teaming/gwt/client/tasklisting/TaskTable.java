@@ -615,7 +615,7 @@ public class TaskTable extends Composite
 		List<TaskMenuOption> ntOpts = new ArrayList<TaskMenuOption>();
 		ntOpts.add(new TaskMenuOption(TaskDisposition.BEFORE.toString(),  m_messages.taskNewAbove()));
 		ntOpts.add(new TaskMenuOption(TaskDisposition.AFTER.toString(),   m_messages.taskNewBelow()));
-		ntOpts.add(new TaskMenuOption(TaskDisposition.SUBTASK.toString(), m_messages.TaskNewSubtask()));
+		ntOpts.add(new TaskMenuOption(TaskDisposition.SUBTASK.toString(), m_messages.taskNewSubtask()));
 		m_newTaskMenu = new TaskPopupMenu(this, TeamingEvents.TASK_NEW_TASK, ntOpts);
 
 		// ...calculate the size we'll use for marker's throughout the
@@ -3009,13 +3009,14 @@ public class TaskTable extends Composite
 		TaskInfo  ti  = task.getTask();
 		TaskEvent tie = ti.getEvent();
 		String dueDate = tie.getLogicalEnd().getDateDisplay();
+		boolean hasDueDate = GwtClientHelper.hasString(dueDate);
 		InlineLabel il = new InlineLabel();
-		il.getElement().setInnerHTML(GwtClientHelper.hasString(dueDate) ? dueDate : "&nbsp;");
+		il.getElement().setInnerHTML(hasDueDate ? dueDate : m_messages.taskNoDueDate());
 		il.setWordWrap(false);
 		if (ti.isTaskOverdue()) {
 			il.addStyleName("gwtTaskList_task-overdue-color");
 		}
-		if (tie.getEndIsCalculated()) {
+		if (tie.getEndIsCalculated() && hasDueDate) {
 			il.addStyleName("gwtTaskList_calculatedDate");
 			il.setTitle(m_messages.taskAltDateCalculated());
 		}
@@ -3708,13 +3709,14 @@ public class TaskTable extends Composite
 			// Yes!  Were we call because the user added a new task?
 			String taskChangeReason = m_taskListing.getTaskChangeReason();
 			if ((null != taskChangeReason) && taskChangeReason.equals("taskAdded")) {
-				// Yes!  When they added the task, was there one and
-				// only one task selected?
+				// Yes!  What's the ID of the new task?
+				newTaskId = m_taskListing.getTaskChangeId();
+				
+				// When they added the task, was there one and only one
+				// task selected?
 				String selectedTaskIdS = jsGetSelectedTaskId();
 				if (GwtClientHelper.hasString(selectedTaskIdS)) {
-					// Yes!  What are the IDs of the new and selected
-					// tasks?
-					newTaskId      = m_taskListing.getTaskChangeId();
+					// Yes!  What's ID of the task that was selected?
 					selectedTaskId = Long.parseLong(selectedTaskIdS);
 					
 					// Do we already know how the user wants to dispose
@@ -3736,6 +3738,14 @@ public class TaskTable extends Composite
 						getUIData(selectedTask).setTaskSelected(true);
 					}
 				}
+				
+				else {
+					// No, there was other that one task selected!
+					// Simply append and select the new task.
+					taskDisposition = TaskDisposition.APPEND;
+					TaskListItem newTask = TaskListItemHelper.findTask(tb, newTaskId);
+					getUIData(newTask).setTaskSelected(true);
+				}
 			}
 		}
 
@@ -3747,9 +3757,8 @@ public class TaskTable extends Composite
 		// Render the tasks from the bundle.
 		m_renderTime = renderTaskBundle(tb, m_taskListing.getUpdateCalculatedDates());
 
-		// Did we just add a new task in the context of an existing
-		// task?
-		if ((null != newTaskId) && (null != selectedTaskId)) {
+		// Did we just add a new task?
+		if (null != newTaskId) {
 			// Yes!  Do we know where the new task should be placed?
 			if (null != taskDisposition) {
 				// Yes!  Just put it there.
@@ -3761,7 +3770,7 @@ public class TaskTable extends Composite
 
 			// No, we don't know where the new task should be placed!
 			// Should we prompt the user for where?
-			else if ((Column.ORDER == m_sortColumn) && m_sortAscending) {
+			else if ((Column.ORDER == m_sortColumn) && m_sortAscending && (null != selectedTaskId)) {
 				// Yes!  Do it.
 				promptForDispositionAsync(newTaskId, selectedTaskId);
 			}
