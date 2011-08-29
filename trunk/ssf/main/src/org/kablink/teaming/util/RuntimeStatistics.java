@@ -164,10 +164,10 @@ public class RuntimeStatistics implements InitializingBean, RuntimeStatisticsMBe
 		String s = dumpSimpleProfilerAsString();
 		if(s.length() > 0)
 			sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(s);
-		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
-		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpWebdavInvocationStatisticsAsString());
-		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSoapInvocationStatisticsAsString());
 		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpDaoInvocationStatisticsAsString());
+		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpMethodInvocationStatisticsAsString());
+		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSoapInvocationStatisticsAsString());
+		sb.append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpWebdavInvocationStatisticsAsString());
 		return sb.toString();
 	}
 	
