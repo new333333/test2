@@ -73,7 +73,7 @@ public class NullFIRepositorySessionFactoryAdapter extends AbstractFIRepositoryS
 
 	public DataSource getDataSourceVersioned(Binder binder,
 			DefinableEntity entity, String relativeFilePath,
-			String versionName, FileTypeMap fileTypeMap)
+			String versionName, Boolean isEncrypted, byte[] encryptionKey, FileTypeMap fileTypeMap)
 			throws RepositoryServiceException, UncheckedIOException {
 		return null;
 	}

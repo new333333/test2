@@ -89,15 +89,11 @@ public class AttachmentsHelper  {
 		String shortFileName = FileUtil.getShortFileName(att.getFileItem().getName());	
 		DataSource ds;
 		if (entity instanceof org.kablink.teaming.domain.Binder) {
-			ds = RepositoryUtil.getDataSourceVersioned(att.getRepositoryName(),
-				(org.kablink.teaming.domain.Binder)entity, 
-				entity, att.getFileItem().getName(), att.getHighestVersion().getVersionName(),
-				FileTypeMap.getDefaultFileTypeMap());
+			ds = RepositoryUtil.getDataSourceVersioned(att,
+				(org.kablink.teaming.domain.Binder)entity, entity, FileTypeMap.getDefaultFileTypeMap());
 		} else {
-			ds = RepositoryUtil.getDataSourceVersioned(att.getRepositoryName(),
-					entity.getParentBinder(), 
-					entity, att.getFileItem().getName(), att.getHighestVersion().getVersionName(),
-					FileTypeMap.getDefaultFileTypeMap());
+			ds = RepositoryUtil.getDataSourceVersioned(att,
+					entity.getParentBinder(), entity, FileTypeMap.getDefaultFileTypeMap());
 			
 		}
 		DataHandler dh = new DataHandler(ds);

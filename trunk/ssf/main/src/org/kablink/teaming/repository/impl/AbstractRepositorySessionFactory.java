@@ -43,6 +43,7 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.RepositorySessionFactory;
@@ -71,14 +72,19 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 		protected String _relativeFilePath;
 		protected String _versionName;
 		protected FileTypeMap _fileMap;
+		protected Boolean _isEncrypted;
+		protected byte[] _encryptionKey;
 
 		public AbstractRepositoryDataSource(Binder binder, DefinableEntity entity, 
-				String relativeFilePath, String versionName, FileTypeMap fileMap) {
+				String relativeFilePath, String versionName, 
+				Boolean isEncrypted, byte[] encryptionKey, FileTypeMap fileMap) {
 			this._binder = binder;
 			this._entity = entity;
 			this._relativeFilePath = relativeFilePath;
 			this._versionName = versionName;
 			this._fileMap = fileMap;
+			this._isEncrypted = isEncrypted;
+			this._encryptionKey = encryptionKey;
 		}
 		
 		public String getContentType() {
@@ -90,6 +96,10 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 			InputStream in = null;
 			try {
 				in = session.readVersioned(_binder, _entity, _relativeFilePath, _versionName, null);
+				if (this._isEncrypted) {
+					CryptoFileEncryption cfe = new CryptoFileEncryption(this._encryptionKey);
+					in = cfe.getEncryptionInputDecryptedStream(in);
+				}
 				return new SessionWrappedInputStream(in, session);
 			} finally {
 				if(in == null)

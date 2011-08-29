@@ -109,6 +109,7 @@ public interface RepositorySessionFactory {
 	 */
 	public DataSource getDataSourceVersioned(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, String versionName, 
+			Boolean isEncrypted, byte[] encryptionKey, 
 			FileTypeMap fileTypeMap) throws RepositoryServiceException,
 			UncheckedIOException;
 	

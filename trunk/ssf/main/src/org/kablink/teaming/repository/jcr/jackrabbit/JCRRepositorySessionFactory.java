@@ -236,16 +236,17 @@ implements JCRRepositorySessionFactoryMBean {
 
 	public DataSource getDataSourceVersioned(Binder binder,
 			DefinableEntity entity, String relativeFilePath,
-			String versionName, FileTypeMap fileTypeMap)
+			String versionName, Boolean isEncrypted, byte[] encryptionKey, FileTypeMap fileTypeMap)
 			throws RepositoryServiceException, UncheckedIOException {
 		return new JCRRepositoryDataSource(binder, entity, relativeFilePath, 
-				versionName, fileTypeMap);
+				versionName, isEncrypted, encryptionKey, fileTypeMap);
 	}
 	
 	public class JCRRepositoryDataSource extends AbstractExclusiveRepositoryDataSource {
 		public JCRRepositoryDataSource(Binder binder, DefinableEntity entity, 
-				String relativeFilePath, String versionName, FileTypeMap fileMap) {
-			super(binder, entity, relativeFilePath, versionName, fileMap);
+				String relativeFilePath, String versionName, 
+				Boolean isEncrypted, byte[] encryptionKey, FileTypeMap fileMap) {
+			super(binder, entity, relativeFilePath, versionName, isEncrypted, encryptionKey, fileMap);
 		}
 	}
 
