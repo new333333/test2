@@ -1683,7 +1683,6 @@ public class GwtTaskHelper {
 			// ...and read them.
 			taskEntriesMap = TaskHelper.findTaskEntries(
 				bs,
-				WebHelper.getRequiredSession(request), 
 				binder,
 				filterTypeParam,
 				modeTypeParam,
