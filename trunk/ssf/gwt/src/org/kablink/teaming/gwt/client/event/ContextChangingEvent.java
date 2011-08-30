@@ -44,7 +44,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
  * The ContextChaingingEvent tells the UI that a context change is
- * about take place, but is not yet in process.
+ * about take place, but is not yet in progress.
  * 
  * @author drfoster@novell.com
  */

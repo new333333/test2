@@ -36,14 +36,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
@@ -94,7 +93,7 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			switch (m_place.getTypeEnum()) {
 			case BINDER:
 				GwtTeaming.fireEvent(
-					new ContextChangedEvent(
+					new ChangeContextEvent(
 						new OnSelectBinderInfo(
 							m_place.getBinderId(),
 							m_place.getPermalinkUrl(),
