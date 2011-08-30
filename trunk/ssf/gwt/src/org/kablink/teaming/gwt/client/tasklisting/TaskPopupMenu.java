@@ -53,6 +53,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * This popup menu is used to display menus of for the various task
@@ -69,13 +70,14 @@ public class TaskPopupMenu extends PopupMenu
 		TaskSetStatusEvent.Handler,
 		TaskViewEvent.Handler
 {
-	private List<PopupMenuItem>		m_menuItems;		//
-	private List<TaskMenuOption>	m_menuOptions;		//
-	private TaskListItem			m_task;				//
-	private TaskListing				m_taskListing;		//
-	private TaskTable				m_taskTable;		//
-	private TeamingEvents			m_taskEventEnum;	//
-	private Widget					m_menuPartner;		//
+	private List<HandlerRegistration>	m_registeredEventHandlers;	//
+	private List<PopupMenuItem>			m_menuItems;				//
+	private List<TaskMenuOption>		m_menuOptions;				//
+	private TaskListItem				m_task;						//
+	private TaskListing					m_taskListing;				//
+	private TaskTable					m_taskTable;				//
+	private TeamingEvents				m_taskEventEnum;			//
+	private Widget						m_menuPartner;				//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -94,12 +96,6 @@ public class TaskPopupMenu extends PopupMenu
 	private TaskPopupMenu(TaskTable taskTable, TaskListing taskListing, TeamingEvents taskEventEnum, List<TaskMenuOption> menuOptions) {
 		// Initialize the super class...
 		super(true, true);
-		
-		// ..register the events to be handled by this class...
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
 		
 		// ...store the parameters...
 		m_taskTable     = taskTable;
@@ -148,6 +144,18 @@ public class TaskPopupMenu extends PopupMenu
 				m_menuItems.add(pmi);
 			}
 		}
+		
+		final TaskPopupMenu thisPopupMenu = this;
+		addCloseHandler(new CloseHandler<PopupPanel>() {
+			@Override
+			public void onClose(CloseEvent<PopupPanel> event) {
+				// If we've got a task table...
+				if (null != m_taskTable) {
+					// ...simply tell it a popup menu has closed.
+					m_taskTable.popupMenuClosed(thisPopupMenu);
+				}
+			}			
+		});
 	}
 	
 	/**
@@ -189,7 +197,9 @@ public class TaskPopupMenu extends PopupMenu
 	 */
 	@Override
 	public void onTaskNewTask(TaskNewTaskEvent event) {
-		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		if (null != m_task) {
+			m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		}
 	}
 
 	/**
@@ -201,7 +211,9 @@ public class TaskPopupMenu extends PopupMenu
 	 */
 	@Override
 	public void onTaskSetPercentDone(TaskSetPercentDoneEvent event) {
-		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		if (null != m_task) {
+			m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		}
 	}
 
 	/**
@@ -213,7 +225,9 @@ public class TaskPopupMenu extends PopupMenu
 	 */
 	@Override
 	public void onTaskSetPriority(TaskSetPriorityEvent event) {
-		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		if (null != m_task) {
+			m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		}
 	}
 
 	/**
@@ -225,7 +239,9 @@ public class TaskPopupMenu extends PopupMenu
 	 */
 	@Override
 	public void onTaskSetStatus(TaskSetStatusEvent event) {
-		m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		if (null != m_task) {
+			m_taskTable.setTaskOption(m_task, event.getEventEnum(), event.getEventOption());
+		}
 	}
 
 	/**
@@ -243,7 +259,22 @@ public class TaskPopupMenu extends PopupMenu
 	/**
 	 * Called to show the TaskPopupMenu.
 	 */
-	public void showTaskPopupMenu(TaskListItem task, Widget menuPartner) {
+	public void showTaskPopupMenu(TaskPopupMenu closedPopup, TaskListItem task, Widget menuPartner) {
+		// Were we given a popup that's been closed?
+		if (null != closedPopup) {
+			// Yes!  Unregister it's registered event handlers.
+			EventHelper.unregisterEventHandlers(closedPopup.m_registeredEventHandlers);
+			closedPopup.m_registeredEventHandlers = null;
+		}
+		
+		// Register the events to be handled by this class...
+		m_registeredEventHandlers = new ArrayList<HandlerRegistration>(); 
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this,
+			m_registeredEventHandlers);
+		
 		// Remember the task and menu partner that we are dealing
 		// with...
 		m_task        = task;
@@ -264,6 +295,6 @@ public class TaskPopupMenu extends PopupMenu
 	
 	public void showTaskPopupMenu(Widget menuPartner) {
 		// Always use the initial form of the method.
-		showTaskPopupMenu(null, menuPartner);
+		showTaskPopupMenu(null, null, menuPartner);
 	}
 }
