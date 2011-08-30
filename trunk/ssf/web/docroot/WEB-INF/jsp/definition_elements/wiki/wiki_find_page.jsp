@@ -53,7 +53,7 @@ function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 	
 </script>
 <% // Show the Wiki Page search widget %>
-<c:if test="${ss_wikiFolderList && empty ss_pseudoEntity}">
+<c:if test="${(ss_wikiFolderList || empty ss_wikiHomepageEntry) && empty ss_pseudoEntity}">
 <div class="ss_wiki_search_bar">
       <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" 
