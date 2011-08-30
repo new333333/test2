@@ -198,13 +198,16 @@ public class TaskDueDateDlg extends DlgBox
 
 	/*
 	 * Returns a TaskDate object based on a date and time.
+	 * 
+	 * If the time is null, midnight is used.
 	 */
 	@SuppressWarnings("deprecation")
 	private TaskDate getTDFromDT(Date date, Date time) {
 		Date reply = CalendarUtil.copyDate(date);
-		reply.setHours(  time.getHours()  );
-		reply.setMinutes(time.getMinutes());
-		reply.setSeconds(time.getSeconds());
+		boolean hasTime = (null != time);
+		reply.setHours(  (hasTime ? time.getHours()   : 0));
+		reply.setMinutes((hasTime ? time.getMinutes() : 0));
+		reply.setSeconds((hasTime ? time.getSeconds() : 0));
 		return new TaskDate(reply);
 	}
 	
@@ -405,13 +408,13 @@ public class TaskDueDateDlg extends DlgBox
 				//    As per the Task Improvements for Evergreen
 				//    design document, the following items must be
 				//    supplied:
-				//    1) A 'Start' date and time; or
-				//    2) Both a 'Start' and an End' date and time; or
-				//    3) A 'Start' date and time and a 'Duration' (in days); or
+				//    1) A 'Start' date; or
+				//    2) Both a 'Start' and an End' date; or
+				//    3) A 'Start' date and a 'Duration' (in days); or
 				//    4) A 'Duration' (in days.)
 				// Is it valid?
-				boolean hasStart = (hasStartDate && hasStartTime);
-				boolean hasEnd   = (hasEndDate   && hasEndTime);
+				boolean hasStart = (hasStartDate && true);	// hasStartTime);	// Commented out and leave it to the defaults...
+				boolean hasEnd   = (hasEndDate   && true);	// hasEndTime);		// ...as per Bugzilla 712328 and 714419.
 				if (hasStart && (!hasEnd) && (!hasDurationDays)) {
 					// Condition 1 has been met.
 					reply = new TaskEvent(true);
