@@ -1567,7 +1567,7 @@ public class ListFolderHelper {
 				}
 			}
 		}
-		if ((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) || 
+		if ((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) || viewType.equals(Definition.VIEW_STYLE_TABLE) || 
 				viewType.equals(Definition.VIEW_STYLE_FILE)) && !folder.isMirrored()) {
 			//Add the Delete and Purge buttons
 			if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries)) {
