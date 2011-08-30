@@ -98,10 +98,26 @@ public class FileRepositorySession implements RepositorySession {
     	
     	// If still here, bad news.
     	String[] arguments = new String[3];
+    	byte[] fileNameBytes = null;
+    	
     	arguments[0] = relativeFilePath;
     	arguments[1] = entry.getTitle() + " ("+entry.getId()+")";
     	arguments[2] = "";
-    	if (relativeFilePath.length() > 200) arguments[2] = NLT.get("errorcode.cannot.fileNameTooLong");
+    	
+    	// Get the file name in bytes.
+    	try
+    	{
+    		fileNameBytes = versionFile.getName().getBytes( "UTF-8" );
+    	}
+    	catch (Exception ex)
+    	{
+    		// Nothing to do.
+    	}
+    	
+    	// On Linux, the maximum length of a file name is 255 bytes.
+    	if ( fileNameBytes != null && fileNameBytes.length > 255 )
+    		arguments[2] = NLT.get("errorcode.cannot.fileNameTooLong");
+    	
     	String errorMsg = NLT.get("errorcode.cannot.writeFile", arguments);
     	throw new RepositoryServiceException(errorMsg);
 	}
