@@ -707,7 +707,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
    	<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
 		<!-- Delete entry  -->
-		<ssf:slidingTableColumn  style="ss_sliding_table_checkbox">
+		<ssf:slidingTableColumn  style="${slidingTableColStyle} ss_sliding_table_checkbox">
 			<div class="ss_title_menu">
 			  <input type="checkbox" name="delete_selectOneCB_${entry1._docId}" 
 			    id="delete_selectOneCB_${entry1._docId}" 
