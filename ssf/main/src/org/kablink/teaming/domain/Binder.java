@@ -809,7 +809,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public void setVersionsInherited() {
 		this.versionsEnabled = null;
 		this.versionsToKeep = null;
-		this.maxFileSize = null;
 	}
 	public Boolean getVersionsEnabled() {
 		return versionsEnabled;
