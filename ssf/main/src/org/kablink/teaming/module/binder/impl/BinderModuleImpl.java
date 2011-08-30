@@ -2525,10 +2525,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
 		Map binderMap = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMapDeleted = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+		List binderMapListDeleted = (List)binderMapDeleted.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
       	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+      		Map entryMap = (Map) iter.next();
+      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      	}
+      	for (Iterator iter=binderMapListDeleted.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
       		binderIdList.add(new Long((String)entryMap.get("_docId")));
       	}
