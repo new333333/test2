@@ -172,6 +172,7 @@ public class TaskTable extends Composite
 	private TaskBundle				m_taskBundle;				//
 	private TaskDueDateDlg			m_dueDateDlg;				//
 	private TaskListing				m_taskListing;				//
+	private TaskPopupMenu			m_closedPopupMenu;			// Tracks the most recently closed popup menu.
 	private TaskPopupMenu			m_newTaskMenu;				//
 	private TaskPopupMenu			m_percentDoneMenu;			//
 	private TaskPopupMenu			m_priorityMenu;				//
@@ -1203,7 +1204,7 @@ public class TaskTable extends Composite
 				else                                                                         {return;}
 				
 				// ...and run the menu.
-				taskMenu.showTaskPopupMenu(task, taskMenuImg);
+				taskMenu.showTaskPopupMenu(m_closedPopupMenu, task, taskMenuImg);
 			}
 		};
 		
@@ -1449,6 +1450,15 @@ public class TaskTable extends Composite
 	}-*/;
 
 	/**
+	 * Called when a task popup menu closes.
+	 * 
+	 * @param popupMenuClosed
+	 */
+	public void popupMenuClosed(TaskPopupMenu popupMenuClosed) {
+		m_closedPopupMenu = popupMenuClosed;
+	}
+	
+	/**
 	 * Called by TaskPopupMenu when a selection has been made in one of
 	 * the task's option menus.
 	 * 
@@ -1605,6 +1615,7 @@ public class TaskTable extends Composite
 	private void handleNewTaskMenu(TaskListItem task) {
 		// Simply run the new task menu for this task.
 		m_newTaskMenu.showTaskPopupMenu(
+			m_closedPopupMenu,
 			task,
 			getUIData(task).getTaskNewTaskMenuImage());
 	}
