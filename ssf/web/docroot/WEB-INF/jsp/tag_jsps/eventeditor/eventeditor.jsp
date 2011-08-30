@@ -645,12 +645,12 @@
 					// As per the Task Improvements for Evergreen
 					// design document, the following items must be
 					// supplied:
-					// 1) A 'Start' date and time; or
-					// 2) Both a 'Start' and an End' date and time; or
-					// 3) A 'Start' date and time and a 'Duration' (in days); or
+					// 1) A 'Start' date; or
+					// 2) Both a 'Start' and an End' date; or
+					// 3) A 'Start' date and a 'Duration' (in days); or
 					// 4) A 'Duration' (in days.)
-					hasEnd   = (hasEnd   && true)	// (0 < eEndTime.value.length));		// Commented out and leave it to the defaults...
-					hasStart = (hasStart && true)	// (0 < eStartTime.value.length));		// ...as per Bugzilla 712328.
+					hasEnd   = (hasEnd   && true);	// (0 < eEndTime.value.length));		// Commented out and leave it to the defaults...
+					hasStart = (hasStart && true);	// (0 < eStartTime.value.length));		// ...as per Bugzilla 712328 and 714419.
 					if (hasStart && (!hasEnd) && (!hasDurationDays)) {
 						// Condition 1 has been met.
 						return true;
