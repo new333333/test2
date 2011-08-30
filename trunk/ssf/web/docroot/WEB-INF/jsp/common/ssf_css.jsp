@@ -2389,7 +2389,7 @@ div.ss_typeToFindResults {
 	border-right:  solid 1px ${ss_generic_border_shadow_color}; 
 	border-bottom: solid 1px ${ss_generic_border_shadow_color}; 
 	background-color: ${ss_style_background_color_opaque};
-	z-index:500;
+	z-index:2000;
 	text-align: left;
 }
 .ss_typeToFindResults div ul {
