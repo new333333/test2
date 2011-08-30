@@ -50,7 +50,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
@@ -349,7 +349,7 @@ public class SearchOptionsComposite extends Composite
 				binderPermalink = responseData.getStringValue();
 				
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.SEARCH_SELECT);
-				GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
+				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 			}// end onSuccess()
 		});
 	}
