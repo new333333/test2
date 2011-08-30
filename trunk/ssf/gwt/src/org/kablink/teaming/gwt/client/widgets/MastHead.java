@@ -143,9 +143,6 @@ public class MastHead extends Composite
 		if ( beta )
 		{
 			String productName = m_requestInfo.getProductName();
-			if (productName.endsWith("Vibe")) {
-				productName += " OnPrem";
-			}
 			m_betaLabel = new Label( GwtTeaming.getMessages().betaWithProduct( productName ) );
 			m_betaLabel.addStyleName( "mastheadBeta" );
 			m_mainMastheadPanel.add( m_betaLabel );
