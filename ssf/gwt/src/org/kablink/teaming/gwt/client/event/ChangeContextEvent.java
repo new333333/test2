@@ -40,8 +40,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ChangeContextEvent tells the UI that a context change is in the
- * process of occurring.
+ * The ChangeContextEvent tells the UI that a context change is
+ * currently in progress.
  * 
  * @author drfoster@novell.com
  */

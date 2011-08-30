@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AddFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesCmd;
@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
@@ -127,7 +126,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 					// Fire the selection changed event
 					// asynchronously so that we can release the AJAX
 					// request ASAP.
-					fireSelectionChangedAsync(
+					fireChangeContextAsync(
 						new OnSelectBinderInfo(
 							m_favorite.getValue(),
 							binderPermalink,
@@ -138,23 +137,23 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		}
 
 		/*
-		 * Asynchronously fires a selection changed event.
+		 * Asynchronously fires a change context event.
 		 */
-		private void fireSelectionChangedAsync(final OnSelectBinderInfo osbi) {
+		private void fireChangeContextAsync(final OnSelectBinderInfo osbi) {
 			ScheduledCommand changeSelection = new ScheduledCommand() {
 				@Override
 				public void execute() {
-					fireSelectionChangedNow(osbi);
+					fireChangeContextNow(osbi);
 				}
 			};
 			Scheduler.get().scheduleDeferred(changeSelection);
 		}
 		
 		/*
-		 * Synchronously fires a selection changed event.
+		 * Synchronously fires a change context event.
 		 */
-		private void fireSelectionChangedNow(OnSelectBinderInfo osbi) {
-			GwtTeaming.fireEvent(new ContextChangedEvent(osbi));
+		private void fireChangeContextNow(OnSelectBinderInfo osbi) {
+			GwtTeaming.fireEvent(new ChangeContextEvent(osbi));
 		}
 	}
 	
