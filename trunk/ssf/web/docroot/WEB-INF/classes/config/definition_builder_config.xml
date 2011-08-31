@@ -3872,7 +3872,8 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']"
-				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$">
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$"
+				characterLength="60">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="description" caption="__description" type="textarea" />
@@ -4025,11 +4026,11 @@
 	<item name="transitionOnElapsedTime" caption="__transition_on_elapsed_time" type="transition" >
 		<properties>
 			<property name="days" caption="__transition_on_days" type="text" 
-				characterMask="^[0-9]*$" />
+				characterMask="^[0-9]*$" characterLength="10" />
 			<property name="hours" caption="__transition_on_hours" type="text"
-				characterMask="^[0-9]*$" />
+				characterMask="^[0-9]*$" characterLength="10" />
 			<property name="mins" caption="__transition_on_mins" type="text"
-				characterMask="^[0-9]*$" />
+				characterMask="^[0-9]*$" characterLength="10" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>

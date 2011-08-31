@@ -1103,10 +1103,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String attrName = configProperty.attributeValue("name");
 				String type = configProperty.attributeValue("type", "");
 				String characterMask = configProperty.attributeValue("characterMask", "");
+				String characterLength = configProperty.attributeValue("characterLength", "");
 				if (inputData.exists("propertyId_"+attrName)) {
 					String[] values = (String[]) inputData.getValues("propertyId_"+attrName);
 					for (int i = 0; i < values.length; i++) {
 						String value = values[i];
+						if (!characterLength.equals("")) {
+							//See if this field is within length
+							Integer cLen = Integer.valueOf(characterLength);
+							if (value.length() > cLen) {
+								//The string is too long
+								throw new DefinitionInvalidException("definition.error.stringTooLong", new Object[] {"\""+value+"\""});
+							}
+						}
 						if (!characterMask.equals("")) {
 							//See if the user entered a valid name
 							if (!value.equals("") && !value.matches(characterMask)) {
@@ -1129,9 +1138,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("textarea")) {
 							newPropertyEle.setText(value);
 						} else if (type.equals("integer")) {
-							if (value.matches("[^0-9]+?")) {
+							if (!value.matches("^[0-9]+$")) {
 								//The value is not a valid integer
-								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {defId, configProperty.attributeValue("caption")});
+								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {value, configProperty.attributeValue("caption")});
 							}
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("selectbox") || type.equals("itemSelect") ||
@@ -1150,9 +1159,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("userGroupSelect")) {
 							String [] v= StringUtil.split(value);
 							for (int vals=0; vals < v.length; ++vals) {
-								if (v[vals].matches("[^0-9]+?")) {
+								if (!v[vals].matches("^[0-9]+$")) {
 									//The value is not a valid integer
-									throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {defId, configProperty.attributeValue("caption")});
+									throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {v[vals], configProperty.attributeValue("caption")});
 								}
 							}
 							newPropertyEle.addAttribute("value", value);
@@ -1188,6 +1197,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								inputData.exists("operationDurationType")) {
 							String operationDuration = inputData.getSingleValue("operationDuration");
 							String operationDurationType = inputData.getSingleValue("operationDurationType");
+							if (!operationDuration.matches("^[0-9]+$")) {
+								//The value is not a valid integer
+								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+							}
+							if (operationDuration.length() > 10) {
+								//The value is not a valid integer
+								throw new DefinitionInvalidException("definition.error.stringTooLong", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+							}
 							workflowCondition.addAttribute("duration", operationDuration);
 							workflowCondition.addAttribute("durationType", operationDurationType);
 						}
@@ -1217,6 +1234,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									inputData.exists("previous_operationDurationType")) {
 								String operationDuration = inputData.getSingleValue("previous_operationDuration");
 								String operationDurationType = inputData.getSingleValue("previous_operationDurationType");
+								if (!operationDuration.matches("^[0-9]+$")) {
+									//The value is not a valid integer
+									throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+								}
+								if (operationDuration.length() > 10) {
+									//The value is not a valid integer
+									throw new DefinitionInvalidException("definition.error.stringTooLong", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+								}
 								workflowCondition.addAttribute("duration", operationDuration);
 								workflowCondition.addAttribute("durationType", operationDurationType);
 							}
@@ -1249,6 +1274,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								inputData.exists("operationDurationType")) {
 							String operationDuration = inputData.getSingleValue("operationDuration");
 							String operationDurationType = inputData.getSingleValue("operationDurationType");
+							if (!operationDuration.matches("^[0-9]+$")) {
+								//The value is not a valid integer
+								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+							}
+							if (operationDuration.length() > 10) {
+								//The value is not a valid integer
+								throw new DefinitionInvalidException("definition.error.stringTooLong", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+							}
 							workflowSetEntryDataValue.addAttribute("duration", operationDuration);
 							workflowSetEntryDataValue.addAttribute("durationType", operationDurationType);
 						}
@@ -1278,6 +1311,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									inputData.exists("previous_operationDurationType")) {
 								String operationDuration = inputData.getSingleValue("previous_operationDuration");
 								String operationDurationType = inputData.getSingleValue("previous_operationDurationType");
+								if (!operationDuration.matches("^[0-9]+$")) {
+									//The value is not a valid integer
+									throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+								}
+								if (operationDuration.length() > 10) {
+									//The value is not a valid integer
+									throw new DefinitionInvalidException("definition.error.stringTooLong", new Object[] {operationDuration, configProperty.attributeValue("caption")});
+								}
 								workflowSetEntryDataValue.addAttribute("duration", operationDuration);
 								workflowSetEntryDataValue.addAttribute("durationType", operationDurationType);
 							}
