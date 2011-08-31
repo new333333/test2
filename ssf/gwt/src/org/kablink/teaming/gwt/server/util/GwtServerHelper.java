@@ -116,6 +116,13 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
@@ -157,6 +164,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
@@ -3547,6 +3555,189 @@ public class GwtServerHelper {
 		if (longListsDiffer(usersExpandedBindersList, expandedBindersList)) {
 			// Yes!  Write it.
 			setExpandedBindersList(bs, expandedBindersList);
+		}
+	}
+
+	/**
+	 * Runs the XSS checker on the GWT RPC commands that require
+	 * checking.
+	 * 
+	 * Note:  Although we don't check everything we checked in
+	 *   Evergreen and earlier, we do check what matters.  Things
+	 *   we aren't checking that we used to include IDs (e.g.,
+	 *   binderId's, entryId's, ...)
+	 * 
+	 * @param cmd
+	 */
+	public static void performXSSCheckOnRpcCmd(VibeRpcCmd cmd) {
+		// What RPC command are we XSS checking?
+		VibeRpcCmdType cmdEnum = VibeRpcCmdType.getEnum( cmd.getCmdType() );
+		switch (cmdEnum) {
+		// The following commands require XSS checks.
+		case MARKUP_STRING_REPLACEMENT:
+		{
+			MarkupStringReplacementCmd msrCmd = ((MarkupStringReplacementCmd) cmd);
+			String html = msrCmd.getHtml();
+			if (MiscUtil.hasString(html)) {
+				msrCmd.setHtml(StringCheckUtil.check(html));
+			}
+			break;
+		}
+			
+			
+		case SAVE_BRANDING:
+		{
+			SaveBrandingCmd sbCmd = ((SaveBrandingCmd) cmd);
+			GwtBrandingData bd = sbCmd.getBrandingData(); 
+			String html = bd.getBranding();
+			if (MiscUtil.hasString(html)) {
+				bd.setBranding(StringCheckUtil.check(html));
+			}
+			break;
+		}
+			
+		case SAVE_USER_STATUS:
+		{
+			SaveUserStatusCmd susCmd = ((SaveUserStatusCmd) cmd);
+			String status = susCmd.getStatus();
+			if (MiscUtil.hasString(status)) {
+				susCmd.setStatus(StringCheckUtil.check(status));
+			}
+			break;
+		}
+			
+		case SHARE_ENTRY:
+		{
+			ShareEntryCmd seCmd = ((ShareEntryCmd) cmd);
+			String comment = seCmd.getComment();
+			if (MiscUtil.hasString(comment)) {
+				seCmd.setComment(StringCheckUtil.check(comment));
+			}
+			break;
+		}
+			
+		case REPLY_TO_ENTRY:
+		{
+			ReplyToEntryCmd rteCmd = ((ReplyToEntryCmd) cmd);
+			String title = rteCmd.getTitle();
+			if (MiscUtil.hasString(title)) {
+				rteCmd.setTitle(StringCheckUtil.check(title));
+			}
+			String desc = rteCmd.getDescription();
+			if (MiscUtil.hasString(desc)) {
+				rteCmd.setDescription(StringCheckUtil.check(desc));
+			}
+			break;
+		}
+			
+		// The following commands do not require XSS checks.
+		case ADD_FAVORITE:
+		case CAN_MODIFY_BINDER:
+		case COLLAPSE_SUBTASKS:
+		case DELETE_TASKS:
+		case EXECUTE_SEARCH:
+		case EXPAND_HORIZONTAL_BUCKET:
+		case EXPAND_SUBTASKS:
+		case EXPAND_VERTICAL_BUCKET:
+		case GET_ACTIVITY_STREAM_DATA:
+		case GET_ACTIVITY_STREAM_PARAMS:
+		case GET_ADD_MEETING_URL:
+		case GET_ADMIN_ACTIONS:
+		case GET_BINDER_BRANDING:
+		case GET_BINDER_INFO:
+		case GET_BINDER_PERMALINK:
+		case GET_BINDER_TAGS:
+		case GET_DEFAULT_ACTIVITY_STREAM:
+		case GET_DEFAULT_FOLDER_DEFINITION_ID:
+		case GET_DOCUMENT_BASE_URL:
+		case GET_DISK_USAGE_INFO:
+		case GET_ENTRY:
+		case GET_ENTRY_TAGS:
+		case GET_EXTENSION_FILES:
+		case GET_EXTENSION_INFO:
+		case GET_FAVORITES:
+		case GET_FILE_ATTACHMENTS:
+		case GET_FOLDER:
+		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
+		case GET_GROUP_MEMBERSHIP:
+		case GET_GROUPS:
+		case GET_HORIZONTAL_NODE:
+		case GET_HORIZONTAL_TREE:
+		case GET_IM_URL:
+		case GET_LOGGED_IN_USER_PERMALINK:
+		case GET_LOGIN_INFO:
+		case GET_MICRO_BLOG_URL:
+		case GET_MODIFY_BINDER_URL:
+		case GET_MY_TEAMS:
+		case GET_PERSONAL_PREFERENCES:
+		case GET_PRESENCE_INFO:
+		case GET_PROFILE_AVATARS:
+		case GET_PROFILE_INFO:
+		case GET_PROFILE_STATS:
+		case GET_QUICK_VIEW_INFO:
+		case GET_RECENT_PLACES:
+		case GET_ROOT_WORKSPACE_ID:
+		case GET_SAVED_SEARCHES:
+		case GET_SITE_ADMIN_URL:
+		case GET_SITE_BRANDING:
+		case GET_SUBSCRIPTION_DATA:
+		case GET_TAG_RIGHTS_FOR_BINDER:
+		case GET_TAG_RIGHTS_FOR_ENTRY:
+		case GET_TAG_SORT_ORDER:
+		case GET_TEAM_ASSIGNEE_MEMBERSHIP:
+		case GET_TEAM_MANAGEMENT_INFO:
+		case GET_TEAMS:
+		case GET_TASK_BUNDLE:
+		case GET_TASK_LINKAGE:
+		case GET_TASK_LIST:
+		case GET_TOOLBAR_ITEMS:
+		case GET_TOP_RANKED:
+		case GET_UPGRADE_INFO:
+		case GET_USER_PERMALINK:
+		case GET_USER_STATUS:
+		case GET_VERTICAL_ACTIVITY_STREAMS_TREE:
+		case GET_VERTICAL_NODE:
+		case GET_VERTICAL_TREE:
+		case GET_VIEW_FOLDER_ENTRY_URL:
+		case HAS_ACTIVITY_STREAM_CHANGED:
+		case IS_ALL_USERS_GROUP:
+		case IS_PERSON_TRACKED:
+		case IS_SEEN:
+		case PERSIST_ACTIVITY_STREAM_SELECTION:
+		case PERSIST_NODE_COLLAPSE:
+		case PERSIST_NODE_EXPAND:
+		case PURGE_TASKS:
+		case REMOVE_EXTENSION:
+		case REMOVE_FAVORITE:
+		case REMOVE_TASK_LINKAGE:
+		case REMOVE_SAVED_SEARCH:
+		case SAVE_PERSONAL_PREFERENCES:
+		case SAVE_SUBSCRIPTION_DATA:
+		case SAVE_TASK_COMPLETED:
+		case SAVE_TASK_DUE_DATE:
+		case SAVE_TASK_LINKAGE:
+		case SAVE_TASK_PRIORITY:
+		case SAVE_TASK_SORT:
+		case SAVE_TASK_STATUS:
+		case SAVE_SEARCH:
+		case SAVE_TAG_SORT_ORDER:
+		case SAVE_WHATS_NEW_SETTINGS:
+		case SET_SEEN:
+		case SET_UNSEEN:
+		case TRACK_BINDER:
+		case UPDATE_BINDER_TAGS:
+		case UPDATE_CALCULATED_DATES:
+		case UPDATE_ENTRY_TAGS:
+		case UPDATE_FAVORITES:
+		case UNTRACK_BINDER:
+		case UNTRACK_PERSON:
+		case VALIDATE_ENTRY_EVENTS:
+			break;
+			
+		default:
+			// Log an error that we encountered an unhandled command.
+			m_logger.error("GwtServerHelper.performXSSCheckOnRpcCmd( Unhandled Command ):  " + cmd.getClass().getName());
+			break;
 		}
 	}
 	

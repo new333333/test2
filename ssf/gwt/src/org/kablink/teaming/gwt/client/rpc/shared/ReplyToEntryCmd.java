@@ -90,4 +90,13 @@ public class ReplyToEntryCmd extends VibeRpcCmd {
 	public int getCmdType() {
 		return VibeRpcCmdType.REPLY_TO_ENTRY.ordinal();
 	}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param description
+	 * @param title
+	 */
+	public void setDescription(String description) {m_description = description;}
+	public void setTitle(      String title)       {m_title       = title;      }
 }

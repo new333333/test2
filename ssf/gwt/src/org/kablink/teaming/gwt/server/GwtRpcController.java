@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,12 +38,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
@@ -121,23 +120,23 @@ public class GwtRpcController extends RemoteServiceServlet
             		m_logger.debug( "!!! Processing old style rpc request:  " + methodName );
             }
 
-        	//Run the data through the XSS checker
-            parameters = performStringCheck(parameters);
+        	// Run the parameters through the XSS checker.
+            performXSSChecks( parameters );
             
-            // If the first parameter to the method is an
-            // HttpRequestInfo object...
+            // Is the first parameter to the method is an
+            // HttpRequestInfo object.?
             if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
             {
             	HttpServletRequest req;
             	HttpRequestInfo ri;
             	
-            	// Get the HttpServletRequest we are working with.
+            	// Yes!  Get the HttpServletRequest we are working with.
             	req = getThreadLocalRequest();
             	
-            	// Get the HttpRequestInfo object that is the first parameter.
-            	ri = (HttpRequestInfo) parameters[0];
-                
-            	// ...drop in the current HttpServletRequest.
+            	// Get the HttpRequestInfo object that is the first
+            	// parameter and drop in the current
+            	// HttpServletRequest.
+            	ri = ((HttpRequestInfo) parameters[0]);                
             	ri.setRequestObj( req );
             	
             	// Is the user logged in?
@@ -216,44 +215,21 @@ public class GwtRpcController extends RemoteServiceServlet
     	m_logger.debug("GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t);
     	super.doUnexpectedFailure(t);
     }
-    
-    Object[] performStringCheck(Object[] input) {
-    	if(input == null)
-    		return null;
-    	else if(input.length == 0)
-    		return input;
-    	else {
-    		Object[] output = new Object[input.length];
-    		for(int i = 0; i < input.length; i++) {
-    			if(input[i] instanceof String) {
-    				output[i] = StringCheckUtil.check((String) input[i]); 
-    			}
-    			else if(input[i] instanceof String[]) {
-    				output[i] = StringCheckUtil.check((String[]) input[i]);     				
-    			}
-    			else {
-    				output[i] = input[i];
-    				
-    				if ( input[i] instanceof GwtBrandingData )
-    				{
-    					String html;
-    					GwtBrandingData brandingData;
-    					
-    					// Get the html used for the branding.
-    					brandingData = (GwtBrandingData) input[i];
-    					html = brandingData.getBranding();
-    					if ( html != null )
-    					{
-    						html = StringCheckUtil.check( html );
-    						brandingData.setBranding( html );
-    					}
-    					// Have this class check its data for possible xss attacks.
-    					//!!!((GwtXssCheck)input[i]).doXssCheck();
-    				}
-    			}
-    		}
-    		return output;
-    	}
-    }
-    
+
+    /*
+     * Runs the XSS checker on the parameters that require checking.
+     */
+    private void performXSSChecks( Object[] parameters )
+    {
+    	// Scan the parameters...
+    	int pCount = ( ( null == parameters ) ? 0 : parameters.length  );
+		for( int i = 0; i < pCount; i += 1 ) {
+			// ...and for any that are VibeRpcCmd's...
+			if( parameters[i] instanceof VibeRpcCmd )
+			{
+				// ...perform XSS checking on the command.
+				GwtServerHelper.performXSSCheckOnRpcCmd( (VibeRpcCmd) parameters[i] ); 
+			}
+		}
+    }// end performXSSChecks()    
 }// end GwtRpcController

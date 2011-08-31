@@ -90,4 +90,11 @@ public class MarkupStringReplacementCmd extends VibeRpcCmd {
 	public int getCmdType() {
 		return VibeRpcCmdType.MARKUP_STRING_REPLACEMENT.ordinal();
 	}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param html
+	 */
+	public void setHtml(String html) {m_html = html;}
 }

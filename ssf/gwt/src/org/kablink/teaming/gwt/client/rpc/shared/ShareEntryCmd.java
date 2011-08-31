@@ -96,4 +96,11 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	public int getCmdType() {
 		return VibeRpcCmdType.SHARE_ENTRY.ordinal();
 	}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param comment
+	 */
+	public void setComment(String comment) {m_comment = comment;}
 }
