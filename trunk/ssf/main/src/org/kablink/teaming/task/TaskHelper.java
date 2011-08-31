@@ -42,7 +42,6 @@ import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -818,8 +817,11 @@ public class TaskHelper {
 		ServerTaskLinkage tl = ServerTaskLinkage.loadSerializationMap(serializationMap);
 
 		// ...find the task list and task that's being removed...
-		List<ServerTaskLink> fixList = ServerTaskLinkage.findTaskList(tl,      entryId);
-		ServerTaskLink       task    = ServerTaskLinkage.findTask(    fixList, entryId);
+		List<ServerTaskLink> fixList = ServerTaskLinkage.findTaskList(tl, entryId);
+		if (null == fixList) {
+			return;
+		}
+		ServerTaskLink task = ServerTaskLinkage.findTask(fixList, entryId);
 		int taskIndex = fixList.indexOf(task);
 		
 		// ...scan the subtasks of the task being removed...
