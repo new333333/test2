@@ -79,6 +79,8 @@ public class TaskPopupMenu extends PopupMenu
 	private TeamingEvents				m_taskEventEnum;			//
 	private Widget						m_menuPartner;				//
 	
+	private static TaskPopupMenu		m_closedPopupMenu;			// Most recently closed popup menu.
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -149,11 +151,7 @@ public class TaskPopupMenu extends PopupMenu
 		addCloseHandler(new CloseHandler<PopupPanel>() {
 			@Override
 			public void onClose(CloseEvent<PopupPanel> event) {
-				// If we've got a task table...
-				if (null != m_taskTable) {
-					// ...simply tell it a popup menu has closed.
-					m_taskTable.popupMenuClosed(thisPopupMenu);
-				}
+				m_closedPopupMenu = thisPopupMenu;
 			}			
 		});
 	}
@@ -259,12 +257,13 @@ public class TaskPopupMenu extends PopupMenu
 	/**
 	 * Called to show the TaskPopupMenu.
 	 */
-	public void showTaskPopupMenu(TaskPopupMenu closedPopup, TaskListItem task, Widget menuPartner) {
-		// Were we given a popup that's been closed?
-		if (null != closedPopup) {
+	public void showTaskPopupMenu(TaskListItem task, Widget menuPartner) {
+		// Are we tracking a popup that's been closed?
+		if (null != m_closedPopupMenu) {
 			// Yes!  Unregister it's registered event handlers.
-			EventHelper.unregisterEventHandlers(closedPopup.m_registeredEventHandlers);
-			closedPopup.m_registeredEventHandlers = null;
+			EventHelper.unregisterEventHandlers(m_closedPopupMenu.m_registeredEventHandlers);
+			m_closedPopupMenu.m_registeredEventHandlers = null;
+			m_closedPopupMenu = null;
 		}
 		
 		// Register the events to be handled by this class...
@@ -295,6 +294,6 @@ public class TaskPopupMenu extends PopupMenu
 	
 	public void showTaskPopupMenu(Widget menuPartner) {
 		// Always use the initial form of the method.
-		showTaskPopupMenu(null, null, menuPartner);
+		showTaskPopupMenu(null, menuPartner);
 	}
 }
