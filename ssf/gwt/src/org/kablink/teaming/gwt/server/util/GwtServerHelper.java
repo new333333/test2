@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.portlet.ActionRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -740,9 +739,7 @@ public class GwtServerHelper {
 		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
 		reply.setBinderPermalink(binderPermalink);
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
-		if (binder instanceof Folder) {
-			reply.setBinderIconName(binder.getIconName());
-		}
+		reply.setBinderIconName(binder.getIconName());
 
 		// When requested to do so...
 		if (mergeUsersExpansions) {
