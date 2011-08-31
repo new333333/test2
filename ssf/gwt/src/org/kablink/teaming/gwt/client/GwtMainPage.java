@@ -75,7 +75,6 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentPersonEvent;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewCurrentBinderTeamMembersEvent;
 import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
@@ -738,14 +737,15 @@ public class GwtMainPage extends Composite
 
 	/*
 	 * Called to create a JavaScript method that will allow independent Content pages that are not 
-	 * instantiated in the GWTMainPage to be able fire a event on the EventBus to notify any listeners.
+	 * instantiated in the GWTMainPage to be able fire a simple Vibe event on the EventBus to notify
+	 * any listeners.
 	 * 
 	 * com.google.web.bindery.event.shared.Event
 	 */
 	private native void initFireVibeEventOnMainEventBusJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_fireVibeEventOnMainEventBus = function( event )
+		$wnd.ss_fireVibeEventOnMainEventBus = function( eventEnum )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireVibeEvent(Lorg/kablink/teaming/gwt/client/event/VibeEventBase;)( event );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireSimpleVibeEvent(Lorg/kablink/teaming/gwt/client/event/TeamingEvents;)( eventEnum );
 		}//end ss_fireVibeEventOnMainEventBus
 	}-*/;
 
@@ -1852,7 +1852,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onFullUIReload( FullUIReloadEvent event )
 	{
-		FullUIReloadEvent.fireOne();
+		reloadContentPanel();
 	}// end onFullUIReload()
 	
 	/**
@@ -2643,12 +2643,12 @@ public class GwtMainPage extends Composite
 	}// end fireInvokeSimpleProfile()
 
 	/*
-	 * Fires an arbitrary event from the JSP based UI.
+	 * Fires an arbitrary simple Vibe event from the JSP based UI.
 	 */
-	private void fireVibeEvent( VibeEventBase<?> event )
+	private void fireSimpleVibeEvent( TeamingEvents eventEnum )
 	{
-		GwtTeaming.fireEvent( event );
-	}// end fireVibeEvent()
+		EventHelper.fireSimpleEvent( eventEnum );
+	}// end fireSimpleVibeEvent()
 
 	/**
 	 * ?

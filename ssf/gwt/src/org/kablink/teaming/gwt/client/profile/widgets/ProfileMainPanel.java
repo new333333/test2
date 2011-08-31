@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
@@ -51,12 +52,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetDiskUsageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetProfileAvatarsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IsPersonTrackedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -525,7 +522,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * This method will be called to track the current binder.
 	 */
 	private void followPerson() {
-		TrackCurrentBinderEvent.fireOne();
+		GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.TRACK_CURRENT_BINDER);
 	}
 	
 	/*
@@ -533,7 +530,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * whose workspace is the current binder.
 	 */
 	private void unfollowPerson() {
-		UntrackCurrentBinderEvent.fireOne();
+		GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.UNTRACK_CURRENT_BINDER);
+		GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.UNTRACK_CURRENT_PERSON);
 	}
 	
 	/**
