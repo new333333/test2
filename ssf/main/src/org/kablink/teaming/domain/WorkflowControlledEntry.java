@@ -56,6 +56,7 @@ public abstract class WorkflowControlledEntry extends Entry
     // This in-memory only list is used to prevent infinite cyclic execution of 
     // state transitions.
     private transient List workflowStatesLoopDetector = null; 
+    private transient Integer workflowStatesLoopDetectorDepth = 0; 
 
 	public WorkflowControlledEntry() {
 		super();
@@ -203,10 +204,18 @@ public abstract class WorkflowControlledEntry extends Entry
 
 	//Routines to protect against workflow state loops when processing state change requests
 	public void startWorkflowStateLoopDetector() {
-		workflowStatesLoopDetector = new ArrayList();
+		if (workflowStatesLoopDetectorDepth <= 0) {
+			workflowStatesLoopDetector = new ArrayList();
+			workflowStatesLoopDetectorDepth = 0;
+		}
+		workflowStatesLoopDetectorDepth++;
 	}
 	public void stopWorkflowStateLoopDetector() {
-		workflowStatesLoopDetector = null;
+		if (workflowStatesLoopDetectorDepth <= 0) {
+			workflowStatesLoopDetector = null;
+			workflowStatesLoopDetectorDepth = 0;
+		}
+		workflowStatesLoopDetectorDepth--;
 	}
 	public boolean checkForWorkflowStateLoop(WorkflowState ws) {
 		String key = ws.getDefinition().getId() + "." + ws.getState();
