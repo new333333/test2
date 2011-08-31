@@ -32,7 +32,6 @@
  */
 
 package org.kablink.teaming.module.ldap.impl;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1261,7 +1260,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						} else if (row != row2) {
 							//have 2 rows that want the same loginName
 							//this could only happen if the user_id_attribute has changed and the new name is already taken
-							logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
+							logger.error(NLT.get( "errorcode.ldap.found2VibeEntries", new Object[] {ssName, dn, row[PRINCIPAL_NAME], row[PRINCIPAL_FOREIGN_NAME], row2[PRINCIPAL_NAME], row2[PRINCIPAL_FOREIGN_NAME]}));
 							//but apply updates to row anyway, just leave loginName unchanged
 						}
 					}
@@ -1514,7 +1513,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					//!!! How do we want to determine if a user is a duplicate?
 					if (userCoordinator.isDuplicate(dn)) {
-						logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
+						logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
 						continue;
 					}
 					
