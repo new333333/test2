@@ -72,6 +72,9 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
 	private static final String PATTERN_STR2_FILE = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*https?[\\s]*:[^>]*\\2|[^>\\s]*https?[\\s]*:[^>\\s]*))([^>]*>)";
 	private static final String PATTERN_STR2a = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))";
+	private static final String PATTERN_STR2b1 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data[\\s]*:[^>]*\\2|[^>\\s]data[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2b2 = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data[\\s]*:[^>]*\\2|[^>\\s]data[\\s]*:[^>\\s]*))";
+	private static final String PATTERN_STR2b3 = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data:image[^>]*\\2|[^>\\s]data:image[^>\\s]*))";
 
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\2|[^>\\s]*style[\\s]*=[^>\\s\"']*)[^>]*>";
 	private static final String PATTERN_STR4 = "(?i)(?:[^<>\\s]*style[\\s]*=[\\s]*\"[^\">]*\"|[^<>\\s]*style[\\s]*=[\\s]*'[^'>]*'|[^>\\s]*style[\\s]*=[^<>\\s\"']*)";
@@ -86,6 +89,9 @@ public class XSSCheck implements StringCheck {
 	private Pattern pattern2;
 	private Pattern pattern2file;
 	private Pattern pattern2a;
+	private Pattern pattern2b1;
+	private Pattern pattern2b2;
+	private Pattern pattern2b3;
 	private Pattern pattern3;
 	private Pattern pattern4;
 	private Pattern pattern5;
@@ -106,6 +112,9 @@ public class XSSCheck implements StringCheck {
 		pattern2 = Pattern.compile(PATTERN_STR2);
 		pattern2file = Pattern.compile(PATTERN_STR2_FILE);
 		pattern2a = Pattern.compile(PATTERN_STR2a);
+		pattern2b1 = Pattern.compile(PATTERN_STR2b1);
+		pattern2b2 = Pattern.compile(PATTERN_STR2b2);
+		pattern2b3 = Pattern.compile(PATTERN_STR2b3);
 		pattern3 = Pattern.compile(PATTERN_STR3);
 		pattern4 = Pattern.compile(PATTERN_STR4);
 		pattern5 = Pattern.compile(PATTERN_STR5);
@@ -272,6 +281,25 @@ public class XSSCheck implements StringCheck {
 			matcher2.appendReplacement( buf, tagString );
 		}
 		matcher2.appendTail(buf);
+		sequence = buf.toString();
+
+		//Check for href="data:..." (except data:image is allowed)
+		Matcher matcher2b1 = pattern2b1.matcher(sequence);
+		buf = new StringBuffer();
+		while (matcher2b1.find()) {
+			String tagString = matcher2b1.group(0);
+			Matcher matcher2b2 = pattern2b2.matcher(tagString);
+			if (matcher2b2.find()) {
+				String scriptString = matcher2b2.group(0);
+				Matcher matcher2b3 = pattern2b3.matcher(scriptString);
+				if (!matcher2b3.find()) {
+					tagString = matcher2b2.replaceAll(StringPool.BLANK);
+					result = false;
+				}
+			}
+			matcher2b1.appendReplacement( buf, tagString );
+		}
+		matcher2b1.appendTail(buf);
 		sequence = buf.toString();
 
 		//Check for style="..." in any tag
