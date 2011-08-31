@@ -3332,7 +3332,7 @@ a.sort-column:hover
 }
 .gwtTaskList_task-strike_Outer
 {
-	background:url(images/strike_marker_blue_repeat.png) repeat-y 18px 2px;
+	/* background:url(images/strike_marker_blue_repeat.png) repeat-y 18px 2px; */
 }
 .gwtTaskList_task-overdue
 {
