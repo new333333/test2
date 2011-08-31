@@ -169,7 +169,7 @@ public class LoginController  extends SAbstractControllerRetry {
 			// Add the "my workspace" url to the response.
 			{
 				String myWSUrl = PermaLinkUtil.getPermalink( request, user );
-				model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1/captive/true") );
+				model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
 			}
 			
 			return new ModelAndView( "forum/GwtMainPage", model );
