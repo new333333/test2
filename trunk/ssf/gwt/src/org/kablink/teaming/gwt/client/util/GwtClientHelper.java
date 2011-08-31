@@ -40,7 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
@@ -616,13 +616,13 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Used to fire a Vibe OnPrem event to the outer most GwtMainpage's
+	 * Used to fire a simple Vibe event to the outer most GwtMainpage's
 	 * event bus from anywhere within the application.
 	 * 
 	 * @param event
 	 */
-	public static native void jsFireVibeEventOnMainEventBus(VibeEventBase<?> event) /*-{
-		$wnd.top.ss_fireVibeEventOnMainEventBus(event);
+	public static native void jsFireVibeEventOnMainEventBus(TeamingEvents eventEnum) /*-{
+		$wnd.top.ss_fireVibeEventOnMainEventBus(eventEnum);
 	}-*/;
 
 	/**
