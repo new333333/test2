@@ -573,7 +573,7 @@ public class GwtMainPage extends Composite
 		if ( url != null && url.length() > 0 )
 		{
 			// Yes
-			m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() + "&captive=true" );
+			m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() );
 		}
 		
 		m_teamingRootPanel.add( m_contentPanel );

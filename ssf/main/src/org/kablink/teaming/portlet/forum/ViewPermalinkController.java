@@ -630,7 +630,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				// Add the "my workspace" url to the response.
 				{
 					String myWSUrl = PermaLinkUtil.getPermalink( request, user );
-					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1/captive/true") );
+					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
 				}
 
 				// Get the flag that tells us if the user has rights to this permalink.
