@@ -67,10 +67,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 </script>
 
 <div class="ss_style ss_portlet">
-	<div style="padding:10px;">
-		<br>
-		
+	<div style="padding:10px;">		
 		<c:if test="${!empty ssException}">
+		<br>
 		  <font color="red">
 		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
 		  </font>
@@ -92,15 +91,6 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	</c:if>
 	<% //need to check tags for templates %>
 	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-	<div align="right">
-	<form class="ss_form" method="post" style="display:inline;" 
-		action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
-		name="binderId" value="${ssBinder.id}"/><ssf:param 
-		name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
-	  <input type="submit" class="ss_submit" name="closeBtn" 
-		value="<ssf:nlt tag="button.close" text="Close"/>">
-	</form>
-</div>
 
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdConfig${renderResponse.namespace}" 
@@ -213,10 +203,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <br>
 <div class="ss_formBreak"/>
 
-<div class="ss_buttonBarLeft">
-<br/>
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</div>
+	<div class="ss_buttonBarRight margintop3">
+		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	</div>
 </form>
 </c:if>
 <c:if test="${!ssSimpleUrlChangeAccess}">
@@ -456,12 +445,12 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
      <c:forEach var="item" items="${ssAllBinderDefinitions}">
    	   <c:if test="${item.value.binderId != -1}">
   	    <c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/>
-  	    <hr/>
-  	    <span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
+  	    <div class="ss_bold" style="border-top: 1px solid #b8b8b8;"><ssf:nlt tag="definition.local"/></div>
+		</c:if>
 	    <input type="radio" name="binderDefinition" value="${item.value.id}" id="local${item.value.id}" 
 	    <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if><c:out value="${disabled}"/>>
 	     <c:if test="${item.value.visibility == 3}"><del></c:if>
-	     <label for="local${item.value.id}">${item.key}<sup>&#134;</sup></label>
+	     <label for="local${item.value.id}">${item.key}</label>
 	     <c:if test="${item.value.visibility == 3}"></del></c:if><br/>
         </c:if>
     </c:forEach>
@@ -493,12 +482,12 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <c:forEach var="item" items="${ssAllBinderDefinitions}">
    	   <c:if test="${item.value.binderId != -1}">
   	    <c:if test="${headerOut == '0'}"><c:set var="headerOut" value="1"/>
-  	    <hr/>
-  	    <span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
+  	    	<div class="ss_bold" style="border-top: 1px solid #b8b8b8;"><ssf:nlt tag="definition.local"/></div>
+		</c:if>
 	      <input type="checkbox" name="binderDefinitions" value="${item.value.id}" id="all2_${item.value.id}" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
 		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>
-		      <label for="all2_${item.value.id}">${item.key}<sup>&#134;</sup></label>
+		      <label for="all2_${item.value.id}">${item.key}</label>
 		      <c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 		</c:if>
      </c:forEach>
@@ -548,14 +537,13 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
      <c:forEach var="item" items="${ssAllEntryDefinitions}">
    	   <c:if test="${item.value.binderId != -1}">
   	    <c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/>
-  	    <hr/>
-  	    <span class="ss_bold"><ssf:nlt tag="definition.local"/></span>
+  	    	<div class="ss_bold" style="border-top: 1px solid #b8b8b8;"><ssf:nlt tag="definition.local"/></div>
   	    <br/>
   	    </c:if>
 	      <input type="checkbox" name="entryDefinition" value="${item.value.id}" id="all5_${item.value.id}" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
 		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>
-		      <label for="all5_${item.value.id}">${item.key}<sup>&#134;</sup></label>
+		      <label for="all5_${item.value.id}">${item.key}</label>
 		      <c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	 </c:if>
     </c:forEach>
@@ -648,11 +636,12 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
    <c:set var="headerOut" value=""/>
     <c:forEach var="item" items="${ssAllWorkflowDefinitions}">
    	   <c:if test="${item.value.binderId != -1}">
-		<c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>		
+		<c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/>
+			<div class="ss_bold" style="border-top: 1px solid #b8b8b8;"><ssf:nlt tag="definition.local"/></div></c:if>		
 	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
 	      <c:out value="${disabled}"/>>
-	          <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<sup>&#134;</sup><c:if test="${item.value.visibility == 3}"></del></c:if><br/>
+	          <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	   </c:if>
    </c:forEach>
      <br>
@@ -662,9 +651,6 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
-  <br>
-<span class="ss_fineprint">&#134; <ssf:nlt tag="definition.local"/></span>
-<br/>
 </c:if>
   
 </c:if>
@@ -704,9 +690,8 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
 <div class="ss_formBreak"/>
 
-<div class="ss_buttonBarLeft">
-<br/>
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<div class="ss_buttonBarRight margintop3">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
 </form>

@@ -360,7 +360,7 @@ div.ss_entryDescription.ss_entryContent table {
   color: #333333;
   	}
 .ss_form select, .ss_form option {
-  background-color: ${ss_form_element_color};
+  background-color: #fff;
   color: ${ss_form_element_text_color};
   }
 div.ss_style select.ss_compactSelectBox, .ss_compactSelectBox {

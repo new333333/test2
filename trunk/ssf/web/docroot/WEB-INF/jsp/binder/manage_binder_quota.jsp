@@ -79,14 +79,13 @@ function ss_checkIfQuotaValid(s) {
 </script>
 
 <div class="ss_style ss_portlet">
-	<div style="padding:10px;">
-		<br>
-		
+	<div style="padding:10px;">		
 		<c:if test="${!empty ssException}">
+		<br>
 		  <font color="red">
 		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
 		  </font>
-		  <br/>
+		<br/>
 		</c:if>
 	
 <c:set var="ss_tab_quota" value="on"/>
@@ -102,15 +101,6 @@ function ss_checkIfQuotaValid(s) {
 </c:if>
 <% //need to check tags for templates %>
 <span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-<div align="right">
-<form class="ss_form" method="post" style="display:inline;" 
-	action="<ssf:url action="manage_binder_quota" actionUrl="true"><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param 
-	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
-  <input type="submit" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
-</form>
-</div>
 
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdConfig${renderResponse.namespace}" 
@@ -127,28 +117,40 @@ function ss_checkIfQuotaValid(s) {
       <c:set var="type" value="workspace"/>
       <c:if test="${ssBinder.entityType == 'folder'}"><c:set var="type" value="folder"/></c:if>
       
-      <div style="padding:10px 10px 0px 10px;">
-        <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsed.${type}"/></span>
-        <span>
+      <div style="padding: 10px;">
+        <span class="ss_normalprint"><ssf:nlt tag="quota.binder.diskSpaceUsed.${type}"/></span>
+        <span class="ss_normalprint ss_bold">
           <fmt:setLocale value="${ssUser.locale}"/>
 		  <fmt:formatNumber type="number" value="${(ss_binderQuota.diskSpaceUsed)/1048576}"
 		  maxFractionDigits="2"/><ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
 
-      <div style="padding:6px 10px 0px 10px;">
-        <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsedCumulative.${type}"/></span>
-        <span>
+      <div style="padding:0px 10px 10px;">
+        <span class="ss_normalprint"><ssf:nlt tag="quota.binder.diskSpaceUsedCumulative.${type}"/></span>
+        <span class="ss_normalprint ss_bold">
           <fmt:setLocale value="${ssUser.locale}"/>
 		  <fmt:formatNumber type="number" value="${(ss_binderQuota.diskSpaceUsedCumulative)/1048576}"
 		  maxFractionDigits="2"/><ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
 
+
+	  <div class="margintop2" style="padding:10px;">
+        <span><ssf:nlt tag="quota.currentParentQuota"/></span>
+        <span class="ss_bold">
+          <c:if test="${empty ss_binderMinQuotaParentBinder}"><ssf:nlt tag="None"/></c:if>
+          <c:if test="${!empty ss_binderMinQuotaParentBinder}">
+          <fmt:setLocale value="${ssUser.locale}"/>
+		  <fmt:formatNumber value="${(ss_binderMinQuotaParentBinder + 524287)/1048576}"
+		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/></c:if>
+        </span>
+      </div>
+
       <c:set var="currentQuota" value=""/>
-	  <div style="padding:6px 10px 0px 10px;">
-        <span class="ss_bold"><ssf:nlt tag="quota.currentQuota"/></span>
-        <span>
+	  <div style="padding:0px 10px 10px;">
+        <span><ssf:nlt tag="quota.currentQuota"/></span>
+        <span class="ss_bold">
           <c:if test="${empty ss_binderQuota.diskQuota}"><ssf:nlt tag="None"/></c:if>
           <c:if test="${!empty ss_binderQuota.diskQuota}">
 		      <c:set var="currentQuota"><fmt:formatNumber pattern="#######" 
@@ -161,32 +163,21 @@ function ss_checkIfQuotaValid(s) {
         </span>
       </div>
 
-	  <div style="padding:6px 10px 0px 10px;">
-        <span class="ss_bold"><ssf:nlt tag="quota.currentParentQuota"/></span>
-        <span>
-          <c:if test="${empty ss_binderMinQuotaParentBinder}"><ssf:nlt tag="None"/></c:if>
-          <c:if test="${!empty ss_binderMinQuotaParentBinder}">
-          <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(ss_binderMinQuotaParentBinder + 524287)/1048576}"
-		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/></c:if>
-        </span>
-      </div>
-
-      <div style="padding:16px 10px 0px 10px;">
+      <div class="margintop3" style="padding:10px;">
        <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled || ss_binderQuotasAllowManageBinderQuotas}">
         <c:if test="${empty ss_binderQuota.diskQuota}">
           <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>
           <input type="text" name="quota" value="" 
-            style="width:80px; text-align:right;"
+            style="width:40px; text-align:right;"
             onChange='if (!ss_checkIfQuotaValid(this.value)){this.value="";}'
           >&nbsp;<ssf:nlt tag="file.sizeMB"/>
         </c:if>
         <c:if test="${!empty ss_binderQuota.diskQuota}">
           <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>
           <input type="text" name="quota" value="${currentQuota}" 
-            style="width:80px; text-align:right;"
+            style="width:40px; text-align:right;"
             onChange='if (!ss_checkIfQuotaValid(this.value)){this.value="";}'
-            /><ssf:nlt tag="file.sizeMB"/>
+            />&nbsp;<ssf:nlt tag="file.sizeMB"/>
         </c:if>
        </c:if>
        <c:if test="${!ss_binderQuotasAllowBinderOwnerEnabled && !ss_binderQuotasAllowManageBinderQuotas}">
@@ -194,12 +185,13 @@ function ss_checkIfQuotaValid(s) {
        </c:if>
 	  </div>
     </fieldset>
-<br/>
-<br/>
+	
+	<div class="margintop3" style="text-align: right;">
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+		  onClick="ss_cancelButtonCloseWindow();return false;">
+	</div>
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-  onClick="ss_cancelButtonCloseWindow();return false;">
 </form>
 </div>
 </div>

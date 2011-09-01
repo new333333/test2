@@ -103,14 +103,13 @@ function ss_confirmEncryptAll() {
 </script>
 
 <div class="ss_style ss_portlet">
-	<div style="padding:10px;">
-		<br>
-		
+	<div style="padding:10px;">		
 		<c:if test="${!empty ssException}">
+		<br>
 		  <font color="red">
 		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
 		  </font>
-		  <br/>
+		<br/>
 		</c:if>
 	
 <c:set var="ss_tab_versionControls" value="on"/>
@@ -121,22 +120,16 @@ function ss_confirmEncryptAll() {
 	action="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 
-<div class="marginbottom3">
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <span><ssf:nlt tag="access.currentFolder"/></span>
-</c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
-  <span><ssf:nlt tag="access.currentWorkspace"/></span>
-</c:if>
-<% //need to check tags for templates %>
-	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-	
-<div align="right">
-  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-  <input type="submit" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
-</div>
-</div>
+	<div class="marginbottom3">
+		<c:if test="${ssBinder.entityType == 'folder'}">
+		  <span><ssf:nlt tag="access.currentFolder"/></span>
+		</c:if>
+		<c:if test="${ssBinder.entityType != 'folder'}">
+		  <span><ssf:nlt tag="access.currentWorkspace"/></span>
+		</c:if>
+		<% //need to check tags for templates %>
+			<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>		
+	</div>
 
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -344,16 +337,16 @@ function ss_confirmEncryptAll() {
 		    onClick="return(ss_confirmEncryptAll());" />
 	  </div>
 	</fieldset>
-<br/>
 </c:if>
 </c:if>
 
-<br/>
+	<div class="margintop3" style="text-align: right;">
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
+		<input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" />" >
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+		  onClick="ss_cancelButtonCloseWindow();return false;">
+	</div>
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-<input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" />" >
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-  onClick="ss_cancelButtonCloseWindow();return false;">
 </form>
 </div>
 </div>
