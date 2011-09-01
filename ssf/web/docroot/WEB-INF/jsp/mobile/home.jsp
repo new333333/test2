@@ -80,7 +80,6 @@
 	    <div class="home-grid-cell">
 		    <a id="whatsnew-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
-									binderId="${ssBinder.id}"
 									operation="mobile_whats_new" />">
 				<div class="main-item myteams-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_whatsnew_128.png"/></div>

@@ -490,7 +490,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_SHOW_USER="mobile_show_user"; 
     public static final String OPERATION_MOBILE_SHOW_WORKSPACE="mobile_show_workspace"; 
     public static final String OPERATION_MOBILE_TRACK_THIS="mobile_track_this"; 
-    public static final String OPERATION_MOBILE_WHATS_NEW="mobile_whats_new"; 
+    public static final String OPERATION_MOBILE_WHATS_NEW="mobile_whats_new";
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
 	public static final String OPERATION_OPEN_WEBDAV_FILE_BY_FILEID = "open_webdav_file_by_fileid";
 	public static final String OPERATION_RELOAD="reload";
@@ -1086,7 +1086,10 @@ public class WebKeys {
     public static final String MOBILE_PAGE_SIZE="15"; 
     public static final String MOBILE_URL="ssMobileUrl"; 
     public static final String MOBILE_WHATSNEW_URL="ssMobileWhatsNewUrl"; 
-    public static final String MOBILE_WHATS_NEW_SITE="ss_whatsNewSite"; 
+    public static final String MOBILE_WHATS_NEW_SITE="ss_whatsNewSite";
+    public static final String MOBILE_TRACKED_PEOPLE = "mobileFollowingPeople";
+	public static final String MOBILE_TRACKED_PLACES = "mobileFollowingPlaces";
+	public static final String OPERATION_MOBILE_SHOW_FOLLOWING = "mobile_show_following";
     public static final String MODIFY_ENTRY_ALLOWED="ss_modifyEntryAllowed";
     public static final String MODIFY_ENTRY_ADAPTER="ss_modifyEntryAdapter";
     public static final String MODIFY_ENTRY_FIELDS_ALLOWED="ss_modifyEntryFieldsAllowed"; 
@@ -1643,6 +1646,6 @@ public class WebKeys {
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
     public static final String SERVLET_PORTAL_LOGIN="portalLogin";
     public static final String SERVLET_PORTAL_LOGOUT="portalLogout";
-	
+
     
 }

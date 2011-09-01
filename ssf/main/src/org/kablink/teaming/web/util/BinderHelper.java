@@ -2789,34 +2789,39 @@ public class BinderHelper {
 		}
 		List<Long> trackedBinderIds = new ArrayList<Long>();
 		for (String s_id : trackedPlaces) trackedBinderIds.add(Long.valueOf(s_id));
-		Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
-		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
-
-		model.put(WebKeys.WHATS_NEW_BINDER, results.get(ObjectKeys.SEARCH_ENTRIES));
-		model.put(WebKeys.SEARCH_TOTAL_HITS, results.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-
-		Map places = new HashMap();
-    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
-    	if (items != null) {
-	    	Iterator it = items.iterator();
-	    	while (it.hasNext()) {
-	    		Map entry = (Map)it.next();
-				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
-				if (id != null) {
-					Long bId = new Long(id);
-					if (!places.containsKey(id)) {
-						try {
-							Binder place = bs.getBinderModule().getBinder(bId);
-							places.put(id, place);
-						} catch(Exception e) {}
+		if (!trackedPlaces.isEmpty() || !trackedPeopleIds.isEmpty()) {
+			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			model.put(WebKeys.WHATS_NEW_BINDER, results.get(ObjectKeys.SEARCH_ENTRIES));
+			model.put(WebKeys.SEARCH_TOTAL_HITS, results.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			
+			Map places = new HashMap();
+	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+					String id = (String)entry.get(Constants.BINDER_ID_FIELD);
+					if (id != null) {
+						Long bId = new Long(id);
+						if (!places.containsKey(id)) {
+							try {
+								Binder place = bs.getBinderModule().getBinder(bId);
+								places.put(id, place);
+							} catch(Exception e) {}
+						}
 					}
-				}
+		    	}
 	    	}
-    	}
-    	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+	    	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+
+		} else {
+			model.put(WebKeys.WHATS_NEW_BINDER, new ArrayList());
+			model.put(WebKeys.SEARCH_TOTAL_HITS, 0);
+		}
+		
     	return trackedBinderIds;
 	}
-	
 	public static void setupUnseenBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {		
 		//Get a list of unseen entries in this binder tree
         User user = RequestContextHolder.getRequestContext().getUser();

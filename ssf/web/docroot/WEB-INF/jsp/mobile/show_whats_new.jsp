@@ -60,32 +60,84 @@
 <c:set var="ss_hideMiniBlog" value="true" scope="request" />
 <c:set var="ss_showWhatsNewNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
-
-  <div class="folders">
-    <div class="folder-content">
-      <div class="folder-head">
-	   <span>
-	    <ssf:nlt tag="${ss_pageTitle2}">
-	      <ssf:param name="value" useBody="true">
-	        <a href="<ssf:url adapter="true" 
-	        		portletName="ss_forum" 
-					binderId="${ssBinder.id}" 
-					action="__ajax_mobile" 
-					operation="mobile_show_folder" 
-					actionUrl="false" />"
-			><c:out value="${ssBinder.title}" escapeXml="true"/></a>
-	      </ssf:param>
-	    </ssf:nlt>
-	   </span>      
-	  </div>
-  
-		<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
+<c:if test="${ss_whatsNewSite}">
+  <div class="folder-content">
+    <div class="folder-head" style="letter-spacing: 0">
+		<form id="whatsNewForm" name="whatsNewForm" 
+		  method="post" 
+		  action="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="true" ><ssf:param 
+			name="operation2" value="${operation2}"/></ssf:url>"
+		>
+        <table cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+          <td valign="top" width="40%" nowrap>
+          <span>&nbsp;<ssf:nlt tag="mobile.whatsNew"/></span>
+          <a href="javascript: ;" 
+      		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;">
+      	    <span>
+              <c:if test="${ss_type == 'teams'}"><ssf:nlt tag="navigation.myTeams"/></c:if>
+              <c:if test="${ss_type == 'tracked'}"><ssf:nlt tag="mobile.whatsNewTracked"/></c:if>
+              <c:if test="${ss_type == 'favorites'}"><ssf:nlt tag="mobile.whatsNewFavorites"/></c:if>
+              <c:if test="${ss_type == 'site'}"><ssf:nlt tag="mobile.whatsNewSite"/></c:if>
+              <c:if test="${ss_type == 'microblog'}"><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></c:if>
+            </span><img border="0" 
+      		  src="<html:rootPath/>images/pics/menudown.gif"/>
+      	  </a>
+          
+			<div id="whats-new-menu" class="action-dialog" style="display:none; z-index:2;">
+			    <div class="dialog-content">
+		      		<div class="menu-item">
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_whats_new" 
+				        actionUrl="true" ><ssf:param name="ss_type" value="teams"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
+				      ><ssf:nlt tag="navigation.myTeams"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_whats_new" 
+				        actionUrl="true" ><ssf:param name="ss_type" value="tracked"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewTracked"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_whats_new" 
+				        actionUrl="true" ><ssf:param name="ss_type" value="favorites"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewFavorites"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_whats_new" 
+				        actionUrl="true" ><ssf:param name="ss_type" value="site"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewSite"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_whats_new" 
+				        actionUrl="true" ><ssf:param name="ss_type" value="microblog"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></a>
+				    </div>
+				</div>
+			</div>
+		  </td>
+		  
+		</tr>
+		</table>
+		</form>
+    </div>
+</c:if>
+	<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
 		  <span style="padding:10px;" class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
 		  <span style="padding:10px;" class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
 		</c:if>
-
+		
         <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
 	      <jsp:useBean id="entryWn" type="java.util.Map" />
 	      <div class="entry">
