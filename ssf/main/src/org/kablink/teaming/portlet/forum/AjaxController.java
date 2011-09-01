@@ -2121,6 +2121,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		Binder binder = null;
+		if (binderId != null) {
+			binder = getBinderModule().getBinder(binderId);
+		}
 		
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY_ATTACHMENT);
@@ -2137,6 +2141,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.BINDER_ID, binderId);
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
+		if (binder != null) {
+			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
+			if (maxFileSize != null) {
+				//Get bytes
+				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000));
+			}
+		}
 		
 		//response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/entry_attachment_options", model);
@@ -2221,6 +2232,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		String library = PortletRequestUtils.getStringParameter(request, "library", "");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = null;
+		if (binderId != null) {
+			binder = getBinderModule().getBinder(binderId);
+		}
 		
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ATTACHMENT);
@@ -2246,6 +2261,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.BINDER_ID, binderId);
 		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_RECEIVER_URL, strURL);
 		model.put(WebKeys.FOLDER_ATTACHMENT_APPLET_REFRESH_URL, strRefreshURL);
+		if (binder != null) {
+			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
+			if (maxFileSize != null) {
+				//Get bytes
+				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000));
+			}
+		}
 		
 		//response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/folder_dropbox_add_attachments", model);

@@ -737,6 +737,7 @@ public class WebKeys {
 	public static final String BINDER_FILE_ENCRYPTION_ENABLED_INHERITED = "ss_binder_file_encryption_enabled_inherited";
 	public static final String BINDER_VERSIONS_INHERITED = "ss_binder_versions_inherited";
 	public static final String BINDER_FILE_SIZE_LIMIT_INHERITED = "ss_binder_file_size_limit_inherited";
+	public static final String BINDER_FILE_MAX_FILE_SIZE = "ss_binder_file_max_file_size";
 	public static final String BINDER_FILES_NOT_ENCRYPTED = "ss_binder_files_not_encrypted";
 	public static final String BINDER_VERSIONS_ENABLED = "ss_binder_versions_enabled";
 	public static final String BINDER_VERSIONS_ENABLED_INHERITED = "ss_binder_versions_enabled_inherited";

@@ -108,6 +108,8 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:nlt tag="binder.add.files.applet.upload.not.supported" />" />
 			    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
 			    <PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge" />" />
+			    <PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
+			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:nlt tag="file.maxSizeExceeded" />" />
 			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
 			<c:if test="<%= !isIE %>">
 			</applet>
