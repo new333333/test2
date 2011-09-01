@@ -108,6 +108,18 @@ public abstract class Converter<T>
 		}
 	}
 
+	private boolean shouldConvert(File convertedFile, FileAttachment fa) {
+		if(!convertedFile.exists())
+			return true; // This file was never converted.
+		if(convertedFile.lastModified() < fa.getModification().getDate().getTime())
+			return true; // The conversion took place "unambiguously" before the current version
+		// This additional check takes care of the subtle edge condition reported in bug #715463.
+		if(convertedFile.length() == 0 &&
+				Integer.valueOf(1).equals(fa.getLastVersion()))
+			return true;
+		return false;
+	}
+	
 	/*
 	 * Direct subclasses (like TextConverter) will provide public convert() methods, which (for the most part)
 	 *   will just pass their arguments along to this method, adding the sub-directory name and file extension
@@ -121,8 +133,7 @@ public abstract class Converter<T>
 		String convertedFilePath = filePath + suffix;
 		File convertedFile = cacheFileStore.getFile(convertedFilePath);
 
-		if (!convertedFile.exists()
-				|| convertedFile.lastModified() < fa.getModification().getDate().getTime())
+		if(shouldConvert(convertedFile, fa)) 
 		{
 			if(fa.getFileItem().getLength() > SPropsUtil.getLong("doc.conversion.size.threshold", 31457280L)) {
 				convertedFile.delete();
