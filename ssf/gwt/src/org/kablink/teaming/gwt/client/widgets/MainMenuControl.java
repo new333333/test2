@@ -747,24 +747,27 @@ public class MainMenuControl extends Composite
 	 * the Site Administration page.
 	 */
 	public void showAdministrationMenubar() {
-		// Hide the browse button
-		m_bhButton.setVisible(false);
-		
-		// Hide My Workspace, My Teams, My Favorites and What's New.
-		m_myWorkspaceBox.setVisible(false);
-		if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    false);
-		if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(false);
-		if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   false);
-		
-		// Hide the panel that holds the menu items.
-		m_contextPanel.setVisible(false);
-		
-		// Hide the search panel.
-		m_searchPanel.setVisible(false);
-		m_soButton.setVisible(   false);
-		
-		// Show the Close administration menu item.
-		m_closeAdminBox.setVisible(true);
+		// Do we think we're in administration mode?
+		if (!(m_closeAdminBox.isVisible())) {
+			// No!  Hide the browse button
+			m_bhButton.setVisible(false);
+			
+			// Hide My Workspace, My Teams, My Favorites and What's New.
+			m_myWorkspaceBox.setVisible(false);
+			if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    false);
+			if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(false);
+			if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   false);
+			
+			// Hide the panel that holds the menu items.
+			m_contextPanel.setVisible(false);
+			
+			// Hide the search panel.
+			m_searchPanel.setVisible(false);
+			m_soButton.setVisible(   false);
+			
+			// Show the Close administration menu item.
+			m_closeAdminBox.setVisible(true);
+		}
 	}
 
 	/*
