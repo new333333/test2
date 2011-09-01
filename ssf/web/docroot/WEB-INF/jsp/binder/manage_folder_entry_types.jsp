@@ -64,14 +64,13 @@ function confirmChangeTypes() {
 </script>
 
 <div class="ss_style ss_portlet">
-	<div style="padding:10px;">
-		<br>
-		
+	<div style="padding:10px;">		
 		<c:if test="${!empty ssException}">
-		  <font color="red">
-		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
-		  </font>
-		  <br/>
+			<div class="margintop2">
+			  <font color="red">
+				<span class="ss_largerprint"><c:out value="${ssException}"/></span>
+			  </font>
+			</div>
 		</c:if>
 	
 <c:set var="ss_tab_changeEntryTypes" value="on"/>
@@ -89,55 +88,42 @@ function confirmChangeTypes() {
 	<span><ssf:nlt tag="access.currentFolder"/></span>
 	<% //need to check tags for templates %>
 	<span class="ss_bold ss_largestprint"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-	<div align="right">
-	  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-	  <input type="submit" class="ss_submit" name="closeBtn" 
-		value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
-	</div>
 </div>
-
 
 <fieldset class="ss_fieldset">
   <legend class="ss_legend">
     <span class="ss_bold"><ssf:nlt tag="binder.changeEntryTypes" /></span>
   </legend>
    
-  <div style="padding:10px 10px 0px 10px;">
-    <span class="ss_bold"><ssf:nlt tag="binder.changeEntryType.selectOld"/></span>
-	<br/>
+  <div style="padding:10px;">
+    <div class="ss_bold"><ssf:nlt tag="binder.changeEntryType.selectOld"/></div>
 	<select name="oldEntryType">
-	  <option value="" selected><ssf:nlt tag="binder.changeEntryType.selectType"/></option>
+	  <option value="" selected style="padding-bottom: 2px; padding-top: 2px;"><ssf:nlt tag="binder.changeEntryType.selectType"/></option>
       <c:forEach var="item" items="${ssAllEntryDefinitions}">
-	      <option value="${item.value.id}" id="oldOption_${item.value.id}">
+	      <option value="${item.value.id}" id="oldOption_${item.value.id}" style="padding-bottom: 2px; padding-top: 2px;">
 	        ${item.key}<c:if test="${item.value.binderId != -1}"><sup>*</sup></c:if>
 	      </option>
       </c:forEach>
     </select>
-    <br>
-    <br/>
-    <span class="ss_bold"><ssf:nlt tag="binder.changeEntryType.selectNew"/></span>
-    <br/>
+    <div class="ss_bold margintop3"><ssf:nlt tag="binder.changeEntryType.selectNew"/></div>
 	<select name="newEntryType">
-	  <option value="" selected><ssf:nlt tag="binder.changeEntryType.selectType"/></option>
+	  <option value="" selected style="padding-bottom: 2px; padding-top: 2px;"><ssf:nlt tag="binder.changeEntryType.selectType"/></option>
       <c:forEach var="item" items="${ssAllEntryDefinitions}">
-	      <option value="${item.value.id}" id="newOption_${item.value.id}">
+	      <option value="${item.value.id}" id="newOption_${item.value.id}" style="padding-bottom: 2px; padding-top: 2px;">
 	        ${item.key}<c:if test="${item.value.binderId != -1}"><sup>*</sup></c:if>
 	      </option>
       </c:forEach>
     </select>
-    <br/>
-    <br/>
-    <div class="ss_fineprint" style="padding:6px 6px 4px 6px;"><ssf:nlt tag="binder.changeEntryType.warning1"/></div>
-    <div class="ss_fineprint" style="padding:0px 6px 10px 6px;"><ssf:nlt tag="binder.changeEntryType.warning2"/></div>
-    <span class="ss_fineprint">* <ssf:nlt tag="definition.local"/></span>
+    <div class="ss_normalprint margintop3 ss_gray_medium" style="padding:5px; max-width: 400px;"><ssf:nlt tag="binder.changeEntryType.warning1"/>&nbsp;<ssf:nlt tag="binder.changeEntryType.warning2"/></div>
+    <div class="ss_normaprint ss_gray_medium">*&nbsp;<ssf:nlt tag="definition.local"/></div>
   </div>
   
 </fieldset>
-<br/>
-
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-  onClick="ss_cancelButtonCloseWindow();return false;">
+	<div class="margintop3" style="text-align: right;">
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
+	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+	  onClick="ss_cancelButtonCloseWindow();return false;">
+	</div>
 </form>
 </div>
 </div>
