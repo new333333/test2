@@ -1170,7 +1170,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Object[] row = null; 
 			Object[] row2 = null;
 			String ldapGuid = null;
-			
+			boolean foundLocalUser = false;
 			
 			if (logger.isDebugEnabled())
 				logger.debug("Retrieved user: '" + dn + "'");
@@ -1208,7 +1208,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				row2 = (Object[])ssUsers.get(ssName);
 				if (row2 != null)
+				{
+					String name;
+					String foreignName;
+					
 					notInLdap.remove(row2[PRINCIPAL_ID]);
+
+					// Did we find a local user?
+					// A local user will have their name equal to their foreignName
+					name = (String) row2[PRINCIPAL_NAME];
+					foreignName = (String) row2[PRINCIPAL_FOREIGN_NAME];
+					if ( name.equalsIgnoreCase( foreignName ) )
+					{
+						// We found a local user.  We don't want to sync the ldap user to this user.
+						foundLocalUser = true;
+						row = null;
+						row2 = null;
+					}
+				}
 			}
 			
 			// Does this ldap user already exist in Teaming?
@@ -1271,6 +1288,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				//setup distinquished name for group sync
 				dnUsers.put(dn, row);
+			}
+			else if ( foundLocalUser )
+			{
+				// The ldap user matched up with an account in teaming that is a local account.
+				// Don't sync the ldap user with the local account.
+				logger.error( NLT.get( "errorcode.ldap.foundLocalAccount", new Object[] {ssName, dn, ssName} ) );
+				return;
 			}
 			else if (foundNames.containsKey(ssName))
 			{
