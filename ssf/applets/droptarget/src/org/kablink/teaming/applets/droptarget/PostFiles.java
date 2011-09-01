@@ -305,6 +305,18 @@ public class PostFiles extends Thread {
               }
               filename = f.getName();
              
+              String sFileSizeLimit = new String(topFrame.getParameter("fileUploadMaxSize"));
+              if (!sFileSizeLimit.equals("")) {
+            	  //There is a file upload size limit, check it
+            	  Long sizeLimit = Long.valueOf(sFileSizeLimit);
+            	  if (f.length() > sizeLimit.longValue()) {
+                  	  String translatedString = new String(topFrame.getParameter("fileUploadSizeExceeded"));
+            		  Debug.writeLog(translatedString);
+            		  reportErrorMessage(topFrame, conn, translatedString + " (" + filename + ")" );
+            		  continue;
+            	  }
+              }
+              
               //Hemanth: 06/13/2007 - Used for Applet specific code in AbstractEntryProcessor.createNewEntryWithAttachmentAndTitle
               //writeFile(localFilePath, out, boundary, topFrame, topDir, "filesFromApplet"+(i+1));
               writeFile(localFilePath, out, boundary, topFrame, topDir, strFileName+(i+1));
