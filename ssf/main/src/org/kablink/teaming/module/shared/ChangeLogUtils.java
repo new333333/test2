@@ -107,12 +107,12 @@ public class ChangeLogUtils {
 		return element;
 	}
 	public static Element buildLog(ChangeLog changes, FileAttachment attachment) {
-		Element element = changes.getEntityRoot();
+		Element element = buildLog(changes, attachment.getOwner().getEntity());
 		attachment.addChangeLog(element);
 		return element;
 	}
 	public static Element buildLog(ChangeLog changes, VersionAttachment attachment) {
-		Element element = changes.getEntityRoot();
+		Element element = buildLog(changes, attachment.getOwner().getEntity());
 		attachment.addChangeLog(element);
 		return element;
 	}
