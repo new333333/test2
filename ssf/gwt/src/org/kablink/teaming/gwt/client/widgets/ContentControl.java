@@ -232,13 +232,16 @@ public class ContentControl extends Composite
 	@Override
 	public void onAdministrationExit( AdministrationExitEvent event )
 	{
-		setVisible( true );
+		if ( ! ( isVisible() ) )
+		{
+			setVisible( true );
+		}
 	}// end onAdministrationExit()
 	
 	/**
 	 * Handles ChangeContextEvent's received by this class.
 	 * 
-	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
+	 * Implements the ChangeContextEvent.Handler.onChangeContext() method.
 	 * 
 	 * @param event
 	 */
