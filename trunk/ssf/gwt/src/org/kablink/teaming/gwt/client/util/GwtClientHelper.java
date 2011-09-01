@@ -580,15 +580,6 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Loads a URL into the GWT UI's content frame.
-	 * 
-	 * @param url
-	 */
-	public static void loadUrlInContentFrame(String url) {
-		GwtMainPage.m_contentCtrl.setUrl(url);
-	}
-
-	/**
 	 * Loads a URL into the current window.
 	 * 
 	 * @param url

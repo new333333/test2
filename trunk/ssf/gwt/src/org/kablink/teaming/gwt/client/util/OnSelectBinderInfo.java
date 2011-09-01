@@ -50,7 +50,6 @@ public class OnSelectBinderInfo {
 	private String m_binderUrl;
 
 	// Various marker strings used to recognize the format of a URL.
-	private final static String CAPTIVE_MARKER = "captive";
 	private final static String GWT_MARKER = "seen_by_gwt";
 
 	// Used to identify the instigator of the Binder selection.
@@ -62,6 +61,7 @@ public class OnSelectBinderInfo {
 		FAVORITE_SELECT,				// A favorite was selected from the My Favorites menu.
 		FORCE_SIDEBAR_RELOAD,			// Forces the sidebar to reload.
 		FORCE_FULL_RELOAD,				// Forces the full UI to reload.
+		GOTO_CONTENT_URL,				// User clicked on something that loads some URL into the content frame.
 		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
 		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
 		SEARCH_SELECT,					// A link from the search options dialog search results was selected.
@@ -74,7 +74,7 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Constructor method.  (1 of 3)
+	 * Constructor method.  (1 of 4)
 	 * 
 	 * @param ti
 	 */
@@ -84,21 +84,39 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Constructor method.  (2 of 3)
+	 * Constructor method.  (2 of 4)
 	 * 
 	 * @param binderId
 	 * @param binderUrl
 	 * @param isTrash
+	 * @param instigator
 	 */
 	public OnSelectBinderInfo(String binderId, String binderUrl, boolean isTrash, Instigator instigator) {
 		// Always use the final form of the constructor.
 		this(Long.parseLong(binderId), binderUrl, isTrash, instigator);
 	}
 	
-	/*
-	 * Constructor method.  (3 of 3)
+	/**
+	 * Constructor method.  (3 of 4)
+	 * 
+	 * @param binderUrl
+	 * @param isTrash
+	 * @param instigator
 	 */
-	private OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash, Instigator instigator) {
+	public OnSelectBinderInfo(String binderUrl, boolean isTrash, Instigator instigator) {
+		// Always use the final form of the constructor.
+		this(((Long) null), binderUrl, isTrash, instigator);
+	}
+	
+	/**
+	 * Constructor method.  (4 of 4)
+	 * 
+	 * @param binderId
+	 * @param binderUrl
+	 * @param isTrash
+	 * @param instigator
+	 */
+	public OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash, Instigator instigator) {
 		// Simply store the parameters.
 		setBinderId(binderId);
 		setBinderUrl(binderUrl);
@@ -111,10 +129,7 @@ public class OnSelectBinderInfo {
 	 * the URL.
 	 */
 	private void fixupUrl() {
-		// Add a captive marker...
-		m_binderUrl = GwtClientHelper.appendUrlParam(m_binderUrl, CAPTIVE_MARKER, "true");
-		
-		// ...and if the URL is a permalink...
+		// If the URL is a permalink...
 		m_isPermalinkUrl = GwtClientHelper.isPermalinkUrl(m_binderUrl);
 		if (m_isPermalinkUrl) {
 			// ...add a GWT marker.

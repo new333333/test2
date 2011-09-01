@@ -38,12 +38,11 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
-import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
-import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
@@ -1423,7 +1422,7 @@ public class GwtMainPage extends Composite
 	 * This method will be called asynchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrlDeferred( final String url, final boolean submitToContentFrame )
+	private void gotoUrlAsync( final String url, final boolean submitToContentFrame )
 	{
 		ScheduledCommand gotoUrl = new ScheduledCommand() {
 			@Override
@@ -1433,13 +1432,13 @@ public class GwtMainPage extends Composite
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( gotoUrl );
-	}// end gotoUrlDeferred()
+	}// end gotoUrlAsync()
 	
-	private void gotoUrlDeferred( final String url )
+	private void gotoUrlAsync( final String url )
 	{
 		// Default to submitting the URL to the content frame.
-		gotoUrlDeferred( url, true );
-	}//end gotoUrlDeferred()
+		gotoUrlAsync( url, true );
+	}//end gotoUrlAsync()
 	
 	/*
 	 * This method will be called synchronously goto a URL,
@@ -1448,8 +1447,21 @@ public class GwtMainPage extends Composite
 	private void gotoUrlNow( final String url, final boolean submitToContentFrame )
 	{
 		if ( submitToContentFrame )
-			 GwtClientHelper.loadUrlInContentFrame( url );
-		else Window.Location.replace(               url );
+		{
+			// Change the browser's URL.
+			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+				url,
+				false,	// false -> Not trash.
+				Instigator.GOTO_CONTENT_URL );
+			if ( GwtClientHelper.validateOSBI( osbInfo ) )
+			{
+				GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+			}
+		}
+		else
+		{
+			Window.Location.replace( url );
+		}
 	}//end gotoUrlNow()
 	
 	private void gotoUrlNow( final String url )
@@ -1654,7 +1666,6 @@ public class GwtMainPage extends Composite
 		if (GwtClientHelper.validateOSBI( osbInfo ))
 		{
 			// ...put it into effect.
-			GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.EXIT_FOR_CONTEXT_SWITCH));
 			m_selectedBinderId = osbInfo.getBinderId().toString();			
 		}
 	}// end onContextChanged()
@@ -1865,8 +1876,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onGotoContentUrl( GotoContentUrlEvent event )
 	{
-		fireContextChanging();
-		gotoUrlNow( event.getContentUrl() );
+		gotoUrlAsync( event.getContentUrl() );
 	}// end onGotoContentUrl()
 	
 	/**
@@ -1879,16 +1889,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onGotoMyWorkspace( GotoMyWorkspaceEvent event )
 	{
-		// If we're currently running site administration...
-		if ( isAdminActive() )
-		{
-			// ...close it first.
-			AdministrationExitEvent.fireOne();
-		}
-		
-		// Change the browser's URL.
-		fireContextChanging();
-		gotoUrlNow( m_requestInfo.getMyWorkspaceUrl() );
+		gotoUrlAsync( m_requestInfo.getMyWorkspaceUrl() );
 	}// end onGotoMyWorkspace()
 	
 	/**
@@ -1901,7 +1902,7 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onGotoPermalinkUrl( GotoPermalinkUrlEvent event )
 	{
-		gotoUrlNow( event.getPermalinkUrl(), true );
+		gotoUrlAsync( event.getPermalinkUrl() );
 	}// end onGotoPermalinkUrl()
 	
 	/**
@@ -2102,9 +2103,8 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchAdvanced( SearchAdvancedEvent event )
 	{
-		fireContextChanging();
 		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
-		GwtClientHelper.loadUrlInContentFrame(searchUrl);
+		gotoUrlAsync(searchUrl);
 	}// end onSearchAdvanced()
 	
 	/**
@@ -2117,13 +2117,9 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchRecentPlace( SearchRecentPlaceEvent event )
 	{
-		// Tell everybody that a context switch is about to happen...
-		fireContextChanging();
-
-		// ...and perform the search.
 		Integer searchFor = event.getSearchTabId();
 		String searchUrl = (m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf(searchFor.intValue()));
-		GwtClientHelper.loadUrlInContentFrame(searchUrl);
+		gotoUrlAsync(searchUrl);
 	}// end onSearchRecentPlace()
 	
 	/**
@@ -2136,14 +2132,10 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchSaved( SearchSavedEvent event )
 	{
-		// Tell everybody that we're about to change contexts.
-		fireContextChanging();
-
-		// What's the name of the saved search?
 		String searchFor = event.getSavedSearchName();
 		searchFor = ( ( null == searchFor ) ? "" : GwtClientHelper.jsEncodeURIComponent( searchFor ) );
 		String searchUrl = ( m_requestInfo.getSavedSearchUrl() + "&ss_queryName=" + searchFor );
-		GwtClientHelper.loadUrlInContentFrame( searchUrl );
+		gotoUrlAsync( searchUrl );
 	}// end onSearchSaved()
 	
 	/**
@@ -2155,10 +2147,7 @@ public class GwtMainPage extends Composite
 	 */
 	@Override
 	public void onSearchSimple( SearchSimpleEvent event )
-	{
-		// Tell everybody that we're about to change contexts.
-		fireContextChanging();
-		
+	{		
 		// What are we searching for?
 		String searchFor = event.getSimpleSearchString();
 		if ( null == searchFor )
@@ -2166,12 +2155,13 @@ public class GwtMainPage extends Composite
 			searchFor = "";
 		}
 		if (GwtClientHelper.jsHasSimpleSearchForm()) {
+			fireContextChanging();
 			GwtClientHelper.jsInvokeSimpleSearch( searchFor );
 		}
 		
 		else {
 			String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
-			GwtClientHelper.loadUrlInContentFrame( searchUrl );
+			gotoUrlAsync( searchUrl );
 		}
 	}// end onSearchSimple()
 	
@@ -2185,14 +2175,10 @@ public class GwtMainPage extends Composite
 	@Override
 	public void onSearchTag( SearchTagEvent event )
 	{
-		// Tell everybody that we're about to change contexts.
-		fireContextChanging();
-		
-		// What's the tag to be searched?
 		String tagName = event.getTagName();
 		tagName = ( ( null == tagName ) ? "" : GwtClientHelper.jsEncodeURIComponent( tagName ));
 		String searchUrl = GwtClientHelper.jsBuildTagSearchUrl( tagName );
-		GwtClientHelper.loadUrlInContentFrame( searchUrl );
+		gotoUrlAsync( searchUrl );
 	}// end onSearchTag()
 	
 	/**
@@ -2540,6 +2526,17 @@ public class GwtMainPage extends Composite
 		m_uiStateManager.restoreUIState();
 	}
 	
+	/**
+	 * Returns true if the activity stream control is active and
+	 * visible and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isActivityStreamActive()
+	{
+		return m_wsTreeCtrl.isInActivityStreamMode();
+	}// end isActivityStreamActive()
+
 	/**
 	 * Returns true if the administration control is active and visible
 	 * and false otherwise.

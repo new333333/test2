@@ -1847,7 +1847,7 @@ public class ActivityStreamCtrl extends Composite
 	public void onAdministrationExit( AdministrationExitEvent event )
 	{
 		// Should we go back into activity stream mode?
-		if ( m_mainPage.getWorkspaceTree().isInActivityStreamMode() )
+		if ( m_mainPage.isActivityStreamActive() )
 		{
 			// Yes
 			show();

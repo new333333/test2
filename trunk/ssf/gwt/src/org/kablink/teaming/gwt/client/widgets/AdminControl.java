@@ -716,7 +716,10 @@ public class AdminControl extends Composite
 	 */
 	public void hideControl()
 	{
-		setVisible( false );
+		if ( isVisible() )
+		{
+			setVisible( false );
+		}
 	}// end hideControl()
 	
 	

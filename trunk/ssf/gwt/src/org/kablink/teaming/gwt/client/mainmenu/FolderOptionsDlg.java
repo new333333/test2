@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -289,9 +290,12 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		if (GwtClientHelper.hasString(url)) {
 			// ...put it into effect.
 			String jsString = tbi.getQualifierValue("onClick");
-			if (GwtClientHelper.hasString(jsString))
-				 GwtClientHelper.jsEvalString(           url, jsString);
-			else GwtClientHelper.loadUrlInContentFrame(url);
+			if (GwtClientHelper.hasString(jsString)) {
+				GwtClientHelper.jsEvalString(url, jsString);
+			}
+			else {
+				GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
+			}
 		}
 		
 		// Return true to close the dialog.

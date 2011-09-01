@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 
 import com.google.gwt.event.shared.EventHandler;
@@ -86,16 +87,29 @@ public class ContextChangingEvent extends VibeEventBase<ContextChangingEvent.Han
 	 * Fires a new one of these events.
 	 */
 	public static void fireOne() {
-		// We'll never been in activity steam mode if we change
-		// context.  Exit it if we're in it.
-		GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.EXIT_FOR_CONTEXT_SWITCH));
+		// If we're currently running site administration...
+		GwtMainPage mp = GwtTeaming.getMainPage();
+		boolean haveMP = ( null != mp );
+		if (haveMP && mp.isAdminActive()) {
+			// ...close it first.
+			AdministrationExitEvent.fireOne();
+		}
+		
+
+		// If we're currently in activity stream mode...
+		if ( haveMP && mp.isActivityStreamActive() ) {
+			// ...close it as we won't be in activity steam mode if we
+			// ...change contexts.
+			GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.EXIT_FOR_CONTEXT_SWITCH));
+		}
 		
 		// Fire the event.
-		GwtTeaming.fireEvent(new ContextChangingEvent());
+		if (haveMP)
+		     GwtTeaming.fireEvent(new ContextChangingEvent());
+		else GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.CONTEXT_CHANGING);
 		
 		// Do we have access to the main menu off the main page?
-		GwtMainPage mp = GwtTeaming.getMainPage();
-		MainMenuControl mmc = ((null == mp) ? null : mp.getMainMenu());
+		MainMenuControl mmc = (haveMP ? null : mp.getMainMenu());
 		if (null != mmc) {
 			// Yes!  Tell it to clear its context menus.  Note that we
 			// do this directly (synchronously) rather than off the

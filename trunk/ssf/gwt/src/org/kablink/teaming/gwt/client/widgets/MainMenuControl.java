@@ -572,25 +572,29 @@ public class MainMenuControl extends Composite
 	 * the Site Administration" page.
 	 */
 	public void hideAdministrationMenubar() {
-		// Show the widget that holds the expand/contract left
-		// navigation, expand/contract header, ... widgets.
-		m_bhButton.setVisible(true);
-		
-		// Show My Workspace, My Teams, My Favorites and What's New.
-		m_myWorkspaceBox.setVisible(true);
-		if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    true);
-		if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(true);
-		if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   true);
-		
-		// Show the panel that holds the menu items.
-		m_contextPanel.setVisible(true);
-		
-		// Show the search panel.
-		m_searchPanel.setVisible(true);
-		m_soButton.setVisible(   true);
-		
-		// Hide the Close administration menu item.
-		m_closeAdminBox.setVisible(false);
+		// Do we think we're in administration mode?
+		if (m_closeAdminBox.isVisible()) {
+			// Yes!  Show the widget that holds the expand/contract
+			// left navigation, expand/contract header, ... widgets.
+			m_bhButton.setVisible(true);
+			
+			// Show My Workspace, My Teams, My Favorites and What's
+			// New.
+			m_myWorkspaceBox.setVisible(true);
+			if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    true);
+			if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(true);
+			if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   true);
+			
+			// Show the panel that holds the menu items.
+			m_contextPanel.setVisible(true);
+			
+			// Show the search panel.
+			m_searchPanel.setVisible(true);
+			m_soButton.setVisible(   true);
+			
+			// Hide the Close administration menu item.
+			m_closeAdminBox.setVisible(false);
+		}
 	}
 
 	/**
