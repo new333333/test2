@@ -289,8 +289,11 @@ public class AdminControl extends Composite
 		 */
 		public void hideActions()
 		{
-			m_actionsTable.setVisible( false );
-			relayoutPage();
+			if ( m_actionsTable.isVisible() )
+			{
+				m_actionsTable.setVisible( false );
+				relayoutPage();
+			}
 		}// end hideActions()
 		
 		/**
@@ -316,8 +319,11 @@ public class AdminControl extends Composite
 		 */
 		public void showActions()
 		{
-			m_actionsTable.setVisible( true );
-			relayoutPage();
+			if ( !m_actionsTable.isVisible() )
+			{
+				m_actionsTable.setVisible( true );
+				relayoutPage();
+			}
 		}// end showActions()
 	}// end AdminCategoryControl
 	
@@ -707,7 +713,10 @@ public class AdminControl extends Composite
 	 */
 	public void hideContentPanel()
 	{
-		m_contentControl.setVisible( false );	
+		if ( m_contentControl.isVisible() )
+		{
+			m_contentControl.setVisible( false );
+		}
 	}// end hideContentPanel()
 	
 	
@@ -728,7 +737,10 @@ public class AdminControl extends Composite
 	 */
 	public void hideTreeControl()
 	{
-		m_adminActionsTreeControl.setVisible( false );	
+		if ( m_adminActionsTreeControl.isVisible() )
+		{
+			m_adminActionsTreeControl.setVisible( false );
+		}
 	}// end hideTreeControl()
 	
 	
@@ -835,7 +847,10 @@ public class AdminControl extends Composite
 	 */
 	public void showContentPanel()
 	{
-		m_contentControl.setVisible( true );	
+		if ( !m_contentControl.isVisible() )
+		{
+			m_contentControl.setVisible( true );
+		}
 	}// end showContentPanel()
 	
 	
@@ -844,40 +859,43 @@ public class AdminControl extends Composite
 	 */
 	public void showControl()
 	{
-		Scheduler.ScheduledCommand cmd;
-
-		// Set the position of the content control.
-		cmd = new Scheduler.ScheduledCommand()
+		if ( !isVisible() )
 		{
-			public void execute()
+			Scheduler.ScheduledCommand cmd;
+	
+			// Set the position of the content control.
+			cmd = new Scheduler.ScheduledCommand()
 			{
-				Scheduler.ScheduledCommand cmd2;
-            	
-				relayoutPage();
-				
-				cmd2 = new Scheduler.ScheduledCommand()
+				public void execute()
 				{
-					public void execute()
+					Scheduler.ScheduledCommand cmd2;
+	            	
+					relayoutPage();
+					
+					cmd2 = new Scheduler.ScheduledCommand()
 					{
-						setVisible( true );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd2 );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-
-		// Issue an ajax request to get the upgrade information from the server.
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
+						public void execute()
+						{
+							setVisible( true );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd2 );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+	
+			// Issue an ajax request to get the upgrade information from the server.
+			cmd = new Scheduler.ScheduledCommand()
 			{
-            	// Get the upgrade info from the server.  If there are upgrade tasks that
-				// need to be performed, AdminInfoDlg will display them.
-				showUpgradeTasks();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+				public void execute()
+				{
+	            	// Get the upgrade info from the server.  If there are upgrade tasks that
+					// need to be performed, AdminInfoDlg will display them.
+					showUpgradeTasks();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}// end showControl()
 	
 	/**
@@ -885,7 +903,10 @@ public class AdminControl extends Composite
 	 */
 	public void showTreeControl()
 	{
-		m_adminActionsTreeControl.setVisible( true );	
+		if ( !m_adminActionsTreeControl.isVisible() )
+		{
+			m_adminActionsTreeControl.setVisible( true );
+		}
 	}// end showTreeControl()
 		
 	/**

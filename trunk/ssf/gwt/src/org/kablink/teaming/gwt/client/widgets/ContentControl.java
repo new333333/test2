@@ -47,7 +47,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.user.client.Window;
@@ -95,15 +94,20 @@ public class ContentControl extends Composite
 	 * through its createAsync().
 	 */
 	private ContentControl( GwtMainPage mainPage, String name )
-	{
+	{		
 		// Store the parameters.
 		m_mainPage = mainPage;
 
-		// Register the events to be handled by this class.
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this );
+		// Is this other than the admin control's content panel?
+		boolean isAdminContent = ( name.equals( "adminContentControl" ));
+		if ( !isAdminContent )
+		{
+			// Yes!  Register the events to be handled by this class.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this );
+		}
 		
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
@@ -111,7 +115,7 @@ public class ContentControl extends Composite
 		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
 		m_frame = new NamedFrame( name );
 		m_frame.setPixelSize( 700, 500 );
-		m_frame.getElement().setId( "contentControl" );
+		m_frame.getElement().setId( isAdminContent ?  "adminContentControl" : "contentControl" );
 		m_frame.setUrl( "" );
 		mainPanel.add( m_frame );
 		
@@ -138,24 +142,9 @@ public class ContentControl extends Composite
 	}
 
 	/*
-	 * Returns the Document encompassing this ContentControl.
-	 */
-	private Document getContentDocument()
-	{
-		Document reply;
-		FrameElement fe = getContentFrame();
-		if ( null == fe )
-		     reply = null;
-		else reply = fe.getContentDocument();
-		return reply;
-	}//end getContentDocument()
-	
-	/**
 	 * Returns the FrameElement encompassing this ContentControl.
-	 * 
-	 * @return
 	 */
-	public FrameElement getContentFrame()
+	private FrameElement getContentFrame()
 	{
 		FrameElement reply;
 		Element e = m_frame.getElement();
@@ -189,15 +178,19 @@ public class ContentControl extends Composite
 	 */
 	public void setDimensions( int width, int height )
 	{
-		// Set the width and height of the frame.
-		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
-		m_frame.setPixelSize( width, height );
-
-		// Does the content panel contain a task listing?
-		if ( null != getContentDocument().getElementById( "gwtTasks" ) )
+		if ( isVisible() )
 		{
-			// Yes!  Let it resize if it needs to.
-			jsResizeTaskListing();
+			// Set the width and height of the frame.
+			setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
+			m_frame.setPixelSize( width, height );
+	
+			// Does the content panel contain a task listing?
+			FrameElement fe = getContentFrame();
+			if ( ( null != fe ) && ( null != fe.getContentDocument().getElementById( "gwtTasks" ) ) )
+			{
+				// Yes!  Let it resize if it needs to.
+				jsResizeTaskListing();
+			}
 		}
 	}// end setDimensions()
 
