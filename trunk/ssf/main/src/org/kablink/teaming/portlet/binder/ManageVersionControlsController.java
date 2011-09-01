@@ -168,7 +168,7 @@ public class ManageVersionControlsController extends AbstractBinderController {
 				String s_maxFileSize;
 				Long maxFileSize = null;
 				try {
-					//The file size is specified in GB on the form and translated to bytes for the database
+					//The file size is specified in MB 
 					s_maxFileSize = PortletRequestUtils.getStringParameter(request, "maxFileSize", "").trim();
 					if (!s_maxFileSize.equals("")) {
 						maxFileSize = Long.valueOf(s_maxFileSize);

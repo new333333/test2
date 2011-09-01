@@ -86,6 +86,8 @@ OpenFile Applet
 	    <PARAM NAME = "resetEditClicked" value="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>
 	    <PARAM NAME = "operatingSystem" value="${ssOSInfo}"/>
 		<PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge" />" />
+		<PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
+		<PARAM NAME = "fileUploadSizeExceeded" value="<ssf:nlt tag="file.maxSizeExceeded" />" />
 	    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
 	    <PARAM NAME = "editorErrorMessage" value="<ssf:nlt tag="applet.editorError" />" />
 	<c:if test="<%= !isIE %>">
