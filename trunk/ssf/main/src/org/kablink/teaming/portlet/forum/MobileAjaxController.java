@@ -286,6 +286,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
 			return ajaxTeamingLiveCheckForActivity(this, request, response);
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FOLLOWING)) {
+			return ajaxMobileShowFollowing(this, request, response);
 		}
 		
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -1033,16 +1035,19 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
 		model.put(WebKeys.SEEN_MAP, seen);
 
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.TYPE, WebKeys.URL_WHATS_NEW);
+
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = null;
 		if (binderId == null) {
 			binder = getWorkspaceModule().getTopWorkspace();
 			binderId = binder.getId();
 			model.put(WebKeys.MOBILE_WHATS_NEW_SITE, true);
+			type = PortletRequestUtils.getStringParameter(request, WebKeys.TYPE, ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE);
 		} else {
 			binder = getBinderModule().getBinder(binderId);
 		}
-		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, WebKeys.URL_WHATS_NEW);
+		
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
@@ -1062,7 +1067,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 
-		if (type.equals(WebKeys.URL_WHATS_NEW)) {
+      	if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_FAVORITES) ||
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
+      		BinderHelper.setupWhatsNewBinderBeans(bs, bs.getBinderModule().getBinder(user.getWorkspaceId()), binderId, model, 
+					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
+      	} else if (type.equals(WebKeys.URL_WHATS_NEW)) {
 			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(WebKeys.URL_WHATS_NEW_TRACKED)|| type.equals(WebKeys.URL_WHATS_NEW_TEAMS)) {
 			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
@@ -1644,6 +1655,52 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("mobile/show_teams", model);
 	}
 	
+	private ModelAndView ajaxMobileShowFollowing(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		Map model = new HashMap();
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+		if (binderId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+			} catch(Exception e) {}
+		}
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
+
+		List<String> trackedPeople = new ArrayList<String>();
+		Long userWsId = user.getWorkspaceId();
+		if (userWsId != null) {
+			Binder userWs = bs.getBinderModule().getBinder(userWsId);
+			trackedPeople = SearchUtils.getTrackedPeopleIds(bs, userWs);
+		}
+		
+		List<Long> trackedPeopleIds = new ArrayList<Long>();
+		for (String strId : trackedPeople) { trackedPeopleIds.add(Long.parseLong(strId));	}
+		Set<User> trackedUsers = getProfileModule().getUsers(trackedPeopleIds);
+		
+		List<Map<String, String>> trackedPeopleMaps = new ArrayList<Map<String, String>>();
+		for (User tracked : trackedUsers) {
+			Map<String, String> properties = new HashMap<String, String>();
+			properties.put("id", tracked.getId().toString());
+			properties.put("name", tracked.getTitle());
+			trackedPeopleMaps.add(properties);
+		}
+		model.put(WebKeys.MOBILE_TRACKED_PEOPLE, trackedPeopleMaps);
+		
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		//BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
+		return new ModelAndView("mobile/show_following", model);
+	}
+
 	private ModelAndView ajaxMobileAddEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
