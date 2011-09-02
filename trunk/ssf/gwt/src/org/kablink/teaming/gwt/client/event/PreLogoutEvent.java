@@ -39,29 +39,25 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The LogoutEvent is used to logout from Vibe OnPrem.
+ * The PreLogoutEvent is used to tell everybody that we're about logout
+ * from Vibe.
  * 
  * @author drfoster@novell.com
  */
-public class LogoutEvent extends VibeEventBase<LogoutEvent.Handler> {
+public class PreLogoutEvent extends VibeEventBase<PreLogoutEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onLogout(LogoutEvent event);
+		void onPreLogout(PreLogoutEvent event);
 	}
 	
-	/*
+	/**
 	 * Class constructor.
-	 * 
-	 * Note:  This constructor is private to prevent it from being
-	 * instantiated outside this class.  The ONLY way it should be
-	 * used is via its static fireOne() method.  See that method for
-	 * why that's the case.
 	 */
-	private LogoutEvent() {
+	public PreLogoutEvent() {
 		super();
 	}
 	
@@ -74,22 +70,14 @@ public class LogoutEvent extends VibeEventBase<LogoutEvent.Handler> {
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onLogout(this);
+        handler.onPreLogout(this);
     }
 	
 	/**
 	 * Fires a new one of these events.
-	 * 
-	 * This method is the ONLY way to fire one of these events as it
-	 * takes care of other 'pre-logout' operations that must occur
-	 * before a logout takes place.
 	 */
 	public static void fireOne() {
-		// Warn everybody that we're about to logout...
-		PreLogoutEvent.fireOne();
-		
-		// ...and then do it.
-		GwtTeaming.fireEvent(new LogoutEvent());
+		GwtTeaming.fireEvent(new PreLogoutEvent());
 	}
     
 	/**
@@ -114,7 +102,7 @@ public class LogoutEvent extends VibeEventBase<LogoutEvent.Handler> {
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.LOGOUT;
+		return TeamingEvents.PRE_LOGOUT;
 	}
 		
 	/**

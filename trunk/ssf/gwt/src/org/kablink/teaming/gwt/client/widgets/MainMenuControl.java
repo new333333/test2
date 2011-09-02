@@ -862,15 +862,11 @@ public class MainMenuControl extends Composite
 		// Clear any context menus currently displayed...
 		clearContextMenus();
 		
-		// ...and hHandle variations based on activity
-		// ...stream and search mode.
+		// ...and handle variations based on activity stream mode.
 		addRecentPlacesToContext(toolbarItemList);
-		boolean inASMode = m_mainPage.getWorkspaceTree().isInActivityStreamMode();
-		if (!inASMode) {
-			addManageToContext(toolbarItemList, tmi);
-		}
-		if (!inASMode) {
-			addViewsToContext(toolbarItemList, inSearch, searchTabId);
+		if (!(m_mainPage.getWorkspaceTree().isInActivityStreamMode())) {
+			addManageToContext(toolbarItemList, tmi                  );
+			addViewsToContext( toolbarItemList, inSearch, searchTabId);
 		}
 	}
 
