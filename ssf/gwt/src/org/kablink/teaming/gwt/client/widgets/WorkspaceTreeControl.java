@@ -94,7 +94,7 @@ public class WorkspaceTreeControl extends Composite
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private TeamingEvents[] m_verticalTreeRegisteredEvents = new TeamingEvents[] {
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
 		TeamingEvents.ACTIVITY_STREAM,
@@ -132,22 +132,14 @@ public class WorkspaceTreeControl extends Composite
 		m_mainPage = mainPage;
 		m_tm       = tm;
 
-		// Register the events to be handled by this class.
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
-
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
 		
 		switch (m_tm) {
 		case HORIZONTAL:
 		{
-			GetHorizontalTreeCmd cmd;
-			
 			mainPanel.addStyleName("breadCrumb_Browser");
-			cmd = new GetHorizontalTreeCmd( selectedBinderId );
+			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
@@ -176,10 +168,15 @@ public class WorkspaceTreeControl extends Composite
 		}
 			
 		case VERTICAL:
-			GetVerticalTreeCmd cmd;
-			
+		{
+			// Register the events to be handled by this class.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_verticalTreeRegisteredEvents,
+				this);
+
 			mainPanel.addStyleName("workspaceTreeControl");
-			cmd = new GetVerticalTreeCmd( selectedBinderId );
+			GetVerticalTreeCmd cmd = new GetVerticalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
@@ -203,6 +200,8 @@ public class WorkspaceTreeControl extends Composite
 			
 			// Set the size of the control.
 			relayoutPageAsync();
+			break;
+		}
 		}
 		
 		// All composites must call initWidget() in their constructors.

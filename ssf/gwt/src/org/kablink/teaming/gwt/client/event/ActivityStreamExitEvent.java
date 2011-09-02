@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -49,7 +51,7 @@ public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEve
 
 	public enum ExitMode {
 		SIMPLE_EXIT,				// Simply exiting activity stream mode to whatever content was there.
-		EXIT_FOR_CONTEXT_SWITCH,	// Exiting in preperation for a context switch.
+		EXIT_FOR_CONTEXT_SWITCH,	// Exiting in preparation for a context switch.
 	}
 	
 	/**
@@ -81,6 +83,15 @@ public class ActivityStreamExitEvent extends VibeEventBase<ActivityStreamExitEve
 		handler.onActivityStreamExit(this);
 	}
 
+	/**
+	 * Fires a new one of these events.
+	 * 
+	 * @param exitMode
+	 */
+	public static void fireOne(ExitMode exitMode) {
+		GwtTeaming.fireEvent(new ActivityStreamExitEvent(exitMode));
+	}
+	
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 *

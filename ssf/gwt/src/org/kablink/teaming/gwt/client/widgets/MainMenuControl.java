@@ -508,7 +508,7 @@ public class MainMenuControl extends Composite
 		menuPanel.add(m_whatsNewBox);
 	}
 
-	/**
+	/*
 	 * Called to remove the context based menu items (Workspace,
 	 * Folder, ...) from the menu bar.
 	 * 
@@ -516,7 +516,7 @@ public class MainMenuControl extends Composite
 	 * so that invalid menu items (i.e., those based on a previous
 	 * context) are not available until the new context fully loads.
 	 */
-	public void clearContextMenus() {
+	private void clearContextMenus() {
 		if (null != m_contextPanel) {
 			m_contextPanel.clear();
 		}
@@ -642,10 +642,7 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onContextChanging(final ContextChangingEvent event) {
-		// Now handled by direct call via
-		// EventHelper.fireContextChanging()
-		//
-		// clearContextMenus();
+		clearContextMenus();
 	}
 	
 	/**
