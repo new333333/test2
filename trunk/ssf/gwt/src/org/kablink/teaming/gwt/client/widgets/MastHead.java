@@ -155,7 +155,12 @@ public class MastHead extends Composite
 			
 			// Create a label that holds the logged-in user's name.
 			{
-				m_userName = new InlineLabel( requestInfo.getUserName() );
+				String userName = requestInfo.getUserName();
+				if ( !GwtClientHelper.hasString( userName ) )
+				{
+					userName = requestInfo.getUserLoginId();
+				}
+				m_userName = new InlineLabel( userName );
 				m_userName.setStylePrimaryName( "mastheadUserName" );
 				m_userName.addStyleName( "brandingLink" );
 				m_userName.addClickHandler( this );
