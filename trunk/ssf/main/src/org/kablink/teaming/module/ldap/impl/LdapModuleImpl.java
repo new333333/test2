@@ -1457,6 +1457,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						syncResults = m_ldapSyncResults.getModifiedUsers();
 					}
 					updateUsers(zoneId, users, syncResults );
+					
+					// Disable the accounts that are not in ldap
+					disableUsers( users );
 				}
 			}
 			return dnUsers;
@@ -2387,6 +2390,39 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		//continue 
 			logError("Error updating users", ex);	   		
 	   	}
+	}
+	
+	/**
+	 * Disable the given list of users.
+	 */
+	protected void disableUsers( Map users )
+	{
+		Set userIds;
+		Iterator iter;
+		
+		if ( users.isEmpty() )
+			return;
+
+		// Get the list of user ids.
+		userIds = users.keySet();
+		
+		for ( iter = userIds.iterator(); iter.hasNext(); )
+		{
+			String userName;
+			Long userIdL;
+			HashMap values;
+			
+			// Get the id of the user.
+			userIdL = (Long) iter.next();
+			
+			// Get the name of the user.
+			values = (HashMap) users.get( userIdL );
+			userName = (String) values.get(  ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME );
+			
+			getProfileModule().disableEntry( userIdL, true );
+
+			logger.info( "Disabled user: " + userName );
+		}
 	}
 
     /**
