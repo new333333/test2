@@ -1465,7 +1465,7 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 tr.ss_attachments_list_primary_file td, tr.ss_attachments_list_regular_file td {
 	padding: 5px 10px 5px 0px;
 	white-space: nowrap;
-	font-size: ${ss_style_largest_print};
+	font-size: ${ss_style_font_largestprint};
 	}
 tr.ss_attachments_list_primary_file td {
     background-color: #fff;
@@ -3423,7 +3423,7 @@ div.ss_profile_picture_frame {
   width: 75px;
   text-align: center;
   vertical-align: middle;
-  posistion:absolute;
+  position:absolute;
 }
 
 div.ss_profile_info_frame {
@@ -3656,7 +3656,6 @@ div.ss_calendarNaviBar {
 	}
 .popupMenuItem a {
 	color: #fff !important;
-	fo
 	}
 .popupMenuItem a:hover {
 	color: #81B2BD !important;

@@ -2444,7 +2444,6 @@ body, table td, select
   text-decoration: none;
   font-size: 11px;
   cursor: pointer;
-  cursor: hand;
   background: #949494;
 }
 .gwt-Button:active {
@@ -3057,7 +3056,7 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 .gwtTaskToolsButton_WidgetTextHover
 {
 	background:  #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important;
-	color        #FFFFFF                                              !important;
+	color:       #FFFFFF                                              !important;
 }
 
 .gwtTasks
