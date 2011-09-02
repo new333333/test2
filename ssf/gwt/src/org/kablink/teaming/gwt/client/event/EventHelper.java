@@ -104,7 +104,7 @@ public class EventHelper {
 		case GOTO_MY_WORKSPACE:                 reply = new GotoMyWorkspaceEvent();              break;
 		case INVOKE_HELP:                       reply = new InvokeHelpEvent();                   break;
 		case LOGIN:                             reply = new LoginEvent();                        break;
-		case LOGOUT:                            reply = new LogoutEvent();                       break;
+		case PRE_LOGOUT:                        reply = new PreLogoutEvent();                    break;
 		case MASTHEAD_HIDE:                     reply = new MastheadHideEvent();                 break;
 		case MASTHEAD_SHOW:                     reply = new MastheadShowEvent();                 break;
 		case MENU_HIDE:							reply = new MenuHideEvent();					 break;
@@ -424,6 +424,15 @@ public class EventHelper {
 				if (eventHandler instanceof LogoutEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = LogoutEvent.registerEvent(eventBus, ((LogoutEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case PRE_LOGOUT:
+				// A PreLogoutEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof PreLogoutEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = PreLogoutEvent.registerEvent(eventBus, ((PreLogoutEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -919,6 +928,7 @@ public class EventHelper {
 			
 			case LOGIN:                             hasHandler = (eventHandler instanceof LoginEvent.Handler);                        break;
 			case LOGOUT:                            hasHandler = (eventHandler instanceof LogoutEvent.Handler);                       break;
+			case PRE_LOGOUT:                        hasHandler = (eventHandler instanceof PreLogoutEvent.Handler);                    break;
 			
 			case MARK_ENTRY_READ:                   hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                break;
 			case MARK_ENTRY_UNREAD:                 hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);              break;

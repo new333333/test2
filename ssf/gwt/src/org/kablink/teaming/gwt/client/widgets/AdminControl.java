@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.LogoutEvent;
+import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -89,7 +89,7 @@ public class AdminControl extends Composite
 	implements 
 	// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
-		LogoutEvent.Handler,
+		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
@@ -104,7 +104,7 @@ public class AdminControl extends Composite
 		TeamingEvents.ADMINISTRATION_EXIT,
 		
 		// Login/out events.
-		TeamingEvents.LOGOUT,
+		TeamingEvents.PRE_LOGOUT,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -923,17 +923,17 @@ public class AdminControl extends Composite
 	}// end onAdministrationExit()
 	
 	/**
-	 * Handles LogoutEvent's received by this class.
+	 * Handles PreLogoutEvent's received by this class.
 	 * 
-	 * Implements the LogoutEvent.Handler.onLogout() method.
+	 * Implements the PreLogoutEvent.Handler.onLogout() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onLogout( LogoutEvent event )
+	public void onPreLogout( PreLogoutEvent event )
 	{
 		doPreLogoutCleanup();
-	}// end onLogout()
+	}// end onPreLogout()
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.

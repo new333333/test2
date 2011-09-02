@@ -79,8 +79,9 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_SUBSCRIBE,					// Invoke the 'subscribe to this entry' UI.
 	INVOKE_TAG,							// Invoke the 'tag this entry' UI.
 	
-	LOGIN,								// logs into   Vibe OnPrem.
-	LOGOUT,								// logs out of Vibe OnPrem.
+	LOGIN,								// Logs into   Vibe.
+	LOGOUT,								// Logs out of Vibe.
+	PRE_LOGOUT,							// Notifies everybody that we're about to log out of Vibe.
 
 	MARK_ENTRY_READ,					// Mark the entry as read.
 	MARK_ENTRY_UNREAD,					// Mark the entry as unread.
