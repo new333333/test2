@@ -37,7 +37,6 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -85,39 +84,41 @@ public class ContextChangingEvent extends VibeEventBase<ContextChangingEvent.Han
 	
 	/**
 	 * Fires a new one of these events.
+	 * 
+	 * This method is the ONLY way to fire one of these events as it
+	 * takes care of other 'pre-context switch' operations that must
+	 * occur before a context switch takes place.
 	 */
 	public static void fireOne() {
-		// If we're currently running site administration...
+		// Do we have access to to a main page (we won't if we're in an
+		// IFRAME)?
 		GwtMainPage mp = GwtTeaming.getMainPage();
-		boolean haveMP = ( null != mp );
-		if (haveMP && mp.isAdminActive()) {
-			// ...close it first.
-			AdministrationExitEvent.fireOne();
+		if (null != mp) {
+			// Yes!  If we're currently running site administration...
+			if (mp.isAdminActive()) {
+				// ...close it as we won't be in the admin console if
+				// ...we change contexts.
+				AdministrationExitEvent.fireOne();
+			}			
+	
+			// If we're currently in activity stream mode...
+			if (mp.isActivityStreamActive()) {
+				// ...close it as we won't be in activity steam mode if
+				// ...we change contexts.
+				ActivityStreamExitEvent.fireOne(ExitMode.EXIT_FOR_CONTEXT_SWITCH);
+			}
+			
+			// Fire the event.
+		    GwtTeaming.fireEvent(new ContextChangingEvent());
 		}
 		
-
-		// If we're currently in activity stream mode...
-		if ( haveMP && mp.isActivityStreamActive() ) {
-			// ...close it as we won't be in activity steam mode if we
-			// ...change contexts.
-			GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.EXIT_FOR_CONTEXT_SWITCH));
-		}
-		
-		// Fire the event.
-		if (haveMP)
-		     GwtTeaming.fireEvent(new ContextChangingEvent());
-		else GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.CONTEXT_CHANGING);
-		
-		// Do we have access to the main menu off the main page?
-		MainMenuControl mmc = (haveMP ? null : mp.getMainMenu());
-		if (null != mmc) {
-			// Yes!  Tell it to clear its context menus.  Note that we
-			// do this directly (synchronously) rather than off the
-			// ContextChangingEvent because that event is handled
-			// asynchronously and may not happen until too late in
-			// the flow to effectively clear the context menus BEFORE
-			// the context switch actually occurs.
-			mmc.clearContextMenus();
+		else {
+			// No, we don't have access to a main page (we must be in
+			// an IFRAME)!  Fire the event through the top level event
+			// bus.  Note that this will end up going through the above
+			// if branch when the callback though this JSNI method
+			// occurs.
+			GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.CONTEXT_CHANGING);
 		}
 	}
 	
