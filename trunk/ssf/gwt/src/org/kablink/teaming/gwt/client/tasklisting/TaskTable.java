@@ -2030,7 +2030,7 @@ public class TaskTable extends Composite
     		// beyond the end of the task list?
     		List<TaskListItem> tasks = m_taskBundle.getTasks();
     		int count = tasks.size();
-    		if (newOrder >= count) {
+    		if (newOrder > count) {
     			// Yes!  Remove it from its current position and append it
     			// to the end of the list.
     			tasks.remove(task);
