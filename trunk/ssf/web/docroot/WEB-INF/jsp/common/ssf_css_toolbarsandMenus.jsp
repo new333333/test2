@@ -1071,7 +1071,7 @@ a.action-anchor:hover {
     position: absolute;
     font-size: .8em;
     }   
-.#entry-status-actions {
+.entry-status-actions {
     position: absolute;
     top: 25px;
     right: 3px;
@@ -1081,7 +1081,7 @@ a.action-anchor:hover {
     color: #F6F6F6;
     font-size: 1em;
     font-weight: bold;
-    background: #3a3e40 url( url(../../../1Graphics/GraphicsDB/Branding/NL2010/gray_blend2_15.png)) repeat-x; 
+    background: #3a3e40 url(../../../1Graphics/GraphicsDB/Branding/NL2010/gray_blend2_15.png) repeat-x; 
     background-position: bottom;
     margin-bottom: 0.5em;
     padding: 5px; 
