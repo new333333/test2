@@ -859,7 +859,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
    						tx.entry.getParentBinder().getPathName() + "/" + tx.entry.getTitle() +
    					 " " + tx.message);
    			} catch (Exception ex) {
-   				logger.error("Error processing timeout: " + ex.getMessage());
+   				logger.error("Error processing timeout", ex);
    			} finally {
 				context.close();
 			}
