@@ -387,6 +387,14 @@ public class GwtProfileHelper {
 				value = u.getOrganization();
 			} else if(name.equals("zonName")){
 				value = u.getZonName();
+			} else if(name.equals("firstName")){
+				value = u.getFirstName();
+			} else if(name.equals("middleName")){
+				value = u.getMiddleName();
+			} else if(name.equals("lastName")){
+				value = u.getLastName();
+			} else if(name.equals("locale")){
+				value = u.getLocale().getDisplayName();
 			} else {
 
 				//Read the custom attribute
