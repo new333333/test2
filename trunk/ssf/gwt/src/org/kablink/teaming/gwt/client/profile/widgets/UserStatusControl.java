@@ -35,16 +35,15 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.Date;
 
-import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -239,12 +238,11 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				savingUserStatusInProgress = false;
 			}
 
-			public void onSuccess( VibeRpcResponse response ) {
-
+			public void onSuccess( VibeRpcResponse response ) {				
 				//Get the text from the input widget and set the status text field
 				statusText.setText(status);
 				setTime(new Date(), new Date());
-				
+								
 				//clear the input field once the statusText has been populated...
 				input.setText("");
 				//reset the char count
@@ -258,8 +256,14 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				} else {
 					showStatus(false);
 				}
-				
-				SidebarReloadEvent.fireOne();
+
+				// In saving the status, did we create a new mini blog
+				// folder that we need to refresh things for?
+				SaveUserStatusRpcResponseData responseData = ((SaveUserStatusRpcResponseData) response.getResponseData());
+				if (responseData.isNewMiniBlogFolder()) {
+					// Yes!  Force the sidebar to refresh.
+					GwtClientHelper.jsFireVibeEventOnMainEventBus(TeamingEvents.SIDEBAR_RELOAD);
+				}
 				
 				savingUserStatusInProgress = false;
 			}

@@ -1219,12 +1219,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_USER_STATUS:
 		{
 			SaveUserStatusCmd susCmd;
-			Boolean result;
-			BooleanRpcResponseData responseData;
+			SaveUserStatusRpcResponseData responseData;
 			
-			susCmd = (SaveUserStatusCmd) cmd;
-			result = saveUserStatus( ri, susCmd.getStatus() );
-			responseData = new BooleanRpcResponseData( result );
+			susCmd = ((SaveUserStatusCmd) cmd);
+			responseData = saveUserStatus( ri, susCmd.getStatus() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -4612,18 +4610,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	private Boolean saveUserStatus( HttpRequestInfo ri, String status ) throws GwtTeamingException
+	private SaveUserStatusRpcResponseData saveUserStatus( HttpRequestInfo ri, String status ) throws GwtTeamingException
 	{
 		try
 		{
-			BinderHelper.addMiniBlogEntry(this, status);
+			BinderHelper.MiniBlogInfo mbi = BinderHelper.addMiniBlogEntryDetailed(this, status);
+			return new SaveUserStatusRpcResponseData(mbi.getEntryId(), mbi.getFolderId(), mbi.isNewMiniBlogFolder());
 		}
 		catch (Exception e)
 		{
 			throw GwtServerHelper.getGwtTeamingException( e );
 		}
-		
-		return Boolean.TRUE;
 	}
 
 	/**

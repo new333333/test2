@@ -187,6 +187,47 @@ public class BinderHelper {
 	
 	private static final String LOGOUT_SUCCESS_URL_MOBILE;
 	private static final String AUTHENTICATION_FAILURE_URL_MOBILE;
+
+	/**
+	 * Inner class that returns information about an added mini blog
+	 * entry.
+	 */
+	public static class MiniBlogInfo {
+		private boolean m_newMiniBlogFolder;
+		private Long    m_entryId;
+		private Long    m_folderId;
+		
+		public MiniBlogInfo(Long entryId, Long folderId, boolean newMiniBlogFolder) {
+			// Simply store the parameters.
+			m_entryId           = entryId;
+			m_folderId          = folderId;
+			m_newMiniBlogFolder = newMiniBlogFolder;
+		}
+		
+		public MiniBlogInfo() {
+			// Nothing to do.
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isNewMiniBlogFolder() {return m_newMiniBlogFolder;}
+		public Long    getEntryId()          {return m_entryId;          }
+		public Long    getFolderId()         {return m_folderId;         }
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param newMiniBlogFolder
+		 * @param entryId
+		 * @param folderId
+		 */
+		public void setNewMiniBlogFolder(boolean newMiniBlogFolder) {m_newMiniBlogFolder = newMiniBlogFolder;}
+		public void setEntryId(          Long    entryId)           {m_entryId           = entryId;          }
+		public void setFolderId(         Long    folderId)          {m_folderId          = folderId;         }
+	}
 	
 	static {
 		String url = SPropsUtil.getString("mobile.spring.security.logout.success.url", "");
@@ -1368,6 +1409,7 @@ public class BinderHelper {
 	static public void setRepliesAccessControl(AllModulesInjected bs, Map model, FolderEntry entry) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
+		@SuppressWarnings("unused")
 		HashMap entryAccessMap = new HashMap();
 		if (accessControlMap.containsKey(entry.getId())) {
 			entryAccessMap = (HashMap) accessControlMap.get(entry.getId());
@@ -4163,9 +4205,13 @@ public class BinderHelper {
 	}
 
 	public static Long addMiniBlogEntry(AllModulesInjected bs, String text) {
+		return addMiniBlogEntryDetailed(bs, text).getEntryId();
+	}
+	public static MiniBlogInfo addMiniBlogEntryDetailed(AllModulesInjected bs, String text) {
 		if(text == null)
 			return null;
 
+		MiniBlogInfo reply = new MiniBlogInfo();
 		Long entryId = null;
 
     	Pattern p = Pattern.compile("([\\s]*)$");
@@ -4190,6 +4236,7 @@ public class BinderHelper {
 			if (miniBlogId == null) {
 				//The miniblog folder doesn't exist, so create it
 				miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+				reply.setNewMiniBlogFolder(true);
 				
 			} else {
 				try {
@@ -4197,15 +4244,18 @@ public class BinderHelper {
 					if (miniBlog.isDeleted()) {
 						//The miniblog folder doesn't exist anymore, so try create it again
 						miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+						reply.setNewMiniBlogFolder(true);
 					}
 				} catch(NoBinderByTheIdException e) {
 					//The miniblog folder doesn't exist anymore, so try create it again
 					logger.debug("BinderHelper.addMiniBlogEntry(NoBinderByTheIdException):  Calling bs.getProfileModule().addUserMiniBlog(...)");
 					miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+					reply.setNewMiniBlogFolder(true);
 				}
 			}
 			if (miniBlog != null) {
 				//Found the mini blog folder, go add this new entry
+				reply.setFolderId(miniBlog.getId());
 		        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
 		        		DateFormat.SHORT, user.getLocale());
 		        dateFormat.setTimeZone(user.getTimeZone());
@@ -4238,8 +4288,9 @@ public class BinderHelper {
 				}
 			}
 		}
-		
-		return entryId;
+
+		reply.setEntryId(entryId);
+		return reply;
 	}
 	
 	public static void saveFolderColumnSettings(AllModulesInjected bs, ActionRequest request, 
