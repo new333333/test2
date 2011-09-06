@@ -3896,6 +3896,9 @@ div.ss_surveyContainer {
 p.ss_survey_question, span.ss_survey_answer {
 	font-size: ${ss_style_font_normalprint};
 	color:#333333;
+.ss_survey_question {
+	padding-right: 20px;
+}	
 }
 div.ss_searchContainer #ss_content { 
 	margin: 0px;
@@ -4201,6 +4204,7 @@ input.ss_saveQueryName {
 }
 div.ss_questionContainer, 
 div.ss_subsection {
+	position: relative;
 	padding: 10px;
 	margin: 10px 0px;
 	background-color:#f6f6f6;
@@ -4231,6 +4235,7 @@ div.ss_content_outer table.ss_milestones_list, div.ss_content_outer table.ss_sur
 	empty-cells: show;
 	border-collapse: collapse;
 }
+div.ss_questionContainer p {padding-right: 30px;}
 div.ss_questionContainer ol {margin: 10px 0px;}
 
 div.ss_questionContainer a.ss_tinyButton {

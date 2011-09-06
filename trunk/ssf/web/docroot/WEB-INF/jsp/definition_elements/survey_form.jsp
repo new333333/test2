@@ -103,7 +103,7 @@
 		ss_survey_${ss_namespace}_${property_name}.locale.moreAnswers = "<ssf:nlt tag='survey.answer.more'/>";
 		ss_survey_${ss_namespace}_${property_name}.locale.questionHeader = "<ssf:nlt tag='survey.question.header'/>";
 		ss_survey_${ss_namespace}_${property_name}.locale.confirmRemove = "<ssf:nlt tag='survey.question.confirmRemove'/>";
-		ss_survey_${ss_namespace}_${property_name}.locale.required = "<ssf:nlt tag='survey.required'/>";
+		ss_survey_${ss_namespace}_${property_name}.locale.required = " <ssf:nlt tag='survey.required'/>";
 		ss_survey_${ss_namespace}_${property_name}.locale.modifySurveyWarning = "<ssf:nlt tag='survey.modify.warning'/>";
 		dojo.addOnLoad(function () {
 			ss_survey_${ss_namespace}_${property_name}.initialize("<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />");

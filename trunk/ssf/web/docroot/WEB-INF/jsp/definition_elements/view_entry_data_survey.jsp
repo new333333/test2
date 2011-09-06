@@ -65,7 +65,7 @@
 </script>
 
 <div class="ss_entryContent">
-<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
+<div class="margintop2" style="border-bottom: 1px solid #b8b8b8; font-size: 18px;"><c:out value="${property_caption}" /></div>
 
 <c:set var="hasRightsToVote" value="${ss_accessControlMap[ssDefinitionEntry.id]['addReply']}"/>
 <c:set var="isModerator" value="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}"/>
@@ -152,11 +152,10 @@
 		<c:forEach var="question" items="${surveyModel.questions}" >
 			
 			<div class="ss_questionContainer" id="${ss_survey_prefix}_${property_name}_question_${question.index}">
-				<p class="ss_survey_question" style="zoom:1;">
-					<c:out value="${question.question}" escapeXml="false"/><c:if 
-					  test="${question.requiredAnswer && !showResults}"><span 
-					  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if>
-				</p>
+					<c:if test="${question.requiredAnswer && !showResults}">
+						<span id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required" style="zoom:1;">*</span><span class="ss_required ss_smallprint"><ssf:nlt tag="survey.answer.required"/></span>
+					</c:if>
+					<c:out value="${question.question}" escapeXml="false"/>
 
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
@@ -213,7 +212,7 @@
 		</c:if>
 		
 		<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !operationChangeVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && surveyModel.allowedToChangeVote}">
-			<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
+			<a style="padding: 0 10px;" href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
 						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="changeVote" /></ssf:url>"><ssf:nlt tag="survey.title.changeVote"/></a>
 		</c:if>
 		
@@ -246,12 +245,13 @@
 
 		<c:forEach var="question" items="${surveyModel.questions}" >
 			<div class="ss_questionContainer" id="${ss_survey_prefix}_${property_name}_question_${question.index}">
-				<p class="ss_survey_question" style="zoom:1;">
-					<c:out value="${question.question}" escapeXml="false"/><c:if 
-					test="${question.requiredAnswer && !showResults}"><span 
-					id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if>
+				<div style="position: absolute; top: 10px; right: 10px;">
 					<a href="javascript: //" onclick="ssSurvey.clearAnswers(${question.index}, [<c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach>], '${ss_survey_prefix}_${property_name}')"><ssf:nlt tag="survey.clear"/></a>
-				</p>
+				</div>
+					<c:if test="${question.requiredAnswer && !showResults}">
+						<span id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required" style="zoom:1;">*</span><span class="ss_required ss_smallprint"><ssf:nlt tag="survey.answer.required"/></span>
+					</c:if>
+					<c:out value="${question.question}" escapeXml="false"/>
 				
 				<c:if test="${question.type == 'multiple'}">
 					<ol>
