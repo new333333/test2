@@ -258,8 +258,16 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		return panel;
 	}
 	
-	public void setPhotoPanelSize(int x, int y) {
-		photoPanel.setSize(x+"px", y+"px");
+	public void setPhotoPanelSize(int width, int height) {
+		boolean sizeX = ((-1) != width);
+		boolean sizeY = ((-1) != height);
+		if (sizeX && sizeY) {
+			photoPanel.setSize((width + "px"), (height + "px"));
+		}
+		else {
+			if      (sizeX) photoPanel.setWidth( width + "px");
+			else if (sizeY) photoPanel.setHeight(height + "px");
+		}
 	}
 	
 	//The modify controller expects the picture ids in an order list in which the pictures need to be displayed

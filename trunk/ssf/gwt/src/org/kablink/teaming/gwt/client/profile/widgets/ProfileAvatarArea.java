@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,7 +51,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 public class ProfileAvatarArea extends FlowPanel  {
-	
 	private boolean isEditMode = false;
 	private EditSuccessfulHandler editSuccessfulHandler;
 	private ProfileRequestInfo profileRequestInfo;
@@ -69,6 +68,7 @@ public class ProfileAvatarArea extends FlowPanel  {
 		createWidget(attr);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void createWidget(ProfileAttribute attr){
 		if(attr.getValue() != null) {
 			List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
@@ -132,6 +132,7 @@ public class ProfileAvatarArea extends FlowPanel  {
 				index = labeledUri.indexOf(':');
 
 				//Make sure http is not prepended to it.
+				@SuppressWarnings("unused")
 				String label = labeledUri.substring(0, index+1);
 				found = (0 < labeledUri.indexOf("http:"));
 				if(!found){
@@ -155,6 +156,15 @@ public class ProfileAvatarArea extends FlowPanel  {
 			anchor = imgAnchor;
 		}
 
+		// Various size calculation constants.
+		private final static int PAD_BASE			= 25;
+		private final static int PAD_LEFT_RIGHT		= PAD_BASE;
+		private final static int PAD_WIDTH			= (PAD_LEFT_RIGHT * 2);	
+		private final static int PAD_TOP_BOTTOM		= PAD_BASE;
+		private final static int PAD_HEIGHT			= (PAD_TOP_BOTTOM * 2);
+		private final static int PAD_FOR_BUTTONS	= 100;	// Padding between bottom of dialog and bottom of image area.
+		private final static int PAD_FOR_VSCROLL	=   5;	// Padding to account for having a vertical scroll bar.
+		
 		public void onClick(ClickEvent event) {
 			
 			if(item != null && anchor != null) {
@@ -163,47 +173,74 @@ public class ProfileAvatarArea extends FlowPanel  {
 				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
 				{
 					public void setPosition(int offsetWidth, int offsetHeight)
-					{		
-						boolean resize = false;
+					{
+						// Determine the sizes we need to perform the
+						// positioning calculations with.
+						int dlgCX = dlg.getOffsetWidth();
+						int dlgCY = dlg.getOffsetHeight();
 						
-						int xOff = dlg.getOffsetWidth();
-						int yOff = dlg.getOffsetHeight();
+						int wndCX = (Window.getClientWidth()  - PAD_WIDTH);
+						int wndCY = (Window.getClientHeight() - PAD_HEIGHT);
 						
-						//is the dialog larger than 500px wide
-						if(xOff >  500) {
-							xOff = 500;
-							resize = true;
-						}
+						int wndScrollX = Window.getScrollLeft();
+						int wndScrollY = Window.getScrollTop();
 						
-						//is the dialog larger than 600px high
-						if(yOff > 600) {
-							yOff = 600;
-							resize = true;
-						}
-						
-						//set the size of the dialog because the image is too large
-						if(resize) {
-							//set the size of the dialog
-							dlg.setSize(xOff+"px", yOff+"px");
-							//set the size of the panel that contains the photo, so that scroll bars will show
-							dlg.setPhotoPanelSize(xOff-30,yOff-120 );
-						}
-						
-						//set the position to launch the new dialog
-						x = anchor.getAbsoluteLeft() + 60;
-						y = anchor.getAbsoluteTop() - dlg.getOffsetHeight() - 60;
+//!						// To assist with debugging, dumps the sizes.
+//!						Window.alert("dlgCX: " + dlgCX + "\ndlgCY: " + dlgCY + "\nwndCX: " + wndCX + "\nwndCY: " + wndCY + "\nwndScrollX: " + wndScrollX + "\nwndScrollY: " + wndScrollY);
 
-						//if the starting positions is half way into the page
-						//and if the dialog is going to be large than set the starting point to the left more
-						if(x > 300 && xOff > 499) {
-							x = 150;
-						}
-
-						//if the starting position is less than the size of the dialog then move down
-						if(y < 600 && yOff > 599) {
-							y = y + 60;
+						// If the dialog wider than the window...
+						boolean resizeX = (dlgCX > wndCX);
+						if (resizeX) {
+							// ...force a resize.
+							dlgCX = wndCX;
 						}
 						
+						// If the dialog taller than window...
+						boolean resizeY = (dlgCY > wndCY);
+						if (resizeY) {
+							// ...force a resize.
+							dlgCY  = wndCY;
+						}
+						
+						// Do we need to resize of the dialog because
+						// the image is too large?
+						if (resizeX || resizeY) {
+							// Yes!  Set the size of the dialog...
+							dlg.setSize(((resizeX ? dlgCX : (dlgCX + PAD_FOR_VSCROLL)) + "px"), (dlgCY + "px"));
+							
+							// ...and of the photo panel so that scroll
+							// ...bars will show, as appropriate.
+							int photoCX = (-1); 
+							int photoCY = (-1);
+							if (resizeX) {
+								photoCX = (dlgCX - PAD_WIDTH);
+								if (PAD_LEFT_RIGHT > photoCX) {
+									photoCX = PAD_LEFT_RIGHT;
+								}
+							}
+							if (resizeY) {
+								photoCY = (dlgCY - (PAD_HEIGHT + PAD_FOR_BUTTONS));
+								if (PAD_TOP_BOTTOM > photoCY) {
+									photoCY = PAD_TOP_BOTTOM;
+								}
+							}
+							dlg.setPhotoPanelSize(photoCX, photoCY);	
+						}
+						
+						// Set the position to launch the dialog.
+						x = (anchor.getAbsoluteLeft() +                         PAD_LEFT_RIGHT);
+						y = (anchor.getAbsoluteTop()  - dlg.getOffsetHeight() - PAD_TOP_BOTTOM);
+
+						// Adjust the starting position so that the
+						// dialog is in view...
+						if ((x + dlgCX) > wndCX) {
+							x = (PAD_LEFT_RIGHT + wndScrollX);
+						}
+						if ((0 > y) || (y + dlgCY) > wndCY) {
+							y = (PAD_TOP_BOTTOM + wndScrollY);
+						}
+
+						// ...and show it.
 						dlg.setPopupPosition( x, y );
 					}
 				};
