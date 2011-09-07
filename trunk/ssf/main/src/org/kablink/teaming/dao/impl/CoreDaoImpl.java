@@ -117,6 +117,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -452,8 +453,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				   				.executeUpdate();
 			   				
 		    	   			//delete folderentrystats associated with those affected entries
-		    	   			String sql = "DELETE fes FROM SS_FolderEntryStats fes INNER JOIN SS_FolderEntries fe ON fes.id=fe.id WHERE fe.parentBinder=" + binder.getId();
-		    	   			session.createSQLQuery(sql).executeUpdate();
+		    	   			String sql = SPropsUtil.getString("delete.folderentrystats.query." + DynamicDialect.getDatabaseType().name(), 
+		    	   					"DELETE fes FROM SS_FolderEntryStats fes INNER JOIN SS_FolderEntries fe ON fes.id=fe.id WHERE fe.parentBinder=:binderId");
+		    	   			session.createSQLQuery(sql).setParameter("binderId", binder.getId()).executeUpdate();
 		    	   			
 			   				//finally delete the entries
 			   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
