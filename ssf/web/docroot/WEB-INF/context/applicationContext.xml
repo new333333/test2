@@ -650,6 +650,7 @@
 				<prop key="setBinderQuotasInitialized">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setHomePageConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setWeekendsAndHolidaysConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setFileSynchAppSettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
