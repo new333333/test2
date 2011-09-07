@@ -51,6 +51,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -157,12 +158,17 @@ public class MashupTag extends BodyTagSupport {
 							html = (String) mashupItemAttributes.get( ObjectKeys.MASHUP_ATTR_DATA );
 							if ( html != null && html.length() > 0 )
 							{
-								String translatedString;
+			    				// ',', '=' and ';' characters have been replaced with "%2c", "%3d" and "%3b".
+			    				// We need to unescape the html.
+	        					html = DefinitionHelper.decodeSeparators( html );
+								mashupItemAttributes.put( ObjectKeys.MASHUP_ATTR_DATA, html );
 
-								// Parse the html and replace any markup with the appropriate url.  For example,
+	        					// Parse the html and replace any markup with the appropriate url.  For example,
 								// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
 								if ( entity != null )
 								{
+									String translatedString;
+
 									translatedString = MarkupUtil.markupStringReplacement( renderRequest, renderResponse, httpReq, httpRes, entity, html, view );
 									mashupItemAttributes.put( ObjectKeys.MASHUP_ATTR_DATA, translatedString );
 								}
