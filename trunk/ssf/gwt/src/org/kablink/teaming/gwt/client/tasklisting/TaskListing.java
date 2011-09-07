@@ -741,7 +741,7 @@ public class TaskListing extends Composite {
 		if (newTaskTable) m_taskTable = new TaskTable(this);
 		final long showTime = m_taskTable.showTasks(m_taskBundle);
 		if (newTaskTable) m_taskListingDIV.add(m_taskTable);
-		if (m_taskBundle.getIsDebug()) {
+		if (m_taskBundle.getIsDebug() && GwtClientHelper.isDebugUI()) {
 			ScheduledCommand showTimeCommand = new ScheduledCommand() {
 				@Override
 				public void execute() {

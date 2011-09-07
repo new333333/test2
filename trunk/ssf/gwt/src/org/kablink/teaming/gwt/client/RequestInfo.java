@@ -99,6 +99,16 @@ public class RequestInfo extends JavaScriptObject
 		return this.contentCss;
 	}-*/;
 	
+
+	/**
+	 * Return whether the UI should perform extra debug checking and
+	 * debug message displays. 
+	 */
+	public final native boolean isDebugUI()
+	/*-{
+		return this.getBFromS( this.debugUI );
+	}-*/;
+	
 	
 	/**
 	 * Return the error message we should display.
@@ -265,12 +275,12 @@ public class RequestInfo extends JavaScriptObject
 	/**
 	 * Return the flag that tells us what product we're running.
 	 */
-	public final native String      getVibeProductString()
+	public final native String getVibeProductString()
 	/*-{
 		return this.vibeProduct;
 	}-*/;
 	
-	public final        VibeProduct getVibeProduct() {
+	public final VibeProduct getVibeProduct() {
 		VibeProduct reply = VibeProduct.OTHER;
 		String vp = getVibeProductString();
 		if (GwtClientHelper.hasString(vp)) {
@@ -299,6 +309,17 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 
+	/**
+	 * Returns the source of this RequestInfo object (i.e., main,
+	 * profile, taskListing, ...
+	 * 
+	 * @return
+	 */
+	public final native String getRequestInfoSource()
+	/*-{
+		return this.requestInfoSource;
+	}-*/;
+	
 	/**
 	 * Return the flag that tells us if the user is logged in.
 	 */

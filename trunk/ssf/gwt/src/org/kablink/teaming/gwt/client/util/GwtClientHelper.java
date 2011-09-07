@@ -166,10 +166,17 @@ public class GwtClientHelper {
 		if      (null != GwtMainPage.m_requestInfo)         reply = GwtMainPage.m_requestInfo;
 		else if (null != GwtProfilePage.profileRequestInfo) reply = GwtProfilePage.profileRequestInfo;
 		else if (null != TaskListing.m_requestInfo)         reply = TaskListing.m_requestInfo;
-		else if (LandingPageEditor.m_requestInfo != null)
-		     reply = LandingPageEditor.m_requestInfo;
-		else reply = null;
-
+		else if (null != LandingPageEditor.m_requestInfo)   reply = LandingPageEditor.m_requestInfo;
+		else                                                reply = null;
+		if (null == reply) {
+			// Virtually NOTHING with the GWT code will work without a
+			// RequestInfo object.  Tell the user about the problem.
+			//
+			// Some potential causes of this problem:
+			// 1. Missing check in the if/else-if above.
+			// 2. The GWT UI component failed to load. 
+			Window.alert(GwtTeaming.getMessages().missingRequestInfo());
+		}
 		return reply;
 	}
 
@@ -303,7 +310,7 @@ public class GwtClientHelper {
 			patches = new String[]{cause};
 		}
 		
-		if (hasString(errorMessage) && displayAlert) {
+		if (hasString(errorMessage) && (displayAlert || isDebugUI())) {
 			errorMessage = patchMessage(errorMessage, patches);
 			Window.alert(errorMessage);
 		}
@@ -365,6 +372,19 @@ public class GwtClientHelper {
 			}
 		}
 	}	
+
+	/**
+	 * Returns true if the UI is in debug mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isDebugUI() {
+		RequestInfo ri = getRequestInfo();
+		if (null == ri) {
+			return false;
+		}
+		return ri.isDebugUI();
+	}
 	
 	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.

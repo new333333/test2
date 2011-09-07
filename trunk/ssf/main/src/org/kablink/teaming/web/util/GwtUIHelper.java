@@ -1236,6 +1236,11 @@ public class GwtUIHelper {
 	 * @param model
 	 */
 	public static void setCommonRequestInfoData(PortletRequest request, AllModulesInjected bs, Map<String, Object> model) {
+		// Put out the flag indicating whether the UI should be in
+		// debug mode (i.e., perform extra checking, display messages,
+		// ...)
+		model.put(WebKeys.VIBE_UI_DEBUG, SPropsUtil.getBoolean("ssf.ui.debug.enabled", false));
+		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
 		// setting the session captive flag products that require it.

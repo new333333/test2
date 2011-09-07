@@ -93,6 +93,7 @@ public class WebKeys {
     public static final String SESSION_CAPTIVE = "sessionCaptive";
     public static final String SESSION_PRODUCT = "sessionProduct";
     public static final String VIBE_PRODUCT = "vibeProduct";
+    public static final String VIBE_UI_DEBUG = "vibeUIDebug";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";

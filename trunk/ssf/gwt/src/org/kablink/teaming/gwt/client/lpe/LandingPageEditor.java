@@ -108,7 +108,7 @@ public class LandingPageEditor extends Composite
 	private LandingPagePropertiesDlgBox m_lpPropertiesDlg = null;
 	
 	private static TextArea m_textBox = null;//!!!
-	public static RequestInfo m_requestInfo = null;
+	public static RequestInfo m_requestInfo = jsGetRequestInfo();
 	
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -134,9 +134,6 @@ public class LandingPageEditor extends Composite
 		
 		// Create a JavaScript function that will be invoked when the "Edit Workspace" form is submitted.
 		initAddLandingPageEditorDataToFormJS( this );
-
-		// Get the RequestInfo object that is a JavaScript object.
-		m_requestInfo = jsGetRequestInfo();
 
 		// Create an ArrayList that will hold all DropZones that are created.
 		m_dropZones = new ArrayList<DropZone>();
@@ -721,7 +718,7 @@ public class LandingPageEditor extends Composite
 	 * Uses JSNI to grab the JavaScript object that holds the
 	 * information about the request we are dealing with.
 	 */
-	private native RequestInfo jsGetRequestInfo() /*-{
+	private static native RequestInfo jsGetRequestInfo() /*-{
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
 	}-*/;
