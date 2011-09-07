@@ -108,6 +108,26 @@ public class TaskHelper {
 	public static final String TASK_COMPLETED_DATE_ATTRIBUTE 				= "completedDate";
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME		= "start_end";
 
+	// The following are the values used for task completion
+	// percentages.
+	private final static String COMPLETED_0   = "c000";
+	private final static String COMPLETED_10  = "c010";
+	private final static String COMPLETED_20  = "c020";
+	private final static String COMPLETED_30  = "c030";
+	private final static String COMPLETED_40  = "c040";
+	private final static String COMPLETED_50  = "c050";
+	private final static String COMPLETED_60  = "c060";
+	private final static String COMPLETED_70  = "c070";
+	private final static String COMPLETED_80  = "c080";
+	private final static String COMPLETED_90  = "c090";
+	private final static String COMPLETED_100 = "c100";
+	
+	// The following are the values used for task statuses.
+	private final static String STATUS_NEEDS_ACTION = "s1";
+	private final static String STATUS_IN_PROCESS   = "s2";
+	private final static String STATUS_COMPLETED    = "s3";
+	private final static String STATUS_CANCELED     = "s4";
+	
 	// Key into the session cache used to store the find task options
 	// Map for use by the GWT UI.
 	public final static String CACHED_FIND_TASKS_OPTIONS_KEY = "gwt-ui-find-tasks-options";
@@ -142,8 +162,8 @@ public class TaskHelper {
 			return formData;
 		}
 		
-		String newPriority = getTaskPriorityValue(formData);
-		String newStatus = getTaskStatusValue(formData);
+		String newPriority  = getTaskPriorityValue( formData);
+		String newStatus    = getTaskStatusValue(   formData);
 		String newCompleted = getTaskCompletedValue(formData);
 
 		adjustTaskAttributesDependencies(entry, result, newPriority, newStatus, newCompleted);
@@ -163,18 +183,18 @@ public class TaskHelper {
 		
 		if (!(newStatus.equals(""))) {
 			formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
-			if (newStatus.equals("s3")) {
-				formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
+			if (newStatus.equals(STATUS_COMPLETED)) {
+				formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {COMPLETED_100});
 			}
 			
 			if (null != entry) {
 				String statusCurrent = getTaskStatusValue(entry);
 				String completedCurrent = getTaskCompletedValue(entry);
 				
-				if ((newStatus.equals("s1") || newStatus.equals("s2")) &&
-						"s3".equals(  statusCurrent)                   &&
-						"c100".equals(completedCurrent)) {
-					formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
+				if ((newStatus.equals(STATUS_NEEDS_ACTION) || newStatus.equals(STATUS_IN_PROCESS)) &&
+						STATUS_COMPLETED.equals(  statusCurrent)                                   &&
+						COMPLETED_100.equals(completedCurrent)) {
+					formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {COMPLETED_90});
 				}
 			}
 		}
@@ -182,24 +202,24 @@ public class TaskHelper {
 		if (!(newCompleted.equals(""))) {
 			formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});			
 			
-			if (newCompleted.equals("c000")) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s1"});
+			if (newCompleted.equals(COMPLETED_0)) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_NEEDS_ACTION});
 			}
 			
-			else if (newCompleted.equals("c010") ||
-				     newCompleted.equals("c020") ||
-				     newCompleted.equals("c030") ||
-				     newCompleted.equals("c040") ||
-				     newCompleted.equals("c050") ||
-				     newCompleted.equals("c060") ||
-				     newCompleted.equals("c070") ||
-				     newCompleted.equals("c080") ||
-				     newCompleted.equals("c090")) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
+			else if (newCompleted.equals(COMPLETED_10) ||
+				     newCompleted.equals(COMPLETED_20) ||
+				     newCompleted.equals(COMPLETED_30) ||
+				     newCompleted.equals(COMPLETED_40) ||
+				     newCompleted.equals(COMPLETED_50) ||
+				     newCompleted.equals(COMPLETED_60) ||
+				     newCompleted.equals(COMPLETED_70) ||
+				     newCompleted.equals(COMPLETED_80) ||
+				     newCompleted.equals(COMPLETED_90)) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_IN_PROCESS});
 			}
 			
-			else if (newCompleted.equals("c100")) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
+			else if (newCompleted.equals(COMPLETED_100)) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_COMPLETED});
 			}		
 
 		}
@@ -237,31 +257,31 @@ public class TaskHelper {
 		DateTime dateTime;
 		switch (filterType) {
 		case CLOSED:
-			searchFilter.addTaskStatuses(new String[] {"s3", "s4"});
+			searchFilter.addTaskStatuses(new String[] {STATUS_COMPLETED, STATUS_CANCELED});
 			break;
 		
 		case ACTIVE:
-			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
+			searchFilter.addTaskStatuses(new String[] {STATUS_NEEDS_ACTION, STATUS_IN_PROCESS});
 			break;
 
 		case DAY:
 			dateTime = (new DateTime(userTimeZone)).plusDays(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
-			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});			
+			searchFilter.addTaskStatuses(new String[] {STATUS_NEEDS_ACTION, STATUS_IN_PROCESS});			
 			break;
 
 		case WEEK:
 			dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusWeeks(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
-			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
+			searchFilter.addTaskStatuses(new String[] {STATUS_NEEDS_ACTION, STATUS_IN_PROCESS});
 			break;
 
 		case MONTH:
 			dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusMonths(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
-			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
+			searchFilter.addTaskStatuses(new String[] {STATUS_NEEDS_ACTION, STATUS_IN_PROCESS});
 			break;
 		}
 
@@ -651,7 +671,13 @@ public class TaskHelper {
 	@SuppressWarnings("unchecked")
 	public static void processTaskCompletion(Entry task, InputDataAccessor inputData, Map entryData) {
 		// Validate the completed value in the input data...
-		String c  = inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		String c = inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		if (null == c) {
+			String s = inputData.getSingleValue(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != s) && s.equals(STATUS_COMPLETED)) {
+				c = COMPLETED_100;
+			}
+		}
 		String cV = validateCompleted(c);
 		if (null != cV) {
 			c = cV;
@@ -687,7 +713,7 @@ public class TaskHelper {
 	 * is returned.
 	 */
 	private static String validateCompleted(String completed) {
-		String reply = "c000";	// Default to 0%.
+		String reply = COMPLETED_0;	// Default to 0%.
 		
 		// Do we have a completed value?
 		if (MiscUtil.hasString(completed)) {
@@ -765,9 +791,9 @@ public class TaskHelper {
 		}
 		
 		// Is the completion value for the task changing?
-		boolean complete     = completeS.equals("c100");
+		boolean complete     = completeS.equals(COMPLETED_100);
 		String  wasCompleteS = getTaskCompletedValue(task);
-		boolean wasComplete  = (MiscUtil.hasString(wasCompleteS) && wasCompleteS.equals("c100"));		
+		boolean wasComplete  = (MiscUtil.hasString(wasCompleteS) && wasCompleteS.equals(COMPLETED_100));		
 		if (complete == wasComplete) {
 			// No!  Nothing to do.
 			return;
