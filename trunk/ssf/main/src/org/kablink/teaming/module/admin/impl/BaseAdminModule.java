@@ -54,4 +54,9 @@ public class BaseAdminModule extends AbstractAdminModule {
 	public void discardDeferredUpdateLogRecords(IndexNode indexNode) {
 		// Noop	
 	}
+	
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl) {
+		// Noop
+	}
+	
 }

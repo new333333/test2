@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.util.SPropsUtil;
 
 @SuppressWarnings("unchecked")
 public class ZoneConfig extends ZonedObject implements WorkArea {
@@ -53,6 +54,10 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean binderQuotasAllowOwner;
 	private Long fileVersionsMaxAge;
 	private MailConfig mailConfig;
+	private Boolean fsaEnabled;
+	private Integer fsaSynchInterval;
+	private String fsaAutoUpdateUrl;
+
 	public ZoneConfig()
 	{
 	}
@@ -229,4 +234,33 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public Set<Long> getChildWorkAreas() {
     	return new HashSet();
     }
+    
+	public boolean getFsaEnabled() {
+		if(fsaEnabled == null)
+			return SPropsUtil.getBoolean("fsa.enabled.default", false);
+		else
+			return fsaEnabled.booleanValue();
+	}
+	public void setFsaEnabled(boolean fsaEnabled) {
+		this.fsaEnabled = Boolean.valueOf(fsaEnabled);
+	}
+	public int getFsaSynchInterval() {
+		if(fsaSynchInterval == null)
+			return SPropsUtil.getInt("fsa.synch.interval.default", 15);
+		else 
+			return fsaSynchInterval.intValue();
+	}
+	public void setFsaSynchInterval(int fsaSynchInterval) {
+		this.fsaSynchInterval = Integer.valueOf(fsaSynchInterval);
+	}
+	public String getFsaAutoUpdateUrl() {
+		if(fsaAutoUpdateUrl == null)
+			return SPropsUtil.getString("fsa.auto.update.url.default", "");
+		else 
+			return fsaAutoUpdateUrl;
+	}
+	public void setFsaAutoUpdateUrl(String fsaAutoUpdateUrl) {
+		this.fsaAutoUpdateUrl = fsaAutoUpdateUrl;
+	}
+	
 }

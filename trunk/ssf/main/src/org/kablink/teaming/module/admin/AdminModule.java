@@ -79,7 +79,8 @@ public interface AdminModule {
 		manageExtensions,
 		manageIndex,
 		manageFunctionCondition,
-		manageRuntime
+		manageRuntime,
+		manageFileSynchApp
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -314,4 +315,6 @@ public interface AdminModule {
 	public void enableSimpleProfiler();
 	
 	public void disableSimpleProfiler();
+	
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl);
  }
