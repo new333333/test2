@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -83,6 +84,7 @@ public class WorkspaceTreeControl extends Composite
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
+		ChangeContextEvent.Handler,
 		ContextChangedEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -101,6 +103,7 @@ public class WorkspaceTreeControl extends Composite
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		
 		// Context events.
+		TeamingEvents.CHANGE_CONTEXT,
 		TeamingEvents.CONTEXT_CHANGED,
 		
 		// Sidebar events.
@@ -366,9 +369,24 @@ public class WorkspaceTreeControl extends Composite
 				if (Instigator.CONTENT_AREA_CHANGED == instigator) {
 					contextLoaded(osbInfo.getBinderId().toString());
 				}
-				else if (Instigator.FORCE_SIDEBAR_RELOAD != instigator) {
-					showBinderBusy(osbInfo);
-				}
+			}
+		}
+	}
+	
+	/**
+	 * Handles ChangeContextEvent's received by this class.
+	 * 
+	 * Implements the ChangeContextEvent.Handler.onContextChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onChangeContext(final ChangeContextEvent event)
+	{
+		if (isSidebarTree()) {
+			OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
+			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
+				showBinderBusy(osbInfo);
 			}
 		}
 	}
@@ -549,12 +567,10 @@ public class WorkspaceTreeControl extends Composite
 		m_mainPage.resetMenuContext();
 	}
 	
-	/**
+	/*
 	 * Called when a selection change is in progress.
-	 *
-	 * @param osbInfo
 	 */
-	public void showBinderBusy(OnSelectBinderInfo osbInfo) {
+	private void showBinderBusy(OnSelectBinderInfo osbInfo) {
 		if (null != m_treeDisplay) {
 			m_treeDisplay.showBinderBusy(osbInfo);
 		}
