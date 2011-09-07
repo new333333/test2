@@ -2137,13 +2137,26 @@ public class GwtTaskHelper {
 				if (nowCompleted) {
 					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.COMPLETED_100});
 				}				
-				else {				
-					if ((TaskInfo.STATUS_NEEDS_ACTION.equals(status)) || (TaskInfo.STATUS_IN_PROCESS.equals(status))) {
-						String currentStatus    = TaskHelper.getTaskStatusValue(   fe);
-						String currentCompleted = TaskHelper.getTaskCompletedValue(fe);
-						if ((TaskInfo.STATUS_COMPLETED.equals(currentStatus)) && (TaskInfo.COMPLETED_100.equals(currentCompleted))) {
-							formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.COMPLETED_90});
-						}
+				else {
+					// What state is the task changing to?
+					boolean nowActive   = (TaskInfo.STATUS_NEEDS_ACTION.equals(status)) || (TaskInfo.STATUS_IN_PROCESS.equals(status));
+					boolean nowCanceled =  TaskInfo.STATUS_CANCELED.equals(    status);
+					
+					// What state is the task changing from?
+					String  currentStatus    = TaskHelper.getTaskStatusValue(   fe); if (null == currentStatus)    currentStatus    = "";
+					String  currentCompleted = TaskHelper.getTaskCompletedValue(fe); if (null == currentCompleted) currentCompleted = "";					
+					boolean wasComplete      = (TaskInfo.COMPLETED_100.equals(   currentCompleted) || (0 == currentCompleted.length()));
+					boolean wasInactive      = (TaskInfo.STATUS_COMPLETED.equals(currentStatus   ) || TaskInfo.STATUS_CANCELED.equals(currentStatus));
+
+					// If we need to force a status change in what's
+					// being stored...
+					String forcedStatus;
+					if      (nowActive   && wasInactive && wasComplete) forcedStatus = TaskInfo.COMPLETED_90;
+					else if (nowCanceled &&                wasComplete) forcedStatus = TaskInfo.COMPLETED_90;
+					else                                                forcedStatus = null;
+					if (null != forcedStatus) {
+						// ...add the change to the form data.
+						formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {forcedStatus});
 					}
 				}
 

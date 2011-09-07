@@ -864,7 +864,7 @@ public class MainMenuControl extends Composite
 		
 		// ...and handle variations based on activity stream mode.
 		addRecentPlacesToContext(toolbarItemList);
-		if (!(m_mainPage.getWorkspaceTree().isInActivityStreamMode())) {
+		if (!(m_mainPage.isActivityStreamActive())) {
 			addManageToContext(toolbarItemList, tmi                  );
 			addViewsToContext( toolbarItemList, inSearch, searchTabId);
 		}
