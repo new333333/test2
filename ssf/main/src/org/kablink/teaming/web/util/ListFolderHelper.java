@@ -1585,7 +1585,7 @@ public class ListFolderHelper {
 				qualifiers.put("onClick", onClickPhrase);
 				qualifiers.put("linkclass", "ss_toolbarDeleteBtnDisabled");
 				qualifiers.put("textId", "ss_toolbarPurgeBtn");
-				entryToolbar.addToolbarMenu("1_purgeSelected", NLT.get("toolbar.menu.trash.purge"), 
+				entryToolbar.addToolbarMenu("1_purgeSelected", NLT.get("toolbar.purge"), 
 						"#", qualifiers);
 			}
 		}
