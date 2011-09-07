@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.event;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -48,19 +49,6 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * @author drfoster@novell.com
  */
 public class EventHelper {
-	// The following controls whether the validateEvents() method
-	// actually does anything.  true -> It performs full validation,
-	// false -> It performs no validate.
-	//
-	// I decided to take this tact rather than always enumerate the
-	// enumeration values in the registerEventHandlers() for
-	// performance reasons.  I didn't want each class that registers
-	// events to pay the price of checking whether perhaps 100's of
-	// events were implemented.
-	//
-	// Prior to shipping, this needs to be set false !!!
-	private final static boolean VALIDATE_EVENT_HANDLERS = true;
-	
 	/*
 	 * Constructor method.
 	 */
@@ -864,10 +852,19 @@ public class EventHelper {
 	/*
 	 * Validates that the event handlers implemented by eventHandler
 	 * are include in a TeamingEvents[].
+	 * 
+	 * The code actually only perform validation checking if the UI is
+	 * in debug mode.  I decided to take this tact rather than always
+	 * enumerate the enumeration values in the registerEventHandlers()
+	 * for performance reasons.  I didn't want each class that
+	 * registers events to pay the price of checking whether perhaps
+	 * 100's of events were implemented.
+	 * 
+	 * This should NEVER be done in shipping code !!!
 	 */
 	private static void validateEvents(TeamingEvents[] eventsToCheck, Object eventHandler) {
 		// If we're not validating things...
-		if (!VALIDATE_EVENT_HANDLERS) {
+		if (!GwtClientHelper.isDebugUI()) {
 			// ...bail.
 			return;
 		}

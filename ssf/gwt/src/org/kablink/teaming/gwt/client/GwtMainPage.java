@@ -187,7 +187,7 @@ public class GwtMainPage extends Composite
 		ViewTeamingFeedEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
-	public static RequestInfo m_requestInfo;
+	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
 	private boolean m_inSearch = false;
@@ -429,7 +429,6 @@ public class GwtMainPage extends Composite
 	private void constructMainPage_Start()
 	{
 		// Get information about the request we are dealing with.
-		m_requestInfo = getRequestInfo();
 		m_selectedBinderId = m_requestInfo.getBinderId();
 		if ( ! ( GwtClientHelper.hasString( m_selectedBinderId ) ) )
 		{
@@ -1071,10 +1070,10 @@ public class GwtMainPage extends Composite
 	}
 
 	
-	/**
+	/*
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
 	 */
-	public native RequestInfo getRequestInfo() /*-{
+	private static native RequestInfo jsGetRequestInfo() /*-{
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
 	}-*/;

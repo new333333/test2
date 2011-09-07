@@ -41,10 +41,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.rpc.shared.GetProfileInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -61,7 +58,7 @@ public class GwtProfilePage extends Composite {
 	// of the m_requestInfo in GwtMainPage.  This was necessary for the
 	// proper operation of HttpRequestInfo.createHttpRequestInfo() from
 	// both the main page and the profile page.
-	public static ProfileRequestInfo profileRequestInfo = null;
+	public static ProfileRequestInfo profileRequestInfo = jsGetProfileRequestInfo();
 	
 	private ProfileMainPanel profileMainPanel;
 	private ProfileSidePanel profileSidePanel;
@@ -74,9 +71,6 @@ public class GwtProfilePage extends Composite {
 	 * through its createAsync().
 	 */
 	private GwtProfilePage() {
-		// Get information about the request we are dealing with.
-		profileRequestInfo = getProfileRequestInfo();
-
 		// Outer div around the page
 		mainProfilePage = new FlowPanel();
 		mainProfilePage.getElement().setId("profileContents");
@@ -202,11 +196,11 @@ public class GwtProfilePage extends Composite {
 		SizeChangedEvent.fireOne();
 	}
 	
-	/**
+	/*
 	 * Use JSNI to grab the JavaScript object that holds the information about
 	 * the request dealing with.
 	 */
-	private native ProfileRequestInfo getProfileRequestInfo() /*-{
+	private static native ProfileRequestInfo jsGetProfileRequestInfo() /*-{
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
 	}-*/;

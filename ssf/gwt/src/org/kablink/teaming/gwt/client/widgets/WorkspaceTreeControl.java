@@ -257,7 +257,7 @@ public class WorkspaceTreeControl extends Composite
 	 * @return
 	 */
 	public RequestInfo getRequestInfo() {
-		return m_mainPage.getRequestInfo();
+		return GwtClientHelper.getRequestInfo();
 	}
 
 	/**
@@ -508,7 +508,7 @@ public class WorkspaceTreeControl extends Composite
 		m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
 		
 		// Are we starting up showing what's new?
-		if (m_mainPage.getRequestInfo().isShowWhatsNewOnLogin()) {
+		if (GwtClientHelper.getRequestInfo().isShowWhatsNewOnLogin()) {
 			GetDefaultActivityStreamCmd cmd;
 			
 			// Yes!  Then we enter activity stream mode by
