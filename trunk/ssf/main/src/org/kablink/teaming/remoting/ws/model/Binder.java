@@ -40,6 +40,7 @@ public class Binder extends DefinableEntity implements Serializable {
     protected Long preDeletedBy;
     protected String path;
     protected String family;
+	private Boolean library;
 
     public Boolean isPreDeleted() {
     	return ((null != preDeleted) && preDeleted);
@@ -74,5 +75,13 @@ public class Binder extends DefinableEntity implements Serializable {
 	}
 	public void setFamily(String family) {
 		this.family = family;
+	}
+	
+	public Boolean getLibrary() {
+		return library;
+	}
+
+	public void setLibrary(Boolean library) {
+		this.library = library;
 	}
 }

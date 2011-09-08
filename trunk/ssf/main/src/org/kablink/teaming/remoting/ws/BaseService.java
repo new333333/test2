@@ -349,6 +349,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
     	if(def != null) {
 	    	binderModel.setFamily(DefinitionUtils.getFamily(def));
     	}
+    	binderModel.setLibrary(binder.isLibrary());
 	}
 	
 	protected void fillBinderBriefModel(BinderBrief brief, Binder binder) {
