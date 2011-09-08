@@ -2339,7 +2339,7 @@ public class GwtMainPage extends Composite
 				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.VIEW_TEAM_MEMBERS );
 				if (GwtClientHelper.validateOSBI( osbInfo ))
 				{
-					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
+					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
 				}
 			}// end onSuccess()
 		});// end AsyncCallback()
