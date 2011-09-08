@@ -124,7 +124,7 @@ public class WebUrlUtil {
 				(req != null)? req.isSecure():null, 
 						getSsfsWebProtocol(),
 						UrlType.ssfs,
-						!SPropsUtil.getBoolean("webdav.url.port.optional",false));
+						!SPropsUtil.getBoolean("webdav.url.port.optional",true));
 		
 		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
 		
@@ -139,7 +139,7 @@ public class WebUrlUtil {
 				(req != null)? req.isSecure():null, 
 						getSsfsWebProtocol(), 
 						UrlType.ssfs,
-						!SPropsUtil.getBoolean("webdav.url.port.optional",false));
+						!SPropsUtil.getBoolean("webdav.url.port.optional",true));
 		
 		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
 		

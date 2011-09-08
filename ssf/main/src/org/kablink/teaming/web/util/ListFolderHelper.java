@@ -2216,11 +2216,12 @@ public class ListFolderHelper {
 			qualifiers.put("webdavUrl", webdavUrl);
 			// To work around a bug in MS that sometimes causes a webdav URL on XP to be treated as a SMB resource,
 			// we add trailing '#' charactger to the WebDAV URL used in this particular capacity. See bug#559341.
+			// Comment added later: Change the default in a way that undo the above workaround. This is to 
+			// force Windows client to use WebDAV redirector instead of Office WebDAV.
 			String webdavSuffix = SPropsUtil.getString("webdav.folder.url.suffix", "");
 			if(webdavSuffix.length() > 0)
-				qualifiers.put("folder", webdavUrl + "/" + webdavSuffix);
-			else
-				qualifiers.put("folder", webdavUrl);
+				webdavUrl = webdavUrl + "/" + webdavSuffix;
+			qualifiers.put("folder", webdavUrl);
 			footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 		}
 		
