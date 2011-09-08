@@ -58,6 +58,7 @@ import org.kablink.teaming.remoting.ws.model.TrashCollection;
 import org.kablink.teaming.remoting.ws.model.User;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.model.ReleaseInfo;
+import org.kablink.teaming.remoting.ws.model.ZoneConfig;
 import org.kablink.teaming.remoting.ws.service.admin.AdminService;
 import org.kablink.teaming.remoting.ws.service.binder.BinderService;
 import org.kablink.teaming.remoting.ws.service.definition.DefinitionService;
@@ -667,6 +668,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public ReleaseInfo admin_getReleaseInfo(String accessToken) {
 		return getAdminService().admin_getReleaseInfo(accessToken);
+	}
+	
+	public ZoneConfig admin_getZoneConfig(String accessToken) {
+		return getAdminService().admin_getZoneConfig(accessToken);
 	}
 	
 	private String normalizeFileUploadDataItemName(String fileUploadDataItemName) {

@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.ws.ElementBuilder;
@@ -401,6 +402,12 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		userModel.setMiniBlogId(user.getMiniBlogId());
 		userModel.setDiskQuota(user.getDiskQuota());
 		userModel.setDiskSpaceUsed(user.getDiskSpaceUsed());
+	}
+	
+	protected void fillZoneConfigModel(org.kablink.teaming.remoting.ws.model.ZoneConfig zoneConfigModel, ZoneConfig zoneConfig) {
+		zoneConfigModel.setFsaEnabled(zoneConfig.getFsaEnabled());
+		zoneConfigModel.setFsaSynchInterval(zoneConfig.getFsaSynchInterval());
+		zoneConfigModel.setFsaAutoUpdateUrl(zoneConfig.getFsaAutoUpdateUrl());
 	}
 	
 	protected void fillGroupModel(org.kablink.teaming.remoting.ws.model.Group groupModel, Group group) {

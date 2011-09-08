@@ -30,26 +30,30 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.remoting.ws.model;
 
-package org.kablink.teaming.remoting.ws.service.admin;
-
-import java.util.Calendar;
-import org.kablink.teaming.remoting.ws.model.ReleaseInfo;
-import org.kablink.teaming.remoting.ws.model.ZoneConfig;
-
-/**
- * @author Jong Kim
- *
- */
-public interface AdminService {
-
-	public String admin_getApplicationScopedToken(String accessToken, long applicationId, long userId);
-
-	public void admin_destroyApplicationScopedToken(String accessToken, String token);
+public class ZoneConfig {
+	private boolean fsaEnabled;
+	private int fsaSynchInterval;
+	private String fsaAutoUpdateUrl;
 	
-	public Calendar admin_getCurrentServerTime(String accessToken);
+	public boolean isFsaEnabled() {
+		return fsaEnabled;
+	}
+	public void setFsaEnabled(boolean fsaEnabled) {
+		this.fsaEnabled = fsaEnabled;
+	}
+	public int getFsaSynchInterval() {
+		return fsaSynchInterval;
+	}
+	public void setFsaSynchInterval(int fsaSynchInterval) {
+		this.fsaSynchInterval = fsaSynchInterval;
+	}
+	public String getFsaAutoUpdateUrl() {
+		return fsaAutoUpdateUrl;
+	}
+	public void setFsaAutoUpdateUrl(String fsaAutoUpdateUrl) {
+		this.fsaAutoUpdateUrl = fsaAutoUpdateUrl;
+	}
 	
-	public ReleaseInfo admin_getReleaseInfo(String accessToken);
-	
-	public ZoneConfig admin_getZoneConfig(String accessToken);
 }

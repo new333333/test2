@@ -36,8 +36,10 @@ package org.kablink.teaming.remoting.ws.service.admin;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.remoting.ws.BaseService;
 import org.kablink.teaming.remoting.ws.model.ReleaseInfo;
+import org.kablink.teaming.remoting.ws.model.ZoneConfig;
 
 /**
  * @author Jong Kim
@@ -83,5 +85,17 @@ public class AdminServiceImpl extends BaseService implements AdminService {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		return cal;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.admin.AdminService#admin_getZoneConfig(java.lang.String)
+	 */
+	@Override
+	public ZoneConfig admin_getZoneConfig(String accessToken) {
+		org.kablink.teaming.domain.ZoneConfig zoneConfig = 
+			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+		ZoneConfig zoneConfigModel = new ZoneConfig();
+		fillZoneConfigModel(zoneConfigModel, zoneConfig);
+		return zoneConfigModel;
 	}
 }
