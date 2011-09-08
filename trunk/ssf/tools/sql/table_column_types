@@ -18,6 +18,7 @@ ss_principals name foreignName description_text title normalTitle firstName last
 ss_tags name
 ss_workflowresponses response
 ss_workflowstates state threadName
+ss_zoneconfig fsaAutoUpdateUrl
 ss_zoneinfo zoneName virtualHost
 ss_simplename name emailaddress
 ss_ldapconnectionconfig url userSearches groupSearches principal userIdAttribute mappings credentials

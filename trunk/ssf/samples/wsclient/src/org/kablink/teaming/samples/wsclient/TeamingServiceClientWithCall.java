@@ -294,6 +294,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_testEntryOperation", new Object[] {null, args[1], ids});
 			} else if(args[0].equals("getReleaseInfo")) {
 				wsClient.fetchAndPrintReleaseInfo("TeamingServiceV1", "admin_getReleaseInfo", new Object[] {null});
+			} else if(args[0].equals("getZoneConfig")) {
+				wsClient.fetchAndPrintZoneConfig("TeamingServiceV1", "admin_getZoneConfig", new Object[] {null});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -384,6 +386,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("testFolderOperation <folder operation name> \"folder id1, folder id2,....\"");
 		System.out.println("testFolderEntryOperation <folder entry operation name> \"entry id1, entry id2,....\"");
 		System.out.println("getReleaseInfo");
+		System.out.println("getZoneConfig");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com

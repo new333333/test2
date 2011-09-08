@@ -72,6 +72,7 @@ import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
 import org.kablink.teaming.client.ws.model.User;
 import org.kablink.teaming.client.ws.model.ReleaseInfo;
+import org.kablink.teaming.client.ws.model.ZoneConfig;
 
 public abstract class WSClientBase {
 
@@ -125,7 +126,8 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.FileVersions.class,
 			org.kablink.teaming.client.ws.model.FileVersion.class,
 			org.kablink.teaming.client.ws.model.ReleaseInfo.class,
-			org.kablink.teaming.client.ws.model.BinderBrief.class
+			org.kablink.teaming.client.ws.model.BinderBrief.class,
+			org.kablink.teaming.client.ws.model.ZoneConfig.class
 	};
 
 	protected String host; // optional - default to localhost
@@ -515,6 +517,13 @@ public abstract class WSClientBase {
 		System.out.println("Server start time: " + ((ri.getServerStartTime() == null)? "null" : ri.getServerStartTime().getTime().toString()));
 		System.out.println("License required edition: " + ri.isLicenseRequiredEdition());
 		System.out.println("Content version: " + ri.getContentVersion());
+	}
+	
+	void fetchAndPrintZoneConfig(String serviceName, String operation, Object[] args) throws Exception {
+		ZoneConfig zc = (ZoneConfig) fetch(serviceName, operation, args);
+		System.out.println("FSA enabled: " + zc.isFsaEnabled());
+		System.out.println("FSA synch interval: " + zc.getFsaSynchInterval());
+		System.out.println("FSA auto update URL: " + zc.getFsaAutoUpdateUrl());
 	}
 	
 	void printDefinableEntity(DefinableEntity entity) {
