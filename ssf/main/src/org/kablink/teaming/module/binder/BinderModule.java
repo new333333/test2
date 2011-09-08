@@ -624,6 +624,10 @@ public interface BinderModule {
     public Boolean isBinderFileEncryptionEnabled(Binder binder);
     public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited)
 		throws AccessControlException;
+    
+    public void setBinderBranding(Long binderId, final String branding) throws AccessControlException;
+    public void setBinderBrandingExt(Long binderId, final String brandingExt) throws AccessControlException;
+    
     /**
      * Set the postingEnabled flag.
      * 

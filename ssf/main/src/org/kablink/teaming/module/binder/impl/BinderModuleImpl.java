@@ -2475,6 +2475,32 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		loadBinderProcessor(binder).setFileAgingDates(binder);
 	}
+	
+	//Routines to set the branding
+    public void setBinderBranding(Long binderId, final String branding)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setBranding(branding);
+				return branding;
+			}
+		});
+	}
+    public void setBinderBrandingExt(Long binderId, final String brandingExt)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setBrandingExt(brandingExt);
+				return brandingExt;
+			}
+		});
+    }
+
+
 
 	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
 	public Long getBinderMaxFileSize(Binder binder) {
