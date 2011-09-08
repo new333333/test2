@@ -1001,11 +1001,15 @@ public class ExportHelper {
 
 		//Branding
 		String branding = binder.getBranding();
-		Element brandingEle = settingsEle.addElement("branding");
-		brandingEle.setText(branding);
+		if (branding != null) {
+			Element brandingEle = settingsEle.addElement("branding");
+			brandingEle.setText(branding);
+		}
 		String brandingExt = binder.getBrandingExt();
-		Element brandingExtEle = settingsEle.addElement("brandingExt");
-		brandingExtEle.setText(brandingExt);
+		if (brandingExt != null) {
+			Element brandingExtEle = settingsEle.addElement("brandingExt");
+			brandingExtEle.setText(brandingExt);
+		}
 		
 		// views
 		List<Definition> viewDefinitions = binder.getViewDefinitions();
