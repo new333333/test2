@@ -166,7 +166,55 @@ public class ServerTaskLinkage {
 		// ID.  Return null.
 		return null;
 	}
+
+	/**
+	 * Searches a ServerTaskLinkage for the ServerTaskLink that
+	 * contains the given task.
+	 * 
+	 * @param taskLinkage
+	 * @param taskId2Find
+	 * 
+	 * @return
+	 */
+	public static ServerTaskLink findTaskContainingTask(ServerTaskLinkage taskLinkage, Long taskId2Find) {
+		List<ServerTaskLink> taskList = ((null == taskLinkage) ? null : taskLinkage.getTaskOrder());
+		ServerTaskLink reply = ((null == taskList) ? null : findTaskContainingTaskImpl(taskList, taskId2Find));
+		return reply;
+	}
 	
+	/*
+	 * Searches the ServerTaskLink's in stlList2Search for a
+	 * ServerTaskLink contain taskId2Find as one of its subtasks.  If
+	 * found, that ServerTaskLink is returned.  Otherwise, null is
+	 * returned.
+	 */
+	private static ServerTaskLink findTaskContainingTaskImpl(List<ServerTaskLink> stlList2Search, Long taskId2Find) {
+		// Scan the ServerTaskLink's in the List<ServerTaskLink> to search.
+		for (ServerTaskLink task:  stlList2Search) {
+			// If this ServerTaskLink's subtask List<ServerTaskLink> is the list in
+			// question...
+			List<ServerTaskLink> subtasks = task.getSubtasks();
+			for (ServerTaskLink subtask:  subtasks) {
+				if (subtask.getEntryId().equals(taskId2Find)) {
+					// ...return the ServerTaskLink.
+					return task;
+				}
+			}
+
+			// If the list we're looking for is a subtask of this
+			// ServerTaskLink's subtasks...
+			ServerTaskLink reply = findTaskContainingTaskImpl(subtasks, taskId2Find);
+			if (null != reply) {
+				// ...return that ServerTaskLink.
+				return reply;
+			}
+		}
+
+		// If we get here, we couldn't find tli2Find in tlList2Search.
+		// Return null.
+		return null;
+	}
+
 	/**
 	 * Returns the List<ServerTaskLink> containing the given ID from this
 	 * ServerTaskLinkage.

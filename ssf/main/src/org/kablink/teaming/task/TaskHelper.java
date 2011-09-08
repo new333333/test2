@@ -498,6 +498,34 @@ public class TaskHelper {
 	}
 
 	/**
+	 * Given a task folder and an entry ID of a task, returns that task
+	 * s parent task ID or null if the task isn't a subtask, or the
+	 * task linkage cannot be accessed.
+	 * 
+	 * @param taskFolder
+	 * @param taskId
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Long getParentTaskId(Folder taskFolder, Long taskId) {
+		// If the folder doesn't have a task linkage serialization map
+		// stored on it...
+		Map serializationMap = ((Map) taskFolder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
+		if ((null == serializationMap) || serializationMap.isEmpty()) {
+			// ...there can be no parent task.
+			return null;
+		}
+
+		// If we can find the parent task of the task whose entry ID we
+		// were given, return its ID, otherwise, return null.
+		ServerTaskLinkage tl = ServerTaskLinkage.loadSerializationMap(serializationMap);
+		ServerTaskLink parentTask = ServerTaskLinkage.findTaskContainingTask(tl, taskId);
+		return ((null == parentTask) ? null : parentTask.getEntryId());
+	}
+	
+	
+	/**
 	 * Returns the task completed value from an entry.
 	 * 
 	 * @param entry
