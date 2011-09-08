@@ -1159,7 +1159,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("userGroupSelect")) {
 							String [] v= StringUtil.split(value);
 							for (int vals=0; vals < v.length; ++vals) {
-								if (!v[vals].matches("^[0-9]+$")) {
+								if (!v[vals].matches("^[0-9 ]+$")) {
 									//The value is not a valid integer
 									throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {v[vals], configProperty.attributeValue("caption")});
 								}
