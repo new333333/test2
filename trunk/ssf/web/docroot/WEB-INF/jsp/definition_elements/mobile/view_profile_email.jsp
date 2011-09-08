@@ -32,40 +32,16 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<% // View profile data dispatcher %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:if test="${!empty ssProfileUser}">
-<c:set var="userTitle"><ssf:userTitle user="${ssProfileUser}"/></c:set>
- <div class="userid">
-   <div>
-     <c:if test="${empty ssProfileUser.customAttributes['picture']}">
-		<img src="<html:imagesPath/>pics/UserPhoto.png" 
-		     alt="${userTitle}" />
-     </c:if>
-     <c:if test="${!empty ssProfileUser.customAttributes['picture']}">
-	   <c:set var="selections" value="${ssProfileUser.customAttributes['picture'].value}" />
-	   <c:set var="pictureCount" value="0"/>
-	   <c:forEach var="selection" items="${selections}">
-	     <c:if test="${pictureCount == 0}">
-		   <img src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
-		     alt="${userTitle}" />
-	     </c:if>
-	     <c:set var="pictureCount" value="${pictureCount + 1}"/>
-	   </c:forEach>
-     </c:if>
-   </div>
-   
-   <div class="username">${userTitle}</div>
-   
-   <fieldset style="border:none;padding:2px;margin:0px;">
-     <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-       configElement="${ssConfigElement}" 
-       configJspStyle="mobile" 
-       entry="${ssDefinitionEntry}" 
-       processThisItem="true" />
-   </fieldset>
-   
-   <div class="userid-clear"></div>
- </div>
-</c:if>
+<div class="entry-content">
+  <div class="entry-caption"><c:out value="${property_caption}" /></div>
+  <div class="entry-element">
+   <c:if test="${!empty ssDefinitionEntry[property_name]}">
+     <div>
+       <span><ssf:mailto email="${ssDefinitionEntry[property_name]}"/></span>
+     </div>
+   </c:if>
+  </div>
+</div>

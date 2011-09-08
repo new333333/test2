@@ -1256,7 +1256,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_attribute.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_email.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
@@ -1275,7 +1275,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_attribute.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_email.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
@@ -1294,7 +1294,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_attribute.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_email.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
@@ -1313,7 +1313,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_attribute.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_profile_email.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />

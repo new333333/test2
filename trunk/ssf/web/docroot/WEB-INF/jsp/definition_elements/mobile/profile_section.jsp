@@ -38,6 +38,7 @@
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 %>
+<div style="padding-top:4px;">
 <fieldset><legend><ssf:nlt tag="${property_caption}" checkIfTag="true"/></legend>
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
        configElement="<%= item %>" 
@@ -45,4 +46,5 @@
        entry="${ssDefinitionEntry}" />
  
 </fieldset>
+</div>
   
