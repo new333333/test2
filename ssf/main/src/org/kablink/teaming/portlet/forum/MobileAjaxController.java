@@ -1514,32 +1514,38 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}
 	private ModelAndView ajaxMobileShowUser(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Long entryId) throws Exception {
-	Map model = new HashMap();
-	Binder binder = getProfileModule().getProfileBinder();
-	BinderHelper.setupStandardBeans(bs, request, response, model, binder.getId(), "ss_mobile");
-	model.put(WebKeys.BINDER, binder);
-	model.put(WebKeys.TABS, Tabs.getTabs(request));
-	BinderHelper.setupMobileSearchBeans(bs, request, response, model);
+		Map model = new HashMap();
+		Binder binder = getProfileModule().getProfileBinder();
+		BinderHelper.setupStandardBeans(bs, request, response, model, binder.getId(), "ss_mobile");
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.TABS, Tabs.getTabs(request));
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
-	User user = RequestContextHolder.getRequestContext().getUser();
-	
-	Principal entry = getProfileModule().getEntry(entryId);
-	model.put(WebKeys.ENTRY, entry);
-	
-	//Setup the actions menu list
-	List actions = new ArrayList();
-	//BinderHelper.addActionsHome(request, actions);
-	BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
-	if (entry instanceof User && ((User)entry).getWorkspaceId() != null) {
-		//BinderHelper.addActionsFullView(bs, request, actions, ((User)entry).getWorkspaceId(), null);
-	}
-	BinderHelper.addActionsSpacer(request, actions);
-	BinderHelper.addActionsLogout(request, actions);
-	BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), entryId);
-	model.put("ss_actions", actions);
-	
-	return new ModelAndView("mobile/show_user", model);
-}	
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		Principal entry = getProfileModule().getEntry(entryId);
+		model.put(WebKeys.ENTRY, entry);
+		model.put(WebKeys.DEFINITION_ENTRY, entry);
+
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		if (DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@name='profileEntryStandardView']") == false) {
+			DefinitionHelper.getDefaultEntryView(entry, model);
+		}
+		
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		//BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
+		if (entry instanceof User && ((User)entry).getWorkspaceId() != null) {
+			//BinderHelper.addActionsFullView(bs, request, actions, ((User)entry).getWorkspaceId(), null);
+		}
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), entryId);
+		model.put("ss_actions", actions);
+		
+		return new ModelAndView("mobile/show_user", model);
+	}	
 
 	private ModelAndView ajaxMobileTrackThis(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {

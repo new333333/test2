@@ -33,7 +33,8 @@
  */
 %>
 <% //Textarea view %>
-<div>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div class="entry-content">
 <c:if test="${!empty property_caption}">
  <div class="entry-caption"><c:out value="${property_caption}"/></div>
 </c:if>
