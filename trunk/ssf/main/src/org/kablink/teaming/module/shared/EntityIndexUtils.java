@@ -35,6 +35,7 @@
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -750,11 +751,31 @@ public class EntityIndexUtils {
     	if (wEntry instanceof FolderEntry) 
     		personal = Utils.isWorkareaInProfilesTree(((FolderEntry)wEntry).getParentBinder());
     	//get principals given read access 
-     	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
+     	Set<Long> ids = wEntry.getStateMembers(WfAcl.AccessType.read);
      	//replace owner indicator, but leave team member alone for now
         //for entries, the owner is stored in the entry acl and not its own field like binders
      	//The extra field is not necessary cause updating does not have to optimized
      	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(wEntry.getOwnerId());
+     	if (wEntry instanceof FolderEntry && !((FolderEntry)wEntry).isTop()) {
+     		//This is a reply. Make sure to also check for access to the top entry
+     		WorkflowSupport wEntryTop = ((FolderEntry)wEntry).getTopEntry();
+     		Set idsTop = wEntryTop.getStateMembers(WfAcl.AccessType.read);
+     		if (idsTop.remove(ObjectKeys.OWNER_USER_ID)) idsTop.add(wEntryTop.getOwnerId());
+     		if (ids.isEmpty()) {
+     			ids.addAll(idsTop);
+     		}
+     		if (!idsTop.isEmpty() && !wEntryTop.isWorkAreaAccess(WfAcl.AccessType.read)) {
+     			//The top entry has specified a list of ids and has not specified "folder default", so filter the ids
+	     		Set<Long> idsToDelete = new HashSet<Long>();
+	     		for (Long id : ids) {
+	     			//If the top entry does not also allow this id, the remove the id
+	     			if (!idsTop.contains(id)) idsToDelete.add(id);
+	     		}
+	     		for (Long id : idsToDelete) {
+	     			ids.remove(id);
+	     		}
+     		}
+     	}
      	// I'm not sure if putting together a long string value is more
      	// 	efficient than processing multiple short strings... We will see.
      	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
@@ -791,23 +812,40 @@ public class EntityIndexUtils {
        		// Add the Entry_ACL field
        		if (wEntry.hasAclSet()) {
        			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
-       			for(String acl:acls)
-       				doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+	       		for(String acl:acls) {
+	       			doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+	       		}
+       		} else {
+	       		//add entry access. 
+	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
+	       			//Make sure to use the acl of the top entry since replies use the top entry acl (unless they specify their own acl)
+	       			entry = ((FolderEntry)entry).getTopEntry();
+	       			wEntry = (WorkflowSupport)entry;
+	       		}
+	       		if (wEntry.hasAclSet()) {
+	       			//This must have been a reply not running a workflow, so check the top entry workflow ACL
+	       			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
+	       			for(String acl:acls) {
+	       				doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+	       			}
+	       		} else if (((Entry)entry).hasEntryAcl()) {
+	    			//The entry has its own ACL specified
+	       			addEntryAcls(doc, binder, (Entry)entry);
+	    		} else if (!wEntry.hasAclSet() && !((Entry)entry).hasEntryAcl()) {
+	    			//The entry is using the folder's ACL
+	    			addDefaultEntryAcls(doc, binder, (Entry)entry);
+	    		}
        		}
-       		//add entry access
-    		if (((Entry)entry).hasEntryAcl()) {
-    			addEntryAcls(doc, binder, (Entry)entry);
-    		} else if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop() && ((FolderEntry)entry).getTopEntry().hasEntryAcl()) {
-    			//This is a reply to an folder entry, set the acl the same as the top entry
-    			addEntryAcls(doc, binder, (Entry)entry);
-    		} else if (!wEntry.hasAclSet() && !((Entry)entry).hasEntryAcl()) {
-    			addDefaultEntryAcls(doc, binder, (Entry)entry);
-    		}
        		//add binder access
     		addBinderAcls(doc, binder);
 
     	} else if (entry instanceof FolderEntry) {
+    		//(This case may no longer be valid now that workflow is included in the Kablink build)
        		// Add the Entry_ACL field
+       		if (!((FolderEntry)entry).isTop()) {
+       			//Make sure to use the acl of the top entry since replies use the top entry acl
+       			entry = ((FolderEntry)entry).getTopEntry();
+       		}
     		if (((Entry)entry).hasEntryAcl()) {
     			addEntryAcls(doc, binder, (Entry)entry);
     		} else {
@@ -831,12 +869,24 @@ public class EntityIndexUtils {
     //This is used to store the "read" acls in a document that is not a search document
     public static void addReadAccess(org.dom4j.Element parent, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
 		// Add ACL field. We only need to index ACLs for read access.
-  		//add binder access
    		if (entry instanceof WorkflowSupport) {
   	   		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
    	   		Element acl = parent.addElement(Constants.ENTRY_ACL_FIELD);
-       		acl.setText(getWfEntryAccess(wEntry));
+
+       		// Add the Entry_ACL field
+       		if (wEntry.hasAclSet()) {
+           		acl.setText(getWfEntryAccess(wEntry));
+       		} else {
+	       		//add entry access of the top entry. 
+	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
+	       			//Make sure to use the acl of the top entry since replies use the top entry acl
+	       			entry = ((FolderEntry)entry).getTopEntry();
+	       			wEntry = (WorkflowSupport)entry;
+	       		}
+	       		acl.setText(getWfEntryAccess(wEntry));
+	       	}
+       		//add binder access
     		addBinderAcls(parent, binder);
 
     	} else if (entry instanceof User) {
