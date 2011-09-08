@@ -33,6 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!empty ssProfileUser}">
 <c:set var="userTitle"><ssf:userTitle user="${ssProfileUser}"/></c:set>
@@ -79,6 +80,14 @@
    <c:if test="${!empty ssProfileUser.phone}">
      <div class="phone">${ssProfileUser.phone}</div>
    </c:if>
+   
+   <fieldset style="border:none;padding:2px;margin:0px;">
+     <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+       configElement="${ssConfigElement}" 
+       configJspStyle="mobile" 
+       entry="${ssDefinitionEntry}" 
+       processThisItem="true" />
+   </fieldset>
    
    <div class="userid-clear"></div>
  </div>
