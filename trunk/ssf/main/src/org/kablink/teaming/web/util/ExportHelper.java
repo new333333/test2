@@ -106,6 +106,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.export.ElementBuilder;
 import org.kablink.teaming.module.definition.export.ElementBuilderUtil;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
@@ -998,6 +999,14 @@ public class ExportHelper {
 
 		Element settingsEle = element.addElement("settings");
 
+		//Branding
+		String branding = binder.getBranding();
+		Element brandingEle = settingsEle.addElement("branding");
+		brandingEle.setText(branding);
+		String brandingExt = binder.getBrandingExt();
+		Element brandingExtEle = settingsEle.addElement("brandingExt");
+		brandingExtEle.setText(brandingExt);
+		
 		// views
 		List<Definition> viewDefinitions = binder.getViewDefinitions();
 		Element views = settingsEle.addElement("views");
@@ -2619,10 +2628,21 @@ public class ExportHelper {
 			Map<String, Definition>definitionIdMap, Map reportMap, Binder topBinder, 
 			Map<String, Principal> nameCache) {
 		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
+		FilesErrors filesErrors = new FilesErrors();
 
 		// current binder definitions
 
 		List<Definition> newDefinitionList = binder.getDefinitions();
+		
+		//Branding
+		Element brandingEle = (Element)entityDoc.selectSingleNode("//settings//branding");
+		if (brandingEle != null) {
+			binderModule.setBinderBranding(binder.getId(), brandingEle.getText());
+		}
+		Element brandingExtEle = (Element)entityDoc.selectSingleNode("//settings//brandingExt");
+		if (brandingExtEle != null) {
+			binderModule.setBinderBrandingExt(binder.getId(), brandingExtEle.getText());
+		}
 
 		// views
 		String xPath = "//settings//views//view";
@@ -2665,27 +2685,27 @@ public class ExportHelper {
 		if (versionControls != null) {
 			String versionsEnabled = versionControls.attributeValue("versionsEnabled", null);
 			if (versionsEnabled != null) {
-				binder.setVersionsEnabled(Boolean.valueOf(versionsEnabled));
+				binderModule.setBinderVersionsEnabled(binder.getId(), Boolean.valueOf(versionsEnabled));
 			}
 			String versionsToKeep = versionControls.attributeValue("versionsToKeep", null);
 			if (versionsToKeep != null) {
-				binder.setVersionsToKeep(Long.valueOf(versionsToKeep));
+				binderModule.setBinderVersionsToKeep(binder.getId(), Long.valueOf(versionsToKeep));
 			}
 			String versionAgingEnabled = versionControls.attributeValue("versionAgingEnabled", null);
 			if (versionAgingEnabled != null) {
-				binder.setVersionAgingEnabled(Boolean.valueOf(versionAgingEnabled));
+				binderModule.setBinderVersionAgingEnabled(binder.getId(), Boolean.valueOf(versionAgingEnabled));
 			}
 			String versionAgingDays = versionControls.attributeValue("versionAgingDays", null);
 			if (versionAgingDays != null) {
-				binder.setVersionAgingDays(Long.valueOf(versionAgingDays));
+				binderModule.setBinderVersionAgingDays(binder.getId(), Long.valueOf(versionAgingDays));
 			}
 			String versionsMaxFileSize = versionControls.attributeValue("versionsMaxFileSize", null);
 			if (versionsMaxFileSize != null) {
-				binder.setMaxFileSize(Long.valueOf(versionsMaxFileSize));
+				binderModule.setBinderMaxFileSize(binder.getId(), Long.valueOf(versionsMaxFileSize));
 			}
 			String fileEncryptionEnabled = versionControls.attributeValue("fileEncryptionEnabled", null);
 			if (fileEncryptionEnabled != null) {
-				binder.setFileEncryptionEnabled(Boolean.valueOf(fileEncryptionEnabled));
+				binderModule.setBinderFileEncryptionEnabled(binder.getId(), Boolean.valueOf(fileEncryptionEnabled), filesErrors);
 			}
 		}
 
