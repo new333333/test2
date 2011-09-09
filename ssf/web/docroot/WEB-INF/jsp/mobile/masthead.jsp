@@ -70,4 +70,5 @@
 </table>
 
 </div>
+<%@ include file="/WEB-INF/jsp/mobile/logout.jsp" %>
 
