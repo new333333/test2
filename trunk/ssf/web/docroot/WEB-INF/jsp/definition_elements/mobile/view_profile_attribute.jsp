@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <div class="entry-content">
-  <div class="entry-caption"><c:out value="${property_caption}" /></div>
+  <div class="attribute-label"><c:out value="${property_caption}" /></div>
   <div class="entry-element">
       <c:out value="${ssDefinitionEntry[property_name]}" escapeXml="false"/>
   </div>

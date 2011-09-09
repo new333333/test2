@@ -33,18 +33,20 @@
  */
 %>
 <% //Profile section view %>
+<% //This builds the DIV around each section on the mobile full profile page %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 %>
 <div style="padding-top:4px;">
-<fieldset><legend><ssf:nlt tag="${property_caption}" checkIfTag="true"/></legend>
+<div class="sectionHeading"><ssf:nlt tag="${property_caption}" checkIfTag="true"/></div>
+
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
        configElement="<%= item %>" 
        configJspStyle="mobile" 
        entry="${ssDefinitionEntry}" />
  
-</fieldset>
 </div>
   
