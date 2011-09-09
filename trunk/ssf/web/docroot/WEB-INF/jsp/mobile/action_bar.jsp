@@ -34,66 +34,6 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
-<script type="text/javascript">
-function ss_logoff() {
-	var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
-	if (x == null || x == "") {
-		var y = '${ss_logoutUrl}';
-		var logoutForm;
-		
-		// Get the logout form.  We use a form so the logout request can be made with
-		// a "post" instead of a "get".  This prevents logout spoofing.
-		logoutForm = document.getElementById( 'logoutForm' );
-		if ( logoutForm != null )
-		{
-			logoutForm.action = y;
-			logoutForm.submit();
-		}
-		else
-		{
-			// This should never happen.
-			alert( 'Could not find the logout form.' );
-		}
-
-		// This is how it used to be done
-		//alert(y);
-		//self.location.href=y;
-	} else {
-		//alert (x);
-		var y = '${ss_logoutUrl}';
-		ss_logoff_from_teaming_then_sso(y);
-	}
-}
-function ss_logoff_from_teaming_then_sso(logoutURL) {
-	callbackRoutine = ss_logoff_from_sso
-	var x;
-
-	if (window.XMLHttpRequest) {
-	x = new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
-	x = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	
-	x.open("POST", logoutURL, true);
-	
-	x.onreadystatechange = function() {
-		if (x.readyState != 4) {
-			return;
-		}
-		if (x.status == 200) {
-			callbackRoutine(x.responseText)        	
-		} else {		
-			callbackRoutine(x.statusText)
-		}
-	}
-	x.send(null);
-	delete x;
-}      
-function ss_logoff_from_sso(s) {
-	self.location.href='<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
-}
-</script>
-
 <div id="actions">
  <table cellspacing="0" cellpadding="0" width="100%">
  <tr>
@@ -186,8 +126,3 @@ function ss_logoff_from_sso(s) {
 
 <%@ include file="/WEB-INF/jsp/mobile/new_menu.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/actions_menu.jsp" %>
-
-<!-- This form is used for logging out. -->
-<!-- The value of the action attribute will be filled in at runtime. -->
-<form name="logoutForm" id="logoutForm" method="post" action="" >
-</form> 

@@ -34,6 +34,14 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 <div class="header">
+<script type="text/javascript">
+function ss_setMastheadTitle(title) {
+	var titleElem = document.getElementById('mastHeadTitle');
+	if ( titleElem != null ) {
+		titleElem.innerHTML = title; 
+	}
+}
+</script>
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td valign="top" align="left" width="1%">
@@ -45,7 +53,7 @@
   </div>
 </td>
 <td valign="middle" align="center">
-  <div class="masthead-title">
+  <div id="mastHeadTitle" class="masthead-title">
   Novell Vibe
   </div>
 </td>
@@ -63,3 +71,5 @@
 <c:if test="${!ss_hideMiniBlog}">
 <%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
 </c:if>
+
+<%@ include file="/WEB-INF/jsp/mobile/logout.jsp" %>
