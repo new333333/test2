@@ -234,6 +234,7 @@ span.pad-left20 select {
 	
 .content {
 	width: 100%;
+	background-color: #949494;
 	}
 
 .userid {
@@ -353,7 +354,7 @@ span.pad-left20 select {
 	position: relative;
 	}
 .folder-content {
-	background-color: #505354;
+	background-color: #c4c4c4;
 	}
 	
 .folder-head {
@@ -371,11 +372,17 @@ span.pad-left20 select {
 .folder-item {
 	font-size: 1.1em;
 	background-color: #fff;
-	padding: 6px 4px 6px 15px;
+	padding: 6px 20px 6px 15px;
 	border-bottom: 1px solid #cccccc;
+	white-space: nowrap;
+	overflow: hidden;
 	}
 .folder-item-ws {
-	background-color: #f6f6f6;
+	background-color: #ededed;
+	border-bottom: 1px solid #cccccc;
+	}
+.folder-item-profile {
+	background-color: #ebf5f5;
 	border-bottom: 1px solid #cccccc;
 	}
 .folder-item-subtext {
@@ -860,4 +867,18 @@ a.ss_linkButton:link, a.ss_linkButton:visited {
 
 .my-item a {
 	padding: 5px 100px 5px 0px;
+	}
+
+/* Profile styles */
+
+.sectionHeading {
+	color:#5A9A98!important;
+	font-size: .9em;
+	line-height:1.1em;
+	padding:10px 0px 5px;
+	}
+
+.attribute-label {
+	font-size: .85em;
+	color: #949494;
 	}

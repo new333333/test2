@@ -36,119 +36,110 @@
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/mobile/masthead_new.jsp" %>
+<%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>
 
 <div style="height:512px; position:relative" class="content" style="background-color: #353838;">
 <div class="folders">
   <div class="folder-content">
-    <div class="home-grid-row">
-	    <div class="home-grid-cell-1">
-			<a id="myworkspace-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-								action="__ajax_mobile" actionUrl="false" 
-								binderId="${ssBinder.id}"
-								operation="mobile_show_workspace" />">
-				<div class="main-item myws-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_home_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="navigation.myWorkspace"/></div>
-				</div>    
-			</a>
-	    </div>
-		<div class="home-grid-cell-1">
-		    <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+		<div class="home-grid-row">
+			<div class="home-grid-cell-1">
+				<a id="myworkspace-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									binderId="${ssBinder.id}"
-									operation="mobile_show_favorites" />">
-				<div class="main-item myteams-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_favorites_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="navigation.myFavorites"/></div>
-				</div>    
-		    </a>
-	    </div>
-	    <div class="home-grid-cell-1">
-		    <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-									action="__ajax_mobile" actionUrl="false" 
-									binderId="${ssBinder.id}"
-									operation="mobile_show_teams" />">
-				<div class="main-item myteams-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_team_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="navigation.myTeams"/></div>
-				</div>    
-		    </a>
-    	</div>
+									operation="mobile_show_workspace" />">
+					<div class="main-item myws-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_home_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="navigation.myWorkspace"/></div>
+					</div>    
+				</a>
+			</div>
+			<div class="home-grid-cell-1">
+				<a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+										action="__ajax_mobile" actionUrl="false" 
+										binderId="${ssBinder.id}"
+										operation="mobile_show_favorites" />">
+					<div class="main-item myteams-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_favorites_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="navigation.myFavorites"/></div>
+					</div>    
+				</a>
+			</div>
+			<div class="home-grid-cell-1">
+				<a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+										action="__ajax_mobile" actionUrl="false" 
+										binderId="${ssBinder.id}"
+										operation="mobile_show_teams" />">
+					<div class="main-item myteams-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_team_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="navigation.myTeams"/></div>
+					</div>    
+				</a>
+			</div>
+		</div>
+	
+		<div class="home-grid-row">
+			<div class="home-grid-cell">
+				<a id="whatsnew-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+										action="__ajax_mobile" actionUrl="false" 
+										operation="mobile_whats_new" />">
+					<div class="main-item myteams-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_whatsnew_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="mobile.whatsNew"/></div>
+					</div>    
+				</a>
+			</div>
+			<div class="home-grid-cell">
+				<a id="following-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+										action="__ajax_mobile" actionUrl="false" 
+										binderId="${ssBinder.id}"
+										operation="mobile_show_following" />">
+					<div class="main-item myfavorites-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_follow_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="navigation.following"/></div>
+					</div>
+				</a>
+			</div>
+			<div class="home-grid-cell">
+				<a id="settings-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+										action="__ajax_mobile" actionUrl="false" 
+										binderId="${ssBinder.id}"
+										operation="mobile_show_recent_places" />">
+					<div class="main-item myws-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_recent_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="navigation.recentPlaces"/></div>
+					</div>    
+				</a>  
+			</div>
+		</div>
+	
+		<div class="home-grid-row">
+			<div class="home-grid-cell">
+				<a id="myprofile-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+										action="__ajax_mobile" actionUrl="false" 
+										entryId="${ssUser.id}"
+										operation="mobile_show_user" />">
+					<div class="main-item myws-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_profile_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="navigation.myProfile"/></div>
+					</div>    
+				</a>
+			</div>
+			<div class="home-grid-cell">
+				<div class="main-item">
+					  <div><img src="<html:rootPath/>images/mobile/main_blank_128.png"/></div>
+					  <div class="main-item-label">&nbsp;</div>
+				</div>
+			</div>
+			<div class="home-grid-cell">
+				<a class="hierarchy-a" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');return false;"/>
+					<div class="main-item navigation-a">
+					  <div><img src="<html:rootPath/>images/mobile/main_hierarchy_128.png"/></div>
+					  <div class="main-item-label"><ssf:nlt tag="navigation.hierarchy"/></div>
+					</div>
+				</a>
+			</div>
+		</div>
 	</div>
-
-	<div class="home-grid-row">
-	    <div class="home-grid-cell">
-		    <a id="whatsnew-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-									action="__ajax_mobile" actionUrl="false" 
-									operation="mobile_whats_new" />">
-				<div class="main-item myteams-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_whatsnew_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="mobile.whatsNew"/></div>
-				</div>    
-		    </a>
-		</div>
-		<div class="home-grid-cell">
-		    <a id="following-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-									action="__ajax_mobile" actionUrl="false" 
-									binderId="${ssBinder.id}"
-									operation="mobile_show_following" />">
-				<div class="main-item myfavorites-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_follow_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="navigation.following"/></div>
-				</div>
-			</a>
-		</div>
-	    <div class="home-grid-cell">
-		    <a id="settings-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-									action="__ajax_mobile" actionUrl="false" 
-									binderId="${ssBinder.id}"
-									operation="mobile_show_recent_places" />">
-				<div class="main-item myws-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_recent_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="navigation.recentPlaces"/></div>
-				</div>    
-		    </a>  
-    	</div>
-    </div>
-
-    <div class="home-grid-row">
-    	<div class="home-grid-cell">
-		    <a id="myprofile-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-									action="__ajax_mobile" actionUrl="false" 
-									entryId="${ssUser.id}"
-									operation="mobile_show_user" />">
-				<div class="main-item myws-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_profile_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="navigation.myProfile"/></div>
-				</div>    
-		    </a>
-    	</div>
-		<div class="home-grid-cell">
-		    <a id="mymicroblog-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-									action="__ajax_mobile" actionUrl="false" 
-									binderId="${ssBinder.id}"
-									operation="mobile_show_miniblog" />">
-				<div class="main-item myfavorites-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_blog_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="miniblog"/></div>
-				</div>
-			</a>
-		</div>
-		<div class="home-grid-cell">
-			<a id="myfiles-a" href="<ssf:url adapter="true" portletName="ss_forum" 
-									action="__ajax_mobile" actionUrl="false" 
-									binderId="${ssBinder.id}"
-									operation="mobile_show_files" />">
-				<div class="main-item myfavorites-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_myfiles_128.png"/></div>
-				  <div class="main-item-label"><ssf:nlt tag="navigation.myFiles"/></div>
-				</div>
-			</a>
-		</div>
-    </div>
-    <div class="home-grid-row">
-    </div>
-  </div>
 </div>
 
 </div>

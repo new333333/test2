@@ -33,6 +33,23 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${!empty ssProfileUser}">
+  <div class="folders">
+		<a id="myprofile-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+								action="__ajax_mobile" actionUrl="false" 
+								entryId="${ssProfileUser.id}"
+								operation="mobile_show_user" />">
+			<div class="folder-item folder-item-profile">
+				<div>
+			  		<img class="margin5r" src="<html:rootPath/>images/mobile/vibe_profile_16.png" align="absmiddle" border="0" />
+			  		<ssf:nlt tag="binder.profile.view"/>
+				</div>
+			</div>    
+		</a>
+  </div>
+</c:if>
+
+
 <c:if test="${!empty ssWorkspaces}">
   <div class="folders">    
 	<c:forEach var="workspace" items="${ssWorkspaces}" >
@@ -40,7 +57,7 @@
 				folderId="${workspace.id}" 
 				action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
 	      <div class="folder-item folder-item-ws">
-		    <img class="margin5r" src="<html:rootPath/>images/mobile/workspace_top.png" align="absmiddle" />
+		    <img class="margin5r" src="<html:rootPath/>images/mobile/workspace_top.png" align="absmiddle" border="0" />
 		  <c:if test="${empty workspace.title}">
 		    (<ssf:nlt tag="workspace.noTitle"/>)
 		  </c:if>
@@ -58,7 +75,7 @@
 				folderId="${folder.id}" 
 				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 	      <div class="folder-item">
-            <img class="margin5r" src="<html:rootPath/>images/mobile/folder.png" align="absmiddle" />
+            <img class="margin5r" src="<html:rootPath/>images/mobile/folder.png" align="absmiddle" border="0" />
 		  <c:if test="${empty folder.title}">
 		    (<ssf:nlt tag="folder.noTitle"/>)
 		  </c:if>
