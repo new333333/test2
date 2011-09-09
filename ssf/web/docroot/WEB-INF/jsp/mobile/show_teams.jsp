@@ -68,6 +68,9 @@
 			</div>
 			</a>
 	  </c:forEach>
+	  <c:if test="${empty ss_mobileTeamsList}">
+	    <div class="entry-content margintop2"><ssf:nlt tag="mobile.noTeams"/></div>
+	</c:if>
 	</div>
   </div>
 </div>
