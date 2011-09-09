@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtGroup;
@@ -398,7 +399,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
-
+		
 		case GET_DISK_USAGE_INFO:
 		{
 			GetDiskUsageInfoCmd gduiCmd;
@@ -491,6 +492,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_FILE_SYNC_APP_CONFIGURATION:
+		{
+			GwtFileSyncAppConfiguration fileSyncAppConfiguration; 
+
+			fileSyncAppConfiguration = GwtServerHelper.getFileSyncAppConfiguration( this );
+			response = new VibeRpcResponse( fileSyncAppConfiguration );
+			return response;
+		}
+
 		case GET_FOLDER:
 		{
 			GetFolderCmd gfCmd;
@@ -1122,6 +1132,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = saveBrandingData( ri, cmd2.getBinderId(), cmd2.getBrandingData() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_FILE_SYNC_APP_CONFIGURATION:
+		{
+			SaveFileSyncAppConfigurationCmd sfsacCmd;
+			Boolean result;
+			
+			sfsacCmd = ((SaveFileSyncAppConfigurationCmd) cmd);
+			result = GwtServerHelper.saveFileSyncAppConfiguration( this, sfsacCmd.getFileSyncAppConfiguration() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		

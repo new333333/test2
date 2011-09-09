@@ -91,6 +91,7 @@ public class EventHelper {
 		case FULL_UI_RELOAD:                    reply = new FullUIReloadEvent();                 break;
 		case GOTO_MY_WORKSPACE:                 reply = new GotoMyWorkspaceEvent();              break;
 		case INVOKE_HELP:                       reply = new InvokeHelpEvent();                   break;
+		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:reply = new InvokeConfigureFileSyncAppDlgEvent();break;
 		case LOGIN:                             reply = new LoginEvent();                        break;
 		case PRE_LOGOUT:                        reply = new PreLogoutEvent();                    break;
 		case MASTHEAD_HIDE:                     reply = new MastheadHideEvent();                 break;
@@ -352,6 +353,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:
+				// An InvokeConfigureFileSyncAppDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeConfigureFileSyncAppDlgEvent.registerEvent( eventBus, ((InvokeConfigureFileSyncAppDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_REPLY:
 				// An InvokeReplyEvent!  Can the event handler we were
 				// given handle that?
@@ -441,7 +451,7 @@ public class EventHelper {
 					registrationHandler = MarkEntryUnreadEvent.registerEvent(eventBus, ((MarkEntryUnreadEvent.Handler) eventHandler));
 				}
 				break;
-				
+
 			case MASTHEAD_HIDE:
 				// A MastheadHideEvent!  Can the event handler we were
 				// given handle that?
@@ -917,6 +927,7 @@ public class EventHelper {
 			case GOTO_PERMALINK_URL:                hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);             break;
 			
 			case INVOKE_HELP:                       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                   break;
+			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler);break;
 			case INVOKE_REPLY:                      hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                  break;
 			case INVOKE_SHARE:                      hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                  break;
 			case INVOKE_SIMPLE_PROFILE:             hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);          break;

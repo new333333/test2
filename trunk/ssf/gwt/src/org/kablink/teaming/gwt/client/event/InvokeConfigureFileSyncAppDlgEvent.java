@@ -39,38 +39,28 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The EditSiteBrandingEvent is used to edit the site branding.
+ * The InvokeConfigureFileSyncDlgEvent is used to invoke the "Configure File Sync App" dialog.
  * 
- * @author drfoster@novell.com
+ * @author jwootton@novell.com
  */
-public class EditSiteBrandingEvent extends VibeEventBase<EditSiteBrandingEvent.Handler> {
+public class InvokeConfigureFileSyncAppDlgEvent extends VibeEventBase<InvokeConfigureFileSyncAppDlgEvent.Handler>
+{
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    private int m_x = -1;
-    private int m_y = -1;
-
 	/**
 	 * Handler interface for this event.
 	 */
-	public interface Handler extends EventHandler {
-		void onEditSiteBranding(EditSiteBrandingEvent event);
+	public interface Handler extends EventHandler
+	{
+		void onInvokeConfigureFileSyncAppDlg( InvokeConfigureFileSyncAppDlgEvent event );
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public EditSiteBrandingEvent() {
-		super();
-	}
-	
-	/**
-	 * 
-	 */
-	public EditSiteBrandingEvent( int x, int y )
+	public InvokeConfigureFileSyncAppDlgEvent()
 	{
-		// We want the edit branding dialog to come up at this location.
-		m_x = x;
-		m_y = y;
+		super();
 	}
 	
 	/**
@@ -81,15 +71,17 @@ public class EditSiteBrandingEvent extends VibeEventBase<EditSiteBrandingEvent.H
 	 * @param handler
 	 */
     @Override
-    protected void dispatch(Handler handler) {
-        handler.onEditSiteBranding(this);
+    protected void dispatch( Handler handler )
+    {
+        handler.onInvokeConfigureFileSyncAppDlg( this );
     }
 	
 	/**
 	 * Fires a new one of these events.
 	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new EditSiteBrandingEvent());
+	public static void fireOne()
+	{
+		GwtTeaming.fireEvent( new InvokeConfigureFileSyncAppDlgEvent() );
 	}
     
 	/**
@@ -100,7 +92,8 @@ public class EditSiteBrandingEvent extends VibeEventBase<EditSiteBrandingEvent.H
 	 * @return
 	 */
     @Override
-    public Type<Handler> getAssociatedType() {
+    public Type<Handler> getAssociatedType()
+    {
         return TYPE;
     }
     
@@ -113,26 +106,11 @@ public class EditSiteBrandingEvent extends VibeEventBase<EditSiteBrandingEvent.H
 	 * @return
 	 */
 	@Override
-	public TeamingEvents getEventEnum() {
-		return TeamingEvents.EDIT_SITE_BRANDING;
-	}
-	
-	/**
-	 * Return the x position where the Edit Branding dialog should be
-	 */
-	public int getX()
+	public TeamingEvents getEventEnum()
 	{
-		return m_x;
+		return TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG;
 	}
-		
-	/**
-	 * Return the y position where the Edit Branding dialog should be
-	 */
-	public int getY()
-	{
-		return m_y;
-	}
-		
+
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -142,7 +120,8 @@ public class EditSiteBrandingEvent extends VibeEventBase<EditSiteBrandingEvent.H
 	 * 
 	 * @return
 	 */
-	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
-		return eventBus.addHandler(TYPE, handler);
+	public static HandlerRegistration registerEvent( SimpleEventBus eventBus, Handler handler )
+	{
+		return eventBus.addHandler( TYPE, handler );
 	}
 }
