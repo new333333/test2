@@ -39,10 +39,13 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
@@ -51,7 +54,9 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
@@ -89,12 +94,14 @@ public class AdminControl extends Composite
 	implements 
 	// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
+		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
+	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -102,6 +109,7 @@ public class AdminControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
+		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -587,8 +595,22 @@ public class AdminControl extends Composite
 		// Are we dealing with the "Site Branding" action?
 		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
 		{
+			EditSiteBrandingEvent esbEvent;
+			int x;
+			int y;
+
+			// Position the Edit Branding dialog at the top, left corner of the content control.
+			x = m_contentControl.getAbsoluteLeft();
+			y = m_contentControl.getAbsoluteTop();
+			
 			// Yes, inform all registered action handlers that the user wants to edit the site branding.
-			EditSiteBrandingEvent.fireOne();
+			esbEvent = new EditSiteBrandingEvent( x, y );
+			GwtTeaming.fireEvent( esbEvent );
+		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_FILE_SYNC_APP )
+		{
+			// Fire the event to invoke the "Configure File Sync" dialog.
+			InvokeConfigureFileSyncAppDlgEvent.fireOne();
 		}
 		else
 		{
@@ -922,6 +944,125 @@ public class AdminControl extends Composite
 		hideControl();
 	}// end onAdministrationExit()
 	
+
+	/**
+	 * Handles InvokeConfigureFileSyncAppDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeConfigureFileSyncAppDlgEvent.Handler.onInvokeConfigureFileSyncAppDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureFileSyncAppDlg( InvokeConfigureFileSyncAppDlgEvent event )
+	{
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		
+		// Create a callback that will be called when we get the File Sync App configuration.
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFileSyncAppConfiguration() );
+			}
+	
+			/**
+			 * We successfully retrieved the File Sync App configuration.  Now invoke the "Configure File Sync App" dialog.
+			 */
+			public void onSuccess( VibeRpcResponse response )
+			{
+				int x;
+				int y;
+				GwtFileSyncAppConfiguration fileSyncAppConfiguration;
+				EditSuccessfulHandler editSuccessfullHandler;
+
+
+				fileSyncAppConfiguration = (GwtFileSyncAppConfiguration) response.getResponseData();
+				
+				// Create a handler that will be called when the user presses the ok button in the dialog.
+				editSuccessfullHandler = new EditSuccessfulHandler()
+				{
+					/**
+					 * This method gets called when user user presses ok in the "Configure File Sync App" dialog.
+					 */
+					public boolean editSuccessful( Object obj )
+					{
+						AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
+						GwtFileSyncAppConfiguration fileSyncAppConfiguration;
+
+						fileSyncAppConfiguration = (GwtFileSyncAppConfiguration) obj;
+						
+						// Create the callback that will be used when we issue an ajax request to save the file sync app configuration.
+						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
+						{
+							/**
+							 * 
+							 */
+							public void onFailure( Throwable t )
+							{
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_SaveFileSyncAppConfiguration() );
+							}
+					
+							/**
+							 * 
+							 * @param result
+							 */
+							public void onSuccess( VibeRpcResponse response )
+							{
+								// Nothing to do.
+							}
+						};
+				
+						// Issue an ajax request to save the File Sync App configuration.
+						{
+							SaveFileSyncAppConfigurationCmd cmd;
+							
+							// Issue an ajax request to save the File Sync App configuration to the db.  rpcSaveCallback will
+							// be called when we get the response back.
+							cmd = new SaveFileSyncAppConfigurationCmd( fileSyncAppConfiguration );
+							GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+						}
+						
+						return true;
+					}
+				};
+				
+				// Get the position of the content control.
+				x = m_contentControl.getAbsoluteLeft();
+				y = m_contentControl.getAbsoluteTop();
+				
+				// Have we already created a "Configure File Sync App" dialog?
+				if ( m_configureFileSyncAppDlg == null )
+				{
+					// No, create one.
+					m_configureFileSyncAppDlg = new ConfigureFileSyncAppDlg( editSuccessfullHandler, null, false, true, x, y );
+				}
+				
+				m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
+				m_configureFileSyncAppDlg.setPopupPosition( x, y );
+				m_configureFileSyncAppDlg.show();
+				
+			}
+		};
+
+		// Issue an ajax request to get the File Sync App configuration.  When we get the File Sync App configuration
+		// we will invoke the "Configure File Sync App" dialog.
+		{
+			GetFileSyncAppConfigurationCmd cmd;
+			
+			// Issue an ajax request to get the File Sync App configuration from the db.
+			cmd = new GetFileSyncAppConfigurationCmd();
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
+	}
+	
+
 	/**
 	 * Handles PreLogoutEvent's received by this class.
 	 * 

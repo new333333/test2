@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
+import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
@@ -1710,7 +1711,7 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 
-			// Does the user have rights to "configure hope page"?
+			// Does the user have rights to "configure home page"?
 			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
 			{
 				// Yes
@@ -1825,6 +1826,19 @@ public class GwtServerHelper {
 
 				adminAction = new GwtAdminAction();
 				adminAction.init( title, "", AdminAction.SITE_BRANDING );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+			
+			// Does the user have rights to "Configure File Sync App"?
+			if ( adminModule.testAccess( AdminOperation.manageFileSynchApp ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configureVibeDesktop" );
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.CONFIGURE_FILE_SYNC_APP );
 				
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
@@ -2353,6 +2367,35 @@ public class GwtServerHelper {
 		return reply;
 	}
 
+	/**
+	 * Return a GwtFileSyncAppConfiguration object that holds the File Sync App configuration data
+	 * 
+	 * @return
+	 */
+	public static GwtFileSyncAppConfiguration getFileSyncAppConfiguration( AllModulesInjected allModules )
+	{
+		GwtFileSyncAppConfiguration fileSyncAppConfiguration;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		
+		zoneModule = allModules.getZoneModule();
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		
+		fileSyncAppConfiguration = new GwtFileSyncAppConfiguration();
+		
+		// Get the whether the File Sync App is enabled.
+		fileSyncAppConfiguration.setIsFileSyncAppEnabled( zoneConfig.getFsaEnabled() );
+		
+		// Get the File Sync App sync interval.
+		fileSyncAppConfiguration.setSyncInterval( zoneConfig.getFsaSynchInterval() );
+		
+		// Get the auto-update url.
+		fileSyncAppConfiguration.setAutoUpdateUrl( zoneConfig.getFsaAutoUpdateUrl() );
+		
+		return fileSyncAppConfiguration;
+	}
+	
+	
 	/**
 	 * Return a list of tags associated with the given entry.
 	 */
@@ -3657,6 +3700,7 @@ public class GwtServerHelper {
 		case GET_EXTENSION_INFO:
 		case GET_FAVORITES:
 		case GET_FILE_ATTACHMENTS:
+		case GET_FILE_SYNC_APP_CONFIGURATION:
 		case GET_FOLDER:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP:
@@ -3711,6 +3755,7 @@ public class GwtServerHelper {
 		case REMOVE_FAVORITE:
 		case REMOVE_TASK_LINKAGE:
 		case REMOVE_SAVED_SEARCH:
+		case SAVE_FILE_SYNC_APP_CONFIGURATION:
 		case SAVE_PERSONAL_PREFERENCES:
 		case SAVE_SUBSCRIPTION_DATA:
 		case SAVE_TASK_COMPLETED:
@@ -3842,6 +3887,24 @@ public class GwtServerHelper {
 		// If we get here, the removal was successful.  Return true.
 		return Boolean.TRUE;
 	}
+	
+	/**
+	 * Save the given File Sync App configuration
+	 */
+	public static Boolean saveFileSyncAppConfiguration( AllModulesInjected allModules, GwtFileSyncAppConfiguration fsaConfiguration )
+	{
+		AdminModule adminModule;
+		Boolean enabled;
+		Integer interval;
+		
+		adminModule = allModules.getAdminModule();
+		enabled = new Boolean( fsaConfiguration.getIsFileSyncAppEnabled() );
+		interval = new Integer( fsaConfiguration.getSyncInterval() );
+		adminModule.setFileSynchAppSettings( enabled, interval, fsaConfiguration.getAutoUpdateUrl() );
+
+		return Boolean.TRUE;
+	}
+	
 	
 	/**
 	 * Saves a search based on its tab ID and SavedSearchInfo.

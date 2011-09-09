@@ -72,6 +72,7 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_MY_WORKSPACE,					// Changes the current context to the user's workspace.
 	GOTO_PERMALINK_URL,					// Changes the current context to a permalink URL.
 
+	INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,	// Invokes the Configure File Sync App dialog.
 	INVOKE_HELP,						// Invokes the Vibe OnPrem online help.
 	INVOKE_REPLY,						// Invoke the 'reply to entry' UI.
 	INVOKE_SHARE,						// Invoke the 'share this entry' UI.

@@ -296,6 +296,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();
 	String rpcFailure_GetDefaultActivityStream();
+	String rpcFailure_GetFileSyncAppConfiguration();
 	String rpcFailure_GetEntryPermalink();
 	String rpcFailure_GetFavorites();
 	String rpcFailure_GetFolder();
@@ -348,6 +349,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveFavorite();
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
+	String rpcFailure_SaveFileSyncAppConfiguration();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
@@ -1056,5 +1058,12 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundRepeatX();
 	String backgroundRepeatY();
 	String backgroundNoRepeat();
-	
+
+	// Strings used in the Novell Desktop App dialog (File Sync)
+	String fileSyncAppAutoUpdateUrlLabel();
+	String fileSyncAppIntervalLabel();
+	String fileSyncAppMinutesLabel();
+	String fileSyncAppOff();
+	String fileSyncAppOn();
+	String fileSyncAppOnOffLabel();
 }// end GwtTeamingMessages

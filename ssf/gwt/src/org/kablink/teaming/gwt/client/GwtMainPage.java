@@ -898,7 +898,7 @@ public class GwtMainPage extends Composite
 	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
-	private void editBranding( GwtBrandingData brandingDataIn )
+	private void editBranding( GwtBrandingData brandingDataIn, int xPos, int yPos )
 	{
 		String brandingBinderId;
 		int xCalc;
@@ -933,12 +933,23 @@ public class GwtMainPage extends Composite
 		final GwtBrandingData brandingData = brandingDataIn;
 		
 		// Get the position of the content control.
-		xCalc = m_contentCtrl.getAbsoluteLeft();
-		if ( xCalc < 75 )
-			xCalc = 75;
-		yCalc = m_contentCtrl.getAbsoluteTop();
-		if ( yCalc < 75 )
-			yCalc = 75;
+		if ( xPos == -1 )
+		{
+			xCalc = m_contentCtrl.getAbsoluteLeft();
+			if ( xCalc < 75 )
+				xCalc = 75;
+		}
+		else
+			xCalc = xPos;
+		
+		if ( yPos == -1 )
+		{
+			yCalc = m_contentCtrl.getAbsoluteTop();
+			if ( yCalc < 75 )
+				yCalc = 75;
+		}
+		else
+			yCalc = yPos;
 		
 		final int x = xCalc;
 		final int y = yCalc;
@@ -1060,9 +1071,12 @@ public class GwtMainPage extends Composite
 			editBrandingImpl( brandingData, x, y );
 		}
 		
-		
 	}// end editBranding()
+
 	
+	/**
+	 * 
+	 */
 	private void editBrandingImpl( GwtBrandingData brandingData, int x, int y ) {
 		m_editBrandingDlg.init( brandingData );
 		m_editBrandingDlg.setPopupPosition( x, y );
@@ -1698,7 +1712,7 @@ public class GwtMainPage extends Composite
 		// Get the branding data the masthead is currently working with.
 		brandingData = m_mastHead.getBrandingData();
 
-		editBranding( brandingData );
+		editBranding( brandingData, -1, -1 );
 	}// end onEditCurrentBinderBranding()
 	
 	/**
@@ -1849,7 +1863,7 @@ public class GwtMainPage extends Composite
 		GwtBrandingData siteBrandingData;
 		
 		siteBrandingData = m_mastHead.getSiteBrandingData();
-		editBranding( siteBrandingData );
+		editBranding( siteBrandingData, event.getX(), event.getY() );
 	}// end onEditSiteBranding()
 	
 	/**
