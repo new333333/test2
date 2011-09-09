@@ -48,7 +48,7 @@
 								operation="mobile_show_workspace" />">
 				<div class="main-item myws-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_home_128.png"/></div>
-				  <div class="main-item-label">My Workspace</div>
+				  <div class="main-item-label"><ssf:nlt tag="navigation.myWorkspace"/></div>
 				</div>    
 			</a>
 	    </div>
@@ -59,7 +59,7 @@
 									operation="mobile_show_favorites" />">
 				<div class="main-item myteams-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_favorites_128.png"/></div>
-				  <div class="main-item-label">My Favorites</div>
+				  <div class="main-item-label"><ssf:nlt tag="navigation.myFavorites"/></div>
 				</div>    
 		    </a>
 	    </div>
@@ -70,7 +70,7 @@
 									operation="mobile_show_teams" />">
 				<div class="main-item myteams-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_team_128.png"/></div>
-				  <div class="main-item-label">My Teams</div>
+				  <div class="main-item-label"><ssf:nlt tag="navigation.myTeams"/></div>
 				</div>    
 		    </a>
     	</div>
@@ -83,7 +83,7 @@
 									operation="mobile_whats_new" />">
 				<div class="main-item myteams-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_whatsnew_128.png"/></div>
-				  <div class="main-item-label">What's New</div>
+				  <div class="main-item-label"><ssf:nlt tag="mobile.whatsNew"/></div>
 				</div>    
 		    </a>
 		</div>
@@ -94,7 +94,7 @@
 									operation="mobile_show_following" />">
 				<div class="main-item myfavorites-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_follow_128.png"/></div>
-				  <div class="main-item-label">Following</div>
+				  <div class="main-item-label"><ssf:nlt tag="navigation.following"/></div>
 				</div>
 			</a>
 		</div>
@@ -105,7 +105,7 @@
 									operation="mobile_show_recent_places" />">
 				<div class="main-item myws-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_recent_128.png"/></div>
-				  <div class="main-item-label">Recent Places</div>
+				  <div class="main-item-label"><ssf:nlt tag="navigation.recentPlaces"/></div>
 				</div>    
 		    </a>  
     	</div>
@@ -119,7 +119,7 @@
 									operation="mobile_show_user" />">
 				<div class="main-item myws-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_profile_128.png"/></div>
-				  <div class="main-item-label">My Profile</div>
+				  <div class="main-item-label"><ssf:nlt tag="navigation.myProfile"/></div>
 				</div>    
 		    </a>
     	</div>
@@ -130,7 +130,7 @@
 									operation="mobile_show_miniblog" />">
 				<div class="main-item myfavorites-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_blog_128.png"/></div>
-				  <div class="main-item-label">Micro-Blog</div>
+				  <div class="main-item-label"><ssf:nlt tag="miniblog"/></div>
 				</div>
 			</a>
 		</div>
@@ -141,7 +141,7 @@
 									operation="mobile_show_files" />">
 				<div class="main-item myfavorites-a">
 				  <div><img src="<html:rootPath/>images/mobile/main_myfiles_128.png"/></div>
-				  <div class="main-item-label">My Files</div>
+				  <div class="main-item-label"><ssf:nlt tag="navigation.myFiles"/></div>
 				</div>
 			</a>
 		</div>

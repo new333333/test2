@@ -36,10 +36,10 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='Following' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("navigation.following") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<c:set var="ss_pageTitle" value='Following' scope="request"/>
+<c:set var="ss_pageTitle" value='<%= NLT.get("navigation.following") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div class="content">
@@ -52,6 +52,9 @@
 							operation="mobile_show_user" />"><span>${following.name}</span></a>
 		</div>
 	</c:forEach>
+	<c:if test="${empty mobileFollowingPeople}">
+	    <div class="entry-content margintop2"><ssf:nlt tag="mobile.noFollowing"/></div>
+	</c:if>
 </div>
 
 </body>
