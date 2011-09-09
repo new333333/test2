@@ -106,7 +106,7 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public class ViewEntryController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
@@ -1023,19 +1023,22 @@ public class ViewEntryController extends  SAbstractController {
 				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));			
 				footerToolbar.addToolbarMenu("3_sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 			}
-	
-			if (getConferencingModule().isEnabled() && 
-					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-				qualifiers = new HashMap();
-				qualifiers.put("popup", Boolean.TRUE);
-				qualifiers.put("post", Boolean.TRUE);
-				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
-				footerToolbar.addToolbarMenu("6_addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
-			}
+
+			// Bugzilla 715365:  Remove link to conferencing.
+			/*
+				if (getConferencingModule().isEnabled() && 
+						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					qualifiers = new HashMap();
+					qualifiers.put("popup", Boolean.TRUE);
+					qualifiers.put("post", Boolean.TRUE);
+					qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+					footerToolbar.addToolbarMenu("6_addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+				}
+			*/
 			
 			//   iCalendar
 			if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
