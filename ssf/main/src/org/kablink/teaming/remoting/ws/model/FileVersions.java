@@ -64,6 +64,8 @@ public class FileVersions {
 	public static class FileVersion {
 		private String id;
 		private int versionNumber;
+		private int majorVersion;
+		private int minorVersion;
 		private Timestamp creation;
 		private Timestamp modification;
 		private long length; // length in bytes
@@ -71,9 +73,11 @@ public class FileVersions {
 
 		public FileVersion() {}
 		
-		public FileVersion(String id, int versionNumber, Timestamp creation, Timestamp modification, long length, String href) {
+		public FileVersion(String id, int versionNumber, int majorVersion, int minorVersion, Timestamp creation, Timestamp modification, long length, String href) {
 			this.id = id;
 			this.versionNumber = versionNumber;
+			this.majorVersion = majorVersion;
+			this.minorVersion = minorVersion;
 			this.creation = creation;
 			this.modification = modification;
 			this.length = length;
@@ -110,6 +114,22 @@ public class FileVersions {
 
 		public void setVersionNumber(int versionNumber) {
 			this.versionNumber = versionNumber;
+		}
+
+		public int getMajorVersion() {
+			return majorVersion;
+		}
+
+		public void setMajorVersion(int majorVersion) {
+			this.majorVersion = majorVersion;
+		}
+
+		public int getMinorVersion() {
+			return minorVersion;
+		}
+
+		public void setMinorVersion(int minorVersion) {
+			this.minorVersion = minorVersion;
 		}
 
 		public long getLength() {

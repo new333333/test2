@@ -668,6 +668,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		for(VersionAttachment vatt : vatts) {
 			versions[i++] = new FileVersion(vatt.getId(),
 					vatt.getVersionNumber(),
+					vatt.getMajorVersion(),
+					vatt.getMinorVersion(),
 					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getCreation().getPrincipal()).getName(), vatt.getCreation().getDate()),
 					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getModification().getPrincipal()).getName(), vatt.getModification().getDate()),
 					vatt.getFileItem().getLength(),
