@@ -21,6 +21,15 @@
 		init : function(ed, url) {
 			// Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mce_ssWikiLink');
 			ed.addCommand('mce_ssWikiLink', function() {
+				if (ed != null && typeof ed.wikilinkNode != "undefined" && 
+						ed.wikilinkNode != null && typeof ed.wikilinkNode.rel != "undefined") {
+					var p = new RegExp("binderId=([0-9])*", "i");
+					var binderIds = ed.wikilinkNode.rel.match(p);
+					if (binderIds != null) {
+						var id = binderIds[0].substr(9);
+						ss_wikiLinkUrl = ss_wikiLinkUrl.replace(p, "binderId="+id);
+					}
+				}
 				ed.windowManager.open({
 					file : ss_wikiLinkUrl,
 					width : 550 + ed.getLang('ss_wikilink.delta_width', 0),
