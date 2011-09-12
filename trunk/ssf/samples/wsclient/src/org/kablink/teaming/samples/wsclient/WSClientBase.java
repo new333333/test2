@@ -541,6 +541,8 @@ public abstract class WSClientBase {
 					System.out.println("Attachment " + i + " file name: " + attachments[i].getFileName());
 					System.out.println("Attachment " + i + " file href: " + attachments[i].getHref());
 					System.out.println("Attachment " + i + " file id: " + attachments[i].getId());
+					System.out.println("Attachment " + i + " major version: " + attachments[i].getMajorVersion());
+					System.out.println("Attachment " + i + " minor version: " + attachments[i].getMinorVersion());
 				}
 			}
 			else {
@@ -576,6 +578,8 @@ public abstract class WSClientBase {
 			System.out.println("File version " + i + " id: " + versions[i].getId());
 			System.out.println("File version " + i + " length: " + versions[i].getLength());
 			System.out.println("File version " + i + " number: " + versions[i].getVersionNumber());
+			System.out.println("File version " + i + " major version: " + versions[i].getMajorVersion());
+			System.out.println("File version " + i + " minor version: " + versions[i].getMinorVersion());
 			System.out.println("File version " + i + " href: " + versions[i].getHref());
 		}
 	}
