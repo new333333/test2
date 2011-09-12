@@ -45,6 +45,7 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -80,7 +81,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().personalPreferencesDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
+		createAllDlgContent( GwtTeaming.getMessages().fileSyncAppDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
 	}
 	
 
@@ -139,6 +140,8 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			Label intervalLabel;
 			
 			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 4 );
 			
 			intervalLabel = new Label( messages.fileSyncAppIntervalLabel() );
 			hPanel.add( intervalLabel );
@@ -252,9 +255,15 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Initialize the on/off radio buttons.
 		if ( fileSyncAppConfiguration.getIsFileSyncAppEnabled() )
+		{
 			m_enableFileSyncRB.setValue( true );
+			m_disableFileSyncRB.setValue( false );
+		}
 		else
+		{
+			m_enableFileSyncRB.setValue( false );
 			m_disableFileSyncRB.setValue( true );
+		}
 		
 		// Initialize the interval textbox
 		interval = fileSyncAppConfiguration.getSyncInterval();
