@@ -12,10 +12,10 @@ function ss_editingICElink() {
 }
 
 function ss_insertICElink(binderId, title, currentBinderId) {
-	currentBinderId = 'xxx'
+	//currentBinderId = 'xxx'
 	var link = "";
 	var inst = tinyMCEPopup.editor;
-	if (inst.wikilinkNode != null) inst.wikilinkNode.parentNode.removeChild(inst.wikilinkNode);
+	//if (inst.wikilinkNode != null) inst.wikilinkNode.parentNode.removeChild(inst.wikilinkNode);
 	elm = inst.selection.getNode();
     var linkText = inst.selection.getSelectedText();
     if (linkText == null || linkText == "") {
@@ -42,7 +42,7 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 		} else {
 		    if (binderId == "") { binderId == currentBinderId };
 		    if (linkText == "") { linkText = title; pad = " "; }
-		    //if (title == "") { title = linkText; }
+		    if (title != "") { linkText = title; }
 			link = '<a href="#" class="ss_icecore_link" rel="binderId=' + binderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
 		}
 		if (link != "") {
@@ -51,6 +51,7 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 	} else {
 		setAttrib(elm, "rel", 'binderId=' + binderId + ' title=' + title);
 		setAttrib(elm, "class", "ss_icecore_link");
+		if (inst.wikilinkNode != null) inst.wikilinkNode.innerHTML = linkText;
 	}
 
 	tinyMCE._setEventsEnabled(inst.getBody(), false);
@@ -129,6 +130,12 @@ function setAttrib(elm, attrib, value) {
 		eval('elm.' + attrib + "=value;");
 	} else
 		elm.removeAttribute(attrib);
+}
+
+function setElmText(elm, value) {
+	if (value != "") {
+		eval("elm.value = value;");
+	}
 }
 
 function ss_prenormalizeText(t) {
