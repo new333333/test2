@@ -1388,6 +1388,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Boolean inherit = Boolean.FALSE;
 		if ("on".equals(inputData.getSingleValue("jspName_custom_inherit"))) inherit=Boolean.TRUE;
 		if (Validator.isNull(value) && !inherit) return;
+		if (value.contains("./") || value.contains("~")) {
+			//Illegal value, ignore it
+			throw new DefinitionInvalidException("definition.error.invalidCharacter", new Object[] {"\""+value+"\""});
+		}
 		jsps = item.addElement("jsps");
 		Element jsp = jsps.addElement("jsp");
 		jsp.addAttribute("name", "custom");

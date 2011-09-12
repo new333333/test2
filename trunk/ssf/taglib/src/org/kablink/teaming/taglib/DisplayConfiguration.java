@@ -199,7 +199,8 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 							String jsp = customJsp;
 							if (Validator.isNull(jsp)) jsp = defaultJsp;
 							
-							if (!Validator.isNull(jsp)) {
+							//Make sure this is a valid jsp
+							if (!Validator.isNull(jsp) && !jsp.contains("./")) {
 								RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 									
 								ServletRequest req = new DynamicServletRequest(httpReq);
