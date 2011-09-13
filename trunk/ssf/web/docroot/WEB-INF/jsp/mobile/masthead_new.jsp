@@ -33,40 +33,44 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+
 <div class="header">
-<script type="text/javascript">
-function ss_setMastheadTitle(title) {
-	var titleElem = document.getElementById('mastHeadTitle');
-	if ( titleElem != null ) {
-		titleElem.innerHTML = title; 
+
+	<script type="text/javascript">
+	function ss_setMastheadTitle(title) {
+		var titleElem = document.getElementById('mastHeadTitle');
+		if ( titleElem != null ) {
+			titleElem.innerHTML = title; 
+		}
 	}
-}
-</script>
-<table cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<td valign="top" align="left" width="1%">
-  <div class="homelink">
-	<c:if test="${!ss_hideMiniBlog}">
-		  <a href="javascript: ;" 
-		    onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><img src="<html:rootPath/>css/images/mobile/blog_but.png" border="0"></a>
-	</c:if>
-  </div>
-</td>
-<td valign="middle" align="center">
-  <div id="mastHeadTitle" class="masthead-title">
-  Novell Vibe
-  </div>
-</td>
-<td valign="top" align="right" width="1%">
-  <div class="search">
-	<a href="javascript: ;" 
-      onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>css/images/mobile/search_but.png" border="0"></a>
-  </div>
-</td>
-</tr>
-</table>
+	</script>
+
+	<table cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td valign="top" align="left" width="1%">
+			  <div class="homelink">
+				<c:if test="${!ss_hideMiniBlog}">
+					  <a href="javascript: ;" 
+						onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><img src="<html:rootPath/>css/images/mobile/blog_but.png" border="0"></a>
+				</c:if>
+			  </div>
+			</td>
+			<td valign="middle" align="center">
+			  <div id="mastHeadTitle" class="masthead-title">
+			  Novell Vibe
+			  </div>
+			</td>
+			<td valign="top" align="right" width="1%">
+			  <div class="search">
+				<a href="javascript: ;" 
+				  onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>css/images/mobile/search_but.png" border="0"></a>
+			  </div>
+			</td>
+		</tr>
+	</table>
 
 </div>
+
 <%@ include file="/WEB-INF/jsp/mobile/search.jsp" %>
 <c:if test="${!ss_hideMiniBlog}">
 <%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>

@@ -35,9 +35,9 @@
 <% //Profile text item %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div class="entry-content">
-  <div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <div class="entry-element">
+<tr>
+	<td class="attribute-label"><c:out value="${property_caption}" /></td>
+	<td class="entry-element">
     <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].valueSet}">
       <c:forEach var="value" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
         <div>
@@ -48,6 +48,6 @@
     <c:if test="${empty ssDefinitionEntry.customAttributes[property_name].valueSet}">
       <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
     </c:if>
-  </div>
-</div>
+  </td>
+</tr>
  

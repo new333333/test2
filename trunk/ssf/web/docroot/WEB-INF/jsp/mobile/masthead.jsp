@@ -36,37 +36,37 @@
 
 <div class="header">
 <table cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<td valign="top" align="left" width="1%">
-  <div class="homelink">
-	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-		action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-	><img src="<html:rootPath/>css/images/mobile/home_but.png" border="0"></a>
-  </div>
-</td>
-<td valign="center" align="center">
-  <div class="masthead-title">
-  <c:if test="${!empty ssEntry && ssEntry.entityType == 'folderEntry'}">
-    <div class="masthead-title2">${ssEntry.parentFolder.parentBinder.title}</div>
-  </c:if>
-  <c:if test="${empty ssEntry && empty ss_pageTitle && !empty ssBinder.parentBinder}">
-    <div class="masthead-title2">${ssBinder.parentBinder.title}</div>
-  </c:if>
-  <c:if test="${!empty ss_pageTitle}">${ss_pageTitle}</c:if>
-  <c:if test="${empty ss_pageTitle}">
-    <c:if test="${empty ssBinder && empty ssEntry}">${ssProductTitle}</c:if>
-    <c:if test="${!empty ssBinder && empty ssEntry}">${ssBinder.title}</c:if>
-    <c:if test="${!empty ssEntry}">${ssEntry.title}</c:if>
-  </c:if>
-  </div>
-</td>
-<td valign="top" align="right" width="1%">
-  <div class="search">
-	<a href="javascript: ;" 
-      onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>css/images/mobile/search_but.png" border="0"></a>
-  </div>
-</td>
-</tr>
+	<tr>
+		<td valign="top" align="left" width="1%">
+		  <div class="homelink">
+			<a href="<ssf:url adapter="true" portletName="ss_forum" 
+				action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+			><img src="<html:rootPath/>css/images/mobile/home_but.png" border="0"></a>
+		  </div>
+		</td>
+		<td valign="center" align="center">
+		  <div class="masthead-title">
+		  <c:if test="${!empty ssEntry && ssEntry.entityType == 'folderEntry'}">
+			<div class="masthead-title2">${ssEntry.parentFolder.parentBinder.title}</div>
+		  </c:if>
+		  <c:if test="${empty ssEntry && empty ss_pageTitle && !empty ssBinder.parentBinder}">
+			<div class="masthead-title2">${ssBinder.parentBinder.title}</div>
+		  </c:if>
+		  <c:if test="${!empty ss_pageTitle}">${ss_pageTitle}</c:if>
+		  <c:if test="${empty ss_pageTitle}">
+			<c:if test="${empty ssBinder && empty ssEntry}">${ssProductTitle}</c:if>
+			<c:if test="${!empty ssBinder && empty ssEntry}">${ssBinder.title}</c:if>
+			<c:if test="${!empty ssEntry}">${ssEntry.title}</c:if>
+		  </c:if>
+		  </div>
+		</td>
+		<td valign="top" align="right" width="1%">
+		  <div class="search">
+			<a href="javascript: ;" 
+			  onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>css/images/mobile/search_but.png" border="0"></a>
+		  </div>
+		</td>
+	</tr>
 </table>
 
 </div>

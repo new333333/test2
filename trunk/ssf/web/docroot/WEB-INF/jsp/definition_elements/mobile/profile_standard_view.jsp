@@ -38,9 +38,11 @@
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 %>
-<div>
+<div style="margin-left: 10px;">
+<table id="profile-page">
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
        configElement="<%= item %>" 
        configJspStyle="mobile" 
        entry="${ssDefinitionEntry}" />
+</table>	   
 </div>
