@@ -719,6 +719,8 @@ public static void resumeTimers(WorkflowSupport entry) {
 				isModify = false;
 				isReply = false;
 			}
+		} catch(Exception e) {
+			logger.error("Error exiting workflow state in entry: " + ((FolderEntry)entry).getTitle());
 		} finally {
 			context.close();
 		}
