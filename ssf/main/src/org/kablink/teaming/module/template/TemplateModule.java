@@ -136,4 +136,6 @@ public interface TemplateModule {
 	public List<TemplateBinder> getTemplates(int type);
 
 	public boolean updateDefaultTemplates(Long topId, boolean replace);
+	
+	public boolean checkIfBinderValidForTemplate(Binder binder, String[] errors);
 }

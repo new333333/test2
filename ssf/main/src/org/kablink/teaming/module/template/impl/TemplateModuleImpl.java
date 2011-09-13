@@ -93,6 +93,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.util.DashboardHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -833,5 +834,27 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
    			throw new NotSupportedException(operation.toString(), "checkAccess");
 
    		}
+   	}
+   	
+   	//Check if this binder can be copied into a template
+   	public boolean checkIfBinderValidForTemplate(Binder binder, String[] errors) {
+		List<Binder>binders = new ArrayList();
+		binders.add(binder);
+		while (!binders.isEmpty()) {
+			Binder b = binders.remove(0);
+			binders.addAll(b.getBinders());
+			//See if this binder usesany local definitions
+			List<Definition> definitions = binder.getViewDefinitions();
+			definitions.addAll(binder.getEntryDefinitions());
+			definitions.addAll(binder.getWorkflowDefinitions());
+			for (Definition def : definitions) {
+				if (def.getBinderId() != -1) {
+					//This is a local definition (local to some binder). These are not allowed
+					errors[0] = NLT.get("error.template.cannotUseLocalDefinitions");
+					return false;
+				}
+			}
+		}
+   		return true;
    	}
 }
