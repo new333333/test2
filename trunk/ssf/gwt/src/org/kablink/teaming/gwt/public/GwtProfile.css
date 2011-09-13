@@ -216,9 +216,10 @@ padding-bottom: 10px;
 	width: 75px;
 }
 .attrLabel {
-font-size:0.8em;
-white-space:nowrap;
-}
+	font-size:0.8em;
+	white-space:nowrap;
+	color: #949494;
+	}
 .marginleft1  {
 margin-left:1em;
 }
