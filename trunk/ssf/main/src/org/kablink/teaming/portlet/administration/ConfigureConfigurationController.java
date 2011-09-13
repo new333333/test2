@@ -108,8 +108,21 @@ public class ConfigureConfigurationController extends  SAbstractController {
 						errors[0] = NLT.get("error.noBinderSelected");
 						response.setRenderParameter(WebKeys.ERROR_LIST, errors);
 					} else {
-						Long configId = getTemplateModule().addTemplateFromBinder(binderId).getId();
-						response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+						//Check if this is a legal binder to copy
+						String[] errors = new String[1];
+						Binder binder = (Binder)getBinderModule().getBinder(binderId);
+						if (!getTemplateModule().checkIfBinderValidForTemplate(binder, errors)) {
+							//This binder cannot be turned into a tempalte
+							response.setRenderParameter(WebKeys.ERROR_LIST, errors);
+						} else {
+							TemplateBinder template = getTemplateModule().addTemplateFromBinder(binderId);
+							if (template == null) {
+								errors[0] = NLT.get("error.binderCannotBeUsedAsTemplate");
+								response.setRenderParameter(WebKeys.ERROR_LIST, errors);
+							}
+							Long configId = template.getId();
+							response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+						}
 					}
 				} else {
 					Map updates = new HashMap();
