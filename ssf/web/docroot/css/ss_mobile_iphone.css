@@ -3,7 +3,7 @@
 */
 
 body { 
-	background-color: #505354; 
+	background-color: #353838; 
 	margin: 0; 
 	}
 
@@ -22,13 +22,6 @@ select {
 input[type=button], input[type=submit], input[type=reset] { 
 	font-size: 1em;
 	}
-input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {   
-    color: #fff;
-    font-size: 1em !important;
-    background: #81b2bd url(/ssf/static/04-04-2011-0834/css/images/main/slice_blend_teal_27.png) repeat-x;
-    background-position: center;
-    }
-
 div.pad-top20 {
 	padding-top: 10px;
 	}	
@@ -236,42 +229,7 @@ span.pad-left20 select {
 	width: 100%;
 	background-color: #949494;
 	}
-
-.userid {
-	background-color: #efeeec; /* #fef7c7; #f8f9cd;*/
-	border-bottom: 1px solid #e2e5e1;
-	}
-.username {
-	font-size: 20px;
-	padding: 5px;
-	padding-bottom: 0px;
-	}
-.phone, .email {
-	font-size: 15px;
-	color: #666;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	margin-left: 23%;
-	}
-.phone-2, .email-2 {
-	font-size: 15px;
-	color: #666;
-	padding: 3px;
-	margin-left: 30px;
-	}
-.userid-clear {
-	clear: both;
-	height: 0px;
-	}
-.userid img {
-	position: relative;
-	top: 0px;
-	left: 0px;
-	width: 20%;
-	float: left;
-	margin-right: 6px;
-	}	
-
+	
 .ws-title {
 	font-size: 1em;
 	font-weight: bold;
@@ -378,7 +336,7 @@ span.pad-left20 select {
 	overflow: hidden;
 	}
 .folder-item-ws {
-	background-color: #ededed;
+	background-color: #f6f6f6;
 	border-bottom: 1px solid #cccccc;
 	}
 .folder-item-profile {
@@ -435,6 +393,9 @@ span.pad-left20 select {
 	padding-top: 4px;
 	padding-left: 12px;
 	}
+#profile-page .entry-element {
+	color: #000;
+	}	
 .entry-caption {
 	font-weight: bold;
 	font-size: 12px;
@@ -867,18 +828,4 @@ a.ss_linkButton:link, a.ss_linkButton:visited {
 
 .my-item a {
 	padding: 5px 100px 5px 0px;
-	}
-
-/* Profile styles */
-
-.sectionHeading {
-	color:#5A9A98!important;
-	font-size: .9em;
-	line-height:1.1em;
-	padding:10px 0px 5px;
-	}
-
-.attribute-label {
-	font-size: .85em;
-	color: #949494;
 	}

@@ -56,9 +56,9 @@
 			%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/profile_text_item.jsp" /><%
 			
 		} else if (itemType.equals("description")) {
-			%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_html_textarea.jsp" /><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/profile_html_textarea.jsp" /><%
 		} else if (itemType.equals("htmlEditorTextarea")) {
-			%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_html_textarea.jsp" /><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/profile_html_textarea.jsp" /><%
 			
 		} else if (itemType.equals("url")) {
 			%><jsp:include page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_url.jsp" /><%

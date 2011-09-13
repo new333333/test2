@@ -40,13 +40,13 @@
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 %>
-<div style="padding-top:4px;">
-<div class="sectionHeading"><ssf:nlt tag="${property_caption}" checkIfTag="true"/></div>
-
-  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-       configElement="<%= item %>" 
-       configJspStyle="mobile" 
-       entry="${ssDefinitionEntry}" />
- 
-</div>
+<tr>
+	<td colspan="2">
+		<div class="sectionHeading"><ssf:nlt tag="${property_caption}" checkIfTag="true"/></div>
+		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+		   configElement="<%= item %>" 
+		   configJspStyle="mobile" 
+		   entry="${ssDefinitionEntry}" />
+	</td>
+</tr>
   

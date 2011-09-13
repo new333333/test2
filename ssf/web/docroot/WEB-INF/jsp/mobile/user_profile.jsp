@@ -37,7 +37,7 @@
 
 <c:if test="${!empty ssProfileUser}">
 <c:set var="userTitle"><ssf:userTitle user="${ssProfileUser}"/></c:set>
- <div class="userid">
+ <div class="userid" style="background-color: #fff;">
    <div>
      <c:if test="${empty ssProfileUser.customAttributes['picture']}">
 		<img src="<html:imagesPath/>pics/UserPhoto.png" 
@@ -56,15 +56,14 @@
      </c:if>
    </div>
    
-   <div class="username">${userTitle}
-   		<span style="font-size: 16px; padding-left: 10px;">
-			<a href="<ssf:url adapter="true" portletName="ss_forum" 
-								action="__ajax_mobile" actionUrl="false" 
-								binderId="${ssEntry.workspaceId}"
-								operation="mobile_show_workspace" />">
-				  Workspace
-			</a>
-   		</span>
+	<div class="username">${userTitle}</div>
+	<div class="userid-action">
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+							action="__ajax_mobile" actionUrl="false" 
+							binderId="${ssEntry.workspaceId}"
+							operation="mobile_show_workspace" />">
+			<span><ssf:nlt tag="mobile.viewWorkspace" /></span>
+		</a>
 	</div>
    
    <fieldset style="border:none;padding:2px;margin:0px;">

@@ -38,9 +38,9 @@
 <%@ include file="/WEB-INF/jsp/mobile/masthead_new.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>
 
-<div style="height:512px; position:relative" class="content" style="background-color: #353838;">
+<div style="height:512px; position:relative; background-color: #353838;" class="content">
 <div class="folders">
-  <div class="folder-content">
+  <div class="folder-content" style="background-color: transparent;">
 		<div class="home-grid-row">
 			<div class="home-grid-cell-1">
 				<a id="myworkspace-a" href="<ssf:url adapter="true" portletName="ss_forum" 

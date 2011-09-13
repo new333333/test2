@@ -34,14 +34,11 @@
 %>
 <% // View profile data dispatcher %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-<div class="entry-content">
-  <div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <div class="entry-element">
-   <c:if test="${!empty ssDefinitionEntry[property_name]}">
-     <div>
-       <span><ssf:mailto email="${ssDefinitionEntry[property_name]}"/></span>
-     </div>
-   </c:if>
-  </div>
-</div>
+<tr>
+	<td class="attribute-label"><c:out value="${property_caption}" /></td>
+	<td class="entry-element">
+		<c:if test="${!empty ssDefinitionEntry[property_name]}">
+       		<ssf:mailto email="${ssDefinitionEntry[property_name]}"/>
+   		</c:if>
+  </td>
+</tr>

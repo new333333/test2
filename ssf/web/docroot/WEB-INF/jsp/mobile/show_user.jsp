@@ -33,9 +33,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${!empty ssEntry.title}">
-  <c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/>
-</c:if>
+  <c:set var="ss_windowTitle" value='<%= NLT.get("__profile_entry_view") %>' scope="request"/>
+  <c:set var="ss_pageTitle" value='<%= NLT.get("relevance.tab.profile") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
