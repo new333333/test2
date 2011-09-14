@@ -4332,6 +4332,12 @@
 	<item name="copyEntry" caption="__copyEntry" multipleAllowedInParent="false">
 		<properties>
 			<property name="folder" caption="__toFolder" type="folderSelect" />
+			<property name="startWorkflow" caption="__workflow_copyWorkflow" type="radio" 
+				  default="startThisNot" value="startThisNot">
+				<option name="startThis" caption="__workflow_copyWorkflow_startThis" />
+				<option name="copyThis" caption="__workflow_copyWorkflow_copyThis" />
+				<option name="startThisNot" caption="__workflow_copyWorkflow_startThisNot" />
+			</property>
 		</properties>
 	</item>
 	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" >

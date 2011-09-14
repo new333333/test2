@@ -125,6 +125,13 @@ function ss_deleteSelectedEntries(operation) {
     		var formObj = document.forms['delete_entries_form'];
     		formObj.delete_entries_list.value = deleteList;
     		formObj.delete_operation.value = operation;
+    		var url = '<ssf:url     
+    		    adapter="true" 
+    		    portletName="ss_forum" 
+    		    binderId="${ssBinder.id}" 
+    		    action="view_folder_listing" 
+    		    actionUrl="true" />';
+    		formObj.action = url;
     		formObj.submit();
     	}
     }

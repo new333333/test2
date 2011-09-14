@@ -322,8 +322,15 @@ public class EnterExitEvent extends AbstractActionHandler {
 		Entry entry = (Entry)wfEntry;
 		Binder parent = entry.getParentBinder();
 		Binder destination  = getDestination(item, entry);
+		String startWorkflow = DefinitionUtils.getPropertyValue(item, "startWorkflow");
+		if (Validator.isNull(startWorkflow)) {
+			//If this isn't set, then assume "start this workflow at the current state"
+			startWorkflow = ObjectKeys.WORKFLOW_START_WORKFLOW_COPY;
+		}
+		Map options = new HashMap();
+		options.put(ObjectKeys.WORKFLOW_START_WORKFLOW, startWorkflow);
 		EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
-		processor.copyEntry(parent, entry, destination, null);
+		processor.copyEntry(parent, entry, destination, options);
 
 	}
 	protected Binder getDestination(Element item, Entry entry) {

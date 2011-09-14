@@ -449,6 +449,10 @@ public interface ObjectKeys {
     public static final String WORKFLOW_PARALLEL_THREAD_NAME = "name";
     public static final String WORKFLOW_PARALLEL_THREAD_START_STATE = "startState";
     public static final String WORKFLOW_PARALLEL_THREAD_END_TRANSITION = "transitionState";
+    public static final String WORKFLOW_START_WORKFLOW = "startWorkflow";
+    public static final String WORKFLOW_START_WORKFLOW_START = "startThis";
+    public static final String WORKFLOW_START_WORKFLOW_COPY = "copyThis";
+    public static final String WORKFLOW_START_WORKFLOW_NO_START = "startThisNot";
     
     //reserved input tags
     public static final String INPUT_FIELD_POSTING_FROM="__poster";
