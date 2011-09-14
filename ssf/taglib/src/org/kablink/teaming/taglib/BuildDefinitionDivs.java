@@ -719,7 +719,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						int optionCount = 0;
 						if (type.equals("selectbox")) {
 							sb.append("<table>\n<tbody>\n<tr>\n<td>\n");
-							sb.append(propertyConfigCaption);
+							sb.append("<span class=\"ss_bold\">" + propertyConfigCaption + "</span>");
 							sb.append("\n</td>\n<td>\n");
 							//See if multiple selections are allowed
 							String multipleText = "";
@@ -729,7 +729,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
 							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
 						} else if (type.equals("radio")) {
-							sb.append(propertyConfigCaption);
+							sb.append("<span class=\"ss_bold\">" + propertyConfigCaption + "</span>");
 							sb.append("<table><tbody>");
 						}
 						//See if there are any built-in options

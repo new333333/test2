@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowState;
+import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
@@ -465,7 +466,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			getCoreDao().save(entry); //need to generate id; do after sortkey is set
 			sourceMap.put(child, entry);
 		    List<Tag> entryTags = tags.get(child.getEntityIdentifier());
-			doCopy(child, entry, entryTags);
+			try{
+				doCopy(child, entry, entryTags, options);
+			} catch(Exception e) {
+				logger.error(e);
+			}
 	   }
 	   
 	   FolderEntry top = sourceMap.get(source);
@@ -475,9 +480,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	   return top; 
    }
  
-   protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags) {
-	   User user = RequestContextHolder.getRequestContext().getUser();
-	   getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry);
+	protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags, Map copyOptions) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry);
 		EntryBuilder.copyAttributes(source, entry);
  		//copy tags
  		List myTags = new ArrayList();
@@ -500,32 +505,47 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		getCoreDao().evict(tags);
 		
 		//Add any workflows
-		Set<WorkflowState> workflowStates = source.getWorkflowStates();
-
-		for (WorkflowState state : workflowStates) {
-			Definition def = state.getDefinition();
-
-			EntityIdentifier entityIdentifier = new EntityIdentifier(entry.getId(), 
-					EntityIdentifier.EntityType.folderEntry);
-
-			Map options = new HashMap();
-			options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state.getState());
+		if (copyOptions.containsKey(ObjectKeys.WORKFLOW_START_WORKFLOW) && 
+				(ObjectKeys.WORKFLOW_START_WORKFLOW_START.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW)) ||
+				 ObjectKeys.WORKFLOW_START_WORKFLOW_COPY.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW)))) {
 			
-			//Workflow State needs a modification timestamp
-			//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	    	Calendar current = Calendar.getInstance();
-	    	current.setTime(new Date());
-			
-			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
-			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);				
-			
-			try {
+			//We are supposed to start the workflows
+			Set<WorkflowState> workflowStates = source.getWorkflowStates();
+	
+			for (WorkflowState state : workflowStates) {
+				Definition def = state.getDefinition();
+	
+				EntityIdentifier entityIdentifier = new EntityIdentifier(entry.getId(), 
+						EntityIdentifier.EntityType.folderEntry);
+	
+				Map options = new HashMap();
+				if (ObjectKeys.WORKFLOW_START_WORKFLOW_COPY.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW))) {
+					options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state.getState());
+				}
+				
+				//Workflow State needs a modification timestamp
+				//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		    	Calendar current = Calendar.getInstance();
+		    	current.setTime(new Date());
+				
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);				
+				
 				getWorkflowModule().addEntryWorkflow((FolderEntry) entry,
 					entityIdentifier, def, options);
-				
-			} catch(Exception e) {
-				logger.error(e);
+					
 			}
+		} else if (copyOptions.containsKey(ObjectKeys.WORKFLOW_START_WORKFLOW) && 
+				ObjectKeys.WORKFLOW_START_WORKFLOW_NO_START.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW))) {
+			//Not starting the workflow that existed on the source entry, so check if one is configured for the folder
+	    	Map workflowAssociations = (Map) entry.getParentBinder().getWorkflowAssociations();
+	    	if (workflowAssociations != null) {
+	    		//See if the entry definition type has an associated workflow
+	    		if (entry.getEntryDefId() != null) {
+	    			Definition wfDef = (Definition)workflowAssociations.get(entry.getEntryDefId());
+	    			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
+	    		}
+	    	}
 		}
 
 		indexEntry(entry.getParentBinder(), entry, null, entry.getFileAttachments(), true, myTags);
@@ -799,7 +819,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		       				getCoreDao().save(dEntry); //need to generate id; do after sortkey is set
 		       				sourceMap.put(sEntry, dEntry);
 		      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
-		       				doCopy(sEntry, dEntry, entryTags);
+		       				doCopy(sEntry, dEntry, entryTags, options);
 
 		       				// Does the folder we're copy entries from
 		       				// contain task linkage information?
