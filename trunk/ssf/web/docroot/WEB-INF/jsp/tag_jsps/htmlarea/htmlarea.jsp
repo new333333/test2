@@ -133,7 +133,7 @@ tinyMCE.init({
   theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
   theme_advanced_buttons1_add: "pdw_toggle",
   theme_advanced_buttons2_add: "|<%--
-  --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
+  --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">,ss_addimage</c:if><%--
   --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if><c:if test="${isShowYouTube}">,ss_youtube</c:if>",
   theme_advanced_path: false,
   pdw_toggle_on : 1,
@@ -192,7 +192,7 @@ tinyMCE.init({
 	  convert_fonts_to_spans: true,
 	  theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
 	  theme_advanced_buttons2_add: "|<%--
-	  --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
+	  --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">,ss_addimage</c:if><%--
 	  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if><c:if test="${isShowYouTube}">,ss_youtube</c:if>",
 	  theme_advanced_path: false,
 	  theme_advanced_disable : "image,advimage",
