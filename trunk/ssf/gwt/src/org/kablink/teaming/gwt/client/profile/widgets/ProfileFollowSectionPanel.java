@@ -35,14 +35,10 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -127,11 +123,10 @@ public class ProfileFollowSectionPanel extends ProfileSectionPanel {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			
-			if(GwtClientHelper.hasString(trackedUser.getUserId())) {
-				String url = GwtClientHelper.appendUrlParam( trackedUser.getViewWorkspaceUrl(), "operation", "showProfile" );
-				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( trackedUser.getWorkspaceId(), url, false, Instigator.TRACKED_USER_SELECT );
-				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+			String url = trackedUser.getViewWorkspaceUrl();
+			if(GwtClientHelper.hasString(url)) {
+				url = GwtClientHelper.appendUrlParam( url, "operation", "showProfile" );
+				GwtClientHelper.jsLoadUrlInCurrentWindow(url);
 			}
 
 //			if(GwtClientHelper.hasString(trackedUser.getUserId())) {
