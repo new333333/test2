@@ -152,6 +152,7 @@ public class TrashBrief implements Serializable {
 		String title = binder.getTitle();
 		String path = binder.getPathName();
 		boolean library = binder.isLibrary();
+		boolean mirrored = binder.isMirrored();
 		Long preDeletedWhen;
 		Long preDeletedBy;
 		if (binder instanceof Workspace) {
@@ -194,7 +195,8 @@ public class TrashBrief implements Serializable {
 				path,
 				creation,
 				modification,
-				permaLink);
+				permaLink,
+				mirrored);
 	}
 	
 	/*

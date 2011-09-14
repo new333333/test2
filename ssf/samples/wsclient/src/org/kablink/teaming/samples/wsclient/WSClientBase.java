@@ -563,6 +563,7 @@ public abstract class WSClientBase {
 		System.out.println("Path: " + binder.getPath());
 		System.out.println("Family: " + binder.getFamily());
 		System.out.println("Library: " + binder.getLibrary());
+		System.out.println("Mirrored: " + binder.getMirrored());
 	}
 	
 	void printUser(User user) {
@@ -595,6 +596,7 @@ public abstract class WSClientBase {
 			System.out.println("Folder " + i + " title: " + fb[i].getTitle());
 			System.out.println("Folder " + i + " family: " + fb[i].getFamily());
 			System.out.println("Folder " + i + " is library: " + fb[i].getLibrary());
+			System.out.println("Folder " + i + " is mirrored: " + fb[i].getMirrored());
 			System.out.println("Folder " + i + " path: " + fb[i].getPath());
 			System.out.println("Folder " + i + " permalink: " + fb[i].getPermaLink());
 		}

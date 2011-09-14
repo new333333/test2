@@ -41,6 +41,7 @@ import org.kablink.teaming.remoting.ws.model.Binder;
 import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.DefinitionBrief;
 import org.kablink.teaming.remoting.ws.model.DefinitionCollection;
+import org.kablink.teaming.remoting.ws.model.Description;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderCollection;
 import org.kablink.teaming.remoting.ws.model.FolderEntry;
@@ -683,8 +684,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	@Override
 	public byte[] folder_getFileVersionAsByteArray(String accessToken,
-			long entryId, String attachmentId, String fileVersionId) {
-		return getFolderService().folder_getFileVersionAsByteArray(accessToken, entryId, attachmentId, fileVersionId);
+			long entryId, String fileVersionId) {
+		return getFolderService().folder_getFileVersionAsByteArray(accessToken, entryId, fileVersionId);
 	}
 
 	@Override
@@ -704,5 +705,50 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 			long entryId, String fileUploadDataItemName, String attachmentId,
 			byte[] fileContent) {
 
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_incrementFileMajorVersion(java.lang.String, long, java.lang.String)
+	 */
+	@Override
+	public void folder_incrementFileMajorVersion(String accessToken,
+			long entryId, String attachmentId) {
+		getFolderService().folder_incrementFileMajorVersion(accessToken, entryId, attachmentId);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_setFileVersionDescription(java.lang.String, long, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void folder_setFileVersionNote(String accessToken,
+			long entryId, String fileVersionId, String note) {
+		getFolderService().folder_setFileVersionNote(accessToken, entryId, fileVersionId, note);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_promoteFileVersionCurrent(java.lang.String, long, java.lang.String)
+	 */
+	@Override
+	public void folder_promoteFileVersionCurrent(String accessToken,
+			long entryId, String fileVersionId) {
+		getFolderService().folder_promoteFileVersionCurrent(accessToken, entryId, fileVersionId);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_deleteFileVersion(java.lang.String, long, java.lang.String)
+	 */
+	@Override
+	public void folder_deleteFileVersion(String accessToken, long entryId,
+			String fileVersionId) {
+		getFolderService().folder_deleteFileVersion(accessToken, entryId, fileVersionId);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_setFileVersionStatus(java.lang.String, long, java.lang.String, int)
+	 */
+	@Override
+	public void folder_setFileVersionStatus(String accessToken, long entryId,
+			String fileVersionId, int status) {
+		getFolderService().folder_setFileVersionStatus(accessToken, entryId, fileVersionId, status);
 	}
 }

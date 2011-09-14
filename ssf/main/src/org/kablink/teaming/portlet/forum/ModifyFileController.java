@@ -137,28 +137,8 @@ public class ModifyFileController extends SAbstractController {
 			}
 
 			if (op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
-				FilesErrors errors = new FilesErrors();
-				//Delete this version
-				if (fileAtt != null && fileAtt instanceof VersionAttachment) {
-					getFileModule().deleteVersion(binder, entity, (VersionAttachment)fileAtt);
-					BinderHelper.indexEntity(this, entity);
-				} else if (fileAtt != null && fileAtt instanceof FileAttachment) {
-					//This is the top file in the version list
-					if (fileAtt.getFileVersionsUnsorted().size() <= 1) {
-						//This is the only version
-						getFileModule().deleteFile(binder, entity, fileAtt, errors);
-						BinderHelper.indexEntity(this, entity);  //Must re-index since there is a new top file version
-					} else {
-						//There are some versions, so one of them will become the new top file
-						getFileModule().deleteVersion(binder, entity, fileAtt.getHighestVersion());
-						BinderHelper.indexEntity(this, entity);  //Must re-index since there is a new top file version
-					}
-					if (entity instanceof WorkflowControlledEntry) {
-						//This is a workflow entity, so see if anything needs to be triggered on modify
-						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
-					}
-				}
-			
+				if(fileAtt != null)
+					getBinderModule().deleteFileVersion(binder, entity, fileAtt);
 			} else if (op.equals(WebKeys.OPERATION_DELETE_MULTIPLE_VERSIONS) && WebHelper.isMethodPost(request)) {
 				//Get the file version
 				Set<Attachment> attachments2 = entity.getAttachments();
@@ -185,42 +165,25 @@ public class ModifyFileController extends SAbstractController {
 						}
 					}
 				}
-				BinderHelper.indexEntity(this, entity);
+				BinderHelper.indexEntity(entity);
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_DESCRIPTION) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
 				if (fileAtt != null) {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
-					Description description = new Description(text);
-					getFileModule().modifyFileComment(entity, fileAtt, description);
-					BinderHelper.indexEntity(this, entity);
-					if (entity instanceof WorkflowControlledEntry) {
-						//This is a workflow entity, so see if anything needs to be triggered on modify
-						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
-					}
+					getBinderModule().setFileVersionNote(entity, fileAtt, text);
 				}
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
 				if (fileVer != null && !entity.getParentBinder().isMirrored()) {
-					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
-					getFileModule().revertFileVersion(entity, fileVer);
-					BinderHelper.indexEntity(this, entity);
-					if (entity instanceof WorkflowControlledEntry) {
-						//This is a workflow entity, so see if anything needs to be triggered on modify
-						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
-					}
+					getBinderModule().promoteFileVersionCurrent(entity, fileVer);
 				}
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_MAJOR_VERSION) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
 				if (fileAtt != null) {
-					getFileModule().incrementMajorFileVersion(entity, fileAtt);
-					BinderHelper.indexEntity(this, entity);
-					if (entity instanceof WorkflowControlledEntry) {
-						//This is a workflow entity, so see if anything needs to be triggered on modify
-						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
-					}
+					getBinderModule().incrementFileMajorVersion(entity, fileAtt);
 				}
 			}
 

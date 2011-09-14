@@ -203,6 +203,13 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			else if(Constants.FALSE.equals(libraryStr))
 				library = Boolean.FALSE;
 
+			Boolean mirrored = null;
+			String mirroredStr = (String) binder.get(Constants.IS_MIRRORED_FIELD);
+			if(Constants.TRUE.equals(mirroredStr))
+				mirrored = Boolean.TRUE;
+			else if(Constants.FALSE.equals(mirroredStr))
+				mirrored = Boolean.FALSE;
+
 			UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.CREATORID_FIELD)));
 			UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.MODIFICATIONID_FIELD)));
 			
@@ -215,7 +222,8 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 					(String) binder.get(Constants.ENTITY_PATH),
 					new Timestamp(((creator != null)? creator.getName() : (String) binder.get(Constants.CREATOR_NAME_FIELD)),(Date) binder.get(Constants.CREATION_DATE_FIELD)),
 					new Timestamp(((modifier != null)? modifier.getName() : (String) binder.get(Constants.MODIFICATION_NAME_FIELD)),(Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
-					PermaLinkUtil.getPermalink(binder)
+					PermaLinkUtil.getPermalink(binder),
+					mirrored
 					)
 			);
 		}

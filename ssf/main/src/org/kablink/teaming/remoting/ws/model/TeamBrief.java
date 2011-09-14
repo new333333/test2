@@ -38,7 +38,7 @@ public class TeamBrief extends BinderBrief implements Serializable {
 
 	public TeamBrief() {}
 
-	public TeamBrief(Long id, String title, String entityType, String family, Boolean library, Integer definitionType, String path, Timestamp creation, Timestamp modification, String permalink) {
-		super(id, title, entityType, family, library, definitionType, path, creation, modification, permalink);
+	public TeamBrief(Long id, String title, String entityType, String family, Boolean library, Integer definitionType, String path, Timestamp creation, Timestamp modification, String permalink, Boolean mirrored) {
+		super(id, title, entityType, family, library, definitionType, path, creation, modification, permalink, mirrored);
 	}
 }

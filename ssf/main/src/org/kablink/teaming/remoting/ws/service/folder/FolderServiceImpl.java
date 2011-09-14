@@ -62,19 +62,18 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -93,7 +92,6 @@ import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -738,9 +736,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	@Override
 	public byte[] folder_getFileVersionAsByteArray(String accessToken,
-			long entryId, String attachmentId, String fileVersionId) {
+			long entryId, String fileVersionId) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
-		return getFileVersionAsByteArray(entry.getParentBinder(), entry, attachmentId, fileVersionId);
+		return getFileVersionAsByteArray(entry.getParentBinder(), entry, fileVersionId);
 	}
 
 	@Override
@@ -855,6 +853,95 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			}
 		}
 		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_incrementFileMajorVersion(java.lang.String, long, java.lang.String)
+	 */
+	@Override
+	public void folder_incrementFileMajorVersion(String accessToken,
+			long entryId, String attachmentId) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		FileAttachment fa = getFileAttachment(entry, attachmentId);
+		getBinderModule().incrementFileMajorVersion(entry, fa);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_setFileVersionNote(java.lang.String, long, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void folder_setFileVersionNote(String accessToken,
+			long entryId, String fileVersionId, String note) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().setFileVersionNote(entry, fa, note);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_promoteFileVersionCurrent(java.lang.String, long, java.lang.String)
+	 */
+	@Override
+	public void folder_promoteFileVersionCurrent(String accessToken,
+			long entryId, String fileVersionId) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		if(entry.getParentBinder().isMirrored())
+			throw new UnsupportedOperationException("Mirrored file does not support version promotion");
+		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
+		if(isTopMostVersion(va))
+			throw new UnsupportedOperationException("Cannot promote a version that is already current");
+		getBinderModule().promoteFileVersionCurrent(entry, va);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_deleteFileVersion(java.lang.String, long, java.lang.String)
+	 */
+	@Override
+	public void folder_deleteFileVersion(String accessToken, long entryId,
+			String fileVersionId) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		VersionAttachment va;
+		try {
+			va = getVersionAttachment(entry, fileVersionId);
+		}
+		catch(NoFileVersionByTheIdException e) {
+			// The version isn't found. Since post-action condition is still met, 
+			// do not throw an exception. Return normally.
+			return;
+		}
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().deleteFileVersion(entry.getParentBinder(), entry, fa);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_setFileVersionStatus(java.lang.String, long, java.lang.String, int)
+	 */
+	@Override
+	public void folder_setFileVersionStatus(String accessToken, long entryId,
+			String fileVersionId, int status) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().setFileVersionStatus(entry, fa, status);
+	}
+
+	private boolean isTopMostVersion(VersionAttachment va) {
+		return (va.getParentAttachment().getHighestVersionNumber() == va.getVersionNumber());
 	}
 
 }

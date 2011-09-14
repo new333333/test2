@@ -70,10 +70,12 @@ public class FileVersions {
 		private Timestamp modification;
 		private long length; // length in bytes
 		private String href;
+		private String note;
+		private int status;
 
 		public FileVersion() {}
 		
-		public FileVersion(String id, int versionNumber, int majorVersion, int minorVersion, Timestamp creation, Timestamp modification, long length, String href) {
+		public FileVersion(String id, int versionNumber, int majorVersion, int minorVersion, Timestamp creation, Timestamp modification, long length, String href, String note, int status) {
 			this.id = id;
 			this.versionNumber = versionNumber;
 			this.majorVersion = majorVersion;
@@ -82,6 +84,8 @@ public class FileVersions {
 			this.modification = modification;
 			this.length = length;
 			this.href = href;
+			this.note = note;
+			this.status = status;
 		}
 
 		public Timestamp getCreation() {
@@ -146,6 +150,22 @@ public class FileVersions {
 
 		public void setModification(Timestamp modification) {
 			this.modification = modification;
+		}
+
+		public String getNote() {
+			return note;
+		}
+
+		public void setNote(String note) {
+			this.note = note;
+		}
+
+		public int getStatus() {
+			return status;
+		}
+
+		public void setStatus(int status) {
+			this.status = status;
 		}
 		
 	}

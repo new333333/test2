@@ -62,10 +62,12 @@ public class AttachmentsField extends Field implements Serializable {
 		private String href;
 		private int majorVersion;
 		private int minorVersion;
+		private String note;
+		private int status;
 		
 		public Attachment() {}
 		
-		public Attachment(String id, String fileName, Timestamp creation, Timestamp modification, long length, String href, int majorVersion, int minorVersion) {
+		public Attachment(String id, String fileName, Timestamp creation, Timestamp modification, long length, String href, int majorVersion, int minorVersion, String note, int status) {
 			this.id = id;
 			this.fileName = fileName;
 			this.creation = creation;
@@ -74,6 +76,8 @@ public class AttachmentsField extends Field implements Serializable {
 			this.href = href;
 			this.majorVersion = majorVersion;
 			this.minorVersion = minorVersion;
+			this.note = note;
+			this.status = status;
 		}
 	
 		public String getId() {
@@ -138,6 +142,22 @@ public class AttachmentsField extends Field implements Serializable {
 
 		public void setMinorVersion(int minorVersion) {
 			this.minorVersion = minorVersion;
+		}
+
+		public String getNote() {
+			return note;
+		}
+
+		public void setNote(String note) {
+			this.note = note;
+		}
+
+		public int getStatus() {
+			return status;
+		}
+
+		public void setStatus(int status) {
+			this.status = status;
 		}
 	}
 

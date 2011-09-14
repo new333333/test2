@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.ws.service.folder;
 
 import java.util.Calendar;
 
+import org.kablink.teaming.remoting.ws.model.Description;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntry;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
@@ -100,7 +101,7 @@ public interface FolderService {
 	public void folder_setEntryTag(String accessToken, Tag tag);
 	public void folder_setRating(String accessToken, long entryId, long value);
 	public byte[] folder_getAttachmentAsByteArray(String accessToken, long entryId, String attachmentId);
-	public byte[] folder_getFileVersionAsByteArray(String accessToken, long entryId, String attachmentId, String fileVersionId);
+	public byte[] folder_getFileVersionAsByteArray(String accessToken, long entryId, String fileVersionId);
 
 	/**
 	 * Return a list of IDs of the entries of the specific family type that have been added or updated between the start and end times.
@@ -190,5 +191,15 @@ public interface FolderService {
 	 * @param entryIds The ID of the entries against which to test the access.
 	 */
 	public boolean[] folder_testEntryOperation(String accessToken, String operationName, long[] entryIds);
+
+	public void folder_incrementFileMajorVersion(String accessToken, long entryId, String attachmentId);
+	
+	public void folder_setFileVersionNote(String accessToken, long entryId, String fileVersionId, String note);
+	
+	public void folder_promoteFileVersionCurrent(String accessToken, long entryId, String fileVersionId);
+	
+	public void folder_deleteFileVersion(String accessToken, long entryId, String fileVersionId);
+	
+	public void folder_setFileVersionStatus(String accessToken, long entryId, String fileVersionId, int status);
 
 }

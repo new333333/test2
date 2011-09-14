@@ -30,66 +30,27 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.ws.model;
+package org.kablink.teaming.domain;
 
-import java.io.Serializable;
+import org.kablink.teaming.NoObjectByTheIdException;
 
-public class Binder extends DefinableEntity implements Serializable {
-	protected Boolean preDeleted;
-    protected Long preDeletedWhen;
-    protected Long preDeletedBy;
-    protected String path;
-    protected String family;
-	private Boolean library;
-	private Boolean mirrored;
+public class NoFileByTheIdException extends NoObjectByTheIdException {
 
-    public Boolean isPreDeleted() {
-    	return ((null != preDeleted) && preDeleted);
-    }
-    public void setPreDeleted(Boolean preDeleted) {
-    	this.preDeleted = preDeleted;
-    }
+	private static final long serialVersionUID = 1L;
+	
+    private static final String NoFileByTheIdException_ErrorCode = "errorcode.no.file.by.the.id";
     
-	public Long getPreDeletedWhen() {
-		return preDeletedWhen;
-	}
-	public void setPreDeletedWhen(Long preDeletedWhen) {
-		this.preDeletedWhen = preDeletedWhen;
-	}
-	
-	public Long getPreDeletedBy() {
-		return preDeletedBy;
-	}
-	public void setPreDeletedBy(Long preDeletedBy) {
-		this.preDeletedBy = preDeletedBy;
-	}
-	
-	public String getPath() {
-		return path;
-	}
-	public void setPath(String path) {
-		this.path = path;
-	}
-	
-	public String getFamily() {
-		return family;
-	}
-	public void setFamily(String family) {
-		this.family = family;
-	}
-	
-	public Boolean getLibrary() {
-		return library;
-	}
+    public NoFileByTheIdException(String fileAttachmentId) {
+        super(NoFileByTheIdException_ErrorCode, fileAttachmentId);
+    }
+    public NoFileByTheIdException(String fileAttachmentId, String message) {
+        super(NoFileByTheIdException_ErrorCode, fileAttachmentId, message);
+    }
+    public NoFileByTheIdException(String fileAttachmentId, String message, Throwable cause) {
+        super(NoFileByTheIdException_ErrorCode,fileAttachmentId, message, cause);
+    }
+    public NoFileByTheIdException(String fileAttachmentId, Throwable cause) {
+        super(NoFileByTheIdException_ErrorCode, fileAttachmentId, cause);
+    }
 
-	public void setLibrary(Boolean library) {
-		this.library = library;
-	}
-	
-	public Boolean getMirrored() {
-		return mirrored;
-	}
-	public void setMirrored(Boolean mirrored) {
-		this.mirrored = mirrored;
-	}
 }

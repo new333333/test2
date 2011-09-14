@@ -531,6 +531,12 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 				webdavUrl = SsfsUtil.getLibraryBinderUrl(path);
 			else
 				webdavUrl = null;
+			Boolean mirrored = null;
+			String mirroredStr = (String)search.get(Constants.IS_MIRRORED_FIELD);
+			if(Constants.TRUE.equals(mirroredStr))
+				mirrored = Boolean.TRUE;
+			else if(Constants.FALSE.equals(mirroredStr))
+				mirrored = Boolean.FALSE;
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
 			icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
 			atomUrl = UrlUtil.getAtomURL(null, id.toString()); // folder only
@@ -544,6 +550,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 					creation,
 					modification,
 					permaLink,
+					mirrored,
 					createdWithDefinitionId,
 					defaultViewDefinitionId,
 					webdavUrl,

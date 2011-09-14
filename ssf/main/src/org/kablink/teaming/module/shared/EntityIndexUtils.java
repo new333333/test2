@@ -1098,4 +1098,9 @@ public class EntityIndexUtils {
 		doc.add(path);
     }
 
+    public static void addBinderIsMirrored(Document doc, Binder binder, boolean fieldsOnly) {
+		Field path = new Field(IS_MIRRORED_FIELD, (binder.isMirrored() ? Constants.TRUE : Constants.FALSE), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+		doc.add(path);
+    }
+
 }
