@@ -77,7 +77,7 @@
     <property name="name" value="_team_workspace"/>  
     <property name="caption" value="__team_workspace"/>  
     <property name="family" value="team"/>  
-    <property name="icon" value="/icons/workspace_blog.gif"/> 
+    <property name="icon" value="/icons/workspace_team.png"/> 
   </properties>  
   <export-mappings/>
 </definition>

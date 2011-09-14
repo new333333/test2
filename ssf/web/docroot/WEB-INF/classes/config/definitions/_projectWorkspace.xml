@@ -142,7 +142,7 @@
   <properties> 
     <property name="name" value="_projectWorkspace"/>  
     <property name="caption" value="__project_management"/>  
-    <property name="icon" value="/icons/workspace.gif"/> 
+    <property name="icon" value="/icons/workspace_project_manage.png"/> 
   </properties>  
   <export-mappings/>
 </definition>

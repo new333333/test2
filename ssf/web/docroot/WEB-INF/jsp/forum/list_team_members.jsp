@@ -53,8 +53,8 @@
     </div>
 
 <c:if test="${!empty ssTeamMemberGroups}">
-	<div style="padding:16px;">
-	    <div style="padding-bottom:6px;">
+    <div style="padding: 1px 0 20px 19px;">
+	    <div style="padding-bottom:4px;">
 	      <span class="ss_gray_medium"><ssf:nlt tag="teamMembersList.groupsInTeam"/></span>
 	    </div>
 	    <div style="padding-left:10px;">
@@ -83,7 +83,7 @@
 	</div>
 </c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">	
-    <div style="padding: 0 0 10px 16px;">
+    <div style="padding: 1px 0 5px 19px;">
       <span class="ss_gray_medium"><ssf:nlt tag="team.members"/></span>
     </div>
 	<table class="ss_buddiesList" style="padding-left: 16px;" cellpadding="0" cellspacing="0">

@@ -315,13 +315,13 @@ a span.ss_profile {
 	margin-top: 2px;
 	}
 .ss_disc_folder_th1{
-	background-image: url("<html:rootPath/>images/icons/folder_blue.gif");
+	background-image: url("<html:rootPath/>images/icons/folder_blue.png");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	color: #00ADef!important;
 	}
 .ss_disc_th2{
-	background-image: url("<html:rootPath/>images/novell/icons/workspace.gif");
+	background-image: url("<html:rootPath/>images/novell/icons/workspace.png");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	color: #EF9418;

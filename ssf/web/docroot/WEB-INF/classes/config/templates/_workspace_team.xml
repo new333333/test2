@@ -5,7 +5,7 @@
   <attribute name="templateDescription" type="description">__template_team_workspace_description</attribute>
   <attribute name="title" type="string">__template_team_workspace</attribute>
   <attribute name="description" type="description"></attribute>
-  <attribute name="iconName" type="string">/icons/team_workspace.gif</attribute>
+  <attribute name="iconName" type="string">/icons/workspace_team.png</attribute>
   <attribute name="name" type="string">_workspace_team</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">false</property>
