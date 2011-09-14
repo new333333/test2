@@ -71,6 +71,7 @@ import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -88,10 +89,13 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
+import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -107,6 +111,7 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
@@ -126,8 +131,10 @@ import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -173,6 +180,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	protected FileModule getFileModule() {
 		// Can't use IoC due to circular dependency
 		return (FileModule) SpringContextUtil.getBean("fileModule");
+	}
+
+	protected WorkflowModule getWorkflowModule() {
+		// Can't use IoC due to circular dependency
+		return (WorkflowModule) SpringContextUtil.getBean("workflowModule");
 	}
 
 	/*
@@ -2797,6 +2809,69 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					return "folderModule.cleanupFolders()";
 				}
 			});
+		}
+	}
+
+	public void incrementFileMajorVersion(DefinableEntity entity, FileAttachment fileAtt) {
+		getFileModule().incrementMajorFileVersion(entity, fileAtt);
+		BinderHelper.indexEntity(entity);
+		if (entity instanceof WorkflowControlledEntry) {
+			//This is a workflow entity, so see if anything needs to be triggered on modify
+			getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+		}
+	}
+	
+	public void setFileVersionNote(DefinableEntity entity, FileAttachment fileAtt, String text) {
+		Description description = new Description(text);
+		getFileModule().modifyFileComment(entity, fileAtt, description);
+		BinderHelper.indexEntity(entity);
+		if (entity instanceof WorkflowControlledEntry) {
+			//This is a workflow entity, so see if anything needs to be triggered on modify
+			getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+		}
+	}
+	
+	public void promoteFileVersionCurrent(DefinableEntity entity, VersionAttachment va) {
+		if(entity.getParentBinder().isMirrored()) return;
+		getFileModule().revertFileVersion(entity, va);
+		BinderHelper.indexEntity(entity);
+		if (entity instanceof WorkflowControlledEntry) {
+			//This is a workflow entity, so see if anything needs to be triggered on modify
+			getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+		}
+	}
+	
+	public void deleteFileVersion(Binder binder, DefinableEntity entity, FileAttachment fileAtt) {
+		FilesErrors errors = new FilesErrors();
+		//Delete this version
+		if (fileAtt instanceof VersionAttachment) {
+			getFileModule().deleteVersion(binder, entity, (VersionAttachment)fileAtt);
+			BinderHelper.indexEntity(entity);
+		} else if (fileAtt instanceof FileAttachment) {
+			//This is the top file in the version list
+			if (fileAtt.getFileVersionsUnsorted().size() <= 1) {
+				//This is the only version
+				getFileModule().deleteFile(binder, entity, fileAtt, errors);
+				BinderHelper.indexEntity(entity);  //Must re-index since there is a new top file version
+			} else {
+				//There are some versions, so one of them will become the new top file
+				getFileModule().deleteVersion(binder, entity, fileAtt.getHighestVersion());
+				BinderHelper.indexEntity(entity);  //Must re-index since there is a new top file version
+			}
+			if (entity instanceof WorkflowControlledEntry) {
+				//This is a workflow entity, so see if anything needs to be triggered on modify
+				getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+			}
+		}
+	}
+	
+	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status) {
+		FileStatus fileStatus = FileStatus.valueOf(status);
+		getFileModule().modifyFileStatus(entity, fa, fileStatus);
+		BinderHelper.indexEntity(entity);
+		if (entity instanceof WorkflowControlledEntry) {
+			//This is a workflow entity, so see if anything needs to be triggered on modify
+			getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
 		}
 	}
 

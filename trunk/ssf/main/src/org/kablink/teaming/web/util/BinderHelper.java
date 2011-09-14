@@ -4566,15 +4566,15 @@ public class BinderHelper {
 		return ((fixFolderDefsThread != null) && fixFolderDefsThread.isFolderFixupReady());
 	}
 	
-	public static void indexEntity(AllModulesInjected bs, DefinableEntity entity) {
+	public static void indexEntity(DefinableEntity entity) {
 		if (EntityType.folderEntry.equals(entity.getEntityType())) {
-			bs.getFolderModule().indexEntry((FolderEntry)entity, false);
+			getFolderModule().indexEntry((FolderEntry)entity, false);
 		} else if (EntityType.folder.equals(entity.getEntityType()) || 
 				EntityType.workspace.equals(entity.getEntityType()) || 
 				EntityType.profiles.equals(entity.getEntityType())) {
-			bs.getBinderModule().indexBinder(entity.getId(), false);
+			getBinderModule().indexBinder(entity.getId(), false);
 		} else if (EntityType.user.equals(entity.getEntityType())) {
-			bs.getProfileModule().indexEntry((Principal)entity);
+			getProfileModule().indexEntry((Principal)entity);
 		}
 	}
 
@@ -4639,4 +4639,14 @@ public class BinderHelper {
 	private static NewableFileSupport getNewableFileSupport() {
 		return (NewableFileSupport) SpringContextUtil.getBean("newableFileSupport");
 	}
+	private static FolderModule getFolderModule() {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+	private static BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+	private static ProfileModule getProfileModule() {
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
+	}
+	
 }

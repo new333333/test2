@@ -131,7 +131,7 @@ public class EntryVersionController extends  SAbstractController {
 						}
 					}
 				}
-				BinderHelper.indexEntity(this, entity);
+				BinderHelper.indexEntity(entity);
 
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());

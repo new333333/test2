@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -51,10 +52,12 @@ import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.remoting.ws.model.Description;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
@@ -743,4 +746,15 @@ public interface BinderModule {
 	public Long getZoneBinderId(Long binderId, String zoneUUID, String entityType);
 	
 	public void changeEntryTypes(Long binderId, String oldDefId, String newDefId);
+	
+	public void incrementFileMajorVersion(DefinableEntity entity, FileAttachment fa);
+	
+	public void setFileVersionNote(DefinableEntity entity, FileAttachment fa, String text);
+	
+	public void promoteFileVersionCurrent(DefinableEntity entity, VersionAttachment va);
+	
+	public void deleteFileVersion(Binder binder, DefinableEntity entity, FileAttachment fa);
+	
+	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status);
+
 }

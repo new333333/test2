@@ -3027,7 +3027,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String entityType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ENTITY_TYPE);				
 		String fileId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");				
 		Integer fileStatusId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_FILE_STATUS);
-		FileStatus fileStatus = FileStatus.valueOf(fileStatusId);
 		DefinableEntity entity = null;
 		Binder binder = null;
 		if (entityType.equals(EntityType.folderEntry.name())) {
@@ -3050,12 +3049,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				}
 			}
 			if (fileAtt != null) {
-				bs.getFileModule().modifyFileStatus(entity, fileAtt, fileStatus);
-				BinderHelper.indexEntity(bs, entity);
-				if (entity instanceof WorkflowControlledEntry) {
-					//This is a workflow entity, so see if anything needs to be triggered on modify
-					getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
-				}
+				bs.getBinderModule().setFileVersionStatus(entity, fileAtt, fileStatusId.intValue());
 			}
 		}
 	}

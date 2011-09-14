@@ -119,8 +119,18 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "ical_uploadCalendarEntriesWithXML", new Object[] {null, Long.parseLong(args[1]), s}, attachFile);
 			} else if(args[0].equals("getAttachmentAsByteArray")) {
 				wsClient.fetchAndPrintByteArray("TeamingServiceV1", "folder_getAttachmentAsByteArray", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("incrementFileMajorVersion")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_incrementFileMajorVersion", new Object[] {null, Long.parseLong(args[1]), args[2]});
 			} else if(args[0].equals("getFileVersionAsByteArray")) {
-				wsClient.fetchAndPrintByteArray("TeamingServiceV1", "folder_getFileVersionAsByteArray", new Object[] {null, Long.parseLong(args[1]), args[2], args[3]});
+				wsClient.fetchAndPrintByteArray("TeamingServiceV1", "folder_getFileVersionAsByteArray", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("setFileVersionNote")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_setFileVersionNote", new Object[] {null, Long.parseLong(args[1]), args[2], args[3]});
+			} else if(args[0].equals("promoteFileVersionCurrent")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_promoteFileVersionCurrent", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("deleteFileVersion")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_deleteFileVersion", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("setFileVersionStatus")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_setFileVersionStatus", new Object[] {null, Long.parseLong(args[1]), args[2], Integer.parseInt(args[3])});
 			} else if(args[0].equals("getFileVersions")) {
 				wsClient.fetchAndPrintFileVersions("TeamingServiceV1", "folder_getFileVersions", new Object[] {null, Long.parseLong(args[1]), args[2]});
 			} else if(args[0].equals("getFileVersionsFromAttachment")) {
@@ -377,7 +387,12 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("testBinderAccess <work area operation name> \"binder id1, binder id2,....\"");
 		System.out.println("testBinderOperation <binder operation name> \"binder id1, binder id2,....\"");
 		System.out.println("getAttachmentAsByteArray <entry id> <attachment id>");
-		System.out.println("getFileVersionAsByteArray <entry id> <attachment id> <file version id>");
+		System.out.println("incrementFileMajorVersion <entry id> <attachment id>");
+		System.out.println("getFileVersionAsByteArray <entry id> <file version id>");
+		System.out.println("setFileVersionNote <entry id> <file version id> <note>");
+		System.out.println("promoteFileVersionCurrent <entry id> <file version id>");
+		System.out.println("deleteFileVersion <entry id> <file version id>");
+		System.out.println("setFileVersionStatus <entry id> <file version id> <status>");
 		System.out.println("getFileVersions <entry id> <file name>");
 		System.out.println("getFileVersionsFromAttachment <entry id> <attachment id>");
 		System.out.println("removeFile <entry id> <file name>");

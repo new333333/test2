@@ -2294,10 +2294,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add ancestry 
         EntityIndexUtils.addAncestry(indexDoc, entity, fieldsOnly);
         
-        //Add binder path
         if (entity instanceof Binder) {
+            //Add binder path
         	EntityIndexUtils.addBinderPath(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsLibrary(indexDoc, (Binder) entity, fieldsOnly);
+        	EntityIndexUtils.addBinderIsMirrored(indexDoc, (Binder) entity, fieldsOnly);
         }
  
         // Add data fields driven by the entry's definition object. 

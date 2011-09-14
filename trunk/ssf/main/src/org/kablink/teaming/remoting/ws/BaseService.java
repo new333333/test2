@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.apache.lucene.document.Field;
 import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -65,6 +64,8 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.NoFileByTheIdException;
+import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -169,6 +170,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("type", (String) entry.get(Constants.ENTITY_FIELD));
 		entryElem.addAttribute("family", (String) entry.get(Constants.FAMILY_FIELD));
 		entryElem.addAttribute("library", (String) entry.get(Constants.IS_LIBRARY_FIELD));
+		entryElem.addAttribute("mirrored", (String) entry.get(Constants.IS_MIRRORED_FIELD));
 		entryElem.addAttribute("path", (String) entry.get(Constants.ENTITY_PATH));
 		entryElem.addAttribute("definitionType", (String) entry.get(Constants.DEFINITION_TYPE_FIELD));
 	}
@@ -350,6 +352,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	    	binderModel.setFamily(DefinitionUtils.getFamily(def));
     	}
     	binderModel.setLibrary(binder.isLibrary());
+    	binderModel.setMirrored(binder.isMirrored());
 	}
 	
 	protected void fillBinderBriefModel(BinderBrief brief, Binder binder) {
@@ -361,6 +364,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	    	brief.setFamily(DefinitionUtils.getFamily(def));
     	}
 		brief.setLibrary(binder.isLibrary());
+		brief.setMirrored(binder.isMirrored());
 		brief.setDefinitionType(binder.getDefinitionType());
 		brief.setPath(binder.getPathName());
 		if(binder.getCreation() != null) {
@@ -673,7 +677,9 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getCreation().getPrincipal()).getName(), vatt.getCreation().getDate()),
 					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getModification().getPrincipal()).getName(), vatt.getModification().getDate()),
 					vatt.getFileItem().getLength(),
-					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, vatt));
+					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, vatt),
+					vatt.getFileItem().getDescription().getText(), 
+					vatt.getFileStatus().intValue());
 		}
 		return new FileVersions(fa.getFileItem().getName(), versions);
 	}
@@ -708,17 +714,30 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected FileAttachment getFileAttachment(DefinableEntity entity, String attachmentId) {
 		Attachment att = entity.getAttachment(attachmentId);
 		if(att == null || !(att instanceof FileAttachment))
-			throw new IllegalArgumentException("No such file attachment [" + attachmentId + "]");
+			throw new NoFileByTheIdException(attachmentId);
 		return (FileAttachment) att;
 	}
 	
-	protected byte[] getFileVersionAsByteArray(Binder binder, DefinableEntity entity, String attachmentId, String fileVersionId) {
-		VersionAttachment va = getVersionAttachment(entity, attachmentId, fileVersionId);
+	protected VersionAttachment getVersionAttachment(DefinableEntity entry, String fileVersionId) {
+		VersionAttachment fileVer;
+		for (Attachment attachment : entry.getAttachments()) {
+			if (attachment instanceof FileAttachment) {
+				fileVer = ((FileAttachment)attachment).findFileVersionById(fileVersionId);
+				if(fileVer != null)
+					return fileVer;
+			}
+		}
+		throw new NoFileVersionByTheIdException(fileVersionId);
+	}
+	
+	protected byte[] getFileVersionAsByteArray(Binder binder, DefinableEntity entity, String fileVersionId) {
+		VersionAttachment va = getVersionAttachment(entity, fileVersionId);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		getFileModule().readFile(binder, entity, va, baos);
 		return baos.toByteArray();
 	}
 	
+	/*
 	protected VersionAttachment getVersionAttachment(DefinableEntity entity, String attachmentId, String fileVersionId) {
 		Attachment att = entity.getAttachment(attachmentId);
 		if(att == null || !(att instanceof FileAttachment))
@@ -729,6 +748,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			throw new IllegalArgumentException("No such file version [" + fileVersionId + "]");
 		return va;
 	}
+	*/
 	
 	protected void getTimestamps(Map options, org.kablink.teaming.remoting.ws.model.DefinableEntity entry)
 	{
