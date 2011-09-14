@@ -308,11 +308,21 @@ public class GwtProfileHelper {
 								
 								Element captionElement = (Element) attrElement.selectSingleNode("properties/property[@name='caption']");
 								if(captionElement != null) {
-
+									final String withHelpMarker = "WithHelp";
 									String attrTitle = captionElement.attributeValue("value");
+									String attrValue = null;
+									if (attrTitle.startsWith("__") && attrTitle.endsWith(withHelpMarker)) {
+										attrValue = NLT.get(attrTitle.substring(0, (attrTitle.length() - withHelpMarker.length())), "", true);
+										if ((null != attrValue) && (0 == attrValue.length())) {
+											attrValue = null;
+										}
+									}
+									if (null == attrValue) {
+										attrValue = NLT.getDef(attrTitle);
+									}
 
 									//Now get the title for this attribute
-									attr.setTitle(NLT.getDef(attrTitle));
+									attr.setTitle(attrValue);
 								}
 
 								Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
@@ -379,6 +389,9 @@ public class GwtProfileHelper {
 			    type = "email";
 			} else if(name.equals("txtEmailAddress")){
 				value = u.getTxtEmailAddress();
+				type = "email";
+			} else if(name.equals("bccEmailAddress")){
+				value = u.getBccEmailAddress();
 				type = "email";
 			} else if(name.equals("twitterId")){
 				value = u.getSkypeId();
