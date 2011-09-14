@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -147,9 +146,9 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-
-			if(team.getPermalinkUrl() != "") {
-				gotoUrl(team.getPermalinkUrl(), true);
+			String url = team.getPermalinkUrl();
+			if(GwtClientHelper.hasString(url)) {
+				GwtClientHelper.jsLoadUrlInCurrentWindow(url);
 			} else {
 				//is this more than lets expand the 
 			   
@@ -182,23 +181,4 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 //			teamCount += 1;
 //		}
 	}
-	
-	/*
-	 * This method will be called to goto a permalink URL received as a
-	 * parameter.
-	 * 
-	 */
-	private void gotoUrl( Object obj, boolean isPermalink )
-	{
-		if ( obj instanceof String )
-		{
-			GwtClientHelper.jsLoadUrlInTopWindow( (String) obj );
-			
-//			if (isPermalink)
-//			     Window.Location.replace( (String) obj );
-//			else GwtClientHelper.jsLoadUrlInTopWindow( (String) obj );
-		}
-		else
-			Window.alert( "in gotoUrl() and obj is not a String object" );
-	}//end gotoUrl()
 }
