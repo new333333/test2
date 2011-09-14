@@ -54,6 +54,7 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
@@ -395,6 +396,8 @@ public class GwtProfileHelper {
 				value = u.getLastName();
 			} else if(name.equals("locale")){
 				value = u.getLocale().getDisplayName();
+			} else if(name.equals("timeZone")){
+				value = TimeZoneHelper.getUserTimeZoneDisplayString(u);
 			} else {
 
 				//Read the custom attribute
