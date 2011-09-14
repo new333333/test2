@@ -1514,7 +1514,7 @@ public class ExportHelper {
 						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
 
 						if (def != null && ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF.equals(def.getId())) {
-							def = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
+							def = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
 							if (def != null) {
 								setEntityDefinitionId(tempDoc, def.getId());
 								defId = def.getId();
