@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,16 +34,15 @@ package org.kablink.teaming.calendar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.TimeZone;
 
 import org.joda.time.DateTimeZone;
-import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.MiscUtil;
 
 
 /**
@@ -53,6 +52,7 @@ import org.kablink.teaming.util.NLT;
  * Olson database IDs too.
  * 
  */
+@SuppressWarnings("unchecked")
 public class TimeZoneHelper {
 
 	private static Map<String, String> cZoneIdConversion = new TreeMap();
@@ -243,5 +243,32 @@ public class TimeZoneHelper {
 		if (!results.containsValue(fixTimeZoneId(user.getTimeZone().getID()))) 
 				results.put(user.getTimeZone().getDisplayName(), fixTimeZoneId(user.getTimeZone().getID()));
 		return results;
+	}
+	
+	/**
+	 * Returns the localized display string for a user.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static String getUserTimeZoneDisplayString(User user) {
+		TreeMap<String, String> tzones = TimeZoneHelper.getTimeZoneIdDisplayStrings(user);
+		String tzId = user.getTimeZone().getID();
+		if (!(MiscUtil.hasString(tzId))) {
+			tzId = org.kablink.teaming.calendar.TimeZoneHelper.getDefault().getID();
+		}
+		String reply = null;
+		for (Map.Entry me:  tzones.entrySet()) {
+			String tz = ((String) me.getValue());
+			if (tz.equalsIgnoreCase(tzId)) {
+				reply = ((String) me.getKey());
+				break;
+			}
+		}
+		if (!(MiscUtil.hasString(reply))) {
+			reply = user.getTimeZone().getDisplayName();
+		}
+		return reply;
 	}
 }
