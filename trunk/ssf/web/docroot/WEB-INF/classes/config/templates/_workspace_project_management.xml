@@ -5,7 +5,7 @@
   <attribute name="templateDescription" type="description">__template_project_management_workspace_description</attribute>
   <attribute name="title" type="string">__template_project_management_workspace</attribute>
   <attribute name="description" type="description"></attribute>
-  <attribute name="iconName" type="string">/icons/workspace.gif</attribute>
+  <attribute name="iconName" type="string">/icons/workspace_project_manage.png</attribute>
   <attribute name="name" type="string">_workspace_project_management</attribute>
   <property name="library">false</property>
   <property name="mirrored">false</property>

@@ -5,7 +5,7 @@
   <attribute name="templateDescription" type="description">__template_discussions_workspace_description</attribute>
   <attribute name="title" type="string">__discussion_workspace</attribute>
   <attribute name="description" type="description"></attribute>
-  <attribute name="iconName" type="string">/icons/workspace.gif</attribute>
+  <attribute name="iconName" type="string">/icons/workspace_discussions.png</attribute>
   <attribute name="name" type="string">_workspace_discussions</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">false</property>

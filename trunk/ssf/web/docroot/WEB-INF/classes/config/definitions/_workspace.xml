@@ -65,7 +65,7 @@
   <properties> 
     <property name="name" value="_workspace"/>  
     <property name="caption" value="__definition_default_workspace"/>  
-    <property name="icon" value="/icons/workspace.gif"/> 
+    <property name="icon" value="/icons/workspace.png"/> 
   </properties>  
   <export-mappings/>
 </definition>
