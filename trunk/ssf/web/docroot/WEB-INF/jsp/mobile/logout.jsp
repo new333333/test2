@@ -35,13 +35,14 @@
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
 <script type="text/javascript">
-function ss_logoff() {
 
-	<c:if test="${!empty nativeMobileApp}">
+function ss_mobileLogoff() {
+
+	<c:if test="${nativeMobileApp}">
 	<%
 		if(isIPhone) {
 	%>
-		    document.location = "NovellVibe:" + "doAppLogout:" + "iphone:";
+	    document.location = "NovellVibe:" + "doAppLogout:" + "iphone:";
 	<%
 		} else {
 	%>
@@ -49,8 +50,13 @@ function ss_logoff() {
 	<%
 		}
 	%>
+		return;
 	</c:if>
 
+	ss_logoff();
+}
+
+function ss_logoff() {
 	var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 	if (x == null || x == "") {
 		var y = '${ss_logoutUrl}';
