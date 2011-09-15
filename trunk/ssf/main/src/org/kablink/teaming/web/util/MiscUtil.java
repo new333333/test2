@@ -214,6 +214,31 @@ public final class MiscUtil
 	
 	
 	/**
+	 * Returns true if nativeMobileApp mode is set, based on the
+	 * RenderRequest and false otherwise.
+	 * 
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static boolean isNativeMobileApp(RenderRequest request) {
+		String param = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NATIVE_MOBILE_APP, "");
+		boolean reply;
+		if (hasString(param)) {
+			reply = Boolean.valueOf(param);
+		}
+		else {
+	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+	        Boolean captive = ((Boolean) session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP));
+	        if (null == captive)
+	        	 reply = false;
+	        else reply = captive.booleanValue();
+		}
+		return reply;
+	}
+	
+	
+	/**
 	 * This method will return true if the given name is the name of a system user account.
 	 * Currently there are 5 system user accounts: "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
 	 */

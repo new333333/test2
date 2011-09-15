@@ -468,6 +468,14 @@ public class BinderHelper {
 					logoutUrl += "?logoutSuccessUrl=" + LOGOUT_SUCCESS_URL_MOBILE;
 				if(AUTHENTICATION_FAILURE_URL_MOBILE != null)
 					loginPostUrl += "?authenticationFailureUrl=" + AUTHENTICATION_FAILURE_URL_MOBILE;
+				
+				//See if this is a native app
+				String s_nativeMobile = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NATIVE_MOBILE_APP, "");
+				if (!s_nativeMobile.equals("")) session.setAttribute(WebKeys.URL_NATIVE_MOBILE_APP, Boolean.valueOf(s_nativeMobile));
+				Boolean nativeMobile = false;
+				if (session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP) != null) 
+					nativeMobile = (Boolean)session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP);
+				model.put(WebKeys.URL_NATIVE_MOBILE_APP, nativeMobile);
 			}
 			model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 			model.put(WebKeys.MOBILE_ACCESS_ENABLED, bs.getAdminModule().isMobileAccessEnabled());
@@ -1006,6 +1014,12 @@ public class BinderHelper {
 	}
 
 	public static void addActionsLogout(RenderRequest request, List actions) {
+		
+		if(MiscUtil.isNativeMobileApp(request)) 
+			return;
+		
+		BinderHelper.addActionsSpacer(request, actions);
+		
 		Map action = new HashMap();
 		action.put("title", NLT.get("logout"));
 		action.put("url", "javascript: ;");
