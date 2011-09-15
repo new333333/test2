@@ -1412,8 +1412,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				ti = TreeInfo.findBinderTrash(rootTI);
 			}
 			if (null == ti) {
-				String binderId = osbInfo.getBinderId().toString();
-				ti = TreeInfo.findBinderTI(rootTI, binderId);
+				Long binderId = osbInfo.getBinderId();
+				if (null != binderId) {
+					ti = TreeInfo.findBinderTI(rootTI, binderId.toString());
+				}
 			}
 			if (null != ti) {
 				// Yes!  Set the busy animation image for this
