@@ -2591,6 +2591,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled, 
 			FilesErrors errors) throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
+		if (binder.isMirrored() && fileEncryptionEnabled) {
+			//Don't enable encryption on mirrored folders
+			return;
+		}
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		checkAccess(binder, BinderOperation.manageConfiguration);
 		getTransactionTemplate().execute(new TransactionCallback() {

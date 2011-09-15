@@ -237,7 +237,7 @@ function ss_confirmEncryptAll() {
 <br/>
 
 <c:if test="${(ss_binder_file_encryption_enabled || ss_binder_file_encryption_allowed) && 
-		!ss_file_encryption_enabled_all}">
+		!ss_file_encryption_enabled_all && !ssBinder.mirrored}">
 <c:if test="${ssBinder.entityType == 'folder'}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -294,7 +294,7 @@ function ss_confirmEncryptAll() {
 </c:if>
 </c:if>
 
-<c:if test="${ss_file_encryption_enabled_all}">
+<c:if test="${ss_file_encryption_enabled_all && !ssBinder.mirrored}">
 <c:if test="${ss_binder_files_not_encrypted == 0}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
@@ -309,7 +309,7 @@ function ss_confirmEncryptAll() {
 	  </div>
 	</fieldset>
 </c:if>
-<c:if test="${ssBinder.entityType == 'folder' && ss_binder_files_not_encrypted > 0}">
+<c:if test="${ssBinder.entityType == 'folder' && ss_binder_files_not_encrypted > 0 && !ssBinder.mirrored}">
     <fieldset class="ss_fieldset">
 	  <legend class="ss_legend">
 		<span class="ss_bold"><ssf:nlt tag="binder.enableFileEncryption" /></span>

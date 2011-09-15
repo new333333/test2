@@ -1618,7 +1618,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	/// step2: update metadata in database
     	
     	Boolean encryptAllFiles = SPropsUtil.getBoolean("file.encryption.encryptAll", false);
-    	if (encryptAllFiles || getBinderModule().isBinderFileEncryptionEnabled(binder)) {
+    	if (!binder.isMirrored() && (encryptAllFiles || getBinderModule().isBinderFileEncryptionEnabled(binder))) {
     		//All files should be encrypted or this binder requires that all files be encrypted, 
     		//  so mark that the file should be encrypted.
     		try {
