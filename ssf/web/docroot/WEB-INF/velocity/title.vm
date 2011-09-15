@@ -27,20 +27,39 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())  
+  #if (!${ssVisitor.NotifyDef.getVariable('folderPathShown')} || ${ssVisitor.NotifyDef.getVariable('folderPathShown')} != 'true')
+    <div style="#ss_eFolderLink()">
+      <span>${ssVisitor.getNLT("notify.forum.label")}&nbsp;</span>
+	  <span>
+	      #if ($ssVisitor.Entity.ParentBinder.ParentBinder)
+		    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.ParentBinder)"
+		      title="$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.PathName})"
+		    >$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.Title})</a>
+		    / 
+		  #end
+		  <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)"
+		    title="$esc.html(${ssVisitor.Entity.ParentBinder.PathName})"
+		  >$esc.html(${ssVisitor.Entity.ParentBinder.Title})</a>
+	  </span>
+    </div>
+  #end
+
   <div style="#ss_eTitle()">
     #if ($ssVisitor.getDocNumber())
       ${ssVisitor.getDocNumber()}.&nbsp;
     #end
-
-    <a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
+	<a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
       #if ($ssVisitor.Entity.Title && $ssVisitor.Entity.Title != "" )
 	    $esc.html($ssVisitor.Entity.Title)
       #else
         <span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
       #end
     </a>
+    #if ($ssVisitor.isHasChanges())
+      <span class="e-title-new" style="padding-left:4px;">($ssVisitor.getNLT($ssVisitor.getChangeType()))</span>
+    #end
   </div>
-
+  
   <div style="#ss_eAuthor()">
     #ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
 
@@ -58,6 +77,7 @@
     #end
   </div>
 #else
+  #ss_printLn("$ssVisitor.getNLT('notify.forum.label') $esc.html(${ssVisitor.Entity.ParentBinder.PathName})")
   #if ($ssVisitor.getDocNumber())
     #ss_print("${ssVisitor.getDocNumber()}. ") 
   #end

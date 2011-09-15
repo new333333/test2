@@ -35,3 +35,4 @@
 #else
   #ss_printLn("$ssVisitor.getNLT('notify.forum.label') $esc.html(${ssVisitor.Entity.PathName})")
 #end
+${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}

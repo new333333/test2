@@ -70,6 +70,8 @@ public class Notify {
 	protected boolean includeAttachments=false;
 	protected boolean redacted=false;
 	protected TimeZone timezone;
+	protected Map<String, Object> variables;
+
 	public Notify(NotifyType type, Locale locale, TimeZone timezone, Date startDate) {
 		this.type = type;
 		this.locale = locale;
@@ -86,6 +88,7 @@ public class Notify {
 		this.dateFormat=DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 		this.timezone = timezone;
 		this.dateFormat.setTimeZone(timezone);
+		this.variables = new HashMap<String, Object>();
 		
 
 	}
@@ -143,6 +146,12 @@ public class Notify {
 	}
 	public Date getStartDate() {
 		return startTs;
+	}
+	public void setVariable(String name, Object value) {
+		this.variables.put(name, value);
+	}
+	public Object getVariable(String name) {
+		return this.variables.get(name);
 	}
 
 }

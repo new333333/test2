@@ -51,6 +51,7 @@
   #end
  </div>
 
+ ${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}
  #set ($relatedEntries = ${ssVisitor.getParam("org.kablink.teaming.notify.params.relatedEntries")})
  #if ($relatedEntries && !$relatedEntries.isEmpty())
   <div style="#ss_eRelated()">
@@ -94,6 +95,7 @@
     #ss_printLn("$ssVisitor.getNLT('notify.forum.label') (${ssVisitor.Entity.ParentBinder.PathName})")
   #end
   $ssVisitor.visit()
+  ${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}
   #set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
   #if ($replies && !$replies.isEmpty())
     #ss_printLn("")

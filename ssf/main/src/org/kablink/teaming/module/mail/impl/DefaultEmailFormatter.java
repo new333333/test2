@@ -639,7 +639,13 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			for (int pos=parentChain.size()-1; pos>=0; --pos) {
 				element = fElement.addElement("folderEntry");
 				parent = (FolderEntry)parentChain.get(pos);
-				doEntry(element, parent, notify, false);
+				boolean hasChanges = false;
+				if (notify.getStartDate() != null) {
+					if (parent.getModification().getDate().after(notify.getStartDate())) {
+						hasChanges = true;
+					}
+				}
+				doEntry(element, parent, notify, hasChanges);
 				params.put("ssElement", element);
 				doDigestEntry(parent, notify, entryWriter, NotifyVisitor.WriterType.HTML, params, entries.contains(parent));
 				doDigestEntry(parent, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, params, entries.contains(parent));

@@ -30,7 +30,7 @@
  #set ($creatorImage =  ${ssVisitor.getUserThumbnailInlineImage($ssVisitor.Entity.Creation.Principal)})
  <style type="text/css">
 	.e-user-avatar {
-	  background: #D8D8D8;
+	  background: #e5e5e5;
 	  padding: 5px;
 	  margin-bottom: 8px;
 	  color: #fff;
@@ -40,7 +40,7 @@
 	  -webkit-border-radius: 5px;
 	}
 	.e-user-avatar-new {
-	  background: #B8B8B8;
+	  background: #b8b8b8;
 	}
 	.e-user-avatar img {
 	  width: 24px;
@@ -66,5 +66,10 @@
 	  padding: 10px 10px 0 0;
 	}
 	.n-logo img {width: 220px;}
+	.e-title-new {
+	  color:#505354;
+	  font-size:0.75em;
+	  font-weight: normal;
+	}
  </style>
 #end
