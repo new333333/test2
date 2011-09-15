@@ -36,6 +36,22 @@
 
 <script type="text/javascript">
 function ss_logoff() {
+
+	<c:if test="${!empty nativeMobileApp}">
+	<%
+		if(isIPhone) {
+	%>
+			alert('Logout of Iphone');
+		    //document.location = "NovellVibe:" + "doAppLogout:" + "iphone:";
+	<%
+		} else {
+	%>
+			Android.doAppLogout();
+	<%
+		}
+	%>
+	</c:if>
+
 	var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 	if (x == null || x == "") {
 		var y = '${ss_logoutUrl}';
