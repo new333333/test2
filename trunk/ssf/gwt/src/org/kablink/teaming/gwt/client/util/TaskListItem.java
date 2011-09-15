@@ -341,6 +341,39 @@ public class TaskListItem implements IsSerializable {
 		public void setLogicalEnd(     TaskDate     logicalEnd)      {m_logicalEnd      = logicalEnd;     }
 		public void setDuration(       TaskDuration duration)        {m_duration        = duration;       }
 		public void setServerData(     Object       serverData)      {m_serverData      = serverData;     }
+
+		/**
+		 * Returns true if the TaskDate has an actual end date and
+		 * false otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean hasActualEnd() {
+			return hasDate(getActualEnd());
+		}
+		
+		/**
+		 * Returns true if the TaskDate has an actual start date and
+		 * false otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean hasActualStart() {
+			return hasDate(getActualStart());
+		}
+
+		/*
+		 * Returns true the the TaskDate has a value and false
+		 * otherwise.
+		 */
+		private boolean hasDate(TaskDate d) {
+			boolean reply = (null != d);
+			if (reply) {
+				String dd = d.getDateDisplay();
+				reply = ((null != dd) && (0 < dd.length()));
+			}
+			return reply;
+		}
 	}
 	
 	/**
