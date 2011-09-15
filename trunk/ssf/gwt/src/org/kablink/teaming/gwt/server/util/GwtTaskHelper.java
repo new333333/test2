@@ -2657,6 +2657,7 @@ public class GwtTaskHelper {
 					// ...and save the modified Event.
 					Map formData = new HashMap(); 
 					formData.put(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME, event);
+					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME,      ti.getStatus());	// We pass the status along so that we don't adversely affect any completion date.
 					fm.modifyEntry(binderId, entryId, new MapInputData(formData), null, null, null, null);
 					reply = true;
 					
