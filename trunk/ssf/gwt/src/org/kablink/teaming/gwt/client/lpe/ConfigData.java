@@ -34,7 +34,10 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * 
@@ -42,6 +45,7 @@ import com.google.gwt.http.client.URL;
  *
  */
 public class ConfigData
+	implements IsSerializable, VibeRpcResponseData
 {
 	private TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
 	private String m_configStr;
@@ -101,6 +105,15 @@ public class ConfigData
 			return m_configItems.size();
 		}// end numItems()
 	}// end TopLevelConfig
+	
+	
+	/**
+	 * 
+	 */
+	public ConfigData()
+	{
+		
+	}
 	
 	
 	/**
