@@ -41,8 +41,7 @@ function ss_logoff() {
 	<%
 		if(isIPhone) {
 	%>
-			alert('Logout of Iphone');
-		    //document.location = "NovellVibe:" + "doAppLogout:" + "iphone:";
+		    document.location = "NovellVibe:" + "doAppLogout:" + "iphone:";
 	<%
 		} else {
 	%>
