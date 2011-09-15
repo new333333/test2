@@ -99,6 +99,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -698,7 +699,11 @@ public class EnterExitEvent extends AbstractActionHandler {
 			hMsg.append("<a href=\"");
 			hMsg.append(permaLink);
 			hMsg.append("\">");
-			hMsg.append(entry.getTitle());
+			if (Validator.isNull(entry.getTitle())) {
+				hMsg.append("--" + NLT.get("entry.noTitle") + "--");
+			} else {
+				hMsg.append(entry.getTitle());
+			}
 			hMsg.append("</a>");
 			hMsg.append("<br /><br />");
 		}
