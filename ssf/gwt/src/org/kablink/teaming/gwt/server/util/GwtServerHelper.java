@@ -957,9 +957,11 @@ public class GwtServerHelper {
 		try
 		{
 			Binder binder;
+			boolean results;
 			
 			binder = bs.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			return new Boolean( bs.getBinderModule().testAccess( binder, BinderOperation.modifyBinder ) );
+			results = bs.getBinderModule().testAccess( binder, BinderOperation.modifyBinder );
+			return new Boolean( results );
 		}
 		catch (NoFolderEntryByTheIdException nbEx)
 		{

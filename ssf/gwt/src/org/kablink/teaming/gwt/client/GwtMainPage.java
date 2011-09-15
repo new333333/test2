@@ -694,9 +694,9 @@ public class GwtMainPage extends Composite
 	 * This method will show/hide controls based on these settings.
 	 */
 	private native void initHandleLandingPageOptionsJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_handleLandingPageOptions = function( hideMasthead, hideSidebar, showBranding, hideMenu )
+		$wnd.ss_handleLandingPageOptions = function( binderId, hideMasthead, hideSidebar, showBranding, hideMenu )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleLandingPageOptions(ZZZZ)( hideMasthead, hideSidebar, showBranding, hideMenu );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleLandingPageOptions(Ljava/lang/String;ZZZZ)( binderId, hideMasthead, hideSidebar, showBranding, hideMenu );
 		}//end ss_handleLandingPageOptions()
 	}-*/;
 
@@ -1095,7 +1095,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
-	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding, boolean hideMenu )
+	private void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
 	{
 		// If we are running in captive mode we never want to show the masthead of sidebar.
 		// Are we running in captive mode (GroupWise integration)?
@@ -1129,7 +1129,7 @@ public class GwtMainPage extends Composite
 				
 				// Issue a command to see if the user has rights to modify this landing page.
 				// If they have rights we will not hide the menu.
-				cmd = new CanModifyBinderCmd( m_selectedBinderId );
+				cmd = new CanModifyBinderCmd( binderId );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
 					/**
@@ -1140,7 +1140,7 @@ public class GwtMainPage extends Composite
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							GwtTeaming.getMessages().rpcFailure_CanModifyBinder(),
-							m_selectedBinderId );
+							binderId );
 					}
 					
 					/**
@@ -1149,10 +1149,12 @@ public class GwtMainPage extends Composite
 					public void onSuccess( VibeRpcResponse response )
 					{
 						BooleanRpcResponseData responseData;
+						Boolean result;
 
 						// Does the user have rights to modify the landing page?
 						responseData = (BooleanRpcResponseData) response.getResponseData();
-						if ( responseData.getBooleanValue().booleanValue() == false )
+						result = responseData.getBooleanValue();
+						if ( result == Boolean.FALSE )
 						{
 							Scheduler.ScheduledCommand scCmd;
 							

@@ -82,7 +82,7 @@
 				hideMenu = ${ss_mashupHideMenu};
 				if ( window.parent.ss_handleLandingPageOptions ) {
 					if (window.name == "gwtContentIframe") {
-						window.parent.ss_handleLandingPageOptions( hideMasthead, hideSidebar, showBranding, hideMenu );
+						window.parent.ss_handleLandingPageOptions( "${ssBinder.id}", hideMasthead, hideSidebar, showBranding, hideMenu );
 					}
 				}
 			</c:if>
