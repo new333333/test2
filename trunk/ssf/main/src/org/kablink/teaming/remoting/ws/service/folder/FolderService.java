@@ -192,14 +192,60 @@ public interface FolderService {
 	 */
 	public boolean[] folder_testEntryOperation(String accessToken, String operationName, long[] entryIds);
 
+	/**
+	 * Copy current version to a new one and set its major version number to be one higher than the
+	 * major version number of the current one and its minor version number to zero. 
+	 * This operation takes as input not the ID of the current file version but the ID of the file attachment.
+	 * 
+	 * @param accessToken
+	 * @param entryId ID of the entry the file is attached to
+	 * @param attachmentId ID of the file attachment
+	 */
 	public void folder_incrementFileMajorVersion(String accessToken, long entryId, String attachmentId);
 	
+	/**
+	 * Set note/comment for the file version.
+	 * 
+	 * @param accessToken
+	 * @param entryId ID of the entry the file is attached to
+	 * @param fileVersionId ID of the file version
+	 * @param note note text. This can contain html markup tags (e.g. <p>Adding <strong>important</strong> note</p>)
+	 */
 	public void folder_setFileVersionNote(String accessToken, long entryId, String fileVersionId, String note);
 	
+	/**
+	 * Copy a previous version to a new one and set its minor version number to be one higher than
+	 * the minor version number of the one being copied and its major version number to the same value. 
+	 * The newly created version becomes current version.
+	 * This operation is valid only on a version that is not current version.
+	 *  
+	 * @param accessToken
+	 * @param entryId ID of the entry the file is attached to
+	 * @param fileVersionId ID of the file version. This must not be current version.
+	 */
 	public void folder_promoteFileVersionCurrent(String accessToken, long entryId, String fileVersionId);
 	
+	/**
+	 * Delete a file version.
+	 * 
+	 * @param accessToken
+	 * @param entryId ID of the entry the file is attached to
+	 * @param fileVersionId ID of the file version. This must not be current version.
+	 */
 	public void folder_deleteFileVersion(String accessToken, long entryId, String fileVersionId);
 	
+	/**
+	 * Set status for a file version.
+	 * 
+	 * @param accessToken
+	 * @param entryId ID of the entry the file is attached to
+	 * @param fileVersionId ID of the file version. This must not be current version.
+	 * @param status status code<br>
+	 * 0 - no status
+	 * 1 - official
+	 * 2 - draft
+	 * 3 - obsolete
+	 */
 	public void folder_setFileVersionStatus(String accessToken, long entryId, String fileVersionId, int status);
 
 }
