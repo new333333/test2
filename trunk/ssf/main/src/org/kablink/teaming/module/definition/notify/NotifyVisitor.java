@@ -219,5 +219,37 @@ public class NotifyVisitor {
 		}
 		return result;
 	}
+	public Boolean isHasChanges() {
+		boolean result = false;
+		if (notifyDef.getStartDate() != null) {
+			if (entity instanceof FolderEntry) {
+				FolderEntry entry = (FolderEntry)entity;
+				if (notifyDef.getStartDate().before(entry.getCreation().getDate())) {
+					result = true;
+				} else if (entry.getWorkflowChange() != null && notifyDef.getStartDate().before(entry.getWorkflowChange().getDate())) {
+					result = true;
+				} else if (notifyDef.getStartDate().before(entry.getModification().getDate())) {
+					result = true;
+				} 
+			}
+		}
+		return result;
+	}
+	public String getChangeType() {
+		String result = "";
+		if (notifyDef.getStartDate() != null) {
+			if (entity instanceof FolderEntry) {
+				FolderEntry entry = (FolderEntry)entity;
+				if (notifyDef.getStartDate().before(entry.getCreation().getDate())) {
+					result = "notify.newEntry";
+				} else if (entry.getWorkflowChange() != null && notifyDef.getStartDate().before(entry.getWorkflowChange().getDate())) {
+					result = "notify.workflowEntry";
+				} else {
+					result = "notify.modifiedEntry";
+				} 
+			}
+		}
+		return result;
+	}
 
 }
