@@ -1,0 +1,24 @@
+<?xml version="1.0" standalone="yes"?>
+<deployments>
+   <deployment>
+      <if-exists>overwrite</if-exists>
+      <instance>
+         <instance-id>IFramePortletInstance</instance-id>
+         <portlet-ref>IFramePortlet</portlet-ref>
+         <preferences>
+			<preference>
+				<name>iframeurl</name>
+				<value>/ssf/help/en/guest.html</value>
+			</preference>
+			<preference>
+				<name>iframewidth</name>
+				<value>800px</value>
+			</preference>
+			<preference>
+				<name>iframeheight</name>
+				<value>420px</value>
+			</preference>
+	  	 </preferences>
+      </instance>
+   </deployment>
+</deployments>
