@@ -40,6 +40,7 @@
 		contentCss:							'<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>',
 		currentUserWorkspaceId:				'${ssUser.workspaceId}',
 		debugUI:							'${vibeUIDebug}',
+		graniteGwtEnabled:					'${vibeGraniteGWTEnabled}',
 		deleteUserUrl:						'${ss_deleteEntryAdapter}',
 		errMsg:								'<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
 		forceSidebarReload:					'false',

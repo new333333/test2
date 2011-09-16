@@ -94,6 +94,7 @@ public class WebKeys {
     public static final String SESSION_PRODUCT = "sessionProduct";
     public static final String VIBE_PRODUCT = "vibeProduct";
     public static final String VIBE_UI_DEBUG = "vibeUIDebug";
+    public static final String VIBE_GRANITE_GWT_ENABLED = "vibeGraniteGWTEnabled";
     public static final String IS_FORM_LOGIN_ALLOWED = "isFormLoginAllowed";
     
     //URL parameters
