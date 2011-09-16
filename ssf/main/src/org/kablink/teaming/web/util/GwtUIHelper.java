@@ -1287,6 +1287,13 @@ public class GwtUIHelper {
 		String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
 		boolean showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
 		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));		
+
+		// Put out the flag indicating whether login is allowed via our standard login dialog.
+		// Logging in via our standard login dialog will be disabled if we are running behind
+		// a single-sign on product such as NAM.
+		Boolean loginDisallowed;
+		loginDisallowed = SPropsUtil.getBoolean( "form.login.auth.disallowed", false );
+		model.put( WebKeys.IS_FORM_LOGIN_ALLOWED,  !loginDisallowed );
 	}
 	
 	/**

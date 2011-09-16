@@ -321,6 +321,15 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return whether logging in is allowed from our standard login dialog.  This will be
+	 * disallowed if we are running behind a single-sign on product such as NAM.
+	 */
+	public final native boolean isFormLoginAllowed()
+	/*-{
+		return this.getBFromS( this.isFormLoginAllowed );
+	}-*/;
+
+	/**
 	 * Return the flag that tells us if the user is logged in.
 	 */
 	public final native boolean isUserLoggedIn()
