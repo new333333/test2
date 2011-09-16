@@ -987,6 +987,16 @@ public class GwtUIHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
 	}
+
+	/**
+	 * Returns true if the Granite GWT extensions are enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isGraniteGwtEnabled() {
+		return SPropsUtil.getBoolean("granite.gwt.enabled", false);
+	}
 	
 	/**
 	 * Returns true if the GWT UI should be active and false otherwise.
@@ -1240,6 +1250,10 @@ public class GwtUIHelper {
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
 		model.put(WebKeys.VIBE_UI_DEBUG, SPropsUtil.getBoolean("ssf.ui.debug.enabled", false));
+		
+		// Put out the flag indicating whether the new GWT UI features
+		// for Granite should be enabled.
+		model.put(WebKeys.VIBE_GRANITE_GWT_ENABLED, isGraniteGwtEnabled());
 		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
