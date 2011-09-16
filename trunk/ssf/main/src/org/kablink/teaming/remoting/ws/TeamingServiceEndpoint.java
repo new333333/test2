@@ -704,7 +704,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_uploadAttachmentAsByteArray(String accessToken,
 			long entryId, String fileUploadDataItemName, String attachmentId,
 			byte[] fileContent) {
-
+        getFolderService().folder_uploadAttachmentAsByteArray(accessToken, entryId, fileUploadDataItemName, attachmentId, fileContent);
 	}
 
 	/* (non-Javadoc)
