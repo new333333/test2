@@ -1222,6 +1222,17 @@ public class GwtMainPage extends Composite
 	 */
 	private void invokeLoginDlg( final boolean allowCancel )
 	{
+		// Is login allowed through our standard login dialog?  This will be disabled if
+		// we are running behind a single-sign on product such as NAM.
+		if ( m_requestInfo.isFormLoginAllowed() == false )
+		{
+			// No
+			// Redirect the page to the url that is currently in the address bar.
+			// This will let single-sign on do its thing. 
+			Window.Location.reload();
+			return;
+		}
+
 		if ( m_loginDlg == null )
 		{
 			String refererUrl;

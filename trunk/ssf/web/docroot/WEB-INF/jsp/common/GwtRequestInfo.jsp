@@ -47,6 +47,7 @@
 		imagesPath:							'<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 		isBinderAdmin:						'${ss_isBinderAdmin}',
 		isDiskQuotaHighWaterMarkExceeded:	'${ss_diskQuotaHighWaterMarkExceeded}',
+		isFormLoginAllowed:					'${isFormLoginAllowed}',
 		isModifyAllowed:					'${ss_modifyEntryAllowed}',
 		isNovellTeaming:					'${isNovellTeaming}',
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
