@@ -374,6 +374,32 @@ public class TaskListItem implements IsSerializable {
 			}
 			return reply;
 		}
+
+		/**
+		 * Returns true if the TaskEvent requires some type of task
+		 * date calculation and false otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean requiresDateCalculations() {
+			// Is the task an all day event?
+			boolean reply = (!(getAllDayEvent()));
+			if (reply) {
+				// No!  Is it's duration in days only?
+				TaskDuration tD = getDuration();
+				reply = tD.hasDaysOnly();
+				if (reply) {
+					// Yes!  If the task has an actual start and end
+					// date, no calculations are required.
+					boolean hasStartAndEnd = (hasActualEnd() && hasActualStart());
+					reply = (!(hasStartAndEnd));				
+				}
+			}
+			
+			// If we get here, reply is true if the TaskEvent requires
+			// some date calculation and false otherwise.  Return it.
+			return reply;
+		}
 	}
 	
 	/**
