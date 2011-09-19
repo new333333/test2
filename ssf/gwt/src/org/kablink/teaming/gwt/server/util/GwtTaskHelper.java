@@ -2279,7 +2279,7 @@ public class GwtTaskHelper {
 			}
 		}
 	}
-	
+
 	/**
 	 * Updates the calculated dates on a given task.
 	 * 
@@ -2360,19 +2360,17 @@ public class GwtTaskHelper {
 		// Scan the tasks in the list.
 		TaskInfo prevTI = null;		
 		for (TaskListItem task:  taskList) {
-			// If a task is an all day event or doesn't have a duration
-			// in days, we don't update its calculated dates.  Can we
-			// potentially update this task's calculated dates?
-			TaskInfo     ti  = task.getTask();
-			TaskEvent    tiE = ti.getEvent();
-			TaskDuration tiD = tiE.getDuration();
-			if ((!(tiE.getAllDayEvent())) && tiD.hasDaysOnly()) {
+			// Does this task require some form of date calculations?
+			TaskInfo  ti  = task.getTask();
+			TaskEvent tiE = ti.getEvent();
+			if (tiE.requiresDateCalculations()) {
 				// Yes!  Extract the additional information we may need
 				// for the calculations from the task...
-				int         durDays        = tiD.getDays();
-				ServerDates tiSD           = ((ServerDates) tiE.getServerData());
-				boolean     hasActualStart = tiSD.hasActualStart();
-				boolean     hasActualEnd   = tiSD.hasActualEnd();
+				TaskDuration tiD            = tiE.getDuration();
+				int          durDays        = tiD.getDays();
+				ServerDates  tiSD           = ((ServerDates) tiE.getServerData());
+				boolean      hasActualStart = tiSD.hasActualStart();
+				boolean      hasActualEnd   = tiSD.hasActualEnd();
 
 				// ...and define a few other local variables we'll
 				// ...need for the analysis.
@@ -2484,7 +2482,7 @@ public class GwtTaskHelper {
 					
 					if (saved) {
 						// Yes!  If we changed the calculated start...
-						if (removeCalcStart || (null != newCalcEnd)) {
+						if (removeCalcStart || (null != newCalcStart)) {
 							// ...update it in the task.
 							TaskDate calcTD = new TaskDate();
 							if (!removeCalcStart) {
@@ -2563,7 +2561,7 @@ public class GwtTaskHelper {
 				pNewCalcEnd = findLatestLogicalEnd(taskList);
 			}
 			else {
-				// We don't need an edn from the subtasks.
+				// We don't need an end from the subtasks.
 				pNewCalcEnd = null;
 			}
 			

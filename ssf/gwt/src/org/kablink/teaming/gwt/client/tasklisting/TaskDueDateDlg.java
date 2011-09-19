@@ -322,22 +322,11 @@ public class TaskDueDateDlg extends DlgBox
 	 * Returns the duration days value to use for the current task.
 	 */
 	private long getDurationDays() {
-		long days = (-1);
-		boolean hasDurationDays = hasEvent();
-		if (hasDurationDays) {
-			boolean hasStartAndEnd = (m_selectedTaskEvent.hasActualEnd() && m_selectedTaskEvent.hasActualStart());
-			hasDurationDays = (!hasStartAndEnd);
-			if (hasDurationDays) {			
-				TaskDuration duration = m_selectedTaskEvent.getDuration();
-				hasDurationDays = ((null != duration));
-				if (hasDurationDays) {
-					hasDurationDays = duration.hasDaysOnly();
-					if (hasDurationDays) {
-						days = duration.getDays();
-					}
-				}
-			}
-		}
+		long days;
+		boolean hasDurationDays = (hasEvent() && m_selectedTaskEvent.requiresDateCalculations());
+		if (hasDurationDays)
+		     days = m_selectedTaskEvent.getDuration().getDays();
+		else days = (-1);
 		return days;
 	}
 	
