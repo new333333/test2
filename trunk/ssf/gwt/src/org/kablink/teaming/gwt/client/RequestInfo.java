@@ -121,7 +121,7 @@ public class RequestInfo extends JavaScriptObject
 	 * 
 	 * @return
 	 */
-	public final native boolean isGranteGwtEnabled()
+	public final native boolean isGraniteGwtEnabled()
 	/*-{
 		return this.getBFromS( this.graniteGwtEnabled );
 	}-*/;
