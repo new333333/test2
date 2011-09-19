@@ -47,8 +47,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ConfigData
 	implements IsSerializable, VibeRpcResponseData
 {
-	private TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
+	private transient TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
 	private String m_configStr;
+	private boolean m_hideMasthead;
+	private boolean m_hideNavPanel;
+	private boolean m_hideFooter;
+	private boolean m_hideMenu;
+	private String m_bgColor;
+	private String m_bgImgUrl;
+	private String m_bgImgRepeat;
 	
 
 	/**
@@ -112,7 +119,7 @@ public class ConfigData
 	 */
 	public ConfigData()
 	{
-		
+		init();
 	}
 	
 	
@@ -121,12 +128,13 @@ public class ConfigData
 	 */
 	public ConfigData( String configStr )
 	{
+		init();
+		
 		// Does the string that holds the configuration have a ';' at the end?
 		m_configStr = configStr;
 		if ( m_configStr != null && !m_configStr.endsWith( ";" ) )
 			m_configStr += ";";
-		
-		m_topLevelConfig = new TopLevelConfig();
+
 	}// end ConfigData()
 	
 	
@@ -339,6 +347,32 @@ public class ConfigData
 	
 	
 	/**
+	 * 
+	 */
+	public String getBackgroundColor()
+	{
+		return m_bgColor;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getBackgroundImgUrl()
+	{
+		return m_bgImgUrl;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public String getBackgroundImgRepeat()
+	{
+		return m_bgImgRepeat;
+	}
+	
+	
+	/**
 	 * Get the name of the item from the configuration string.  The name will be the
 	 * first word followed by a ',' or a ';'
 	 */
@@ -356,6 +390,58 @@ public class ConfigData
 
 		return name;
 	}// end getConfigItemName()
+	
+
+	/**
+	 * 
+	 */
+	public boolean getHideFooter()
+	{
+		return m_hideFooter;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public boolean getHideMasthead()
+	{
+		return m_hideMasthead;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public boolean getHideMenu()
+	{
+		return m_hideMenu;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getHideNavPanel()
+	{
+		return m_hideNavPanel;
+	}
+	
+	
+	/**
+	 * Initialized data members to their default value.
+	 */
+	private void init()
+	{
+		m_topLevelConfig = new TopLevelConfig();
+
+		m_configStr = null;
+		m_hideFooter = false;
+		m_hideMasthead = false;
+		m_hideMenu = false;
+		m_hideNavPanel = false;
+		m_bgColor = null;
+		m_bgImgUrl = null;
+	}
 	
 	
 	/**
@@ -379,6 +465,73 @@ public class ConfigData
 			}
 		}
 	}// end parse()
+	
+	
+	/**
+	 * 
+	 */
+	public void setBackgroundColor( String color )
+	{
+		m_bgColor = color;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setBackgroundImgRepeat( String repeat )
+	{
+		m_bgImgRepeat = repeat;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void setBackgroundImgUrl( String imgUrl )
+	{
+		m_bgImgUrl = imgUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setConfigStr( String configStr )
+	{
+		m_configStr = configStr;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void setHideFooter( boolean hideFooter )
+	{
+		m_hideFooter = hideFooter;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHideMasthead( boolean hideMasthead )
+	{
+		m_hideMasthead = hideMasthead;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHideMenu( boolean hideMenu )
+	{
+		m_hideMenu = hideMenu;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHideNavPanel( boolean hideNavPanel )
+	{
+		m_hideNavPanel = hideNavPanel;
+	}
 	
 	
 	/**

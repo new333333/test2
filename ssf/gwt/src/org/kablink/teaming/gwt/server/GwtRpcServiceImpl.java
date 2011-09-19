@@ -86,6 +86,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -577,6 +578,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = getImUrl( ri, giuCmd.getBinderId() );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_LANDING_PAGE_DATA:
+		{
+			GetLandingPageDataCmd glpdCmd;
+			ConfigData lpConfigData;
+			
+			glpdCmd = (GetLandingPageDataCmd) cmd;
+			lpConfigData = GwtServerHelper.getLandingPageData( req, this, glpdCmd.getBinderId() );
+			response = new VibeRpcResponse( lpConfigData );
 			return response;
 		}
 		

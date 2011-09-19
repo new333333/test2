@@ -111,6 +111,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -2655,6 +2656,118 @@ public class GwtServerHelper {
 	public static GwtTeamingException getGwtTeamingException() {
 		// Always use the initial form of the method.
 		return getGwtTeamingException(null);
+	}
+
+
+	/**
+	 * Get the landing page data for the given binder.
+	 */
+	public static ConfigData getLandingPageData( HttpServletRequest request, AllModulesInjected allModules, String binderId ) throws GwtTeamingException
+	{
+		ConfigData configData;
+		
+		configData = new ConfigData();
+
+		try
+		{
+			Binder binder;
+			CustomAttribute customAttr;
+			
+			binder = allModules.getBinderModule().getBinder( Long.parseLong( binderId ) );
+			
+			// The landing page configuration data is stored as a custom attribute with the name "mashup"
+			customAttr = binder.getCustomAttribute( "mashup" );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
+    		{
+    			String configStr;
+
+    			configStr = (String) customAttr.getValue();
+    			configData.setConfigStr( configStr );
+    		}
+    		
+			// Get the value of the "hide the masthead" setting.
+    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_MASTHEAD );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
+    			configData.setHideMasthead( ((Boolean) customAttr.getValue()).booleanValue() );
+			
+			// Get the value of the "hide the navigation panel" setting.
+    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_SIDEBAR );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
+    			configData.setHideNavPanel( ((Boolean) customAttr.getValue()).booleanValue() );
+			
+			// Get the value of the "hide the footer" setting.
+    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_FOOTER );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
+    			configData.setHideFooter( ((Boolean) customAttr.getValue()).booleanValue() );
+			
+			// Get the other settings that are stored in the "mashup__properties" custom attribute
+    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_PROPERTIES );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.XML )
+    		{
+    			Document doc;
+    			
+				doc = (Document) customAttr.getValue();
+				if ( doc != null )
+				{
+					Element bgElement;
+					Element pgLayoutElement;
+					
+					// Get the <background ...> element.
+					bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
+					if ( bgElement != null )
+					{
+						String bgColor;
+						String bgImgName;
+						
+						bgColor = bgElement.attributeValue( "color" );
+						if ( bgColor != null )
+							configData.setBackgroundColor( bgColor );
+						
+						bgImgName = bgElement.attributeValue( "imgName");
+						if ( bgImgName != null )
+						{
+							String fileUrl;
+							String webPath;
+							
+							webPath = WebUrlUtil.getServletRootURL( request );
+	    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, bgImgName );
+	    					configData.setBackgroundImgUrl( fileUrl );
+							
+							// Get the background image repeat value.
+							{
+								String repeat;
+								
+								repeat = bgElement.attributeValue( "repeat" );
+								if ( repeat != null )
+									configData.setBackgroundImgRepeat( repeat );
+							}
+						}
+					}
+					
+					// Get the <pageLayout hideMenu="true | false" /> element.
+					pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
+					if ( pgLayoutElement != null )
+					{
+						String hideMenu;
+						
+						hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
+						if ( hideMenu != null )
+						{
+							boolean value;
+							
+							value = Boolean.parseBoolean( hideMenu );
+							configData.setHideMenu( value );
+						}
+					}
+				}
+    		}
+		}
+		catch (Exception ex)
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+		
+		return configData;
 	}
 	
 	/**
