@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.ui.Composite;
+
 /**
  * This class represents the configuration data for a Table
  * @author jwootton
@@ -64,6 +66,23 @@ public class TableColConfig extends ConfigItem
 		m_configItems.add( configItem );
 	}// end addChild()
 
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Nothing to do here
+	 */
+	public DropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return null;
+	}
+	
 	
 	/**
 	 * 

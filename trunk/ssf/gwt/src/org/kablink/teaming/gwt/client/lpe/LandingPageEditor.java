@@ -187,7 +187,7 @@ public class LandingPageEditor extends Composite
 				DropWidget dropWidget;
 				
 				// Create the appropriate widget based on the given ConfigItem.
-				dropWidget = DropWidget.createDropWidget( this, configItem );
+				dropWidget = configItem.createDropWidget( this );
 				
 				if ( dropWidget != null )
 					m_canvas.addWidgetToDropZone( dropWidget );

@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
  * This class represents the configuration data for a Link To Url
@@ -93,6 +94,23 @@ public class LinkToUrlConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
+	
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Create a DropWidget that can be used in the landing page editor.
+	 */
+	public LinkToUrlDropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return new LinkToUrlDropWidget( lpe, this );
+	}
 	
 	
 	/**

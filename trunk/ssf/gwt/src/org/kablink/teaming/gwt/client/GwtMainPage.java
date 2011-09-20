@@ -79,6 +79,7 @@ import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
+import org.kablink.teaming.gwt.client.landingpage.LandingPage;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -895,6 +896,35 @@ public class GwtMainPage extends Composite
 		});
 	}// end contextLoaded()
 
+	/**
+	 * Display a landing page for the given binder id.
+	 */
+	private void displayLandingPage( String binderId )
+	{
+		LandingPage.LandingPageClient lpClient;
+		
+		lpClient = new LandingPage.LandingPageClient()
+		{
+			/**
+			 * 
+			 */
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			/**
+			 * 
+			 */
+			public void onSuccess( LandingPage landingPage )
+			{
+			}
+		};
+		
+		// Create a LandingPage widget for the selected binder.
+		LandingPage.createAsync( binderId, lpClient );
+	}
+	
 	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
@@ -1215,7 +1245,6 @@ public class GwtMainPage extends Composite
 	{
 		AdministrationEvent.fireOne();
 	}
-	
 	
 	/**
 	 * Invoke the "login" dialog.

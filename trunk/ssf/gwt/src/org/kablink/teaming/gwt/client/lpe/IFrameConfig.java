@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.ui.Composite;
 
 
 
@@ -100,6 +101,23 @@ public class IFrameConfig extends ConfigItem
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
+	}
+	
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Create a DropWidget that can be used in the landing page editor.
+	 */
+	public IFrameDropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return new IFrameDropWidget( lpe, this );
 	}
 	
 	

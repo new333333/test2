@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.landingpage;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
+import org.kablink.teaming.gwt.client.lpe.ConfigItem;
+import org.kablink.teaming.gwt.client.lpe.DropWidget;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -46,6 +48,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * This widget is the Landing Page.  It is used to render a landing page configuration.
@@ -56,6 +59,7 @@ public class LandingPage extends Composite
 {
 	private String m_binderId;
 	private ConfigData m_configData;
+	private FlowPanel m_mainPanel;
 	
 	/**
 	 * 
@@ -102,10 +106,35 @@ public class LandingPage extends Composite
 	 */
 	private void constructLandingPage()
 	{
+		int i;;
+		int numItems;
+		
 		if ( m_configData == null )
 			return;
 		
-		Window.alert( "Landing Page under construction" );
+		if ( m_mainPanel == null )
+			m_mainPanel = new FlowPanel();
+		
+		m_mainPanel.clear();
+		
+		// Add items to the page that are defined in the configuration.
+		numItems = m_configData.size();
+		for (i = 0; i < numItems; ++i)
+		{
+			ConfigItem configItem;
+			
+			// Get the next item in the list.
+			configItem = m_configData.get( i );
+			if ( configItem != null )
+			{
+				Composite lpElement;
+				
+				// Create the appropriate composite based on the given ConfigItem.
+				lpElement = configItem.createComposite();
+				if ( lpElement != null )
+					m_mainPanel.add( lpElement );
+			}
+		}
 	}
 	
 	/**

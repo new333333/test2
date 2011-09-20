@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.user.client.ui.Composite;
+
 /**
  * This class represents the configuration data for a Utility Element
  * @author jwootton
@@ -98,6 +100,23 @@ public class UtilityElementConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
+	
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Create a DropWidget that can be used in the landing page editor.
+	 */
+	public UtilityElementDropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return new UtilityElementDropWidget( lpe, this );
+	}
 	
 	
 	/**
