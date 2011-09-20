@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -245,7 +246,7 @@ public class GwtTeaming implements EntryPoint
 		}
 		
 		// Are we in the main page?
-		final RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
+		RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
 		if ( mainRootPanel != null )
 		{
 			// Yes!  Load the main page's split point.
@@ -261,8 +262,12 @@ public class GwtTeaming implements EntryPoint
 				@Override
 				public void onSuccess( GwtMainPage mainPage )
 				{
+					RootLayoutPanel rlPanel;
+					
 					m_mainPage = mainPage;
-					mainRootPanel.add( mainPage );
+					
+					rlPanel = RootLayoutPanel.get();
+					rlPanel.add( mainPage );
 				}// end onSuccess()
 			} );
 			
