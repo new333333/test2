@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.lpe;
 import java.util.ArrayList;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
  * This class represents the configuration data for a Table
@@ -189,6 +190,23 @@ public class TableConfig extends ConfigItem
 	{
 		m_configItems.add( configItem );
 	}// end addChild()
+	
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Create a DropWidget that can be used in the landing page editor.
+	 */
+	public TableDropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return new TableDropWidget( lpe, this );
+	}
 	
 	
 	/**

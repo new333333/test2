@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
  * This class represents the configuration data for an enhanced view
@@ -211,6 +212,23 @@ public class EnhancedViewConfig extends ConfigItem
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
+	}
+	
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Create a DropWidget that can be used in the landing page editor.
+	 */
+	public EnhancedViewDropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return new EnhancedViewDropWidget( lpe, this );
 	}
 	
 	

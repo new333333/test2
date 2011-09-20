@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
  * This class represents the configuration data for a "Google Gadget" widget.
@@ -88,6 +89,23 @@ public class GoogleGadgetConfig extends ConfigItem
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
+	}
+	
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Create a DropWidget that can be used in the landing page editor.
+	 */
+	public DropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return new GoogleGadgetDropWidget( lpe, this );
 	}
 	
 	

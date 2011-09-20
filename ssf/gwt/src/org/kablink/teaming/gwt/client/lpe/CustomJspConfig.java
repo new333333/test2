@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
  * This class represents the configuration data for a Custom Jsp
@@ -113,6 +114,23 @@ public class CustomJspConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
+	
+	
+	/**
+	 * Create a composite that can be used on any page.
+	 */
+	public Composite createComposite()
+	{
+		return null;
+	}
+	
+	/**
+	 * Create a DropWidget that can be used in the landing page editor.
+	 */
+	public CustomJspDropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		return new CustomJspDropWidget( lpe, this );
+	}
 	
 	
 	/**

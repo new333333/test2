@@ -119,7 +119,7 @@ public class TableDropWidget extends DropWidget
 						configItem = tableColConfig.get( i );
 						
 						// Create the appropriate DropWidget based on the configuration data.
-						dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
+						dropWidget = configItem.createDropWidget( m_lpe );
 						
 						// Add the widget to the col's drop zone.
 						dropZone.addWidgetToDropZone( dropWidget );
@@ -128,7 +128,7 @@ public class TableDropWidget extends DropWidget
 				else
 				{
 					// Create the appropriate DropWidget based on the configuration data.
-					dropWidget = DropWidget.createDropWidget( m_lpe, configData );
+					dropWidget = configData.createDropWidget( m_lpe );
 					
 					// Add the widget to the col's drop zone.
 					dropZone.addWidgetToDropZone( dropWidget );

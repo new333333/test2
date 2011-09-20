@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
  * 
@@ -90,6 +91,23 @@ public class ConfigData
 		{
 			m_configItems.clear();
 		}// end clear()
+		
+		
+		/**
+		 * This is just a place holder.  Nothing to do.
+		 */
+		public Composite createComposite()
+		{
+			return null;
+		}
+		
+		/**
+		 * This is just a place holder.  Nothing to do.
+		 */
+		public DropWidget createDropWidget( LandingPageEditor lpe )
+		{
+			return null;
+		}
 		
 		
 		/**
