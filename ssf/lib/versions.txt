@@ -36,7 +36,7 @@ Ehcache 2.2.0 (needed by Hibernate)
 ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.7.8
-gwt 2.3.0 (Google Web Toolkit)
+gwt 2.4.0 (Google Web Toolkit)
 Hibernate 3.6.0.Final
 hibernate memcached 1.2.2 (Apache License 2.0; http://code.google.com/p/hibernate-memcached)
 ical4j 1.0
