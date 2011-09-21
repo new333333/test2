@@ -35,8 +35,10 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.widgets.TableWidget;
+import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.ui.Composite;
 
 /**
  * This class represents the configuration data for a Table
@@ -193,11 +195,14 @@ public class TableConfig extends ConfigItem
 	
 	
 	/**
-	 * Create a composite that can be used on any page.
+	 * Create a widget that can be used on any page.
 	 */
-	public Composite createComposite()
+	public VibeWidget createWidget()
 	{
-		return null;
+		TableWidget tableWidget;
+		
+		tableWidget = new TableWidget( this );
+		return tableWidget;
 	}
 	
 	/**

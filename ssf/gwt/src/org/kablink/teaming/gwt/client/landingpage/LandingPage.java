@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client.landingpage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
-import org.kablink.teaming.gwt.client.lpe.DropWidget;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -45,21 +44,23 @@ import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ResizeComposite;
 
 /**
  * This widget is the Landing Page.  It is used to render a landing page configuration.
  * @author jwootton
  *
  */
-public class LandingPage extends Composite
+public class LandingPage extends ResizeComposite
 {
 	private String m_binderId;
 	private ConfigData m_configData;
-	private FlowPanel m_mainPanel;
+	private DockLayoutPanel m_mainPanel;
 	
 	/**
 	 * 
@@ -113,7 +114,7 @@ public class LandingPage extends Composite
 			return;
 		
 		if ( m_mainPanel == null )
-			m_mainPanel = new FlowPanel();
+			m_mainPanel = new DockLayoutPanel( Style.Unit.PX );
 		
 		m_mainPanel.clear();
 		
@@ -127,12 +128,20 @@ public class LandingPage extends Composite
 			configItem = m_configData.get( i );
 			if ( configItem != null )
 			{
-				Composite lpElement;
+				ResizeComposite widget;
 				
 				// Create the appropriate composite based on the given ConfigItem.
-				lpElement = configItem.createComposite();
-				if ( lpElement != null )
-					m_mainPanel.add( lpElement );
+				widget = configItem.createWidget();
+				if ( widget != null )
+					m_mainPanel.add( widget );
+				else
+				{
+					//!!!
+					Label label;
+					
+					label = new Label( "widget: " + configItem.getClass().getName() );
+					m_mainPanel.add( label );
+				}
 			}
 		}
 	}
