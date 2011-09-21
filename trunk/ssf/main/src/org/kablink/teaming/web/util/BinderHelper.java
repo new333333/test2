@@ -67,6 +67,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -476,6 +477,25 @@ public class BinderHelper {
 				if (session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP) != null) 
 					nativeMobile = (Boolean)session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP);
 				model.put(WebKeys.URL_NATIVE_MOBILE_APP, nativeMobile);
+				if(nativeMobile) {
+					boolean addCookie = true;
+					Cookie[] cookies = request.getCookies();
+					if(cookies != null) {
+						for(Cookie cookie:cookies) {
+							if(cookie.getName().equals(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE)) {
+								addCookie = false;
+								break;
+							}
+						}
+					}
+					if(addCookie) {
+						String op = (String)model.get(WebKeys.URL_OPERATION2);
+						Cookie newCookie = new Cookie(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE,op);
+						newCookie.setPath("/ssf");
+						newCookie.setMaxAge(21278567);
+						response.addProperty(newCookie);
+					}
+				}
 			}
 			model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 			model.put(WebKeys.MOBILE_ACCESS_ENABLED, bs.getAdminModule().isMobileAccessEnabled());
