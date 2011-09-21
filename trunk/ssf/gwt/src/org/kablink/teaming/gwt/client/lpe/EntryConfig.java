@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.user.client.ui.Composite;
+import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 
 /**
@@ -91,7 +91,7 @@ public class EntryConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
-	public Composite createComposite()
+	public VibeWidget createWidget()
 	{
 		return null;
 	}

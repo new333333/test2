@@ -35,10 +35,10 @@ package org.kablink.teaming.gwt.client.lpe;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.ui.Composite;
 
 /**
  * 
@@ -96,7 +96,7 @@ public class ConfigData
 		/**
 		 * This is just a place holder.  Nothing to do.
 		 */
-		public Composite createComposite()
+		public VibeWidget createWidget()
 		{
 			return null;
 		}

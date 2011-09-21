@@ -34,7 +34,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.user.client.ui.Composite;
+import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 /**
  * 
@@ -49,10 +49,10 @@ public abstract class ConfigItem
 	public abstract void addChild( ConfigItem childItem );
 	
 	/**
-	 * Create a composite that can be used on any page.  Currently, the returned composite
+	 * Create a widget that can be used on any page.  Currently, the returned widget
 	 * is only used in a landing page.
 	 */
-	public abstract Composite createComposite();
+	public abstract VibeWidget createWidget();
 
 	/**
 	 * Create a DropWidget that is used in the landing page editor.
