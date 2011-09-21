@@ -200,6 +200,7 @@ public class WebKeys {
     public static final String URL_MUSTER_IDS="muster_ids";
     public static final String URL_NAMESPACE="namespace";
     public static final String URL_NATIVE_MOBILE_APP="nativeMobileApp";
+    public static final String URL_NATIVE_MOBILE_APP_COOKIE="nativeMobileAppC";
     public static final String URL_NEW_TAB="newTab";
     public static final String URL_NEW_TAB_PLACE_HOLDER="ss_new_tab_place_holder";
     public static final String URL_NORMALIZED_TITLE="title";

@@ -62,6 +62,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -126,6 +127,7 @@ import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -573,7 +575,25 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				model.put(WebKeys.URL, adapterUrl);
 			}
 		}
-		return new ModelAndView("mobile/show_login_form", model);
+			
+		String view = "mobile/show_login_form";
+		if(MiscUtil.isNativeMobileApp(request)) {
+			view = "mobile/app_login";
+		}
+		
+		Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			for(Cookie cookie:cookies) {
+				if(cookie.getName().equals(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE)) {
+					String value = cookie.getValue();
+					model.put(WebKeys.URL_OPERATION2, value);
+					view = "mobile/app_login";
+					break;
+				}
+			}
+		}
+		
+		return new ModelAndView(view, model);
 	}
 	
 	private ModelAndView ajaxMobileLoginCheckForActivity(AllModulesInjected bs, RenderRequest request, 

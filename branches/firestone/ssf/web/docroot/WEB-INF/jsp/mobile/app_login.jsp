@@ -46,11 +46,11 @@
 <%
 	if(isIPhone) {
 %>
-	document.location = "NovellVibe:" + "doAppLogin:" + "${operation2}:";
+	document.location = "NovellVibe:" + "doAppLogin:" + "${operation2}:" + "${ssUrl}:";
 <%
 	} else {
 %>
-	Android.doAppLogin("${operation2}");
+	Android.doAppLogin("${operation2}", "${ssUrl}");
 <%
 	}
 %>
