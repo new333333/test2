@@ -794,6 +794,36 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	@Override
+	public boolean folder_uploadAttachmentAsByteArrayConditional(String accessToken, long entryId, 
+			String fileUploadDataItemName, String attachmentId, byte[] fileContent,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		FileAttachment fa = getFileAttachment(entry, attachmentId);
+		boolean result;
+		if(lastVersionNumber != null || lastMajorVersionNumber != null || lastMinorVersionNumber != null) {
+			result = false;
+			VersionAttachment va = fa.getHighestVersion();
+			if(va != null) {
+				if(lastVersionNumber != null) {
+					if(lastVersionNumber.intValue() == va.getVersionNumber())
+						result = true;
+				}
+				else if(lastMajorVersionNumber != null && lastMinorVersionNumber != null) {
+					if(lastMajorVersionNumber.intValue() == va.getMajorVersion() && 
+						lastMinorVersionNumber.intValue() == va.getMinorVersion())
+						result = true;
+				}
+			}
+		}
+		else {
+			result = true;
+		}
+		if(result)
+			folder_uploadAttachmentAsByteArray(accessToken, entryId, fileUploadDataItemName, attachmentId, fileContent);
+		return result;
+	}
+
+	@Override
 	public boolean[] folder_testFolderOperation(String accessToken,
 			String operationName, long[] folderIds) {
 		boolean[] result = new boolean[folderIds.length];

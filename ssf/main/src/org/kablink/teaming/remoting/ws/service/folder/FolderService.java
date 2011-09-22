@@ -71,6 +71,9 @@ public interface FolderService {
 			String fileUploadDataItemName, String fileName, byte[] fileContent);
 	public void folder_uploadAttachmentAsByteArray(String accessToken, long entryId, 
 			String fileUploadDataItemName, String attachmentId, byte[] fileContent);
+	public boolean folder_uploadAttachmentAsByteArrayConditional(String accessToken, long entryId, 
+			String fileUploadDataItemName, String attachmentId, byte[] fileContent,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
 	public void folder_uploadFileStaged(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId);
