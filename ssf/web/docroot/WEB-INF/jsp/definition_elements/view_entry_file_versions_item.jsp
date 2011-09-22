@@ -71,7 +71,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		String c = String.valueOf(fn.charAt(i));
 		cCount++;
 		if (c.matches("[\\W_]?") || cCount > 15) {
-			fnBr += c + "<wbr/>";
+			fnBr += c;
+			if (!BrowserSniffer.is_ie(request)) {
+				fnBr += "<wbr/>";
+			}
 			cCount = 0;
 		} else {
 			fnBr += c;
@@ -88,9 +91,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
 	  <tr class="${ss_attachedFileRowClass}">		
-		<td colspan="2" class="ss_att_title"
-		  <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 80) { %> style="white-space: nowrap;" <% } %>
-		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>
+		<td colspan="2" width="25%" class="ss_att_title"
+		  <% if (selection.getFileItem().getName().length() <= 40) { %> style="white-space: nowrap;" <% } %>
+		  <% if (selection.getFileItem().getName().length() > 40) { %> style="white-space: normal;" <% } %>
 		>
 		  <c:if test="${ss_isBinderMirroredFolder || !selection.fileExists}">
 		    ${selection.fileItem.name}
@@ -207,14 +210,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 		</td>
-		<td class="ss_att_meta" width="100%">
+		<td class="ss_att_meta" >
           <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <c:set var="ss_attachedFileShowEditButton" value="true" scope="request"/>
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
           <c:set var="ss_attachedFileShowEditButton" value="false" scope="request"/>
 		</td>
-		<td width="100%" style="border: 0px;">&nbsp;</td>
+		<td style="border: 0px;">&nbsp;</td>
 	</tr>
 	<tr class="${ss_attachedFileRowClass}">
 	  	<td colspan="9" class="ss_att_description" style="padding-left: 38px; white-space: normal">
@@ -237,7 +240,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			String c = String.valueOf(vfn.charAt(i));
 			vcCount++;
 			if (c.matches("[\\W_]?") || vcCount > 15) {
-				vfnBr += c + "<wbr/>";
+				vfnBr += c;
+				if (!BrowserSniffer.is_ie(request)) {
+					vfnBr += "<wbr/>";
+				}
 				vcCount = 0;
 			} else {
 				vfnBr += c;
@@ -251,9 +257,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			    <td style="padding-left: 8px; padding-right: 3px">
 			      <input type="checkbox" name="delete_version_${fileVersion.id}"/>
 			    </td>
-				<td class="ss_att_title" style="font-weight: normal; padding-left: 0px;
-		  			<% if (!BrowserSniffer.is_ie(request) && fileVersion.getFileItem().getName().length() <= 80) { %> white-space: nowrap; <% } %>
-		  			<% if (BrowserSniffer.is_ie(request) || fileVersion.getFileItem().getName().length() > 80) { %> white-space: normal; <% } %>
+				<td width="25%" class="ss_att_title" style="font-weight: normal; padding-left: 0px;
+		  			<% if (fileVersion.getFileItem().getName().length() <= 40) { %> white-space: nowrap; <% } %>
+		  			<% if (fileVersion.getFileItem().getName().length() > 40) { %> white-space: normal; <% } %>
 				  ">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
@@ -308,7 +314,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				</td>
 				<td class="ss_att_meta">
 				</td>
-				<td width="100%" style="border: 0px;">&nbsp;</td>
+				<td style="border: 0px;">&nbsp;</td>
 			  </tr>	
 			  <c:choose>
 				<c:when test="${status.count <= 3}">
