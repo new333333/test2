@@ -63,7 +63,7 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 					attachments.add(new Attachment(att.getId(), att.getFileItem().getName(),
 							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getCreation().getPrincipal()).getName(), att.getCreation().getDate()),
 							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getModification().getPrincipal()).getName(), att.getModification().getDate()),
-							att.getFileItem().getLength(), webUrl, att.getMajorVersion().intValue(), att.getMinorVersion().intValue(), att.getFileItem().getDescription().getText(), att.getFileStatus().intValue()));
+							att.getFileItem().getLength(), webUrl, att.getHighestVersionNumber(), att.getMajorVersion().intValue(), att.getMinorVersion().intValue(), att.getFileItem().getDescription().getText(), att.getFileStatus().intValue()));
 				context.handleAttachment(att, webUrl);
 			}
 		}
