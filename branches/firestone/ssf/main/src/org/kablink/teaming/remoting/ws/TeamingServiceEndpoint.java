@@ -707,6 +707,14 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
         getFolderService().folder_uploadAttachmentAsByteArray(accessToken, entryId, fileUploadDataItemName, attachmentId, fileContent);
 	}
 
+	@Override
+	public boolean folder_uploadAttachmentAsByteArrayConditional(String accessToken,
+			long entryId, String fileUploadDataItemName, String attachmentId, byte[] fileContent,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+        return getFolderService().folder_uploadAttachmentAsByteArrayConditional
+        (accessToken, entryId, fileUploadDataItemName, attachmentId, fileContent, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_incrementFileMajorVersion(java.lang.String, long, java.lang.String)
 	 */
