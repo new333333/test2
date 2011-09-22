@@ -500,6 +500,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void pruneFileVersions(Binder binder, DefinableEntity entry) {
 		Long maxVersions = getBinderModule().getBinderVersionsToKeep(binder);
+		pruneFileVersions(binder, entry, maxVersions);
+	}
+	
+	public void pruneFileVersions(Binder binder, DefinableEntity entry, Long maxVersions) {
     	if (maxVersions != null) {
 	    	Collection<FileAttachment> atts = entry.getFileAttachments();
 	    	for (FileAttachment fa : atts) {
@@ -780,16 +784,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fui = new FileUploadItem(type, name, file, va.getRepositoryName());
    		fuis.add(fui);
 
+   		boolean prune2 = prune;
    		Long maxVersionsToKeep = getBinderModule().getBinderVersionsToKeep(binder);
    		if (maxVersionsToKeep != null && maxVersionsToKeep == 0) {
    			//This is a special case. We explicitly turn off pruning of versions 
    			//  so the user doesn't lose the original top version during this operation
-   			prune = Boolean.FALSE;
+   			prune2 = Boolean.FALSE;
    		}
     	try {	
-    		writeFiles(binder, entity, fuis, null, prune);
+    		writeFiles(binder, entity, fuis, null, prune2);
     	}
     	finally {}
+    	if (prune && maxVersionsToKeep != null && maxVersionsToKeep == 0) {
+    		//This is a special case. Make sure to keep at least one version
+    		pruneFileVersions(binder, entity, maxVersionsToKeep + 1);
+    	}
     	
     	//Copy up the status, comment and major version
     	VersionAttachment newTopVa = fa.getHighestVersion();

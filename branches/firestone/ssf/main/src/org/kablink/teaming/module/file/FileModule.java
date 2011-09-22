@@ -422,6 +422,7 @@ public interface FileModule {
 	 * @param entity
 	 */
 	public void pruneFileVersions(Binder binder, DefinableEntity entry);
+	public void pruneFileVersions(Binder binder, DefinableEntity entry, Long maxVersions);
 
 	/**
 	 * Delete the specified version. 
