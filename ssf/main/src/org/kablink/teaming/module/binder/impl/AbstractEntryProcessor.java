@@ -188,7 +188,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		        			FileAttachment fa = (FileAttachment)att;
 		        			String itemName = fa.getName();
 		        			if (itemName != null) {
-		        				String fileNote = inputData.getSingleValue(itemName + ".description");
+		        				String fileNote = inputData.getSingleValue(itemName + fa.getId().toString() + ".description");
 		        				if (fileNote != null) {
 		        					fa.getFileItem().setDescription(fileNote);
 		        					VersionAttachment hVer = fa.getHighestVersion();
@@ -561,7 +561,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		        			FileAttachment fa = (FileAttachment)att;
 		        			String itemName = fa.getName();
 		        			if (itemName != null) {
-		        				String fileNote = inputData.getSingleValue(itemName + ".description");
+		        				String fileNote = inputData.getSingleValue(itemName + fa.getId().toString() + ".description");
 		        				if (fileNote != null) {
 		        					fa.getFileItem().setDescription(fileNote);
 		        					VersionAttachment hVer = fa.getHighestVersion();
