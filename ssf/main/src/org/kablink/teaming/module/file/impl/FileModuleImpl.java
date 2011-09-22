@@ -1872,7 +1872,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			//if we are adding a new version of an existing attachment to 
 			//a uniqueName item, set flag - (will already be set if originally added
 			//through a unique element.  In other works, once unique always unique
-			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
+			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName(),
+					fui.getDescription());
 		}
 		
 		return versionName;
@@ -1880,7 +1881,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
     private void updateFileAttachment(FileAttachment fAtt, 
 			UserPrincipal user, String versionName, Long contentLength,
-			Date modDate, String modName) {
+			Date modDate, String modName, Description description) {
     	HistoryStamp now = new HistoryStamp(user);
     	HistoryStamp mod;
        	if(modDate != null) {
@@ -1897,6 +1898,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 		if(contentLength != null)
 			fItem.setLength(contentLength);
+		
+		if(description != null)
+			fItem.setDescription(description);
 		
 		if(versionName != null) {
 			// The repository system supports versioning.        			
@@ -2221,6 +2225,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	fAtt.setEncryptionKey(fui.getEncryptionKey());
     	FileItem fItem = new FileItem();
     	fItem.setName(relativeFilePath);
+    	fItem.setDescription(fui.getDescription());
     	// Optimization: Do NOT try to get the file size directly from the 
     	// FileUploadItem object. In the case where the content is available
     	// only as a InputStream (as opposed to a File), getting the size 
@@ -2454,7 +2459,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					else {
 						Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
 								relativeFilePath, versionName));
-						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null);
+						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null, null);
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
 		            	incrementDiskSpaceUsed(fa);								
