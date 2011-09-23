@@ -1755,11 +1755,12 @@ public class ExportHelper {
 		setSignature(options, doc, nameCache);
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 
+		FolderEntry entry = null;
 		try {
 			// create new entry
 			if(logger.isDebugEnabled())
 				logger.debug("Adding entry in binder " + binderId + " with definition " + def.getId());
-			final FolderEntry entry = folderModule.addEntry(new Long(binderId),
+			entry = folderModule.addEntry(new Long(binderId),
 					def.getId(), new DomInputData(doc, iCalModule), null,
 					options);
 			long newEntryId = entry.getId().longValue();
@@ -1768,8 +1769,18 @@ public class ExportHelper {
 			entryIdMap.put(entryId, newEntryId);
 			
 			// add file attachments
-			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
-			
+			try {
+				addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
+			} catch(Exception e) {
+				Integer c = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++c);
+				((List)reportMap.get(errorList)).add(e.getLocalizedMessage() + " (" + entry.getTitle() + ")");
+				if (entry != null) {
+					entryIdMap.remove(entryId);
+					folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+				}
+				throw new RemotingException(e);
+			}
 			// workflows
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the entry " + newEntryId);
@@ -1777,11 +1788,12 @@ public class ExportHelper {
 				final Map fDefinitionIdMap = definitionIdMap;
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
+				final FolderEntry fEntry = entry;
 				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", 
 						new String[] {"[" + String.valueOf(reportMap.get("entries")) + "] " + entry.getTitle()}));
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
+						importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 						return null;
 					}
 				});
@@ -1807,11 +1819,19 @@ public class ExportHelper {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
 			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+			if (entry != null) {
+				entryIdMap.remove(entryId);
+				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+			}
 			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
 			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+			if (entry != null) {
+				entryIdMap.remove(entryId);
+				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+			}
 			throw new RemotingException(e);
 		}
 	}
@@ -1836,11 +1856,12 @@ public class ExportHelper {
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+		FolderEntry entry = null;
 		try {
 			// add new reply
 			if(logger.isDebugEnabled())
 				logger.debug("Adding reply to entry " + parentId + " + in binder " + binderId);
-			final FolderEntry entry = folderModule.addReply(new Long(binderId),
+			entry = folderModule.addReply(new Long(binderId),
 					new Long(parentId), def.getId(),
 					new DomInputData(doc, iCalModule), null, options);
 			long newEntryId = entry.getId().longValue();
@@ -1849,7 +1870,18 @@ public class ExportHelper {
 			entryIdMap.put(entryId, newEntryId);
 
 			// add file attachments
-			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
+			try {
+				addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
+			} catch(Exception e) {
+				Integer c = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++c);
+				((List)reportMap.get(errorList)).add(e.getLocalizedMessage() + " (" + entry.getTitle() + ")");
+				if (entry != null) {
+					entryIdMap.remove(entryId);
+					folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+				}
+				throw new RemotingException(e);
+			}
 
 			// workflows
 			if(logger.isDebugEnabled())
@@ -1858,9 +1890,10 @@ public class ExportHelper {
 				final Map fDefinitionIdMap = definitionIdMap;
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
+				final FolderEntry fEntry = entry;
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
+						importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 						return null;
 					}
 				});
@@ -1881,11 +1914,19 @@ public class ExportHelper {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
 			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+			if (entry != null) {
+				entryIdMap.remove(entryId);
+				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+			}
 			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
 			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+			if (entry != null) {
+				entryIdMap.remove(entryId);
+				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+			}
 			throw new RemotingException(e);
 		}
 	}
@@ -1991,7 +2032,7 @@ public class ExportHelper {
 	}
 
 	private static void addFileAttachments(Long binderId, Long entryId, Long topBinderId, 
-			Document entityDoc, String tempDir, Map reportMap, Map binderIdMap, Map entryIdMap) {
+			Document entityDoc, String tempDir, Map reportMap, Map binderIdMap, Map entryIdMap) throws Exception {
 
 		String hrefPath = getHrefPath(binderId, entryId, topBinderId, binderIdMap, entryIdMap);
 		String xPath = "//attribute[@type='attachFiles']//file";
@@ -2073,7 +2114,7 @@ public class ExportHelper {
 
 	private static void addFileVersions(Long binderId, Long entryId,
 			String fileDataItemName, String filename, String href,
-			int numVersions, String versionsDir, Map reportMap) {
+			int numVersions, String versionsDir, Map reportMap) throws Exception {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 
@@ -2096,7 +2137,8 @@ public class ExportHelper {
 					logger.error(e);
 					Integer c = (Integer)reportMap.get(errors);
 					reportMap.put(errors, ++c);
-					((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+					((List)reportMap.get(errorList)).add(e.getLocalizedMessage() + " (" + filename + ")");
+					throw e;
 				}
 			}
 		}
@@ -2114,8 +2156,8 @@ public class ExportHelper {
 			logger.error(e);
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
-			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
-			return;
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage() + " (" + filename + ")");
+			throw e;
 		}
 	}
 
