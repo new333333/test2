@@ -841,13 +841,21 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		var ulObj = document.getElementById('added_' + that._multiplePrefix);
 		var newLiObj = document.createElement("li");
 		newLiObj.setAttribute("id", id);
-		var newGroupAnchorObj = document.createElement("a");
-		var showGroupUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_group_list", groupId:id});
-		newGroupAnchorObj.setAttribute("href", showGroupUrl);
-		newGroupAnchorObj.setAttribute("onclick", "self.window.open(this.href, '_blank', 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=400,height=600');return false;");
-		newGroupAnchorObj.className = "ss_nowrap";
-		newGroupAnchorObj.innerHTML = spanObj.innerHTML;
-		newLiObj.appendChild(newGroupAnchorObj);
+		if (!ss_isIE) {
+			//This does not work on IE, so skip making the group name hot 
+			var newGroupAnchorObj = document.createElement("a");
+			var showGroupUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_group_list", groupId:id});
+			newGroupAnchorObj.setAttribute("href", showGroupUrl);
+			newGroupAnchorObj.setAttribute("onclick", "self.window.open(this.href, '_blank', 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=400,height=600');return false;");
+			newGroupAnchorObj.className = "ss_nowrap";
+			newGroupAnchorObj.innerHTML = spanObj.innerHTML;
+			newLiObj.appendChild(newGroupAnchorObj);
+		} else {
+			var newGroupAnchorObj = document.createElement("span");
+			newGroupAnchorObj.className = "ss_nowrap";
+			newGroupAnchorObj.innerHTML = spanObj.innerHTML;
+			newLiObj.appendChild(newGroupAnchorObj);
+		}
 		var newAnchorObj = document.createElement("a");
 		newAnchorObj.setAttribute("href", "javascript: ;");
 		dojo.connect(newAnchorObj, "onclick", function(evt) {
