@@ -24,9 +24,6 @@
 {
 	background: #fff;
 	position: absolute;
-	left: 246px;
-	top: 8px;
-	z-index: 100;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -1514,9 +1511,6 @@ body, table td, select
 /* Style used for the panel that holds the content control. */
 .mainContentControl
 {
-	left: 246px;
-	position: absolute;
-	top: 8px;
 	background-color:#fff;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1537,10 +1531,10 @@ body, table td, select
 /* Style used for the WorkspaceTree control found in Teaming's main page. */
 .mainWorkspaceTreeControl
 {
-	left: 8px;
-	position: absolute;
-	top: 8px;
-	z-index: 100;
+	/*!!! left: 8px; */
+	/*!!! position: absolute; */
+	/*!!! top: 8px; */
+	/*!!! z-index: 100; */
 }
 
 /* Styles used by the bread crumb navigator. */

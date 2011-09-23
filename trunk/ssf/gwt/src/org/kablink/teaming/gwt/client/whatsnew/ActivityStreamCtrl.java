@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamDataCmd;
@@ -88,6 +89,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -100,12 +102,13 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -114,7 +117,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jwootton
  *
  */
-public class ActivityStreamCtrl extends Composite
+public class ActivityStreamCtrl extends ResizeComposite
 	implements ClickHandler,
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
@@ -134,6 +137,7 @@ public class ActivityStreamCtrl extends Composite
 	private int m_width;
 	private int m_height;
 	private InlineLabel m_sourceName;
+	private ASCLayoutPanel m_mainLayoutPanel;
 	private FlowPanel m_headerPanel;
 	private FlowPanel m_searchResultsPanel;
 	private FlowPanel m_footerPanel;
@@ -205,6 +209,31 @@ public class ActivityStreamCtrl extends Composite
 		TeamingEvents.VIEW_UNREAD_ENTRIES,
 	};
 	
+	/**
+	 * 
+	 */
+	private class ASCLayoutPanel extends VibeDockLayoutPanel
+	{
+		ActivityStreamCtrl m_asCtrl;
+		
+		/**
+		 * 
+		 */
+		public ASCLayoutPanel( ActivityStreamCtrl asCtrl )
+		{
+			super( Style.Unit.PX );
+			
+			m_asCtrl = asCtrl;
+		}
+		
+		/**
+		 * 
+		 */
+		public void onResize()
+		{
+			m_asCtrl.setSize( getOffsetWidth(), getOffsetHeight() );
+		}
+	}
 	
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -311,8 +340,12 @@ public class ActivityStreamCtrl extends Composite
 		// Create the popup menu used to set "show all" or "show unread"
 		m_showSettingPopupMenu  = new ShowSettingPopupMenu( true, true );
 		
+		m_mainLayoutPanel = new ASCLayoutPanel( this );
+		m_mainLayoutPanel.addStyleName( "activityStreamLayoutPanel" );
+		m_mainLayoutPanel.add( mainPanel );
+		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget( m_mainLayoutPanel );
 	}
 	
 	
@@ -1051,7 +1084,6 @@ public class ActivityStreamCtrl extends Composite
 	public void hide()
 	{
 		cancelCheckForChangesTimer();
-		setVisible( false );
 	}
 	
 	
@@ -1624,7 +1656,6 @@ public class ActivityStreamCtrl extends Composite
 		relayoutPage();
 	}
 	
-	
 	/**
 	 * Set the text in the title.
 	 */
@@ -1643,8 +1674,6 @@ public class ActivityStreamCtrl extends Composite
 	public void show()
 	{
 		Scheduler.ScheduledCommand cmd;
-
-		setVisible( true );
 
 		// Restart the "check for changes" timer.
 		startCheckForChangesTimer();
