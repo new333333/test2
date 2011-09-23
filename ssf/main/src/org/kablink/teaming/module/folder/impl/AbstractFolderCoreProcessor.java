@@ -76,6 +76,7 @@ import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.index.IndexUtils;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -470,13 +471,20 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 				doCopy(child, entry, entryTags, options);
 			} catch(Exception e) {
 				logger.error(e);
+				//The copy failed, so delete the attempted copy
+				sourceMap.remove(child);
+				FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
+				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+				break;
 			}
 	   }
 	   
 	   FolderEntry top = sourceMap.get(source);
 	   //the top folder was already index but prior to adding its children, so by adding this index on the top folder entry
 	   //the additional information such as # of comments on a blog entry will show correctly
-	   indexEntry(top.getParentBinder(), top, null, top.getFileAttachments(), true, tags.get(top.getEntityIdentifier()));
+	   if (top != null) {
+		   indexEntry(top.getParentBinder(), top, null, top.getFileAttachments(), true, tags.get(top.getEntityIdentifier()));
+	   }
 	   return top; 
    }
  
