@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.user.client.Window;
@@ -186,10 +187,23 @@ public class ContentControl extends Composite
 	
 			// Does the content panel contain a task listing?
 			FrameElement fe = getContentFrame();
-			if ( ( null != fe ) && ( null != fe.getContentDocument().getElementById( "gwtTasks" ) ) )
+			if ( null != fe ) 
 			{
-				// Yes!  Let it resize if it needs to.
-				jsResizeTaskListing();
+				Document doc;
+
+				try
+				{
+					doc = fe.getContentDocument();
+					if ( doc != null && null != doc.getElementById( "gwtTasks" ) )
+					{
+						// Yes!  Let it resize if it needs to.
+						jsResizeTaskListing();
+					}
+				}
+				catch (Exception ex)
+				{
+					// Nothing to do.
+				}
 			}
 		}
 	}// end setDimensions()

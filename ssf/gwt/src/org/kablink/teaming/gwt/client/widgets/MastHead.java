@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -753,6 +754,8 @@ public class MastHead extends Composite
 	public void onMastheadHide( MastheadHideEvent event )
 	{
 		setVisible( false );
+		
+		SizeChangedEvent.fireOne();
 	}// end onMastheadHide()
 	
 	/**
@@ -766,5 +769,7 @@ public class MastHead extends Composite
 	public void onMastheadShow( MastheadShowEvent event )
 	{
 		setVisible( true );
+		
+		SizeChangedEvent.fireOne();
 	}// end onMastheadShow()	
 }// end MastHead

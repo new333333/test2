@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
@@ -118,6 +119,7 @@ import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
@@ -129,25 +131,29 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 
 /**
  * This widget will display the main Teaming page
  */
-public class GwtMainPage extends Composite
+public class GwtMainPage extends ResizeComposite
 	implements ResizeHandler,
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamEnterEvent.Handler,
+		ActivityStreamExitEvent.Handler,
 		AdministrationEvent.Handler,
 		AdministrationExitEvent.Handler,
 		AdministrationUpgradeCheckEvent.Handler,
@@ -191,6 +197,10 @@ public class GwtMainPage extends Composite
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
+	private DockLayoutPanel m_mainPanel = null;
+	private SplitLayoutPanel m_splitLayoutPanel = null;
+	private VibeDockLayoutPanel m_contentLayoutPanel = null;
+	private FlowPanel m_headerPanel = null;
 	private boolean m_inSearch = false;
 	private String m_searchTabId = "";
 	private EditBrandingDlg m_editBrandingDlg = null;
@@ -202,7 +212,6 @@ public class GwtMainPage extends Composite
 	private EditSuccessfulHandler m_editPersonalPrefsSuccessHandler = null;
 	private EditSuccessfulHandler m_editTagsSuccessHandler = null;
 	private FlowPanel m_contentPanel;
-	private FlowPanel m_teamingRootPanel;
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
@@ -221,6 +230,7 @@ public class GwtMainPage extends Composite
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
+		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		
 		// Administration events.
 		TeamingEvents.ADMINISTRATION,
@@ -301,7 +311,7 @@ public class GwtMainPage extends Composite
 		constructMainPage_Start();
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( m_teamingRootPanel );
+		initWidget( m_mainPanel );
 	}
 	
 	/*
@@ -441,8 +451,8 @@ public class GwtMainPage extends Composite
 		}
 		m_novellTeaming = m_requestInfo.isNovellTeaming();
 		
-		m_teamingRootPanel = new FlowPanel();
-		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
+		m_mainPanel = new DockLayoutPanel( Style.Unit.PX );
+		m_mainPanel.addStyleName( "mainTeamingPagePanel" );
 
 		ScheduledCommand loadControls = new ScheduledCommand()
 		{
@@ -516,9 +526,13 @@ public class GwtMainPage extends Composite
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
 		
+		m_headerPanel = new FlowPanel();
+		m_headerPanel.addStyleName( "mainHeaderPanel" );
+		m_mainPanel.addNorth( m_headerPanel, 200 );
+		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
-		m_teamingRootPanel.add( m_mastHead );
+		m_headerPanel.add( m_mastHead );
 
 		// Is there an error message to be displayed?
 		final String errMsg = m_requestInfo.getErrMsg();
@@ -548,23 +562,27 @@ public class GwtMainPage extends Composite
 		}
 		
 		// Add the main menu to the page.
-		m_teamingRootPanel.add( m_mainMenuCtrl );
+		m_headerPanel.add( m_mainMenuCtrl );
 		
 		// Create a panel to hold the WorkspaceTree control and the content control
 		m_contentPanel = new FlowPanel();
 		m_contentPanel.addStyleName( "mainContentPanel" );
 		
+		m_splitLayoutPanel = new SplitLayoutPanel();
+		m_mainPanel.add( m_splitLayoutPanel );
+		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
-		m_contentPanel.add( m_wsTreeCtrl );
+		m_splitLayoutPanel.insert( m_wsTreeCtrl, DockLayoutPanel.Direction.WEST, 250, null );
+		
+		// Create a panel that will hold the content.
+		m_contentLayoutPanel = new VibeDockLayoutPanel( Style.Unit.PX );
+		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
+		m_splitLayoutPanel.add( m_contentLayoutPanel );
 		
 		// Create the content control.
 		m_contentCtrl.addStyleName( "mainContentControl" );
-		m_contentPanel.add( m_contentCtrl );
-		
-		// Create an activity stream control.
-		m_activityStreamCtrl.hide();
-		m_contentPanel.add( m_activityStreamCtrl );
+		m_contentLayoutPanel.add( m_contentCtrl );
 		
 		// Do we have a url we should set the ContentControl to?
 		url = m_requestInfo.getAdaptedUrl();
@@ -573,8 +591,6 @@ public class GwtMainPage extends Composite
 			// Yes
 			m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() );
 		}
-		
-		m_teamingRootPanel.add( m_contentPanel );
 		
 		// Add a ResizeHandler to the browser so we'll know when the user resizes the browser.
 		Window.addResizeHandler( this );
@@ -821,7 +837,8 @@ public class GwtMainPage extends Composite
 			// ...Clear the flag, tell the menu about this context and
 			// ...otherwise ignore this.
 			m_requestInfo.clearShowWhatsNewOnLogin();
-			m_mainMenuCtrl.setContext( binderId, inSearch, searchTabId );			
+			m_mainMenuCtrl.setContext( binderId, inSearch, searchTabId );
+			handleOnActivityStreamEnter();
 			return;
 		}
 		
@@ -839,7 +856,7 @@ public class GwtMainPage extends Composite
 			
 			// ...otherwise, we hide the activity streams control and
 			// ...let the search display.
-			m_activityStreamCtrl.hide();
+			m_contentLayoutPanel.replaceCenterContent( m_contentCtrl );
 		}
 		
 		m_inSearch    = inSearch;
@@ -965,7 +982,7 @@ public class GwtMainPage extends Composite
 		// Get the position of the content control.
 		if ( xPos == -1 )
 		{
-			xCalc = m_contentCtrl.getAbsoluteLeft();
+			xCalc = m_contentLayoutPanel.getAbsoluteLeft();
 			if ( xCalc < 75 )
 				xCalc = 75;
 		}
@@ -974,7 +991,7 @@ public class GwtMainPage extends Composite
 		
 		if ( yPos == -1 )
 		{
-			yCalc = m_contentCtrl.getAbsoluteTop();
+			yCalc = m_contentLayoutPanel.getAbsoluteTop();
 			if ( yCalc < 75 )
 				yCalc = 75;
 		}
@@ -1209,6 +1226,20 @@ public class GwtMainPage extends Composite
 		}
 	}// end handleLandingPageOptions()
 	
+	
+	/**
+	 * Do the work when we enter activity stream mode.
+	 */
+	private void handleOnActivityStreamEnter()
+	{
+		// Hide any popup entry iframe divs.
+		GwtClientHelper.jsHideEntryPopupDiv();
+		
+		// Add the ActivityStreamCtrl as the content of the center panel.
+		m_contentLayoutPanel.replaceCenterContent( m_activityStreamCtrl );
+		m_activityStreamCtrl.setSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
+		m_activityStreamCtrl.show();
+	}
 
 	/*
 	 * This method will handle the given page ui in gwt instead of
@@ -1318,8 +1349,8 @@ public class GwtMainPage extends Composite
 	{
 		m_tagPanelElement = tagPanelElement;
 		
-		final int x = m_contentCtrl.getAbsoluteLeft() + 500;
-		final int y = m_contentCtrl.getAbsoluteTop() + 25;
+		final int x = m_contentLayoutPanel.getAbsoluteLeft() + 500;
+		final int y = m_contentLayoutPanel.getAbsoluteTop() + 25;
 
 		if ( m_tagThisDlg == null )
 		{
@@ -1587,9 +1618,23 @@ public class GwtMainPage extends Composite
 	 */
 	public void onActivityStreamEnter( ActivityStreamEnterEvent event )
 	{
-		// Hide any popup entry iframe divs.
-		GwtClientHelper.jsHideEntryPopupDiv();
+		handleOnActivityStreamEnter();
 	}//end enterActivityStreamMode()
+
+
+	/**
+	 * Handles ActivityStreamEnterExit's received by this class.
+	 * 
+	 * Implements the ActivityStreamExitEvent.Handler.onActivityStreamExit() method.
+	 * 
+	 * @param event
+	 */
+	public void onActivityStreamExit( ActivityStreamExitEvent event )
+	{
+		// Add the ContentCtrl as the content of the center panel.
+		m_contentLayoutPanel.replaceCenterContent( m_contentCtrl );
+		m_contentCtrl.setDimensions( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
+	}
 
 	/**
 	 * Handles AdministrationEvent's received by this class.
@@ -1794,8 +1839,8 @@ public class GwtMainPage extends Composite
 				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
 				
 				// Get the position of the content control.
-				x = m_contentCtrl.getAbsoluteLeft();
-				y = m_contentCtrl.getAbsoluteTop();
+				x = m_contentLayoutPanel.getAbsoluteLeft();
+				y = m_contentLayoutPanel.getAbsoluteTop();
 				
 				// Create a handler that will be called when the user presses the ok button in the dialog.
 				if ( m_editPersonalPrefsSuccessHandler == null )
@@ -2496,38 +2541,36 @@ public class GwtMainPage extends Composite
 	 */
 	public void relayoutPage( boolean layoutImmediately )
 	{
-		int width;
-		int height;
-
 		// Are we supposed to relayout now?
 		if ( layoutImmediately == true )
 		{
+			int width;
+			int height;
+			
+			width = m_contentLayoutPanel.getOffsetWidth();
+			height = m_contentLayoutPanel.getOffsetHeight();
+			
 			// Yes
-			// Calculate how wide the ContentControl should be.
-			{
-				int clientWidth;
-				
-				// Get the width of the browser window's client area.
-				clientWidth = Window.getClientWidth();
-				
-				width = clientWidth - m_contentCtrl.getAbsoluteLeft() - 10; 
-			}
+			if ( m_contentCtrl != null )
+				m_contentCtrl.setDimensions( width, height );
 			
-			// Calculate how high the ContentControl should be.
-			{
-				int clientHeight;
-				
-				// Get the height of the browser window's client area.
-				clientHeight = Window.getClientHeight();
-				
-				height = clientHeight - m_contentPanel.getAbsoluteTop() - 20;
-			}
-			
-			m_contentCtrl.setDimensions( width, height );
-			
-			// Tell the activity stream control to relayout.
-			if ( m_activityStreamCtrl != null )
+			if ( isActivityStreamActive() )
 				m_activityStreamCtrl.setSize( width, height );
+			
+			// Adjust the size of the north panel that holds the masthead and menu bar
+			{
+				int panelHeight;
+				
+				panelHeight = 0;
+				
+				if ( m_mastHead != null && m_mastHead.isVisible() )
+					panelHeight += m_mastHead.getOffsetHeight();
+				
+				if ( m_mainMenuCtrl != null && m_mainMenuCtrl.isVisible() )
+					panelHeight += m_mainMenuCtrl.getOffsetHeight();
+
+				m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
+			}
 			
 			// Do we have an Administration control?
 			if ( m_adminControl != null )
