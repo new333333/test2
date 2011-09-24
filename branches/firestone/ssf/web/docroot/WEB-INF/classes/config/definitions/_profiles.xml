@@ -21,12 +21,6 @@
         <property name="required" value=""/> 
       </properties> 
     </item>  
-    <item name="workspaceBranding" caption="__branding" type="data" category="workspaceData" display="form" id="9"> 
-      <properties> 
-        <property name="caption" value="__branding"/>  
-        <property name="name" value="branding"/> 
-      </properties> 
-    </item>  
     <item name="workspaceIcon" caption="__icon" type="data" category="workspaceData" id="8"> 
       <properties> 
         <property name="name" value="iconName"/>  
