@@ -638,7 +638,6 @@
 			<option name="description" initial="true" />
 			<option name="folderIcon" initial="true" />
 			<option name="folderRemoteApp" />
-			<option name="folderBranding" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
@@ -681,6 +680,8 @@
 		</jsps>
 	</item>
 	
+<!--
+  Note: branding is now done in the GWT code
 	<item name="folderBranding" caption="__branding" type="data" dataType="branding" multipleAllowed="false" 
 			category="folderData" display="form">
 		<properties>
@@ -694,6 +695,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDescription" />
 	</item>
+-->
 	
 <!--
   Note: This item was removed. It is a work in progress. See also "entryArrtibutes".
@@ -849,7 +851,6 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
-			<option name="workspaceBranding" initial="true" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
@@ -2303,7 +2304,6 @@
 			<option name="title" initial="true" definitionType="8"/>
 			<option name="description" initial="true" />
 			<option name="workspaceRemoteApp" />
-			<option name="workspaceBranding" initial="true" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
@@ -2343,6 +2343,8 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 	</item>
 	
+<!--
+  Note: branding is now done in the GWT code
 	<item name="workspaceBranding" caption="__branding" type="data" dataType="branding" multipleAllowed="false" 
 			category="workspaceData" display="form">
 		<properties>
@@ -2356,6 +2358,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDescription" />
 	</item>
+-->
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
 		multipleAllowed="false"  display="view">		
