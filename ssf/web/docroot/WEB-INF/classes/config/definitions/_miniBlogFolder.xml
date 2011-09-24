@@ -19,12 +19,6 @@
         <property name="required" value=""/> 
       </properties> 
     </item>  
-    <item name="folderBranding" caption="__branding" type="data" category="folderData" display="form" id="11"> 
-      <properties> 
-        <property name="caption" value="__branding"/>  
-        <property name="name" value="branding"/> 
-      </properties> 
-    </item> 
   </item>  
   <item name="forumView" caption="__folder_view" id="6"> 
     <item name="descriptionView" caption="__description" id="8"> 
