@@ -17,12 +17,6 @@
         <property name="caption" value="__icon"/> 
       </properties> 
     </item>  
-    <item name="workspaceBranding" caption="__branding" type="data" category="workspaceData" display="form" id="11"> 
-      <properties> 
-        <property name="caption" value="__branding"/>  
-        <property name="name" value="branding"/> 
-      </properties> 
-    </item>  
     <item name="workspaceRemoteApp" caption="__remoteApp" type="data" category="workspaceData" display="form" id="12"> 
       <properties> 
         <property name="caption" value="__remoteApp"/>  

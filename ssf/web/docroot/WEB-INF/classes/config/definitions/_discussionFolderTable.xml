@@ -27,12 +27,6 @@
         <property name="name" value="_remoteApp"/> 
       </properties> 
     </item>  
-    <item name="folderBranding" caption="__branding" type="data" category="folderData" display="form" id="11"> 
-      <properties> 
-        <property name="caption" value="__branding"/>  
-        <property name="name" value="branding"/> 
-      </properties> 
-    </item>  
     <item name="folderIcon" caption="__icon" type="data" id="4"> 
       <properties> 
         <property name="name" value="iconName"/>  
