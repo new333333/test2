@@ -83,7 +83,7 @@ function ss_validateSize( obj ) {
 			// No, tell the user about the problem.
 			var msg;
 			
-			msg = '<ssf:nlt tag="administration.quota.invalidDefaultQuotaSize" />';
+			msg = "<ssf:escapeQuotes><ssf:nlt tag="administration.quota.invalidDefaultQuotaSize" /></ssf:escapeQuotes>";
 			alert(msg);
 			obj.value="";
 		}
@@ -92,7 +92,7 @@ function ss_validateSize( obj ) {
 
 function ss_checkIfNumber(obj) {
 	if (!ss_isInteger(obj.value)) {
-		var msg = "<ssf:nlt tag="definition.error.invalidCharacter"><ssf:param name="value" value="xxxxxx"/></ssf:nlt>";
+		var msg = "<ssf:escapeQuotes><ssf:nlt tag="definition.error.invalidCharacter"><ssf:param name="value" value="xxxxxx"/></ssf:nlt></ssf:escapeQuotes>";
 		msg = ss_replaceSubStr(msg, "xxxxxx", obj.value);
 		alert(msg);
 		obj.value="";
@@ -180,7 +180,7 @@ var ss_validationRunning = false;
 function ss_validateBinderQuotas() {
 	ss_setupStatusMessageDiv();
 	var statusDiv = document.getElementById("ss_operation_status");
-	statusDiv.innerHTML = "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.starting"/></span>";
+	statusDiv.innerHTML = "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.starting"/></ssf:escapeQuotes></span>";
 	var urlParams = {operation:"validate_binder_quotas", ss_statusId:ss_validateStatusTicket};
 	ss_get_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams), ss_validationComplete);
 	ss_validationRunning = true;
@@ -194,9 +194,9 @@ function ss_validationComplete(data) {
 	}
 	ss_validationRunning = false;
 	var statusDiv = document.getElementById("ss_operation_status");
-	statusDiv.innerHTML = "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completed"/></span><br/>\n";
-	statusDiv.innerHTML += "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completedScanned"/> " + data.ids + "</span><br/>\n";
-	statusDiv.innerHTML += "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completedCorrections"/> " + data.errors + "</span><br/>\n";
+	statusDiv.innerHTML = "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.completed"/></ssf:escapeQuotes></span><br/>\n";
+	statusDiv.innerHTML += "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.completedScanned"/></ssf:escapeQuotes> " + data.ids + "</span><br/>\n";
+	statusDiv.innerHTML += "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.completedCorrections"/></ssf:escapeQuotes> " + data.errors + "</span><br/>\n";
 	<c:if test="${!ss_binderQuotasInitialized}">
 	  var url = "<ssf:url action="manage_quotas" actionUrl="true"><ssf:param 
 		name="binderId" value="${ssBinder.id}"/></ssf:url>";
@@ -226,7 +226,7 @@ function ss_checkForAllUsersGroup() {
 		var groups = formObj.addGroups.value.split(" ");
 		for (var i = 0; i < groups.length; i++) {
 			if (groups[i] == '${ssAllUsersGroupId}') {
-				alert("<ssf:nlt tag="administration.quotas.allUsers.notAllowed"/>")
+				alert("<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.allUsers.notAllowed"/></ssf:escapeQuotes>")
 				return;
 			}
 		}
@@ -235,7 +235,7 @@ function ss_checkForAllUsersGroup() {
 		var groups = formObj.addFSLGroups.value.split(" ");
 		for (var i = 0; i < groups.length; i++) {
 			if (groups[i] == '${ssAllUsersGroupId}') {
-				alert("<ssf:nlt tag="administration.quotas.allUsers.notAllowed"/>")
+				alert("<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.allUsers.notAllowed"/></ssf:escapeQuotes>")
 				return;
 			}
 		}
@@ -289,7 +289,7 @@ function ss_checkForAllUsersGroup() {
 		</div>
 	    <div style="margin: 10px; padding-top:16px;">
 	      <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
-	        title="<ssf:nlt tag="administration.quotas.binder.validateHint"/>"
+	        title="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.binder.validateHint"/></ssf:escapeQuotes>"
 	      >
 	        <c:if test="${ss_binderQuotasInitialized}">
 	          <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
@@ -344,7 +344,8 @@ function ss_checkForAllUsersGroup() {
 			
 	<div style="margin: 10px">
 	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
-		<span style="paddong-right: 5px;"><input type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
+		<span style="paddong-right: 5px;"><input type="button" class="ss_submit" name="addGroupBtn" 
+		  value="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.addGroupQuota"/></ssf:escapeQuotes>"
 		  onClick="showAddGroupsDiv();return false;"/></span>
 	</div>  
 	<!--Add Group DIV dialog-->
@@ -443,15 +444,16 @@ function ss_checkForAllUsersGroup() {
 		  <tr class="footrow ends">
 		    <td colspan="6" style="padding: 3px;">
 				<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  			title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
+		  			title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteChecked"/></ssf:escapeQuotes>"/>
 			</td>
 		  </tr>		
 	  </table>
 	</c:if>
 	
 	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
-		<input type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
-	  onClick="showAddUsersDiv();return false;"/>
+		<input type="button" class="ss_submit" name="addUserBtn" 
+		  value="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.addUserQuota"/></ssf:escapeQuotes>"
+	      onClick="showAddUsersDiv();return false;"/>
 	</div>  
 	<!--Add User DIV dialog-->
 	<div class="ss_relDiv">
@@ -552,7 +554,7 @@ function ss_checkForAllUsersGroup() {
 		  <tr class="footrow ends">
 		    <td colspan="6" style="padding: 3px;">
     <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
+		  title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteChecked"/></ssf:escapeQuotes>"/>
 
 			</td>
 		  </tr>
@@ -590,7 +592,8 @@ function ss_checkForAllUsersGroup() {
 			
 	<div style="margin: 10px">
 	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
-		<input type="button" class="ss_submit" name="addFSLGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
+		<input type="button" class="ss_submit" name="addFSLGroupBtn" 
+		  value="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.addGroupQuota"/></ssf:escapeQuotes>"
 		  onClick="showAddFSLGroupsDiv();return false;"/>
 	</div>  
 	<!--Add Group DIV dialog-->
@@ -689,15 +692,16 @@ function ss_checkForAllUsersGroup() {
 		  <tr class="ends footrow">
 		    <td colspan="5" style="padding: 3px;">
     <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  title="<ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/>"/>
+		  title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/></ssf:escapeQuotes>"/>
 			  </td>
 			</tr>
 		  </table>
 	</c:if>
 	
 	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
-		<input type="button" class="ss_submit" name="addFSLUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
-	  onClick="showAddFSLUsersDiv();return false;"/>
+		<input type="button" class="ss_submit" name="addFSLUserBtn" 
+		  value="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.addUserQuota"/></ssf:escapeQuotes>"
+	      onClick="showAddFSLUsersDiv();return false;"/>
 	</div>  
 	<!--Add User DIV dialog-->
 	<div class="ss_relDiv">
@@ -794,7 +798,7 @@ function ss_checkForAllUsersGroup() {
 		  <tr class="footrow ends">
 		    <td colspan="6" style="padding: 3px;">
     <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  title="<ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/>"/>
+		  title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/></ssf:escapeQuotes>"/>
 
 			</td>
 		  </tr>
