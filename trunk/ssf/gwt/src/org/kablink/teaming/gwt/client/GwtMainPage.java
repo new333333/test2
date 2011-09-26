@@ -196,7 +196,7 @@ public class GwtMainPage extends ResizeComposite
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
-	private DockLayoutPanel m_mainPanel = null;
+	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
 	private VibeDockLayoutPanel m_contentLayoutPanel = null;
 	private FlowPanel m_headerPanel = null;
@@ -210,7 +210,6 @@ public class GwtMainPage extends ResizeComposite
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditSuccessfulHandler m_editPersonalPrefsSuccessHandler = null;
 	private EditSuccessfulHandler m_editTagsSuccessHandler = null;
-	private FlowPanel m_contentPanel;
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
@@ -450,7 +449,7 @@ public class GwtMainPage extends ResizeComposite
 		}
 		m_novellTeaming = m_requestInfo.isNovellTeaming();
 		
-		m_mainPanel = new DockLayoutPanel( Style.Unit.PX );
+		m_mainPanel = new VibeDockLayoutPanel( Style.Unit.PX );
 		m_mainPanel.addStyleName( "mainTeamingPagePanel" );
 
 		ScheduledCommand loadControls = new ScheduledCommand()
@@ -562,10 +561,6 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Add the main menu to the page.
 		m_headerPanel.add( m_mainMenuCtrl );
-		
-		// Create a panel to hold the WorkspaceTree control and the content control
-		m_contentPanel = new FlowPanel();
-		m_contentPanel.addStyleName( "mainContentPanel" );
 		
 		m_splitLayoutPanel = new DockLayoutPanel( Style.Unit.PX );
 		m_mainPanel.add( m_splitLayoutPanel );
@@ -1670,9 +1665,28 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void execute()
 			{
+				// Hide the administration console and its menu.
+				m_adminControl.hideControl();
+				m_mainMenuCtrl.hideAdministrationMenubar();
+				
 				// Restore the ui state to what it was before we opened
 				// the site administration.
 				restoreUIState();
+
+				m_mainPanel.replaceCenterContent( m_splitLayoutPanel );
+
+				// If the activity stream was showing show it now.
+				if ( isActivityStreamActive() )
+				{
+					m_activityStreamCtrl.setVisible( true );
+					m_activityStreamCtrl.setSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
+					m_activityStreamCtrl.show();
+				}
+				else if ( m_contentCtrl.isVisible() == false )
+				{
+					m_contentCtrl.setVisible( true );
+				}
+				
 				relayoutPage( true );
 			}// end execute()
 		};
@@ -2681,7 +2695,6 @@ public class GwtMainPage extends ResizeComposite
 				public void onSuccess( AdminControl adminCtrl )
 				{
 					m_adminControl = adminCtrl;
-					m_contentPanel.add( m_adminControl );
 					
 					ScheduledCommand showAdminControl = new ScheduledCommand()
 					{
@@ -2706,6 +2719,8 @@ public class GwtMainPage extends ResizeComposite
 		m_contentCtrl.setVisible( false );
 		m_activityStreamCtrl.hide();
 		
+		// Put the admin control as the widget in the center panel of the main panel.
+		m_mainPanel.replaceCenterContent( m_adminControl );
 		m_adminControl.showControl();
 		relayoutPage( false );
 	}// end showAdminControlImpl()

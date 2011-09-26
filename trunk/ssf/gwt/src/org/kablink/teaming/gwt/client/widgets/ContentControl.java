@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -64,7 +63,6 @@ import com.google.gwt.user.client.ui.NamedFrame;
 public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
-		AdministrationExitEvent.Handler,
 		ChangeContextEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -76,9 +74,6 @@ public class ContentControl extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		// Administration events.
-		TeamingEvents.ADMINISTRATION_EXIT,
-
 		// Context events.
 		TeamingEvents.CHANGE_CONTEXT,
 		
@@ -229,22 +224,6 @@ public class ContentControl extends Composite
 		m_frame.setUrl( url );
 	}// end setUrl()
 
-	/**
-	 * Handles AdministrationExitEvent's received by this class.
-	 * 
-	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onAdministrationExit( AdministrationExitEvent event )
-	{
-		if ( ! ( isVisible() ) )
-		{
-			setVisible( true );
-		}
-	}// end onAdministrationExit()
-	
 	/**
 	 * Handles ChangeContextEvent's received by this class.
 	 * 
