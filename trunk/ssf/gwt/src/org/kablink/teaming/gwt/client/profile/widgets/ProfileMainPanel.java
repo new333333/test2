@@ -418,8 +418,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		formPanel.getElement().setId("form1");
 		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" + "&profile=1" );
 	
-		uploadBtn = new Anchor("Upload");
-		uploadBtn.setTitle("Select to upload photo");
+		uploadBtn = new Anchor(GwtTeaming.getMessages().profileUpload());
+		uploadBtn.setTitle(GwtTeaming.getMessages().profileUploadSelect());
 		uploadBtn.addClickHandler( new ClickHandler(){
 				public void onClick(ClickEvent event){
 					formPanel.submit();

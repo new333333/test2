@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.safehtml.shared.SafeHtml;
 
 
 /**
@@ -800,6 +801,8 @@ public interface GwtTeamingMessages extends Messages
 	String profileQuotaUsed();
 	String profileSetDefaultAvatar();
 	String profileRemoveAvatar();
+	String profileUpload();
+	String profileUploadSelect();
 	
 	// Presence related strings
 	String presenceAvailable();
