@@ -539,14 +539,12 @@ public class MainMenuControl extends Composite
 	 * @param searchTabId
 	 */
 	public void contextLoaded(final String binderId, final boolean inSearch, final String searchTabId) {
-		GetBinderInfoCmd cmd;
-		
 		// Keep track of the context that we're loading.
 		setContext(binderId, inSearch, searchTabId);
 		
 		// Rebuild the context based panel based on the new context.
-		cmd = new GetBinderInfoCmd( binderId );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		GetBinderInfoCmd cmd = new GetBinderInfoCmd( binderId );
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;
 				GwtClientHelper.handleGwtRPCFailure(
@@ -554,13 +552,10 @@ public class MainMenuControl extends Composite
 					m_messages.rpcFailure_GetBinderInfo(),
 					binderId);
 			}
-			public void onSuccess(VibeRpcResponse response) {
-				BinderInfo binderInfo;
-				
-				binderInfo = (BinderInfo) response.getResponseData();
-				
+			public void onSuccess(VibeRpcResponse response) {				
 				// Show the context asynchronously so that we can
 				// release the AJAX request ASAP.
+				BinderInfo binderInfo = ((BinderInfo) response.getResponseData());
 				showContextAsync(binderInfo, binderId, inSearch, searchTabId);
 			}
 		});
@@ -784,11 +779,9 @@ public class MainMenuControl extends Composite
 	 * Synchronously shows the context that was loaded.
 	 */
 	private void showContextNow(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
-		GetToolbarItemsCmd cmd;
-		
 		m_contextBinder = binderInfo;
-		cmd = new GetToolbarItemsCmd( binderId );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		GetToolbarItemsCmd cmd = new GetToolbarItemsCmd( binderId );
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -796,15 +789,8 @@ public class MainMenuControl extends Composite
 					binderId);
 			}
 			public void onSuccess(VibeRpcResponse response) {
-				final List<ToolbarItem> toolbarItemList;
-				if (null != response.getResponseData())
-				{
-					GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
-					toolbarItemList = responseData.getToolbarItems();
-				}
-				else {
-					toolbarItemList = null;
-				}
+				GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
+				final List<ToolbarItem> toolbarItemList = ((null == responseData) ? null : responseData.getToolbarItems());
 
 				// Run the 'Get Team Management' RPC request as a
 				// scheduled command so the RPC request that got us
@@ -821,13 +807,9 @@ public class MainMenuControl extends Composite
 									binderId);
 							}
 							public void onSuccess(VibeRpcResponse response) {
-								TeamManagementInfo tmi = null;
-								
-								if ( response.getResponseData() != null )
-									tmi = (TeamManagementInfo) response.getResponseData();
-								
 								// Show the toolbar items asynchronously so
 								// that we can release the AJAX request ASAP.
+								TeamManagementInfo tmi = ((TeamManagementInfo) response.getResponseData());
 								showToolbarItemsAsync(
 									inSearch,
 									searchTabId,

@@ -190,6 +190,7 @@ import org.kablink.util.PropertyNotFoundException;
  *
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unchecked")
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
 
@@ -515,7 +516,6 @@ public class GwtServerHelper {
 	/**
 	 * Add a reply to the given entry.
 	 */
-	@SuppressWarnings("unchecked")
 	public static FolderEntry addReply( AllModulesInjected bs, String entryId, String title, String desc )
 		throws WriteEntryDataException, WriteFilesException
 	{
@@ -1121,9 +1121,45 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the URL needed to invoke the start/schedule meeting dialog.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static String getAddMeetingUrl( AllModulesInjected bs, HttpServletRequest request, String binderId ) throws GwtTeamingException
+	{
+		AdaptedPortletURL adapterUrl;
+
+		// ...store the team meeting URL.
+		adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
+		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
+		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+
+		if (getWorkspaceType(GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId)) == WorkspaceType.USER) {
+			// This is a User Workspace so add the owner in and don't append team members
+			Principal p = GwtProfileHelper.getPrincipalByBinderId(bs, binderId);
+			if (p != null) {
+				Long id = p.getId();
+				String [] ids = new String[1];
+				ids[0] = id.toString();
+				adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, ids);
+			}
+			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.FALSE.toString() );
+		} else {
+			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+	    }
+
+		return adapterUrl.toString();
+	}
+	
+	/**
 	 * Return a list of administration actions the user has rights to perform. 
 	 */
-	@SuppressWarnings("unchecked")
 	public static ArrayList<GwtAdminCategory> getAdminActions( HttpServletRequest request, Binder binder, AbstractAllModulesInjected allModules )
 	{
 		ArrayList<GwtAdminCategory> adminCategories;
@@ -1155,7 +1191,7 @@ public class GwtServerHelper {
 		licenseModule = allModules.getLicenseModule();
 		zoneModule = allModules.getZoneModule();
 		
-		user = GwtServerHelper.getCurrentUser();
+		user = getCurrentUser();
 		
  		try
  		{
@@ -2453,7 +2489,6 @@ public class GwtServerHelper {
 	 * Returns a cloned copy of the expanded Binder's list from the
 	 * UserProperties.
 	 */
-	@SuppressWarnings("unchecked")
 	private static List<Long> getExpandedBindersList(AllModulesInjected bs) {
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 		List<Long> reply= ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
@@ -2465,7 +2500,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static String getDefaultFolderDefinitionId(AllModulesInjected bs, String binderIdS) {
 		// Does the user have a default definition selected for this
 		// binder?
@@ -2491,7 +2525,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<FavoriteInfo> getFavorites(AllModulesInjected bs) {
 		// Allocate an ArrayList<FavoriteInfo> to hold the favorites.
 		ArrayList<FavoriteInfo> reply = new ArrayList<FavoriteInfo>();
@@ -2764,7 +2797,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw getGwtTeamingException( ex );
 		}
 		
 		return configData;
@@ -2826,7 +2859,7 @@ public class GwtServerHelper {
 		
 		try {
 			// Guest user can't get presence information.
-			User userAsking = GwtServerHelper.getCurrentUser();
+			User userAsking = getCurrentUser();
 			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(userAsking.getInternalId()))) {
 				PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
 				if (null != presenceService) {
@@ -2920,7 +2953,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<RecentPlaceInfo> getRecentPlaces(HttpServletRequest request, AllModulesInjected bs) {
 		// Allocate an ArrayList to return the recent places in.
 		ArrayList<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
@@ -3011,7 +3043,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<SavedSearchInfo> getSavedSearches(AllModulesInjected bs) {
 		// Allocate an ArrayList to return the saved searches in.
 		List<SavedSearchInfo> ssList = new ArrayList<SavedSearchInfo>();
@@ -3046,7 +3077,6 @@ public class GwtServerHelper {
 	/**
 	 * Return information about self registration.
 	 */
-	@SuppressWarnings("unchecked")
 	public static GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpServletRequest request, AllModulesInjected ami )
 	{
 		GwtSelfRegistrationInfo selfRegInfo;
@@ -3110,7 +3140,6 @@ public class GwtServerHelper {
 	/**
 	 * Return the membership of the given group.
 	 */
-	@SuppressWarnings("unchecked")
 	public static ArrayList<GwtTeamingItem> getGroupMembership( AllModulesInjected ami, String groupId ) throws GwtTeamingException
 	{
 		ArrayList<GwtTeamingItem> retList;
@@ -3191,7 +3220,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw getGwtTeamingException( ex );
 		}
 		
 		return retList;
@@ -3204,7 +3233,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<GroupInfo> getGroups(HttpServletRequest request, AllModulesInjected bs, Long userId) {
 		// Allocate an ArrayList<GroupInfo> to hold the groups.
 		ArrayList<GroupInfo> reply = new ArrayList<GroupInfo>();
@@ -3249,7 +3277,7 @@ public class GwtServerHelper {
 		
 		subscriptionData = new SubscriptionData();
 
-		user = GwtServerHelper.getCurrentUser();
+		user = getCurrentUser();
 		
 		// Get the user's primary email address.
 		address = user.getEmailAddress( Principal.PRIMARY_EMAIL );
@@ -3310,7 +3338,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<TeamInfo> getTeams(HttpServletRequest request, AllModulesInjected bs, Long userId) {
 		// Allocate an ArrayList<TeamInfo> to hold the teams.
 		ArrayList<TeamInfo> reply = new ArrayList<TeamInfo>();
@@ -3347,7 +3374,7 @@ public class GwtServerHelper {
 	 */
 	public static List<String> getTrackedPeople(AllModulesInjected bs) {
 		// Return the IDs of the people the current user is tracking.
-		Long userId = GwtServerHelper.getCurrentUser().getId();
+		Long userId = getCurrentUser().getId();
 		return SearchUtils.getTrackedPeopleIds(bs, userId);
 	}
 	
@@ -3358,7 +3385,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static List<String> getTrackedPlaces(AllModulesInjected bs) {
-		Long userId = GwtServerHelper.getCurrentUser().getId();
+		Long userId = getCurrentUser().getId();
 		return SearchUtils.getTrackedPlacesIds(bs, userId);
 	}
 	
@@ -3366,7 +3393,6 @@ public class GwtServerHelper {
 	 * Using a search query, returns a List<BinderData> containing
 	 * the sorted list the children of a given binder.
 	 */
-	@SuppressWarnings("unchecked")
 	private static List<BinderData> getChildBinderData(AllModulesInjected bs, Binder binder, BucketInfo bi) {
 		String pageTuple;
 		if (null == bi) {
@@ -3436,7 +3462,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<TopRankedInfo> getTopRanked(HttpServletRequest request, AllModulesInjected bs)
 	{
 		// Allocate an ArrayList to return the top ranked items in.
@@ -3982,7 +4007,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static Boolean removeSavedSearch(AllModulesInjected bs, SavedSearchInfo ssi) {
 		// Does the user contain any saved searches?
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
@@ -4030,7 +4054,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static SavedSearchInfo saveSearch(AllModulesInjected bs, String searchTabId, SavedSearchInfo ssi) {
 		// If we can't access the HttpSession...
 		HttpSession hSession = getCurrentHttpSession();
@@ -4139,8 +4162,8 @@ public class GwtServerHelper {
 		catch (Exception e)
 		{
 			if (e instanceof AccessControlException)
-			     m_logger.warn( "GwtSeverHelper.saveSubscriptionData() AccessControlException" );
-			else m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception"     );
+			     m_logger.warn( "GwtServerHelper.saveSubscriptionData() AccessControlException" );
+			else m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception"      );
 			
 			throw getGwtTeamingException( e );
 		}
@@ -4201,7 +4224,6 @@ public class GwtServerHelper {
 	 * Send an email notification to the given recipients for the given entry.
 	 * This code was taken from RelevanceAjaxController.java, ajaxSaveShareThisBinder() and modified.
 	 */
-	@SuppressWarnings("unchecked")
 	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, String entryId, String addedComments, List<String> principalIds, List<String> teamIds )
 		throws Exception
 	{
