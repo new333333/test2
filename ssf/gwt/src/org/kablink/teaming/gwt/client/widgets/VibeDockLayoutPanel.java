@@ -90,9 +90,13 @@ public class VibeDockLayoutPanel extends DockLayoutPanel
 		currentContent = getCenter();
 		
 		if ( currentContent != null )
+		{
 			remove( currentContent );
+			currentContent.setVisible( false );
+		}
 		
 		// Add the new widget to the center panel.
 		add( widget );
+		widget.setVisible( true );
 	}
 }
