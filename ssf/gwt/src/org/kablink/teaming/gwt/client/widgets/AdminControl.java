@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
@@ -93,7 +92,6 @@ import com.google.gwt.user.client.ui.Label;
 public class AdminControl extends Composite
 	implements 
 	// Event handlers implemented by this class.
-		AdministrationExitEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -108,7 +106,6 @@ public class AdminControl extends Composite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
-		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		
 		// Login/out events.
@@ -578,6 +575,7 @@ public class AdminControl extends Composite
 			public void onSuccess( ContentControl contentCtrl )
 			{
 				m_contentControl = contentCtrl;
+				m_contentControl.setVisible( false );
 				m_contentControl.addStyleName( "adminContentControl" );
 				mainPanel.add( m_contentControl );
 			}// end onSuccess()
@@ -931,20 +929,6 @@ public class AdminControl extends Composite
 		}
 	}// end showTreeControl()
 		
-	/**
-	 * Handles AdministrationExitEvent's received by this class.
-	 * 
-	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onAdministrationExit( AdministrationExitEvent event )
-	{
-		hideControl();
-	}// end onAdministrationExit()
-	
-
 	/**
 	 * Handles InvokeConfigureFileSyncAppDlgEvent received by this class.
 	 * 

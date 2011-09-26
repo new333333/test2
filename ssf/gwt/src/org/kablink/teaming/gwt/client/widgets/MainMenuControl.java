@@ -103,7 +103,6 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
 public class MainMenuControl extends Composite
 	implements
 	// Event handlers implemented by this class.
-		AdministrationExitEvent.Handler,
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
 		MastheadHideEvent.Handler,
@@ -135,9 +134,6 @@ public class MainMenuControl extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		// Administration events.
-		TeamingEvents.ADMINISTRATION_EXIT,
-
 		// Context events.
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGING,
@@ -592,18 +588,6 @@ public class MainMenuControl extends Composite
 		}
 	}
 
-	/**
-	 * Handles AdministrationExitEvent's received by this class.
-	 * 
-	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onAdministrationExit(AdministrationExitEvent event) {
-		hideAdministrationMenubar();
-	}
-	
 	/**
 	 * Handles ContextChangedEvent's received by this class.
 	 * 

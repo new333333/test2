@@ -41,7 +41,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
-import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
@@ -107,7 +106,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -122,7 +120,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
-		AdministrationExitEvent.Handler,
 		InvokeReplyEvent.Handler,
 		InvokeShareEvent.Handler,
 		InvokeSubscribeEvent.Handler,
@@ -187,9 +184,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		
-		// Administration events.
-		TeamingEvents.ADMINISTRATION_EXIT,
-
 		// Invoke events.
 		TeamingEvents.INVOKE_REPLY,
 		TeamingEvents.INVOKE_SHARE,
@@ -231,7 +225,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		 */
 		public void onResize()
 		{
-			m_asCtrl.setSize( getOffsetWidth(), getOffsetHeight() );
+			//!!!m_asCtrl.setSize( getOffsetWidth(), getOffsetHeight() );
 		}
 	}
 	
@@ -1864,24 +1858,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	{
 		hide();
 	}// end onActivityStreamExit()
-	
-	/**
-	 * Handles AdministrationExitEvent's received by this class.
-	 * 
-	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onAdministrationExit( AdministrationExitEvent event )
-	{
-		// Should we go back into activity stream mode?
-		if ( m_mainPage.isActivityStreamActive() )
-		{
-			// Yes
-			show();
-		}
-	}// end onAdministrationExit()
 	
 	/**
 	 * Handles InvokeReplyEvent's received by this class.
