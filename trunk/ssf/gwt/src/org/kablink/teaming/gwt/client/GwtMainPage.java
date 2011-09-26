@@ -142,7 +142,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 
 /**
@@ -198,7 +197,7 @@ public class GwtMainPage extends ResizeComposite
 	public static ContentControl m_contentCtrl;
 
 	private DockLayoutPanel m_mainPanel = null;
-	private SplitLayoutPanel m_splitLayoutPanel = null;
+	private DockLayoutPanel m_splitLayoutPanel = null;
 	private VibeDockLayoutPanel m_contentLayoutPanel = null;
 	private FlowPanel m_headerPanel = null;
 	private boolean m_inSearch = false;
@@ -568,12 +567,12 @@ public class GwtMainPage extends ResizeComposite
 		m_contentPanel = new FlowPanel();
 		m_contentPanel.addStyleName( "mainContentPanel" );
 		
-		m_splitLayoutPanel = new SplitLayoutPanel();
+		m_splitLayoutPanel = new DockLayoutPanel( Style.Unit.PX );
 		m_mainPanel.add( m_splitLayoutPanel );
 		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
-		m_splitLayoutPanel.insert( m_wsTreeCtrl, DockLayoutPanel.Direction.WEST, 250, null );
+		m_splitLayoutPanel.addWest( m_wsTreeCtrl, 246 );
 		
 		// Create a panel that will hold the content.
 		m_contentLayoutPanel = new VibeDockLayoutPanel( Style.Unit.PX );

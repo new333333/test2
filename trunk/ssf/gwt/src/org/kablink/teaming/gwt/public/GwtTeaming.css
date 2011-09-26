@@ -1511,16 +1511,18 @@ body, table td, select
 /* Style used for the panel that holds the content control. */
 .mainContentControl
 {
+	top: 8px !important;
 	background-color:#fff;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
-.mainContentControl iframe.gwt-Frame {
+.mainContentControl iframe.gwt-Frame
+{
 	border-width: 0px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	}
+}
 
 /* Style used for the content panel in Teaming's main page. */
 .mainContentPanel
@@ -1531,10 +1533,9 @@ body, table td, select
 /* Style used for the WorkspaceTree control found in Teaming's main page. */
 .mainWorkspaceTreeControl
 {
-	/*!!! left: 8px; */
-	/*!!! position: absolute; */
-	/*!!! top: 8px; */
-	/*!!! z-index: 100; */
+	left: 8px !important;
+	top:  8px !important;
+	z-index: 100;
 }
 
 /* Styles used by the bread crumb navigator. */
