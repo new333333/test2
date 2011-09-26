@@ -200,6 +200,13 @@ public class GwtTaskHelper {
 	}
 	
 	/*
+	 * Inhibits this class from being instantiated. 
+	 */
+	private GwtTaskHelper() {
+		// Nothing to do.
+	}
+
+	/*
 	 * Converts a String to a Long, if possible, and adds it as the ID
 	 * of an AssignmentInfo to a List<AssignmentInfo>.
 	 */

@@ -124,16 +124,15 @@ import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
+import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -310,7 +309,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			StringRpcResponseData responseData;
 			
 			gamuCmd = (GetAddMeetingUrlCmd) cmd;
-			result = getAddMeetingUrl( ri, gamuCmd.getBinderId() );
+			result = GwtServerHelper.getAddMeetingUrl( this, getRequest( ri ), gamuCmd.getBinderId() );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -844,7 +843,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TeamManagementInfo result;
 			
 			gtmiCmd = (GetTeamManagementInfoCmd) cmd;
-			result = getTeamManagementInfo( ri, gtmiCmd.getBinderId() );
+			result = GwtMenuHelper.getTeamManagementInfo( this, getRequest( ri ), gtmiCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -867,8 +866,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			List<ToolbarItem> result;
 			GetToolbarItemsRpcResponseData responseData;
 			
-			gtiCmd = (GetToolbarItemsCmd) cmd;
-			result = getToolbarItems( ri, gtiCmd.getBinderId() );
+			gtiCmd = ((GetToolbarItemsCmd) cmd);
+			if (GwtUIHelper.useCachedMenuBeans())
+			     result =               getToolbarItemsFromCache( getRequest( ri ), gtiCmd.getBinderId() );
+			else result = GwtMenuHelper.getToolbarItems( this,    getRequest( ri ), gtiCmd.getBinderId() );
 			responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2647,42 +2648,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getSiteAdministrationUrl()
 	
 	/**
-	 * Return the URL needed to invoke the start/schedule meeting dialog.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	private String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
-	{
-		AdaptedPortletURL adapterUrl;
-
-		// ...store the team meeting URL.
-		adapterUrl = new AdaptedPortletURL( getRequest(ri), "ss_forum", true );
-		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
-		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-
-		if (GwtServerHelper.getWorkspaceType(GwtUIHelper.getBinderSafely(getBinderModule(), binderId)) == WorkspaceType.USER) {
-			// This is a User Workspace so add the owner in and don't append team members
-			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
-			if (p != null) {
-				Long id = p.getId();
-				String [] ids = new String[1];
-				ids[0] = id.toString();
-				adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, ids);
-			}
-			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.FALSE.toString() );
-		} else {
-			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
-	    }
-
-		return adapterUrl.toString();
-	}// end getAddMeetingUrl()
-	
-	/**
 	 * Return a GwtBrandingData object for the home workspace.
 	 * 
 	 * @param ri
@@ -3971,44 +3936,48 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ToolbarItem> getToolbarItems( HttpRequestInfo ri, String binderId )
+	private static List<ToolbarItem> getToolbarItemsFromCache( HttpServletRequest request, String binderId )
 	{
+		/// If the Granite GWT extensions are enabled...
+		if (!(GwtUIHelper.useCachedMenuBeans())) {
+			// ...something's wrong as this should never be called in
+			// ...that scenario.
+			m_logger.warn("GwtRpcServiceImpl.getToolbarItemsFromCache( *Internal Error* ):  Should never be called when the Granite GWT extensions are enabled.");
+		}
+		
 		// Construct an ArrayList<ToolbarItem> to hold the toolbar
 		// items.
 		ArrayList<ToolbarItem> tmiList = new ArrayList<ToolbarItem>();
 
-		// If we can't access the HttpSession...
-		HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
-		if (null == hSession) {
-			// ...we can't access the cached toolbar beans to build the
-			// ...toolbar items from.  Bail.
-			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access the current HttpSession' )");
-			return tmiList;
-		}
-
 		// If we can't access the cached toolbar beans... 
+		HttpSession hSession = request.getSession();
 		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
 		Map<String, Map> tbMaps = ((null == tabsObj) ? null : ((Map<String, Map>) tabsObj.getData()));
 		if (null == tbMaps) {
 			// ...we can't build any toolbar items.  Bail.
-			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access any cached toolbars' )");
+			m_logger.debug("GwtRpcServiceImpl.getToolbarItemsFromCache( 'Could not access any cached toolbars' )");
 			return tmiList;
 		}
 		
 		// Scan the toolbars...
-		m_logger.debug("GwtRpcServiceImpl.getToolbarItems():");
+		m_logger.debug("GwtRpcServiceImpl.getToolbarItemsFromCache():");
 		Set<String> tbKeySet = tbMaps.keySet();
-		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
+		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); )
+		{
 			// ...constructing a ToolbarItem for each.
 			String tbKey = tbKeyIT.next();
-			tmiList.add(buildToolbarItemFromToolbar("...", tbKey, tbMaps.get(tbKey)));
+			tmiList.add(
+				buildToolbarItemFromToolbarCache(
+					"...",
+					tbKey,
+					tbMaps.get( tbKey ) ) );
 		}
 
 		// If we get here, tmiList refers to the
 		// List<ToolbarItem>'s to construct the GWT UI based toolbar
 		// from.  Return it.
 		return tmiList;
-	}
+	}// end getToolbarItemsFromCache()
 
 	/**
 	 * Returns a List<TopRankedInfo> of the top ranked items from the
@@ -4167,7 +4136,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Constructs a ToolbarItem based on a toolbar.
 	 */
 	@SuppressWarnings("unchecked")
-	private ToolbarItem buildToolbarItemFromToolbar(String traceStart, String tbKey, Map tbMap) {
+	private static ToolbarItem buildToolbarItemFromToolbarCache( String traceStart, String tbKey, Map tbMap )
+	{
 		// Log the name of the toolbar that we're building a toolbar
 		// item for...
 		m_logger.debug(traceStart + ":toolbar=" + tbKey);
@@ -4214,7 +4184,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				else {
 					// No, it's not a map of qualifiers!  Construct a
 					// nested toolbar item for it.
-					toolbarItem.addNestedItem(buildToolbarItemFromToolbar((traceStart + "..."), k, ((Map) o)));
+					toolbarItem.addNestedItem(buildToolbarItemFromToolbarCache((traceStart + "..."), k, ((Map) o)));
 				}
 			}
 			
@@ -4254,7 +4224,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		// If we get here, toolbarItem refers to the ToolbarItem for
 		// this toolbar.  Return it.
 		return toolbarItem;
-	}
+	}// end buildToolbarItemFromToolbarCache()
 
 	/*
 	 * Get the subscription data for the given entry id.
@@ -4267,83 +4237,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return subscriptionData;
 	}
-	
-	/**
-	 * Returns a TeamManagementInfo object regarding the current user's
-	 * team management capabilities.
-	 * 
-	 * @param ri
-	 * @binderId
-	 * 
-	 * @return
-	 */
-	private TeamManagementInfo getTeamManagementInfo( HttpRequestInfo ri, String binderId )
-	{
-		TeamManagementInfo tmi;
-		User user;
-		
-		// Construct a base TeamManagementInfo object.
-		tmi = new TeamManagementInfo();
-		
-		// Is the current user the guest user?
-		user = GwtServerHelper.getCurrentUser();
-		if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) )
-		{
-			Binder binder;
-			
-			// No!  Is the binder other than the profiles container?
-			binder = GwtUIHelper.getBinderSafely( getBinderModule(), binderId );
-			if ( ( null != binder ) && ( EntityIdentifier.EntityType.profiles != binder.getEntityType() ) )
-			{
-				AdaptedPortletURL adapterUrl;
-				HttpServletRequest request = getRequest( ri ); 
-			
-				// Yes!  Then the user is allowed to view team membership.
-				tmi.setViewAllowed( true );
-	
-				// If the user can manage the team...
-				if ( getBinderModule().testAccess( binder, BinderOperation.manageTeamMembers ) )
-				{
-					// ...store the team management URL...
-					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
-					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER );
-					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-					adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
-					tmi.setManageUrl( adapterUrl.toString() );
-				}
-	
-				// ...if the user can send mail to the team...
-				if ( MiscUtil.hasString( user.getEmailAddress() ) )
-				{
-					// ...store the send mail URL...
-					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
-					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL );
-					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
-					tmi.setSendMailUrl( adapterUrl.toString() );
-				}
-	
-				// ...if the user can start a team meeting...
-				if ( getConferencingModule().isEnabled())
-				{
-					CustomAttribute ca = user.getCustomAttribute("conferencingID");
-					if (ca != null && MiscUtil.hasString((String)ca.getValue())) {		
-						// ...store the team meeting URL.
-						try {
-							tmi.setTeamMeetingUrl( getAddMeetingUrl(ri, binderId) );
-						} catch (GwtTeamingException e) {
-							// Nothing to do...
-						}
-					}
-				}
-			}
-		}
-
-		// If we get here, tmi refers to a TeamManagementInfo object
-		// containing the user's team management capabilities.  Return
-		// it.
-		return tmi;
-	}//end getTeamManagementInfo()
 	
 	/*
 	 * Add a reply to the given entry.  Return an object that can be used by the What's New page.

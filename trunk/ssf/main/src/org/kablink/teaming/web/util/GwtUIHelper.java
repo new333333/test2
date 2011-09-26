@@ -80,7 +80,11 @@ import org.springframework.web.portlet.ModelAndView;
  */
 public class GwtUIHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
-	
+
+	// Used as an extra layer of enablement with the cached menu beans
+	// as I get the infrastructure in place to not need them anymore.
+	private static boolean USE_CACHED_MENU_BEANS	= true;
+
 	// Used to write a flag to the session cache regarding the state
 	// of the GWT UI.
 	private final static String GWT_UI_ENABLED_FLAG = "gwtUIEnabled";
@@ -89,7 +93,7 @@ public class GwtUIHelper {
 	// based UI.
 	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN = SPropsUtil.getBoolean("activity.stream.on.login",  true);
 	
-	// String used to recognized an '&' formatted URL vs. a '/'
+	// String used to recognize an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	
@@ -628,6 +632,12 @@ public class GwtUIHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void cacheToolbarBeansImpl(HttpServletRequest hRequest, Map model) {
+		/// If the Granite GWT extensions are enabled...
+		if (!(useCachedMenuBeans())) {
+			// ...we don't cache the toolbar beans.  Bail.
+			return;
+		}
+		
 		// If we don't have an HttpServletRequest...
 		if (null == hRequest) {
 			// ...bail.
@@ -1293,7 +1303,7 @@ public class GwtUIHelper {
 		model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
 
 		// Put out the ID of the top Vibe workspace.
-		String topWSId = GwtUIHelper.getTopWSIdSafely(bs);
+		String topWSId = getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
 		
 		// Put out a true/false indicator as to the state of the
@@ -1324,6 +1334,16 @@ public class GwtUIHelper {
 		     reply = binder.getSearchTitle();
 		else reply = binder.getTitle();
 		return reply;
+	}
+	
+	/**
+	 * Returns true if we should use cached beans from the controllers to
+	 * construct menus and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean useCachedMenuBeans() {
+		return (USE_CACHED_MENU_BEANS || (!(isGraniteGwtEnabled())));
 	}
 	
 	/**
