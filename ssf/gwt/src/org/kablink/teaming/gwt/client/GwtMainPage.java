@@ -203,6 +203,7 @@ public class GwtMainPage extends ResizeComposite
 	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
 	private VibeDockLayoutPanel m_contentLayoutPanel = null;
+	private FlowPanel m_contentFlowPanel = null;
 	private FlowPanel m_headerPanel = null;
 	private boolean m_inSearch = false;
 	private String m_searchTabId = "";
@@ -582,9 +583,17 @@ public class GwtMainPage extends ResizeComposite
 		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
 		m_splitLayoutPanel.add( m_contentLayoutPanel );
 		
+		m_contentFlowPanel = new FlowPanel();
+		m_contentFlowPanel.getElement().setId( "contentFlowPanel" );
+		m_contentFlowPanel.addStyleName( "contentFlowPanel" );
+		m_contentLayoutPanel.add( m_contentFlowPanel );
+		
 		// Create the content control.
 		m_contentCtrl.addStyleName( "mainContentControl" );
-		m_contentLayoutPanel.add( m_contentCtrl );
+		m_contentFlowPanel.add( m_contentCtrl );
+		
+		m_activityStreamCtrl.hide();
+		m_contentFlowPanel.add( m_activityStreamCtrl );
 		
 		// Do we have a url we should set the ContentControl to?
 		url = m_requestInfo.getAdaptedUrl();
@@ -858,7 +867,8 @@ public class GwtMainPage extends ResizeComposite
 			
 			// ...otherwise, we hide the activity streams control and
 			// ...let the search display.
-			m_contentLayoutPanel.replaceCenterContent( m_contentCtrl );
+			m_activityStreamCtrl.hide();
+			m_contentCtrl.setVisible( true );
 		}
 		
 		m_inSearch    = inSearch;
@@ -1238,7 +1248,8 @@ public class GwtMainPage extends ResizeComposite
 		GwtClientHelper.jsHideEntryPopupDiv();
 		
 		// Add the ActivityStreamCtrl as the content of the center panel.
-		m_contentLayoutPanel.replaceCenterContent( m_activityStreamCtrl );
+		m_contentCtrl.setVisible( false );
+		//!!!m_contentLayoutPanel.replaceCenterContent( m_activityStreamCtrl );
 		m_activityStreamCtrl.setSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
 		m_activityStreamCtrl.show();
 	}
@@ -1633,8 +1644,12 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
+		m_activityStreamCtrl.hide();
+		m_contentCtrl.setVisible( true );
+		
 		// Add the ContentCtrl as the content of the center panel.
-		m_contentLayoutPanel.replaceCenterContent( m_contentCtrl );
+		//!!!m_contentLayoutPanel.replaceCenterContent( m_contentCtrl );
+		
 		m_contentCtrl.setDimensions( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
 	}
 
