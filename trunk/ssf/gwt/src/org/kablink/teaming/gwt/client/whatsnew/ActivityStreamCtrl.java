@@ -1078,6 +1078,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public void hide()
 	{
 		cancelCheckForChangesTimer();
+		setVisible( false );
 	}
 	
 	
@@ -1398,6 +1399,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 		int headerHeight;
 		int resultsHeight;
 
+		if ( m_width == 0 || m_height == 0 )
+			return;
+		
 		// Figure out how tall to make the search results panel.
 		headerHeight = m_headerPanel.getOffsetHeight();
 		footerHeight = m_footerPanel.getOffsetHeight();
@@ -1669,6 +1673,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 	{
 		Scheduler.ScheduledCommand cmd;
 
+		setVisible( true );
+		
 		// Restart the "check for changes" timer.
 		startCheckForChangesTimer();
 		
