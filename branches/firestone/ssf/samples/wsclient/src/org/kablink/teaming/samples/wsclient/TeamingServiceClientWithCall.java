@@ -92,7 +92,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("setBinderDefinitionsInherited")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setDefinitionsInherited", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getFolderEntry")) {
-				wsClient.fetchAndPrintDE("TeamingServiceV1", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2]), Boolean.parseBoolean(args[3])});			
+				wsClient.fetchAndPrintFolderEntry("TeamingServiceV1", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2]), Boolean.parseBoolean(args[3])});			
 			} else if(args[0].equals("getFolderEntryTags")) {
 				wsClient.fetchAndPrintTags("TeamingServiceV1", "folder_getEntryTags", new Object[] {null, Long.parseLong(args[1])});			
 			} else if(args[0].equals("getToken")) {

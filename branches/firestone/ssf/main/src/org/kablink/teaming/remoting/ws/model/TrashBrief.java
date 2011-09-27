@@ -153,6 +153,9 @@ public class TrashBrief implements Serializable {
 		String path = binder.getPathName();
 		boolean library = binder.isLibrary();
 		boolean mirrored = binder.isMirrored();
+		Long parentBinderId = null;
+		if(binder.getParentBinder() != null)
+			parentBinderId = binder.getParentBinder().getId();
 		Long preDeletedWhen;
 		Long preDeletedBy;
 		if (binder instanceof Workspace) {
@@ -196,7 +199,8 @@ public class TrashBrief implements Serializable {
 				creation,
 				modification,
 				permaLink,
-				mirrored);
+				mirrored,
+				parentBinderId);
 	}
 	
 	/*
@@ -238,6 +242,8 @@ public class TrashBrief implements Serializable {
 		if(null != fe.getModification()) {
 			feb.setModification(getTimestampFromHistory(fe.getModification()));
 		}
+		if(fe.getReservation() != null && fe.getReservation().getPrincipal() != null)
+			feb.setReservedBy(fe.getReservation().getPrincipal().getId());
 		return feb;
 	}
 
