@@ -173,6 +173,9 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("mirrored", (String) entry.get(Constants.IS_MIRRORED_FIELD));
 		entryElem.addAttribute("path", (String) entry.get(Constants.ENTITY_PATH));
 		entryElem.addAttribute("definitionType", (String) entry.get(Constants.DEFINITION_TYPE_FIELD));
+		String parentBinderId = (String) entry.get(Constants.BINDERS_PARENT_ID_FIELD);
+		if(Validator.isNotNull(parentBinderId))
+			entryElem.addAttribute("parentBinderId", parentBinderId);
 	}
 	
 	protected void addAttachmentAttributes(Element entryElem, Map entry) {
@@ -342,6 +345,11 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			wfModel.setResponses(wfr.toArray(new org.kablink.teaming.remoting.ws.model.WorkflowResponse[wfr.size()]));
 		}
 		entryModel.setWorkflows(wfs.toArray(new Workflow[wfs.size()]));
+		HistoryStamp h = entry.getReservation();
+		if(h != null) {
+			if(h.getPrincipal() != null)
+				entryModel.setReservedBy(h.getPrincipal().getId());
+		}
 	}
 	protected void fillBinderModel(org.kablink.teaming.remoting.ws.model.Binder binderModel, Binder binder) {
 		// Binder common
@@ -474,6 +482,9 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if(entity.getAverageRating() != null) {
 			entityModel.setAverageRating(toAverageRatingModel(entity.getAverageRating()));
 		}
+		if(entity.getEntityType() != null) {
+			entityModel.setEntityType(entity.getEntityType().name());
+		}
 	}
 	
 	protected org.kablink.teaming.remoting.ws.model.Timestamp toTimestampModel(HistoryStamp hs) {
@@ -568,6 +579,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if(entry.getModification() != null) {
 			entryBrief.setModification(toTimestampModel(entry.getModification()));
 		}
+		if(entry.getReservation() != null && entry.getReservation().getPrincipal() != null)
+			entryBrief.setReservedBy(entry.getReservation().getPrincipal().getId());
 		return entryBrief;
 	}	
 
@@ -591,6 +604,9 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		
 		entryBrief.setCreation(new Timestamp(((creator != null)? creator.getName() : (String) entry.get(Constants.CREATOR_NAME_FIELD)),(Date) entry.get(Constants.CREATION_DATE_FIELD)));
 		entryBrief.setModification(new Timestamp(((modifier != null)? modifier.getName() : (String) entry.get(Constants.MODIFICATION_NAME_FIELD)),(Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
+		String reservedByStr = (String) entry.get(Constants.RESERVEDBY_ID_FIELD);
+		if(Validator.isNotNull(reservedByStr))
+			entryBrief.setReservedBy(Long.valueOf(reservedByStr));
 		return entryBrief;
 	}
 	

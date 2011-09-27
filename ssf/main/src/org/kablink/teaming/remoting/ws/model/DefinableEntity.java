@@ -58,6 +58,7 @@ public abstract class DefinableEntity implements Serializable {
 	private Map<String,CustomStringField> stringFieldMap = new HashMap<String,CustomStringField>();
 	private Map<String,CustomEventField> eventFieldMap = new HashMap<String,CustomEventField>();
     private String permaLink;
+	private String entityType;
 
 	public Long getParentBinderId() {
 		return parentBinderId;
@@ -284,6 +285,14 @@ public abstract class DefinableEntity implements Serializable {
 	}
 	public void setPermaLink(String permaLink) {
 		this.permaLink = permaLink;
+	}
+
+	public String getEntityType() {
+		return entityType;
+	}
+
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
 	}
 
 }
