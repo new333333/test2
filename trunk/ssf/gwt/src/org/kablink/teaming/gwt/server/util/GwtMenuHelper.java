@@ -43,16 +43,24 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -73,6 +81,179 @@ public class GwtMenuHelper {
 		// Nothing to do.
 	}
 
+	/*
+	 * Adds the ToolBarItem's for a folder to the
+	 * List<ToolBarItem> of them.
+	 * 
+	 * Based on ListFolderHelper.buildFolderToolbars()
+	 */
+	private static void buildFolderMenuItems(AllModulesInjected bs, HttpServletRequest request, Folder binder, List<ToolbarItem> tbiList) {
+		tbiList.add(constructFolderItems(           WebKeys.FOLDER_TOOLBAR,             bs, request, binder));
+		tbiList.add(constructFolderViewsItems(      WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, binder));
+		tbiList.add(constructFolderActionsItems(    WebKeys.FOLDER_ACTIONS_TOOLBAR,     bs, request, binder));		
+		tbiList.add(constructCalendarImportItems(   WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, binder));		
+		tbiList.add(constructWhatsNewItems(         WebKeys.WHATS_NEW_TOOLBAR,          bs, request, binder));
+		tbiList.add(constructEmailSubscriptionItems(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, binder));
+	}
+	
+	/*
+	 * Adds the ToolBarItem's common to all binder types to the
+	 * List<ToolBarItem> of them.
+	 * 
+	 * Based on GwtUIHelper.buildGwtMiscToolbar()
+	 */
+	private static void buildMiscMenuItems(AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType, List<ToolbarItem> tbiList) {
+//!		...this needs to be implemented...
+	}
+	
+	/*
+	 * Adds the ToolBarItem's for the profiles binder to the
+	 * List<ToolBarItem> of them.
+	 * 
+	 * Based on ProfilesBinderHelper.buildViewFolderToolbars()
+	 */
+	private static void buildProfilesMenuItems(AllModulesInjected bs, HttpServletRequest request, ProfileBinder binder, List<ToolbarItem> tbiList) {
+		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, binder));
+		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, binder));
+		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, binder));
+	}
+	
+	/*
+	 * Adds the ToolBarItem's for a workspace to the
+	 * List<ToolBarItem> of them.
+	 * 
+	 * Based on WorkspaceTreeHelper.buildWorkspaceToolbar()
+	 */
+	private static void buildWorkspaceMenuItems(AllModulesInjected bs, HttpServletRequest request, Workspace binder, List<ToolbarItem> tbiList) {
+		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, binder));
+		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, binder));
+		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, binder));
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for calendar imports. to the
+	 */
+	private static ToolbarItem constructCalendarImportItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder binder) {
+		// Allocate the base ToolbarItem to return;
+		ToolbarItem reply = new ToolbarItem(tbKey);
+
+		// Are we looking at a calendar or task folder that we can add entries to?
+		boolean isCalendar =                   BinderHelper.isBinderCalendar(binder);
+		boolean isTask     = ((!isCalendar) && BinderHelper.isBinderTask(    binder));
+		if ((isCalendar || isTask) && bs.getFolderModule().testAccess(binder, FolderOperation.addEntry)) {
+			// Yes!  Generate the required structure for the menu.
+			ToolbarItem calTBI = new ToolbarItem("calendar");
+			reply.addNestedItem(calTBI);
+			
+			ToolbarItem catTBI = new ToolbarItem("categories");
+			calTBI.addNestedItem(catTBI);
+			
+			ToolbarItem cal2TBI = new ToolbarItem("calendar");
+			catTBI.addNestedItem(cal2TBI);
+			
+			// Load the localized strings we need for the menu items...
+			String importFromFile;
+			String importByURL;
+			String importType;
+			if (isCalendar) {
+				importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
+				importByURL    = NLT.get("toolbar.menu.calendarImport.byURL"   );
+				importType     = "calendar";
+			}
+			
+			else {
+				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
+				importByURL    = NLT.get("toolbar.menu.taskImport.byURL"   );				
+				importType     = "task";
+			}
+			
+			// ...and generate the items.
+			ToolbarItem importTBI = new ToolbarItem(importType + ".File");
+			importTBI.setTitle(importFromFile);
+			importTBI.setTeamingEvent(TeamingEvents.IMPORT_ICAL_FILE);
+			cal2TBI.addNestedItem(importTBI);
+			
+			importTBI = new ToolbarItem(importType + ".Url");
+			importTBI.setTitle(importByURL);
+			importTBI.setTeamingEvent(TeamingEvents.IMPORT_ICAL_URL);
+			cal2TBI.addNestedItem(importTBI);
+		}		
+		
+		// If we get here, reply refers to the ToolbarItem requested.
+		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for email subscription handling.
+	 */
+	private static ToolbarItem constructEmailSubscriptionItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder binder) {
+		// Allocate the base ToolbarItem to return;
+		ToolbarItem reply = new ToolbarItem(tbKey);
+		
+//!		...this needs to be implemented...		
+		
+		// If we get here, reply refers to the ToolbarItem requested.
+		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for folder actions.
+	 */
+	private static ToolbarItem constructFolderActionsItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+		// Allocate the base ToolbarItem to return;
+		ToolbarItem reply = new ToolbarItem(tbKey);
+		
+//!		...this needs to be implemented...		
+		
+		// If we get here, reply refers to the ToolbarItem requested.
+		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for folders.
+	 */
+	private static ToolbarItem constructFolderItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+		// Allocate the base ToolbarItem to return;
+		ToolbarItem reply = new ToolbarItem(tbKey);
+		
+//!		...this needs to be implemented...		
+		
+		// If we get here, reply refers to the ToolbarItem requested.
+		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for folder views.
+	 */
+	private static ToolbarItem constructFolderViewsItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+		// Allocate the base ToolbarItem to return;
+		ToolbarItem reply = new ToolbarItem(tbKey);
+		
+//!		...this needs to be implemented...		
+		
+		// If we get here, reply refers to the ToolbarItem requested.
+		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for What's New handling.
+	 */
+	private static ToolbarItem constructWhatsNewItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+		// Allocate the base ToolbarItem to return;
+		ToolbarItem reply = new ToolbarItem(tbKey);
+		
+//!		...this needs to be implemented...
+		
+		// If we get here, reply refers to the ToolbarItem requested.
+		// Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns a TeamManagementInfo object regarding the current user's
 	 * team management capabilities.
@@ -153,15 +334,35 @@ public class GwtMenuHelper {
 	 *
 	 * @param bs
 	 * @param request
-	 * @param binderId
+	 * @param binderIdS
 	 * 
 	 * @return
 	 */
-	public static List<ToolbarItem> getToolbarItems(AllModulesInjected bs, HttpServletRequest request, String binderId) {
+	public static List<ToolbarItem> getToolbarItems(AllModulesInjected bs, HttpServletRequest request, String binderIdS) {
 		SimpleProfiler.start("GwtMenuHelper.getToolbarItems()");
 		try {
-//!			...this needs to be implemented...
-			return new ArrayList<ToolbarItem>();
+			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
+			// that we'll return...
+			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
+
+			// ...add the ToolbarItem's specific to a binder type to
+			// ...the list...
+			Long binderId = Long.parseLong(binderIdS);
+			Binder binder = bs.getBinderModule().getBinder(binderId);
+			EntityType binderType = binder.getEntityType();
+			switch (binderType) {
+			case workspace:  buildWorkspaceMenuItems(bs, request, ((Workspace)     binder), reply); break;
+			case folder:     buildFolderMenuItems(   bs, request, ((Folder)        binder), reply); break;
+			case profiles:   buildProfilesMenuItems( bs, request, ((ProfileBinder) binder), reply); break;
+			}
+
+			// ...and add the ToolbarItem's required by all binder
+			// ...types to the list.
+			buildMiscMenuItems(bs, request, binder, binderType, reply);
+			
+			// If we get here, reply refers to the List<ToolbarItem> of
+			// the ToolbarItem's for the binder.  Return it.
+			return reply;
 		}
 		
 		finally {

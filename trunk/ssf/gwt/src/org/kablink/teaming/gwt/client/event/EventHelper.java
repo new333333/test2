@@ -90,8 +90,8 @@ public class EventHelper {
 		case EDIT_SITE_BRANDING:                reply = new EditSiteBrandingEvent();             break;
 		case FULL_UI_RELOAD:                    reply = new FullUIReloadEvent();                 break;
 		case GOTO_MY_WORKSPACE:                 reply = new GotoMyWorkspaceEvent();              break;
-		case INVOKE_HELP:                       reply = new InvokeHelpEvent();                   break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:reply = new InvokeConfigureFileSyncAppDlgEvent();break;
+		case INVOKE_HELP:                       reply = new InvokeHelpEvent();                   break;
 		case LOGIN:                             reply = new LoginEvent();                        break;
 		case PRE_LOGOUT:                        reply = new PreLogoutEvent();                    break;
 		case MASTHEAD_HIDE:                     reply = new MastheadHideEvent();                 break;
@@ -344,12 +344,21 @@ public class EventHelper {
 				}
 				break;
 				
-			case INVOKE_HELP:
-				// An InvokeHelpEvent!  Can the event handler we were
+			case IMPORT_ICAL_FILE:
+				// An ImportIcalFileEvent!  Can the event handler we were
 				// given handle that?
-				if (eventHandler instanceof InvokeHelpEvent.Handler) {
+				if (eventHandler instanceof ImportIcalFileEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = InvokeHelpEvent.registerEvent(eventBus, ((InvokeHelpEvent.Handler) eventHandler));
+					registrationHandler = ImportIcalFileEvent.registerEvent(eventBus, ((ImportIcalFileEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case IMPORT_ICAL_URL:
+				// An ImportIcalUrlEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof ImportIcalUrlEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ImportIcalUrlEvent.registerEvent(eventBus, ((ImportIcalUrlEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -362,6 +371,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_HELP:
+				// An InvokeHelpEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof InvokeHelpEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeHelpEvent.registerEvent(eventBus, ((InvokeHelpEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_REPLY:
 				// An InvokeReplyEvent!  Can the event handler we were
 				// given handle that?
@@ -926,8 +944,11 @@ public class EventHelper {
 			case GOTO_MY_WORKSPACE:                 hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);              break;
 			case GOTO_PERMALINK_URL:                hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);             break;
 			
-			case INVOKE_HELP:                       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                   break;
+			case IMPORT_ICAL_FILE:                  hasHandler = (eventHandler instanceof ImportIcalFileEvent.Handler);               break;
+			case IMPORT_ICAL_URL:                   hasHandler = (eventHandler instanceof ImportIcalUrlEvent.Handler);                break;
+			
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler);break;
+			case INVOKE_HELP:                       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                   break;
 			case INVOKE_REPLY:                      hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                  break;
 			case INVOKE_SHARE:                      hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                  break;
 			case INVOKE_SIMPLE_PROFILE:             hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);          break;

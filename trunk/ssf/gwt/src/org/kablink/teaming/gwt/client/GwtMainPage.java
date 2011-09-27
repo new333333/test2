@@ -54,6 +54,8 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
+import org.kablink.teaming.gwt.client.event.ImportIcalFileEvent;
+import org.kablink.teaming.gwt.client.event.ImportIcalUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
@@ -166,6 +168,8 @@ public class GwtMainPage extends ResizeComposite
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
 		GotoPermalinkUrlEvent.Handler,
+		ImportIcalFileEvent.Handler,
+		ImportIcalUrlEvent.Handler,
 		InvokeHelpEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
 		LoginEvent.Handler,
@@ -252,6 +256,10 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.EDIT_CURRENT_BINDER_BRANDING,
 		TeamingEvents.EDIT_PERSONAL_PREFERENCES,
 		TeamingEvents.EDIT_SITE_BRANDING,
+
+		// Import event.
+		TeamingEvents.IMPORT_ICAL_FILE,
+		TeamingEvents.IMPORT_ICAL_URL,
 		
 		// Invoke events.
 		TeamingEvents.INVOKE_HELP,
@@ -2026,6 +2034,34 @@ public class GwtMainPage extends ResizeComposite
 	{
 		invokeLoginDlg( true );
 	}// end onLogin()
+	
+	/**
+	 * Handles ImportIcalFileEvent's received by this class.
+	 * 
+	 * Implements the ImportIcalFileEvent.Handler.onImportIcalFile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onImportIcalFile( ImportIcalFileEvent event )
+	{
+//!		...this needs to be implemented...
+		Window.alert( "GwtMainPage.onImportIcalFile( " + event.getImportType() + " ):  ...this needs to be implemented..." );
+	}// end onImportIcalFile()
+	
+	/**
+	 * Handles ImportIcalUrlEvent's received by this class.
+	 * 
+	 * Implements the ImportIcalUrlEvent.Handler.onImportIcalUrl() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onImportIcalUrl( ImportIcalUrlEvent event )
+	{
+//!		...this needs to be implemented...
+		Window.alert( "GwtMainPage.onImportIcalUrl( " + event.getImportType() + " ):  ...this needs to be implemented..." );
+	}// end onImportIcalUrl()
 	
 	/**
 	 * Handles InvokeHelpEvent's received by this class.

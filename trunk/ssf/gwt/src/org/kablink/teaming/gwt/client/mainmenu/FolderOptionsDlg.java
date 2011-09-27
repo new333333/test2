@@ -39,6 +39,10 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.event.ImportIcalFileEvent;
+import org.kablink.teaming.gwt.client.event.ImportIcalUrlEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -284,18 +288,33 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-		// If we have a folder option selected...
+		// If we have a folder option selected, put it into effect.
 		ToolbarItem tbi = ((ToolbarItem) callbackData);
-		String url = tbi.getUrl();
-		if (GwtClientHelper.hasString(url)) {
-			// ...put it into effect.
-			String jsString = tbi.getQualifierValue("onClick");
-			if (GwtClientHelper.hasString(jsString)) {
-				GwtClientHelper.jsEvalString(url, jsString);
+		TeamingEvents event = tbi.getTeamingEvent();
+		if (TeamingEvents.UNDEFINED == event) {
+			String url = tbi.getUrl();
+			if (GwtClientHelper.hasString(url)) {
+				String jsString = tbi.getQualifierValue("onClick");
+				if (GwtClientHelper.hasString(jsString)) {
+					GwtClientHelper.jsEvalString(url, jsString);
+				}
+				else {
+					GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
+				}
 			}
-			else {
-				GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
+		}
+		
+		else {
+			VibeEventBase<?> vibeEvent;
+			String importType = tbi.getName();
+			switch (event) {			
+			case IMPORT_ICAL_FILE:  vibeEvent = new ImportIcalFileEvent(importType); break;
+			case IMPORT_ICAL_URL:   vibeEvent = new ImportIcalUrlEvent( importType); break;			
+			default:
+				Window.alert(m_messages.mainMenuFolderOptionsUnexpectedEvent(event.name()));
+				return true;
 			}
+			GwtTeaming.fireEvent(vibeEvent);
 		}
 		
 		// Return true to close the dialog.
