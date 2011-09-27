@@ -33,6 +33,8 @@
 package org.kablink.teaming.remoting.ws.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 public class AttachmentsField extends Field implements Serializable {
 
@@ -65,10 +67,14 @@ public class AttachmentsField extends Field implements Serializable {
 		private int minorVersion;
 		private String note;
 		private int status;
+		private Long lockedBy;
+		private Calendar lockExpiration;
 		
 		public Attachment() {}
 		
-		public Attachment(String id, String fileName, Timestamp creation, Timestamp modification, long length, String href, int versionNumber, int majorVersion, int minorVersion, String note, int status) {
+		public Attachment(String id, String fileName, Timestamp creation, Timestamp modification, 
+				long length, String href, int versionNumber, int majorVersion, int minorVersion, 
+				String note, int status, Long lockedBy, Date lockExpiration) {
 			this.id = id;
 			this.fileName = fileName;
 			this.creation = creation;
@@ -80,6 +86,12 @@ public class AttachmentsField extends Field implements Serializable {
 			this.minorVersion = minorVersion;
 			this.note = note;
 			this.status = status;
+			this.lockedBy = lockedBy;
+			if(lockExpiration != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(lockExpiration);
+				setLockExpiration(cal);
+			}
 		}
 	
 		public String getId() {
@@ -168,6 +180,22 @@ public class AttachmentsField extends Field implements Serializable {
 
 		public void setStatus(int status) {
 			this.status = status;
+		}
+
+		public Long getLockedBy() {
+			return lockedBy;
+		}
+
+		public void setLockedBy(Long lockedBy) {
+			this.lockedBy = lockedBy;
+		}
+
+		public Calendar getLockExpiration() {
+			return lockExpiration;
+		}
+
+		public void setLockExpiration(Calendar lockExpiration) {
+			this.lockExpiration = lockExpiration;
 		}
 	}
 

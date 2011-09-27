@@ -45,6 +45,7 @@ public class FolderEntry extends Entry implements Serializable {
 	protected Boolean preDeleted;
 	protected Long preDeletedWhen;
 	protected Long preDeletedBy;
+	protected Long reservedBy;
 	public int getDocLevel() {
 		return docLevel;
 	}
@@ -98,5 +99,13 @@ public class FolderEntry extends Entry implements Serializable {
 	}
 	public void setPreDeletedBy(Long preDeletedBy) {
 		this.preDeletedBy = preDeletedBy;
+	}
+
+	public Long getReservedBy() {
+		return reservedBy;
+	}
+
+	public void setReservedBy(Long reservedBy) {
+		this.reservedBy = reservedBy;
 	}
 }

@@ -135,7 +135,7 @@ public class TeamingServiceClientWithStub {
 		
 		//fetchCalendarEntriesCreatedOrModifiedOrEventDatedBetweenTwoDates();
 		
-		// addFileEntry();
+		//addFileEntry();
 		
 		//addDiscussionEntry();
 		
@@ -562,12 +562,8 @@ public class TeamingServiceClientWithStub {
 		FolderEntry testEntry = new FolderEntry();
 		// Do not add title!!!
 		testEntry.setDescription(new Description(1,"Creating a file entry through web services"));
-		testEntry.setParentBinderId(new Long(488));
-		// Note: This call does NOT actually attach a file. Even though a file name is specified,
-		// the actual content is attached to the SOAP message. Consequently, the server side will
-		// conveniently ignore the file name, and will initially create an empty file entry with 
-		// no file attached.
-		long testEntryId = stub.folder_addEntry(null, testEntry, "debug1.txt");
+		testEntry.setParentBinderId(new Long(518));
+		long testEntryId = stub.folder_addEntry(null, testEntry, null);
 		System.out.println("Successfully created an empty file entry with ID = " + testEntryId);
 		String fileText = "Wow, this works!!";
 		stub.folder_uploadFileAsByteArray(null, testEntryId, null, "what-the.txt", fileText.getBytes());

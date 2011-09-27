@@ -501,6 +501,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		String family;
 		Integer definitionType;
 		String path;
+		Long parentBinderId = null;
 		for (int i=0; i<searchBinders.size(); ++i) {
 			Map search = (Map)searchBinders.get(i);
 			String entityType = (String)search.get(Constants.ENTITY_FIELD);
@@ -540,6 +541,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
 			icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
 			atomUrl = UrlUtil.getAtomURL(null, id.toString()); // folder only
+			String parentBinderIdStr = (String) search.get(Constants.BINDERS_PARENT_ID_FIELD);
+			if(Validator.isNotNull(parentBinderIdStr))
+				parentBinderId = Long.valueOf(parentBinderIdStr);
 			folderList.add(new FolderBrief(id,
 					title,
 					entityType,
@@ -556,7 +560,8 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 					webdavUrl,
 					rssUrl,
 					icalUrl,
-					atomUrl));
+					atomUrl,
+					parentBinderId));
 		}
 		FolderBrief[] array = new FolderBrief[folderList.size()];
 		return new FolderCollection(firstRecord, 
