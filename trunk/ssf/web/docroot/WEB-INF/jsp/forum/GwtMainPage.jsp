@@ -95,7 +95,7 @@
 			//This may fail if the iframe is showing something in another domain
 			//If so, the alternate method (via ss_communicationFrame) is used to set the window height
 			try {
-				var iframeDiv = document.getElementById('contentControl')
+				var iframeDiv = document.getElementById('contentFlowPanel')
 				var startOfContent = ss_getObjectTop(iframeDiv);
 				var windowHeight = ss_getWindowHeight();
 				var iframeMinimum = parseInt(windowHeight - startOfContent - ss_workareaIframeMinOffset);
@@ -120,7 +120,7 @@
 			//ss_debug("**** "+ss_debugTrace());
 			if (ss_isGwtUIActive && ss_getUserDisplayStyle() == "newpage") {
 				try {
-					var contentIframe = document.getElementById('contentControl');
+					var contentIframe = document.getElementById('contentFlowPanel');
 					var startOfContent = ss_getObjectTop(contentIframe);
 					var entryIframeDiv = document.getElementById('ss_showentrydiv');
 					var entryIframeFrame = document.getElementById('ss_showentryframe');
@@ -129,7 +129,7 @@
 					var left = ss_getObjectLeft(contentIframe);
 					ss_setObjectTop(entryIframeDiv, top);
 					ss_setObjectLeft(entryIframeDiv, left);
-					ss_setObjectWidth(entryIframeFrame, contentIframe.style.width);
+					ss_setObjectWidth(entryIframeFrame, contentIframe.offsetWidth);
 					var windowHeight = parseInt(ss_getWindowHeight());
 					var iframeMinimum = parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin);
 					if (iframeMinimum < 100) iframeMinimum = 100;
