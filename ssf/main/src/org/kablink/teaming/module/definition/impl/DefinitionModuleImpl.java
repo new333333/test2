@@ -2058,6 +2058,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				processInputDataItem(itemName, nameValue, inputData, entryData,
 			    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
 				
+				//By convention, we assume the element called "branding" is the folder branding
+				itemName = "folderBranding";
+				nameValue = "branding";
+				//Process this special value
+				processInputDataItem(itemName, nameValue, inputData, entryData,
+			    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
+				
 				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
 				List<Element> itItems = entryFormItem.selectNodes(".//item[@type='data']");
 				boolean attachFilesSeen = false;
