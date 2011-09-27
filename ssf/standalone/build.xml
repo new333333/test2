@@ -120,7 +120,7 @@
 		<!-- gwt component is deployed into its own web app -->
 		<ant dir="${project.dir}/gwt" target="${target}" inheritAll="false" />
 		<!-- rest component is deployed into its own web app -->
-		<!--<ant dir="${project.dir}/rest" target="${target}" inheritAll="false" />-->
+		<ant dir="${project.dir}/rest" target="${target}" inheritAll="false" />
 	</target>
 
 	<target name="move-shared-libraries">
