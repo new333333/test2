@@ -1678,16 +1678,12 @@ public class GwtMainPage extends ResizeComposite
 				// If the activity stream was showing show it now.
 				if ( isActivityStreamActive() )
 				{
-					m_activityStreamCtrl.setVisible( true );
-					m_activityStreamCtrl.setSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
 					m_activityStreamCtrl.show();
 				}
 				else if ( m_contentCtrl.isVisible() == false )
 				{
 					m_contentCtrl.setVisible( true );
 				}
-				
-				relayoutPage( true );
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( cmd );
