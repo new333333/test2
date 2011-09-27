@@ -68,6 +68,7 @@ import org.kablink.teaming.client.ws.model.FolderEntryCollection;
 import org.kablink.teaming.client.ws.model.GroupBrief;
 import org.kablink.teaming.client.ws.model.GroupCollection;
 import org.kablink.teaming.client.ws.model.Tag;
+import org.kablink.teaming.client.ws.model.TeamCollection;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
 import org.kablink.teaming.client.ws.model.User;
@@ -405,6 +406,12 @@ public abstract class WSClientBase {
 		printDefinableEntity(entity);
 	}
 
+	void fetchAndPrintFolderEntry(String serviceName, String operation, Object[] args) throws Exception {
+		FolderEntry entry = (FolderEntry) fetch(serviceName, operation, args);
+		
+		printFolderEntry(entry);
+	}
+
 	void fetchAndPrintUser(String serviceName, String operation, Object[] args) throws Exception {
 		User user = (User) fetch(serviceName, operation, args);
 
@@ -526,6 +533,11 @@ public abstract class WSClientBase {
 		System.out.println("FSA auto update URL: " + zc.getFsaAutoUpdateUrl());
 	}
 	
+	void printFolderEntry(FolderEntry entry) {
+		printDefinableEntity(entry);
+		System.out.println("Reserved by: " + entry.getReservedBy());
+	}
+	
 	void printDefinableEntity(DefinableEntity entity) {
 		if(entity != null) {
 			System.out.println("Entity class: " + entity.getClass().getName());
@@ -545,6 +557,9 @@ public abstract class WSClientBase {
 					System.out.println("Attachment " + i + " minor version: " + attachments[i].getMinorVersion());
 					System.out.println("Attachment " + i + " note: " + attachments[i].getNote());
 					System.out.println("Attachment " + i + " status: " + attachments[i].getStatus());
+					System.out.println("Attachment " + i + " locked by: " + attachments[i].getLockedBy());
+					System.out.println("Attachment " + i + " lock expiration: " + 
+							((attachments[i].getLockExpiration() != null)? attachments[i].getLockExpiration().getTime().toString():null));
 				}
 			}
 			else {
@@ -566,6 +581,7 @@ public abstract class WSClientBase {
 		System.out.println("Family: " + binder.getFamily());
 		System.out.println("Library: " + binder.getLibrary());
 		System.out.println("Mirrored: " + binder.getMirrored());
+		System.out.println("Parent binder ID: " + binder.getParentBinderId());
 	}
 	
 	void printUser(User user) {
@@ -599,6 +615,7 @@ public abstract class WSClientBase {
 			System.out.println("Folder " + i + " id: " + fb[i].getId());
 			System.out.println("Folder " + i + " title: " + fb[i].getTitle());
 			System.out.println("Folder " + i + " family: " + fb[i].getFamily());
+			System.out.println("Folder " + i + " parent binder id: " + fb[i].getParentBinderId());
 			System.out.println("Folder " + i + " is library: " + fb[i].getLibrary());
 			System.out.println("Folder " + i + " is mirrored: " + fb[i].getMirrored());
 			System.out.println("Folder " + i + " path: " + fb[i].getPath());

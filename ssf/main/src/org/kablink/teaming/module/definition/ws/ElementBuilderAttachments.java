@@ -38,6 +38,7 @@ import java.util.List;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.remoting.ws.model.AttachmentsField;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.model.AttachmentsField.Attachment;
@@ -59,11 +60,15 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 					value.setText(att.getFileItem().getName());
 					value.addAttribute("href", webUrl);
 				}
-				if(attachments != null)
+				if(attachments != null) {
+					FileLock fl = att.getFileLock();
 					attachments.add(new Attachment(att.getId(), att.getFileItem().getName(),
 							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getCreation().getPrincipal()).getName(), att.getCreation().getDate()),
 							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getModification().getPrincipal()).getName(), att.getModification().getDate()),
-							att.getFileItem().getLength(), webUrl, att.getHighestVersionNumber(), att.getMajorVersion().intValue(), att.getMinorVersion().intValue(), att.getFileItem().getDescription().getText(), att.getFileStatus().intValue()));
+							att.getFileItem().getLength(), webUrl, att.getHighestVersionNumber(), att.getMajorVersion().intValue(), att.getMinorVersion().intValue(), 
+							att.getFileItem().getDescription().getText(), att.getFileStatus().intValue(),
+							(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null, (fl!= null)? fl.getExpirationDate():null));
+				}
 				context.handleAttachment(att, webUrl);
 			}
 		}

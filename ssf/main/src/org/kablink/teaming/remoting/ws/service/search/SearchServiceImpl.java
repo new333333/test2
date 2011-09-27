@@ -68,6 +68,7 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.tree.WebSvcTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criterion;
 import org.kablink.util.search.Restrictions;
@@ -213,6 +214,11 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.CREATORID_FIELD)));
 			UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.MODIFICATIONID_FIELD)));
 			
+			Long parentBinderId = null;
+			String parentBinderIdStr = (String) binder.get(Constants.BINDERS_PARENT_ID_FIELD);
+			if(Validator.isNotNull(parentBinderIdStr))
+				parentBinderId = Long.valueOf(parentBinderIdStr);
+
 			teamList.add(new TeamBrief(binderId, 
 					(String) binder.get(Constants.TITLE_FIELD),
 					(String) binder.get(Constants.ENTITY_FIELD),
@@ -223,7 +229,8 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 					new Timestamp(((creator != null)? creator.getName() : (String) binder.get(Constants.CREATOR_NAME_FIELD)),(Date) binder.get(Constants.CREATION_DATE_FIELD)),
 					new Timestamp(((modifier != null)? modifier.getName() : (String) binder.get(Constants.MODIFICATION_NAME_FIELD)),(Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
 					PermaLinkUtil.getPermalink(binder),
-					mirrored
+					mirrored,
+					parentBinderId
 					)
 			);
 		}

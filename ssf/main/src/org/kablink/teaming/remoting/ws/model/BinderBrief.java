@@ -47,10 +47,11 @@ public class BinderBrief implements Serializable {
 	private Timestamp modification;
 	private String permaLink;
 	private Boolean mirrored;
+	private Long parentBinderId;
 
 	public BinderBrief() {}
 
-	public BinderBrief(Long id, String title, String entityType, String family, Boolean library, Integer definitionType, String path, Timestamp creation, Timestamp modification, String permaLink, Boolean mirrored) {
+	public BinderBrief(Long id, String title, String entityType, String family, Boolean library, Integer definitionType, String path, Timestamp creation, Timestamp modification, String permaLink, Boolean mirrored, Long parentBinderId) {
 		this.id = id;
 		this.title = title;
 		this.entityType = entityType;
@@ -62,6 +63,7 @@ public class BinderBrief implements Serializable {
 		this.modification = modification;
 		this.permaLink = permaLink;
 		this.mirrored = mirrored;
+		this.parentBinderId = parentBinderId;
 	}
 
 	public Timestamp getCreation() {
@@ -138,6 +140,14 @@ public class BinderBrief implements Serializable {
 
 	public void setMirrored(Boolean mirrored) {
 		this.mirrored = mirrored;
+	}
+
+	public Long getParentBinderId() {
+		return parentBinderId;
+	}
+
+	public void setParentBinderId(Long parentBinderId) {
+		this.parentBinderId = parentBinderId;
 	}
 
 }

@@ -173,6 +173,8 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			} else {
 				element.addAttribute("id", binder.getId().toString() + "." + getPage());
 			}
+			if(binder.getParentBinder() != null)
+				element.addAttribute("parentBinderId", binder.getParentBinder().getId().toString());
 			//only need this information if this is the bottom of the tree
 			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
 				boolean hasChildBinders = helper.hasChildren(bs, source, type);
