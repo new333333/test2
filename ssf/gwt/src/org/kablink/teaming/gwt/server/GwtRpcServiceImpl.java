@@ -3945,9 +3945,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			m_logger.warn("GwtRpcServiceImpl.getToolbarItemsFromCache( *Internal Error* ):  Should never be called when the Granite GWT extensions are enabled.");
 		}
 		
-		// Construct an ArrayList<ToolbarItem> to hold the toolbar
-		// items.
-		ArrayList<ToolbarItem> tmiList = new ArrayList<ToolbarItem>();
+		// Construct a List<ToolbarItem> to hold the toolbar items.
+		List<ToolbarItem> tmiList = new ArrayList<ToolbarItem>();
 
 		// If we can't access the cached toolbar beans... 
 		HttpSession hSession = request.getSession();
@@ -4143,8 +4142,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		m_logger.debug(traceStart + ":toolbar=" + tbKey);
 
 		// ...and create its toolbar item.
-		ToolbarItem toolbarItem = new ToolbarItem();
-		toolbarItem.setName(tbKey);
+		ToolbarItem toolbarItem = new ToolbarItem(tbKey);
 
 		// Scan the items in this toolbar's map.
 		Set kSet = tbMap.keySet();

@@ -105,6 +105,16 @@ public class ToolbarItem implements IsSerializable {
 	}
 
 	/**
+	 * Constructor method.
+	 * 
+	 * @param name
+	 */
+	public ToolbarItem(String name) {
+		this();
+		setName(name);
+	}
+
+	/**
 	 * Adds a nested toolbar item to this one.
 	 *  
 	 * @param tmi

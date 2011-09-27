@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.i18n.client.Messages;
-import com.google.gwt.safehtml.shared.SafeHtml;
 
 
 /**
@@ -513,6 +512,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgImportCalendar();
 	String mainMenuFolderOptionsDlgImportTask();
 	String mainMenuFolderOptionsNoOptions();
+	String mainMenuFolderOptionsUnexpectedEvent(String eventName);
 	String mainMenuManageEditTeam();
 	String mainMenuManageEmailTeam();
 	String mainMenuManageFolderOptions();

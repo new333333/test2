@@ -1583,6 +1583,28 @@ public class BinderHelper {
 	}
 	
 	/**
+	 * Determines whether a binder is a task.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	static public boolean isBinderTask(Binder binder) {
+		boolean isTask = (EntityIdentifier.EntityType.folder == binder.getEntityType());
+		if (isTask) {
+			String dFamily = "";
+			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
+			if (familyProperty != null) {
+				dFamily = familyProperty.attributeValue("value", "");
+				if (null != dFamily) {
+					isTask = dFamily.equalsIgnoreCase("task");
+				}
+			}
+		}
+		return isTask;
+	}
+	
+	/**
 	 * Determines whether a binder is a Wiki.
 	 * 
 	 * @param binder
