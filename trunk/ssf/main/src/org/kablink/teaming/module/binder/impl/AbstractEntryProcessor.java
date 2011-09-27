@@ -1033,6 +1033,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 						}
 						wr.setResponse(response);
 						wr.setResponseDate(entry.getModification().getDate());
+						wEntry.removeWorkflowResponse(wr);
+						wEntry.addWorkflowResponse(wr);
 					}
 				} else {
 					//if no changes have been made update timestamp

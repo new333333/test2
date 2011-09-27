@@ -458,13 +458,15 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		return response;
     }
     public static Map<Long,User> getQuestionResponderPrincipals(WorkflowSupport entry, WorkflowState ws, String question) {
-    	Set<Long> ids = getQuestionResponders(entry, ws, question);
+    	Set<Long> ids = getQuestionResponders(entry, ws, question, false);
     	List<User> users = getInstance().profileDao.loadUsers(ids, RequestContextHolder.getRequestContext().getZoneId());
     	Map<Long,User> userMap = new HashMap<Long,User>();
     	for (User user : users) userMap.put(user.getId(), user);
     	return userMap;
     }
-    public static Set<Long> getQuestionResponders(WorkflowSupport entry, WorkflowState ws, String question) {
+    public static Set<Long> getQuestionResponders(WorkflowSupport entry, WorkflowState ws, String question, Boolean includeAllUsersGroup) {
+        Long allUsersId = Utils.getAllUsersGroupId();
+        boolean allUsersIncluded = false;
     	Definition wfDef = ws.getDefinition();
     	Set<Long> responders = new HashSet();
 		Document wfDoc = wfDef.getDefinition();
@@ -478,12 +480,20 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 					WfAcl acl = getAcl(questionRespondersEle, (DefinableEntity)entry, WfAcl.AccessType.modify);
 					if (acl != null) {
 						responders.addAll(acl.getPrincipalIds());
+						if (allUsersId != null && responders.contains(allUsersId)) {
+							responders.remove(allUsersId);
+							//Remember if "all users" is included
+							allUsersIncluded = true;
+						}
 						responders = getInstance().profileDao.explodeGroups(responders, 
 			 					RequestContextHolder.getRequestContext().getZoneId(), false);
 					}
 				}
 			}
 		}
+        if (responders.remove(ObjectKeys.OWNER_USER_ID)) responders.add(entry.getOwnerId());
+     	if (responders.remove(ObjectKeys.TEAM_MEMBER_ID)) responders.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
+
 		//See if this question allows folder default
 		if (checkIfQuestionRespondersIncludeForumDefault(entry, ws, question)) {
 			//Yes, add in those users who can modify the entry
@@ -492,15 +502,18 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	        if (modifyEntries.remove(ObjectKeys.OWNER_USER_ID)) modifyEntries.add(entry.getOwnerId());
 	     	if (modifyEntries.remove(ObjectKeys.TEAM_MEMBER_ID)) modifyEntries.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
 	   		//See if this includes All Users
-	        Long allUsersId = Utils.getAllUsersGroupId();
 	        if (allUsersId != null && modifyEntries.contains(allUsersId)) {
-	        	//We ignore the All Users group
 	        	modifyEntries.remove(allUsersId);
+				//Remember if "all users" is included
+				allUsersIncluded = true;
 	        }
 	        Set<Long> defaultResponders = getInstance().profileDao.explodeGroups(modifyEntries, zoneId, false);
 	        responders.addAll(defaultResponders);
 		}
-
+		if (includeAllUsersGroup && allUsersIncluded) {
+			//Put back the All Users group so it can be checked later.
+			responders.add(allUsersId);
+		}
 		return responders;
     }
 
@@ -767,11 +780,14 @@ public static void resumeTimers(WorkflowSupport entry) {
 						return toState;
 					}
 				} else if (type.equals("transitionOnResponse")) {
+					Long allUsersId = Utils.getAllUsersGroupId();
 					String question = DefinitionUtils.getPropertyValue(condition, "question");
 					String response = DefinitionUtils.getPropertyValue(condition, "response");
 					String responseRule = GetterUtil.get(DefinitionUtils.getPropertyValue(condition, "transition_rule"), "first");
 					//Build a list of the people who must respond
-					Set<Long> responders = getQuestionResponders(entry, state, question);
+					Set<Long> responders = getQuestionResponders(entry, state, question, false);
+					Set<Long> respondersPlusAllUsers = getQuestionResponders(entry, state, question, true);
+					boolean allUsersIncluded = respondersPlusAllUsers.contains(allUsersId);
 					Set<Long> respondersFound = new HashSet();
 					Set<Long> respondersWhoAnsweredThis = new HashSet();
 					boolean doTransition = false;
@@ -783,7 +799,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 							if (state.getDefinition().getId().equals(wr.getDefinitionId()) &&
 									question.equals(wr.getName())) {
 								//Yes, Build lists of responders who answered and responders who answered with this response
-								if (responders.contains(wr.getResponderId())) {
+								if (allUsersIncluded || responders.contains(wr.getResponderId())) {
 									respondersFound.add(wr.getResponderId());
 									if (response.equals(wr.getResponse())) {
 										respondersWhoAnsweredThis.add(wr.getResponderId());
@@ -791,38 +807,40 @@ public static void resumeTimers(WorkflowSupport entry) {
 								}
 								
 								//Now check the rules
+								//Note: if the "All Users" group is included in the ACL, then none of the rules requiring everyone to answer are checked.
+								//  We do not support testing if all users in sthe site have responded.
 								if (response.equals(wr.getResponse()) && responseRule.equals("first")) {
 									//Transition as soon as one person gives this response.
 									doTransition = true;
 									break;
-								} else if (responders.size() == respondersFound.size() && responseRule.equals("all") 
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("all") 
 										&& respondersWhoAnsweredThis.size() == responders.size()) {
 									//all of the responders have responded with exactly this value
 									doTransition = true;
 									break;
-								} else if (responders.size() == respondersFound.size() && responseRule.equals("one")
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one")
 										&& respondersWhoAnsweredThis.size() > 0) {
 									//all of the responders have responded and at least one has answered this
 									doTransition = true;
 									break;
-								} else if (responders.size() == respondersFound.size() && responseRule.equals("one_other")
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one_other")
 										&& respondersWhoAnsweredThis.size() < responders.size()) {
 									//all of the responders have responded and at least one did not answer with this
 									doTransition = true;
 									break;
-								} else if (responders.size() == respondersFound.size() && responseRule.equals("majority")
+								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("majority")
 										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
 									//All of the responders have answered and a majority have answered with this
 									doTransition = true;
 									break;
-								} else if (responseRule.equals("majority_immediate")
+								} else if (!allUsersIncluded && responseRule.equals("majority_immediate")
 										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
 									//A majority have answered with this response
 									doTransition = true;
 									break;
 								} else {
 									//See if all responders answered
-									if (responders.size() == respondersFound.size()) {
+									if (!allUsersIncluded && responders.size() == respondersFound.size()) {
 										//all of the responders have responded and no conditions were met
 										doTransition = false;
 										break;
