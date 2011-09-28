@@ -151,10 +151,7 @@ public class ToolbarItem implements IsSerializable {
 	 * @param value
 	 */
 	public void addQualifier(String name, String value) {
-		NameValuePair nvp = new NameValuePair();
-		nvp.setName(name);
-		nvp.setValue(value);
-		addQualifier(nvp);
+		addQualifier(new NameValuePair(name, value));
 	}
 
 	/**
