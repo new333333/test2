@@ -152,6 +152,13 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	return false;
     }
     /**
+     * Return true if this binder is a TemplateBinder
+     * @return
+     */
+    public boolean isTemplateBinder() {
+    	return this instanceof TemplateBinder;
+    }
+    /**
      * Return true if this binder is to root of a tree
      * @return
      */
