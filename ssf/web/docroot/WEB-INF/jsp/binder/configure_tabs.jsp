@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 		<div style="text-align: left; margin: 0px 15px 0px 0px; border: 0pt none;" 
 		  class="wg-tabs margintop3 marginbottom2">
@@ -52,6 +53,7 @@
 					  </a>
 				  </div>
 			  </td>
+			  <% if (!(ssBinder instanceof org.kablink.teaming.domain.TemplateBinder)) { %>
 			  <td>
 				  <div class="wg-tab roundcornerSM ${ss_tab_simpleUrls}">
 					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
@@ -61,7 +63,9 @@
 					  ><ssf:nlt tag="binder.configure.definitions.simpleUrls"/></a>
 				  </div>
 			  </td>
+			  <% } %>
 			  <c:if test="${ssBinder.entityType == 'folder'}">
+			  <% if (!(ssBinder instanceof org.kablink.teaming.domain.TemplateBinder)) { %>
 			  <td>
 				  <div class="wg-tab roundcornerSM ${ss_tab_changeEntryTypes}">
 					  <a href="<ssf:url action="manage_folder_entry_types" actionUrl="true"><ssf:param 
@@ -69,6 +73,7 @@
 					  ><ssf:nlt tag="binder.configure.folderEntryTypes"/></a>
 				  </div>
 			  </td>
+			  <% } %>
 			  </c:if>
 			  <td>
 				  <div class="wg-tab roundcornerSM ${ss_tab_quota}">
