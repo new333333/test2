@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
@@ -52,6 +53,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
@@ -73,7 +75,7 @@ import org.kablink.teaming.web.util.MiscUtil;
  */
 public class GwtMenuHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtMenuHelper.class);
-	
+
 	/*
 	 * Inhibits this class from being instantiated. 
 	 */
@@ -87,13 +89,13 @@ public class GwtMenuHelper {
 	 * 
 	 * Based on ListFolderHelper.buildFolderToolbars()
 	 */
-	private static void buildFolderMenuItems(AllModulesInjected bs, HttpServletRequest request, Folder binder, List<ToolbarItem> tbiList) {
-		tbiList.add(constructFolderItems(           WebKeys.FOLDER_TOOLBAR,             bs, request, binder));
-		tbiList.add(constructFolderViewsItems(      WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, binder));
-		tbiList.add(constructFolderActionsItems(    WebKeys.FOLDER_ACTIONS_TOOLBAR,     bs, request, binder));		
-		tbiList.add(constructCalendarImportItems(   WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, binder));		
-		tbiList.add(constructWhatsNewItems(         WebKeys.WHATS_NEW_TOOLBAR,          bs, request, binder));
-		tbiList.add(constructEmailSubscriptionItems(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, binder));
+	private static void buildFolderMenuItems(AllModulesInjected bs, HttpServletRequest request, Folder folder, List<ToolbarItem> tbiList) {
+		tbiList.add(constructFolderItems(           WebKeys.FOLDER_TOOLBAR,             bs, request, folder, EntityType.folder));
+		tbiList.add(constructFolderViewsItems(      WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, folder, EntityType.folder));
+		tbiList.add(constructFolderActionsItems(    WebKeys.FOLDER_ACTIONS_TOOLBAR,     bs, request, folder, EntityType.folder));		
+		tbiList.add(constructCalendarImportItems(   WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, folder, EntityType.folder));		
+		tbiList.add(constructWhatsNewItems(         WebKeys.WHATS_NEW_TOOLBAR,          bs, request, folder, EntityType.folder));
+		tbiList.add(constructEmailSubscriptionItems(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, folder, EntityType.folder));
 	}
 	
 	/*
@@ -112,10 +114,10 @@ public class GwtMenuHelper {
 	 * 
 	 * Based on ProfilesBinderHelper.buildViewFolderToolbars()
 	 */
-	private static void buildProfilesMenuItems(AllModulesInjected bs, HttpServletRequest request, ProfileBinder binder, List<ToolbarItem> tbiList) {
-		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, binder));
-		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, binder));
-		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, binder));
+	private static void buildProfilesMenuItems(AllModulesInjected bs, HttpServletRequest request, ProfileBinder pb, List<ToolbarItem> tbiList) {
+		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, pb, EntityType.profiles));
+		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, pb, EntityType.profiles));
+		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, pb, EntityType.profiles));
 	}
 	
 	/*
@@ -124,23 +126,23 @@ public class GwtMenuHelper {
 	 * 
 	 * Based on WorkspaceTreeHelper.buildWorkspaceToolbar()
 	 */
-	private static void buildWorkspaceMenuItems(AllModulesInjected bs, HttpServletRequest request, Workspace binder, List<ToolbarItem> tbiList) {
-		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, binder));
-		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, binder));
-		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, binder));
+	private static void buildWorkspaceMenuItems(AllModulesInjected bs, HttpServletRequest request, Workspace ws, List<ToolbarItem> tbiList) {
+		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, ws, EntityType.workspace));
+		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, ws, EntityType.workspace));
+		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, ws, EntityType.workspace));
 	}
 	
 	/*
 	 * Constructs a ToolbarItem for calendar imports. to the
 	 */
-	private static ToolbarItem constructCalendarImportItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder binder) {
+	private static ToolbarItem constructCalendarImportItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder folder, EntityType binderType) {
 		// Allocate the base ToolbarItem to return;
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
 		// Are we looking at a calendar or task folder that we can add entries to?
-		boolean isCalendar =                   BinderHelper.isBinderCalendar(binder);
-		boolean isTask     = ((!isCalendar) && BinderHelper.isBinderTask(    binder));
-		if ((isCalendar || isTask) && bs.getFolderModule().testAccess(binder, FolderOperation.addEntry)) {
+		boolean isCalendar =                   BinderHelper.isBinderCalendar(folder);
+		boolean isTask     = ((!isCalendar) && BinderHelper.isBinderTask(    folder));
+		if ((isCalendar || isTask) && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
 			// Yes!  Generate the required structure for the menu.
 			ToolbarItem calTBI = new ToolbarItem("calendar");
 			reply.addNestedItem(calTBI);
@@ -156,26 +158,26 @@ public class GwtMenuHelper {
 			String importByURL;
 			String importType;
 			if (isCalendar) {
-				importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
-				importByURL    = NLT.get("toolbar.menu.calendarImport.byURL"   );
+				importFromFile = "toolbar.menu.calendarImport.fromFile";
+				importByURL    = "toolbar.menu.calendarImport.byURL";
 				importType     = "calendar";
 			}
 			
 			else {
-				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
-				importByURL    = NLT.get("toolbar.menu.taskImport.byURL"   );				
+				importFromFile = "toolbar.menu.taskImport.fromFile";
+				importByURL    = "toolbar.menu.taskImport.byURL";				
 				importType     = "task";
 			}
 			
 			// ...and generate the items.
 			ToolbarItem importTBI = new ToolbarItem(importType + ".File");
-			importTBI.setTitle(importFromFile);
-			importTBI.setTeamingEvent(TeamingEvents.IMPORT_ICAL_FILE);
+			markTBITitle(importTBI, importFromFile                );
+			markTBIEvent(importTBI, TeamingEvents.IMPORT_ICAL_FILE);
 			cal2TBI.addNestedItem(importTBI);
 			
 			importTBI = new ToolbarItem(importType + ".Url");
-			importTBI.setTitle(importByURL);
-			importTBI.setTeamingEvent(TeamingEvents.IMPORT_ICAL_URL);
+			markTBITitle(importTBI, importByURL                  );
+			markTBIEvent(importTBI, TeamingEvents.IMPORT_ICAL_URL);
 			cal2TBI.addNestedItem(importTBI);
 		}		
 		
@@ -187,7 +189,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for email subscription handling.
 	 */
-	private static ToolbarItem constructEmailSubscriptionItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder binder) {
+	private static ToolbarItem constructEmailSubscriptionItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
 		// Allocate the base ToolbarItem to return;
 		ToolbarItem reply = new ToolbarItem(tbKey);
 		
@@ -201,7 +203,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for folder actions.
 	 */
-	private static ToolbarItem constructFolderActionsItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+	private static ToolbarItem constructFolderActionsItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
 		// Allocate the base ToolbarItem to return;
 		ToolbarItem reply = new ToolbarItem(tbKey);
 		
@@ -215,11 +217,147 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for folders.
 	 */
-	private static ToolbarItem constructFolderItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+	private static ToolbarItem constructFolderItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
 		// Allocate the base ToolbarItem to return;
 		ToolbarItem reply = new ToolbarItem(tbKey);
+
+		// Define some locals to work with.
+		BinderModule bm = bs.getBinderModule();
+		boolean isFolder    =                                  (EntityType.folder    == binderType);
+		boolean isProfiles  = ((!isFolder) &&                  (EntityType.profiles  == binderType));
+		boolean isWorkspace = ((!isFolder) && (!isProfiles) && (EntityType.workspace == binderType));
+		AdaptedPortletURL url;
+		Long binderId = binder.getId();
+		String binderIdS = String.valueOf(binderId);
+		ToolbarItem actionTBI;
 		
+		// Generate the required structure for the menu.
+		ToolbarItem addTBI    = new ToolbarItem(                "addBinder"     );
+		ToolbarItem adminTBI  = new ToolbarItem(                "administration");		
+		ToolbarItem catTBI    = new ToolbarItem(                "categories"    );
+		ToolbarItem configTBI = new ToolbarItem(isFolder ? "" : "configuration" );
+		adminTBI.addNestedItem(catTBI);
+
+		// Is the binder a folder or workspace?
+		boolean addMenuCreated    = false;
+		boolean adminMenuCreated  = false;
+		boolean configMenuCreated = false;
+		if (isFolder || isWorkspace) {
+			// Yes!  Does the user have rights add a new folder to this
+			// binder?
+			if (bm.testAccess(binder, BinderOperation.addFolder)) {
+				// Yes!  Add a ToolbarItem for it.
+				addMenuCreated   =
+				adminMenuCreated = true;
+				
+				url = new AdaptedPortletURL(request, "ss_forum", false);
+				url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_ADD_BINDER);
+				url.setParameter(WebKeys.URL_BINDER_ID, binderIdS                );
+				url.setParameter(WebKeys.URL_OPERATION, (isFolder ? WebKeys.OPERATION_ADD_SUB_FOLDER : WebKeys.OPERATION_ADD_FOLDER));
+				
+				actionTBI = new ToolbarItem("add");
+				markTBIPopup(actionTBI                          );
+				markTBITitle(actionTBI, "toolbar.menu.addFolder");
+				markTBIUrl(  actionTBI, url                     );
+				
+				addTBI.addNestedItem(actionTBI);
+			}
+			
+			// Can the user copy or move this binder?
+			boolean allowCopyMove;
+			if (isWorkspace) {
+				Workspace workspace = ((Workspace) binder);
+				Integer wsDefType = workspace.getDefinitionType();
+				allowCopyMove =
+					((!(workspace.isReserved())) &&
+						((null == wsDefType) || (Definition.USER_WORKSPACE_VIEW != wsDefType.intValue())));
+			}
+			else {
+				allowCopyMove = true;
+			}
+			if (allowCopyMove) {
+				// Yes!  Do they have rights to move it?
+				if (bs.getBinderModule().testAccess(binder, BinderOperation.moveBinder)) {
+					// Yes!  Add a ToolbarItem for it.
+					adminMenuCreated  =
+					configMenuCreated = true;
+					
+					url = new AdaptedPortletURL(request, "ss_forum", false);
+					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
+					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
+					url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+					url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MOVE);
+					
+					actionTBI = new ToolbarItem("move");
+					markTBIPopup(actionTBI                                                                         );
+					markTBITitle(actionTBI, (isFolder ? "toolbar.menu.move_folder" : "toolbar.menu.move_workspace"));
+					markTBIUrl(  actionTBI, url                                                                    );
+					
+					configTBI.addNestedItem(actionTBI);
+				}
+
+				// Yes!  Do they have rights to copy it?
+				if (bs.getBinderModule().testAccess(binder, BinderOperation.copyBinder)) {
+					// Yes!  Add a ToolbarItem for it.
+					adminMenuCreated  =
+					configMenuCreated = true;
+					
+					url = new AdaptedPortletURL(request, "ss_forum", false);
+					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
+					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
+					url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+					url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_COPY);
+					
+					actionTBI = new ToolbarItem("copy");
+					markTBIPopup(actionTBI                                                                         );
+					markTBITitle(actionTBI, (isFolder ? "toolbar.menu.copy_folder" : "toolbar.menu.copy_workspace"));
+					markTBIUrl(  actionTBI, url                                                                    );
+					
+					configTBI.addNestedItem(actionTBI);
+				}
+			}
+		}
+		
+		// Does the user have rights modify this binder?
+		if (bm.testAccess(binder, BinderOperation.modifyBinder)) {
+			// Yes!  Add the ToolBarItem's for it.
+			adminMenuCreated  =
+			configMenuCreated = true;
+
+			// First, a modify ToolbarItem...
+			url = new AdaptedPortletURL(request, "ss_forum", false);
+			url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY);
+			
+			actionTBI = new ToolbarItem("modify");
+			markTBIPopup(actionTBI                                                                             );
+			markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
+			markTBIUrl(  actionTBI, url                                                                        );
+			
+			configTBI.addNestedItem(actionTBI);
+
+			// ...then a configure ToolbarItem.
+			url = new AdaptedPortletURL(request, "ss_forum", false);
+			url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name()       );
+			
+			actionTBI = new ToolbarItem("configureDefinitions");
+			markTBIPopup(actionTBI                              );
+			markTBITitle(actionTBI, "toolbar.menu.configuration");
+			markTBIUrl(  actionTBI, url                         );
+			
+			configTBI.addNestedItem(actionTBI);
+		}
+
 //!		...this needs to be implemented...		
+
+		// Connect any menus we created together.
+		if (addMenuCreated)    catTBI.addNestedItem(addTBI   );
+		if (configMenuCreated) catTBI.addNestedItem(configTBI);		
+		if (adminMenuCreated)  reply.addNestedItem( adminTBI );
 		
 		// If we get here, reply refers to the ToolbarItem requested.
 		// Return it.
@@ -229,7 +367,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for folder views.
 	 */
-	private static ToolbarItem constructFolderViewsItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+	private static ToolbarItem constructFolderViewsItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
 		// Allocate the base ToolbarItem to return;
 		ToolbarItem reply = new ToolbarItem(tbKey);
 		
@@ -243,7 +381,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for What's New handling.
 	 */
-	private static ToolbarItem constructWhatsNewItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+	private static ToolbarItem constructWhatsNewItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
 		// Allocate the base ToolbarItem to return;
 		ToolbarItem reply = new ToolbarItem(tbKey);
 		
@@ -368,5 +506,33 @@ public class GwtMenuHelper {
 		finally {
 			SimpleProfiler.stop("GwtMenuHelper.getToolbarItems()");
 		}
+	}
+
+	/*
+	 * Marks a ToolbarItem's event.
+	 */
+	private static void markTBIEvent(ToolbarItem tbi, TeamingEvents event) {
+		tbi.setTeamingEvent(event);
+	}
+	
+	/*
+	 * Marks a ToolbarItem as bringing up a popup window.
+	 */
+	private static void markTBIPopup(ToolbarItem tbi) {
+		tbi.addQualifier(new NameValuePair("popup", "true"));
+	}
+	
+	/*
+	 * Marks a ToolbarItem's title based on a resource key.
+	 */
+	private static void markTBITitle(ToolbarItem tbi, String key) {
+		tbi.setTitle(NLT.get(key));
+	}
+	
+	/*
+	 * Marks a ToolbarItem's URL based on an AdaptedPortletURL.
+	 */
+	private static void markTBIUrl(ToolbarItem tbi, AdaptedPortletURL url) {
+		tbi.setUrl(url.toString());
 	}
 }

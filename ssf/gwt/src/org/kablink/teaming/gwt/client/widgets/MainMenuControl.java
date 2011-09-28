@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
+import org.kablink.teaming.gwt.client.event.ImportIcalFileEvent;
+import org.kablink.teaming.gwt.client.event.ImportIcalUrlEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -105,6 +107,8 @@ public class MainMenuControl extends Composite
 	// Event handlers implemented by this class.
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
+		ImportIcalFileEvent.Handler,
+		ImportIcalUrlEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -129,14 +133,20 @@ public class MainMenuControl extends Composite
 	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
 	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
 	private SearchMenuPanel					m_searchPanel;
+	@SuppressWarnings("unused")
+	private String							m_menuUsage;	// Which context this menu is being used in.
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private TeamingEvents[] m_topRegisteredEvents = new TeamingEvents[] {
 		// Context events.
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGING,
+		
+		// Import event.
+		TeamingEvents.IMPORT_ICAL_FILE,
+		TeamingEvents.IMPORT_ICAL_URL,
 		
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
@@ -176,15 +186,20 @@ public class MainMenuControl extends Composite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private MainMenuControl(GwtMainPage mainPage) {
+	private MainMenuControl(GwtMainPage mainPage, String menuUsage) {
 		// Store the parameter.
-		m_mainPage = mainPage;
+		m_mainPage  = mainPage;
+		m_menuUsage = menuUsage;
 		
 		// Register the events to be handled by this class.
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
+		if (menuUsage.equalsIgnoreCase("top")) {
+			// Register the events targeted to Vibe's top level menu
+			// bar.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_topRegisteredEvents,
+				this);
+		}
 		
 		// Create the menu's main panel...
 		FlowPanel menuPanel = new FlowPanel();
@@ -625,6 +640,32 @@ public class MainMenuControl extends Composite
 	}
 	
 	/**
+	 * Handles ImportIcalFileEvent's received by this class.
+	 * 
+	 * Implements the ImportIcalFileEvent.Handler.onImportIcalFile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onImportIcalFile(ImportIcalFileEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onImportIcalFile( " + event.getImportType() + " ):  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles ImportIcalUrlEvent's received by this class.
+	 * 
+	 * Implements the ImportIcalUrlEvent.Handler.onImportIcalUrl() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onImportIcalUrl(ImportIcalUrlEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onImportIcalUrl( " + event.getImportType() + " ):  ...this needs to be implemented...");
+	}
+	
+	/**
 	 * Handles MastheadHideEvent's received by this class.
 	 * 
 	 * Implements the MastheadHideEvent.Handler.onMastheadHide() method.
@@ -850,14 +891,15 @@ public class MainMenuControl extends Composite
 	 * it via the callback.
 	 * 
 	 * @param mainPage
+	 * @param menuUsage
 	 * @param menuClient
 	 */
-	public static void createAsync(final GwtMainPage mainPage, final MainMenuControlClient menuClient) {
+	public static void createAsync(final GwtMainPage mainPage, final String menuUsage, final MainMenuControlClient menuClient) {
 		GWT.runAsync(MainMenuControl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				MainMenuControl mainMenuCtrl = new MainMenuControl(mainPage);
+				MainMenuControl mainMenuCtrl = new MainMenuControl(mainPage, menuUsage);
 				menuClient.onSuccess(mainMenuCtrl);
 			}
 			

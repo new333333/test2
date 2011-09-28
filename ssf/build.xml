@@ -88,6 +88,9 @@
 	<target name="clean" depends="init">
 		<delete dir="${temp.dir}" />
 		<delete dir="${docs.api.dir}" />
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="gwt-unitCache" />
+		</delete>
 		
 		<ant dir="util" target="clean" inheritAll="false"/>
 		<ant dir="util-search" target="clean" inheritAll="false"/>
