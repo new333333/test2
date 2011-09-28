@@ -278,6 +278,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the language that the tinyMCE editor should use.
+	 * 
+	 * @return
+	 */
+	public final native String getTinyMCELanguage()
+	/*-{
+		return this.tinyMCELang;
+	}-*/;
+
+	/**
 	 * Return the user's id.
 	 * 
 	 * @return

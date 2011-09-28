@@ -75,6 +75,7 @@
 		showWhatsNewOnLogin:				'${showWhatsNew}',		
 		simpleSearchUrl:					'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="quickSearch" value="true"/><ssf:param name="operation" value="ss_searchResults"/></ssf:url></ssf:escapeJavaScript>',
 		teamingFeedUrl:						'<ssf:escapeJavaScript><ssf:url adapter="true" portletName="ss_forum" action="__ajax_mobile" operation="view_teaming_live" actionUrl="false" /></ssf:escapeJavaScript>',
+		tinyMCELang:						'${tinyMCELang}',
 		topWSId:							'${topWSId}',
 		userDescription:					'',
 		userId:								'${ssUser.id}',

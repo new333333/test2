@@ -1293,6 +1293,12 @@ public class GwtUIHelper {
 			isCapable = BrowserSniffer.is_TinyMCECapable( hRequest, unsupportedUserAgents );
 			model.put( "isTinyMCECapable", Boolean.toString( isCapable ) );
 		}
+		
+		// Add the language code the tinyMCE editor will use.  It is different from the
+		// language is running in in the following way.  If the user is running
+		// Traditional Chinese the language code will be "tw".  If the user is running
+		// Simplified Chinese the language code will be "zh".
+		model.put( "tinyMCELang", getTinyMCELanguage() );
 
 		// Put out the name of the product (Novell or Kablink Vibe)
 		// that's running.
@@ -1319,6 +1325,32 @@ public class GwtUIHelper {
 		loginDisallowed = SPropsUtil.getBoolean( "form.login.auth.disallowed", false );
 		model.put( WebKeys.IS_FORM_LOGIN_ALLOWED,  !loginDisallowed );
 	}
+	
+	/**
+	 * Return the language the tinyMCE editor should use.  The language is different from the
+	 * language the user is running in in the following way.  If the user is running
+	 * Traditional Chinese the language code will be "tw".  If the user is running
+	 * Simplified Chinese the language code will be "zh".
+	 */
+	public static String getTinyMCELanguage()
+	{
+		String langCode;
+		String country;
+		User user;
+		
+		user = RequestContextHolder.getRequestContext().getUser();
+		
+		langCode = user.getLocale().getLanguage();
+
+		country = user.getLocale().getCountry();
+		if ( country != null && country.equalsIgnoreCase( "tw" ) )
+			langCode = "tw";
+		else if ( country != null && country.equalsIgnoreCase( "cn" ) )
+			langCode = "zh";
+		
+		return langCode;
+	}
+	
 	
 	/**
 	 * Given a binder, returns the string to display for it in a

@@ -256,6 +256,6 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	 */
 	public void setLanguage()
 	{
-		language = m_lpe.getLanguage();
+		language = m_lpe.getTinyMCELanguage();
 	}
 }
