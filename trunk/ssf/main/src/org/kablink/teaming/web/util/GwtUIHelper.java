@@ -83,7 +83,7 @@ public class GwtUIHelper {
 
 	// Used as an extra layer of enablement with the cached menu beans
 	// as I get the infrastructure in place to not need them anymore.
-	private static boolean USE_CACHED_MENU_BEANS	= true;
+	private static boolean USE_CACHED_MENU_BEANS	= SPropsUtil.getBoolean("granite.gwt.use.cached.menus", true);
 
 	// Used to write a flag to the session cache regarding the state
 	// of the GWT UI.
