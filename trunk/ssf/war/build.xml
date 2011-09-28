@@ -12,6 +12,7 @@
 		</delete>
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${temp.dir}" />
+			<fileset dir="WEB-INF"     />
 		</delete>
 	</target>
 		

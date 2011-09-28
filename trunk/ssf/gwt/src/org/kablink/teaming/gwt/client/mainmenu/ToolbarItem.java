@@ -79,6 +79,18 @@ public class ToolbarItem implements IsSerializable {
 		}
 
 		/**
+		 * Constructor method.
+		 * 
+		 * @param name
+		 * @param value
+		 */
+		public NameValuePair(String name, String value) {
+			this();
+			m_name  = name;
+			m_value = value;
+		}
+
+		/**
 		 * Public get'er methods.
 		 * 
 		 * @return
