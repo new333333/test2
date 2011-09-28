@@ -1068,6 +1068,9 @@ public class DefinitionHelper {
     				}
     			}
     		}
+    		
+    		// Add the language the tinyMCE editor should use.
+    		model.put( "tinyMCELang", GwtUIHelper.getTinyMCELanguage() );
 
         	attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_STYLE);
     		if (attr == null || attr.equals("")) {

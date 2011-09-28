@@ -528,6 +528,15 @@ public class LandingPageEditor extends Composite
 	}
 	
 	/**
+	 * Return the language the tinyMCE editor should use
+	 */
+	public String getTinyMCELanguage()
+	{
+		return m_lpeConfig.getTinyMCELanguage();
+	}
+	
+	
+	/**
 	 * 
 	 */
 	public void handleMouseMove( int clientX, int clientY )
