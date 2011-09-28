@@ -42,8 +42,12 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
-import org.kablink.teaming.gwt.client.event.ImportIcalFileEvent;
-import org.kablink.teaming.gwt.client.event.ImportIcalUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeAboutEvent;
+import org.kablink.teaming.gwt.client.event.InvokeClipboardEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
+import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
+import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -107,8 +111,12 @@ public class MainMenuControl extends Composite
 	// Event handlers implemented by this class.
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
-		ImportIcalFileEvent.Handler,
-		ImportIcalUrlEvent.Handler,
+		InvokeClipboardEvent.Handler,
+		InvokeConfigureColumnsEvent.Handler,
+		InvokeAboutEvent.Handler,
+		InvokeEmailNotificationEvent.Handler,
+		InvokeImportIcalFileEvent.Handler,
+		InvokeImportIcalUrlEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -144,9 +152,13 @@ public class MainMenuControl extends Composite
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGING,
 		
-		// Import event.
-		TeamingEvents.IMPORT_ICAL_FILE,
-		TeamingEvents.IMPORT_ICAL_URL,
+		// Invoke events.
+		TeamingEvents.INVOKE_ABOUT,
+		TeamingEvents.INVOKE_CLIPBOARD,
+		TeamingEvents.INVOKE_CONFIGURE_COLUMNS,
+		TeamingEvents.INVOKE_EMAIL_NOTIFICATION,
+		TeamingEvents.INVOKE_IMPORT_ICAL_FILE,
+		TeamingEvents.INVOKE_IMPORT_ICAL_URL,
 		
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
@@ -640,29 +652,81 @@ public class MainMenuControl extends Composite
 	}
 	
 	/**
-	 * Handles ImportIcalFileEvent's received by this class.
+	 * Handles InvokeAboutEvent's received by this class.
 	 * 
-	 * Implements the ImportIcalFileEvent.Handler.onImportIcalFile() method.
+	 * Implements the InvokeAboutEvent.Handler.onInvokeAbout() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onImportIcalFile(ImportIcalFileEvent event) {
+	public void onInvokeAbout(InvokeAboutEvent event) {
 //!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onImportIcalFile( " + event.getImportType() + " ):  ...this needs to be implemented...");
+		Window.alert("MainMenuControl.onInvokeAbout():  ...this needs to be implemented...");
 	}
 	
 	/**
-	 * Handles ImportIcalUrlEvent's received by this class.
+	 * Handles InvokeClipboardEvent's received by this class.
 	 * 
-	 * Implements the ImportIcalUrlEvent.Handler.onImportIcalUrl() method.
+	 * Implements the InvokeClipboardEvent.Handler.onInvokeClipboard() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onImportIcalUrl(ImportIcalUrlEvent event) {
+	public void onInvokeClipboard(InvokeClipboardEvent event) {
 //!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onImportIcalUrl( " + event.getImportType() + " ):  ...this needs to be implemented...");
+		Window.alert("MainMenuControl.onInvokeClipboard():  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles InvokeConfigureColumnsEvent's received by this class.
+	 * 
+	 * Implements the InvokeConfigureColumnsEvent.Handler.onInvokeConfigureColumns() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureColumns(InvokeConfigureColumnsEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onInvokeConfigureColumns():  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles InvokeEmailNotificationEvent's received by this class.
+	 * 
+	 * Implements the InvokeEmailNotificationEvent.Handler.onInvokeEmailNotification() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeEmailNotification(InvokeEmailNotificationEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onInvokeEmailNotification():  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles InvokeImportIcalFileEvent's received by this class.
+	 * 
+	 * Implements the InvokeImportIcalFileEvent.Handler.onInvokeImportIcalFile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeImportIcalFile(InvokeImportIcalFileEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onInvokeImportIcalFile( " + event.getImportType() + " ):  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles InvokeImportIcalUrlEvent's received by this class.
+	 * 
+	 * Implements the InvokeImportIcalUrlEvent.Handler.onInvokeImportIcalUrl() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeImportIcalUrl(InvokeImportIcalUrlEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onInvokeImportIcalUrl( " + event.getImportType() + " ):  ...this needs to be implemented...");
 	}
 	
 	/**

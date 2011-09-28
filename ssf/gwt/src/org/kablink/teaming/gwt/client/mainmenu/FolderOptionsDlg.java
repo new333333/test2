@@ -39,8 +39,9 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
-import org.kablink.teaming.gwt.client.event.ImportIcalFileEvent;
-import org.kablink.teaming.gwt.client.event.ImportIcalUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
+import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
+import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
@@ -308,8 +309,9 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			VibeEventBase<?> vibeEvent;
 			String importType = tbi.getName();
 			switch (event) {			
-			case IMPORT_ICAL_FILE:  vibeEvent = new ImportIcalFileEvent(importType); break;
-			case IMPORT_ICAL_URL:   vibeEvent = new ImportIcalUrlEvent( importType); break;			
+			case INVOKE_CONFIGURE_COLUMNS:  vibeEvent = new InvokeConfigureColumnsEvent();         break;
+			case INVOKE_IMPORT_ICAL_FILE:   vibeEvent = new InvokeImportIcalFileEvent(importType); break;
+			case INVOKE_IMPORT_ICAL_URL:    vibeEvent = new InvokeImportIcalUrlEvent( importType); break;			
 			default:
 				Window.alert(m_messages.mainMenuFolderOptionsUnexpectedEvent(event.name()));
 				return true;

@@ -222,6 +222,10 @@ public class ContextMenuItem {
 					break;
 
 				case EDIT_CURRENT_BINDER_BRANDING:
+				case INVOKE_ABOUT:
+				case INVOKE_CLIPBOARD:
+				case INVOKE_CONFIGURE_COLUMNS:
+				case INVOKE_EMAIL_NOTIFICATION:
 				case TRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_PERSON:

@@ -32,45 +32,34 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ImportIcalFileEvent is used to invoke Vibe's import an iCal from
- * a URL dialog.
+ * The InvokeAboutEvent is used to invoke Vibe's about dialog.
  * 
  * @author drfoster@novell.com
  */
-public class ImportIcalUrlEvent extends VibeEventBase<ImportIcalUrlEvent.Handler> {
+public class InvokeAboutEvent extends VibeEventBase<InvokeAboutEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
-    
-    public String m_importType;
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onImportIcalUrl(ImportIcalUrlEvent event);
+		void onInvokeAbout(InvokeAboutEvent event);
 	}
 	
 	/**
 	 * Class constructor.
-	 * 
-	 * @param importType
 	 */
-	public ImportIcalUrlEvent(String importType) {
+	public InvokeAboutEvent() {
 		super();
-		m_importType = importType;
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public String getImportType() {return m_importType;}
-	
+
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
@@ -80,9 +69,16 @@ public class ImportIcalUrlEvent extends VibeEventBase<ImportIcalUrlEvent.Handler
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onImportIcalUrl(this);
+        handler.onInvokeAbout(this);
     }
 	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new InvokeAboutEvent());
+	}
+    
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 *
@@ -105,7 +101,7 @@ public class ImportIcalUrlEvent extends VibeEventBase<ImportIcalUrlEvent.Handler
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.INVOKE_HELP;
+		return TeamingEvents.INVOKE_ABOUT;
 	}
 		
 	/**
