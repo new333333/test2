@@ -37,12 +37,12 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ImportIcalFileEvent is used to invoke Vibe's import an iCal from
- * a file dialog.
+ * The InvokeImportIcalFileEvent is used to invoke Vibe's import an
+ * iCal from a file dialog.
  * 
  * @author drfoster@novell.com
  */
-public class ImportIcalFileEvent extends VibeEventBase<ImportIcalFileEvent.Handler> {
+public class InvokeImportIcalFileEvent extends VibeEventBase<InvokeImportIcalFileEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public String m_importType;
@@ -51,7 +51,7 @@ public class ImportIcalFileEvent extends VibeEventBase<ImportIcalFileEvent.Handl
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onImportIcalFile(ImportIcalFileEvent event);
+		void onInvokeImportIcalFile(InvokeImportIcalFileEvent event);
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class ImportIcalFileEvent extends VibeEventBase<ImportIcalFileEvent.Handl
 	 * 
 	 * @param importType
 	 */
-	public ImportIcalFileEvent(String importType) {
+	public InvokeImportIcalFileEvent(String importType) {
 		super();
 		m_importType = importType;
 	}
@@ -80,7 +80,7 @@ public class ImportIcalFileEvent extends VibeEventBase<ImportIcalFileEvent.Handl
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onImportIcalFile(this);
+        handler.onInvokeImportIcalFile(this);
     }
 	
 	/**
@@ -105,7 +105,7 @@ public class ImportIcalFileEvent extends VibeEventBase<ImportIcalFileEvent.Handl
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.IMPORT_ICAL_FILE;
+		return TeamingEvents.INVOKE_IMPORT_ICAL_FILE;
 	}
 		
 	/**

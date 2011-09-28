@@ -551,7 +551,7 @@ public class GwtUIHelper {
 		// UI is active.  Is it?
 		if (isGwtUIActive(request)) {
 			// Yes!  Add an about toolbar item.
-			addAboutToToolbar( bs, request, model, gwtMiscToolbar);
+			addAboutToToolbar(bs, request, model, gwtMiscToolbar);
 			
 			// Do we have a binder and are we running as other than
 			// guest?

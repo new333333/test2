@@ -72,16 +72,19 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_MY_WORKSPACE,					// Changes the current context to the user's workspace.
 	GOTO_PERMALINK_URL,					// Changes the current context to a permalink URL.
 
-	IMPORT_ICAL_FILE,					// Runs the dialog to import an iCal by uploading  a file.
-	IMPORT_ICAL_URL,					// Runs the dialog to import an iCal by specifying a URL.
-	
+	INVOKE_ABOUT,						// Invokes the About dialog.
+	INVOKE_CLIPBOARD,					// Invokes the Clipboard dialog.
+	INVOKE_CONFIGURE_COLUMNS,			// Invokes the Configure Columns dialog.
 	INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,	// Invokes the Configure File Sync App dialog.
+	INVOKE_EMAIL_NOTIFICATION,			// Invokes the Email Notification dialog.
 	INVOKE_HELP,						// Invokes the Vibe OnPrem online help.
-	INVOKE_REPLY,						// Invoke the 'reply to entry' UI.
-	INVOKE_SHARE,						// Invoke the 'share this entry' UI.
+	INVOKE_IMPORT_ICAL_FILE,			// Invokes the dialog to import an iCal by uploading  a file.
+	INVOKE_IMPORT_ICAL_URL,				// Invokes the dialog to import an iCal by specifying a URL.
+	INVOKE_REPLY,						// Invokes the 'reply to entry' UI.
+	INVOKE_SHARE,						// Invokes the 'share this entry' UI.
 	INVOKE_SIMPLE_PROFILE,				// Invokes the simple profile dialog.
-	INVOKE_SUBSCRIBE,					// Invoke the 'subscribe to this entry' UI.
-	INVOKE_TAG,							// Invoke the 'tag this entry' UI.
+	INVOKE_SUBSCRIBE,					// Invokes the 'subscribe to this entry' UI.
+	INVOKE_TAG,							// Invokes the 'tag this entry' UI.
 	
 	LOGIN,								// Logs into   Vibe.
 	LOGOUT,								// Logs out of Vibe.
