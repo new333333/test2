@@ -143,6 +143,10 @@ var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss"><ssf:param
 
 var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" />";
 
+<c:if test="${!empty ssBinder && ssBinder.templateBinder}">
+  var ss_isTemplateBinder = true;
+</c:if>
+
 //Not logged in message
 var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 	
