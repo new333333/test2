@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.module.rss.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,12 +64,15 @@ import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.rss.RssModule;
@@ -87,6 +92,8 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.LockFile;
 import org.kablink.util.PropertyNotFoundException;
+import org.w3c.tidy.Tidy;
+import org.w3c.tidy.TidyMessage;
 
 public class RssModuleImpl extends CommonDependencyInjection implements
 		RssModule, RssModuleImplMBean {
@@ -683,8 +690,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				+ PermaLinkUtil.getPermalink(entry).replaceAll(
 						"&", "&amp;") + "</link>\n";
 
-		String description = entry.getDescription() == null ? "" : entry
-				.getDescription().getText();
+		String description = entry.getDescription() == null ? "" : tidyGetXHTML(entry
+				.getDescription());
 		description = MarkupUtil.markupStringReplacement(null, null, null, null,
 				entry, description, WebKeys.MARKUP_EXPORT);
 		description = "<![CDATA[ " + description + "]]>";
@@ -784,8 +791,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				+ PermaLinkUtil.getPermalink(entry).replaceAll(
 						"&", "&amp;") + "\"/>\n";
 
-		String subtitle = entry.getDescription() == null ? "" : entry
-				.getDescription().getText();
+		String subtitle = entry.getDescription() == null ? "" : tidyGetXHTML(entry
+				.getDescription());
 		subtitle = MarkupUtil.markupStringReplacement(null, null, null, null,
 				entry, subtitle, WebKeys.MARKUP_EXPORT);
 		//subtitle = "<![CDATA[ " + subtitle + "]]>";
@@ -822,4 +829,73 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		return doc;
 	}
+	
+    private String tidyGetXHTML(Description description) {
+		String text = description.getText();
+		if (description.getFormat() == description.FORMAT_HTML) {
+			ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
+			ByteArrayOutputStream sw = new ByteArrayOutputStream();
+			TidyMessageListener tml = new TidyMessageListener();
+			Tidy tidy = new Tidy();
+			tidy.setQuiet(true);
+			tidy.setShowWarnings(false);
+			tidy.setMessageListener(tml);
+			tidy.setPrintBodyOnly(true);
+			tidy.setFixUri(false);
+			tidy.setFixComments(false);
+			tidy.setAsciiChars(false);
+			tidy.setBreakBeforeBR(false);
+			tidy.setBurstSlides(false);
+			tidy.setDropEmptyParas(false);
+			tidy.setDropFontTags(false);
+			tidy.setDropProprietaryAttributes(false);
+			tidy.setEncloseBlockText(false);
+			tidy.setEncloseText(false);
+			tidy.setIndentAttributes(false);
+			tidy.setIndentCdata(false);
+			tidy.setIndentContent(false);
+			tidy.setLiteralAttribs(true);
+			tidy.setLogicalEmphasis(false);
+			tidy.setLowerLiterals(false);
+			tidy.setMakeClean(false);
+			tidy.setMakeBare(false);
+			tidy.setInputEncoding("UTF8");
+			tidy.setOutputEncoding("UTF8");
+			tidy.setRawOut(true);
+			tidy.setSmartIndent(false);
+			tidy.setTidyMark(false);
+			tidy.setWord2000(true);	// Allows <o:p> constructs as per MS Outlook, MS Word, ...
+			tidy.setWrapAsp(false);
+			tidy.setWrapAttVals(false);
+			tidy.setWrapJste(false);
+			tidy.setWrapPhp(false);
+			tidy.setWrapScriptlets(false);
+			tidy.setWrapSection(false);
+			tidy.setWraplen(1000000);
+			tidy.setXHTML(true);
+			org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
+			if (tml.isErrors() || tidy.getParseErrors() > 0) {
+				description.setText("");
+			} else {
+				if (!text.equals("")) {
+					//If the original value was not empty, then store the corrected html
+					text = sw.toString().trim();
+				}
+			}
+		}
+		return text;
+    }
+
+	private class TidyMessageListener implements org.w3c.tidy.TidyMessageListener {
+		private int errorCount = 0;
+		public void messageReceived(TidyMessage message) {
+			message.toString();
+			errorCount++;
+		}
+		public boolean isErrors() {
+			if (errorCount > 0) return true;
+			return false;
+		}
+	}
+
 }
