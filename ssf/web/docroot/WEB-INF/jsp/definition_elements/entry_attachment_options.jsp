@@ -99,17 +99,17 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			    <PARAM NAME = "deactivationUrl" value=""/>
 			    <PARAM NAME = "displayUrl" value="0"/>
 			    <PARAM NAME = "loadDirectory" value="yes" />
-			    <PARAM NAME = "menuLabelPaste" value="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />
-			    <PARAM NAME = "menuLabelCancel" value="<ssf:nlt tag="binder.add.files.applet.menu.cancel" />" />
-			    <PARAM NAME = "menuLabelDeactivate" value="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
-			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:nlt tag="binder.add.files.applet.no.directory" />" />
-			    <PARAM NAME = "noFileAlertMessage" value="<ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" />" />
-			    <PARAM NAME = "uploadInProgress" value="<ssf:nlt tag="binder.add.files.applet.upload.in.progress" />" />
-			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:nlt tag="binder.add.files.applet.upload.not.supported" />" />
-			    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
-			    <PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge" />" />
+			    <PARAM NAME = "menuLabelPaste" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.menu.paste" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "menuLabelCancel" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.menu.cancel" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "menuLabelDeactivate" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.menu.deactivate" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.no.directory" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "noFileAlertMessage" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "uploadInProgress" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.upload.in.progress" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.upload.not.supported" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "uploadErrorMessage" value="<ssf:escapeQuotes><ssf:nlt tag="exception.codedError.title" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:escapeQuotes><ssf:nlt tag="applet.errorFileTooLarge" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
-			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:nlt tag="file.maxSizeExceeded" />" />
+			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:escapeQuotes><ssf:nlt tag="file.maxSizeExceeded" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
 			<c:if test="<%= !isIE %>">
 			</applet>
