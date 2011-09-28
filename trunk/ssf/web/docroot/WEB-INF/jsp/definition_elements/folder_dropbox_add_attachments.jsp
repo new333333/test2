@@ -97,7 +97,7 @@ function ss_showLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 function ss_showLoadingFolderDiv${ssBinderId}${ss_namespace}(fileNames) {
 	var divId = 'ss_divFolderFilesLoading${ssBinderId}${ss_namespace}';
 	var divObj = document.getElementById(divId);
-	divObj.innerHTML = '<span class="ss_bold"><ssf:nlt tag="loading.files"/></span>: ' + fileNames
+	divObj.innerHTML = '<span class="ss_bold"><ssf:escapeJavaScript><ssf:nlt tag="loading.files"/></ssf:escapeJavaScript></span>: ' + fileNames
 	ss_showDiv(divId, 'no');
 }
 
@@ -179,19 +179,19 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 				</c:if>
 			    <PARAM NAME = "onLoadFunction" value="ss_onAppletLoad${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "onCancelFunction" value="" />
-			    <PARAM NAME = "menuLabelPaste" value="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />
-			    <PARAM NAME = "menuLabelCancel" value="<ssf:nlt tag="binder.add.files.applet.menu.cancel" />" />
-			    <PARAM NAME = "menuLabelDeactivate" value="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
-			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:nlt tag="binder.add.files.applet.no.directory.for.nonlibrary.folder" />" />
-			    <PARAM NAME = "noFileAlertMessage" value="<ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" />" />
-			    <PARAM NAME = "uploadInProgress" value="<ssf:nlt tag="binder.add.files.applet.upload.in.progress" />" />
+			    <PARAM NAME = "menuLabelPaste" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.menu.paste" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "menuLabelCancel" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.menu.cancel" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "menuLabelDeactivate" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.menu.deactivate" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.no.directory.for.nonlibrary.folder" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "noFileAlertMessage" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "uploadInProgress" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.upload.in.progress" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "fileLoadingInProgress" value="ss_startLoadingFiles${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "fileLoadingEnded" value="ss_endLoadingFiles${ssBinderId}${ss_namespace}" />
-			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:nlt tag="binder.add.files.applet.upload.not.supported" />" />
-			    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
-			    <PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge" />" />
+			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:escapeQuotes><ssf:nlt tag="binder.add.files.applet.upload.not.supported" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "uploadErrorMessage" value="<ssf:escapeQuotes><ssf:nlt tag="exception.codedError.title" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:escapeQuotes><ssf:nlt tag="applet.errorFileTooLarge" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
-			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:nlt tag="file.maxSizeExceeded" />" />
+			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:escapeQuotes><ssf:nlt tag="file.maxSizeExceeded" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
 			<c:if test="<%= !isIE %>">
 			</applet>
