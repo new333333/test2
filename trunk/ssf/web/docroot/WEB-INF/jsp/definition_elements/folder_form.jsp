@@ -94,22 +94,18 @@
 		<br/>
 
 		<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.module.folder.MirroredFolder">
-			<c:if test="${ssDefinitionEntry.mirroredAllowed}">
-				<c:set var="cb_checked" value=""/>
-				<c:if test="${ssDefinitionEntry.mirrored}" >
-					<c:set var="cb_checked" value="checked"/>
-				</c:if>
+			<c:if test="${ssDefinitionEntry.mirrored}">
 				<c:set var="resourceDrivers" value="<%= org.kablink.teaming.fi.connection.ResourceDriverManagerUtil.getAllowedResourceDrivers() %>"/>
 				<input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
 				<br/>
 	
-				<c:if test="${ssDefinitionEntry.mirrored && !empty ssDefinitionEntry.resourceDriver}" >
+				<c:if test="${!empty ssDefinitionEntry.resourceDriver}" >
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-					<input type="text" class="ss_text" size="30" name="resourceDriver" value="${ssDefinitionEntry.resourceDriver.titleAndMode}" disabled/>
+					<span>${ssDefinitionEntry.resourceDriver.titleAndMode}</span>
 					<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
 				</c:if>
 
-				<c:if test="${empty ssDefinitionEntry.resourceDriver && !empty resourceDrivers}" >
+				<c:if test="${ssBinderIsEmpty && empty ssDefinitionEntry.resourceDriver && !empty resourceDrivers}" >
 					<span class="ss_errorLabel"><ssf:nlt tag="folder.resource.driver.select"/></span>
 					<br>
 					<br>
@@ -127,12 +123,14 @@
 				</c:if>				
 				<br/>
 	
-				<c:if test="${((ssBinderIsEmpty && ssDefinitionEntry.mirroredAllowed) || ssDefinitionEntry.mirrored) && !empty resourceDrivers}" >
-				  <c:if test="${ssDefinitionEntry.mirrored}" >
-				    <c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
-				  </c:if>
+				<c:if test="${ssBinderIsEmpty && !empty resourceDrivers}" >
 				  <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
-				  <input type="text" class="ss_text" size="110" name="rootPath" value="${resourceRootPath}" disabled/><br/>
+				  <c:if test="${!empty ssDefinitionEntry.resourceDriver}">
+				    <span>${resourceRootPath}</span><br/>
+				  </c:if>
+				  <c:if test="${empty ssDefinitionEntry.resourceDriver}">
+				    <input type="text" class="ss_text" size="110" name="rootPath" value="${resourceRootPath}"/><br/>
+				  </c:if>
 				  <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span><br>
 				  <input type="text" class="ss_text" size="110" name="resourcePath" value="${ssDefinitionEntry.resourcePath}"/><br/>
 				</c:if>
