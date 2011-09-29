@@ -163,6 +163,7 @@ public interface AdminModule {
     public Long getFileVersionsMaxAge();
     public void setFileVersionsMaxAge(Long fileVersionAge);
     public Long getFileSizeLimitUserDefault();
+    public Long getUserFileSizeLimit();
     public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault);
     public MailConfig getMailConfig();
     public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier);
