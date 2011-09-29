@@ -310,6 +310,8 @@ public class PostFiles extends Thread {
             	  //There is a file upload size limit, check it
             	  Long sizeLimit = Long.valueOf(sFileSizeLimit);
             	  if (f.length() > sizeLimit.longValue()) {
+                      Debug.writeLog("File size limit: " + sFileSizeLimit);
+                      Debug.writeLog("File size: " + String.valueOf(f.length()));
                   	  String translatedString = new String(topFrame.getParameter("fileUploadSizeExceeded"));
             		  Debug.writeLog(translatedString);
             		  reportErrorMessage(topFrame, conn, translatedString + " (" + filename + ")" );
