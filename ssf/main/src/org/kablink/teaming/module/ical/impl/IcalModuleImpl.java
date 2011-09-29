@@ -1616,6 +1616,12 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * TZ if we have a non-system user to adjust it with.
 	 */
 	private void fixupFloatingDT(DateProperty dp) {
+		// We're we given a DateProperty to fixup?
+		if (null == dp) {
+			// No!  Bail.
+			return;
+		}
+		
 		// Does this DateProperty require some adjustment with the
 		// user's timezone?
 		Parameter tzId = dp.getParameter(Parameter.TZID);
