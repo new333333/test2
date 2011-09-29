@@ -35,6 +35,7 @@ package org.kablink.teaming.web.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -148,16 +149,18 @@ public class GwtUIHelper {
 	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
 	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
 
-	// Inner class used exclusively by addTrackBinderToToolbar() to
-	// assist in building the toolbar items to support tracking.
-	private static class TrackInfo {
-		String m_event;
-		String m_resourceKey;
-		String m_tbName;
+	/**
+	 * Inner class used by addTrackBinderToToolbar() to assist in
+	 * building the toolbar items to support tracking.
+	 */
+	public static class TrackInfo {
+		public String m_event;
+		public String m_resourceKey;
+		public String m_tbName;
 		
 		TrackInfo(String tbName, String event, String resourceKey) {
-			m_tbName = tbName;
-			m_event  = event;
+			m_tbName      = tbName;
+			m_event       = event;
 			m_resourceKey = resourceKey;
 		}
 	}
@@ -398,74 +401,13 @@ public class GwtUIHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void addTrackBinderToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
-		// Construct an ArrayList to hold TrackInfo objects that
-		// describe what track operations we'll need in the menu.
-		ArrayList<TrackInfo> tiList = new ArrayList<TrackInfo>();
-
-		// What do we know about this binder?
-		Long binderId = binder.getId();
-		boolean binderIsWorkspace     = (binder instanceof Workspace);
-		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(binder);
-		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
-		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
-		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);
-
-		// Build TrackInfo objects for the toolbar items we need to add
-		// for tracking (or untracking) whatever we're looking at.
-		if (binderTracked) {
-			if (personTracked) {
-				// User workspace:  Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
-			}
-			else {
-				if (binderIsUserWorkspace) {
-					// User workspace:  Tracked / Person:  Not Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-					tiList.add(new TrackInfo("trackPerson", "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
-				}
-				else if (binderIsWorkspace) {
-					// Workspace:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-				}
-				else if (binderIsCalendar) {
-					// Calendar:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisCalendarNot"));				
-				}
-				else {
-					// Folder:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisFolderNot"));				
-				}
-			}
-		}
-		else {
-			if (personTracked) {
-				// User workspace:  Not Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
-			}
-			else if (binderIsUserWorkspace) {
-				// User workspace:  Not Tracked / Person:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
-			}
-			else if (binderIsWorkspace) {
-				// Workspace:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
-			}
-			else if (binderIsCalendar) {
-				// Calendar:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisCalendar"));				
-			}
-			else {
-				// Folder:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisFolder"));				
-			}
-		}
+		// Get a List<TrackInfo> that describes what track operations
+		// we'll need in the menu.
+		List<TrackInfo> tiList = getTrackInfoList(bs, binder);
 
 		// Scan the TrackInfo objects we generated...
-		for (Iterator<TrackInfo> tiIT = tiList.iterator(); tiIT.hasNext(); ) {
+		for (TrackInfo ti:  tiList) {
 			// ...adding a toolbar item for each.
-			TrackInfo ti = tiIT.next();
 			addEventToToolbar(tb, ti.m_tbName, ti.m_event, NLT.get(ti.m_resourceKey));
 		}
 	}
@@ -574,13 +516,18 @@ public class GwtUIHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Generates the appropriate resource key for the given binder.
 	 * 
 	 * Note:  The logic for which key is based on the logic from
 	 *        sidebar_track2.jsp.
+	 *        
+	 * @param binder
+	 * @param keyBase
+	 * 
+	 * @return
 	 */
-	private static String buildRelevanceKey(Binder binder, String keyBase) {
+	public static String buildRelevanceKey(Binder binder, String keyBase) {
 		String relevanceKey = keyBase;
 		switch (binder.getEntityType()) {
 		case workspace:
@@ -923,6 +870,82 @@ public class GwtUIHelper {
 	private static boolean hasRefererUrl(PortletRequest pRequest) {
 		return (0 < getRefererUrl(pRequest).length());
 	}
+
+	/**
+	 * Returns a List<TrackInfo> of how a binder is being tracked.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static List<TrackInfo> getTrackInfoList(AllModulesInjected bs, Binder binder) {
+		// Construct an ArrayList to hold TrackInfo objects that
+		// describe what track operations we'll need in the menu.
+		List<TrackInfo> tiList = new ArrayList<TrackInfo>();
+
+		// What do we know about this binder?
+		Long binderId = binder.getId();
+		boolean binderIsWorkspace     = (binder instanceof Workspace);
+		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(binder);
+		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
+		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
+		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);
+
+		// Build TrackInfo objects for the toolbar items we need to add
+		// for tracking (or untracking) whatever we're looking at.
+		if (binderTracked) {
+			if (personTracked) {
+				// User workspace:  Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else {
+				if (binderIsUserWorkspace) {
+					// User workspace:  Tracked / Person:  Not Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("trackPerson", "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
+				}
+				else if (binderIsWorkspace) {
+					// Workspace:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+				}
+				else if (binderIsCalendar) {
+					// Calendar:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisCalendarNot"));				
+				}
+				else {
+					// Folder:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisFolderNot"));				
+				}
+			}
+		}
+		else {
+			if (personTracked) {
+				// User workspace:  Not Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else if (binderIsUserWorkspace) {
+				// User workspace:  Not Tracked / Person:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
+			}
+			else if (binderIsWorkspace) {
+				// Workspace:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
+			}
+			else if (binderIsCalendar) {
+				// Calendar:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisCalendar"));				
+			}
+			else {
+				// Folder:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisFolder"));				
+			}
+		}
+		
+		return tiList;
+	}
 	
 	/**
 	 * Returns s User from it's ID guarding against any exceptions.  If
@@ -1110,9 +1133,13 @@ public class GwtUIHelper {
 		return reply;
 	}
 	
-	/*
+	/**
 	 * Takes a Binder permalink and does what's necessary to bring up
 	 * the trash on that Binder.
+	 * 
+	 * @param binderPermalink
+	 * 
+	 * @return
 	 */
 	public static String getTrashPermalink(String binderPermalink) {
 		return appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
