@@ -64,6 +64,7 @@ document.body.style.backgroundRepeat = '${ss_mashupBGImgRepeat}';
 </script>
 
 <div class="ss_mashup_canvas_view" style="background-color: #fff;">
+	<c:if test="${ssConfigJspStyle != 'mobile'}">
 	<div id="ss_mashup_canvas_print" style="position: relative;">
 		&nbsp;
 		<a style="position: absolute; right: 10px; top: 2px;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
@@ -72,7 +73,7 @@ document.body.style.backgroundRepeat = '${ss_mashupBGImgRepeat}';
 	      		 src="<html:rootPath/>images/pics/masthead/masthead_printer.png" border="0" align="absmiddle" />
 		</a>
 	</div>
-
+	</c:if>
 
   <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
     <c:set var="mashupValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
