@@ -222,6 +222,12 @@ public interface BinderModule {
 	 * one.
 	 */
 	public void deleteBinderFinish();
+	
+	/**
+	 * Check if the binder is empty
+	 * @param binder
+	 */
+	public boolean isBinderEmpty(Binder binder);
 		
 	/**
 	 * Check if the binder quota has been exceeded

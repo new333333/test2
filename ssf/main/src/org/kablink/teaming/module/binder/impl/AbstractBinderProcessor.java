@@ -2035,6 +2035,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void setFileAgingDates(Binder binder) {
     	//Nothing to be done here. It is all done in FolderCoreProcessor
     }
+    
+    //Routine to see if this binder is empty
+    public boolean isFolderEmpty(final Binder binder) {
+    	return true;
+    }
    	
     // ***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {

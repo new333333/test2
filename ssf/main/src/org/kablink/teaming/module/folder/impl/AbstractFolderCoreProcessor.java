@@ -925,6 +925,29 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	 		}});
 		}
 	}
+
+    //***********************************************************************************************************
+    //no transaction
+	public boolean isFolderEmpty(final Binder binder) { 
+		Boolean result = true;
+		if (binder instanceof Folder) {
+	 		//now see if there are entries in the binder
+	 		@SuppressWarnings("unused")
+			final Folder folder = (Folder)binder;
+	 		result = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
+	 			public Object doInTransaction(TransactionStatus status) {
+	 				FilterControls filter = new FilterControls();
+	 				filter.setOrderBy(new OrderBy("HKey.sortKey"));
+	 				SFQuery query = getFolderDao().queryEntries((Folder)binder, filter);
+	 		      	if (query.hasNext()) {
+	 		      		return Boolean.FALSE;
+	 		      	} else {
+	 		      		return Boolean.TRUE;
+	 		      	}
+	 		}});
+		}
+		return result;
+	}
 	
     //***********************************************************************************************************
     public Set getPrincipalIds(DefinableEntity entity) {

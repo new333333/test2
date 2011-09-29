@@ -127,5 +127,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     public void setFileAgingDates(Binder binder) {
     	//Nothing to be done
     }
+    
+    public boolean isFolderEmpty(final Binder binder) {
+    	return true;
+    }
 
 }
