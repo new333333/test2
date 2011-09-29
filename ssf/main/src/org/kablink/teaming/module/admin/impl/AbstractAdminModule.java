@@ -493,6 +493,26 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setFileSizeLimitUserDefault(fileSizeLimitUserDefault);
   	}
+  	public Long getUserFileSizeLimit() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		//Check the system default and the user limits
+		Long userMaxFileSize = user.getFileSizeLimit();
+		Long userMaxGroupsFileSize = user.getMaxGroupsFileSizeLimit();
+		Long fileSizeLimit = null;
+		if (userMaxGroupsFileSize != null) {
+			//Start with the group setting (if any)
+			fileSizeLimit = userMaxGroupsFileSize;
+		}
+		if (userMaxFileSize != null) {
+			//If there is a user setting, use that (even if it is less than the group setting)
+			fileSizeLimit = userMaxFileSize;
+		}
+		if (fileSizeLimit == null) {
+			//There aren't any per-user or per-group settings, so see if there is a site default
+			fileSizeLimit = getFileSizeLimitUserDefault();
+		}
+		return fileSizeLimit;
+  	}
   	public MailConfig getMailConfig() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return new MailConfig(zoneConfig.getMailConfig()); 		

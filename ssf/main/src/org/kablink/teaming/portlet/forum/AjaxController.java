@@ -2143,9 +2143,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
-			if (maxFileSize != null) {
+			Long maxUserFileSize = getAdminModule().getUserFileSizeLimit();
+			if (maxFileSize != null || maxUserFileSize != null) {
+				if (maxFileSize == null) {
+					maxFileSize = maxUserFileSize;
+				}
+				if (maxUserFileSize != null && maxUserFileSize < maxFileSize) {
+					maxFileSize = maxUserFileSize;
+				}
 				//Get bytes
-				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000));
+				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000000));
 			}
 		}
 		
@@ -2263,9 +2270,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.FOLDER_ATTACHMENT_APPLET_REFRESH_URL, strRefreshURL);
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
-			if (maxFileSize != null) {
+			Long maxUserFileSize = getAdminModule().getUserFileSizeLimit();
+			if (maxFileSize != null || maxUserFileSize != null) {
+				if (maxFileSize == null) {
+					maxFileSize = maxUserFileSize;
+				}
+				if (maxUserFileSize != null && maxUserFileSize < maxFileSize) {
+					maxFileSize = maxUserFileSize;
+				}
 				//Get bytes
-				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000));
+				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000000));
 			}
 		}
 		
