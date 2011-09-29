@@ -272,6 +272,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			
 			model.put(WebKeys.BINDER, binder);
 //			model.put(WebKeys.ENTRY, binder);
+			model.put(WebKeys.BINDER_IS_EMPTY, getBinderModule().isBinderEmpty(binder));
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 			Definition binderDef = binder.getEntryDef();
 			if (binderDef == null) {

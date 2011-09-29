@@ -109,7 +109,7 @@
 					<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
 				</c:if>
 
-				<c:if test="${ssDefinitionEntry.mirrored && empty ssDefinitionEntry.resourceDriver && !empty resourceDrivers}" >
+				<c:if test="${empty ssDefinitionEntry.resourceDriver && !empty resourceDrivers}" >
 					<span class="ss_errorLabel"><ssf:nlt tag="folder.resource.driver.select"/></span>
 					<br>
 					<br>
@@ -127,11 +127,14 @@
 				</c:if>				
 				<br/>
 	
-				<c:if test="${!empty resourceDrivers}" >
-					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
-					<input type="text" class="ss_text" size="110" name="rootPath" value="${resourceRootPath}" disabled/><br/>
-					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span><br>
-					<input type="text" class="ss_text" size="110" name="resourcePath" value="${ssDefinitionEntry.resourcePath}"/><br/>
+				<c:if test="${((ssBinderIsEmpty && ssDefinitionEntry.mirroredAllowed) || ssDefinitionEntry.mirrored) && !empty resourceDrivers}" >
+				  <c:if test="${ssDefinitionEntry.mirrored}" >
+				    <c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
+				  </c:if>
+				  <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
+				  <input type="text" class="ss_text" size="110" name="rootPath" value="${resourceRootPath}" disabled/><br/>
+				  <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span><br>
+				  <input type="text" class="ss_text" size="110" name="resourcePath" value="${ssDefinitionEntry.resourcePath}"/><br/>
 				</c:if>
 				<br/>
 			</c:if>
