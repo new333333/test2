@@ -132,7 +132,26 @@ public class ToolbarItem implements IsSerializable {
 	 * @param tmi
 	 */
 	public void addNestedItem(ToolbarItem tmi) {
-		m_nestedItemsAL.add(tmi);
+		if (null != tmi) {
+			m_nestedItemsAL.add(tmi);
+		}
+	}
+	
+	/**
+	 * Adds a the ToolbarItem's from a List<ToolbarItem> as nested
+	 * items to a ToolbarItem.
+	 * 
+	 * @param tmiList
+	 */
+	public void addNestedItems(List<ToolbarItem> tmiList) {
+		// If the list is not empty...
+		if ((null != tmiList) && (!(tmiList.isEmpty()))) {
+			// ...scan the items in the list...
+			for (ToolbarItem tmi:  tmiList) {
+				// ...adding each.
+				m_nestedItemsAL.add(tmi);
+			}
+		}
 	}
 
 	/**

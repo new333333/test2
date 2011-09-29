@@ -96,6 +96,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
+		case INVOKE_SEND_EMAIL_TO_TEAM:             reply = new InvokeSendEmailToTeamEvent();         break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
 		case MASTHEAD_HIDE:                     	reply = new MastheadHideEvent();                  break;
@@ -426,6 +427,15 @@ public class EventHelper {
 				if (eventHandler instanceof InvokeReplyEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeReplyEvent.registerEvent(eventBus, ((InvokeReplyEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case INVOKE_SEND_EMAIL_TO_TEAM:
+				// An InvokeSendEmailToTeamEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeSendEmailToTeamEvent.registerEvent(eventBus, ((InvokeSendEmailToTeamEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -993,6 +1003,7 @@ public class EventHelper {
 			case INVOKE_IMPORT_ICAL_FILE:           	hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);          break;
 			case INVOKE_IMPORT_ICAL_URL:            	hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);           break;
 			case INVOKE_REPLY:                      	hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                   break;
+			case INVOKE_SEND_EMAIL_TO_TEAM:             hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);         break;
 			case INVOKE_SHARE:                      	hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                   break;
 			case INVOKE_SIMPLE_PROFILE:             	hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);           break;
 			case INVOKE_SUBSCRIBE:                  	hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);               break;

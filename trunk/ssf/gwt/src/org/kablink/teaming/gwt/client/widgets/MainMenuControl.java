@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -117,6 +118,7 @@ public class MainMenuControl extends Composite
 		InvokeEmailNotificationEvent.Handler,
 		InvokeImportIcalFileEvent.Handler,
 		InvokeImportIcalUrlEvent.Handler,
+		InvokeSendEmailToTeamEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -159,6 +161,7 @@ public class MainMenuControl extends Composite
 		TeamingEvents.INVOKE_EMAIL_NOTIFICATION,
 		TeamingEvents.INVOKE_IMPORT_ICAL_FILE,
 		TeamingEvents.INVOKE_IMPORT_ICAL_URL,
+		TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM,
 		
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
@@ -727,6 +730,19 @@ public class MainMenuControl extends Composite
 	public void onInvokeImportIcalUrl(InvokeImportIcalUrlEvent event) {
 //!		...this needs to be implemented...
 		Window.alert("MainMenuControl.onInvokeImportIcalUrl( " + event.getImportType() + " ):  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles InvokeSendEmailToTeamEvent's received by this class.
+	 * 
+	 * Implements the InvokeSendEmailToTeamEvent.Handler.onInvokeSendEmailToTeam() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeSendEmailToTeam(InvokeSendEmailToTeamEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onInvokeSendEmailToTeam():  ...this needs to be implemented...");
 	}
 	
 	/**

@@ -70,6 +70,9 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.GwtUIHelper.TrackInfo;
+import org.kablink.util.BrowserSniffer;
 
 
 /**
@@ -103,11 +106,15 @@ public class GwtMenuHelper {
 	private final static String IMPORT_EXPORT			= "importExport";
 	private final static String MANAGE_DEFINITIONS		= "manageDefinitions";
 	private final static String MANUAL_SYNC				= "manualSync";
+	private final static String MOBILE_UI				= "mobileUI";
 	private final static String MODIFY					= "modify";
 	private final static String MOVE					= "move";
 	private final static String REPORTS					= "reports";
 	private final static String SCHEDULE_SYNC			= "scheduleSync";
+	private final static String SEND_EMAIL				= "sendEmail";
+	private final static String SHARE					= "share";
 	private final static String SS_FORUM				= "ss_forum";
+	private final static String TRASH					= "trash";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 
 	/*
@@ -144,53 +151,25 @@ public class GwtMenuHelper {
 		tbiList.add(miscTBI);
 
 		// Add the about to it.
-		ToolbarItem itemTBI = new ToolbarItem(ABOUT);
-		markTBITitle(itemTBI, "misc.about");
-		markTBIEvent(itemTBI, TeamingEvents.INVOKE_ABOUT);
-		miscTBI.addNestedItem(itemTBI);
+		miscTBI.addNestedItem(constructAboutItem());
 		
 		// Do we have a binder and are we running as other than
 		// guest?
 		if ((null != binder) && (!(GwtServerHelper.getCurrentUser().isShared()))) {
-			// Yes!  Does the user have rights to brand this binder?
-			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-				// Yes!  Add a ToolbarItem for it. 
-				String menuKey = "toolbar.menu.brand.";
-				if      (EntityType.workspace == binderType) menuKey += "workspace";
-				else if (EntityType.folder    == binderType) menuKey += "folder";
-				else                                         menuKey  = null;
-				if (null != menuKey) {				
-					itemTBI = new ToolbarItem(BRANDING);
-					markTBITitle(itemTBI, menuKey                                   );
-					markTBIEvent(itemTBI, TeamingEvents.EDIT_CURRENT_BINDER_BRANDING);
-					miscTBI.addNestedItem(itemTBI);
-				}
+			// Yes!  Add a ToolbarItem for editing its branding.
+			miscTBI.addNestedItem(constructEditBrandingItem(bs, binder, binderType));
 
-				// Is this other than the profiles binder?
-				if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
-					// Yes!  Add a clipboard ToolbarItem.
-					itemTBI = new ToolbarItem(CLIPBOARD);
-					markTBITitle(itemTBI, "toolbar.menu.clipboard"      );
-					markTBIEvent(itemTBI, TeamingEvents.INVOKE_CLIPBOARD);
-					miscTBI.addNestedItem(itemTBI);
-
-					// Can the columns be configured on this binder?
-					String viewType = DefinitionUtils.getViewType(binder);
-					if (MiscUtil.hasString(viewType)) {
-						if (viewType.equalsIgnoreCase("folder") ||
-								viewType.equalsIgnoreCase("table") ||
-								viewType.equalsIgnoreCase("file")) {
-							// Yes!  Add a configure columns
-							// ToolbarItem.
-							itemTBI = new ToolbarItem(CONFIGURE_COLUMNS);
-							markTBITitle(itemTBI, "misc.configureColumns"               );
-							markTBIEvent(itemTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
-							miscTBI.addNestedItem(itemTBI);
-						}
-					}
-					
-//!					...this needs to be implemented...
-				}
+			// Is this other than the profiles binder?
+			if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
+				// Yes!  Add the various binder based
+				// ToolbarItem's.
+				miscTBI.addNestedItem( constructClipboardItem()                 );
+				miscTBI.addNestedItem( constructConfigureColumsItem(     binder));
+				miscTBI.addNestedItem( constructSendEmailToItem()               );
+				miscTBI.addNestedItem( constructShareBinderItem(request, binder));
+				miscTBI.addNestedItem( constructMobileUiItem(   request, binder));
+				miscTBI.addNestedItems(constructTrackBinderItem(bs,      binder));
+				miscTBI.addNestedItem( constructTrashItem(      request, binder));
 			}
 		}
 	}
@@ -217,6 +196,16 @@ public class GwtMenuHelper {
 		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, ws, EntityType.workspace));
 		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, ws, EntityType.workspace));
 		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, ws, EntityType.workspace));
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for About.
+	 */
+	private static ToolbarItem constructAboutItem() {
+		ToolbarItem aboutTBI = new ToolbarItem(ABOUT);
+		markTBITitle(aboutTBI, "misc.about");
+		markTBIEvent(aboutTBI, TeamingEvents.INVOKE_ABOUT);
+		return aboutTBI;
 	}
 	
 	/*
@@ -271,6 +260,53 @@ public class GwtMenuHelper {
 		return reply;
 	}
 
+	/*
+	 * Constructs a ToolbarItem to run the clipboard dialog.
+	 */
+	private static ToolbarItem constructClipboardItem() {
+		ToolbarItem cbTBI = new ToolbarItem(CLIPBOARD);
+		markTBITitle(cbTBI, "toolbar.menu.clipboard"      );
+		markTBIEvent(cbTBI, TeamingEvents.INVOKE_CLIPBOARD);
+		return cbTBI;
+	}
+
+	/*
+	 * Constructs a ToolbarItem to run the configure columns dialog.
+	 */
+	private static ToolbarItem constructConfigureColumsItem(Binder binder) {
+		// Can the user configure columns on this binder?
+		String viewType = DefinitionUtils.getViewType(binder);
+		if (MiscUtil.hasString(viewType)) {
+			if (viewType.equalsIgnoreCase("folder") ||
+					viewType.equalsIgnoreCase("table") ||
+					viewType.equalsIgnoreCase("file")) {
+				// Yes!  Create a configure columns ToolbarItem.
+				ToolbarItem ccTBI = new ToolbarItem(CONFIGURE_COLUMNS);
+				markTBITitle(ccTBI, "misc.configureColumns"               );
+				markTBIEvent(ccTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
+				return ccTBI;
+			}
+		}
+		return null;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem to run the branding editor on a binder.
+	 */
+	private static ToolbarItem constructEditBrandingItem(AllModulesInjected bs, Binder binder, EntityType binderType) {
+		if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+			String menuKey = "toolbar.menu.brand.";
+			if      (EntityType.workspace == binderType) menuKey += "workspace";
+			else if (EntityType.folder    == binderType) menuKey += "folder";
+			else                                         return null;
+			ToolbarItem ebTBI = new ToolbarItem(BRANDING);
+			markTBITitle(ebTBI, menuKey                                   );
+			markTBIEvent(ebTBI, TeamingEvents.EDIT_CURRENT_BINDER_BRANDING);
+			return ebTBI;
+		}
+		return null;
+	}
+	
 	/*
 	 * Constructs a ToolbarItem for email subscription handling.
 	 */
@@ -735,6 +771,99 @@ public class GwtMenuHelper {
 		// Return it.
 		return reply;
 	}
+
+	/*
+	 * Constructs a ToolbarItem to run the send email to team members
+	 * dialog. 
+	 */
+	private static ToolbarItem constructSendEmailToItem() {
+		User user = GwtServerHelper.getCurrentUser();
+		if (MiscUtil.hasString(user.getEmailAddress()) && (!(user.isShared()))) {
+			ToolbarItem sendEmailToTBI = new ToolbarItem(SEND_EMAIL             );
+			markTBITitle(sendEmailToTBI, "toolbar.menu.sendMail"                );
+			markTBIEvent(sendEmailToTBI, TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM);
+			return sendEmailToTBI;
+		}
+		return null;
+	}
+
+	/*
+	 * Constructs a ToolbarItem to run the share binder dialog.
+	 */
+	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder) {
+		// Create the base ToolbarItem for the share binder...
+		ToolbarItem sbTBI = new ToolbarItem(SHARE);
+		markTBIPopup(sbTBI, "550", "750");
+		markTBITitle(sbTBI, GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis"));
+		
+		// ...generate the URL to share it...
+		AdaptedPortletURL url = new AdaptedPortletURL(request, SS_FORUM, true);
+		url.setParameter(WebKeys.ACTION,        "__ajax_relevance"            );
+		url.setParameter(WebKeys.URL_OPERATION, "share_this_binder"           );
+		url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binder.getId()));
+		markTBIUrl(sbTBI, url);
+		
+		// ...and return the item.
+		return sbTBI;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem to change the UI to mobile.
+	 */
+	private static ToolbarItem constructMobileUiItem(HttpServletRequest request, Binder binder) {
+		// Are we running in a mobile browser?
+		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+		if (BrowserSniffer.is_mobile(request, userAgents)) {
+			// Yes!  Construct a URL to go to the mobile UI...
+			AdaptedPortletURL url = new AdaptedPortletURL(request, SS_FORUM, true, true);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
+
+			// ...generate a ToolbarItem for it...
+			ToolbarItem mobileTBI = new ToolbarItem(MOBILE_UI);
+			markTBITitle(mobileTBI, "toolbar.menu.mobileUI"         );
+			markTBIEvent(mobileTBI, TeamingEvents.GOTO_PERMALINK_URL);
+			markTBIUrl(  mobileTBI, url                             );
+			
+			// ...and return it.
+			return mobileTBI;
+		}
+		return null;
+	}
+	
+	/*
+	 * Returns a List<ToolbarItem> of track binder items required
+	 * for the binder.
+	 */
+	private static List<ToolbarItem> constructTrackBinderItem(AllModulesInjected bs, Binder binder) {
+		List<ToolbarItem> tbTBIs = new ArrayList<ToolbarItem>();
+		List<TrackInfo> tiList = GwtUIHelper.getTrackInfoList(bs, binder);
+		for (TrackInfo ti:  tiList) {
+			ToolbarItem tbTBI = new ToolbarItem(ti.m_tbName);
+			markTBITitle(tbTBI, ti.m_resourceKey                 );
+			markTBIEvent(tbTBI, TeamingEvents.valueOf(ti.m_event));
+			tbTBIs.add(tbTBI);
+		}
+		return tbTBIs;
+	}
+
+	/*
+	 * Constructs a ToolbarItem to view the trash on an binder.
+	 */
+	private static ToolbarItem constructTrashItem(HttpServletRequest request, Binder binder) {		
+		// Construct a permalink URL to the trash for the binder...
+		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
+		String trashPermalink  = GwtUIHelper.getTrashPermalink(binderPermalink);
+		
+		// ...construct a ToolbarItem for it...
+		ToolbarItem trashTBI = new ToolbarItem(TRASH);
+		markTBITitle(trashTBI, "toolbar.menu.trash"            );
+		markTBIEvent(trashTBI, TeamingEvents.GOTO_PERMALINK_URL);
+		markTBIUrl(  trashTBI, trashPermalink                  );
+
+		// ...and return it.
+		return trashTBI;
+	}
 	
 	/*
 	 * Constructs a ToolbarItem for What's New handling.
@@ -916,7 +1045,11 @@ public class GwtMenuHelper {
 	/*
 	 * Marks a ToolbarItem's URL based on an AdaptedPortletURL.
 	 */
+	private static void markTBIUrl(ToolbarItem tbi, String url) {
+		tbi.setUrl(url);
+	}
+	
 	private static void markTBIUrl(ToolbarItem tbi, AdaptedPortletURL url) {
-		tbi.setUrl(url.toString());
+		markTBIUrl(tbi, url.toString());
 	}
 }
