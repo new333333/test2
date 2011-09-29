@@ -2878,5 +2878,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
 		}
 	}
+	
+	public boolean isBinderEmpty(Binder binder) {
+		BinderProcessor processor = loadBinderProcessor(binder);
+		return processor.isFolderEmpty(binder);
+	}
 
 }
