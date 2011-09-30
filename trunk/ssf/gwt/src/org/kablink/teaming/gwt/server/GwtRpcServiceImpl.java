@@ -705,8 +705,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GetRecentPlacesRpcResponseData responseData;
 			List<RecentPlaceInfo> result;
-			
-			result = getRecentPlaces( ri );
+			if (GwtUIHelper.isGraniteGwtEnabled())
+			     result = GwtMenuHelper.getRecentPlaces(            this, getRequest( ri ), ((GetRecentPlacesCmd) cmd).getBinderId() );
+			else result = GwtServerHelper.getRecentPlacesFromCache( this, getRequest( ri )                                           );
 			responseData = new GetRecentPlacesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -867,9 +868,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetToolbarItemsRpcResponseData responseData;
 			
 			gtiCmd = ((GetToolbarItemsCmd) cmd);
-			if (GwtUIHelper.useCachedMenuBeans())
-			     result =               getToolbarItemsFromCache( getRequest( ri ), gtiCmd.getBinderId() );
-			else result = GwtMenuHelper.getToolbarItems( this,    getRequest( ri ), gtiCmd.getBinderId() );
+			if (GwtUIHelper.isGraniteGwtEnabled())
+			     result = GwtMenuHelper.getToolbarItems( this,    getRequest( ri ), gtiCmd.getBinderId() );
+			else result =               getToolbarItemsFromCache( getRequest( ri ), gtiCmd.getBinderId() );
 			responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -3887,19 +3888,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getPresenceInfo
 
 	/**
-	 * Returns information about the recent place the current user has
-	 * visited.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	private List<RecentPlaceInfo> getRecentPlaces( HttpRequestInfo ri )
-	{
-		return GwtServerHelper.getRecentPlaces( getRequest( ri ), this );
-	}// end getRecentPlaces()
-	
-	/**
 	 * Returns information about the saved search the current user has
 	 * defined.
 	 * 
@@ -3939,7 +3927,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private static List<ToolbarItem> getToolbarItemsFromCache( HttpServletRequest request, String binderId )
 	{
 		/// If the Granite GWT extensions are enabled...
-		if (!(GwtUIHelper.useCachedMenuBeans())) {
+		if (GwtUIHelper.isGraniteGwtEnabled()) {
 			// ...something's wrong as this should never be called in
 			// ...that scenario.
 			m_logger.warn("GwtRpcServiceImpl.getToolbarItemsFromCache( *Internal Error* ):  Should never be called when the Granite GWT extensions are enabled.");

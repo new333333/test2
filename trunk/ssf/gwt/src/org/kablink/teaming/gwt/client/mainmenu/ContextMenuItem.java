@@ -231,6 +231,8 @@ public class ContextMenuItem {
 				case UNTRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_PERSON:
 				case VIEW_CURRENT_BINDER_TEAM_MEMBERS:
+				case VIEW_WHATS_NEW_IN_BINDER:
+				case VIEW_WHATS_UNSEEN_IN_BINDER:
 					EventHelper.fireSimpleEvent(m_teamingEvent);
 					break;
 					

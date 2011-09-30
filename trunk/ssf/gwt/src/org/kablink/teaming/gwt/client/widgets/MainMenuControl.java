@@ -54,6 +54,8 @@ import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ViewWhatsNewInBinderEvent;
+import org.kablink.teaming.gwt.client.event.ViewWhatsUnseenInBinderEvent;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
@@ -122,7 +124,9 @@ public class MainMenuControl extends Composite
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
 		SidebarHideEvent.Handler,
-		SidebarShowEvent.Handler
+		SidebarShowEvent.Handler,
+		ViewWhatsNewInBinderEvent.Handler,
+		ViewWhatsUnseenInBinderEvent.Handler
 {
 	private BinderInfo						m_contextBinder;
 	private ContextLoadInfo					m_lastContextLoaded;
@@ -170,6 +174,10 @@ public class MainMenuControl extends Composite
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_SHOW,
+		
+		// View events.
+		TeamingEvents.VIEW_WHATS_NEW_IN_BINDER,
+		TeamingEvents.VIEW_WHATS_UNSEEN_IN_BINDER,
 	};
 	
 	/*
@@ -791,6 +799,32 @@ public class MainMenuControl extends Composite
 	@Override
 	public void onSidebarShow(SidebarShowEvent event) {
 		setWorkspaceTreeSliderMenuItemState(TeamingEvents.SIDEBAR_HIDE);
+	}
+	
+	/**
+	 * Handles ViewWhatsNewInBinderEvent's received by this class.
+	 * 
+	 * Implements the ViewWhatsNewInBinderEvent.Handler.onViewWhatsNewInBinder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewWhatsNewInBinder(ViewWhatsNewInBinderEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onViewWhatsNewInBinder():  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles ViewWhatsUnseenInBinderEvent's received by this class.
+	 * 
+	 * Implements the ViewWhatsUnseenInBinderEvent.Handler.onViewWhatsUnseenInBinder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewWhatsUnseenInBinder(ViewWhatsUnseenInBinderEvent event) {
+//!		...this needs to be implemented...
+		Window.alert("MainMenuControl.onViewWhatsUnseenInBinder():  ...this needs to be implemented...");
 	}
 	
 	/**

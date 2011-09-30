@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -64,13 +64,13 @@ import org.springframework.web.portlet.ModelAndView;
 
 
 
+@SuppressWarnings("unchecked")
 public class ProfilesBinderHelper {
 	public static ModelAndView setupProfilesBinderBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response, boolean showTrash) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
  		return setupProfilesBinderBeans(bs, binderId, request, response, model, showTrash);
 	}
-	@SuppressWarnings("unchecked")
 	public static ModelAndView setupProfilesBinderBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response, Map model, boolean showTrash) throws Exception {
 	
@@ -161,7 +161,6 @@ public class ProfilesBinderHelper {
 		return new ModelAndView(BinderHelper.getViewListingJsp(bs, BinderHelper.getViewType(bs, binder)), model);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected static void initPageCounts(RenderRequest request, Map userProperties, Tabs.TabEntry tab, Map options) {
 		Map tabOptions = tab.getData();
 		//Determine the Records Per Page
@@ -288,7 +287,7 @@ public class ProfilesBinderHelper {
 		return hmRet;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unused")
 	protected static void buildViewFolderToolbars(AllModulesInjected bs, RenderRequest request, RenderResponse response, 
 			ProfileBinder binder, Map model) {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -301,7 +300,6 @@ public class ProfilesBinderHelper {
 		Toolbar folderActionsToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
-		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar trashToolbar = new Toolbar();
 		Toolbar gwtMiscToolbar = new Toolbar();
 		Toolbar gwtUIToolbar = new Toolbar();
@@ -419,7 +417,6 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
-		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
 		model.put(WebKeys.GWT_MISC_TOOLBAR,  gwtMiscToolbar.getToolbar());
 		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());

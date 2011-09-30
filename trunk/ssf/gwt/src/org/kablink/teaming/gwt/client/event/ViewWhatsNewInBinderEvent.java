@@ -30,51 +30,91 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.event;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 
+import com.google.gwt.event.shared.EventHandler;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class holds all of the information necessary to execute the "get recent places" command.
+ * The ViewWhatsNewInBinderEvent is used to show the new items in the
+ * current binder.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
-public class GetRecentPlacesCmd extends VibeRpcCmd
-{
-	private Long m_binderId;
-	
+public class ViewWhatsNewInBinderEvent extends VibeEventBase<ViewWhatsNewInBinderEvent.Handler> {
+    public static Type<Handler> TYPE = new Type<Handler>();
+
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * Handler interface for this event.
 	 */
-	public GetRecentPlacesCmd()
-	{
-		super();
+	public interface Handler extends EventHandler {
+		void onViewWhatsNewInBinder(ViewWhatsNewInBinderEvent event);
 	}
 	
-	public GetRecentPlacesCmd(Long binderId) {
-		this();
-		m_binderId = binderId;
+	/**
+	 * Class constructor.
+	 */
+	public ViewWhatsNewInBinderEvent() {
+		super();
 	}
 
 	/**
-	 * Get'er methods.
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onViewWhatsNewInBinder(this);
+    }
+	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new ViewWhatsNewInBinderEvent());
+	}
+    
+	/**
+	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
-	public Long getBinderId() {
-		return m_binderId;
-	}
-	
+    @Override
+    public Type<Handler> getAssociatedType() {
+        return TYPE;
+    }
+    
 	/**
-	 * Returns the command's enumeration value.
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * Implements VibeBaseEvent.getEventEnum()
 	 * 
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_RECENT_PLACES.ordinal();
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.VIEW_WHATS_NEW_IN_BINDER;
+	}
+		
+	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
+	 * 
+	 * @param eventBus
+	 * @param handler
+	 * 
+	 * @return
+	 */
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 }

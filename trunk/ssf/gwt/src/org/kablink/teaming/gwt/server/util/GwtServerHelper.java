@@ -182,7 +182,6 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
-import org.kablink.util.PropertyNotFoundException;
 
 
 /**
@@ -1118,6 +1117,69 @@ public class GwtServerHelper {
 		// If we get here, reply refers to the FavoriteInfo for the
 		// JSONObject or is null.  Return it.
 		return reply;
+	}
+
+	/**
+	 * Fills a List<RecentPlaceInfo> with the recent places information
+	 * stored in a Tabs object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param tabs
+	 * @param rpiList
+	 */
+	public static void fillRecentPlacesFromTabs(AllModulesInjected bs, HttpServletRequest request, Tabs tabs, List<RecentPlaceInfo> rpiList) {
+		// Scan the tabs...
+		int count = 0;
+		List tabList = tabs.getTabList();
+		int maxTitle = SPropsUtil.getInt("history.max.title",   30);
+		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
+		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
+			// ...creating a RecentPlaceInfo object for each...
+			TabEntry tab = ((TabEntry) tabIT.next());
+			RecentPlaceInfo rpi = new RecentPlaceInfo();
+			String title = ((String) tab.getData().get("title"));
+			if (title.length() > maxTitle) {
+				title = (title.substring(0, maxTitle) + "...");
+			}
+			rpi.setTitle(title);
+			rpi.setId(String.valueOf(tab.getTabId()));
+			rpi.setType(tab.getType());
+			switch (rpi.getTypeEnum()) {
+			case BINDER:
+				// If the tab's binder is no longer accessible...
+				Long binderId = tab.getBinderId();
+				Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+				if ((null == binder) || GwtUIHelper.isBinderPreDeleted(binder)) {
+					// ...skip it.
+					continue;
+				}
+				rpi.setBinderId(String.valueOf(binderId));
+				rpi.setEntityPath(((String) tab.getData().get("path")));
+				rpi.setEntryId(String.valueOf(tab.getEntryId()));
+				rpi.setPermalink(PermaLinkUtil.getPermalink(request, binder));
+				
+				break;
+				
+			case SEARCH:
+				rpi.setSearchQuery(tab.getQuery());
+				rpi.setSearchQuick(((Boolean) tab.getData().get("quickSearch")));
+				
+				break;
+
+			default:
+				continue;
+			}
+			
+			// ...adding it to the list of them...
+			rpiList.add(rpi);
+			
+			// ...and stopping when we hit our maximum.
+			count += 1;
+			if (maxItems == count) {
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -2949,13 +3011,17 @@ public class GwtServerHelper {
 
 	/**
 	 * Returns information about the recent places the current user has
-	 * visited.
+	 * visited that has been stored by the controllers in the session
+	 * cache.
+	 *
+	 * @param bs
+	 * @param request
 	 * 
 	 * @return
 	 */
-	public static List<RecentPlaceInfo> getRecentPlaces(HttpServletRequest request, AllModulesInjected bs) {
+	public static List<RecentPlaceInfo> getRecentPlacesFromCache(AllModulesInjected bs, HttpServletRequest request) {
 		// Allocate an ArrayList to return the recent places in.
-		ArrayList<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
+		List<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
 		
 		// If we can't access the HttpSession...
 		HttpSession hSession = getCurrentHttpSession();
@@ -2974,66 +3040,9 @@ public class GwtServerHelper {
 			m_logger.debug("GwtServerHelper.getRecentPlaces( 'Could not access any cached tabs' )");
 			return rpiList;
 		}
-		
-		// What's the maximum size for a place's title?
-		int maxTitle = 30;
-		try {
-			maxTitle = SPropsUtil.getInt("history.max.title");
-		} catch (PropertyNotFoundException e) {}
 
-		// Scan the cached tabs...
-		int count = 0;
-		List tabList = tabs.getTabList();
-		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
-		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
-			// ...creating a RecentPlaceInfo object for each...
-			TabEntry tab = ((TabEntry) tabIT.next());
-			RecentPlaceInfo rpi = new RecentPlaceInfo();
-			String title = ((String) tab.getData().get("title"));
-			if (title.length() > maxTitle) {
-				title = (title.substring(0, maxTitle) + "...");
-			}
-			rpi.setTitle(title);
-			rpi.setId(String.valueOf(tab.getTabId()));
-			rpi.setType(tab.getType());
-			switch (rpi.getTypeEnum()) {
-			case BINDER:
-				// If the tab's binder is no longer accessible...
-				Long binderId = tab.getBinderId();
-				Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
-				if ((null == binder) || GwtUIHelper.isBinderPreDeleted(binder)) {
-					// ...skip it.
-					continue;
-				}
-				rpi.setBinderId(String.valueOf(binderId));
-				rpi.setEntityPath(((String) tab.getData().get("path")));
-				rpi.setEntryId(String.valueOf(tab.getEntryId()));
-				rpi.setPermalink(PermaLinkUtil.getPermalink(request, binder));
-				
-				break;
-				
-			case SEARCH:
-				rpi.setSearchQuery(tab.getQuery());
-				rpi.setSearchQuick(((Boolean) tab.getData().get("quickSearch")));
-				
-				break;
-
-			default:
-				continue;
-			}
-			
-			// ...adding it to the list of them...
-			rpiList.add(rpi);
-			
-			// ...and stopping when we hit our maximum.
-			count += 1;
-			if (maxItems == count) {
-				break;
-			}
-		}
-
-		// If we get here, rpiList refers to a List<RecentPlaceInfo> of
-		// the user's recent places.  Return it.
+		// Fill the List<RecentPlaceInfo> from the Tabs and return it.
+		fillRecentPlacesFromTabs(bs, request, tabs, rpiList);
 		return rpiList;
 	}
 	
