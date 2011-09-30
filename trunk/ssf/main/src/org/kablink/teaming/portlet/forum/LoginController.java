@@ -39,6 +39,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -143,7 +144,23 @@ public class LoginController  extends SAbstractControllerRetry {
 		if(BrowserSniffer.is_wap_xhtml(req) || 
 				BrowserSniffer.is_blackberry(req) || 
 				BrowserSniffer.is_iphone(req)) {
-			return new ModelAndView("mobile/show_login_form", model);
+			
+			String view = "mobile/show_login_form";
+			
+			Cookie[] cookies = request.getCookies();
+			if(cookies != null) {
+				for(Cookie cookie:cookies) {
+					//if we found the native mobile and we have an error logging in then
+					if(cookie.getName().equals(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE) && ex != null) {
+						String value = cookie.getValue();
+						model.put(WebKeys.URL_OPERATION2, value);
+						view = "mobile/redirected_login";
+						break;
+					}
+				}
+			}
+			
+			return new ModelAndView(view, model);
 		}
 		
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
