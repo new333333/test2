@@ -151,6 +151,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	private static final String TASK_HASSPECIFIED_END   = "X-VIBE-HASSPECIFIED-END";
 	private static final String TASK_HASSPECIFIED_START = "X-VIBE-HASSPECIFIED-START";
 	
+	// When generating a UID for an event, the follow is used to split
+	// the UID value from the iCal from the RECURRENCE-ID.  Vibe uses
+	// a combination of both to uniquely identify an event.
+	private static final String RECURRENCE_ID_MARKER	= "::RecurrenceId:";
+	
 	private static enum ComponentType {
 		Task,
 		Calendar;
@@ -1760,8 +1765,18 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		
 		Event event = new Event();
 		
-		if (uid != null) {
-			event.setUid(uid.getValue());
+		boolean hasUid           = (null != uid);
+		boolean hasRecurrenceUid = (null != recurrenceId);
+		if (hasUid || hasRecurrenceUid) {
+			StringBuffer eventUid = new StringBuffer("");
+			if (hasUid) {
+				eventUid.append(uid.getValue());
+			}
+			if (hasRecurrenceUid) {
+				eventUid.append(RECURRENCE_ID_MARKER);
+				eventUid.append(recurrenceId.getValue());
+			}
+			event.setUid(eventUid.toString());
 		}
 		if (start != null) {
 			GregorianCalendar startCal = new GregorianCalendar();
@@ -2218,6 +2233,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	/**
 	 * Creates new iCalendar object and sets fields.
 	 */
+
 	private Calendar createICalendar(String calendarName) {
 		Calendar calendar = new Calendar();
 		calendar.getProperties().add(PROD_ID);
