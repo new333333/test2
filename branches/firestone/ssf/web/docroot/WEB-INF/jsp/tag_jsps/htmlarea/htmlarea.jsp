@@ -171,9 +171,13 @@ dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
 
 //If you need to change a translated string in the advanced theme langs, do it as follows
 function ss_addLanguageChanges() {
-//	tinyMCE.addI18n('${ss_user_lang}.advanced',{
-//		font_size : "<ssf:nlt tag="xxxx" text="Font Size xxxx"/>"
-//		});
+<%
+/**
+	tinyMCE.addI18n('${ss_user_lang}.advanced',{
+		font_size : "<ssf:nlt tag="xxxx" text="Font Size xxxx"/>"
+		});
+*/
+%>
 }
 
 tinyMCE.init({
