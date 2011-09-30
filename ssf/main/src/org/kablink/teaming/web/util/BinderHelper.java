@@ -1049,6 +1049,7 @@ public class BinderHelper {
 
 	public static void addActionsFullView(AllModulesInjected bs, RenderRequest request, List actions, 
 			Long binderId, Long entryId) {
+		if (binderId == null) return;
 		Binder binder = null;
 		try {
 			binder = bs.getBinderModule().getBinder(binderId);
