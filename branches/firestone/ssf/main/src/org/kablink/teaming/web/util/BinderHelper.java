@@ -469,33 +469,8 @@ public class BinderHelper {
 					logoutUrl += "?logoutSuccessUrl=" + LOGOUT_SUCCESS_URL_MOBILE;
 				if(AUTHENTICATION_FAILURE_URL_MOBILE != null)
 					loginPostUrl += "?authenticationFailureUrl=" + AUTHENTICATION_FAILURE_URL_MOBILE;
-				
-				//See if this is a native app
-				String s_nativeMobile = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NATIVE_MOBILE_APP, "");
-				if (!s_nativeMobile.equals("")) session.setAttribute(WebKeys.URL_NATIVE_MOBILE_APP, Boolean.valueOf(s_nativeMobile));
-				Boolean nativeMobile = false;
-				if (session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP) != null) 
-					nativeMobile = (Boolean)session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP);
-				model.put(WebKeys.URL_NATIVE_MOBILE_APP, nativeMobile);
-				if(nativeMobile) {
-					boolean addCookie = true;
-					Cookie[] cookies = request.getCookies();
-					if(cookies != null) {
-						for(Cookie cookie:cookies) {
-							if(cookie.getName().equals(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE)) {
-								addCookie = false;
-								break;
-							}
-						}
-					}
-					if(addCookie) {
-						String op = (String)model.get(WebKeys.URL_OPERATION2);
-						Cookie newCookie = new Cookie(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE,op);
-						newCookie.setPath("/ssf");
-						newCookie.setMaxAge(21278567);
-						response.addProperty(newCookie);
-					}
-				}
+				//check and set cookie if is a native app
+				setupMobileCookie(session, request, response, model);
 			}
 			model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 			model.put(WebKeys.MOBILE_ACCESS_ENABLED, bs.getAdminModule().isMobileAccessEnabled());
@@ -824,6 +799,35 @@ public class BinderHelper {
 			}
 			List<Map> favList = f.getFavoritesList();
 			model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
+		}
+	}
+	
+	public static void setupMobileCookie(HttpSession session, RenderRequest request, RenderResponse response, Map model) {
+		//See if this is a native app
+		String s_nativeMobile = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NATIVE_MOBILE_APP, "");
+		if (!s_nativeMobile.equals("")) session.setAttribute(WebKeys.URL_NATIVE_MOBILE_APP, Boolean.valueOf(s_nativeMobile));
+		Boolean nativeMobile = false;
+		if (session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP) != null) 
+			nativeMobile = (Boolean)session.getAttribute(WebKeys.URL_NATIVE_MOBILE_APP);
+		model.put(WebKeys.URL_NATIVE_MOBILE_APP, nativeMobile);
+		if(nativeMobile) {
+			boolean addCookie = true;
+			Cookie[] cookies = request.getCookies();
+			if(cookies != null) {
+				for(Cookie cookie:cookies) {
+					if(cookie.getName().equals(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE)) {
+						addCookie = false;
+						break;
+					}
+				}
+			}
+			if(addCookie) {
+				String op = (String)model.get(WebKeys.URL_OPERATION2);
+				Cookie newCookie = new Cookie(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE,op);
+				newCookie.setPath("/ssf");
+				newCookie.setMaxAge(21278567);
+				response.addProperty(newCookie);
+			}
 		}
 	}
 
