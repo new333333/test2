@@ -645,6 +645,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		adapterUrl.setParameter(WebKeys.URL_OPERATION2, "whatsnew");
 		model.put(WebKeys.MOBILE_WHATSNEW_URL, adapterUrl);
 
+		HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+		BinderHelper.setupMobileCookie(session, request, response, model);
+		
 		String view = "mobile/app_login";
 		return new ModelAndView(view, model);
 	}
