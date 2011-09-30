@@ -139,6 +139,8 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_RESOURCE_LIBRARY,				// Shows the resource library page.
 	VIEW_TEAMING_FEED,					// Opens the Teaming Feed window.
 	VIEW_UNREAD_ENTRIES,				// Show unread entries.
+	VIEW_WHATS_UNSEEN_IN_BINDER,		// Shows the items that are unseen in the current binder.
+	VIEW_WHATS_NEW_IN_BINDER,			// Shows the items that are new    in the current binder.
 		
 	UNDEFINED;							// Undefined event - Should never be fired !!!
 

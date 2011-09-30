@@ -61,7 +61,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "recentPlaces_";
 	
-	@SuppressWarnings("unused")
 	private BinderInfo m_currentBinder;	// The currently selected binder.
 	
 	/*
@@ -183,7 +182,7 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 		}
 		
 		// Otherwise, read the users recent places.
-		cmd = new GetRecentPlacesCmd();
+		cmd = new GetRecentPlacesCmd(Long.parseLong(m_currentBinder.getBinderId()));
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(

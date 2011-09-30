@@ -82,10 +82,6 @@ import org.springframework.web.portlet.ModelAndView;
 public class GwtUIHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
 
-	// Used as an extra layer of enablement with the cached menu beans
-	// as I get the infrastructure in place to not need them anymore.
-	private static boolean USE_CACHED_MENU_BEANS	= SPropsUtil.getBoolean("granite.gwt.use.cached.menus", true);
-
 	// Used to write a flag to the session cache regarding the state
 	// of the GWT UI.
 	private final static String GWT_UI_ENABLED_FLAG = "gwtUIEnabled";
@@ -110,7 +106,6 @@ public class GwtUIHelper {
 	private final static String[] CACHED_TOOLBARS = new String[] {
 		WebKeys.CALENDAR_IMPORT_TOOLBAR,
 		WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,
-		WebKeys.FOLDER_ACTIONS_TOOLBAR,
 		WebKeys.FOLDER_TOOLBAR,
 		WebKeys.FOLDER_VIEWS_TOOLBAR,
 		WebKeys.GWT_MISC_TOOLBAR,
@@ -580,7 +575,7 @@ public class GwtUIHelper {
 	@SuppressWarnings("unchecked")
 	private static void cacheToolbarBeansImpl(HttpServletRequest hRequest, Map model) {
 		/// If the Granite GWT extensions are enabled...
-		if (!(useCachedMenuBeans())) {
+		if (isGraniteGwtEnabled()) {
 			// ...we don't cache the toolbar beans.  Bail.
 			return;
 		}
@@ -1393,16 +1388,6 @@ public class GwtUIHelper {
 		     reply = binder.getSearchTitle();
 		else reply = binder.getTitle();
 		return reply;
-	}
-	
-	/**
-	 * Returns true if we should use cached beans from the controllers to
-	 * construct menus and false otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean useCachedMenuBeans() {
-		return (USE_CACHED_MENU_BEANS || (!(isGraniteGwtEnabled())));
 	}
 	
 	/**

@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -71,6 +72,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.GwtUIHelper.TrackInfo;
 import org.kablink.util.BrowserSniffer;
 
@@ -115,6 +117,8 @@ public class GwtMenuHelper {
 	private final static String SHARE					= "share";
 	private final static String SS_FORUM				= "ss_forum";
 	private final static String TRASH					= "trash";
+	private final static String UNSEEN					= "unseen";
+	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 
 	/*
@@ -133,7 +137,6 @@ public class GwtMenuHelper {
 	private static void buildFolderMenuItems(AllModulesInjected bs, HttpServletRequest request, Folder folder, List<ToolbarItem> tbiList) {
 		tbiList.add(constructFolderItems(           WebKeys.FOLDER_TOOLBAR,             bs, request, folder, EntityType.folder));
 		tbiList.add(constructFolderViewsItems(      WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, folder                   ));
-		tbiList.add(constructFolderActionsItems(    WebKeys.FOLDER_ACTIONS_TOOLBAR,     bs, request, folder, EntityType.folder));		
 		tbiList.add(constructCalendarImportItems(   WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, folder                   ));		
 		tbiList.add(constructWhatsNewItems(         WebKeys.WHATS_NEW_TOOLBAR,          bs, request, folder, EntityType.folder));
 		tbiList.add(constructEmailSubscriptionItems(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, folder                   ));
@@ -181,9 +184,7 @@ public class GwtMenuHelper {
 	 * Based on ProfilesBinderHelper.buildViewFolderToolbars()
 	 */
 	private static void buildProfilesMenuItems(AllModulesInjected bs, HttpServletRequest request, ProfileBinder pb, List<ToolbarItem> tbiList) {
-		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, pb, EntityType.profiles));
-		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, pb, EntityType.profiles));
-		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, pb, EntityType.profiles));
+		tbiList.add(constructFolderItems(WebKeys.FOLDER_TOOLBAR, bs, request, pb, EntityType.profiles));
 	}
 	
 	/*
@@ -193,9 +194,8 @@ public class GwtMenuHelper {
 	 * Based on WorkspaceTreeHelper.buildWorkspaceToolbar()
 	 */
 	private static void buildWorkspaceMenuItems(AllModulesInjected bs, HttpServletRequest request, Workspace ws, List<ToolbarItem> tbiList) {
-		tbiList.add(constructFolderItems(       WebKeys.FOLDER_TOOLBAR,         bs, request, ws, EntityType.workspace));
-		tbiList.add(constructWhatsNewItems(     WebKeys.WHATS_NEW_TOOLBAR,      bs, request, ws, EntityType.workspace));
-		tbiList.add(constructFolderActionsItems(WebKeys.FOLDER_ACTIONS_TOOLBAR, bs, request, ws, EntityType.workspace));
+		tbiList.add(constructFolderItems(  WebKeys.FOLDER_TOOLBAR,    bs, request, ws, EntityType.workspace));
+		tbiList.add(constructWhatsNewItems(WebKeys.WHATS_NEW_TOOLBAR, bs, request, ws, EntityType.workspace));
 	}
 	
 	/*
@@ -323,20 +323,6 @@ public class GwtMenuHelper {
 			markTBIEvent(emailTBI, TeamingEvents.INVOKE_EMAIL_NOTIFICATION);
 			reply.addNestedItem(emailTBI);
 		}
-		
-		// If we get here, reply refers to the ToolbarItem requested.
-		// Return it.
-		return reply;
-	}
-	
-	/*
-	 * Constructs a ToolbarItem for folder actions.
-	 */
-	private static ToolbarItem constructFolderActionsItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
-		// Allocate the base ToolbarItem to return;
-		ToolbarItem reply = new ToolbarItem(tbKey);
-		
-//!		...this needs to be implemented...		
 		
 		// If we get here, reply refers to the ToolbarItem requested.
 		// Return it.
@@ -866,13 +852,32 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for What's New handling.
+	 * Constructs the ToolbarItem's for What's New handling.
 	 */
 	private static ToolbarItem constructWhatsNewItems(String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
 		// Allocate the base ToolbarItem to return;
 		ToolbarItem reply = new ToolbarItem(tbKey);
-		
-//!		...this needs to be implemented...
+
+		// Is the current user the guest user?
+		if (!(GwtServerHelper.getCurrentUser().isShared())) {
+			// No!  Is this other than a WIKI folder?
+			boolean isFolder = (EntityType.folder == binderType);
+			if ((!isFolder) || (!(BinderHelper.isBinderWiki(binder)))) {
+				// Yes!  Generate a ToolbarItem for What's New....
+				ToolbarItem itemTBI = new ToolbarItem(WHATS_NEW);
+				markTBITitle(itemTBI,             "toolbar.menu.whatsNew"                                                          );
+				markTBIHint( itemTBI, (isFolder ? "toolbar.menu.title.whatsNewInFolder" : "toolbar.menu.title.whatsNewInWorkspace"));
+				markTBIEvent(itemTBI, TeamingEvents.VIEW_WHATS_NEW_IN_BINDER);
+				reply.addNestedItem(itemTBI);
+
+				// ...and generate one for Unseen.
+				itemTBI = new ToolbarItem(UNSEEN);
+				markTBITitle(itemTBI,             "toolbar.menu.whatsUnseen"                                                             );
+				markTBIHint( itemTBI, (isFolder ? "toolbar.menu.title.whatsUnreadInFolder" : "toolbar.menu.title.whatsUnreadInWorkspace"));
+				markTBIEvent(itemTBI, TeamingEvents.VIEW_WHATS_UNSEEN_IN_BINDER);
+				reply.addNestedItem(itemTBI);
+			}
+		}
 		
 		// If we get here, reply refers to the ToolbarItem requested.
 		// Return it.
@@ -884,6 +889,32 @@ public class GwtMenuHelper {
 	 */
 	private static AdaptedPortletURL createActionUrl(HttpServletRequest request) {
 		return new AdaptedPortletURL(request, SS_FORUM, true);
+	}
+	
+	/**
+	 * Returns information about the recent places the current user has
+	 * visited.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static List<RecentPlaceInfo> getRecentPlaces(AllModulesInjected bs, HttpServletRequest request, Long binderId) {
+		List<RecentPlaceInfo> reply = new ArrayList<RecentPlaceInfo>();
+		
+		// Read the current tabs...
+		Tabs tabs = Tabs.getTabs(request);
+		Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+		if (null != binder) {
+			// ...use them to fill List<RecentPlaceInfo>... 
+			Tabs.TabEntry tab = tabs.findTab(binder, false);
+			GwtServerHelper.fillRecentPlacesFromTabs(bs, request, tab.getTabs(), reply);
+		}
+		
+		// ...and return the List<RecentPlaceInfo>.
+		return reply;
 	}
 	
 	/**

@@ -128,6 +128,8 @@ public class EventHelper {
 		case VIEW_RESOURCE_LIBRARY:             	reply = new ViewResourceLibraryEvent();           break;
 		case VIEW_TEAMING_FEED:                 	reply = new ViewTeamingFeedEvent();               break;
 		case VIEW_UNREAD_ENTRIES:               	reply = new ViewUnreadEntriesEvent();             break;
+		case VIEW_WHATS_NEW_IN_BINDER:				reply = new ViewWhatsNewInBinderEvent();          break;
+		case VIEW_WHATS_UNSEEN_IN_BINDER:			reply = new ViewWhatsUnseenInBinderEvent();       break;
 			
 		default:
 		case UNDEFINED:
@@ -862,6 +864,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case VIEW_WHATS_NEW_IN_BINDER:
+				// A ViewWhatsNewInBinderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewWhatsNewInBinderEvent.registerEvent(eventBus, ((ViewWhatsNewInBinderEvent.Handler) eventHandler));
+				}				
+				break;
+			
+			case VIEW_WHATS_UNSEEN_IN_BINDER:
+				// A ViewWhatsUnseenInBinderEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewWhatsUnseenInBinderEvent.registerEvent(eventBus, ((ViewWhatsUnseenInBinderEvent.Handler) eventHandler));
+				}				
+				break;
+			
 			default:
 			case UNDEFINED:
 				// Whatever it is, we can't handle it!  Tell the user
@@ -1055,6 +1075,8 @@ public class EventHelper {
 			case VIEW_RESOURCE_LIBRARY:             	hasHandler = (eventHandler instanceof ViewResourceLibraryEvent.Handler);           break;
 			case VIEW_TEAMING_FEED:                 	hasHandler = (eventHandler instanceof ViewTeamingFeedEvent.Handler);               break;
 			case VIEW_UNREAD_ENTRIES:               	hasHandler = (eventHandler instanceof ViewUnreadEntriesEvent.Handler);             break;
+			case VIEW_WHATS_NEW_IN_BINDER:				hasHandler = (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler);          break;
+			case VIEW_WHATS_UNSEEN_IN_BINDER:			hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);       break;
 			
 			case UNDEFINED:
 				// Ignore.
