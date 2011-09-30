@@ -57,14 +57,16 @@
    </div>
    
 	<div class="username">${userTitle}</div>
-	<div class="userid-action">
+	<c:if test="${!empty ssEntry.workspaceId}">
+	  <div class="userid-action">
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
 							binderId="${ssEntry.workspaceId}"
 							operation="mobile_show_workspace" />">
 			<span><ssf:nlt tag="mobile.viewWorkspace" /></span>
 		</a>
-	</div>
+	  </div>
+	</c:if>
    
    <fieldset style="border:none;padding:2px;margin:0px;">
      <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
