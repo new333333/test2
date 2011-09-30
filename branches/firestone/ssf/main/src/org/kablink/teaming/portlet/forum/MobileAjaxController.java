@@ -1133,6 +1133,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					model.put(WebKeys.ENTRY, u);
 					model.put(WebKeys.BINDER, getProfileModule().getProfileBinder());
 					BinderHelper.setupMobileSearchBeans(bs, request, response, model);
+
+					model.put(WebKeys.DEFINITION_ENTRY, u);
+					model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+					if (DefinitionHelper.getDefinition(u.getEntryDefDoc(), model, "//item[@name='profileEntryStandardView']") == false) {
+						DefinitionHelper.getDefaultEntryView(u, model);
+					}
 					
 					//BinderHelper.addActionsHome(request, actions);
 					BinderHelper.addActionsRecentPlaces(request, actions, binderId);
