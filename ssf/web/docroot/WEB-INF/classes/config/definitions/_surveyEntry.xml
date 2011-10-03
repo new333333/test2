@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <definition name="_surveyEntry" caption="__definition_default_survey_entry" type="1" nextId="65" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50004"> 
-  <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
       <item name="title" caption="__title" type="data" id="3"> 
@@ -85,7 +85,7 @@
       </item> 
     </item> 
   </item>  
-  <item name="entryView" caption="__entry_view_definition" id="9"> 
+  <item name="entryView" caption="__entry_view_definition" id="9" display="view"> 
     <item name="titleView" caption="__title" id="10"> 
       <properties> 
         <property name="caption" value="__title"/> 
@@ -128,7 +128,7 @@
       </properties> 
     </item> 
   </item>  
-  <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
+  <item name="entryBlogView" caption="__entry_blog_view_definition" id="16" display="view"> 
     <item name="titleBlogView" caption="__title" id="17"> 
       <properties> 
         <property name="caption" value="__title"/> 
@@ -153,22 +153,23 @@
         <property name="caption" value="__due_date"/> 
       </properties> 
     </item>  
-    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="63">
-      <properties>
-        <property name="caption" value="__entry_attachments"/>
-      </properties>
-    </item>
-    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="64">
-      <properties>
-        <property name="caption" value="__entry_comments"/>
-      </properties>
-    </item>
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="63"> 
+      <properties> 
+        <property name="caption" value="__entry_attachments"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="64"> 
+      <properties> 
+        <property name="caption" value="__entry_comments"/> 
+      </properties> 
+    </item> 
   </item>  
-  <properties> 
-    <property name="name" value="_surveyEntry"/>  
-    <property name="caption" value="__definition_default_survey_entry"/>  
-    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
-  </properties>  
+  <properties>
+    <property name="caption" value="__definition_default_survey_entry"/>
+    <property name="name" value="_surveyEntry"/>
+    <property name="family" value="survey"/>
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
+  </properties>
   <export-mappings>
     <export definitionId="402883c6115753d801115777f284000b">_comment</export>
   </export-mappings>
