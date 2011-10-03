@@ -219,6 +219,8 @@
 				<option name="wiki" caption="__family_wiki" />
 				<option name="file" caption="__family_file" />
 				<option name="miniblog" caption="__family_miniblog" />
+				<option name="survey" caption="__family_survey" />
+				<option name="guestbook" caption="__family_guestbook" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
