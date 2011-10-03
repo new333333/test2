@@ -47,6 +47,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -244,6 +245,10 @@ public class TrashBrief implements Serializable {
 		}
 		if(fe.getReservation() != null && fe.getReservation().getPrincipal() != null)
 			feb.setReservedBy(fe.getReservation().getPrincipal().getId());
+    	org.dom4j.Document def = fe.getEntryDefDoc();
+    	if(def != null) {
+    		feb.setFamily(DefinitionUtils.getFamily(def));
+    	}
 		return feb;
 	}
 
