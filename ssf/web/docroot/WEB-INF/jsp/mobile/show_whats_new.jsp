@@ -60,7 +60,7 @@
 <c:set var="ss_hideMiniBlog" value="true" scope="request" />
 <c:set var="ss_showWhatsNewNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
-<c:if test="${ss_whatsNewSite}">
+
   <div class="folder-content">
     <div class="folder-head" style="letter-spacing: 0">
 		<form id="whatsNewForm" name="whatsNewForm" 
@@ -72,7 +72,7 @@
         <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
           <td valign="top" width="40%" nowrap>
-          <span>&nbsp;<ssf:nlt tag="mobile.whatsNew"/></span>
+          
           <a href="javascript: ;" 
       		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;">
       	    <span>
@@ -130,7 +130,7 @@
 		</table>
 		</form>
     </div>
-</c:if>
+
 	<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
 		  <span style="padding:10px;" class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
 		</c:if>
