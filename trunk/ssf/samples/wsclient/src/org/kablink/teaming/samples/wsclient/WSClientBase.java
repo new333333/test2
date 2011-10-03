@@ -451,6 +451,7 @@ public abstract class WSClientBase {
 				System.out.println("Doc Level: " + feb.getDocLevel());
 				System.out.println("Doc Number: " + feb.getDocNumber());
 				System.out.println("Title: " + feb.getTitle());
+				System.out.println("Family: " + feb.getFamily());
 				System.out.println("Href: " + feb.getHref());
 				System.out.println("Permalink: " + feb.getPermaLink());
 				String[] fileNames = feb.getFileNames();
@@ -543,6 +544,7 @@ public abstract class WSClientBase {
 			System.out.println("Entity class: " + entity.getClass().getName());
 			System.out.println("Entity ID: " + entity.getId());
 			System.out.println("Entity title: " + entity.getTitle());
+			System.out.println("Entity family: " + entity.getFamily());
 			AttachmentsField aField = entity.getAttachmentsField();
 			if(aField != null) {
 				System.out.println("Attachments name: " + aField.getName());
