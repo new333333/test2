@@ -355,10 +355,6 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		// Binder common
 		fillDefinableEntityModel(binderModel, binder);
 		binderModel.setPath(binder.getPathName());
-    	org.dom4j.Document def = binder.getEntryDefDoc();
-    	if(def != null) {
-	    	binderModel.setFamily(DefinitionUtils.getFamily(def));
-    	}
     	binderModel.setLibrary(binder.isLibrary());
     	binderModel.setMirrored(binder.isMirrored());
 	}
@@ -485,6 +481,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if(entity.getEntityType() != null) {
 			entityModel.setEntityType(entity.getEntityType().name());
 		}
+    	org.dom4j.Document def = entity.getEntryDefDoc();
+    	if(def != null) {
+    		entityModel.setFamily(DefinitionUtils.getFamily(def));
+    	}
 	}
 	
 	protected org.kablink.teaming.remoting.ws.model.Timestamp toTimestampModel(HistoryStamp hs) {
@@ -581,6 +581,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		}
 		if(entry.getReservation() != null && entry.getReservation().getPrincipal() != null)
 			entryBrief.setReservedBy(entry.getReservation().getPrincipal().getId());
+    	org.dom4j.Document def = entry.getEntryDefDoc();
+    	if(def != null) {
+    		entryBrief.setFamily(DefinitionUtils.getFamily(def));
+    	}
 		return entryBrief;
 	}	
 
@@ -607,6 +611,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		String reservedByStr = (String) entry.get(Constants.RESERVEDBY_ID_FIELD);
 		if(Validator.isNotNull(reservedByStr))
 			entryBrief.setReservedBy(Long.valueOf(reservedByStr));
+		entryBrief.setFamily((String) entry.get(Constants.FAMILY_FIELD));
 		return entryBrief;
 	}
 	

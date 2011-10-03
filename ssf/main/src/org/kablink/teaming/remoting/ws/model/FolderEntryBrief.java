@@ -48,6 +48,7 @@ public class FolderEntryBrief implements Serializable {
     private String permaLink;
     private String[] fileNames;
     private Long reservedBy;
+    private String family;
 
 	public Long getBinderId() {
 		return binderId;
@@ -120,6 +121,12 @@ public class FolderEntryBrief implements Serializable {
 	}
 	public void setReservedBy(Long reservedBy) {
 		this.reservedBy = reservedBy;
+	}
+	public String getFamily() {
+		return family;
+	}
+	public void setFamily(String family) {
+		this.family = family;
 	}
 	
 }
