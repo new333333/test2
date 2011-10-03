@@ -171,19 +171,22 @@ dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
 
 //If you need to change a translated string in the advanced theme langs, do it as follows
 function ss_addLanguageChanges() {
-<%
-/**
 	tinyMCE.addI18n('${ss_user_lang}.advanced',{
-		font_size : "<ssf:nlt tag="xxxx" text="Font Size xxxx"/>"
+		font_size : "<ssf:nlt tag="tinyMce.font_size" text="Font size"/>"
 		});
-*/
-%>
+	tinyMCE.addI18n('${ss_user_lang}.advanced',{
+		fontdefault : "<ssf:nlt tag="tinyMce.font_family" text="Font family"/>"
+		});
+	tinyMCE.addI18n('${ss_user_lang}.advanced',{
+		paragraph : "<ssf:nlt tag="tinyMce.paragraph" text="paragraph"/>"
+		});
 }
 
 tinyMCE.init({
 	paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 	mode: "specific_textareas", editor_selector: "mceEditable_minimal",
 	theme : "simple",
+	onpageload : "ss_addLanguageChanges",
 	language: "${ss_user_lang}",
 	  content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
 	  relative_urls: false, 
