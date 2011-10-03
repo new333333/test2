@@ -39,7 +39,7 @@
 		  action="__ajax_mobile" 
 		  binderId="${ssBinder.id}"
 		  operation="mobile_whats_new"><ssf:param
-		  name="type" value="${ss_type}"/><ssf:param
+		  name="ss_type" value="${ss_type}"/><ssf:param
 		  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
 		><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_20.png" 
@@ -56,7 +56,7 @@
 		action="__ajax_mobile" 
 		binderId="${ssBinder.id}"
 		operation="mobile_whats_new"><ssf:param
-		name="type" value="${ss_type}"/><ssf:param
+		name="ss_type" value="${ss_type}"/><ssf:param
 		name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 
 	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_20.png" 
