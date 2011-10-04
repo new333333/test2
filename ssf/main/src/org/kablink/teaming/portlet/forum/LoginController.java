@@ -143,7 +143,8 @@ public class LoginController  extends SAbstractControllerRetry {
 		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
 		if(BrowserSniffer.is_wap_xhtml(req) || 
 				BrowserSniffer.is_blackberry(req) || 
-				BrowserSniffer.is_iphone(req)) {
+				BrowserSniffer.is_iphone(req) ||
+				BrowserSniffer.is_droid(req)) {
 			
 			String view = "mobile/show_login_form";
 			
