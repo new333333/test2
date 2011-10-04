@@ -198,8 +198,7 @@ public class GwtMainPage extends ResizeComposite
 
 	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
-	private VibeDockLayoutPanel m_contentLayoutPanel = null;
-	private FlowPanel m_contentFlowPanel = null;
+	private MainContentLayoutPanel m_contentLayoutPanel = null;
 	private FlowPanel m_headerPanel = null;
 	private boolean m_inSearch = false;
 	private String m_searchTabId = "";
@@ -570,22 +569,15 @@ public class GwtMainPage extends ResizeComposite
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		m_splitLayoutPanel.addWest( m_wsTreeCtrl, 246 );
 		
-		// Create a panel that will hold the content.
-		m_contentLayoutPanel = new VibeDockLayoutPanel( Style.Unit.PX );
-		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
-		m_splitLayoutPanel.add( m_contentLayoutPanel );
-		
-		m_contentFlowPanel = new FlowPanel();
-		m_contentFlowPanel.getElement().setId( "contentFlowPanel" );
-		m_contentFlowPanel.addStyleName( "contentFlowPanel" );
-		m_contentLayoutPanel.add( m_contentFlowPanel );
-		
 		// Create the content control.
 		m_contentCtrl.addStyleName( "mainContentControl" );
-		m_contentFlowPanel.add( m_contentCtrl );
 		
 		m_activityStreamCtrl.hide();
-		m_contentFlowPanel.add( m_activityStreamCtrl );
+		
+		// Create a panel that will hold the content.
+		m_contentLayoutPanel = new MainContentLayoutPanel( m_contentCtrl, m_activityStreamCtrl );
+		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
+		m_splitLayoutPanel.add( m_contentLayoutPanel );
 		
 		// Do we have a url we should set the ContentControl to?
 		url = m_requestInfo.getAdaptedUrl();
@@ -859,8 +851,7 @@ public class GwtMainPage extends ResizeComposite
 			
 			// ...otherwise, we hide the activity streams control and
 			// ...let the search display.
-			m_activityStreamCtrl.hide();
-			m_contentCtrl.setVisible( true );
+			m_contentLayoutPanel.showContentControl();
 		}
 		
 		m_inSearch    = inSearch;
@@ -939,6 +930,8 @@ public class GwtMainPage extends ResizeComposite
 			 */
 			public void onSuccess( LandingPage landingPage )
 			{
+				landingPage.setPixelSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
+				m_contentLayoutPanel.showWidget( landingPage );
 			}
 		};
 		
@@ -1239,11 +1232,8 @@ public class GwtMainPage extends ResizeComposite
 		// Hide any popup entry iframe divs.
 		GwtClientHelper.jsHideEntryPopupDiv();
 		
-		// Add the ActivityStreamCtrl as the content of the center panel.
-		m_contentCtrl.setVisible( false );
-		//!!!m_contentLayoutPanel.replaceCenterContent( m_activityStreamCtrl );
 		m_activityStreamCtrl.setSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
-		m_activityStreamCtrl.show();
+		m_contentLayoutPanel.showActivityStream();
 	}
 
 	/*
@@ -1636,12 +1626,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
-		m_activityStreamCtrl.hide();
-		m_contentCtrl.setVisible( true );
-		
-		// Add the ContentCtrl as the content of the center panel.
-		//!!!m_contentLayoutPanel.replaceCenterContent( m_contentCtrl );
-		
+		m_contentLayoutPanel.showContentControl();
 		m_contentCtrl.setDimensions( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
 	}
 
@@ -1693,11 +1678,11 @@ public class GwtMainPage extends ResizeComposite
 				// If the activity stream was showing show it now.
 				if ( isActivityStreamActive() )
 				{
-					m_activityStreamCtrl.show();
+					m_contentLayoutPanel.showActivityStream();
 				}
 				else if ( m_contentCtrl.isVisible() == false )
 				{
-					m_contentCtrl.setVisible( true );
+					m_contentLayoutPanel.showContentControl();
 				}
 			}// end execute()
 		};
@@ -2727,8 +2712,7 @@ public class GwtMainPage extends ResizeComposite
 		// Hide everything on the menu, the workspace tree control and the content control.
 		m_mainMenuCtrl.showAdministrationMenubar();
 		m_wsTreeCtrl.setVisible( false );
-		m_contentCtrl.setVisible( false );
-		m_activityStreamCtrl.hide();
+		m_contentLayoutPanel.hideAllContent();
 		
 		// Put the admin control as the widget in the center panel of the main panel.
 		m_mainPanel.replaceCenterContent( m_adminControl );

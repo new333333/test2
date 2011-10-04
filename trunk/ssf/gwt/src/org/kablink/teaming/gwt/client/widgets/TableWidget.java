@@ -37,8 +37,11 @@ import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.lpe.TableConfig;
 import org.kablink.teaming.gwt.client.lpe.TableProperties;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
+import com.google.gwt.user.client.ui.Label;
 
 /**
  * 
@@ -47,6 +50,7 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  */
 public class TableWidget extends VibeWidget
 {
+	private FlowPanel m_mainPanel;
 
 	/**
 	 * 
@@ -112,6 +116,11 @@ public class TableWidget extends VibeWidget
 		CellFormatter cellFormatter;
 		
 		numColumns = props.getNumColumnsInt();
+		
+		Window.alert( "Table with " + String.valueOf( numColumns ) + " columns" );
+		Label label;
+		label = new Label( "Table with " + String.valueOf( numColumns ) + " columns" );
+		m_mainPanel.add( label );
 	
 //!!
 /*
@@ -188,23 +197,18 @@ public class TableWidget extends VibeWidget
 	 */
 	private void init( TableProperties properties )
 	{
-		FlowPanel wrapperPanel;
+		VibeDockLayoutPanel layoutPanel;
 
-		wrapperPanel = new FlowPanel();
-		wrapperPanel.addStyleName( "dropWidgetWrapperPanel" );
-
-//!!!
-/*
+		layoutPanel = new VibeDockLayoutPanel( Style.Unit.PX );
+		layoutPanel.addStyleName( "tableWidget" );
+		
 		m_mainPanel = new FlowPanel();
-		m_mainPanel.addStyleName( "lpeDropWidget" );
+		layoutPanel.add( m_mainPanel );
 		
-		// Create the table
 		createTable( properties );
-		
+
 		// All composites must call initWidget() in their constructors.
-		wrapperPanel.add( m_mainPanel );
-		initWidget( wrapperPanel );
-*/
+		initWidget( layoutPanel );
 	}
 	
 }

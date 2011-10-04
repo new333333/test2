@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
+import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -47,7 +48,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
@@ -60,18 +61,22 @@ public class LandingPage extends ResizeComposite
 {
 	private String m_binderId;
 	private ConfigData m_configData;
-	private DockLayoutPanel m_mainPanel;
+	private VibeDockLayoutPanel m_mainPanel;
 	
 	/**
 	 * 
 	 */
-	public LandingPage( String binderId )
+	public LandingPage( final String binderId )
 	{
 		Scheduler.ScheduledCommand cmd;
+		FlowPanel flowPanel;
 		
-		m_configData = null;
-		m_binderId = binderId;
+		m_mainPanel = new VibeDockLayoutPanel( Style.Unit.PX );
+		flowPanel = new FlowPanel();
+		m_mainPanel.add( flowPanel );
 		
+		initWidget( m_mainPanel );
+
 		cmd = new Scheduler.ScheduledCommand()
 		{
 			/**
@@ -79,8 +84,8 @@ public class LandingPage extends ResizeComposite
 			 */
 			public void execute()
 			{
-				// Read the configuration data from the server.
-				readConfigurationData();
+				// Initialize this landing page for the given binder.
+				initialize( binderId );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -109,14 +114,13 @@ public class LandingPage extends ResizeComposite
 	{
 		int i;;
 		int numItems;
+		FlowPanel flowPanel;
 		
 		if ( m_configData == null )
 			return;
 		
-		if ( m_mainPanel == null )
-			m_mainPanel = new DockLayoutPanel( Style.Unit.PX );
-		
-		m_mainPanel.clear();
+		flowPanel = (FlowPanel) m_mainPanel.getCenter();
+		flowPanel.clear();
 		
 		// Add items to the page that are defined in the configuration.
 		numItems = m_configData.size();
@@ -133,14 +137,14 @@ public class LandingPage extends ResizeComposite
 				// Create the appropriate composite based on the given ConfigItem.
 				widget = configItem.createWidget();
 				if ( widget != null )
-					m_mainPanel.add( widget );
+					flowPanel.add( widget );
 				else
 				{
 					//!!!
 					Label label;
 					
 					label = new Label( "widget: " + configItem.getClass().getName() );
-					m_mainPanel.add( label );
+					flowPanel.add( label );
 				}
 			}
 		}
@@ -173,6 +177,19 @@ public class LandingPage extends ResizeComposite
 			}
 		} );
 	}
+	
+	/**
+	 * Initialize this landing page with data from the given binder.
+	 */
+	public void initialize( String binderId )
+	{
+		m_configData = null;
+		m_binderId = binderId;
+
+		// Read the configuration data from the server.
+		readConfigurationData();
+	}
+	
 	
 	/**
 	 * Issue an ajax call to read the configuration data for this landing page.
