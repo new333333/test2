@@ -33,14 +33,19 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.lpe.ColWidthUnit;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
+import org.kablink.teaming.gwt.client.lpe.TableColConfig;
 import org.kablink.teaming.gwt.client.lpe.TableConfig;
 import org.kablink.teaming.gwt.client.lpe.TableProperties;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -51,6 +56,7 @@ import com.google.gwt.user.client.ui.Label;
 public class TableWidget extends VibeWidget
 {
 	private FlowPanel m_mainPanel;
+	private FlexTable m_table;
 
 	/**
 	 * 
@@ -70,6 +76,56 @@ public class TableWidget extends VibeWidget
 	}
 
 	/**
+	 * Create a widget for every child defined in TableColConfig and add the children to
+	 * the given col in the table.
+	 */
+	private void addChildWidgetsFromConfigToCell( ConfigItem configData, int col )
+	{
+		// Is the given col valid?
+		if ( col < m_table.getCellCount( 0 ) )
+		{
+			int i;
+			ResizeComposite widget;
+			
+			// Yes
+			if ( configData instanceof TableColConfig )
+			{
+				TableColConfig tableColConfig;
+				
+				tableColConfig = (TableColConfig) configData;
+				for (i = 0; i < tableColConfig.numItems(); ++i)
+				{
+					ConfigItem configItem;
+					
+					// Get the next piece of configuration information.
+					configItem = tableColConfig.get( i );
+					
+					// Create the appropriate widget based on the given ConfigItem.
+					widget = configItem.createWidget();
+					if ( widget != null )
+						m_table.setWidget( 0, col, widget );
+					else
+					{
+						Label label;
+						
+						label = new Label( "widget: " + configItem.getClass().getName() );
+						m_table.setWidget( 0, col, label );
+					}
+				}
+			}
+			else
+			{
+				// Create the appropriate Widget based on the configuration data.
+				widget = configData.createWidget();
+				
+				// Add the widget to the appropriate col.
+				m_table.setWidget( 0, col, widget );
+			}
+		}
+	}
+	
+	
+	/**
 	 * Create a widget for every child of this table as defined in the TableConfig data.
 	 */
 	public void addChildWidgetsToTable( TableConfig configData )
@@ -85,8 +141,6 @@ public class TableWidget extends VibeWidget
 			// Get the next ConfigItem.
 			configItem = configData.get( i );
 
-//!!!
-/*
 			// A TableConfig can only hold TableColConfig items.
 			if ( configItem instanceof TableColConfig )
 			{
@@ -100,7 +154,6 @@ public class TableWidget extends VibeWidget
 				// where a tableStart did not contain a tableCol element.
 				addChildWidgetsFromConfigToCell( configItem, col );
 			}
-*/
 		}
 	}
 	
@@ -117,35 +170,23 @@ public class TableWidget extends VibeWidget
 		
 		numColumns = props.getNumColumnsInt();
 		
-		Window.alert( "Table with " + String.valueOf( numColumns ) + " columns" );
-		Label label;
-		label = new Label( "Table with " + String.valueOf( numColumns ) + " columns" );
-		m_mainPanel.add( label );
-	
-//!!
-/*
-		// Have we already created a FlexTable?
-		if ( m_flexTable == null )
-		{
-			// No
-			m_flexTable = new FlexTable();
-			m_flexTable.addStyleName( "lpeTable" );
-			m_flexTable.setWidth( "100%" );
-			
-			m_mainPanel.add( m_flexTable );
-			
-			// Add 1 row to the table.
-			m_flexTable.insertRow( 0 );
-			
-			// Add the appropriate number of columns to the table.
-			for (i = 0; i < numColumns; ++i)
-			{
-				m_flexTable.addCell( 0 );
-			}
-		}
+		m_table = new FlexTable();
+		m_table.addStyleDependentName( "tableWidget" );
+		m_table.setWidth( "100%" );
 		
-		cellFormatter = m_flexTable.getFlexCellFormatter();
-		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
+		// Add 1 row to the table.
+		m_table.insertRow( 0 );
+		
+		// Add the appropriate number of columns to the table.
+		for (i = 0; i < numColumns; ++i)
+		{
+			m_table.addCell( 0 );
+		}
+
+		m_mainPanel.add( m_table );
+	
+		cellFormatter = m_table.getFlexCellFormatter();
+		for (i = 0; i < m_table.getCellCount( 0 ); ++i )
 		{
 			ColWidthUnit unit;
 			Element tdElement;
@@ -188,7 +229,6 @@ public class TableWidget extends VibeWidget
 			// Set the vertical alignment of this cell to "top".
 			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
 		}
-*/
 	}
 
 	

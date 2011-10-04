@@ -45,7 +45,9 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * This panel holds the content of the main Vibe page.  Currently this content panel
  * holds both the ActivityStreamCtrl and the ContentCtrl.  These both must exist but
- * only one is visible.
+ * only one is visible.  This panel can hold 1 additional widget.  This widget can be
+ * any widget.  When this widget is visible, the ActivityStreamCtrl and the ContentCtrl
+ * are hidden.
  * 
  * @author jwootton
  *
@@ -55,6 +57,7 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	private FlowPanel m_contentFlowPanel = null;
 	private ContentControl m_contentCtrl;
 	private ActivityStreamCtrl m_activityStreamCtrl;
+	private ResizeComposite m_miscWidget;
 
 	/**
 	 * 
@@ -65,6 +68,7 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 
 		m_contentCtrl = contentCtrl;
 		m_activityStreamCtrl = asCtrl;
+		m_miscWidget = null;
 		
 		m_contentFlowPanel = new FlowPanel();
 		m_contentFlowPanel.getElement().setId( "contentFlowPanel" );
@@ -90,6 +94,8 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	 */
 	public void showActivityStream()
 	{
+		if ( m_miscWidget != null )
+			m_miscWidget.setVisible( false );
 		m_contentCtrl.setVisible( false );
 		m_activityStreamCtrl.show();
 	}
@@ -99,6 +105,8 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	 */
 	public void showContentControl()
 	{
+		if ( m_miscWidget != null )
+			m_miscWidget.setVisible( false );
 		m_activityStreamCtrl.hide();
 		m_contentCtrl.setVisible( true );
 	}
@@ -108,21 +116,14 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	 */
 	public void showWidget( ResizeComposite composite )
 	{
-		int i;
-		
 		hideAllContent();
-		
-		// Remove all widgets (but not m_contentCtrl or m_activityStreamCtrl)
-		for (i = 0; i < m_contentFlowPanel.getWidgetCount(); ++i)
-		{
-			Widget nextWidget;
-			
-			nextWidget = m_contentFlowPanel.getWidget( i );
-			if ( nextWidget != m_contentCtrl && nextWidget != m_activityStreamCtrl )
-				m_contentFlowPanel.remove( nextWidget );
-		}
+
+		// Remove the previous widget(but not m_contentCtrl or m_activityStreamCtrl)
+		if ( m_miscWidget != null )
+			m_contentFlowPanel.remove( m_miscWidget );
 		
 		// Add the new widget
+		m_miscWidget = composite;
 		m_contentFlowPanel.add( composite );
 	}
 }

@@ -72,6 +72,7 @@ public class LandingPage extends ResizeComposite
 		FlowPanel flowPanel;
 		
 		m_mainPanel = new VibeDockLayoutPanel( Style.Unit.PX );
+		m_mainPanel.addStyleName( "landingPageMainPanel" );
 		flowPanel = new FlowPanel();
 		m_mainPanel.add( flowPanel );
 		
