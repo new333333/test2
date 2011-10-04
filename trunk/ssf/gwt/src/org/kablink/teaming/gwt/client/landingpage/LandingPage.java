@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,6 +34,8 @@
 package org.kablink.teaming.gwt.client.landingpage;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.ViewBase;
+import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
@@ -57,7 +59,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author jwootton
  *
  */
-public class LandingPage extends ResizeComposite
+public class LandingPage extends ViewBase
 {
 	private String m_binderId;
 	private ConfigData m_configData;
@@ -66,8 +68,10 @@ public class LandingPage extends ResizeComposite
 	/**
 	 * 
 	 */
-	public LandingPage( final String binderId )
+	public LandingPage( final String binderId, final ViewReady viewReady )
 	{
+		super( viewReady );
+		
 		Scheduler.ScheduledCommand cmd;
 		FlowPanel flowPanel;
 		
@@ -149,6 +153,10 @@ public class LandingPage extends ResizeComposite
 				}
 			}
 		}
+
+		// Tell the base class that we're done constructing the the
+		// landing page view.
+		viewReady();
 	}
 	
 	/**
@@ -157,7 +165,7 @@ public class LandingPage extends ResizeComposite
 	 * 
 	 * @param landingPageClient
 	 */
-	public static void createAsync( final String binderId, final LandingPageClient landingPageClient )
+	public static void createAsync( final String binderId, final ViewReady viewReady, final LandingPageClient landingPageClient )
 	{
 		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
 		{			
@@ -166,7 +174,7 @@ public class LandingPage extends ResizeComposite
 			{
 				LandingPage lp;
 				
-				lp = new LandingPage( binderId );
+				lp = new LandingPage( binderId, viewReady );
 				landingPageClient.onSuccess( lp );
 			}
 			

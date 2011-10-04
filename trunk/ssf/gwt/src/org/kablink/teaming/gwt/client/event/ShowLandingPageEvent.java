@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -47,6 +49,7 @@ public class ShowLandingPageEvent extends VibeEventBase<ShowLandingPageEvent.Han
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private String m_binderId;
+	private ViewReady m_viewReady;
 
 	/**
 	 * Handler interface for this event.
@@ -61,9 +64,10 @@ public class ShowLandingPageEvent extends VibeEventBase<ShowLandingPageEvent.Han
 	 * 
 	 * @param binderId
 	 */
-	public ShowLandingPageEvent( String binderId )
+	public ShowLandingPageEvent( String binderId, ViewReady viewReady )
 	{
 		super();
+		m_viewReady = viewReady;
 		m_binderId = binderId;
 	}
 	
@@ -73,6 +77,11 @@ public class ShowLandingPageEvent extends VibeEventBase<ShowLandingPageEvent.Han
 	public String getBinderId()
 	{
 		return m_binderId;
+	}
+	
+	public ViewReady getViewReady()
+	{
+		return m_viewReady;
 	}
 	
 	/**
