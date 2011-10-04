@@ -34,7 +34,10 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
+import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
+import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -356,9 +359,13 @@ public class ContentControl extends Composite
 					WorkspaceType wt = bi.getWorkspaceType(); 
 					switch ( wt )
 					{
+					case LANDING_PAGE:
+						GwtTeaming.fireEvent( new ShowLandingPageEvent( bi.getBinderId() ) );
+						viHandled = true;
+						break;
+						
 					case DISCUSSIONS:
 					case GLOBAL_ROOT:
-					case LANDING_PAGE:
 					case PROFILE_ROOT:
 					case PROJECT_MANAGEMENT:
 					case TEAM:
@@ -408,6 +415,9 @@ public class ContentControl extends Composite
 		{
 			// No!  Load the URL instead.
 			setUrl( url );
+			
+			// Show the content control.
+			ShowContentControlEvent.fireOne();
 		}
 	}// end setViewNow()
 	

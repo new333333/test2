@@ -1509,7 +1509,7 @@ body, table td, select
 }
 
 /* Style used for the panel that holds the content control. */
-.mainContentControl
+.mainContentControl, .landingPageMainPanel
 {
 	top: 8px !important;
 	background-color:#fff;

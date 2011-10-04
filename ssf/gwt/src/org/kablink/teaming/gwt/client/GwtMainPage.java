@@ -67,6 +67,8 @@ import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 import org.kablink.teaming.gwt.client.event.SearchTagEvent;
+import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
+import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -179,6 +181,8 @@ public class GwtMainPage extends ResizeComposite
 		SearchSavedEvent.Handler,
 		SearchSimpleEvent.Handler,
 		SearchTagEvent.Handler,
+		ShowContentControlEvent.Handler,
+		ShowLandingPageEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarReloadEvent.Handler,
 		SidebarShowEvent.Handler,
@@ -275,6 +279,12 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.SEARCH_SAVED,
 		TeamingEvents.SEARCH_SIMPLE,
 		TeamingEvents.SEARCH_TAG,
+		
+		// Show Content Control event
+		TeamingEvents.SHOW_CONTENT_CONTROL,
+		
+		// Landing Page events
+		TeamingEvents.SHOW_LANDING_PAGE,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -2020,6 +2030,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onGotoMyWorkspace( GotoMyWorkspaceEvent event )
 	{
+		m_contentLayoutPanel.showContentControl();
 		gotoUrlAsync( m_requestInfo.getMyWorkspaceUrl() );
 	}// end onGotoMyWorkspace()
 	
@@ -2311,6 +2322,32 @@ public class GwtMainPage extends ResizeComposite
 		String searchUrl = GwtClientHelper.jsBuildTagSearchUrl( tagName );
 		gotoUrlAsync( searchUrl );
 	}// end onSearchTag()
+	
+	/**
+	 * Handles ShowContentControlEvent's received by this class.
+	 * 
+	 * Implements the ShowContentControlEvent.Handler.onShowContentControl() method.
+	 * 
+	 */
+	@Override
+	public void onShowContentControl( ShowContentControlEvent event )
+	{
+		// Display the content control
+		m_contentLayoutPanel.showContentControl();
+	}
+	
+	/**
+	 * Handles ShowLandingPageEvent's received by this class.
+	 * 
+	 * Implements the ShowLandingPageEvent.Handler.onShowLandingPage() method.
+	 * 
+	 */
+	@Override
+	public void onShowLandingPage( ShowLandingPageEvent event )
+	{
+		// Display a landing page for the given binder id.
+		displayLandingPage( event.getBinderId() );
+	}
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.

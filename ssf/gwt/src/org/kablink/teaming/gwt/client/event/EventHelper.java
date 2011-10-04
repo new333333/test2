@@ -104,6 +104,7 @@ public class EventHelper {
 		case MENU_HIDE:								reply = new MenuHideEvent();					  break;
 		case MENU_SHOW:								reply = new MenuShowEvent();					  break;
 		case SEARCH_ADVANCED:                   	reply = new SearchAdvancedEvent();                break;
+		case SHOW_CONTENT_CONTROL:                 	reply = new ShowContentControlEvent();            break;
 		case SIDEBAR_HIDE:                      	reply = new SidebarHideEvent();                   break;
 		case SIDEBAR_RELOAD:                    	reply = new SidebarReloadEvent();                 break;
 		case SIDEBAR_SHOW:                      	reply = new SidebarShowEvent();                   break;
@@ -611,6 +612,24 @@ public class EventHelper {
 					registrationHandler = SearchTagEvent.registerEvent(eventBus, ((SearchTagEvent.Handler) eventHandler));
 				}
 				break;
+				
+			case SHOW_CONTENT_CONTROL:
+				// A ShowContentControlEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShowContentControlEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowContentControlEvent.registerEvent( eventBus, ((ShowContentControlEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SHOW_LANDING_PAGE:
+				// A ShowLandingPageEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShowLandingPageEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowLandingPageEvent.registerEvent( eventBus, ((ShowLandingPageEvent.Handler) eventHandler));
+				}
+				break;
 			
 			case SIDEBAR_HIDE:
 				// A SidebarHideEvent!  Can the event handler we were
@@ -1042,6 +1061,9 @@ public class EventHelper {
 			case SEARCH_SAVED:                      	hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                   break;
 			case SEARCH_SIMPLE:                     	hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);                  break;
 			case SEARCH_TAG:                        	hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                     break;
+			
+			case SHOW_CONTENT_CONTROL:                  hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);            break;
+			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			
 			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;
 			case SIDEBAR_RELOAD:                    	hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);                 break;

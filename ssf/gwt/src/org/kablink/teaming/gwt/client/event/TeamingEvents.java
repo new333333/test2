@@ -107,6 +107,9 @@ public enum TeamingEvents implements IsSerializable {
 	SEARCH_SIMPLE,						// Performs a simple search on a string.
 	SEARCH_TAG,							// Executes a search using a string as a tag Name.
 	
+	SHOW_CONTENT_CONTROL,				// Shows the Content Control
+	SHOW_LANDING_PAGE,					// Shows the landing page
+	
 	SIDEBAR_HIDE,						// Hides the left navigation panel.
 	SIDEBAR_RELOAD,						// Tells the left navigation panel to reload itself.
 	SIDEBAR_SHOW,						// Shows the left navigation panel.
