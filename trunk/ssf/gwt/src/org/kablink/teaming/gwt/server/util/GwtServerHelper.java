@@ -2343,7 +2343,7 @@ public class GwtServerHelper {
 		// accessed and null otherwise.  Return it.
 		return reply;
 	}
-	
+
 	/**
 	 * Returns a BinderInfo describing a binder.
 	 * 
@@ -3550,6 +3550,27 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Given a user ID, returns the corresponding User object.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static User getUserFromId(AllModulesInjected bs, Long userId) {
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		Set<User> userSet = bs.getProfileModule().getUsers(userIds);
+		User[] users = userSet.toArray(new User[0]);
+		
+		User reply;
+		if ((null != users) && (1 == users.length))
+		     reply = users[0];
+		else reply = null;
+		return reply;
+	}
+	
+	/**
 	 * Return the "show setting" (show all or show unread) for the "What's new" page.
 	 */
 	public static ShowSetting getWhatsNewShowSetting( UserProperties userProperties )
@@ -3892,6 +3913,7 @@ public class GwtServerHelper {
 		case GET_VERTICAL_NODE:
 		case GET_VERTICAL_TREE:
 		case GET_VIEW_FOLDER_ENTRY_URL:
+		case GET_VIEW_INFO:
 		case HAS_ACTIVITY_STREAM_CHANGED:
 		case IS_ALL_USERS_GROUP:
 		case IS_PERSON_TRACKED:

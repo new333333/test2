@@ -35,47 +35,39 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * This class holds all of the information necessary to execute the "Get Binder Info" command.
+ * This class holds all of the information necessary to execute the
+ * 'Get View Info' command.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
-public class GetBinderInfoCmd extends VibeRpcCmd
-{
-	private String m_binderId;
+public class GetViewInfoCmd extends VibeRpcCmd {
+	private String m_url;
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public GetBinderInfoCmd()
-	{
+	public GetViewInfoCmd() {
 		super();
 	}
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param url
 	 */
-	public GetBinderInfoCmd( String binderId )
-	{
-		this();
-		m_binderId = binderId;
+	public GetViewInfoCmd(String url) {
+		this();		
+		m_url = url;
 	}
 	
 	/**
+	 * Get'er method.
 	 * 
+	 * @return
 	 */
-	public GetBinderInfoCmd( Long binderId )
-	{
-		this( String.valueOf( binderId ) );
-	}
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
+	public String getUrl() {return m_url;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -86,6 +78,6 @@ public class GetBinderInfoCmd extends VibeRpcCmd
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.GET_BINDER_INFO.ordinal();
+		return VibeRpcCmdType.GET_VIEW_INFO.ordinal();
 	}
 }

@@ -39,17 +39,29 @@ import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.gwt.client.util.ViewType;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.RequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
@@ -67,6 +79,9 @@ public class ContentControl extends Composite
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
+	private boolean m_isAdminContent;
+	private boolean m_isDebugUI;
+	private boolean m_isGraniteGwtEnabled;
 	private GwtMainPage m_mainPage;
 	private NamedFrame m_frame;
 	
@@ -94,9 +109,14 @@ public class ContentControl extends Composite
 		// Store the parameters.
 		m_mainPage = mainPage;
 
+		// Extract some commonly used flags from the RequestInfo.
+		RequestInfo ri = GwtClientHelper.getRequestInfo();
+		m_isDebugUI           = ri.isDebugUI();
+		m_isGraniteGwtEnabled = ri.isGraniteGwtEnabled();
+
 		// Is this other than the admin control's content panel?
-		boolean isAdminContent = ( name.equals( "adminContentControl" ));
-		if ( !isAdminContent )
+		m_isAdminContent = ( name.equals( "adminContentControl" ));
+		if ( !m_isAdminContent )
 		{
 			// Yes!  Register the events to be handled by this class.
 			EventHelper.registerEventHandlers(
@@ -111,7 +131,7 @@ public class ContentControl extends Composite
 		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
 		m_frame = new NamedFrame( name );
 		m_frame.setPixelSize( 700, 500 );
-		m_frame.getElement().setId( isAdminContent ?  "adminContentControl" : "contentControl" );
+		m_frame.getElement().setId( m_isAdminContent ?  "adminContentControl" : "contentControl" );
 		m_frame.setUrl( "" );
 		mainPanel.add( m_frame );
 		
@@ -155,17 +175,15 @@ public class ContentControl extends Composite
 	 */
 	public void reload()
 	{
-		String url;
-		
-		// Clear the iframe content.
+		// Clear the IFRAME content.
 		clear();
 		
-		// Remember the current url.
-		url = m_frame.getUrl();
+		// Remember the current URL.
+		String url = m_frame.getUrl();
 
-		// Reload the url.
-		setUrl( "" );
-		setUrl( url );
+		// Reload the URL.
+		setUrl(         ""  );
+		setViewFromUrl( url );
 	}// end reload()
 	
 	
@@ -215,15 +233,184 @@ public class ContentControl extends Composite
 			$wnd.top.gwtContentIframe.ss_resizeTasks();
 		}
 	}-*/;	
-	
+
 	/**
-	 * This method will set the url used by the iframe.
+	 * This method will set the URL used by the IFRAME.
+	 * 
+	 * @param url
 	 */
 	public void setUrl( String url )
 	{
 		m_frame.setUrl( url );
 	}// end setUrl()
 
+	/*
+	 * Asynchronously loads a view based on a ViewInfo.
+	 */
+	private void setViewAsync( final ViewInfo vi, final String url ) {
+		ScheduledCommand doSetBinderView = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				setViewNow( vi, url );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doSetBinderView );
+	}// end setViewAsync()
+
+	/*
+	 * If the Granite GWT UI is enabled, sets the view based on the
+	 * URL.  Otherwise, simply loads the URL in the content frame the
+	 * way it has always been done.
+	 */
+	private void setViewFromUrl( final String url ) {
+		// Are we running the Granite GWT extensions?
+		if (m_isGraniteGwtEnabled && (!m_isAdminContent))
+		{			
+			// Yes!  Use the URL to get a ViewInfo for the new
+			// context.
+			GetViewInfoCmd cmd = new GetViewInfoCmd( url );
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>()
+			{
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetViewInfo(),
+						url );
+				}// end onFailure()
+				
+				public void onSuccess( VibeRpcResponse response )
+				{				
+					// Show the context asynchronously so that we can
+					// release the AJAX request ASAP.
+					ViewInfo vi = ((ViewInfo) response.getResponseData());
+					setViewAsync( vi, url );
+				}//end onSuccess()
+			});
+		}
+			
+		else
+		{
+			// No, we aren't running the Granite GWT extensions!
+			// Put the change into affect the old way via the URL.
+			setUrl( url );
+		}
+	}
+	
+	/*
+	 * Synchronously loads a view based on a ViewInfo.
+	 * 
+	 * If a view cannot be determined (or no ViewInfo was provided),
+	 * the URL is loaded into the IFRAME instead.
+	 */
+	private void setViewNow( ViewInfo vi, String url ) {
+		// Do we have a ViewInfo?
+		boolean viHandled = false;
+		if ( null != vi )
+		{
+			// What type of view is it?
+			ViewType vt = vi.getViewType();
+			switch ( vt )
+			{
+			case BINDER:
+				// A binder!  What type of binder is it?
+				BinderInfo bi = vi.getBinderInfo();
+				BinderType bt = bi.getBinderType();
+				switch ( bt )
+				{
+				case FOLDER:
+					// A folder!  What type of folder is it?
+					FolderType ft = bi.getFolderType();
+					switch ( ft )
+					{
+					case BLOG:
+					case CALENDAR:
+					case DISCUSSION:
+					case FILE:
+					case GUESTBOOK:
+					case MILESTONE:
+					case MINIBLOG:
+					case MIRROREDFILE:
+					case PHOTOALBUM:
+					case SURVEY:
+					case TASK:
+					case TRASH:
+					case WIKI:
+						// These aren't handled!  Let things take the
+						// default flow.
+						break;
+						
+					default:
+						// Something we don't know how to handle!
+						if ( m_isDebugUI ) {
+							Window.alert("ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )");
+						}
+						break;
+					}
+					break;
+					
+				case WORKSPACE:
+					// A workspace!  What type of workspace is it?
+					WorkspaceType wt = bi.getWorkspaceType(); 
+					switch ( wt )
+					{
+					case DISCUSSIONS:
+					case GLOBAL_ROOT:
+					case LANDING_PAGE:
+					case PROFILE_ROOT:
+					case PROJECT_MANAGEMENT:
+					case TEAM:
+					case TEAM_ROOT:
+					case TOP:
+					case TRASH:
+					case USER:
+					case WORKSPACE:
+						// These aren't handled!  Let things take the 
+						// default flow.
+						break;
+					
+					default:
+						// Something we don't know how to handle!  
+						if ( m_isDebugUI ) {
+							Window.alert("ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )");
+						}
+						break;
+					}
+					break;
+				
+				default:
+					// Something we don't know how to handle!
+					if ( m_isDebugUI ) {
+						Window.alert("ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )");
+					}
+					break;
+				}
+				break;
+				
+			case ADVANCED_SEARCH:
+				// These aren't handled!  Let things take the
+				// default flow.
+				break;
+				
+			default:
+				// Something we don't know how to handle!
+				if ( m_isDebugUI ) {
+					Window.alert("ContentControl.setViewNow( Unhandled ViewType:  " + vt.name() + " )");
+				}
+				break;
+			}			
+		}
+
+		// Did we handle the ViewInfo as a view?
+		if (!viHandled)
+		{
+			// No!  Load the URL instead.
+			setUrl( url );
+		}
+	}// end setViewNow()
+	
 	/**
 	 * Handles ChangeContextEvent's received by this class.
 	 * 
@@ -238,10 +425,10 @@ public class ContentControl extends Composite
 		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 		if ( GwtClientHelper.validateOSBI( osbInfo, false ))
 		{
-			// Yes!  Tell everybody the context is about to be
-			// changed and put the change into affect.
-			ContextChangingEvent.fireOne();			
-			setUrl( osbInfo.getBinderUrl() );
+			// Yes!  Tell everybody the context is about to be changed
+			// and change it.
+			ContextChangingEvent.fireOne();						
+			setViewFromUrl( osbInfo.getBinderUrl() );
 		}
 	}// end onChangeContext()
 	
