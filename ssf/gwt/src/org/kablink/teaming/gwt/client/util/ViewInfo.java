@@ -30,62 +30,58 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.util;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds all of the information necessary to execute the "Get Binder Info" command.
+ * Class used to communicate information about a view between the
+ * client and server.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  *
  */
-public class GetBinderInfoCmd extends VibeRpcCmd
-{
-	private String m_binderId;
+public class ViewInfo implements IsSerializable, VibeRpcResponseData {
+	private BinderInfo m_binderInfo;				// If view type is binder, a BinderInfo object that describes it.
+	private ViewType   m_viewType = ViewType.OTHER;	//
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
-	 */
-	public GetBinderInfoCmd()
-	{
-		super();
-	}
-	
-	/**
+	 * Constructor method.
 	 * 
+	 * No parameters as per GWT serialization requirements.
 	 */
-	public GetBinderInfoCmd( String binderId )
-	{
+	public ViewInfo() {
+		// Nothing to do.
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param viewType
+	 */
+	public ViewInfo(ViewType viewType) {
 		this();
-		m_binderId = binderId;
+		m_viewType = viewType;
 	}
-	
+
 	/**
-	 * 
-	 */
-	public GetBinderInfoCmd( Long binderId )
-	{
-		this( String.valueOf( binderId ) );
-	}
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_BINDER_INFO.ordinal();
-	}
+	public boolean    isAdvancedSearchView() {return m_viewType == ViewType.ADVANCED_SEARCH;}
+	public boolean    isBinderView()         {return m_viewType == ViewType.BINDER;         }
+	public BinderInfo getBinderInfo()        {return m_binderInfo;                          }
+	public ViewType   getViewType()          {return m_viewType;                            }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @return
+	 */
+	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}	
+	public void setViewType(  ViewType   viewType)   {m_viewType   = viewType;  }	
 }

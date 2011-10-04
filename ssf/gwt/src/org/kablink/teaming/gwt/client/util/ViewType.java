@@ -30,62 +30,21 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.util;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds all of the information necessary to execute the "Get Binder Info" command.
+ * Enumeration used to communicate the type of a view between the
+ * client and the server as part of a GWT RPC request.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  *
  */
-public class GetBinderInfoCmd extends VibeRpcCmd
-{
-	private String m_binderId;
+public enum ViewType implements IsSerializable {
+	ADVANCED_SEARCH,
+	BINDER,
 	
-	/**
-	 * For GWT serialization, must have a zero param contructor
-	 */
-	public GetBinderInfoCmd()
-	{
-		super();
-	}
-	
-	/**
-	 * 
-	 */
-	public GetBinderInfoCmd( String binderId )
-	{
-		this();
-		m_binderId = binderId;
-	}
-	
-	/**
-	 * 
-	 */
-	public GetBinderInfoCmd( Long binderId )
-	{
-		this( String.valueOf( binderId ) );
-	}
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_BINDER_INFO.ordinal();
-	}
+	OTHER,
 }

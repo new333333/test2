@@ -124,12 +124,14 @@ import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
+import org.kablink.teaming.gwt.server.util.GwtViewHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -347,6 +349,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			binderId = ((GetBinderInfoCmd) cmd).getBinderId();
 			binderInfo = getBinderInfo( ri, binderId );
 			response = new VibeRpcResponse( binderInfo );
+			return response;
+		}
+		
+		case GET_VIEW_INFO:
+		{
+			ViewInfo vi = getViewInfo( ri, ((GetViewInfoCmd) cmd) );
+			response = new VibeRpcResponse( vi );
 			return response;
 		}
 		
@@ -3646,6 +3655,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private BinderInfo getBinderInfo( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.getBinderInfo( this, binderId );
+	}//end getBinderInfo()
+
+	/**
+	 * Returns a ViewInfo used to control folder views based on a URL.
+	 *
+	 * @param ri
+	 * @param viCmd
+	 * 
+	 * @return
+	 */
+	private ViewInfo getViewInfo( HttpRequestInfo ri, GetViewInfoCmd viCmd )
+	{
+		return GwtViewHelper.getViewInfo( this, getRequest( ri ), viCmd.getUrl() );
 	}//end getBinderInfo()
 
 	/**

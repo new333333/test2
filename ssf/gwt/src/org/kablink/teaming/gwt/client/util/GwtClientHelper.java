@@ -321,6 +321,11 @@ public class GwtClientHelper {
 		handleGwtRPCFailure(t, errorMessage, new String[]{patch});
 	}
 	
+	public static void handleGwtRPCFailure(Throwable t, String errorMessage, Long patch) {
+		// Always use the initial form of the method.
+		handleGwtRPCFailure(t, errorMessage, new String[]{String.valueOf(patch)});
+	}
+	
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage) {
 		// Always use the initial form of the method.
 		handleGwtRPCFailure(t, errorMessage, ((String[]) null));

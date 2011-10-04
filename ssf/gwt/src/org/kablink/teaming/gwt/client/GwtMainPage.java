@@ -584,7 +584,7 @@ public class GwtMainPage extends ResizeComposite
 		if ( url != null && url.length() > 0 )
 		{
 			// Yes
-			m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() );
+			gotoUrlAsync( m_requestInfo.getAdaptedUrl() );
 		}
 		
 		// Add a ResizeHandler to the browser so we'll know when the user resizes the browser.

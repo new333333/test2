@@ -30,62 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.datatable;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
-
+import com.google.gwt.user.cellview.client.DataGrid;
 
 /**
- * This class holds all of the information necessary to execute the "Get Binder Info" command.
+ * Common 'data table' base class for use by all Vibe folders that show
+ * a simple list of entries.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
-public class GetBinderInfoCmd extends VibeRpcCmd
-{
-	private String m_binderId;
-	
-	/**
-	 * For GWT serialization, must have a zero param contructor
-	 */
-	public GetBinderInfoCmd()
-	{
-		super();
-	}
-	
-	/**
-	 * 
-	 */
-	public GetBinderInfoCmd( String binderId )
-	{
-		this();
-		m_binderId = binderId;
-	}
-	
-	/**
-	 * 
-	 */
-	public GetBinderInfoCmd( Long binderId )
-	{
-		this( String.valueOf( binderId ) );
-	}
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_BINDER_INFO.ordinal();
-	}
+public class VibeDataTable<T> extends DataGrid<T> {
 }
