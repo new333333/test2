@@ -81,6 +81,7 @@ public class ElementBuilderMashupCanvas extends AbstractElementBuilder {
 			}
 		}
 		String mashupValue = DefinitionHelper.fixupMashupCanvasGraphics(obj.toString(), entity);
+		mashupValue = MarkupUtil.markupStringReplacementForExport(mashupValue);
     	return build(element, mashupValue, dataElemType, dataElemName);
     }
 }
