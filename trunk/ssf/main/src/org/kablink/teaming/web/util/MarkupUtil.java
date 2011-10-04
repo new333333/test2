@@ -131,9 +131,13 @@ public class MarkupUtil {
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
 	protected final static Pattern titleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
 	protected final static Pattern titleUrlBinderPattern = Pattern.compile("binderId=([^\\s]*)");
+	protected final static Pattern titleUrlBinderPattern2 = Pattern.compile("binderId%3d([^\\s]*)");
 	protected final static Pattern titleUrlZoneUUIDPattern = Pattern.compile("zoneUUID=([^\\s]*)");
+	protected final static Pattern titleUrlZoneUUIDPattern2 = Pattern.compile("zoneUUID%3d([^\\s]*)");
 	protected final static Pattern titleUrlTitlePattern = Pattern.compile("title=([^\\s]*)");
+	protected final static Pattern titleUrlTitlePattern2 = Pattern.compile("title%3d([^\\s]*)");
 	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$");
+	protected final static Pattern titleUrlTextPattern2 = Pattern.compile("text%3d(.*)$");
 	protected final static Pattern youtubeUrlPattern = Pattern.compile("(\\{\\{youtubeUrl: ([^\\}]*)\\}\\})");
 	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url=([^\\s]*)");
 	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width=([^\\s]*)");
@@ -1245,28 +1249,53 @@ public class MarkupUtil {
 				if (matcher.groupCount() < 2) continue;
 				String urlParts = matcher.group(2).trim();
 				String s_binderId = "";
+				String s_binderIdEquals = "=";
 				Matcher fieldMatcher = titleUrlBinderPattern.matcher(urlParts);
 				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
+				fieldMatcher = titleUrlBinderPattern2.matcher(urlParts);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) {
+					s_binderId = fieldMatcher.group(1).trim();
+					s_binderIdEquals = "%3d";
+				}
 		    		
 				String s_zoneUUID = "";
+				String s_zoneUUIDEquals = "=";
 				fieldMatcher = titleUrlZoneUUIDPattern.matcher(urlParts);
 				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1).trim();
+				fieldMatcher = titleUrlZoneUUIDPattern2.matcher(urlParts);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) {
+					s_zoneUUID = fieldMatcher.group(1).trim();
+					s_zoneUUIDEquals = "%3d";
+				}
 				if (s_zoneUUID.equals("")) {
 					ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
 					s_zoneUUID = String.valueOf(zoneInfo.getId());
+					s_zoneUUIDEquals = s_binderIdEquals;
 				}
 		    		
 				String normalizedTitle = "";
+				String normalizedTitleEquals = "=";
 				fieldMatcher = titleUrlTitlePattern.matcher(urlParts);
 				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
+				fieldMatcher = titleUrlTitlePattern2.matcher(urlParts);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) {
+					normalizedTitle = fieldMatcher.group(1).trim();
+					normalizedTitleEquals = "%3d";
+				}
 		        	
 				String title = "";
+				String titleEquals = "=";
 				fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
 				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
+				fieldMatcher = titleUrlTextPattern2.matcher(urlParts); //html stripped on input
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) {
+					title = fieldMatcher.group(1).trim();
+					titleEquals = "%3d";
+				}
 		        	
 				//rebuild the link
-	    		String titleLink = "{{titleUrl: binderId=" + s_binderId + " zoneUUID=" + s_zoneUUID + 
-	    			" title=" + normalizedTitle + " text=" + Html.stripHtml(title) + "}}";
+	    		String titleLink = "{{titleUrl: binderId" + s_binderIdEquals + s_binderId + " zoneUUID" + s_zoneUUIDEquals + s_zoneUUID + 
+	    			" title" + normalizedTitleEquals + normalizedTitle + " text" + titleEquals + Html.stripHtml(title) + "}}";
     			matcher.appendReplacement(outputBuf, titleLink.replace("$", "\\$"));
 	    	} while (matcher.find());
 			matcher.appendTail(outputBuf);
