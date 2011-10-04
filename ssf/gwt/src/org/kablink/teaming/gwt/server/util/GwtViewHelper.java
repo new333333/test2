@@ -35,11 +35,8 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -65,6 +63,64 @@ public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 
 	/*
+	 * Dumps the contents of a ViewInfo object.
+	 */
+	private static void dumpViewInfo(ViewInfo vi) {
+		// If debug tracing isn't enabled...
+		if (!(m_logger.isDebugEnabled())) {
+			// ...bail.
+			return;
+		}
+
+		// If we weren't given a ViewInfo to dump...
+		if (null == vi) {
+			// ...trace that fact and bail.
+			m_logger.debug("...dumpViewInfo( null ):  No ViewInfo to dump.");
+			return;
+		}
+		
+		ViewType vt = vi.getViewType();
+		m_logger.debug("...dumpViewInfo( " + vt.name() + " )");
+		switch (vt) {
+		case BINDER:
+			BinderInfo bi = vi.getBinderInfo();
+			BinderType bt = bi.getBinderType();
+			m_logger.debug(".....dumpViewInfo( BINDER ):  " + bt.name());
+			switch (bt) {
+			case FOLDER:
+				m_logger.debug("........dumpViewInfo( BINDER:FOLDER     ):  " + bi.getFolderType().name());
+				break;
+				
+			case WORKSPACE:
+				m_logger.debug("........dumpViewInfo( BINDER:WORKSPACE  ):  " + bi.getWorkspaceType().name());
+				break;
+			
+			case OTHER:
+				m_logger.debug("........dumpViewInfo( BINDER:OTHER      )");
+				break;
+				
+			default:
+				m_logger.debug(".........dumpViewInfo( BINDER:Not Handled ):  This BinderType is not implemented by the dumper.");
+				break;
+			}
+			
+			m_logger.debug("........dumpViewInfo( BINDER:Id         ):  " + bi.getBinderId());
+			m_logger.debug("........dumpViewInfo( BINDER:Title      ):  " + bi.getBinderTitle());
+			m_logger.debug("........dumpViewInfo( BINDER:EntityType ):  " + bi.getEntityType());
+			
+			break;
+			
+		case ADVANCED_SEARCH:
+		case OTHER:
+			break;
+			
+		default:
+			m_logger.debug("......dumpViewInfo( Not Handled ):  This ViewType is not implemented by the dumper.");
+			break;
+		}
+	}
+	
+	/*
 	 * Returns a Map<String, String> for the query parameters from a
 	 * URL.
 	 */
@@ -75,7 +131,7 @@ public class GwtViewHelper {
 			uri = new URI(url);
 		} catch (URISyntaxException e) {
 			// No!  Log the error and bail.
-			m_logger.error("GwtServerHelper.getQueryParameters( URL Parsing Exception ):  ", e);
+			m_logger.error("GwtViewHelper.getQueryParameters( URL Parsing Exception ):  ", e);
 			return null;
 		}
 		
@@ -208,12 +264,13 @@ public class GwtViewHelper {
 	 */
 	public static ViewInfo getViewInfo(AllModulesInjected bs, HttpServletRequest request, String url) {
 		// Trace the URL we're working with.
-		m_logger.info("GwtViewHelper.getViewInfo():  " + url);
+		m_logger.debug("GwtViewHelper.getViewInfo():  " + url);
 
 		// Can we parse the URL?
 		Map<String, String> nvMap = getQueryParameters(url);
 		if ((null == nvMap) || nvMap.isEmpty()) {
 			// No!  Then we can't get a BinderInfo.
+			m_logger.debug("GwtViewHelper.getViewInfo():  1:Could not determine a view.");
 			return null;
 		}
 
@@ -231,6 +288,7 @@ public class GwtViewHelper {
 				// A user!  Can we access the user?
 				Long entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID);			
 				if (!(initVIFromUser(bs, GwtServerHelper.getUserFromId(bs, entryId), vi))) {
+					m_logger.debug("GwtViewHelper.getViewInfo():  2:Could not determine a view.");
 					return null;
 				}
 			}
@@ -238,6 +296,7 @@ public class GwtViewHelper {
 				// A folder, workspace or the profiles binder!  Setup
 				// a binder view based on the binder ID.
 				if (!(initVIFromBinderId(bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+					m_logger.debug("GwtViewHelper.getViewInfo():  3:Could not determine a view.");
 					return null;
 				}
 			}
@@ -247,6 +306,7 @@ public class GwtViewHelper {
 			// A view workspace listing!  Setup a binder view based
 			// on the binder ID.
 			if (!(initVIFromBinderId(bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+				m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
 				return null;
 			}
 		}
@@ -260,6 +320,9 @@ public class GwtViewHelper {
 
 		// If we get here reply refers to the BinderInfo requested or
 		// is null.  Return it.
+		if (m_logger.isDebugEnabled()) {
+			dumpViewInfo(vi);
+		}
 		return vi;
 	}
 

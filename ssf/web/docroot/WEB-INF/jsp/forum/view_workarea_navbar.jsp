@@ -174,7 +174,12 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	setTimeout("self.location.href = '"+url+"';", 100);
+	if (typeof window.top.ss_gotoContentUrl != "undefined") {
+		window.top.ss_gotoContentUrl(url);
+	}
+	else {
+		setTimeout("self.location.href = '"+url+"';", 100);
+	}
 	return false;
 }
 if (typeof ss_workarea_showId == "undefined") 

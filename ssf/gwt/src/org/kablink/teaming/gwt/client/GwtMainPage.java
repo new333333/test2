@@ -476,46 +476,9 @@ public class GwtMainPage extends ResizeComposite
 			GwtTeaming.getEventBus(),
 			m_registeredEvents,
 			this);
-		
-		// Initialize the context load handler used by the JSP based
-		// UI to tell the GWT UI that a context has been loaded.
-		initContextLoadHandlerJS(this);
-		
-		// Initialize the pre context switch handler used by the
-		// JSP based UI to tell the GWT UI that a context switch is
-		// about to occur.
-		initFireContextChangingJS(this);
-		
-		// Initialize the JavaScript function that gets called when we want to handle a page using
-		// GWT instead of in jsp.
-		// For example, we never want the jsp login page to be loaded in the content control.
-		initHandlePageWithGWTJS( this );
-		
-		// Initialize the JavaScript function that gets called when we want to close the
-		// administration content panel.
-		initCloseAdministrationContentPanelJS( this );
-		
-		// Initialize the JSNI method that will allow any content to
-		// fire a Vibe OnPrem event on the main event bus for the
-		// application.
-		//
-		// See GwtClientHelper:jsFireVibeEventOnMainEventBus()
-		initFireVibeEventOnMainEventBusJS( this );
-		
-		// Initialize JavaScript to perform Popup for User Profile
-		initSimpleUserProfileJS( this );
-		
-		// Initialize JavaScript that handles the landing page options
-		initHandleLandingPageOptionsJS( this );
-		
-		// Initialize the JavaScript that calls the login dialog.
-		initInvokeLoginDlgJS( this );
-		
-		// Initialize the JavaScript that invokes the Tag dialog
-		initInvokeTagDlgJS( this );
-		
-		// Initialize the JavaScript that invokes the admin page.
-		initInvokeAdminPageJS( this );
+
+		// Initialize the various call backs accessed from JavaScript.
+		initJSMethods();
 		
 		// Create a UIStateManager that we will use to save/restore the ui state.
 		m_uiStateManager = new UIStateManager();
@@ -759,6 +722,65 @@ public class GwtMainPage extends ResizeComposite
 		}//end ss_fireVibeEventOnMainEventBus
 	}-*/;
 
+	/*
+	 * Initialize the various call backs accessed from JavaScript.
+	 */
+	private void initJSMethods()
+	{
+		// Initialize the context load handler used by the JSP based
+		// UI to tell the GWT UI that a context has been loaded.
+		initContextLoadHandlerJS( this );
+		
+		// Initialize the pre context switch handler used by the
+		// JSP based UI to tell the GWT UI that a context switch is
+		// about to occur.
+		initFireContextChangingJS( this );
+		
+		// Initialize the JavaScript function that gets called when we want to handle a page using
+		// GWT instead of in jsp.
+		// For example, we never want the jsp login page to be loaded in the content control.
+		initHandlePageWithGWTJS( this );
+		
+		// Initialize the JavaScript function that gets called when we want to close the
+		// administration content panel.
+		initCloseAdministrationContentPanelJS( this );
+		
+		// Initialize the JSNI method that will allow any content to
+		// fire a Vibe OnPrem event on the main event bus for the
+		// application.
+		//
+		// See GwtClientHelper:jsFireVibeEventOnMainEventBus()
+		initFireVibeEventOnMainEventBusJS( this );
+		
+		// Initializes the callback method used to load a content URL. 
+		initGotoContentUrlJS( this );
+		
+		// Initialize JavaScript to perform Popup for User Profile
+		initSimpleUserProfileJS( this );
+		
+		// Initialize JavaScript that handles the landing page options
+		initHandleLandingPageOptionsJS( this );
+		
+		// Initialize the JavaScript that calls the login dialog.
+		initInvokeLoginDlgJS( this );
+		
+		// Initialize the JavaScript that invokes the Tag dialog
+		initInvokeTagDlgJS( this );
+		
+		// Initialize the JavaScript that invokes the admin page.
+		initInvokeAdminPageJS( this );
+	}
+
+	/*
+	 * Creates the native JavaScript method used to load a content URL.
+	 */
+	private native void initGotoContentUrlJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_gotoContentUrl = function( url )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::gotoUrlAsync(Ljava/lang/String;)( url );
+		}//end ss_gotoContentUrl
+	}-*/;
+	
 	/*
 	 * Invoke the Simple User Profile or Quick View
 	 */
