@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
+import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
@@ -943,7 +944,7 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * Display a landing page for the given binder id.
 	 */
-	private void displayLandingPage( String binderId )
+	private void displayLandingPage( String binderId, ViewReady viewReady )
 	{
 		LandingPage.LandingPageClient lpClient;
 		
@@ -968,7 +969,7 @@ public class GwtMainPage extends ResizeComposite
 		};
 		
 		// Create a LandingPage widget for the selected binder.
-		LandingPage.createAsync( binderId, lpClient );
+		LandingPage.createAsync( binderId, viewReady, lpClient );
 	}
 	
 	/*
@@ -2346,7 +2347,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onShowLandingPage( ShowLandingPageEvent event )
 	{
 		// Display a landing page for the given binder id.
-		displayLandingPage( event.getBinderId() );
+		displayLandingPage( event.getBinderId(), event.getViewReady() );
 	}
 	
 	/**

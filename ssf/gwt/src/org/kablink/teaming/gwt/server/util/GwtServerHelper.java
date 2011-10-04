@@ -3878,6 +3878,7 @@ public class GwtServerHelper {
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
 		case GET_IM_URL:
+		case GET_LANDING_PAGE_DATA:
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:
 		case GET_MICRO_BLOG_URL:

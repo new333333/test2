@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
@@ -49,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -308,7 +310,7 @@ public class ContentControl extends Composite
 	 * If a view cannot be determined (or no ViewInfo was provided),
 	 * the URL is loaded into the IFRAME instead.
 	 */
-	private void setViewNow( ViewInfo vi, String url ) {
+	private void setViewNow( final ViewInfo vi, final String url ) {
 		// Do we have a ViewInfo?
 		boolean viHandled = false;
 		if ( null != vi )
@@ -319,7 +321,7 @@ public class ContentControl extends Composite
 			{
 			case BINDER:
 				// A binder!  What type of binder is it?
-				BinderInfo bi = vi.getBinderInfo();
+				final BinderInfo bi = vi.getBinderInfo();
 				BinderType bt = bi.getBinderType();
 				switch ( bt )
 				{
@@ -360,7 +362,17 @@ public class ContentControl extends Composite
 					switch ( wt )
 					{
 					case LANDING_PAGE:
-						GwtTeaming.fireEvent( new ShowLandingPageEvent( bi.getBinderId() ) );
+						GwtTeaming.fireEvent(new ShowLandingPageEvent(bi.getBinderId(), new ViewReady() {
+							@Override
+							public void viewReady() {
+								OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+									bi.getBinderId(),
+									url,
+									false,	// false -> Not trash.
+									Instigator.CONTENT_AREA_CHANGED);
+								GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
+							}
+						}));
 						viHandled = true;
 						break;
 						
