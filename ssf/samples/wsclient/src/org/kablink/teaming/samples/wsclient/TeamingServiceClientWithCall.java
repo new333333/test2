@@ -302,6 +302,9 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				for(int i = 0; i < sIds.length; i++)
 					ids[i] = Long.parseLong(sIds[i]);
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_testEntryOperation", new Object[] {null, args[1], ids});
+			} else if(args[0].equals("testFolderEntryOperations")) {
+				String[] ops = split(args[1]);
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_testEntryOperations", new Object[] {null, ops, Long.parseLong(args[2])});
 			} else if(args[0].equals("getReleaseInfo")) {
 				wsClient.fetchAndPrintReleaseInfo("TeamingServiceV1", "admin_getReleaseInfo", new Object[] {null});
 			} else if(args[0].equals("getZoneConfig")) {
@@ -400,6 +403,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getCurrentServerTime");
 		System.out.println("testFolderOperation <folder operation name> \"folder id1, folder id2,....\"");
 		System.out.println("testFolderEntryOperation <folder entry operation name> \"entry id1, entry id2,....\"");
+		System.out.println("testFolderEntryOperations \"operation name1, operation name2,....\" <folder entry id>");
 		System.out.println("getReleaseInfo");
 		System.out.println("getZoneConfig");
 		
