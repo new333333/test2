@@ -855,6 +855,31 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	@Override
+	public boolean[] folder_testFolderOperations(String accessToken, String[] operationNames, long folderId) {
+		boolean[] result = new boolean[operationNames.length];
+		for(int i = 0; i < operationNames.length; i++)
+			result[i] = false;
+		Folder folder;
+		try {
+			folder = getFolderModule().getFolderWithoutAccessCheck(folderId);
+		}
+		catch(NoFolderByTheIdException e) {
+			return result;
+		}
+		FolderOperation folderOperation;
+		for(int i = 0; i < operationNames.length; i++) {
+			try {
+				folderOperation = FolderOperation.valueOf(operationNames[i]);
+				result[i] = getFolderModule().testAccess(folder, folderOperation);
+			}
+			catch(IllegalArgumentException e) {
+				continue;
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public boolean[] folder_testEntryOperation(String accessToken,
 			String operationName, long[] entryIds) {
 		boolean[] result = new boolean[entryIds.length];
@@ -885,6 +910,30 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return result;
 	}
 
+	public boolean[] folder_testEntryOperations(String accessToken, String[] operationNames, long entryId) {
+		boolean[] result = new boolean[operationNames.length];
+		for(int i = 0; i < operationNames.length; i++)
+			result[i] = false;
+		FolderEntry entry;
+		try {
+			entry = getFolderModule().getEntryWithoutAccessCheck(null, entryId);
+		}
+		catch(NoFolderEntryByTheIdException e) {
+			return result;
+		}
+		FolderOperation folderOperation;
+		for(int i = 0; i < operationNames.length; i++) {
+			try {
+				folderOperation = FolderOperation.valueOf(operationNames[i]);
+				result[i] = getFolderModule().testAccess(entry, folderOperation);
+			}
+			catch(IllegalArgumentException e) {
+				continue;
+			}
+		}
+		return result;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_incrementFileMajorVersion(java.lang.String, long, java.lang.String)
 	 */

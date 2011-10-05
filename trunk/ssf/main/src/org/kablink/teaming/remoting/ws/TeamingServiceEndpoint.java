@@ -268,6 +268,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getBinderService().binder_testOperation(accessToken, binderOperationName, binderIds);
 	}
 
+	public boolean[] binder_testOperations(String accessToken, String[] binderOperationNames, long binderId) {
+		return getBinderService().binder_testOperations(accessToken, binderOperationNames, binderId);
+	}
+
 	public long binder_getTopWorkspaceId(String accessToken) {
 		return getBinderService().binder_getTopWorkspaceId(accessToken);
 	}
@@ -428,8 +432,16 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_testFolderOperation(accessToken, operationName, folderIds);
 	}
 
+	public boolean[] folder_testFolderOperations(String accessToken, String[] operationNames, long folderId) {
+		return getFolderService().folder_testFolderOperations(accessToken, operationNames, folderId);
+	}
+
 	public boolean[] folder_testEntryOperation(String accessToken, String operationName, long[] entryIds) {
 		return getFolderService().folder_testEntryOperation(accessToken, operationName, entryIds);
+	}
+
+	public boolean[] folder_testEntryOperations(String accessToken, String[] operationNames, long entryId) {
+		return getFolderService().folder_testEntryOperations(accessToken, operationNames, entryId);
 	}
 
 	/// Ical Service

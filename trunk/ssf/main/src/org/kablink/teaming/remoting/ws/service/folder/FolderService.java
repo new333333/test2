@@ -181,6 +181,21 @@ public interface FolderService {
 	public boolean[] folder_testFolderOperation(String accessToken, String operationName, long[] folderIds);
 
 	/**
+	 * Test if the calling user has the right to execute each operation on the specified folder.
+	 * 
+	 * <p>If the folder does not exist, the result will be set to <code>false</code> for all operations.
+	 * If the operation name is an unknown value in Teaming, the result will be set to <code>false</code>
+	 * for that operation.
+	 * 
+	 * @param accessToken Either the security token passed to your application by Teaming as part of
+	 * implementing a remote application, or the null value.
+	 * @param operationNames The string names of {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
+	 * instances. See the Java source file for the names.
+	 * @param folderId The ID of the entry against which to test the access.
+	 */
+	public boolean[] folder_testFolderOperations(String accessToken, String[] operationNames, long folderId);
+
+	/**
 	 * Test if the calling user has the right to execute the specified operation on each of the entries specified.
 	 * 
 	 * <p>If an entry does not exist, the result will be set to <code>false</code> for that specific entry.
@@ -194,6 +209,21 @@ public interface FolderService {
 	 * @param entryIds The ID of the entries against which to test the access.
 	 */
 	public boolean[] folder_testEntryOperation(String accessToken, String operationName, long[] entryIds);
+
+	/**
+	 * Test if the calling user has the right to execute the specified operation on each of the entries specified.
+	 * 
+	 * <p>If the entry does not exist, the result will be set to <code>false</code> for all operations.
+	 * If the operation name is an unknown value in Teaming, the result will be set to <code>false</code>
+	 * for that operation.
+	 * 
+	 * @param accessToken Either the security token passed to your application by Teaming as part of
+	 * implementing a remote application, or the null value.
+	 * @param operationNames The string names of {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
+	 * instances. See the Java source file for the names.
+	 * @param entryId The ID of the entry against which to test the access.
+	 */
+	public boolean[] folder_testEntryOperations(String accessToken, String[] operationNames, long entryId);
 
 	/**
 	 * Copy current version to a new one and set its major version number to be one higher than the
