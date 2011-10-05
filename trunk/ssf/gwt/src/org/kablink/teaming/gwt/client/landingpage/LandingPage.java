@@ -156,7 +156,7 @@ public class LandingPage extends ViewBase
 
 		// Tell the base class that we're done constructing the the
 		// landing page view.
-		viewReady();
+		super.viewReady();
 	}
 	
 	/**

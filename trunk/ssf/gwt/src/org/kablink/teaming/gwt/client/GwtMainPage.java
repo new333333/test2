@@ -941,7 +941,7 @@ public class GwtMainPage extends ResizeComposite
 		});
 	}// end contextLoaded()
 
-	/**
+	/*
 	 * Display a landing page for the given binder id.
 	 */
 	private void displayLandingPage( String binderId, ViewReady viewReady )
@@ -965,12 +965,12 @@ public class GwtMainPage extends ResizeComposite
 			{
 				landingPage.setPixelSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
 				m_contentLayoutPanel.showWidget( landingPage );
-			}
+			}// end onSuccess()
 		};
 		
 		// Create a LandingPage widget for the selected binder.
 		LandingPage.createAsync( binderId, viewReady, lpClient );
-	}
+	}// end displayLandingPage()
 	
 	/*
 	 * Invoke the "Edit Branding" dialog.

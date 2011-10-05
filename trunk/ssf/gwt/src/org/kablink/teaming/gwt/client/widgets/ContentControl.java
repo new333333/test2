@@ -133,7 +133,8 @@ public class ContentControl extends Composite
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
 
-		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
+		// Give the IFRAME a name so that view_workarea_navbar.jsp,
+		// doesn't set the URL of the browser.
 		m_frame = new NamedFrame( name );
 		m_frame.setPixelSize( 700, 500 );
 		m_frame.getElement().setId( m_isAdminContent ?  "adminContentControl" : "contentControl" );
@@ -146,7 +147,7 @@ public class ContentControl extends Composite
 	
 	
 	/**
-	 * Clear the contents of the iframe.
+	 * Clear the contents of the IFRAME.
 	 */
 	public void clear()
 	{
@@ -253,7 +254,7 @@ public class ContentControl extends Composite
 	 * Asynchronously loads a view based on a ViewInfo.
 	 */
 	private void setViewAsync( final ViewInfo vi, final String url ) {
-		ScheduledCommand doSetBinderView = new ScheduledCommand()
+		ScheduledCommand doSetView = new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -261,7 +262,7 @@ public class ContentControl extends Composite
 				setViewNow( vi, url );
 			}// end execute()
 		};
-		Scheduler.get().scheduleDeferred( doSetBinderView );
+		Scheduler.get().scheduleDeferred( doSetView );
 	}// end setViewAsync()
 
 	/*
@@ -269,9 +270,10 @@ public class ContentControl extends Composite
 	 * URL.  Otherwise, simply loads the URL in the content frame the
 	 * way it has always been done.
 	 */
-	private void setViewFromUrl( final String url ) {
+	private void setViewFromUrl( final String url )
+	{
 		// Are we running the Granite GWT extensions?
-		if (m_isGraniteGwtEnabled && (!m_isAdminContent))
+		if ( m_isGraniteGwtEnabled && (!m_isAdminContent) )
 		{			
 			// Yes!  Use the URL to get a ViewInfo for the new
 			// context.
@@ -302,7 +304,7 @@ public class ContentControl extends Composite
 			// Put the change into affect the old way via the URL.
 			setUrl( url );
 		}
-	}
+	}// end setViewFromUrl()
 	
 	/*
 	 * Synchronously loads a view based on a ViewInfo.
@@ -320,13 +322,32 @@ public class ContentControl extends Composite
 			switch ( vt )
 			{
 			case BINDER:
-				// A binder!  What type of binder is it?
+				// Regardless of the type, we'll need an ViewReady to
+				// clean up things after the view is loaded.  Create
+				// one now.
 				final BinderInfo bi = vi.getBinderInfo();
+				final String binderId = bi.getBinderId();
+				ViewReady viewReady = new ViewReady()
+				{
+					@Override
+					public void viewReady()
+					{
+						GwtTeaming.fireEvent(
+							new ContextChangedEvent(
+								new OnSelectBinderInfo(
+									binderId,
+									url,
+									bi.isBinderTrash(),
+									Instigator.CONTENT_AREA_CHANGED ) ) );
+					}//end viewReady()
+				};
+				
+				// What type of binder is it?
 				BinderType bt = bi.getBinderType();
 				switch ( bt )
 				{
 				case FOLDER:
-					// A folder!  What type of folder is it?
+					// What type of folder is it?
 					FolderType ft = bi.getFolderType();
 					switch ( ft )
 					{
@@ -349,30 +370,21 @@ public class ContentControl extends Composite
 						
 					default:
 						// Something we don't know how to handle!
-						if ( m_isDebugUI ) {
-							Window.alert("ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )");
+						if ( m_isDebugUI )
+						{
+							Window.alert( "ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )" );
 						}
 						break;
 					}
 					break;
 					
 				case WORKSPACE:
-					// A workspace!  What type of workspace is it?
+					// What type of workspace is it?
 					WorkspaceType wt = bi.getWorkspaceType(); 
 					switch ( wt )
 					{
 					case LANDING_PAGE:
-						GwtTeaming.fireEvent(new ShowLandingPageEvent(bi.getBinderId(), new ViewReady() {
-							@Override
-							public void viewReady() {
-								OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-									bi.getBinderId(),
-									url,
-									false,	// false -> Not trash.
-									Instigator.CONTENT_AREA_CHANGED);
-								GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
-							}
-						}));
+						GwtTeaming.fireEvent( new ShowLandingPageEvent( binderId, viewReady ) );
 						viHandled = true;
 						break;
 						
@@ -392,8 +404,9 @@ public class ContentControl extends Composite
 					
 					default:
 						// Something we don't know how to handle!  
-						if ( m_isDebugUI ) {
-							Window.alert("ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )");
+						if ( m_isDebugUI )
+						{
+							Window.alert( "ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )" );
 						}
 						break;
 					}
@@ -401,34 +414,35 @@ public class ContentControl extends Composite
 				
 				default:
 					// Something we don't know how to handle!
-					if ( m_isDebugUI ) {
-						Window.alert("ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )");
+					if ( m_isDebugUI )
+					{
+						Window.alert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
 					}
 					break;
 				}
 				break;
 				
 			case ADVANCED_SEARCH:
-				// These aren't handled!  Let things take the
-				// default flow.
+				// These aren't handled!  Let things take the default
+				// flow.
 				break;
 				
 			default:
 				// Something we don't know how to handle!
-				if ( m_isDebugUI ) {
-					Window.alert("ContentControl.setViewNow( Unhandled ViewType:  " + vt.name() + " )");
+				if ( m_isDebugUI )
+				{
+					Window.alert( "ContentControl.setViewNow( Unhandled ViewType:  " + vt.name() + " )" );
 				}
 				break;
 			}			
 		}
 
 		// Did we handle the ViewInfo as a view?
-		if (!viHandled)
+		if ( !viHandled )
 		{
-			// No!  Load the URL instead.
-			setUrl( url );
-			
-			// Show the content control.
+			// No!  Load the URL instead and make sure the
+			// ContentControl is showing.
+			setUrl( url );			
 			ShowContentControlEvent.fireOne();
 		}
 	}// end setViewNow()
