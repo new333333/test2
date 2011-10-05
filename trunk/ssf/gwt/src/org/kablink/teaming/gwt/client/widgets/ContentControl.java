@@ -33,11 +33,13 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
+import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -56,6 +58,7 @@ import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
 import org.kablink.teaming.gwt.client.RequestInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -81,6 +84,7 @@ public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
 		ChangeContextEvent.Handler,
+		ShowDiscussionFolderEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
@@ -96,6 +100,9 @@ public class ContentControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Context events.
 		TeamingEvents.CHANGE_CONTEXT,
+		
+		// Show events.
+		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -325,8 +332,9 @@ public class ContentControl extends Composite
 				// Regardless of the type, we'll need an ViewReady to
 				// clean up things after the view is loaded.  Create
 				// one now.
-				final BinderInfo bi = vi.getBinderInfo();
-				final String binderId = bi.getBinderId();
+				final BinderInfo bi        = vi.getBinderInfo();
+				final String     binderIdS = bi.getBinderId();
+				final Long       binderId  = Long.parseLong( binderIdS );
 				ViewReady viewReady = new ViewReady()
 				{
 					@Override
@@ -335,7 +343,7 @@ public class ContentControl extends Composite
 						GwtTeaming.fireEvent(
 							new ContextChangedEvent(
 								new OnSelectBinderInfo(
-									binderId,
+									binderIdS,
 									url,
 									bi.isBinderTrash(),
 									Instigator.CONTENT_AREA_CHANGED ) ) );
@@ -351,9 +359,14 @@ public class ContentControl extends Composite
 					FolderType ft = bi.getFolderType();
 					switch ( ft )
 					{
+					case DISCUSSION:
+						GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( binderId, viewReady ) );
+						viHandled = true;
+						break;
+						
+						
 					case BLOG:
 					case CALENDAR:
-					case DISCUSSION:
 					case FILE:
 					case GUESTBOOK:
 					case MILESTONE:
@@ -384,7 +397,7 @@ public class ContentControl extends Composite
 					switch ( wt )
 					{
 					case LANDING_PAGE:
-						GwtTeaming.fireEvent( new ShowLandingPageEvent( binderId, viewReady ) );
+						GwtTeaming.fireEvent( new ShowLandingPageEvent( binderIdS, viewReady ) );
 						viHandled = true;
 						break;
 						
@@ -467,6 +480,38 @@ public class ContentControl extends Composite
 			setViewFromUrl( osbInfo.getBinderUrl() );
 		}
 	}// end onChangeContext()
+	
+	/**
+	 * Handles ShowDiscussionFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowDiscussionFolderEvent.Handler.onShowDiscussionFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowDiscussionFolder( ShowDiscussionFolderEvent event )
+	{
+		// Create a DiscussionFolderView widget for the selected binder.
+		DiscussionFolderView.createAsync(
+				event.getBinderId(),
+				event.getViewReady(),
+				new DiscussionFolderView.DiscussionFolderViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( DiscussionFolderView dfView )
+			{
+				MainContentLayoutPanel clp = m_mainPage.getMainContentLayoutPanel();
+				dfView.setPixelSize( clp.getOffsetWidth(), clp.getOffsetHeight() );
+				clp.showWidget( dfView );
+			}// end onSuccess()
+		});
+	}// end onShowDiscussionFolder()
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.

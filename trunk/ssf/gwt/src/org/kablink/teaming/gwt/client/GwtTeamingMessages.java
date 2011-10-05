@@ -384,6 +384,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_ContentControl();
+	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_ExtensionsConfig();
 	String codeSplitFailure_FindCtrl();
