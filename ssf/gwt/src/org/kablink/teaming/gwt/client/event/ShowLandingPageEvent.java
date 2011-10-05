@@ -63,16 +63,19 @@ public class ShowLandingPageEvent extends VibeEventBase<ShowLandingPageEvent.Han
 	 * Class constructor.
 	 * 
 	 * @param binderId
+	 * @param viewReady
 	 */
 	public ShowLandingPageEvent( String binderId, ViewReady viewReady )
 	{
 		super();
 		m_viewReady = viewReady;
-		m_binderId = binderId;
+		m_binderId  = binderId;
 	}
 	
 	/**
-	 *
+	 * Get'er methods.
+	 * 
+	 * @return
 	 */
 	public String getBinderId()
 	{
