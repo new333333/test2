@@ -35,27 +35,41 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.util.search.Constants;
 
 
 /**
- * Helper methods for the GWT UI server code.
+ * Helper methods for the GWT binder views.
  *
  * @author drfoster@novell.com
  */
@@ -118,6 +132,176 @@ public class GwtViewHelper {
 			m_logger.debug("......dumpViewInfo( Not Handled ):  This ViewType is not implemented by the dumper.");
 			break;
 		}
+	}
+
+	/**
+	 * Reads the current user's columns and sort information for a
+	 * folder and returns them it as a FolderColumnsRpcResponseData.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param folderType
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType) throws GwtTeamingException {
+		try {
+			Folder			folder               = ((Folder) bs.getBinderModule().getBinder(folderId));
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+			
+			Map    columnNames;
+			Map    columnTitles      = null;
+			String columnOrderString = null;
+
+			// Are we showing the trash on this folder?
+			if (FolderType.TRASH == folderType) {
+				// Yes!  The columns in a trash view are not
+				// configurable.  Use the default trash columns.
+				columnNames = getColumnsLHMFromAS(TrashHelper.trashColumns);
+			}
+			
+			else {
+				// No, we aren't showing the trash on this folder!  Are
+				// there user defined columns on this folder?
+				columnNames = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
+				if (null == columnNames) {
+					// No!  Are there defaults stored on the binder?
+					columnNames = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS));
+					if (null == columnNames) {
+						// No!  Use the default as setup in
+						// folder_column_defaults.jsp.
+						String[] defaultCols;
+						if (FolderType.FILE == folderType)
+						     defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"};
+						else defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"};
+						columnNames = getColumnsLHMFromAS(defaultCols);
+					}
+					
+					else {
+						// Yes, there are defaults from the binder!
+						// Read and names and sort order from there as
+						// well.
+						columnTitles      = ((Map)    folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES    ));
+						columnOrderString = ((String) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER));
+					}
+				}
+				
+				else {
+					// Yes, there are user defined columns on the
+					// folder!  Read and names and sort order from
+					// there as well.
+					columnTitles      = ((Map)    userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_TITLES    ));
+					columnOrderString = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER));
+				}
+			}
+
+			// If we don't have any column names...
+			if (null == columnTitles) {
+				// ...just use an empty map.
+				columnTitles = new HashMap();
+			}
+			
+			// If we don't have any column sort order...
+			if (!(MiscUtil.hasString(columnOrderString))) {
+				// ...define one based on the column names.
+				Set<String> keySet = columnNames.keySet();
+				boolean firstCol = true;
+				StringBuffer sb = new StringBuffer("");
+				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
+					if (!firstCol) {
+						sb.append("|");
+					}
+					sb.append(ksIT.next());
+					firstCol = false;
+				}
+				columnOrderString = sb.toString();
+			}
+
+			// Finally, generate a List<String> from the raw column
+			// order string...
+			List<String> columnSortOrder = new ArrayList<String>();
+			String[] sortOrder = columnOrderString.split("\\|");
+			for (String columnName:  sortOrder) {
+				if (MiscUtil.hasString(columnName)) {
+					columnSortOrder.add(columnName);
+				}
+			}
+			
+			// ...and ensure all the columns are accounted for in it.
+			Set<String> keySet = columnNames.keySet();
+			for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
+				String columnName = ksIT.next();
+				if (!(columnSortOrder.contains(columnName))) {
+					columnSortOrder.add(columnName);
+				}
+			}
+
+			// If we get here, we've got all the data we need to define
+			// the List<FolderColumnInf> for this folder.  Allocate the
+			// list that we can fill from that data.
+			List<FolderColumnInfo> fciList = new ArrayList<FolderColumnInfo>();
+			for (String columnName:  columnSortOrder) {
+				// Is this column to be shown?
+				String columnValue = ((String) columnNames.get(columnName));
+				if (!(MiscUtil.hasString(columnValue))) {
+					// No!  Skip it.
+					continue;
+				}
+
+				// Is there a custom title for this column?
+				String columnTitle = ((String) columnTitles.get(columnName));
+				if (!(MiscUtil.hasString(columnTitle))) {
+					// No!  Use the default.
+					columnTitle = NLT.get("folder.column." + columnName, columnName, true);
+				}
+
+				// Add a FolderColumnInfo for this to the list we're
+				// going to return.
+				fciList.add(new FolderColumnInfo(columnName, columnTitle));
+			}
+
+			// How should the folder be sorted?
+			String	sortBy = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY));
+			boolean sortDescend;
+			if (MiscUtil.hasString(sortBy)) {
+				String sortDescendS = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND));
+				sortDescend = (("true").equalsIgnoreCase(sortDescendS));
+			}
+			else {
+				sortBy      = Constants.SORTNUMBER_FIELD;
+				sortDescend = true;
+			}
+
+			// Finally, use the data we obtained to create a
+			// FolderColumnsRpcResponseData and return that. 
+			FolderColumnsRpcResponseData reply = new FolderColumnsRpcResponseData(
+				fciList,
+				sortBy,
+				sortDescend);
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
+	/*
+	 * Returns a LinkedHashMap of the column names from a String[]
+	 * of them.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getColumnsLHMFromAS(String[] columnNames) {
+		Map reply = new LinkedHashMap();
+		for (String columnName:  columnNames) {
+			reply.put(columnName, columnName);
+		}
+		return reply;
 	}
 	
 	/*
