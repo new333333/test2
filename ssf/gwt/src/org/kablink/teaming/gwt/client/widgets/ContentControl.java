@@ -329,12 +329,31 @@ public class ContentControl extends Composite
 			switch ( vt )
 			{
 			case BINDER:
+				// Are we in UI debug mode?
+				final BinderInfo bi = vi.getBinderInfo();
+				if ( m_isDebugUI )
+				{
+					// Regardless of what's implemented or not, should
+					// we force this binder through its old, JSP flow?
+					//
+					// While write the GWT based views, I've
+					// continually wanted to go back and look at the
+					// JSP version of what I'm implementing.  This lets
+					// us force a binder, regardless of type, to ALWAYS
+					// go through the JSP display flow.
+					String binderTitle = bi.getBinderTitle().trim().toLowerCase();
+					if (binderTitle.startsWith("jsp-") && binderTitle.endsWith("-jsp")) {
+						// Yes!  Simply break out of the switch.  That
+						// will let it take the default flow.
+						break;
+					}
+				}
+				
 				// Regardless of the type, we'll need an ViewReady to
 				// clean up things after the view is loaded.  Create
 				// one now.
-				final BinderInfo bi        = vi.getBinderInfo();
-				final String     binderIdS = bi.getBinderId();
-				final Long       binderId  = Long.parseLong( binderIdS );
+				final String binderIdS = bi.getBinderId();
+				final Long   binderId  = Long.parseLong( binderIdS );
 				ViewReady viewReady = new ViewReady()
 				{
 					@Override
