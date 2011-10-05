@@ -33,18 +33,31 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
+import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Discussion folder view.
@@ -52,26 +65,27 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class DiscussionFolderView extends ViewBase {
-	private Long				m_binderId;		// The ID of the discussion folder to be viewed.				
-	private VibeDockLayoutPanel	m_mainPanel;	// The panel holding the content of the view.
+	private Long				m_folderId;								// The ID of the discussion folder to be viewed.				
+	private GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	//
+	private VibeDockLayoutPanel	m_mainPanel;							// The panel holding the content of the view.
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param binderId
+	 * @param folderId
 	 * @param viewReady
 	 */
-	public DiscussionFolderView(Long binderId, ViewReady viewReady) {
+	public DiscussionFolderView(Long folderId, ViewReady viewReady) {
 		// Initialize the base class...
 		super(viewReady);
 
 		// ...store the parameters...
-		m_binderId = binderId;
+		m_folderId = folderId;
 
 		// ...create the main content panel...
 		m_mainPanel = new VibeDockLayoutPanel(Style.Unit.PX);
 		m_mainPanel.addStyleName("gwt-folderView gwt-discussionFolderMainPanel");
-		m_mainPanel.add(new FlowPanel());
+		m_mainPanel.add(new VibeFlowPanel());
 
 		// ...initialize the composite...
 		initWidget(m_mainPanel);
@@ -92,12 +106,19 @@ public class DiscussionFolderView extends ViewBase {
 	/*
 	 * Construct this discussion folder view.
 	 */
-	private void constructDiscussionFolderView() {
-		FlowPanel fp = ((FlowPanel) m_mainPanel.getCenter());
-		fp.clear();
+	private void constructDiscussionFolderView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
+		VibeFlowPanel vfp = ((VibeFlowPanel) m_mainPanel.getCenter());
+		vfp.clear();
 		
 //!		...this needs to be implemented...
-		fp.add(new InlineLabel("DiscussionFolderView.constructDiscussionFolderView(" + m_binderId + "):  ...this needs to be implemented..."));
+		VerticalPanel vp = new VerticalPanel();
+		vfp.add(vp);
+		vp.add(new InlineLabel("Sort by:  " + folderSortBy));
+		vp.add(new InlineLabel("Sort descending:  " + folderSortDescend));
+		vp.add(new HTML("<br/>"));
+		for (FolderColumnInfo fc:  folderColumnsList) {
+			vp.add(new InlineLabel(fc.getColumnName() + "='" + fc.getColumnTitle() + "'"));
+		}
 
 		// Tell the base class that we're done constructing the
 		// discussion folder view.
@@ -110,11 +131,11 @@ public class DiscussionFolderView extends ViewBase {
 	 * 
 	 * @param dfvClient
 	 */
-	public static void createAsync(final Long binderId, final ViewReady viewReady, final DiscussionFolderViewClient dfvClient) {
+	public static void createAsync(final Long folderId, final ViewReady viewReady, final DiscussionFolderViewClient dfvClient) {
 		GWT.runAsync(DiscussionFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				DiscussionFolderView dfView = new DiscussionFolderView(binderId, viewReady);
+				DiscussionFolderView dfView = new DiscussionFolderView(folderId, viewReady);
 				dfvClient.onSuccess(dfView);
 			}
 			
@@ -143,7 +164,32 @@ public class DiscussionFolderView extends ViewBase {
 	 * Synchronously initialize this discussion folder.
 	 */
 	private void initializeViewNow() {
-		// Construct the discussion folder view.
-		constructDiscussionFolderView();
+		GwtClientHelper.executeCommand(
+				new GetFolderColumnsCmd(m_folderId, FolderType.DISCUSSION),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetFolderColumns(),
+					m_folderId);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				final FolderColumnsRpcResponseData responseData = ((FolderColumnsRpcResponseData) response.getResponseData());
+				ScheduledCommand doConstructView = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						// Construct the discussion folder view.
+						constructDiscussionFolderView(
+							responseData.getFolderColumns(),
+							responseData.getFolderSortBy(),
+							responseData.getFolderSortDescend());
+					}
+				};
+				Scheduler.get().scheduleDeferred(doConstructView);
+			}
+		});
 	}
 }
