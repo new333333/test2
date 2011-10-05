@@ -39,10 +39,8 @@ import org.kablink.teaming.gwt.client.lpe.TableColConfig;
 import org.kablink.teaming.gwt.client.lpe.TableConfig;
 import org.kablink.teaming.gwt.client.lpe.TableProperties;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -55,7 +53,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class TableWidget extends VibeWidget
 {
-	private FlowPanel m_mainPanel;
+	private VibeFlowPanel m_layoutPanel;
 	private FlexTable m_table;
 
 	/**
@@ -171,7 +169,7 @@ public class TableWidget extends VibeWidget
 		numColumns = props.getNumColumnsInt();
 		
 		m_table = new FlexTable();
-		m_table.addStyleDependentName( "tableWidget" );
+		m_table.addStyleName( "tableWidgetTable" );
 		m_table.setWidth( "100%" );
 		
 		// Add 1 row to the table.
@@ -183,7 +181,7 @@ public class TableWidget extends VibeWidget
 			m_table.addCell( 0 );
 		}
 
-		m_mainPanel.add( m_table );
+		m_layoutPanel.add( m_table );
 	
 		cellFormatter = m_table.getFlexCellFormatter();
 		for (i = 0; i < m_table.getCellCount( 0 ); ++i )
@@ -237,18 +235,12 @@ public class TableWidget extends VibeWidget
 	 */
 	private void init( TableProperties properties )
 	{
-		VibeDockLayoutPanel layoutPanel;
-
-		layoutPanel = new VibeDockLayoutPanel( Style.Unit.PX );
-		layoutPanel.addStyleName( "tableWidget" );
-		
-		m_mainPanel = new FlowPanel();
-		layoutPanel.add( m_mainPanel );
+		m_layoutPanel = new VibeFlowPanel();
+		m_layoutPanel.addStyleName( "tableWidgetMainPanel" );
 		
 		createTable( properties );
 
 		// All composites must call initWidget() in their constructors.
-		initWidget( layoutPanel );
+		initWidget( m_layoutPanel );
 	}
-	
 }

@@ -41,15 +41,13 @@ import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
@@ -62,7 +60,7 @@ public class LandingPage extends ViewBase
 {
 	private String m_binderId;
 	private ConfigData m_configData;
-	private VibeDockLayoutPanel m_mainPanel;
+	private VibeFlowPanel m_mainPanel;
 	
 	/**
 	 * 
@@ -72,12 +70,9 @@ public class LandingPage extends ViewBase
 		super( viewReady );
 		
 		Scheduler.ScheduledCommand cmd;
-		FlowPanel flowPanel;
 		
-		m_mainPanel = new VibeDockLayoutPanel( Style.Unit.PX );
+		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "landingPageMainPanel" );
-		flowPanel = new FlowPanel();
-		m_mainPanel.add( flowPanel );
 		
 		initWidget( m_mainPanel );
 
@@ -118,13 +113,11 @@ public class LandingPage extends ViewBase
 	{
 		int i;;
 		int numItems;
-		FlowPanel flowPanel;
 		
 		if ( m_configData == null )
 			return;
 		
-		flowPanel = (FlowPanel) m_mainPanel.getCenter();
-		flowPanel.clear();
+		m_mainPanel.clear();
 		
 		// Add items to the page that are defined in the configuration.
 		numItems = m_configData.size();
@@ -141,14 +134,15 @@ public class LandingPage extends ViewBase
 				// Create the appropriate composite based on the given ConfigItem.
 				widget = configItem.createWidget();
 				if ( widget != null )
-					flowPanel.add( widget );
+				{
+					m_mainPanel.add( widget );
+				}
 				else
 				{
-					//!!!
 					Label label;
 					
 					label = new Label( "widget: " + configItem.getClass().getName() );
-					flowPanel.add( label );
+					m_mainPanel.add( label );
 				}
 			}
 		}
