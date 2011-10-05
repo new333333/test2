@@ -602,6 +602,16 @@ public class GwtMainPage extends ResizeComposite
 	}// end constructMainPage_Finish()
 
 	/**
+	 * Returns the main content panel.
+	 * 
+	 * @return
+	 */
+	public MainContentLayoutPanel getMainContentLayoutPanel()
+	{
+		return m_contentLayoutPanel;
+	}
+	
+	/**
 	 * Returns the main menu control.
 	 * 
 	 * @return

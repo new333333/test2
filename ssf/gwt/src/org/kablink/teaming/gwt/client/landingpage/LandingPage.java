@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -154,8 +153,8 @@ public class LandingPage extends ViewBase
 			}
 		}
 
-		// Tell the base class that we're done constructing the the
-		// landing page view.
+		// Tell the base class that we're done constructing the landing
+		// page view.
 		super.viewReady();
 	}
 	
@@ -167,7 +166,7 @@ public class LandingPage extends ViewBase
 	 */
 	public static void createAsync( final String binderId, final ViewReady viewReady, final LandingPageClient landingPageClient )
 	{
-		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()

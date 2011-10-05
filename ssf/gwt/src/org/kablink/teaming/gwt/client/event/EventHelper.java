@@ -614,20 +614,29 @@ public class EventHelper {
 				break;
 				
 			case SHOW_CONTENT_CONTROL:
-				// A ShowContentControlEvent!  Can the event handler we were given handle that?
-				if ( eventHandler instanceof ShowContentControlEvent.Handler )
-				{
+				// A ShowContentControlEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowContentControlEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = ShowContentControlEvent.registerEvent( eventBus, ((ShowContentControlEvent.Handler) eventHandler));
+					registrationHandler = ShowContentControlEvent.registerEvent(eventBus, ((ShowContentControlEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SHOW_DISCUSSION_FOLDER:
+				// A ShowDiscussionFolderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ShowDiscussionFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowDiscussionFolderEvent.registerEvent(eventBus, ((ShowDiscussionFolderEvent.Handler) eventHandler));
 				}
 				break;
 			
 			case SHOW_LANDING_PAGE:
-				// A ShowLandingPageEvent!  Can the event handler we were given handle that?
-				if ( eventHandler instanceof ShowLandingPageEvent.Handler )
-				{
+				// A ShowLandingPageEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowLandingPageEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = ShowLandingPageEvent.registerEvent( eventBus, ((ShowLandingPageEvent.Handler) eventHandler));
+					registrationHandler = ShowLandingPageEvent.registerEvent(eventBus, ((ShowLandingPageEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1063,6 +1072,7 @@ public class EventHelper {
 			case SEARCH_TAG:                        	hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                     break;
 			
 			case SHOW_CONTENT_CONTROL:                  hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);            break;
+			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			
 			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;
