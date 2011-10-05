@@ -133,6 +133,21 @@ public interface BinderService {
 	 */
 	public boolean[] binder_testOperation(String accessToken, String binderOperationName, long[] binderIds);
 
+	/**
+	 * Test if the calling user has the right to execute each operation on the specified binder.
+	 * 
+	 * <p>If the binder does not exist, the result will be set to <code>false</code> for all operations.
+	 * If the operation name is an unknown value in Teaming, the result will be set to <code>false</code>
+	 * for that operation.
+	 * 
+	 * @param accessToken Either the security token passed to your application by Teaming as part of
+	 * implementing a remote application, or the null value.
+	 * @param binderOperationNames The string names of {@link org.kablink.teaming.module.binder.BinderModule.BinderOperation BinderOperation}
+	 * instances. See the Java source file for the names.
+	 * @param binderId The ID of the binder against which to test the access.
+	 */
+	public boolean[] binder_testOperations(String accessToken, String[] binderOperationNames, long binderId);
+
 	public long binder_getTopWorkspaceId(String accessToken);
 	
     public void binder_setDefinitionsInherited(String accessToken, long binderId, boolean inheritFromParent);

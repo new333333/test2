@@ -701,6 +701,31 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return result;
 	}
 	
+	@Override
+	public boolean[] binder_testOperations(String accessToken, String[] binderOperationNames, long binderId) {
+		boolean[] result = new boolean[binderOperationNames.length];
+		for(int i = 0; i < binderOperationNames.length; i++)
+			result[i] = false;
+		Binder binder;
+		try {
+			binder = getBinderModule().getBinderWithoutAccessCheck(binderId);
+		}
+		catch(NoBinderByTheIdException e) {
+			return result;
+		}
+		BinderOperation binderOperation;
+		for(int i = 0; i < binderOperationNames.length; i++) {
+			try {
+				binderOperation = BinderOperation.valueOf(binderOperationNames[i]);
+				result[i] = getBinderModule().testAccess(binder, binderOperation);
+			}
+			catch(IllegalArgumentException e) {
+				continue;
+			}
+		}
+		return result;
+	}
+	
 	interface FolderSearcher {
 		Map searchFolders();
 	}
