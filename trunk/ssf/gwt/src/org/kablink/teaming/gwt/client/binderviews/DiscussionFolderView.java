@@ -55,6 +55,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -107,12 +108,12 @@ public class DiscussionFolderView extends ViewBase {
 	 * Construct this discussion folder view.
 	 */
 	private void constructDiscussionFolderView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
-		VibeFlowPanel vfp = ((VibeFlowPanel) m_mainPanel.getCenter());
-		vfp.clear();
+		FlowPanel fp = ((FlowPanel) m_mainPanel.getCenter());
+		fp.clear();
 		
 //!		...this needs to be implemented...
 		VerticalPanel vp = new VerticalPanel();
-		vfp.add(vp);
+		fp.add(vp);
 		vp.add(new InlineLabel("Sort by:  " + folderSortBy));
 		vp.add(new InlineLabel("Sort descending:  " + folderSortDescend));
 		vp.add(new HTML("<br/>"));
