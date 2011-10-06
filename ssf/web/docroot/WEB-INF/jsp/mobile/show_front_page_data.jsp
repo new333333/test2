@@ -86,7 +86,7 @@
 </c:if>
 
   <div class="folder-content">
-    <div class="folder-head" style="letter-spacing: 0">
+    <div class="folder-head" style="letter-spacing: 0; padding: 5px;">
 		<form id="whatsNewForm" name="whatsNewForm" 
 		  method="post" 
 		  action="<ssf:url adapter="true" portletName="ss_forum" 
@@ -98,14 +98,14 @@
           <td valign="top" width="40%" nowrap>
           <span>&nbsp;<ssf:nlt tag="mobile.whatsNew"/></span>
           <a href="javascript: ;" 
-      		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;">
+      		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;" style="color: #1f1f1f; font-size: 1.1em;	">
       	    <span>
               <c:if test="${ss_whatsNewType == 'teams'}"><ssf:nlt tag="navigation.myTeams"/></c:if>
               <c:if test="${ss_whatsNewType == 'tracked'}"><ssf:nlt tag="mobile.whatsNewTracked"/></c:if>
               <c:if test="${ss_whatsNewType == 'favorites'}"><ssf:nlt tag="mobile.whatsNewFavorites"/></c:if>
               <c:if test="${ss_whatsNewType == 'site'}"><ssf:nlt tag="mobile.whatsNewSite"/></c:if>
               <c:if test="${ss_whatsNewType == 'microblog'}"><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></c:if>
-            </span><img border="0" 
+            </span>&nbsp;<img border="0" 
       		  src="<html:rootPath/>images/pics/menudown.gif"/>
       	  </a>
           
