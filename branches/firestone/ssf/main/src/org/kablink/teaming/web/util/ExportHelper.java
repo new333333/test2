@@ -1683,9 +1683,13 @@ public class ExportHelper {
 				logger.debug("Adding team members to binder " + newBinderId);
 			addTeamMembers(newBinderId, doc, nameCache);
 
-			// workflows
 			final Map rMap = reportMap;
 			final Map fNameCache = nameCache;
+			
+			// binder settings
+			importSettingsList(doc, binder, fDefIdMap, rMap, topBinder, fNameCache);
+
+			// workflows
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
 			// Bug #701024 - Flush out all uncommitted changes and clear the session to
@@ -1697,9 +1701,6 @@ public class ExportHelper {
 				logger.debug("Importing workflows for the binder " + newBinderId);
 			transactionTemplate.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
-
-					// binder settings
-					importSettingsList(doc, binder, fDefIdMap, rMap, topBinder, fNameCache);
 
 					// workflows
 					importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache, topBinder, true);
