@@ -70,5 +70,6 @@
 </table>
 
 </div>
+<%@ include file="/WEB-INF/jsp/mobile/search.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/logout.jsp" %>
 

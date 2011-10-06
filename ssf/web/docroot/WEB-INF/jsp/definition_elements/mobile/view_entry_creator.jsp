@@ -44,7 +44,6 @@
 	  ><ssf:userTitle user="${ssDefinitionEntry.creation.principal}"/></a>
   </span>
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
-    <br/>
     <span class="entry-author" style="padding-left:4px;">
       (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
     </span>

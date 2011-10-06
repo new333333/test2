@@ -62,7 +62,7 @@
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folder-content">
-    <div class="folder-head" style="letter-spacing: 0">
+    <div class="folder-head" style="letter-spacing: 0; padding: 5px;">
 		<form id="whatsNewForm" name="whatsNewForm" 
 		  method="post" 
 		  action="<ssf:url adapter="true" portletName="ss_forum" 
@@ -74,18 +74,18 @@
           <td valign="top" width="40%" nowrap>
           
           <a href="javascript: ;" 
-      		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;">
+      		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;" style="color: #fff; font-size: 1.4em;">
       	    <span>
               <c:if test="${ss_type == 'teams'}"><ssf:nlt tag="navigation.myTeams"/></c:if>
               <c:if test="${ss_type == 'tracked'}"><ssf:nlt tag="mobile.whatsNewTracked"/></c:if>
               <c:if test="${ss_type == 'favorites'}"><ssf:nlt tag="mobile.whatsNewFavorites"/></c:if>
               <c:if test="${ss_type == 'site'}"><ssf:nlt tag="mobile.whatsNewSite"/></c:if>
               <c:if test="${ss_type == 'microblog'}"><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></c:if>
-            </span><img border="0" 
+            </span>&nbsp;<img border="0" 
       		  src="<html:rootPath/>images/pics/menudown.gif"/>
       	  </a>
           
-			<div id="whats-new-menu" class="action-dialog" style="display:none; z-index:2;">
+			<div id="whats-new-menu" class="action-dialog" style="display:none; z-index:2; font-size: 1.2em;">
 			    <div class="dialog-content">
 		      		<div class="menu-item">
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
