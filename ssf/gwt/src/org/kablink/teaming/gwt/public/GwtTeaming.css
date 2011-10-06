@@ -1509,7 +1509,7 @@ body, table td, select
 }
 
 /* Style used for the panel that holds the content control. */
-.mainContentControl, .landingPageMainPanel, .gwt-folderView
+.mainContentControl, .landingPageMainPanel, .gwt-viewBase
 {
 	top: 8px !important;
 	background-color:#fff;
@@ -3511,16 +3511,21 @@ td.datePickerMonth {
 {
 	border-bottom: 1px solid #BBBBB9;
 }
+/* End of styles used with an object list table */
+
 
 /* Start:  GWT folder view styles. */
 /* ...Start:  Generic folder view styles. */
+.gwt-folderViewBase {}
 /* ...End:  Generic folder view styles. */
 
+/* ...Start:  Generic data table folder view styles. */
+.gwt-dataTableFolderFlowPanelBase     {}
+.gwt-dataTableFolderViewBase          {}
+.gwt-dataTableFolderVerticalPanelBase {}
+/* ...End:  Generic data table folder view styles. */
+
 /* ...Start:  Discussion folder view styles. */
-.gwt-discussionFolderMainPanel
-{
-}
+.gwt-discussionFolderFlowPanel {}
 /* ...End:  Discussion folder view styles. */
 /* End:  GWT folder view styles. */
-
-/* End of styles used with an object list table */
