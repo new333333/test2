@@ -36,11 +36,10 @@ package org.kablink.teaming.gwt.client;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This panel holds the content of the main Vibe page.  Currently this content panel
@@ -54,7 +53,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MainContentLayoutPanel extends VibeDockLayoutPanel
 {
-	private FlowPanel m_contentFlowPanel = null;
+	private VibeFlowPanel m_contentFlowPanel = null;
 	private ContentControl m_contentCtrl;
 	private ActivityStreamCtrl m_activityStreamCtrl;
 	private ResizeComposite m_miscWidget;
@@ -70,7 +69,7 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 		m_activityStreamCtrl = asCtrl;
 		m_miscWidget = null;
 		
-		m_contentFlowPanel = new FlowPanel();
+		m_contentFlowPanel = new VibeFlowPanel();
 		m_contentFlowPanel.getElement().setId( "contentFlowPanel" );
 		m_contentFlowPanel.addStyleName( "contentFlowPanel" );
 		

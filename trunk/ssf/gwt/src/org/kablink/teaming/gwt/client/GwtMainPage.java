@@ -135,8 +135,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -151,7 +149,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends ResizeComposite
-	implements ResizeHandler,
+	implements
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamEnterEvent.Handler,
@@ -561,9 +559,6 @@ public class GwtMainPage extends ResizeComposite
 			gotoUrlAsync( m_requestInfo.getAdaptedUrl() );
 		}
 		
-		// Add a ResizeHandler to the browser so we'll know when the user resizes the browser.
-		Window.addResizeHandler( this );
-		
 		// Is the user logged in?
 		if ( m_requestInfo.isUserLoggedIn() == false )
 		{
@@ -963,6 +958,7 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void onUnavailable()
 			{
 				// Nothing to do.  Error handled in asynchronous provider.
@@ -971,9 +967,10 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void onSuccess( LandingPage landingPage )
 			{
-				landingPage.setPixelSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
+				landingPage.setViewSize();
 				m_contentLayoutPanel.showWidget( landingPage );
 			}// end onSuccess()
 		};
@@ -1524,10 +1521,14 @@ public class GwtMainPage extends ResizeComposite
 	
 	/**
 	 * This method gets called when the browser gets resized.
+	 * 
+	 * Overrides ResizeComposite.onResize()
 	 */
-	public void onResize( ResizeEvent event )
+	@Override
+	public void onResize()
 	{
 		// Adjust the height and width of the controls on this page.
+		super.onResize();
 		relayoutPage( false );
 	}// end onResize()
 	

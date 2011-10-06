@@ -32,7 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
+
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -53,6 +57,7 @@ public abstract class ViewBase extends ResizeComposite {
 	 * @param viewReady
 	 */
 	public ViewBase(ViewReady viewReady) {
+		super();
 		m_viewReady = viewReady;
 	}
 
@@ -63,5 +68,36 @@ public abstract class ViewBase extends ResizeComposite {
 	final public void viewReady() {
 		m_viewReady.viewReady();
 	}
-}
 
+	/**
+	 * Intercepts the initWidget call to the composite so that a
+	 * ViewBase specific style can be added to it.
+	 * 
+	 * Overrides ResizeComposite.initWidget() 
+	 */
+	@Override
+	protected void initWidget(Widget widget) {
+		super.initWidget(widget);
+		addStyleName("gwt-viewBase");
+	}
+	
+	/**
+	 * Manages resizing the view.
+	 * 
+	 * Overrides RequiresResize.onResize()
+	 */
+	@Override
+	public void onResize() {
+		super.onResize();
+		setViewSize();
+	}
+
+	/**
+	 * Sets the size of the view based on the MainContentLayoutPanel
+	 * that holds it.
+	 */
+	public void setViewSize() {
+		MainContentLayoutPanel clp = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+		setPixelSize((clp.getOffsetWidth() - 8), (clp.getOffsetHeight() - 16));
+	}
+}

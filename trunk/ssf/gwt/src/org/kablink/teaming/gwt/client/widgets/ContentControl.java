@@ -58,7 +58,6 @@ import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
 import org.kablink.teaming.gwt.client.RequestInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -525,9 +524,8 @@ public class ContentControl extends Composite
 			@Override
 			public void onSuccess( DiscussionFolderView dfView )
 			{
-				MainContentLayoutPanel clp = m_mainPage.getMainContentLayoutPanel();
-				dfView.setPixelSize( clp.getOffsetWidth(), clp.getOffsetHeight() );
-				clp.showWidget( dfView );
+				dfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( dfView );
 			}// end onSuccess()
 		});
 	}// end onShowDiscussionFolder()
