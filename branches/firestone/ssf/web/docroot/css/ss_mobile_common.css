@@ -278,4 +278,47 @@ td .sectionHeading {
 	width: 30%;
 	}
 
+.mobile-main {
+	width: 100%
+	}
+	.mobile-main td {
+		width: 33%;
+		}
+	.main-cell {
+		text-align: center;
+		vertical-align: top;
+		padding: 15px 5px;
+		background-color: #505354;
+		border-top: 1px solid #808080;
+		border-left: 1px solid #808080;
+		border-right: 0px solid #000000;
+		border-bottom: 0px solid #000000;
+/*		border-right: 1px solid #353838;
+		border-left: 1px solid #949494; */
+		}
+	.main-cell a {
+		color: #f6f6f6;
+		font-size: .85em;
+		}
+	.main-item img { 
+		vertical-align: middle;
+		border:0px;
+		width: 60%;
+		}
+	.main-item-label {
+		margin-top: 5px;
+		}
 
+.my-item {
+	font-weight: normal;
+   	text-shadow: 0 1px 0 #000000;
+	background-color: #fff;
+	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+}
+
+.my-item img { 
+	vertical-align: middle;
+	margin-right: 5px;
+	border:0px;
+}
