@@ -1057,12 +1057,20 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.TYPE, WebKeys.URL_WHATS_NEW);
 
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Binder top = getWorkspaceModule().getTopWorkspace();
 		Binder binder = null;
-		if (binderId == null) {
-			binder = getWorkspaceModule().getTopWorkspace();
+		if (binderId == null || binderId.equals(top.getId())) {
+			binder = top;
 			binderId = binder.getId();
 			model.put(WebKeys.MOBILE_WHATS_NEW_SITE, true);
-			type = PortletRequestUtils.getStringParameter(request, WebKeys.TYPE, ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE);
+			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+			String savedType = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE);
+			if (savedType == null || savedType.equals("")) savedType = ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE;
+			type = PortletRequestUtils.getStringParameter(request, WebKeys.TYPE, savedType);
+			if (!type.equals("") && !type.equals(savedType)) {
+				//Remember the last type of results
+				bs.getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE, type);
+			}
 		} else {
 			binder = getBinderModule().getBinder(binderId);
 		}
