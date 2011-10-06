@@ -82,13 +82,11 @@ public class FilterController extends AbstractBinderController {
 			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
 			Document searchFilter = requestParser.getSearchQuery();
 			if (searchFilter != null) {
-				if (SearchFilter.checkIfFilterGlobal(searchFilter)) {
+				if (SearchFilter.checkIfFilterGlobal(searchFilter) && getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 					Map searchFiltersG = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
 					if (searchFiltersG == null) searchFiltersG = new HashMap();
 					searchFiltersG.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
-					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
-					}
+					getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
 					if (globalOriginal != null && !globalOriginal.equals("true")) {
 						//This was a change from personal to global, delete the old one
 						UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
@@ -118,7 +116,7 @@ public class FilterController extends AbstractBinderController {
 					getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFiltersP);
 
 					//See if the filter was changed to global or if the name was changed
-					if (globalOriginal != null && globalOriginal.equals("true")) {
+					if (globalOriginal != null && globalOriginal.equals("true") && getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 						//This was a change from global to personal, delete the old one
 						Map searchFiltersG = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
 						if (searchFiltersG != null && searchFiltersG.containsKey(filterNameOriginal)) {
@@ -156,13 +154,15 @@ public class FilterController extends AbstractBinderController {
 		
 		} else if (formData.containsKey("deleteBtnGlobal") && WebHelper.isMethodPost(request)) {
 			//This is a request to delete a global filter
-			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
-			if (!selectedSearchFilter.equals("")) {
-				Map searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
-				if (searchFilters == null) searchFilters = new HashMap();
-				if (searchFilters.containsKey(selectedSearchFilter)) {
-					searchFilters.remove(selectedSearchFilter);
-					getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
+			if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+				String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
+				if (!selectedSearchFilter.equals("")) {
+					Map searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+					if (searchFilters == null) searchFilters = new HashMap();
+					if (searchFilters.containsKey(selectedSearchFilter)) {
+						searchFilters.remove(selectedSearchFilter);
+						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
+					}
 				}
 			}
 			setupViewBinder(response, binderId, binderType);
@@ -201,7 +201,9 @@ public class FilterController extends AbstractBinderController {
 		String selectedSearchFilterGlobal = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
 		if (!selectedSearchFilterGlobal.equals("")) model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilterGlobal);
 		Map globalSearchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
-		if (globalSearchFilters == null) globalSearchFilters = new HashMap();
+		if (globalSearchFilters == null || !getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+			globalSearchFilters = new HashMap();
+		}
 		model.put(WebKeys.FILTER_SEARCH_FILTERS_GLOBAL, globalSearchFilters);
 		
 		Workspace ws = getWorkspaceModule().getTopWorkspace();
