@@ -181,7 +181,7 @@
   </div>
 </c:if>
 </td>
-<td style="width:80%; padding-left:10px;">
+<td style="padding-left:10px;">
 <c:if test="${!empty ssConfigDefinition}">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
