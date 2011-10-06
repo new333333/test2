@@ -98,6 +98,6 @@ public abstract class ViewBase extends ResizeComposite {
 	 */
 	public void setViewSize() {
 		MainContentLayoutPanel clp = GwtTeaming.getMainPage().getMainContentLayoutPanel();
-		setPixelSize((clp.getOffsetWidth() - 8), (clp.getOffsetHeight() - 16));
+		setPixelSize((clp.getOffsetWidth() - 8), (clp.getOffsetHeight() - 19));
 	}
 }
