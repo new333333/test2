@@ -112,7 +112,7 @@ public class MarkupUtil {
 	protected final static Pattern readFilePathPattern = Pattern.compile("/readFile/[^\"]*");
 	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class\\s*=\\s*\"\\s*ss_addimage_att\\s*\"[^>]*>)");
 	
-	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"\\s*ss_icecore_link\\s*\"[^>]*>)(.*)", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
+	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"*\\s*ss_icecore_link\\s*\"*[^>]*>)(.*)", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
 	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel\\s*=\\s*\"([^\"]*)");
 	protected final static Pattern iceCoreLinkAPattern = Pattern.compile("</a>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
 	
@@ -343,7 +343,7 @@ public class MarkupUtil {
     		
         	String linkText = "" ;
         	if (m.groupCount() >= 2) { linkText = m.group(2).trim().replace("$", "\\$"); }
-        	int i = linkText.indexOf("</a>");
+        	int i = linkText.toLowerCase().indexOf("</a>");
         	if (i < 0) break;
         	String titleText = linkText.substring(0, i);
         	String remainderText = linkText.substring(i+4, linkText.length());
