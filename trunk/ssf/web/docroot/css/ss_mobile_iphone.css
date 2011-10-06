@@ -115,10 +115,7 @@ span.pad-left20 select {
 	left: 5px;
 	right: 5px;
 	padding: 10px;
-	border-left: 1px solid #1C5894;
-	border-right: 1px solid #1C5894;
-	border-top: 2px solid #1C5894;
-	border-bottom: 4px solid #1C5894;
+	border: 1px solid #353838;
 	background: #e8e9e6 url(images/mobile/putty_blend3.png) repeat-x;
 	background-position: bottom;
 	}
@@ -163,7 +160,7 @@ span.pad-left20 select {
 	line-height:.5em;
 	}
 .menu-item {padding-left: .5em; margin-bottom: 10px}
-.menu-item a { font-size: 1em;}
+.menu-item a { font-size: 1.2em; padding-bottom: 4px; font-weight: normal;}
 .menu-curlevel {font-weight: bold;}	
 
 #micro-blog-a { 
@@ -249,64 +246,7 @@ span.pad-left20 select {
 .masthead-title2 {
 	font-size: .6em;
 	}
-
-/*  my links styles */
-.home-grid-row {
-	clear: both;
-
-}
-
-.home-grid-cell-1 {
-	width: 32.3%;
-	float: left;
-	border-right: 2px solid #353838;
-	border-left: 1px solid #949494;
-}
-.home-grid-cell {
-	width: 32.3%;
-	float: left;
-	border-right: 2px solid #353838;
-	border-left: 1px solid #888888;
-	border-top: 1px solid #888888;
-}
-
-.home-grid-cell .main-item,
-.home-grid-cell-1 .main-item {
-	padding: 20% 5px 20%;
-	text-align:center;
-}
-
-.main-item {
-	color: #f6f6f6;
-	font-size: 13px;
-   	text-shadow: 0 1px 0 #000000;
-	background-color: #505354;
-	border-bottom: 1px solid #000000;
-}
-.main-item img { 
-	vertical-align: middle;
-	border:0px;
-	width: 60%;
-}
-
-.main-item-label {
-	margin-top: 5px;
-	}
-
-.my-item {
-	font-weight: normal;
-   	text-shadow: 0 1px 0 #000000;
-	background-color: #fff;
-	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
-	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
-}
-
-.my-item img { 
-	vertical-align: middle;
-	margin-right: 5px;
-	border:0px;
-}
-
+	
 /*  folder styles */
 .folders {
 	position: relative;
