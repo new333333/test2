@@ -132,10 +132,10 @@
     </div>
 
 	<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
-		  <span style="padding:10px;" class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+		  <div style="padding:10px; color: #fff;" class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></div>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
-		  <span style="padding:10px;" class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
+		  <div style="padding:10px; color: #fff;" class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></div>
 		</c:if>
 		
         <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
@@ -163,11 +163,11 @@
 				    binderId="${entryWn._principal.workspaceId}" />"
 				 ><c:out value="${entryWn._principal.title}" escapeXml="true"/></a></span>
 	
-			  	 <div class="entry-date">
+			  	 <span class="entry-date">
 			    	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		          	value="${entryWn._modificationDate}" type="both" 
 			      	timeStyle="short" dateStyle="medium" />
-			  	 </div>
+			  	 </span>
 		   
 		  	</div>
 		  

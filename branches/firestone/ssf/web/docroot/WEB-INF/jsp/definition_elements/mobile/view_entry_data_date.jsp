@@ -34,11 +34,18 @@
 %>
 <% //Date view %>
 <div class="entry-content">
-  <div class="entry-element">
-  
-   <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
-					  dateStyle="medium" />
-  </div>
-  <div class="entry-caption"><c:out value="${property_caption}" /></div>
+	<table>
+		<tr>
+			<td>
+				  <div class="entry-caption"><c:out value="${property_caption}" /></div>
+			</td>
+			<td>
+				  <div class="entry-element">  
+					   <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+									value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
+									dateStyle="medium" />
+				  </div>
+			</td>
+		<tr>
+	</table>		
 </div>
