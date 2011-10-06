@@ -136,10 +136,10 @@
 			<td width="50%" style="padding: 10px; vertical-align: top;">
 			<!-- Start Left Column --> 
 				<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
-				  <span class="ss_italic" style="padding:5px;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+				  <div class="ss_italic" style="padding:5px; color: #fff;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></div>
 				</c:if>
 				<c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
-				  <span class="ss_italic" style="padding:5px;"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
+				  <div class="ss_italic" style="padding:10px; color: #fff;"><ssf:nlt tag="whatsnew.noEntriesFound"/></div>
 				</c:if>
 				<c:forEach var="entryWn" items="${ss_whatsNewBinder}">
 				  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
