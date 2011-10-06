@@ -1511,6 +1511,7 @@ body, table td, select
 /* Style used for the panel that holds the content control. */
 .mainContentControl, .landingPageMainPanel, .gwt-viewBase
 {
+	position: relative;
 	top: 8px !important;
 	background-color:#fff;
 	-moz-border-radius: 5px;
