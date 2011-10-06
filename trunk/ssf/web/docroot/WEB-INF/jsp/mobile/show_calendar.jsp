@@ -359,7 +359,7 @@ Date nextDate = calendarNextDate.getTime();
         </c:if>
       </div>
 	  <div class="ss_mobile_calendar_no_entries_content">
-	    <span><ssf:nlt tag="folder.NoResults"/></span>
+	    <div style="color: #fff;"><ssf:nlt tag="folder.NoResults"/></div>
 	  </div>
 	</c:if>
 </div>
