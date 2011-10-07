@@ -49,11 +49,10 @@ import org.kablink.teaming.gwt.client.event.InvokeSubscribeEvent;
 import org.kablink.teaming.gwt.client.event.InvokeTagEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
-import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
-import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.ViewAllEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewUnreadEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
@@ -126,8 +125,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		InvokeTagEvent.Handler,
 		MarkEntryReadEvent.Handler,
 		MarkEntryUnreadEvent.Handler,
-		SidebarHideEvent.Handler,
-		SidebarShowEvent.Handler,
 		ViewAllEntriesEvent.Handler,
 		ViewUnreadEntriesEvent.Handler
 {
@@ -139,7 +136,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private FlowPanel m_searchResultsPanel;
 	private FlowPanel m_footerPanel;
 	private FlowPanel m_showSettingPanel;
-	private GwtMainPage m_mainPage;
 	private Object m_selectedObj = null;
 	private AsyncCallback<VibeRpcResponse> m_searchResultsCallback;
 	private AsyncCallback<VibeRpcResponse> m_checkForChangesCallback = null;
@@ -176,6 +172,10 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private ShareThisDlg m_shareThisDlg = null;
 	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
 
+	// Used to adjust the size and position of things to account for
+	// the padding the footer's style.
+	private final static int FOOTER_PADDING_ADJUST	= 6;
+
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -194,10 +194,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		TeamingEvents.MARK_ENTRY_READ,
 		TeamingEvents.MARK_ENTRY_UNREAD,
 		
-		// Sidebar events.
-		TeamingEvents.SIDEBAR_HIDE,
-		TeamingEvents.SIDEBAR_SHOW,
-		
 		// View events.
 		TeamingEvents.VIEW_ALL_ENTRIES,
 		TeamingEvents.VIEW_UNREAD_ENTRIES,
@@ -208,6 +204,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private class ASCLayoutPanel extends VibeDockLayoutPanel
 	{
+		@SuppressWarnings("unused")
 		ActivityStreamCtrl m_asCtrl;
 		
 		/**
@@ -225,6 +222,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		 */
 		public void onResize()
 		{
+			super.onResize();
 			//!!!m_asCtrl.setSize( getOffsetWidth(), getOffsetHeight() );
 		}
 	}
@@ -237,9 +235,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private ActivityStreamCtrl(
 		GwtMainPage mainPage )
 	{
-		// Store the parameter.
-		m_mainPage = mainPage;
-
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
 			GwtTeaming.getEventBus(),
@@ -1408,7 +1403,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		// Set the width and height of the panel that holds the results.  We subtract 10 from
 		// the width to leave space for a vertical scrollbar.
-		resultsHeight = m_height - headerHeight - footerHeight;
+		resultsHeight = (((m_height - headerHeight) - footerHeight) - FOOTER_PADDING_ADJUST);
 		m_searchResultsPanel.setHeight( String.valueOf( resultsHeight ) + "px" );
 		m_searchResultsPanel.setWidth( String.valueOf( m_width - 10 ) + "px" );
 		
@@ -1646,6 +1641,10 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	public void setSize( int width, int height )
 	{
+		// Adjust the width and height for proper spacing.
+		width  += GwtConstants.CONTENT_WIDTH_ADJUST;
+		height += (GwtConstants.CONTENT_HEIGHT_ADJUST + FOOTER_PADDING_ADJUST);
+		
 		// Set the width and height
 		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
 		m_width = width;
@@ -1979,38 +1978,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			uiEntry.markEntryAsUnread();
 		}
 	}// end onMarkEntryUnread()
-	
-	/**
-	 * Handles SidebarHideEvent's received by this class.
-	 * 
-	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSidebarHide( SidebarHideEvent event )
-	{
-		if ( !m_mainPage.isAdminActive() )
-		{
-			addStyleName( "mainWorkspaceTreeControl" );
-		}
-	}// end onSidebarHide()
-	
-	/**
-	 * Handles SidebarShowEvent's received by this class.
-	 * 
-	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSidebarShow( SidebarShowEvent event )
-	{
-		if ( !m_mainPage.isAdminActive() )
-		{
-			removeStyleName( "mainWorkspaceTreeControl" );
-		}
-	}// end onSidebarShow()
 	
 	/**
 	 * Handles ViewAllEntriesEvent's received by this class.

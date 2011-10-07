@@ -41,8 +41,6 @@ import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
-import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
-import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
@@ -56,6 +54,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
@@ -83,9 +82,7 @@ public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
 		ChangeContextEvent.Handler,
-		ShowDiscussionFolderEvent.Handler,
-		SidebarHideEvent.Handler,
-		SidebarShowEvent.Handler
+		ShowDiscussionFolderEvent.Handler
 {
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -102,10 +99,6 @@ public class ContentControl extends Composite
 		
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
-		
-		// Sidebar events.
-		TeamingEvents.SIDEBAR_HIDE,
-		TeamingEvents.SIDEBAR_SHOW,
 	};
 	
 	/*
@@ -206,6 +199,10 @@ public class ContentControl extends Composite
 	{
 		if ( isVisible() )
 		{
+			// Adjust the width and height for proper spacing.
+			width  += GwtConstants.CONTENT_WIDTH_ADJUST;
+			height += GwtConstants.CONTENT_HEIGHT_ADJUST;
+			
 			// Set the width and height of the frame.
 			setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
 			m_frame.setPixelSize( width, height );
@@ -529,38 +526,6 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowDiscussionFolder()
-	
-	/**
-	 * Handles SidebarHideEvent's received by this class.
-	 * 
-	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSidebarHide( SidebarHideEvent event )
-	{
-		if ( !m_mainPage.isAdminActive() )
-		{
-			addStyleName( "mainWorkspaceTreeControl" );
-		}
-	}// end onSidebarHide()
-	
-	/**
-	 * Handles SidebarShowEvent's received by this class.
-	 * 
-	 * Implements the SidebarShowEvent.Handler.onSidebarShow() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSidebarShow( SidebarShowEvent event )
-	{
-		if ( !m_mainPage.isAdminActive() )
-		{
-			removeStyleName( "mainWorkspaceTreeControl" );
-		}
-	}// end onSidebarShow()
 	
 	/**
 	 * Callback interface to interact with the content control

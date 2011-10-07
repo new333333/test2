@@ -498,7 +498,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		m_headerPanel = new FlowPanel();
 		m_headerPanel.addStyleName( "mainHeaderPanel" );
-		m_mainPanel.addNorth( m_headerPanel, 200 );
+		m_mainPanel.addNorth( m_headerPanel, GwtConstants.HEADER_HEIGHT );
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
@@ -539,7 +539,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
-		m_splitLayoutPanel.addWest( m_wsTreeCtrl, 246 );
+		m_splitLayoutPanel.addWest( m_wsTreeCtrl, GwtConstants.SIDEBAR_TREE_WIDTH );
 		
 		// Create the content control.
 		m_contentCtrl.addStyleName( "mainContentControl" );
@@ -2170,10 +2170,9 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMastheadHide( MastheadHideEvent event )
 	{
-		if ( event.getResizeContentImmediately() )
-		{
-			relayoutPage( true );
-		}
+		m_mainPanel.setWidgetSize( m_headerPanel, m_mainMenuCtrl.getOffsetHeight() );
+		m_mainPanel.forceLayout();
+		onResize();
 	}// end onMastheadHide()
 	
 	/**
@@ -2186,7 +2185,9 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMastheadShow( MastheadShowEvent event )
 	{
-		relayoutPage( true );
+		m_mainPanel.setWidgetSize( m_headerPanel, GwtConstants.HEADER_HEIGHT );
+		m_mainPanel.forceLayout();
+		onResize();
 	}// end onMastheadShow()
 	
 	/**
@@ -2371,10 +2372,9 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSidebarHide( SidebarHideEvent event )
 	{
-		if ( event.getResizeContentImmediately() )
-		{
-			relayoutPage( true );
-		}
+		m_splitLayoutPanel.setWidgetSize( m_wsTreeCtrl, GwtConstants.PANEL_PADDING );
+		m_splitLayoutPanel.forceLayout();
+		onResize();
 	}// end onSidebarHide()
 	
 	/**
@@ -2400,7 +2400,9 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSidebarShow( SidebarShowEvent event )
 	{
-		relayoutPage( true );
+		m_splitLayoutPanel.setWidgetSize( m_wsTreeCtrl, GwtConstants.SIDEBAR_TREE_WIDTH );
+		m_splitLayoutPanel.forceLayout();
+		onResize();
 	}// end onSidebarShow()
 	
 	/**

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
 
@@ -98,6 +99,6 @@ public abstract class ViewBase extends ResizeComposite {
 	 */
 	public void setViewSize() {
 		MainContentLayoutPanel clp = GwtTeaming.getMainPage().getMainContentLayoutPanel();
-		setPixelSize((clp.getOffsetWidth() - 8), (clp.getOffsetHeight() - 19));
+		setPixelSize((clp.getOffsetWidth() + GwtConstants.CONTENT_WIDTH_ADJUST), (clp.getOffsetHeight() + GwtConstants.CONTENT_HEIGHT_ADJUST));
 	}
 }
