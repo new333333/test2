@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
@@ -44,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -358,6 +358,7 @@ public class AdminControl extends Composite
 			m_mainTable.addStyleName( "adminCategoriesTable" );
 			m_mainTable.setCellPadding( 0 );
 			m_mainTable.setCellSpacing( 0 );
+			m_mainTable.setWidth("100%");
 			
 			mainPanel.add( m_mainTable );
 			
@@ -558,6 +559,9 @@ public class AdminControl extends Composite
 		m_adminActionsTreeControl = new AdminActionsTreeControl();
 		mainPanel.add( m_adminActionsTreeControl );
 		
+		// All composites must call initWidget() in their constructors.
+		initWidget( mainPanel );
+		
 		// Create a control to hold the administration page for the selection administration action.
 		ContentControl.createAsync(
 				mainPage,
@@ -578,11 +582,9 @@ public class AdminControl extends Composite
 				m_contentControl.setVisible( false );
 				m_contentControl.addStyleName( "adminContentControl" );
 				mainPanel.add( m_contentControl );
+				relayoutPage();
 			}// end onSuccess()
 		} );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
 	}// end AdminControl()
 
 	/**
@@ -614,9 +616,6 @@ public class AdminControl extends Composite
 		{
 			String url;
 			
-			// Position the content control.
-			relayoutPageNow();
-			
 			// Get the url used by the selected action.
 			url = adminAction.getUrl();
 			if ( url != null && url.length() > 0 )
@@ -633,7 +632,9 @@ public class AdminControl extends Composite
 				{
 					public void execute()
 					{
+						// Show an position the content control.
 						showContentPanel();
+						relayoutPage();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -769,16 +770,21 @@ public class AdminControl extends Composite
 	 */
 	public void relayoutPage()
 	{
-		Scheduler.ScheduledCommand cmd;
-
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
+		// If the AdminControl is visible...
+		if ( isVisible() )
+		{		
+			Scheduler.ScheduledCommand cmd;
+	
+			cmd = new Scheduler.ScheduledCommand()
 			{
-				relayoutPageNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+				public void execute()
+				{
+					// ...update the page's layout.
+					relayoutPageNow();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}// end relayoutPage()
 	
 	
@@ -816,7 +822,7 @@ public class AdminControl extends Composite
 		}
 		
 		// Set the width and height of the content control.
-		m_contentControl.setDimensions( width, height );
+		m_contentControl.setDimensions( width, height + GwtConstants.PANEL_PADDING );
 
 		// Set the left position of the content control.
 		style = m_contentControl.getElement().getStyle();
@@ -897,6 +903,7 @@ public class AdminControl extends Composite
 						public void execute()
 						{
 							setVisible( true );
+							relayoutPage();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd2 );

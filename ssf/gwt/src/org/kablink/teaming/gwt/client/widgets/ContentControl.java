@@ -202,9 +202,11 @@ public class ContentControl extends Composite
 	{
 		if ( isVisible() )
 		{
-			// Adjust the width and height for proper spacing.
-			width  += GwtConstants.CONTENT_WIDTH_ADJUST;
-			height += GwtConstants.CONTENT_HEIGHT_ADJUST;
+			if (!m_isAdminContent) {
+				// Adjust the width and height for proper spacing.
+				width  += GwtConstants.CONTENT_WIDTH_ADJUST;
+				height += GwtConstants.CONTENT_HEIGHT_ADJUST;
+			}
 			
 			// Set the width and height of the frame.
 			setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
