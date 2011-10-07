@@ -122,7 +122,7 @@
 			</a>
 		</td>  
 		<td class="main-cell">
-				<a class="hierarchy-a" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');return false;"/>
+				<a class="hierarchy-a" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');window.scroll(0,0);return false;"/>
 					<div class="main-item navigation-a">
 					  <div><img src="<html:rootPath/>images/mobile/main_hierarchy_128.png"/></div>
 					  <div class="main-item-label"><ssf:nlt tag="navigation.hierarchy"/></div>
