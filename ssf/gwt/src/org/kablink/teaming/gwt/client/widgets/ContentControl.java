@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
@@ -82,7 +83,8 @@ public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
 		ChangeContextEvent.Handler,
-		ShowDiscussionFolderEvent.Handler
+		ShowDiscussionFolderEvent.Handler,
+		ShowLandingPageEvent.Handler
 {
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -99,6 +101,7 @@ public class ContentControl extends Composite
 		
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
+		TeamingEvents.SHOW_LANDING_PAGE,
 	};
 	
 	/*
@@ -526,6 +529,43 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowDiscussionFolder()
+	
+	/**
+	 * Handles ShowLandingPageEvent's received by this class.
+	 * 
+	 * Implements the ShowLandingPageEvent.Handler.onShowLandingPage() method.
+	 */
+	@Override
+	public void onShowLandingPage( ShowLandingPageEvent event )
+	{
+		// Display a landing page for the given binder id.
+		LandingPage.LandingPageClient lpClient;
+		
+		lpClient = new LandingPage.LandingPageClient()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void onSuccess( LandingPage landingPage )
+			{
+				landingPage.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( landingPage );
+			}// end onSuccess()
+		};
+		
+		// Create a LandingPage widget for the selected binder.
+		LandingPage.createAsync( event.getBinderId(), event.getViewReady(), lpClient );
+	}// end onShowLandingPage()
 	
 	/**
 	 * Callback interface to interact with the content control
