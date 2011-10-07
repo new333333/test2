@@ -9,7 +9,6 @@ table.ss_mashup {
 }
 
 .ss_mashup_canvas_view {
-  background: #ffffff;
 }
 .ss_mashup_canvas_form {
   border: 1px silver solid; 
@@ -165,7 +164,6 @@ div.ss_mashup_graphic_content {
   }
   
 div.ss_mashup_url_content {
-  background: #FFFFFF;
   text-align: left;
   padding-bottom: 3px;
   }
