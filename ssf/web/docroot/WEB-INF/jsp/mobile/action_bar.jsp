@@ -44,7 +44,7 @@
   
 <c:if test="${!ss_hideMiniBlog}">
   <a href="javascript: ;" 
-    onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
+    onClick="ss_toggleDivVisibility('micro-blog-edit');ss_selectElement('micro-blog-text');return false;"><ssf:nlt tag="miniblog"/></a>
 </c:if>
   
   <c:if test="${!empty ss_new_actions}">
