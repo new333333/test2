@@ -22,8 +22,8 @@
 /* Styles used with the activity stream control */
 .activityStreamCtrl
 {
+	top: 8px !important;
 	background: #fff;
-	position: absolute;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
