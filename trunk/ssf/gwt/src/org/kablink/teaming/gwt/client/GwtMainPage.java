@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
-import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
@@ -69,7 +68,6 @@ import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
-import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -83,7 +81,6 @@ import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
-import org.kablink.teaming.gwt.client.landingpage.LandingPage;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -181,7 +178,6 @@ public class GwtMainPage extends ResizeComposite
 		SearchSimpleEvent.Handler,
 		SearchTagEvent.Handler,
 		ShowContentControlEvent.Handler,
-		ShowLandingPageEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarReloadEvent.Handler,
 		SidebarShowEvent.Handler,
@@ -279,11 +275,8 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.SEARCH_SIMPLE,
 		TeamingEvents.SEARCH_TAG,
 		
-		// Show Content Control event
+		// Show events.
 		TeamingEvents.SHOW_CONTENT_CONTROL,
-		
-		// Landing Page events
-		TeamingEvents.SHOW_LANDING_PAGE,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -946,39 +939,6 @@ public class GwtMainPage extends ResizeComposite
 		});
 	}// end contextLoaded()
 
-	/*
-	 * Display a landing page for the given binder id.
-	 */
-	private void displayLandingPage( String binderId, ViewReady viewReady )
-	{
-		LandingPage.LandingPageClient lpClient;
-		
-		lpClient = new LandingPage.LandingPageClient()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			/**
-			 * 
-			 */
-			@Override
-			public void onSuccess( LandingPage landingPage )
-			{
-				landingPage.setViewSize();
-				m_contentLayoutPanel.showWidget( landingPage );
-			}// end onSuccess()
-		};
-		
-		// Create a LandingPage widget for the selected binder.
-		LandingPage.createAsync( binderId, viewReady, lpClient );
-	}// end displayLandingPage()
-	
 	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
@@ -2347,19 +2307,6 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Display the content control
 		m_contentLayoutPanel.showContentControl();
-	}
-	
-	/**
-	 * Handles ShowLandingPageEvent's received by this class.
-	 * 
-	 * Implements the ShowLandingPageEvent.Handler.onShowLandingPage() method.
-	 * 
-	 */
-	@Override
-	public void onShowLandingPage( ShowLandingPageEvent event )
-	{
-		// Display a landing page for the given binder id.
-		displayLandingPage( event.getBinderId(), event.getViewReady() );
 	}
 	
 	/**
