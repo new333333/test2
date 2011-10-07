@@ -51,7 +51,7 @@
 			  <div class="homelink">
 				<c:if test="${!ss_hideMiniBlog}">
 					  <a href="javascript: ;" 
-						onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><img src="<html:rootPath/>css/images/mobile/blog_but.png" border="0"></a>
+						onClick="ss_toggleDivVisibility('micro-blog-edit');ss_selectElement('micro-blog-text');return false;"><img src="<html:rootPath/>css/images/mobile/blog_but.png" border="0"></a>
 				</c:if>
 			  </div>
 			</td>
