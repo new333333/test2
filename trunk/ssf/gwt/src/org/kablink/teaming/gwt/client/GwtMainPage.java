@@ -2130,9 +2130,13 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMastheadHide( MastheadHideEvent event )
 	{
+		// Force the layout panels to resize as appropriate.
 		m_mainPanel.setWidgetSize( m_headerPanel, m_mainMenuCtrl.getOffsetHeight() );
 		m_mainPanel.forceLayout();
-		onResize();
+		
+		// Note that we don't have to do anything special here to
+		// affect our resize processing.  That just happens because of
+		// the workings of the layout panels.
 	}// end onMastheadHide()
 	
 	/**
@@ -2145,9 +2149,24 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMastheadShow( MastheadShowEvent event )
 	{
-		m_mainPanel.setWidgetSize( m_headerPanel, GwtConstants.HEADER_HEIGHT );
+		// Is the masthead visible?
+		if ( !m_mastHead.isVisible() ) {
+			// No!  We need to show it so that we can get it's height
+			// below to adjust the panel sizes correctly.  It doesn't
+			// appear to be deterministic as to which MastheadShowEvent
+			// handler gets called first (this one or the one is
+			// Masthead.java.)  If it's this one, the masthead will
+			// still be hidden and the getHight() on it returns 0.
+			m_mastHead.setVisible( true );
+		}
+		
+		// Force the layout panels to resize as appropriate.
+		m_mainPanel.setWidgetSize( m_headerPanel, m_mainMenuCtrl.getOffsetHeight() + m_mastHead.getHeight() );	//GwtConstants.HEADER_HEIGHT );
 		m_mainPanel.forceLayout();
-		onResize();
+		
+		// Note that we don't have to do anything special here to
+		// affect our resize processing.  That just happens because of
+		// the workings of the layout panels.
 	}// end onMastheadShow()
 	
 	/**
@@ -2321,6 +2340,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		m_splitLayoutPanel.setWidgetSize( m_wsTreeCtrl, GwtConstants.PANEL_PADDING );
 		m_splitLayoutPanel.forceLayout();
+		
 		onResize();
 	}// end onSidebarHide()
 	
@@ -2349,6 +2369,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		m_splitLayoutPanel.setWidgetSize( m_wsTreeCtrl, GwtConstants.SIDEBAR_TREE_WIDTH );
 		m_splitLayoutPanel.forceLayout();
+		
 		onResize();
 	}// end onSidebarShow()
 	
@@ -2573,50 +2594,54 @@ public class GwtMainPage extends ResizeComposite
 		// Are we supposed to relayout now?
 		if ( layoutImmediately == true )
 		{
-			int width;
-			int height;
-			
-			width = m_contentLayoutPanel.getOffsetWidth();
-			height = m_contentLayoutPanel.getOffsetHeight();
-			
-			// Yes
-			if ( m_contentCtrl != null )
-				m_contentCtrl.setDimensions( width, height );
-			
-			if ( isActivityStreamActive() )
-				m_activityStreamCtrl.setSize( width, height );
-			
-			// Adjust the size of the north panel that holds the masthead and menu bar
-			{
-				int panelHeight;
-				
-				panelHeight = 0;
-				
-				if ( m_mastHead != null && m_mastHead.isVisible() )
-					panelHeight += m_mastHead.getOffsetHeight();
-				
-				if ( m_mainMenuCtrl != null && m_mainMenuCtrl.isVisible() )
-					panelHeight += m_mainMenuCtrl.getOffsetHeight();
-
-				m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
-			}
-			
-			// Do we have an Administration control?
-			if ( m_adminControl != null )
-			{
-				// Yes
+			// Are we in administration mode?
+			if ( isAdminActive() ) {
+				// Yes!  Tell the admin console to relayout.
 				m_adminControl.relayoutPage();
 			}
 			
-			// Do we have a workspace tree control?
-			if ( null != m_wsTreeCtrl )
+			else
 			{
+				int width;
+				int height;
+
+				// No, we aren't in administration mode!  layout the
+				// non-admin content.
+				width  = m_contentLayoutPanel.getOffsetWidth();
+				height = m_contentLayoutPanel.getOffsetHeight();
+				
 				// Yes
-				m_wsTreeCtrl.relayoutPageAsync();
+				if ( m_contentCtrl != null )
+					m_contentCtrl.setDimensions( width, height );
+				
+				if ( isActivityStreamActive() )
+					m_activityStreamCtrl.setSize( width, height );
+				
+				// Adjust the size of the north panel that holds the masthead and menu bar
+				{
+					int panelHeight;
+					
+					panelHeight = 0;
+					
+					if ( m_mastHead != null && m_mastHead.isVisible() )
+						panelHeight += m_mastHead.getOffsetHeight();
+					
+					if ( m_mainMenuCtrl != null && m_mainMenuCtrl.isVisible() )
+						panelHeight += m_mainMenuCtrl.getOffsetHeight();
+	
+					m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
+				}
+				
+				// Do we have a workspace tree control?
+				if ( null != m_wsTreeCtrl )
+				{
+					// Yes
+					m_wsTreeCtrl.relayoutPageAsync();
+				}
+				
+				// Set the size and position of the entry popup div.
+				GwtClientHelper.jsSetEntryPopupIframeSize();
 			}
-			
-			// Set the size and position of the entry popup div.
-			GwtClientHelper.jsSetEntryPopupIframeSize();
 		}
 		else
 		{
