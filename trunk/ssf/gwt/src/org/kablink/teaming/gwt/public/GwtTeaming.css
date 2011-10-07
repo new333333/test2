@@ -1509,7 +1509,7 @@ body, table td, select
 }
 
 /* Style used for the panel that holds the content control. */
-.mainContentControl, .landingPageMainPanel, .gwt-viewBase
+.mainContentControl, .landingPageMainPanel, .vibe-viewBase
 {
 	position: relative;
 	top: 8px !important;
@@ -3517,16 +3517,16 @@ td.datePickerMonth {
 
 /* Start:  GWT folder view styles. */
 /* ...Start:  Generic folder view styles. */
-.gwt-folderViewBase {}
+.vibe-folderViewBase {}
 /* ...End:  Generic folder view styles. */
 
 /* ...Start:  Generic data table folder view styles. */
-.gwt-dataTableFolderFlowPanelBase     {}
-.gwt-dataTableFolderViewBase          {}
-.gwt-dataTableFolderVerticalPanelBase {}
+.vibe-dataTableFolderFlowPanelBase     {}
+.vibe-dataTableFolderViewBase          {}
+.vibe-dataTableFolderVerticalPanelBase {}
 /* ...End:  Generic data table folder view styles. */
 
 /* ...Start:  Discussion folder view styles. */
-.gwt-discussionFolderFlowPanel {}
+.vibe-discussionFolderFlowPanel {}
 /* ...End:  Discussion folder view styles. */
 /* End:  GWT folder view styles. */
