@@ -86,7 +86,7 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	@Override
 	public void constructView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
 		// Setup the appropriate styles for a discussion folder...
-		getFlowPanel().addStyleName("gwt-discussionFolderFlowPanel");
+		getFlowPanel().addStyleName("vibe-discussionFolderFlowPanel");
 
 		// ...reset the view's content...
 		resetView(folderColumnsList, folderSortBy, folderSortDescend);

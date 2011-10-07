@@ -112,12 +112,12 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private void constructCommonContent() {
 		// Create the main layout panel for the content...
 		m_mainPanel = new VibeDockLayoutPanel(Style.Unit.PX);
-		m_mainPanel.addStyleName("gwt-folderViewBase gwt-dataTableFolderViewBase");
+		m_mainPanel.addStyleName("vibe-folderViewBase vibe-dataTableFolderViewBase");
 
 		// ...create the vertical panel that holds the layout that
 		// ...flows down the view...
 		m_verticalPanel = new VibeVerticalPanel();
-		m_verticalPanel.addStyleName("gwt-dataTableFolderVerticalPanelBase");
+		m_verticalPanel.addStyleName("vibe-dataTableFolderVerticalPanelBase");
 	
 		// ...add the common toolbars, ... to that vertical panel...
 //!		...this needs to be implemented...
@@ -125,7 +125,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		// ...create a flow panel for the implementing class to put
 		// ...its content.
 		m_flowPanel = new VibeFlowPanel();
-		m_flowPanel.addStyleName("gwt-dataTableFolderFlowPanelBase");
+		m_flowPanel.addStyleName("vibe-dataTableFolderFlowPanelBase");
 		
 		// ...and tie everything together.
 		m_verticalPanel.add(m_flowPanel);
