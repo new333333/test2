@@ -182,6 +182,12 @@ function ss_toggleDivVisibility(id) {
 	}
 }
 
+//Routine to select an element
+function ss_selectElement(id) {
+	var eleObj = self.document.getElementById(id);
+	eleObj.select();
+}
+
 //Routine to clear the value of a hidden field in a form and blank the owning div
 function ss_delete_hidden_field(obj, formName, elementName, value) {
 	var formObj = self.document.getElementById(formName);
