@@ -57,14 +57,22 @@
 
 <script type="text/javascript">
 
-document.body.style.backgroundColor = '${ss_mashupBGColor}';
-document.body.style.backgroundImage = "url( '${ss_mashupBGImg}' )";
-document.body.style.backgroundRepeat = '${ss_mashupBGImgRepeat}';
+<c:if test="${!empty ss_mashupBGColor}">
+  document.body.style.backgroundColor = '${ss_mashupBGColor}';
+</c:if>
+<c:if test="${!empty ss_mashupBGImg}">
+  document.body.style.backgroundImage = "url( '${ss_mashupBGImg}' )";
+</c:if>
+<c:if test="${!empty ss_mashupBGImgRepeat}">
+  document.body.style.backgroundRepeat = '${ss_mashupBGImgRepeat}';
+</c:if>
 
 </script>
 
-<div class="ss_mashup_canvas_view" style="background-color: #fff;">
-	<c:if test="${ssConfigJspStyle != 'mobile'}">
+<div 
+  <c:if test="${empty ss_mashupBGColor}">class="ss_mashup_canvas_view</c:if>
+>
+  <c:if test="${ssConfigJspStyle != 'mobile'}">
 	<div id="ss_mashup_canvas_print" style="position: relative;">
 		&nbsp;
 		<a style="position: absolute; right: 10px; top: 2px;" class="ss_actions_bar13_pane_none" href="javascript: window.print();">
@@ -73,7 +81,7 @@ document.body.style.backgroundRepeat = '${ss_mashupBGImgRepeat}';
 	      		 src="<html:rootPath/>images/pics/masthead/masthead_printer.png" border="0" align="absmiddle" />
 		</a>
 	</div>
-	</c:if>
+  </c:if>
 
   <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
     <c:set var="mashupValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
