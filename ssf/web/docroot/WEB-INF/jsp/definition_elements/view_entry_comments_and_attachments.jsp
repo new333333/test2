@@ -104,7 +104,12 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 		onMouseOver="ss_hoverOverTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
 		onMouseOut="ss_hoverOverTabStopped('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
 		onClick="ss_showTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');">
-		<ssf:nlt tag="__entry_comments"/>
+		<c:if test="${propertyValues_tabTitle[0] != 'replies'}">
+		  <ssf:nlt tag="__entry_comments"/>
+		</c:if>
+		<c:if test="${propertyValues_tabTitle[0] == 'replies'}">
+		  <ssf:nlt tag="__entry_replies"/>
+		</c:if>
 		<c:if test="${ssEntry == ssDefinitionEntry}">
 		  <span class="ss_smallprint">(${fn:length(ssFolderEntryDescendants)})</span>
 		</c:if>
