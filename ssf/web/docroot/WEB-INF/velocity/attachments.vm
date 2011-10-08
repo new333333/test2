@@ -47,12 +47,12 @@
 #foreach ($selection in $ssVisitor.Entity.FileAttachments)
 	<tr>
 		#if ($ssVisitor.NotifyDef.isAttachmentsIncluded())
-			<td style="font-size:10px;font-weight:bold;padding-left:0px;">${selection.fileItem.name}
+			<td style="font-size:10px;font-weight:bold;padding-left:0px;white-space:nowrap;">
+				${selection.fileItem.name}
 			</td>
 		#else
-			<td style="font-size:10px;font-weight:bold;padding-left:0px;"><a style="text-decoration: none;" 
-				href="$ssVisitor.getFileLink(${selection})">
-				${selection.fileItem.name}</a>
+			<td style="font-size:10px;font-weight:bold;padding-left:0px;white-space:nowrap;">
+				<a style="text-decoration: none;" href="$ssVisitor.getFileLink(${selection})">${selection.fileItem.name}</a>
 			</td>
 		#end
 		<td style="font-size:10px;white-space:nowrap;padding-left:10px;color:#666666">
