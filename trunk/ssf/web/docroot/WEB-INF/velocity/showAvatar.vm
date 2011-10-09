@@ -41,7 +41,7 @@
      #else
       <td width="90%" valign="top">
      #end
-      <div>
+      <div class="e-mail-head">
         #if (!$creatorImage.isEmpty())
           #ss_printLn("$creatorImage")
         #end
@@ -59,7 +59,7 @@
 
 	 #if ($ssVisitor.getParam('ssReplyTo'))
 	  <td width="10%" align="right" valign="top">
-	    <div style="white-space:nowrap;padding-top:4px;">
+	    <div style="white-space:nowrap;padding-top:10px;">
 		  <a href="mailto:${ssVisitor.getParam('ssReplyTo')}?subject=RE: DocId:${ssVisitor.Entity.ParentBinder.Id}:${ssVisitor.Entity.Id}"
 			class="actionbut">${ssVisitor.getNLT("mail.reply")}</a>
 		</div>
@@ -67,7 +67,7 @@
 	 #end
 
      <td width="10%" align="right" valign="top">
-	  <div style="white-space:nowrap;padding-top:4px;">
+	  <div style="white-space:nowrap;padding-top:10px;">
 	    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity)" 
 	      class="actionbut">${ssVisitor.getNLT("email.visitMessage")}</a>
 	  </div>
