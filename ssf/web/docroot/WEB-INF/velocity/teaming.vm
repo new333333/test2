@@ -43,7 +43,7 @@
 #macro (ss_eLabel2)#ss_print("font-size:13px;margin: 15px 10px 5px 5px;")#end 
 #macro (ss_eChild)#ss_print("margin:1px 1px 1px 15px;padding:8px;background-color:#F6F6F6;border:1px solid #B8B8B8;-moz-border-radius:5px;-webkit-border-radius:5px;")#end 
 #macro (ss_entryContent)#ss_print("font-size:12px;font-weight:normal;font-family:Arial;margin:5px 5px 10px 15px;")#end
-#macro (ss_eTitle)#ss_print("font-size:16px;color:#82b2bd;margin:5px;")#end
+#macro (ss_eTitle)#ss_print("font-size:1.1em;color:#5691A6;margin:5px;")#end
 #macro (ss_entrySignature)#ss_print("font-size:10px;padding-left:5px;color:#666666;")#end 
 #macro (ss_labelLeft)#ss_print("font-weight:bold;font-size:12px;display:inline;padding-right:2px;")#end
 #macro (ss_labelRight)#ss_print("font-weight:bold;font-size:12px;display:inline;padding-left:2px;")#end
