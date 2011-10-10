@@ -649,11 +649,14 @@ public class AdminControl extends Composite
 	 */
 	public void doPreLogoutCleanup()
 	{
-		// Clear the iframe's content 
-		m_contentControl.clear();
+		if ( isVisible() == true )
+		{
+			// Clear the iframe's content 
+			m_contentControl.clear();
 		
-		// Set the iframe's content to nothing.
-		m_contentControl.setUrl( "" );
+			// Set the iframe's content to nothing.
+			m_contentControl.setUrl( "" );
+		}
 	}// end doPreLogoutCleanup()
 	
 	
