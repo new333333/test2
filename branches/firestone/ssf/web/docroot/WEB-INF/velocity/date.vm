@@ -30,7 +30,7 @@
 <div style="#ss_entryContent()">
  <span style="#ss_labelLeft()">$property_caption</span>
 #if (${ssVisitor.Entity.getCustomAttribute($property_name)})
- <span>$ssVisitor.NotifyDef.DateFormat.format(${ssVisitor.Entity.getCustomAttribute($property_name).Value})</span>
+ <span style="white-space:nowrap;">$ssVisitor.NotifyDef.DateFormat.format(${ssVisitor.Entity.getCustomAttribute($property_name).Value})</span>
 #end
 </div>
 #else
