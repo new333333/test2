@@ -120,18 +120,22 @@
 			//ss_debug("**** "+ss_debugTrace());
 			if (ss_isGwtUIActive && ss_getUserDisplayStyle() == "newpage") {
 				try {
+					var PANEL_PADDING = 8;
 					var contentIframe = document.getElementById('contentFlowPanel');
 					var startOfContent = ss_getObjectTop(contentIframe);
+					var entryIframeBoxDiv = document.getElementById('ss_iframe_box_div');
 					var entryIframeDiv = document.getElementById('ss_showentrydiv');
 					var entryIframeFrame = document.getElementById('ss_showentryframe');
 					if (entryIframeDiv == null || entryIframeFrame == null) return;
-					var top = ss_getObjectTop(contentIframe);
-					var left = ss_getObjectLeft(contentIframe);
-					ss_setObjectTop(entryIframeDiv, top);
-					ss_setObjectLeft(entryIframeDiv, left);
-					ss_setObjectWidth(entryIframeFrame, contentIframe.offsetWidth);
+					var top   = (Number(ss_getObjectTop(contentIframe)) + PANEL_PADDING);
+					var left  =  Number(ss_getObjectLeft(contentIframe));
+					var width = (Number(contentIframe.offsetWidth)      - PANEL_PADDING);
+					ss_setObjectTop(  entryIframeDiv,    top  );
+					ss_setObjectLeft( entryIframeDiv,    left );
+					ss_setObjectWidth(entryIframeBoxDiv, width);
+					ss_setObjectWidth(entryIframeFrame,  width);
 					var windowHeight = parseInt(ss_getWindowHeight());
-					var iframeMinimum = parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin);
+					var iframeMinimum = (parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin) - PANEL_PADDING);
 					if (iframeMinimum < 100) iframeMinimum = 100;
 					if (window.frames['ss_showentryframe'] != null) {
 						if (parseInt(entryIframeFrame.style.height) != parseInt(iframeMinimum)) {
