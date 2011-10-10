@@ -724,13 +724,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapSchedule schedule;
 		String zoneName;
 		ZoneInfo zoneInfo;
-		Map mods;
 
 		zoneInfo = getZoneModule().getZoneInfo( zoneId );
 		zoneName = zoneInfo.getZoneName();
 		
 		schedule = new LdapSchedule( getSyncObject( zoneName ).getScheduleInfo( zoneId ) );
-		mods = new HashMap();
 		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zoneId ))
 		{
 			String ldapGuidAttribute;
@@ -741,9 +739,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				// Yes
 				LdapContext ctx;
-				String dn = null;
-				Map userAttributes;
-				String [] userAttributeNames;
 
 				try
 				{
@@ -754,15 +749,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					continue;
 				}
 				
-				// Get 
-				userAttributes = config.getMappings();
-				userAttributeNames = (String[])(userAttributes.keySet().toArray(sample));
-		
 				for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches())
 				{
 					try
 					{
-						String[] attributesToRead;
 						Attributes lAttrs;
 						int scope;
 						SearchControls sch;
@@ -770,9 +760,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						String filter;
 						NamingEnumeration ctxSearch;
 						Binding bd;
+						String ldapGuid;
+						String userIdAttributeName[] = {config.getUserIdAttribute()};
+						String attributesToRead[] = {ldapGuidAttribute};
 
 						scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
-						sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
+						sch = new SearchControls(scope, 1, 0, userIdAttributeName, false, false);
 			
 						search = "(" + config.getUserIdAttribute() + "=" + userName + ")";
 						filter = searchInfo.getFilterWithoutCRLF();
@@ -789,32 +782,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						bd = (Binding)ctxSearch.next();
 
-						// Get the list of the ldap attribute names we want read from the ldap directory.
-						attributesToRead = getAttributeNamesToRead( userAttributeNames, config );
-						
+						// Read the ldap guid from the directory.
 						lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
 						
-						getUpdates( userAttributeNames, userAttributes, lAttrs, mods, config.getLdapGuidAttribute() );
+						// Get the guid from what we read from the directory.
+						ldapGuid = getLdapGuid( lAttrs, ldapGuidAttribute );
 
-						return (String)mods.get( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID );
+						if ( ctx != null )
+						{
+							try
+							{
+								ctx.close();
+							}
+							catch ( NamingException ex )
+							{
+								// Nothing to do
+							}
+						}
+
+						return ldapGuid;
 					}
 					catch (NamingException ex)
 					{
 						// Nothing to do.
 					}
-					finally
-					{
-						try
-						{
-							ctx.close();
-						}
-						catch (NamingException ex)
-						{
-							// Nothing to do
-						}
-					}
-
 				}// end for()
+
+				if ( ctx != null )
+				{
+					try
+					{
+						ctx.close();
+					}
+					catch ( NamingException ex )
+					{
+						// Nothing to do
+					}
+				}
 			}
 		}// end for()
 		
@@ -878,11 +882,38 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						dn = bd.getNameInNamespace();
 					}
 					mods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-				} finally {
-					ctx.close();
 				}
+				finally
+				{
+					// Nothing to do.
+				}
+				
+				if ( ctx != null )
+				{
+					try
+					{
+						ctx.close();
+					}
+					catch ( NamingException ex )
+					{
+						// Nothing to do
+					}
+				}
+
 				updateUser(zone, teamingUserName, mods);
 				return;
+			}
+			
+			if ( ctx != null )
+			{
+				try
+				{
+					ctx.close();
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
 			}
 		}
 		throw new NoUserByTheNameException( teamingUserName );
@@ -1200,30 +1231,36 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			// Did we find the given ldap user in Teaming by their ldap guid?
 			if ( !foundLdapGuid )
 			{
-				// No, search for the ldap user in Teaming in other ways. 
-				//use DN as 1st priority match.  This will catch changes in USER_ID_ATTRIBUTE
-				row = ssDnUsers.get(dn); 
-				if (row != null)
-					notInLdap.remove(row[PRINCIPAL_ID]);
-				
-				row2 = (Object[])ssUsers.get(ssName);
-				if (row2 != null)
+				// No
+				// Are we using the ldap guid to identify users?
+				if ( ldapGuidAttribute == null || ldapGuidAttribute.length() == 0 )
 				{
-					String name;
-					String foreignName;
+					// No
+					// Search for the ldap user in Teaming in other ways. 
+					//use DN as 1st priority match.  This will catch changes in USER_ID_ATTRIBUTE
+					row = ssDnUsers.get(dn); 
+					if (row != null)
+						notInLdap.remove(row[PRINCIPAL_ID]);
 					
-					notInLdap.remove(row2[PRINCIPAL_ID]);
-
-					// Did we find a local user?
-					// A local user will have their name equal to their foreignName
-					name = (String) row2[PRINCIPAL_NAME];
-					foreignName = (String) row2[PRINCIPAL_FOREIGN_NAME];
-					if ( name.equalsIgnoreCase( foreignName ) )
+					row2 = (Object[])ssUsers.get(ssName);
+					if (row2 != null)
 					{
-						// We found a local user.  We don't want to sync the ldap user to this user.
-						foundLocalUser = true;
-						row = null;
-						row2 = null;
+						String name;
+						String foreignName;
+						
+						notInLdap.remove(row2[PRINCIPAL_ID]);
+	
+						// Did we find a local user?
+						// A local user will have their name equal to their foreignName
+						name = (String) row2[PRINCIPAL_NAME];
+						foreignName = (String) row2[PRINCIPAL_FOREIGN_NAME];
+						if ( name.equalsIgnoreCase( foreignName ) )
+						{
+							// We found a local user.  We don't want to sync the ldap user to this user.
+							foundLocalUser = true;
+							row = null;
+							row2 = null;
+						}
 					}
 				}
 			}
