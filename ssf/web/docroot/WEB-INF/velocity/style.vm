@@ -40,12 +40,17 @@
 	  -webkit-border-radius: 5px;
 	}
 	.e-user-avatar-new {
-	  background: #b8b8b8;
+	  background: #e0e0e0;
 	}
 	.e-user-avatar img {
-	  width: 24px;
+	  width: 36px;
 	  vertical-align: middle;
-	  padding-right: 5px;
+	  padding-right: 3px;
+	}
+	.e-mail-head a {
+		text-decoration: none;
+		color: #fff;
+		font-weight: bold;
 	}
 	a.actionbut {
 	  background: #81b2bd;
