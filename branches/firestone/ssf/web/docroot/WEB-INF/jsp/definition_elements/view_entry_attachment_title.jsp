@@ -73,6 +73,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <%  editInPlaceSupported = true;  %>
   </ssf:ifSupportsEditInPlace>
 
+<c:if test="${ss_attachedFile.fileExists}">
 <%
 	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 %>
@@ -127,6 +128,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</c:if>
 	</ssf:editorTypeToUseForEditInPlace>
 <%  }  %>
+</c:if>
+<c:if test="${!ss_attachedFile.fileExists}">
+	<span><%= fnBr %></span>
+</c:if>
 
 	<c:if test="${ss_attachedFile.currentlyLocked}">
 	  <br/>
