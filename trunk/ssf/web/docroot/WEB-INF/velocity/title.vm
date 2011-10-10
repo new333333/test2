@@ -32,7 +32,7 @@
     #if ($ssVisitor.getDocNumber())
       ${ssVisitor.getDocNumber()}.&nbsp;
     #end
-	<a style="text-decoration:underline;color:#82b2bd;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
+	<a style="text-decoration:underline;color:#5691A6; font-size: 1.1em;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
       #if ($ssVisitor.Entity.Title && $ssVisitor.Entity.Title != "" )
 	    $esc.html($ssVisitor.Entity.Title)
       #else
