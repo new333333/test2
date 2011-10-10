@@ -280,6 +280,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
     	getBinderService().binder_setDefinitionsInherited(accessToken, binderId, inheritFromParent);
     }
 
+    public int binder_checkQuotaAndFileSizeLimit(String accessToken, Long userId, long binderId, long fileSize, String fileName) {
+    	if(fileName == null) // file name is not required in this context
+    		fileName = "";
+    	return getBinderService().binder_checkQuotaAndFileSizeLimit(accessToken, userId, binderId, fileSize, fileName);
+    }
 	
 	/// Folder Service
 
@@ -598,6 +603,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public BinderBrief[] profile_getFollowedPlaces(String accessToken, Long userId,
 			String[] families, Boolean library) {
 		return getProfileService().profile_getFollowedPlaces(accessToken, userId, families, library);
+	}
+	
+	public long profile_getMaxUserQuota(String accessToken, Long userId) {
+		return getProfileService().profile_getMaxUserQuota(accessToken, userId);
 	}
 	
 	// Search Service

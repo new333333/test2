@@ -2625,4 +2625,31 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	// reported in the Bug #632279.
     	return (fa.getFileVersionsUnsorted().size() > 0);
     }
+    
+	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName) {
+    	User user;
+    	if(userId != null)
+    		user = (User)getProfileDao().loadUserDeadOrAlive(userId, RequestContextHolder.getRequestContext().getZoneId());
+    	else
+    		user = RequestContextHolder.getRequestContext().getUser();
+		try {
+			checkQuota(user, fileSize, fileName);
+		}
+		catch(DataQuotaException e) {
+			return 1; // user quota
+		}
+		try {
+			checkBinderQuota(binder, fileSize, fileName);
+		}
+		catch(DataQuotaException e) {
+			return 2; // binder quota
+		}
+		try {
+			checkFileSizeLimit(binder, fileSize, fileName);
+		}
+		catch(DataQuotaException e) {
+			return 3; // file size limit
+		}
+		return 0;
+	}
 }

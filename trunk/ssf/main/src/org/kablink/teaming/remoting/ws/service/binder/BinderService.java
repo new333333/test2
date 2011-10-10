@@ -152,4 +152,6 @@ public interface BinderService {
 	
     public void binder_setDefinitionsInherited(String accessToken, long binderId, boolean inheritFromParent);
 
+    public int binder_checkQuotaAndFileSizeLimit(String accessToken, Long userId, long binderId, long fileSize, String fileName);
+
 }

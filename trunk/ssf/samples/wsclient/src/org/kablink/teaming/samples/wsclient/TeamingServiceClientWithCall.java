@@ -55,7 +55,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getTopWorkspaceId")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTopWorkspaceId", new Object[] {null});
 			} else if(args[0].equals("getUser")) {
-				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+				wsClient.fetchAndPrintUser("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getUserByName")) {
 				wsClient.fetchAndPrintUser("TeamingServiceV1", "profile_getUserByName", new Object[] {null, args[1], Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getUsersByEmail")) {
@@ -83,6 +83,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getTeams", new Object[] {null});
 			} else if(args[0].equals("getUserTeams")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getUserTeams", new Object[] {null, Long.parseLong(args[1])});
+			} else if(args[0].equals("getMaxUserQuota")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_getMaxUserQuota", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getUserGroups")) {
 				wsClient.fetchAndPrintGC("TeamingServiceV1", "profile_getUserGroups", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getBinder")) {
@@ -260,6 +262,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_preDeleteEntry", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("restoreEntry")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_restoreEntry", new Object[] {null, Long.parseLong(args[1])});
+			} else if(args[0].equals("checkQuotaAndFileSizeLimit")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_checkQuotaAndFileSizeLimit", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), Long.parseLong(args[3]), args[4]});
 			} else if(args[0].equals("getCreatedOrUpdatedEntries")) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getCreatedOrUpdatedEntries", 
@@ -339,6 +343,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getTeamMembers <binder id> <explodeGroups> <first> <max>");
 		System.out.println("getTeams");
 		System.out.println("getUserTeams <user id>");
+		System.out.println("getMaxUserQuota <user id>");
 		System.out.println("getBinder <binder id> <includeAttachments>");
 		System.out.println("getBinderTags <binder id>");
 		System.out.println("setBinderDefinitionsInherited <binder id> <setBinderDefinitionsInherited>");
@@ -387,6 +392,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("restoreBinder <binder id>");
 		System.out.println("preDeleteEntry <entry id>");
 		System.out.println("restoreEntry <entry id>");
+		System.out.println("checkQuotaAndFileSizeLimit <user id> <binder id> <file size in bytes> <file name>");
 		System.out.println("testBinderAccess <work area operation name> \"binder id1, binder id2,....\"");
 		System.out.println("testBinderOperation <binder operation name> \"binder id1, binder id2,....\"");
 		System.out.println("getAttachmentAsByteArray <entry id> <attachment id>");

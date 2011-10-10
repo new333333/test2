@@ -104,4 +104,11 @@ public interface ProfileService {
 	
 	public BinderBrief[] profile_getFollowedPlaces(String accessToken, Long userId, String[] families, Boolean library);
 
+	/**
+	 * Get a user's disk quota in bytes which is either specific, or max of group membership
+	 * @param accessToken
+	 * @param userId
+	 * @return
+	 */
+	public long profile_getMaxUserQuota(String accessToken, Long userId);
 }
