@@ -52,12 +52,12 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.zone.ZoneException;
-import org.kablink.teaming.security.authentication.AuthenticationException;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
+import org.kablink.teaming.security.authentication.UserMismatchException;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -140,7 +140,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public User authenticate(String zoneName, String userName, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
-		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException
+		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException
 	{
 		validateZone(zoneName);
 		User user=null;
@@ -220,7 +220,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
+		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
 		validateZone(zoneName);
 		User user=null;
 		boolean hadSession = SessionUtil.sessionActive();
@@ -249,16 +249,19 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	 */
 	protected User doAuthenticate(String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
-			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
+			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
 		User user = null;
 
 		SimpleProfiler.start( "3x-AuthenticationManagerImpl.doAuthenticate()" );
 
 		try {
+			String ldapGuid;
+
+			ldapGuid = null;
+			
 			// Are we dealing with one of the system accounts? ie admin
 			if ( !MiscUtil.isSystemUserAccount( username ) )
 			{
-				String ldapGuid;
 				LdapModule ldapModule;
 				Binder top;
 				Long zoneId;
@@ -295,11 +298,42 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 			}
 
-			// Did we find the user by their ldap guid?
+			// Did we find the user in the Vibe db by their ldap guid?
 			if ( user == null )
 			{
 				// No, try to find the user by their name.
 				user = getProfileDao().findUserByName(username, zoneName);
+
+				// Did we find the user by name?
+				if ( user != null )
+				{
+					// Yes
+					// Do we have an ldap guid we read from the directory for this user?
+					if ( ldapGuid != null )
+					{
+						String vibeLdapGuid;
+						
+						// Yes
+						// Is the user we found really the user we are looking for?
+						// Check to see that the ldap guid we read from the directory matches
+						// the ldap guid stored in the Vibe db for this user.
+						vibeLdapGuid = user.getLdapGuid();
+						
+						// Do the ldap guids match?
+						if ( vibeLdapGuid != null && ldapGuid.equalsIgnoreCase( vibeLdapGuid ) == false )
+						{
+							// No
+							// The user we found by name is not the user we are looking for.
+							user = null;
+							
+							// Throw an exception that indicates that the user that tried
+							// to log in successfully authenticated to the ldap directory
+							// but can't use Vibe because there is another user in Vibe with
+							// the same name.
+							throw new UserMismatchException( "The Vibe user account for the name, " + username + ", does not belong to the authenticated user" );
+						}
+					}
+				}
 			}
 		} catch (NoWorkspaceByTheNameException e) {
      		if (user == null) {
