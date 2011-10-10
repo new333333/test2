@@ -36,6 +36,15 @@ public class ZoneConfig {
 	private boolean fsaEnabled;
 	private int fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
+	private boolean mobileAccessEnabled;
+	private boolean diskQuotasEnabled;
+	private int diskQuotaUserDefault;
+	private int diskQuotasHighwaterPercentage;
+	private Long fileSizeLimitUserDefault;
+	private boolean binderQuotasInitialized;
+	private boolean binderQuotasEnabled;
+	private boolean binderQuotasAllowOwner;
+	private Long fileVersionsMaxAge;
 	
 	public boolean isFsaEnabled() {
 		return fsaEnabled;
@@ -54,6 +63,60 @@ public class ZoneConfig {
 	}
 	public void setFsaAutoUpdateUrl(String fsaAutoUpdateUrl) {
 		this.fsaAutoUpdateUrl = fsaAutoUpdateUrl;
+	}
+	public boolean isMobileAccessEnabled() {
+		return mobileAccessEnabled;
+	}
+	public void setMobileAccessEnabled(boolean mobileAccessEnabled) {
+		this.mobileAccessEnabled = mobileAccessEnabled;
+	}
+	public boolean isDiskQuotasEnabled() {
+		return diskQuotasEnabled;
+	}
+	public void setDiskQuotasEnabled(boolean diskQuotasEnabled) {
+		this.diskQuotasEnabled = diskQuotasEnabled;
+	}
+	public int getDiskQuotaUserDefault() {
+		return diskQuotaUserDefault;
+	}
+	public void setDiskQuotaUserDefault(int diskQuotaUserDefault) {
+		this.diskQuotaUserDefault = diskQuotaUserDefault;
+	}
+	public int getDiskQuotasHighwaterPercentage() {
+		return diskQuotasHighwaterPercentage;
+	}
+	public void setDiskQuotasHighwaterPercentage(int diskQuotasHighwaterPercentage) {
+		this.diskQuotasHighwaterPercentage = diskQuotasHighwaterPercentage;
+	}
+	public Long getFileSizeLimitUserDefault() {
+		return fileSizeLimitUserDefault;
+	}
+	public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault) {
+		this.fileSizeLimitUserDefault = fileSizeLimitUserDefault;
+	}
+	public boolean isBinderQuotasInitialized() {
+		return binderQuotasInitialized;
+	}
+	public void setBinderQuotasInitialized(boolean binderQuotasInitialized) {
+		this.binderQuotasInitialized = binderQuotasInitialized;
+	}
+	public boolean isBinderQuotasEnabled() {
+		return binderQuotasEnabled;
+	}
+	public void setBinderQuotasEnabled(boolean binderQuotasEnabled) {
+		this.binderQuotasEnabled = binderQuotasEnabled;
+	}
+	public boolean isBinderQuotasAllowOwner() {
+		return binderQuotasAllowOwner;
+	}
+	public void setBinderQuotasAllowOwner(boolean binderQuotasAllowOwner) {
+		this.binderQuotasAllowOwner = binderQuotasAllowOwner;
+	}
+	public Long getFileVersionsMaxAge() {
+		return fileVersionsMaxAge;
+	}
+	public void setFileVersionsMaxAge(Long fileVersionsMaxAge) {
+		this.fileVersionsMaxAge = fileVersionsMaxAge;
 	}
 	
 }

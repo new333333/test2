@@ -37,6 +37,7 @@ import java.io.Serializable;
 public class Group extends Principal implements Serializable {
 	
 	private Long diskQuota;
+	private Long fileSizeLimit;
 	
 	public Long getDiskQuota() {
 		if (diskQuota == null) return new Long(0);
@@ -44,5 +45,11 @@ public class Group extends Principal implements Serializable {
 	}
 	public void setDiskQuota(Long diskQuota) {
 		this.diskQuota = diskQuota;
+	}
+	public Long getFileSizeLimit() {
+		return fileSizeLimit;
+	}
+	public void setFileSizeLimit(Long fileSizeLimit) {
+		this.fileSizeLimit = fileSizeLimit;
 	}
 }

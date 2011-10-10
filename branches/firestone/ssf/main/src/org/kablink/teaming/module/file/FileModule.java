@@ -482,4 +482,21 @@ public interface FileModule {
 	 * @param fileAttachment
 	 */
 	public void encryptVersion(Binder binder, DefinableEntity entity, VersionAttachment va, FilesErrors errors);
+	
+	/**
+	 * Check if adding a file would go over quota or violate file size limit. If there are multiple
+	 * violations involved, the result will reflect only one and first violation detected in this 
+	 * particular order - user quota, binder quota, and file size limit. In other words, this
+	 * method returns as soon as it detects one violation.
+	 * @param userId
+	 * @param binder
+	 * @param fileSize
+	 * @param fileName
+	 * @return integer value representing the result of the check<br>
+	 * 0 - no violation
+	 * 1 - user quota violation
+	 * 2 - binder quota violation
+	 * 3 - file size limit violation
+	 */
+	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName);
 }	
