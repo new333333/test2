@@ -1139,7 +1139,7 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
-	private void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
+	public void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
 	{
 		// If we are running in captive mode we never want to show the masthead of sidebar.
 		// Are we running in captive mode (GroupWise integration)?

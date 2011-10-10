@@ -113,11 +113,42 @@ public class LandingPage extends ViewBase
 	{
 		int i;;
 		int numItems;
+		String bgColor;
+		String bgImgUrl;
+		
+		m_mainPanel.clear();
 		
 		if ( m_configData == null )
 			return;
+
+		// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
+		GwtTeaming.getMainPage().handleLandingPageOptions( m_binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
 		
-		m_mainPanel.clear();
+		// Is a background color specified?
+		bgColor = m_configData.getBackgroundColor();
+		if ( bgColor != null && bgColor.length() > 0 )
+		{
+			// Yes
+			m_mainPanel.getElement().getStyle().setBackgroundColor( bgColor );
+		}
+		
+		// Is a background image specified?
+		bgImgUrl = m_configData.getBackgroundImgUrl();
+		if ( bgImgUrl != null && bgImgUrl.length() > 0 )
+		{
+			String bgRepeat;
+			
+			// Yes
+			m_mainPanel.getElement().getStyle().setBackgroundImage( "url( " + bgImgUrl + " )" );
+			
+			// Is a background repeat value specified?
+			bgRepeat = m_configData.getBackgroundImgRepeat();
+			if ( bgRepeat != null && bgRepeat.length() > 0 )
+			{
+				// Yes
+				m_mainPanel.getElement().getStyle().setProperty( "backgroundRepeat", bgRepeat );
+			}
+		}
 		
 		// Add items to the page that are defined in the configuration.
 		numItems = m_configData.size();
