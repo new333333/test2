@@ -151,16 +151,23 @@
       <tr>
       <td>
       <div class="ss_thumbnail_tiny">
+       <c:if test="${selection.fileExists}">
         <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
 		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>"/>
+       </c:if>
       </div>
       </td>
       <td>
 	  <div class="ss_entryTitleFile">
-      <a target="_blank" 
-      href="<ssf:fileUrl file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
-      >${selection.fileItem.name}
-      </a>
+	  <c:if test="${selection.fileExists}">
+        <a target="_blank" 
+          href="<ssf:fileUrl file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
+        >${selection.fileItem.name}
+        </a>
+      </c:if>
+      <c:if test="${!selection.fileExists}">
+        <span>${selection.fileItem.name}</span>
+      </c:if>
       </div>
       </td>
       </tr>

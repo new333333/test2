@@ -2389,6 +2389,7 @@ public class BinderHelper {
 			FileItem fi = new FileItem();
 			fa.setFileItem(fi);
 			fa.setId(fileAttId);
+			fa.setFileExists(false);	//Assume file does not exist until we actually find it.
 			
 			//Set the owner and modifier of the attachment
 			Element hs2 = (Element)fileAttachment.selectSingleNode("./historyStamp[@name='created']");
@@ -2481,6 +2482,7 @@ public class BinderHelper {
 					if (fv.getMajorVersion().equals(fa.getMajorVersion()) && 
 							fv.getMinorVersion().equals(fa.getMinorVersion())) {
 						fa.setId(fv.getId());
+						fa.setFileExists(true);
 						break;
 					}
 				}

@@ -220,7 +220,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td style="border: 0px;">&nbsp;</td>
 	</tr>
 	<tr class="${ss_attachedFileRowClass}">
-	  	<td colspan="9" class="ss_att_description" style="padding-left: 38px; white-space: normal">
+	  	<td colspan="10" class="ss_att_description" style="padding-left: 38px; white-space: normal">
 	    	<ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup>
 	  	</td>
 	</tr>
@@ -255,7 +255,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
 			<tr class="${ss_attachedFileRowClass}">
 			    <td style="padding-left: 8px; padding-right: 3px">
+			     <c:if test="${!ss_pseudoEntity}">
 			      <input type="checkbox" name="delete_version_${fileVersion.id}"/>
+			     </c:if>
 			    </td>
 				<td width="25%" class="ss_att_title" style="font-weight: normal; padding-left: 0px;
 		  			<% if (fileVersion.getFileItem().getName().length() <= 40) { %> white-space: nowrap; <% } %>
@@ -324,7 +326,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_desc_row${status.count}" style="display: none; ">
 				</c:otherwise>
 			  </c:choose>
-			    <td colspan="9" class="ss_att_description" style="padding-left: 38px; white-space: normal;">
+			    <td colspan="10" class="ss_att_description" style="padding-left: 38px; white-space: normal;">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	

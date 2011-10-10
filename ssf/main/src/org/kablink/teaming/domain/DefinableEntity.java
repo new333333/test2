@@ -351,7 +351,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * @param att
      */
     public void addAttachment(Attachment att) {
-    	if (att == null) return;
+    	if (att == null || att.getId() == null) return;
         getAttachments();
         attachments.add(att);
  	   	att.setOwner(this);

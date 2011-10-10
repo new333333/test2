@@ -63,7 +63,7 @@
   <c:if test="${versionCount >= 1}">
     <c:set var="thumbRowSpan" value="2"/>
   </c:if>
-     <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
 	    <td valign="top" class="ss_att_meta" nowrap width="5%">
 	      <c:if test="${selection.fileExists && !empty ss_pseudoEntityRevert && !ss_isBinderMirroredFolder}">
@@ -86,7 +86,7 @@
 	    </div>
 		</td>
 		
-		<td valign="top" style="height:20px;" class="ss_att_title" width="30%">
+		<td valign="top" style="height:20px;" class="ss_att_title" width="25%">
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <c:if test="${selection.fileExists && !ss_isBinderMirroredFolder}">
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
@@ -94,6 +94,10 @@
           <c:if test="${!selection.fileExists || ss_isBinderMirroredFolder}">
             ${selection.fileItem.name}
           </c:if>
+		</td>
+
+		<td valign="top" class="ss_att_meta" nowrap width="5%">
+		  <ssf:nlt tag="file.versionNumber"><ssf:param name="value" value="${selection.fileVersion}"/></ssf:nlt>
 		</td>
 
 		<td valign="top" class="ss_att_meta" nowrap width="5%">
@@ -120,13 +124,13 @@
 	</tr>
 	<tr>
 	  <td></td>
-	  <td valign="top" colspan="6" class="ss_att_description" width="100%">
+	  <td valign="top" colspan="8" class="ss_att_description" width="100%">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
 </c:forEach>
 <c:if test="${selectionCount > 0}">
-     <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 </c:if>
 </tbody>
 </table>
