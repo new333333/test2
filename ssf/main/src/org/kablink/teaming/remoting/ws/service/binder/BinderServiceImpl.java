@@ -63,6 +63,7 @@ import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -737,5 +738,11 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	
     public void binder_setDefinitionsInherited(String accessToken, long binderId, boolean inheritFromParent) {
     	getBinderModule().setDefinitionsInherited(binderId, inheritFromParent);
+    }
+    
+    @Override
+    public int binder_checkQuotaAndFileSizeLimit(String accessToken, Long userId, long binderId, long fileSize, String fileName) {
+		Binder binder = getBinderModule().getBinder(binderId);
+    	return getFileModule().checkQuotaAndFileSizeLimit(userId, binder, fileSize, fileName);
     }
 }

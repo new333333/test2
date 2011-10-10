@@ -167,6 +167,8 @@ public class TeamingServiceClientWithStub {
 		//getMovedEntries();
 		
 		//getDeletedAndRestoredEntries();
+		
+		//addDicsussionEntryWithChineseInTitle();
 	}
 	
 	public static void addMicroBlog() throws Exception {
@@ -568,6 +570,38 @@ public class TeamingServiceClientWithStub {
 		String fileText = "Wow, this works!!";
 		stub.folder_uploadFileAsByteArray(null, testEntryId, null, "what-the.txt", fileText.getBytes());
 		System.out.println("Successfully uploaded primary file");
+	}
+	
+	public static void addDicsussionEntryWithChineseInTitle() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		FolderEntry testEntry = new FolderEntry();
+		//String text = "下記.txt";
+		// Assign Chinese string to a variable by using Unicode code value representation 
+		// instead of the above literal characters. Alternatively you could use the literal
+		// value, save this Java file in UTF-8 and then compile it with UTF-8 as encoding.
+		String text = "\u4e0b\u8a18\u002e\u0074\u0078\u0074";
+		byte[] ba = text.getBytes("UTF-8");
+		for(byte b:ba) {
+			int i = b & 0xFF;
+			System.out.print(Integer.toHexString(i) + " ");
+		}
+		System.out.println();
+		for(int i=0; i < text.length(); i++) {
+			int c = text.codePointAt(i);
+			System.out.print(Integer.toHexString(c) + " ");
+		}
+		System.out.println();
+		testEntry.setTitle(text);
+		testEntry.setDescription(new Description(1,text));
+		testEntry.setParentBinderId(new Long(44));
+		long testEntryId = stub.folder_addEntry(null, testEntry, null);
+		System.out.println("Successfully created a discussion entry with ID = " + testEntryId);
+		
+		// Attach a file to the entry. This file contains Chinese in both filename and content.
+		// The following two statements are equivalent.
+		//stub.folder_uploadFileAsByteArray(null, testEntryId, null, "下記.txt", "下記".getBytes("UTF-8"));
+		stub.folder_uploadFileAsByteArray(null, testEntryId, null, "\u4e0b\u8a18\u002e\u0074\u0078\u0074", "\u4e0b\u8a18".getBytes("UTF-8"));
+		System.out.println("Successfully uploaded primary file with Chinese in both filename and content");
 	}
 	
 	public static void addDiscussionEntry() throws Exception {

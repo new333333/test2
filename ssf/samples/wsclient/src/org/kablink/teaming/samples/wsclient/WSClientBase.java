@@ -67,6 +67,7 @@ import org.kablink.teaming.client.ws.model.FolderEntryBrief;
 import org.kablink.teaming.client.ws.model.FolderEntryCollection;
 import org.kablink.teaming.client.ws.model.GroupBrief;
 import org.kablink.teaming.client.ws.model.GroupCollection;
+import org.kablink.teaming.client.ws.model.Principal;
 import org.kablink.teaming.client.ws.model.Tag;
 import org.kablink.teaming.client.ws.model.TeamCollection;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
@@ -532,6 +533,15 @@ public abstract class WSClientBase {
 		System.out.println("FSA enabled: " + zc.isFsaEnabled());
 		System.out.println("FSA synch interval: " + zc.getFsaSynchInterval());
 		System.out.println("FSA auto update URL: " + zc.getFsaAutoUpdateUrl());
+		System.out.println("Mobile access enabled: " + zc.isMobileAccessEnabled());
+		System.out.println("Disk quotas enabled: " + zc.isDiskQuotasEnabled());
+		System.out.println("Disk quota user default: " + zc.getDiskQuotaUserDefault());
+		System.out.println("Disk quota high water percentage: " + zc.getDiskQuotasHighwaterPercentage());
+		System.out.println("File size limit user default: " + zc.getFileSizeLimitUserDefault());
+		System.out.println("Binder quotas initialized: " + zc.isBinderQuotasInitialized());
+		System.out.println("Binder quotas enabled: " + zc.isBinderQuotasEnabled());
+		System.out.println("Binder quotas allow owner: " + zc.isBinderQuotasAllowOwner());
+		System.out.println("File version max age: " + zc.getFileVersionsMaxAge());
 	}
 	
 	void printFolderEntry(FolderEntry entry) {
@@ -587,8 +597,33 @@ public abstract class WSClientBase {
 	}
 	
 	void printUser(User user) {
-		printDefinableEntity(user);
+		printPrincipal(user);
+		System.out.println("First name: " + user.getFirstName());
+		System.out.println("Midele name: " + user.getMiddleName());
+		System.out.println("Last name: " + user.getLastName());
+		System.out.println("Organization: " + user.getOrganization());
+		System.out.println("Phone: " + user.getPhone());
+		System.out.println("Zon name: " + user.getZonName());
+		System.out.println("Locale language: " + user.getLocaleLanguage());
+		System.out.println("Locale country: " + user.getLocaleCountry());
+		System.out.println("Timezone: " + user.getTimeZone());
+		System.out.println("Skype id: " + user.getSkypeId());
+		System.out.println("Twitter id: " + user.getTwitterId());
+		System.out.println("Mini blog id: " + user.getMiniBlogId());
+		System.out.println("Disk quota: " + user.getDiskQuota());
+		System.out.println("File size limit: " + user.getFileSizeLimit());
+		System.out.println("Disk space used: " + user.getDiskSpaceUsed());
+		System.out.println("Max groups quota: " + user.getMaxGroupsQuota());
+		System.out.println("Max groups file size limit: " + user.getMaxGroupsFileSizeLimit());
 		System.out.println("Workspace ID: " + user.getWorkspaceId());
+	}
+	
+	void printPrincipal(Principal principal) {
+		printDefinableEntity(principal);
+		System.out.println("Disabled: " + principal.isDisabled());
+		System.out.println("Email address: " + principal.getEmailAddress());
+		System.out.println("Name: " + principal.getName());
+		System.out.println("Reserved: " + principal.isReserved());
 	}
 	
 	void printFileVersions(FileVersions fileVersions) {

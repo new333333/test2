@@ -532,4 +532,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			return binder;
 		}
 	}
+	
+	public long profile_getMaxUserQuota(String accessToken, Long userId) {
+		if(userId != null)			
+			return getProfileModule().getMaxUserQuota(userId);
+		else
+			return getProfileModule().getMaxUserQuota();
+	}
 }

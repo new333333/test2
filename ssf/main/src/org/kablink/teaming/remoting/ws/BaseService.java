@@ -396,7 +396,6 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		userModel.setOrganization(user.getOrganization());
 		userModel.setPhone(user.getPhone());
 		userModel.setZonName(user.getZonName());
-		userModel.setWorkspaceId(user.getWorkspaceId());
 		
 		Locale locale = user.getLocale();
 		if(locale != null) {
@@ -410,17 +409,32 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		userModel.setTwitterId(user.getTwitterId());
 		userModel.setMiniBlogId(user.getMiniBlogId());
 		userModel.setDiskQuota(user.getDiskQuota());
+		userModel.setFileSizeLimit(user.getFileSizeLimit());
 		userModel.setDiskSpaceUsed(user.getDiskSpaceUsed());
+		userModel.setMaxGroupsQuota(user.getMaxGroupsQuota());
+		userModel.setMaxGroupsFileSizeLimit(user.getMaxGroupsFileSizeLimit());
+		userModel.setWorkspaceId(user.getWorkspaceId());
 	}
 	
 	protected void fillZoneConfigModel(org.kablink.teaming.remoting.ws.model.ZoneConfig zoneConfigModel, ZoneConfig zoneConfig) {
 		zoneConfigModel.setFsaEnabled(zoneConfig.getFsaEnabled());
 		zoneConfigModel.setFsaSynchInterval(zoneConfig.getFsaSynchInterval());
 		zoneConfigModel.setFsaAutoUpdateUrl(zoneConfig.getFsaAutoUpdateUrl());
+		zoneConfigModel.setMobileAccessEnabled(zoneConfig.isMobileAccessEnabled());
+		zoneConfigModel.setDiskQuotasEnabled(zoneConfig.isDiskQuotaEnabled());
+		zoneConfigModel.setDiskQuotaUserDefault(zoneConfig.getDiskQuotaUserDefault());
+		zoneConfigModel.setDiskQuotasHighwaterPercentage(zoneConfig.getDiskQuotasHighwaterPercentage());
+		zoneConfigModel.setFileSizeLimitUserDefault(zoneConfig.getFileSizeLimitUserDefault());
+		zoneConfigModel.setBinderQuotasInitialized(zoneConfig.isBinderQuotaInitialized());
+		zoneConfigModel.setBinderQuotasEnabled(zoneConfig.isBinderQuotaEnabled());
+		zoneConfigModel.setBinderQuotasAllowOwner(zoneConfig.isBinderQuotaAllowBinderOwnerEnabled());
+		zoneConfigModel.setFileVersionsMaxAge(zoneConfig.getFileVersionsMaxAge());
 	}
 	
 	protected void fillGroupModel(org.kablink.teaming.remoting.ws.model.Group groupModel, Group group) {
 		fillPrincipalModel(groupModel, group);
+		groupModel.setDiskQuota(group.getDiskQuota());
+		groupModel.setFileSizeLimit(group.getFileSizeLimit());
 	}
 	
 	protected void fillPrincipalModel(org.kablink.teaming.remoting.ws.model.Principal principalModel, Principal entry) {
