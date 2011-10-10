@@ -2819,7 +2819,7 @@ public class GwtServerHelper {
 							configData.setBackgroundColor( bgColor );
 						
 						bgImgName = bgElement.attributeValue( "imgName");
-						if ( bgImgName != null )
+						if ( bgImgName != null && bgImgName.length() > 0 )
 						{
 							String fileUrl;
 							String webPath;
