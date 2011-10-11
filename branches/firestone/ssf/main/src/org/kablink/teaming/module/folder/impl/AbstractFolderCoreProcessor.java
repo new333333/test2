@@ -622,6 +622,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	moveFiles(binder, entries, destination);
     	//finally remove from index and reAdd.
     	indexEntries(entries);
+   		getRssModule().updateRssFeed(fEntry); 
     }
     
     //***********************************************************************************************************
