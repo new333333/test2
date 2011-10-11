@@ -710,6 +710,7 @@ public interface ObjectKeys {
     public static final	int DISKQUOTA_EXCEEDED = 3;
     public static final String PRINCIPAL_TYPE_GROUP = "group";
     public static final String PRINCIPAL_TYPE_USER = "user";
+    public final static long MEGABYTES = 1024L * 1024L;
     
     //Mobile related constants
 	public static final String USER_PROPERTY_MOBILE_WHATS_NEW_TYPE = "mobile_whats_new_type";

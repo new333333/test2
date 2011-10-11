@@ -2122,7 +2122,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
 		if (maxFileSize != null) {
 			//There is a file size limit, go check it
-			if (fileSize > maxFileSize * 1000000) {
+			if (fileSize > maxFileSize * ObjectKeys.MEGABYTES) {
 				throw new DataQuotaException("file.maxSizeExceeded", 
 						new Object[]{fileName});
 			}
@@ -2144,7 +2144,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			fileSizeLimit = getAdminModule().getFileSizeLimitUserDefault();
 		}
 		//Now check to see if the file size is above the limit
-		if (fileSizeLimit != null && fileSize > fileSizeLimit * 1000000) {
+		if (fileSizeLimit != null && fileSize > fileSizeLimit * ObjectKeys.MEGABYTES) {
 			throw new DataQuotaException("file.maxSizeExceeded", 
 					new Object[]{fileName});
 		}
