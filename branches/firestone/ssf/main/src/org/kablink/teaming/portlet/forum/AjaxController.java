@@ -2152,7 +2152,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					maxFileSize = maxUserFileSize;
 				}
 				//Get bytes
-				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000000));
+				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize * ObjectKeys.MEGABYTES));
 			}
 		}
 		
@@ -2279,7 +2279,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					maxFileSize = maxUserFileSize;
 				}
 				//Get bytes
-				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize*1000000));
+				model.put(WebKeys.BINDER_FILE_MAX_FILE_SIZE, String.valueOf(maxFileSize * ObjectKeys.MEGABYTES));
 			}
 		}
 		
