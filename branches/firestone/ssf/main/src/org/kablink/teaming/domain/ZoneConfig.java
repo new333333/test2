@@ -57,6 +57,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean fsaEnabled;
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
+	private Long fsaMaxFileSize;
 
 	public ZoneConfig()
 	{
@@ -262,5 +263,14 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setFsaAutoUpdateUrl(String fsaAutoUpdateUrl) {
 		this.fsaAutoUpdateUrl = fsaAutoUpdateUrl;
 	}
-	
+	public long getFsaMaxFileSize() {
+		if(fsaMaxFileSize == null)
+			return SPropsUtil.getLong("fsa.max.file.size", 10485760L);
+		else
+			return fsaMaxFileSize;
+	}
+	public void setFsaMaxFileSize(long fsaMaxFileSize) {
+		// In this version of Vibe, this field is NOT persisted to database. So, this method shouldn't be used.
+		this.fsaMaxFileSize = fsaMaxFileSize;
+	}
 }
