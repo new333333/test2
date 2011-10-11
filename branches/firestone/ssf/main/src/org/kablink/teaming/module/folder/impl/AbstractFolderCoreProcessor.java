@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -572,6 +573,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	if (fEntry.getTopEntry() != null)
     		throw new NotSupportedException("errorcode.notsupported.moveReply");
     	moveEntryCheckMirrored(binder, entry, destination);
+    	
+    	//Remove this entry from the RSS index
+    	Set<Entry> entriesToDelete = new HashSet<Entry>();
+    	entriesToDelete.add(entry);
+    	getRssModule().deleteRssFeed(entry.getParentBinder(), entriesToDelete);
+    	
     	HKey oldKey = fEntry.getHKey();
     	//get Children
     	List entries = getFolderDao().loadEntryDescendants(fEntry);
