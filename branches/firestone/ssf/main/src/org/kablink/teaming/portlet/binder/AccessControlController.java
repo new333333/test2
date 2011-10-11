@@ -129,9 +129,9 @@ public class AccessControlController extends AbstractBinderController {
 			if ((workArea instanceof FolderEntry) && ((FolderEntry)workArea).isTop()) {
 				String aclType = PortletRequestUtils.getStringParameter(request, "aclSelection", "entry");	
 				if (aclType.equals("folder")) {
-					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE, Boolean.TRUE);
 					Map functionMemberships = new HashMap();
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
+					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE, Boolean.TRUE);
 					//SimpleProfiler.done(logger);
 				} else if (aclType.equals("entry")) {
 					//Set the entry acl
