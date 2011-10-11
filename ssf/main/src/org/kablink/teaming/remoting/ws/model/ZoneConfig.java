@@ -36,6 +36,7 @@ public class ZoneConfig {
 	private boolean fsaEnabled;
 	private int fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
+	private long fsaMaxFileSize;
 	private boolean mobileAccessEnabled;
 	private boolean diskQuotasEnabled;
 	private int diskQuotaUserDefault;
@@ -63,6 +64,12 @@ public class ZoneConfig {
 	}
 	public void setFsaAutoUpdateUrl(String fsaAutoUpdateUrl) {
 		this.fsaAutoUpdateUrl = fsaAutoUpdateUrl;
+	}
+	public long getFsaMaxFileSize() {
+		return fsaMaxFileSize;
+	}
+	public void setFsaMaxFileSize(long fsaMaxFileSize) {
+		this.fsaMaxFileSize = fsaMaxFileSize;
 	}
 	public boolean isMobileAccessEnabled() {
 		return mobileAccessEnabled;

@@ -533,6 +533,7 @@ public abstract class WSClientBase {
 		System.out.println("FSA enabled: " + zc.isFsaEnabled());
 		System.out.println("FSA synch interval: " + zc.getFsaSynchInterval());
 		System.out.println("FSA auto update URL: " + zc.getFsaAutoUpdateUrl());
+		System.out.println("FSA max file size: " + zc.getFsaMaxFileSize());
 		System.out.println("Mobile access enabled: " + zc.isMobileAccessEnabled());
 		System.out.println("Disk quotas enabled: " + zc.isDiskQuotasEnabled());
 		System.out.println("Disk quota user default: " + zc.getDiskQuotaUserDefault());
