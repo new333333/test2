@@ -47,12 +47,14 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFileByTheNameException;
+import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -76,6 +78,8 @@ import org.kablink.teaming.remoting.ws.model.UserBrief;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
@@ -239,7 +243,31 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		return groupModel;
 	}
 	public org.kablink.teaming.remoting.ws.model.User profile_getUserByName(String accessToken, String userName, boolean includeAttachments) {
-		User user = getProfileModule().getUserDeadOrAlive(userName);
+		User user = null;
+		if(SPropsUtil.getBoolean("profile.service.getuserbyname.legacy", false)) {
+			user = getProfileModule().getUserDeadOrAlive(userName);
+		}
+		else {
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			// Read this user's ldap guid from the ldap directory.
+			String ldapGuid = getLdapModule().readLdapGuidFromDirectory(userName,  zoneId);
+			// Try to find the user in Teaming by their ldap guid.
+			if(Validator.isNotNull(ldapGuid)) {
+				try {
+					// Try to find the user in Teaming by their ldap guid.
+					user =  getProfileDao().findUserByLdapGuid(ldapGuid, zoneId);
+				}
+				catch(NoUserByTheNameException e) {
+					// Nothing to do
+				}
+			}
+			// Did we find the user by their ldap guid?
+			if (user == null)
+			{
+				// No, try to find the user by their name.
+				user = getProfileModule().getUserDeadOrAlive(userName);
+			}
+		}
 		return profile_getUser(accessToken, user.getId(), includeAttachments);
 	}
 	public org.kablink.teaming.remoting.ws.model.User profile_getUser(String accessToken, long userId, boolean includeAttachments) {
@@ -538,5 +566,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			return getProfileModule().getMaxUserQuota(userId);
 		else
 			return getProfileModule().getMaxUserQuota();
+	}
+	protected ProfileDao getProfileDao() {
+		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 }
