@@ -787,7 +787,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
  						//token id is id of workflowState
  						WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
  		   				//only process timers in current zone
- 						if(ws == null) {
+ 						if(ws == null || ws.getDefinition() == null) {
  							// There is no workflow state associated with this timer, which is an indication
  							// that this is an orphaned timer. This means that somehow the system failed to
  							// purge the associated timers when the workflow was removed from the system. 
@@ -802,7 +802,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
  							return null;
  						}
  						final Entry entry = (Entry)ws.getOwner().getEntity();					
- 						if (entry.isDeleted() || entry.getParentBinder().isDeleted()) {
+ 						if (entry == null || entry.isDeleted() || entry.getParentBinder().isDeleted()) {
  							schedulerSession.deleteTimer(timer);
  							return null;
  						}
@@ -829,9 +829,13 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        					}
 	        				}, zoneId, runAsId);
 	        			} catch (DelegationException jx) {
+	        				//Remove the timer so it doesn't keep failing 
+	        				schedulerSession.deleteTimer(timer);
 	        				throw new TimerException(entry, ws, "Error processing workflow timeout: " + 
 	        						jx.getCause().getMessage());
 	        			} catch (Exception ex) {
+	        				//Remove the timer so it doesn't keep failing 
+	        				schedulerSession.deleteTimer(timer);
 	        				throw new TimerException(entry, ws, "Error processing workflow timeout: " + ex.getMessage());
 	        			}
 	        			//onDataValue takes care of itself
