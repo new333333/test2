@@ -239,7 +239,7 @@ public class HTMLInputFilter
     
     vSelfClosingTags = new String[] { "img", "br", "hr" };
     vNeedClosingTags = new String[] { "a", "b", "strong", "i", "em", "p", "span", "div", "table", "tr", "td", "th" };
-    vAllowedProtocols = new String[] { "*", "http", "https", "mailto" }; 
+    vAllowedProtocols = new String[] { "*", "http", "https", "mailto", "data" }; 
     vDisAllowedProtocols = new String[] { "" }; 
     vProtocolAtts = new String[] { "src", "href", "cite", "scheme" };
     vRemoveBlanks = new String[] { };  //For example:  "b", "strong", "i", "em", "p"
@@ -534,7 +534,6 @@ public class HTMLInputFilter
   
   protected String processParamProtocol( String s )
   {
-    s = decodeEntities( s );
     Matcher m = pattern_process_param_protocol.matcher( s );
     if (m.find()) {
       String protocol = m.group(1);
