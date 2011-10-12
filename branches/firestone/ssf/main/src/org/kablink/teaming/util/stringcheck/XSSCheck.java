@@ -76,8 +76,8 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR2b2 = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data[\\s]*:[^>]*\\2|[^>\\s]data[\\s]*:[^>\\s]*))";
 	private static final String PATTERN_STR2b3 = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data:image[^>]*\\2|[^>\\s]data:image[^>\\s]*))";
 
-	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\2|[^>\\s]*style[\\s]*=[^>\\s\"']*)[^>]*>";
-	private static final String PATTERN_STR4 = "(?i)(?:[^<>\\s]*style[\\s]*=[\\s]*\"[^\">]*\"|[^<>\\s]*style[\\s]*=[\\s]*'[^'>]*'|[^>\\s]*style[\\s]*=[^<>\\s\"']*)";
+	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>]*)>";
+	private static final String PATTERN_STR4 = "(?i)(?:style[\\s]*=[\\s]*\"[^\">]*\"|style[\\s]*=[\\s]*'[^'>]*'|style[\\s]*=[^<>\\s\"']*)";
 	private static final String PATTERN_STR5 = "(?i)((?:^url\\W|\\Wurl\\W|^expression\\W|\\Wexpression\\W))";
 	private static final String PATTERN_STR5a = "(?i)(/\\*[^*]*\\*/)";
 	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s]*))([^>]*>)";
