@@ -1686,14 +1686,19 @@ public class ExportHelper {
 			final Map rMap = reportMap;
 			final Map fNameCache = nameCache;
 			
+			// Bug #701024 - Flush out all uncommitted changes and clear the session
+			// to prevent NonUniqueObjectException exception.
+			coreDao.flush();
+			coreDao.clear();
+
 			// binder settings
 			importSettingsList(doc, binder, fDefIdMap, rMap, topBinder, fNameCache);
 
 			// workflows
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
-			// Bug #701024 - Flush out all uncommitted changes and clear the session to
-			// prevent NonUniqueObjectException from occurring during import of workflows.
+			// Bug #701024 - Flush out all uncommitted changes and clear the session
+			// to prevent NonUniqueObjectException exception.
 			coreDao.flush();
 			coreDao.clear();
 
