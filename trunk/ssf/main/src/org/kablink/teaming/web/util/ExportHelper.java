@@ -1387,6 +1387,7 @@ public class ExportHelper {
 							if (newDef != null) {
 								setEntityDefinitionId(tempDoc, newDef.getId());
 								defId = newDef.getId();
+								def = newDef;
 							}
 						}
 
@@ -1411,7 +1412,7 @@ public class ExportHelper {
 							if (parentId == null) {
 								try {
 									folder_addEntryWithXML(null, newBinderId, topBinderId,
-										def, xmlStr, tempDir, entryIdMap, binderIdMap, 
+										def, tempDoc.asXML(), tempDir, entryIdMap, binderIdMap, 
 										definitionIdMap, entryId, statusTicket, reportMap, nameCache);
 							
 									Integer count = (Integer)reportMap.get(entries);
@@ -1426,7 +1427,7 @@ public class ExportHelper {
 								Long newParentId = (Long) entryIdMap.get(parentId);
 								try {
 									folder_addReplyWithXML(null, newBinderId, topBinderId,
-											newParentId, def, xmlStr, tempDir, entryIdMap, binderIdMap, 
+											newParentId, def, tempDoc.asXML(), tempDir, entryIdMap, binderIdMap, 
 											definitionIdMap, entryId, reportMap, nameCache);
 								} catch(Exception e) {
 									Integer c = (Integer)reportMap.get(errors);
@@ -1535,7 +1536,7 @@ public class ExportHelper {
 						if (entType.equals("folder")) {
 							try {
 								binder_addBinderWithXML(null, newParentId, def,
-										xmlStr, binderId, topBinderId, binderIdMap, taskLinkageMap, definitionIdMap, tempDir, reportMap, 
+										tempDoc.asXML(), binderId, topBinderId, binderIdMap, taskLinkageMap, definitionIdMap, tempDir, reportMap, 
 										statusTicket, nameCache);
 								Integer count = (Integer)reportMap.get(folders);
 								reportMap.put(folders, ++count);
