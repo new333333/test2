@@ -41,6 +41,8 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.util.SpringContextUtil;
 
 public class FileUtils {
 
@@ -54,6 +56,14 @@ public class FileUtils {
 			binder = (Binder)entity;
 		}
 		Boolean versionAgingEnabled = binder.getVersionAgingEnabled();
+		if (versionAgingEnabled == null) versionAgingEnabled = Boolean.FALSE;
+		Boolean zoneVersionAgingEnabled = Boolean.FALSE;
+		AdminModule adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
+		Long zoneVersionAgingMaxDays = adminModule.getFileVersionsMaxAge();
+		if (zoneVersionAgingMaxDays != null && zoneVersionAgingMaxDays > 0) {
+			zoneVersionAgingEnabled = Boolean.TRUE;
+		}
+
 		Long versionAgingDays = binder.getVersionAgingDays();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
     	for (FileAttachment fa : atts) {
@@ -66,17 +76,26 @@ public class FileUtils {
     				currentMajorVersion = va.getMajorVersion();
     				if (va.isAgingEnabled()) {
     					va.setAgingEnabled(Boolean.FALSE);
-    				};
+    				}
     			} else {
     				//This is a minor version that is not the highest in its major class. It is subject to aging
-    				if (versionAgingEnabled != null && versionAgingEnabled.booleanValue() && (va.getAgingEnabled() == null || !va.isAgingEnabled())) {
+    				//Binder aging has both agingEnabled=true and agingDate != null
+    				//Zone aging has agingEnabled=true and agingDate=null
+    				if ((zoneVersionAgingEnabled.booleanValue() || versionAgingEnabled.booleanValue()) && 
+    						(va.getAgingEnabled() == null || !va.isAgingEnabled())) {
     					va.setAgingEnabled(Boolean.TRUE);
+    				} else if (!zoneVersionAgingEnabled.booleanValue() && !versionAgingEnabled.booleanValue() && 
+    						(va.getAgingEnabled() != null && va.isAgingEnabled())) {
+    					va.setAgingEnabled(Boolean.FALSE);
     				}
     				//Calculate the binder aging date (if any)
     				if (versionAgingDays != null) {
     					Date creationDate = va.getCreation().getDate();
     					Date agingDate = new Date(creationDate.getTime() + versionAgingDays*24*60*60*1000);
     					va.setAgingDate(agingDate);
+    				} else if (va.getAgingDate() != null) {
+    					//Make sure the aging days is null when binder aging is off so it is subject to zone wide aging
+    					va.setAgingDate(null);
     				}
     			}
 			}
