@@ -78,6 +78,7 @@ import org.kablink.teaming.remoting.ws.model.UserBrief;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -471,7 +472,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			java.util.Iterator it = favorites.getRootElement().selectNodes("favorite[@type=\"binder\"]").iterator();
 			while(it.hasNext()) {
 				Element e = (Element)it.next();
-				org.kablink.teaming.domain.Binder binder = getBinder(Long.valueOf(e.attributeValue("value")));
+				org.kablink.teaming.domain.Binder binder = getBinderIfAccessible(Long.valueOf(e.attributeValue("value")));
 				if(binder != null){
 					BinderBrief brief = new BinderBrief();
 					fillBinderBriefModel(brief, binder);
@@ -485,11 +486,14 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		return ret;
 	}
 
-	private org.kablink.teaming.domain.Binder getBinder(Long binderId) {
+	private org.kablink.teaming.domain.Binder getBinderIfAccessible(Long binderId) {
 		try {
 			return getBinderModule().getBinder(binderId);
 		}
 		catch(NoBinderByTheIdException e) {
+			return null;
+		}
+		catch(AccessControlException e) {
 			return null;
 		}
 	}
@@ -525,7 +529,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		List<BinderBrief> binders = new ArrayList<BinderBrief>();
 		if(trackedPlacesIds != null) {
 			for(String id:trackedPlacesIds) {
-				org.kablink.teaming.domain.Binder binder = getBinder(Long.valueOf(id));
+				org.kablink.teaming.domain.Binder binder = getBinderIfAccessible(Long.valueOf(id));
 				binder = filterBinder(binder, families, library);
 				if(binder != null){
 					BinderBrief brief = new BinderBrief();
