@@ -3896,9 +3896,9 @@ div.ss_surveyContainer {
 p.ss_survey_question, span.ss_survey_answer {
 	font-size: ${ss_style_font_normalprint};
 	color:#333333;
+}
 .ss_survey_question {
 	padding-right: 20px;
-}	
 }
 div.ss_searchContainer #ss_content { 
 	margin: 0px;

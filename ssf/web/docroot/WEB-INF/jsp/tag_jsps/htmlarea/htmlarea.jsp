@@ -76,6 +76,7 @@
     --%></c:if><%--
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
+<%@ include file="/WEB-INF/jsp/common/tinymce_translations.jsp" %>
 <script type="text/javascript">
 <c:if test="${!empty ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 var ss_diskQuotaExceeded = ${ss_diskQuotaExceeded};
@@ -168,19 +169,6 @@ desc : "<ssf:nlt tag="editor.youtube.title"/>",
 youTubeUrl : "<ssf:nlt tag="__youTubeUrl"/>",
 dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
 });
-
-//If you need to change a translated string in the advanced theme langs, do it as follows
-function ss_addLanguageChanges() {
-	tinyMCE.addI18n('${ss_user_lang}.advanced',{
-		font_size : "<ssf:nlt tag="tinyMce.font_size" text="Font size"/>"
-		});
-	tinyMCE.addI18n('${ss_user_lang}.advanced',{
-		fontdefault : "<ssf:nlt tag="tinyMce.font_family" text="Font family"/>"
-		});
-	tinyMCE.addI18n('${ss_user_lang}.advanced',{
-		paragraph : "<ssf:nlt tag="tinyMce.paragraph" text="paragraph"/>"
-		});
-}
 
 tinyMCE.init({
 	paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},

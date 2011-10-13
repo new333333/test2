@@ -34,11 +34,13 @@
 %>
 <%@ page import="java.util.Locale" %>
 <script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
+<%@ include file="/WEB-INF/jsp/common/tinymce_translations.jsp" %>
 <script type="text/javascript">
 //need to shut off relative links and adding pictures for mail.
 tinyMCE.init({
 	paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 	mode: "specific_textareas", editor_selector: "mceEditable",
+	onpageload : "ss_addLanguageChanges",
 <c:choose><%--
     --%><c:when test="${ssUser.locale.language == 'da'}">language: 'da',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'de'}">language: 'de',</c:when><%--
@@ -76,6 +78,31 @@ tinyMCE.init({
   theme_advanced_path: false,
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_resizing_use_cookie : false});
+
+tinyMCE.addI18n('${ss_user_lang}.ss_addimage_dlg',{
+	overQuota : "${ss_quotaMessage} ",
+	srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
+	addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
+	addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>",
+	imageName : "<ssf:nlt tag="editor.addimage.imageName"/>",
+	imageSelectBox : ss_imageSelections${element_id},
+	missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
+	});
+
+tinyMCE.addI18n('${ss_user_lang}.pdw',{
+	description : "<ssf:nlt tag="editor.pdw.desc"/>"
+	});
+tinyMCE.addI18n('${ss_user_lang}.ss_addimage',{
+	desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
+	});
+tinyMCE.addI18n('${ss_user_lang}.ss_wikilink',{
+	desc : "<ssf:nlt tag="editor.wikilink.title"/>"
+	});
+tinyMCE.addI18n('${ss_user_lang}.ss_youtube',{
+	desc : "<ssf:nlt tag="editor.youtube.title"/>",
+	youTubeUrl : "<ssf:nlt tag="__youTubeUrl"/>",
+	dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
+	});
 
 </script>
 <div align="left">
