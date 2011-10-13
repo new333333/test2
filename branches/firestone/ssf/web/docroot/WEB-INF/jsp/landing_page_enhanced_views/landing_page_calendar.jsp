@@ -64,6 +64,13 @@
 <c:set var="prefix" value="${landingPageCalendarPrefix}" />
 <c:set var="mashupBinderId" value="${mashup_attributes['folderId']}"/>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashupBinderId]}"/>
+<c:if test="${!empty mashup_attributes['zoneUUID']}">
+  <c:set var="zoneBinderId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['folderId']}" />
+  <c:if test="${!empty ss_mashupBinders[zoneBinderId]}">
+    <c:set var="mashupBinder" value="${ss_mashupBinders[zoneBinderId]}"/>
+    <c:set var="mashupBinderIdIndex" value="${zoneBinderId}"/>
+  </c:if>
+</c:if>
 
 <c:set var="calendarWidth" value="100%" />
 <c:set var="calendarHeight" value="100%" />

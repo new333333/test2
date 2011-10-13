@@ -56,6 +56,13 @@
 %>
 <c:set var="mashupEntryId" value="${mashup_attributes['entryId']}"/>
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashupEntryId]}"/>
+<c:if test="${!empty mashup_attributes['zoneUUID']}">
+  <c:set var="zoneEntryId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['entryId']}" />
+  <c:if test="${!empty ss_mashupEntries[zoneEntryId]}">
+    <c:set var="mashupEntry" value="${ss_mashupEntries[zoneEntryId]}"/>
+	<c:set var="mashupEntryId" value="${mashupEntry.id}"/>
+  </c:if>
+</c:if>
 <c:set var="mashupEntryReplies" value="${ss_mashupEntryReplies[mashupEntryId]}"/>
 <c:set var="originalDefinitionEntry" value="${ssDefinitionEntry}"/>
 <c:set var="originalBinder" value="${ssBinder}"/>
