@@ -336,7 +336,7 @@ public abstract class AbstractTinyMCEConfiguration
 		int c = 1;
 		for (String p : themeAdvancedBlockFormats) {
 			button1 += p;
-			if (c < themeAdvancedButtons1.length) {
+			if (c < themeAdvancedBlockFormats.length) {
 				button1 += ", ";
 			}
 			++c;
