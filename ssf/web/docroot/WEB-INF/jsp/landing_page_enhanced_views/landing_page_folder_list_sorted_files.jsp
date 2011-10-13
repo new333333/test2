@@ -59,6 +59,13 @@
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:set var="mashupBinderId" value="${mashup_attributes['folderId']}"/>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashupBinderId]}"/>
+<c:if test="${!empty mashup_attributes['zoneUUID']}">
+  <c:set var="zoneBinderId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['folderId']}" />
+  <c:if test="${!empty ss_mashupBinders[zoneBinderId]}">
+    <c:set var="mashupBinder" value="${ss_mashupBinders[zoneBinderId]}"/>
+    <c:set var="mashupBinderId" value="${mashupBinder.id}"/>
+  </c:if>
+</c:if>
 
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
