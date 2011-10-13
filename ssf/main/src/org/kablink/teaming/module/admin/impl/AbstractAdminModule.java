@@ -829,7 +829,15 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	return functionsPruned;
     }
 	//no transaction
-    public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, Set<Long>> functionMemberships) {
+    public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
+    		final Map<Long, Set<Long>> functionMemberships) {
+    	setWorkAreaFunctionMemberships(workArea, functionMemberships, Boolean.TRUE);
+    }
+    public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, 
+    		Set<Long>> functionMemberships, boolean doCheckAccess) {
+    	if (doCheckAccess) {
+    		checkAccess(workArea, AdminOperation.manageFunctionMembership);
+    	}
 		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		
