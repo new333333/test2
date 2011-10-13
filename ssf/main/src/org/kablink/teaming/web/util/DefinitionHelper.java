@@ -1272,6 +1272,16 @@ public class DefinitionHelper {
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("") &&
     				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
     			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
+    		} else if (ObjectKeys.MASHUP_TYPE_ENHANCED_VIEW.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
+    				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID).equals("") &&
+    				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
+    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
+    		} else if (ObjectKeys.MASHUP_TYPE_ENHANCED_VIEW.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) && 
+    				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("") &&
+    				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
+    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
     		}
     	}
     	String result = "";
