@@ -50,7 +50,7 @@ table tr td { border: 1px solid #BBBBBB; }
 
 ul li {
     margin: 2px 0px 0px 0px;
-    list-style-type: round;
+    list-style-type: disc;
     list-style-position: outside;
     list-style-image: none;
 }
