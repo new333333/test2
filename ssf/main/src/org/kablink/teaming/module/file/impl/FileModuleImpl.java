@@ -1923,8 +1923,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			vAtt.setEncrypted(fAtt.getEncrypted());
 			vAtt.setEncryptionKey(fAtt.getEncryptionKey());
 			fAtt.addFileVersion(vAtt);
+			// Do this only if a new version has actually been created.
+			FileUtils.setFileVersionAging(fAtt.getOwner().getEntity());
 		}
-		FileUtils.setFileVersionAging(fAtt.getOwner().getEntity());
 	}
     
     private class UpdateInfo {
@@ -2448,13 +2449,23 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					// we add some additional checking here specific to OpenOffice to prevent
 					// extraneous and empty file version to be created in the system.
 					long size = session.getContentLengthVersioned(binder, entity, relativeFilePath, versionName);
-					if(size == 0 && 
-							session.getFactory().isVersionDeletionAllowed() &&
-							isNonzerolengthOpenOfficeFile(relativeFilePath)) {
+					if(size == 0 
+							&& session.getFactory().isVersionDeletionAllowed()
+							// To handle Bug 710153, do not limit file extensions to just native OO files.
+							// && isNonzerolengthOpenOfficeFile(relativeFilePath)
+							) {
 						logger.info("Deleting version [" + versionName + "] of file [" + relativeFilePath +
 								"] from repository [" + fa.getRepositoryName() + 
-								"] to prevent OO from errorneously creating zero-length file.");
+								"] to prevent OO or similar editors from errorneously creating zero-length file.");
 						session.deleteVersion(binder, entity, relativeFilePath, versionName);
+						VersionAttachment vAtt = fa.getHighestVersion();
+						if(vAtt != null) {
+							fa.setModification(vAtt.getModification());
+							fa.setFileStatus(vAtt.getFileStatus());
+							fa.getFileItem().setLength(vAtt.getFileItem().getLength());
+							fa.getFileItem().setDescription(vAtt.getFileItem().getDescription());
+							metadataDirty = true;
+						}
 					}
 					else {
 						Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
