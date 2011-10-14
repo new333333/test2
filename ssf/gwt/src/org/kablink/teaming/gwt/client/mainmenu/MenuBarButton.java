@@ -34,11 +34,11 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.widgets.VibeAnchorTabstop;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 
 
@@ -49,7 +49,7 @@ import com.google.gwt.user.client.ui.Image;
  * @author drfoster@novell.com
  *
  */
-public class MenuBarButton extends Anchor {
+public class MenuBarButton extends VibeAnchorTabstop {
 	private VibeEventBase<?>	m_event;	// The event to fire when the button is clicked.
 	
 	/*

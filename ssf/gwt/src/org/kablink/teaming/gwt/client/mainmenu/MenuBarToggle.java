@@ -34,12 +34,12 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.widgets.VibeAnchorTabstop;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -51,7 +51,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public class MenuBarToggle extends Anchor {
+public class MenuBarToggle extends VibeAnchorTabstop {
 	private Image			m_altImg;		// The alternate Image.
 	private Image			m_baseImg;		// The base      Image.
 	private Image 			m_currentImg;	// Current image being displayed.
