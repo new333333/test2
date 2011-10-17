@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -54,6 +55,16 @@ public class VibeHorizontalPanel extends HorizontalPanel implements ProvidesResi
 		setHeight("100%");
 	}
 
+	/**
+	 * Adds a cell at the right of the panel that will fill it. 
+	 */
+	public void addRightPad() {
+		InlineLabel nbsp = new InlineLabel();
+		nbsp.getElement().setInnerHTML("&nbsp;");
+		add(nbsp);
+		setCellHeight(nbsp, "100%");
+	}
+	
 	/**
 	 * Implements RequiresResize.onResize()
 	 */

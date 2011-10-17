@@ -3516,8 +3516,44 @@ td.datePickerMonth {
 
 
 /* Start:  GWT folder view styles. */
+/* ...Start:  Accessory styles. */
+.vibe-accessoriesPanel
+{
+	color: #333;
+	background-color: #EAEBE8;
+	display: block;
+	padding: 10px;
+	margin-bottom: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+/* ...End:  Accessory styles. */
+
+/* ...Start:  Filter panel styles. */
+.vibe-filterPanel
+{
+	background-color: #EAF5F5;
+	display: block;
+	padding: 10px;
+	margin-bottom: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+/* ...End:  Filter panel styles. */
+
+/* ...Start:  Entry menu panel styles. */
+.vibe-entryMenuPanel
+{
+	display: block;
+	padding: 10px;
+	margin-bottom: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+/* ...End:  Entry menu panel styles. */
+
 /* ...Start:  Generic folder view styles. */
-.vibe-folderViewBase {}
+.vibe-folderViewBase {padding: 5px;}
 /* ...End:  Generic folder view styles. */
 
 /* ...Start:  Generic data table folder view styles. */

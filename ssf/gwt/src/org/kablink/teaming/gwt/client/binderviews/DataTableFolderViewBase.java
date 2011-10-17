@@ -37,6 +37,12 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
+import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel.AccessoriesPanelClient;
+import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
+import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel.EntryMenuPanelClient;
+import org.kablink.teaming.gwt.client.binderviews.FilterPanel;
+import org.kablink.teaming.gwt.client.binderviews.FilterPanel.FilterPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
@@ -45,13 +51,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -66,9 +70,13 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private List<FolderColumnInfo>	m_folderColumnsList;					// The list of columns to be displayed.
 	private Long					m_folderId;								// The ID of the folder to be viewed.				
 	private String					m_folderSortBy;							// Which column the view is sorted on.
-	private VibeDockLayoutPanel		m_mainPanel;							// The main panel holding the content of the view.
+	private VibeFlowPanel			m_mainPanel;							// The main panel holding the content of the view.
 	private VibeFlowPanel			m_flowPanel;							// The flow panel used to hold the view specific content of the view.
 	private VibeVerticalPanel		m_verticalPanel;						// The vertical panel that holds all components of the view, both common and view specific.
+
+	private final int ACCESSORY_PANEL_INDEX		= 0;
+	private final int FILTER_PANEL_INDEX		= 1;
+	private final int ENTRY_MENU_PANEL_INDEX	= 2;
 	
 	/**
 	 * Constructor method.
@@ -90,7 +98,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		initWidget(m_mainPanel);
 
 		// ...and finally, asynchronously initialize the view.
-		initializeViewAsync();
+		loadPart1Async();
 	}
 	
 	/**
@@ -110,8 +118,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * Creates the main content panels, ...
 	 */
 	private void constructCommonContent() {
-		// Create the main layout panel for the content...
-		m_mainPanel = new VibeDockLayoutPanel(Style.Unit.PX);
+		// Create the main panel for the content...
+		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName("vibe-folderViewBase vibe-dataTableFolderViewBase");
 
 		// ...create the vertical panel that holds the layout that
@@ -129,6 +137,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		
 		// ...and tie everything together.
 		m_verticalPanel.add(m_flowPanel);
+		m_verticalPanel.addBottomPad();
 		m_mainPanel.add(m_verticalPanel);
 	}
 	
@@ -144,22 +153,79 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	public abstract void resetView(    List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend);
 
 	/*
-	 * Asynchronously initialize this view.
+	 * Asynchronously loads part 1 of the view.
 	 */
-	private void initializeViewAsync() {
-		Scheduler.ScheduledCommand doInit = new Scheduler.ScheduledCommand() {
+	private void loadPart1Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				initializeViewNow();
+				loadPart1Now();
 			}
 		};
-		Scheduler.get().scheduleDeferred(doInit);
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
-	 * Synchronously initialize this view.
+	 * Synchronously loads part 1 of the view.
 	 */
-	private void initializeViewNow() {
+	private void loadPart1Now() {
+		AccessoriesPanel.createAsync(m_folderId, new AccessoriesPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(AccessoriesPanel ap) {
+				m_verticalPanel.insert(ap, ACCESSORY_PANEL_INDEX);
+				loadPart2Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads part 2 of the view.
+	 */
+	private void loadPart2Async() {
+		FilterPanel.createAsync(m_folderId, new FilterPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(FilterPanel ap) {
+				m_verticalPanel.insert(ap, FILTER_PANEL_INDEX);
+				loadPart3Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads part 3 of the view.
+	 */
+	private void loadPart3Async() {
+		EntryMenuPanel.createAsync(m_folderId, new EntryMenuPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(EntryMenuPanel ap) {
+				m_verticalPanel.insert(ap, ENTRY_MENU_PANEL_INDEX);
+				loadPart3Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads part 3 of the view.
+	 */
+	private void loadPart3Now() {
 		GwtClientHelper.executeCommand(
 				new GetFolderColumnsCmd(m_folderId, m_folderType),
 				new AsyncCallback<VibeRpcResponse>() {
