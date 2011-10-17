@@ -33,12 +33,17 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.util.VibeKBHook;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.Anchor;
+
 
 /**
  * Wraps a GWT Anchor widget ensuring it has a tab stop set.
@@ -50,33 +55,81 @@ public class VibeAnchorTabstop extends Anchor {
 	 * Constructor method.
 	 * 
 	 * @param tabIndex
+	 * @param kbHook
 	 */
-	public VibeAnchorTabstop(int tabIndex) {
+	public VibeAnchorTabstop(int tabIndex, final VibeKBHook kbHook) {
 		// Initialize the superclass...
 		super();
 		
-/*
 		// ...set the tab index...
 		setTabIndex(tabIndex);
 		
-		// ...and and a key press handler to trigger a click event
+		// ...add a key up handler to trigger an appropriate event
 		// ...when the user presses the enter key.
+		final VibeAnchorTabstop thisA = this;
 		addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
-				if (isEnabled() && isVisible() && (event.getNativeEvent().getCharCode() == KeyCodes.KEY_ENTER)) {
-					NativeEvent clickEvent = Document.get().createClickEvent(1, 0, 0, 0, 0, false, false, false, false);
-					getElement().dispatchEvent(clickEvent);
+				if (isEnabled() && isVisible()) {
+					if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode()) {
+						if (null == kbHook)
+						     fireClick();
+						else kbHook.onEnter(thisA);
+					}
 				}
 			}
 		});
-*/
+
+		// ...and if we were given a keyboard hook...
+		if (null != kbHook) {
+			// ...add a key down handler to trigger an appropriate
+			// ...event when the user presses the tab key.
+			addKeyDownHandler(new KeyDownHandler() {
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					if (isEnabled() && isVisible()) {
+						if (KeyCodes.KEY_TAB == event.getNativeEvent().getKeyCode()) {
+							kbHook.onTab(thisA);
+						}
+					}
+				}
+			});
+		}
 	}
 	
 	/**
 	 * Constructor method.
 	 */
 	public VibeAnchorTabstop() {
-		this(0);
+		// Always use the initial form of the constructor.
+		this(0, null);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param tabIndex
+	 */
+	public VibeAnchorTabstop(int tabIndex) {
+		// Always use the initial form of the constructor.
+		this(tabIndex, null);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param kbHook
+	 */
+	public VibeAnchorTabstop(VibeKBHook kbHook) {
+		// Always use the initial form of the constructor.
+		this(0, kbHook);
+	}
+
+	/**
+	 * Fires a click event to the anchor.
+	 */
+	public void fireClick() {
+		NativeEvent clickEvent = Document.get().createClickEvent(1, 0, 0, 0, 0, false, false, false, false);
+		getElement().dispatchEvent(clickEvent);
 	}
 }

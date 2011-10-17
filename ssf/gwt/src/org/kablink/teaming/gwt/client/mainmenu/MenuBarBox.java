@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.VibeKBHook;
 import org.kablink.teaming.gwt.client.widgets.VibeAnchorTabstop;
 
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -42,7 +43,6 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-
 
 
 /**
@@ -56,21 +56,21 @@ public class MenuBarBox extends FlowPanel {
 	private FlowPanel m_boxPanel;
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
 	 *
 	 * @param boxId
 	 * @param itemImgRes
 	 * @param itemText
 	 * @param dropdown
-	 * @param ch
+	 * @param kbHook
 	 */
-	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown) {
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown, VibeKBHook kbHook) {
 		// Initialize the FlowPanel super class...
 		super();
 		addStyleName("mainMenuContent");
 
 		// ...create an Anchor to contain the box...
-		m_boxA = new VibeAnchorTabstop();
+		m_boxA = new VibeAnchorTabstop(kbHook);
 		m_boxA.addStyleName("mainMenuBar_BoxA");
 
 		// ...create a FlowPanel to contain the items in the box...
@@ -118,19 +118,19 @@ public class MenuBarBox extends FlowPanel {
 		add(m_boxA);
 	}
 	
-	public MenuBarBox(String boxId, String itemText, boolean dropdown) {
+	public MenuBarBox(String boxId, String itemText, boolean dropdown, VibeKBHook kbHook) {
 		// Always use the initial form of the constructor.
-		this(boxId, null, itemText, dropdown);
+		this(boxId, null, itemText, dropdown, kbHook);
 	}
 	
-	public MenuBarBox(String boxId, String itemText) {
+	public MenuBarBox(String boxId, String itemText, VibeKBHook kbHook) {
 		// Always use the initial form of the constructor.
-		this(boxId, null, itemText, false);
+		this(boxId, null, itemText, false, kbHook);
 	}
 	
-	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText) {
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, VibeKBHook kbHook) {
 		// Always use the initial form of the constructor.
-		this(boxId, itemImgRes, itemText, false);
+		this(boxId, itemImgRes, itemText, false, kbHook);
 	}
 
 	/**

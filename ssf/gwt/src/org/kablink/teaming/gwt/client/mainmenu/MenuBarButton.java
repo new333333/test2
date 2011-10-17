@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.util.VibeKBHook;
 import org.kablink.teaming.gwt.client.widgets.VibeAnchorTabstop;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -74,9 +75,9 @@ public class MenuBarButton extends VibeAnchorTabstop {
 	 * @param event
 	 * @param clickHandler
 	 */
-	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, ClickHandler clickHandler) {
+	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, ClickHandler clickHandler, VibeKBHook kbHook) {
 		// Initialize the super class...
-		super();
+		super(kbHook);
 		
 		// ...store the parameters...
 		m_event = event;
@@ -102,13 +103,23 @@ public class MenuBarButton extends VibeAnchorTabstop {
 		addMouseOutHandler( hover);
 	}
 	
+	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, VibeKBHook kbHook) {
+		// Always use the initial form of the constructor.
+		this(imgRes, imgTitle, event, null, kbHook);
+	}
+	
 	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event) {
 		// Always use the initial form of the constructor.
 		this(imgRes, imgTitle, event, null);
 	}
 	
+	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler, VibeKBHook kbHook) {
+		// Always use the initial form of the constructor.
+		this(imgRes, imgTitle, null, clickHandler, kbHook);
+	}
+	
 	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler) {
 		// Always use the initial form of the constructor.
-		this(imgRes, imgTitle, null, clickHandler);
+		this(imgRes, imgTitle, null, clickHandler, null);
 	}
 }

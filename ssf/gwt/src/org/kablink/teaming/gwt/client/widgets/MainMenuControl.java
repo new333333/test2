@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -64,6 +65,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
+import org.kablink.teaming.gwt.client.mainmenu.MenuBarPopupBase;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
@@ -87,6 +89,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.VibeKBHook;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -102,6 +105,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -110,7 +114,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * @author drfoster@novell.com
  */
 public class MainMenuControl extends Composite
-	implements
+	implements VibeKBHook,
 	// Event handlers implemented by this class.
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
@@ -142,6 +146,7 @@ public class MainMenuControl extends Composite
 	private MenuBarBox						m_whatsNewBox;
 	private MenuBarButton					m_bhButton;
 	private MenuBarButton					m_soButton;
+	private MenuBarPopupBase				m_openPopupMenu;
 	private MenuBarToggle					m_wsTreeSlider;
 	private MenuBarToggle					m_mastHeadSlider;
 	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
@@ -149,6 +154,7 @@ public class MainMenuControl extends Composite
 	private SearchMenuPanel					m_searchPanel;
 	@SuppressWarnings("unused")
 	private String							m_menuUsage;	// Which context this menu is being used in.
+	private TeamingPopupPanel m_soPopup;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -245,11 +251,11 @@ public class MainMenuControl extends Composite
 		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				m_soButton.removeStyleName("subhead-control-bg2");
-				final TeamingPopupPanel soPopup = new TeamingPopupPanel(true, false);
-				GwtClientHelper.rollDownPopup(soPopup);
-				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
+				m_soPopup = new TeamingPopupPanel(true, false);
+				GwtClientHelper.rollDownPopup(m_soPopup);
+				m_soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
 				SearchOptionsComposite.createAsync(
-						soPopup,
+						m_soPopup,
 						new SearchOptionsCompositeClient() {					
 					@Override
 					public void onUnavailable() {
@@ -261,9 +267,9 @@ public class MainMenuControl extends Composite
 					public void onSuccess(SearchOptionsComposite soc) {
 						// Connect things together...
 						soc.addStyleName("mainMenuSearchOptions");
-						soPopup.setWidget(soc);
-						soPopup.setGlassEnabled(true);
-						soPopup.setGlassStyleName("mainMenuPopup_Glass");
+						m_soPopup.setWidget(soc);
+						m_soPopup.setGlassEnabled(true);
+						m_soPopup.setGlassStyleName("mainMenuPopup_Glass");
 						
 						// ...and show the search options popup.  We do
 						// ...this as a scheduled command so that the
@@ -276,11 +282,11 @@ public class MainMenuControl extends Composite
 								// Position and show the popup as per
 								// the position of the search panel on
 								// the menu.
-								soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+								m_soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 									public void setPosition(int offsetWidth, int offsetHeight) {
 										int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
 										int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
-										soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+										m_soPopup.setPopupPosition(soPopupLeft, soPopupTop);
 									}
 								});
 							}
@@ -288,7 +294,8 @@ public class MainMenuControl extends Composite
 						Scheduler.get().scheduleDeferred(showSOPopup);
 					}
 				});
-			}});
+			}},
+			this);
 		m_soButton.addStyleName("mainMenuButton mainMenuSearchOptions_Button subhead-control-bg1 roundcornerSM");
 		menuPanel.add(m_soButton);
 		
@@ -302,7 +309,7 @@ public class MainMenuControl extends Composite
 	 * the menu bar.
 	 */
 	private void addCloseAdministrationToCommon(FlowPanel menuPanel) {
-		m_closeAdminBox = new MenuBarBox("ss_mainMenuCloseAdmin", m_messages.close(), false);
+		m_closeAdminBox = new MenuBarBox("ss_mainMenuCloseAdmin", m_messages.close(), false, this);
 		m_closeAdminBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
@@ -335,7 +342,7 @@ public class MainMenuControl extends Composite
 
 		// ...add the browse hierarchy button...
 		BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
-		m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
+		m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe, this);
 		bhe.setOnBrowseHierarchyInfo(new OnBrowseHierarchyInfo(m_bhButton));
 		m_bhButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_buttonsPanel.add(m_bhButton);
@@ -363,7 +370,9 @@ public class MainMenuControl extends Composite
 		case FOLDER:     manageNameCalc = m_messages.mainMenuBarFolder();    break;
 		case WORKSPACE:  manageNameCalc = m_messages.mainMenuBarWorkspace(); break;
 		}
+		
 		final String manageName = manageNameCalc;
+		final VibeKBHook kbHook = this;
 
 		ManageMenuPopup.createAsync(manageName, new ManageMenuPopupClient() {			
 			@Override
@@ -378,13 +387,13 @@ public class MainMenuControl extends Composite
 				mmp.setToolbarItemList(toolbarItemList);
 				mmp.setTeamManagementInfo(tmi);
 				if (mmp.shouldShowMenu()) {
-					final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true);
+					final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true, kbHook);
 					manageBox.addClickHandler(
 						new ClickHandler() {
 							public void onClick(ClickEvent event) {
 								if (mmp.isShowing())
-								     mmp.hideMenu();
-								else mmp.showMenu(manageBox);
+								     hidePopupMenu(mmp);
+								else showPopupMenu(mmp, manageBox);
 							}
 						});
 					m_contextPanel.add(manageBox);
@@ -398,21 +407,21 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addMyFavoritesToCommon(FlowPanel menuPanel) {
-		m_myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), true);
+		m_myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), true, this);
 		m_myFavoritesBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (null == m_myFavoritesMenuPopup) {
 						m_myFavoritesMenuPopup = new MyFavoritesMenuPopup();
 						m_myFavoritesMenuPopup.setCurrentBinder(m_contextBinder);
-						m_myFavoritesMenuPopup.showMenu(m_myFavoritesBox);
+						showPopupMenu(m_myFavoritesMenuPopup, m_myFavoritesBox);
 						m_myFavoritesMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
 							public void onClose(CloseEvent<PopupPanel> event) {
 							     m_myFavoritesMenuPopup = null;
 							}});
 					}
 					else {
-					     m_myFavoritesMenuPopup.hideMenu();
+					     hidePopupMenu(m_myFavoritesMenuPopup);
 					}
 				}
 			});
@@ -423,21 +432,21 @@ public class MainMenuControl extends Composite
 	 * Adds the My Teams item to the common portion of the menu bar.
 	 */
 	private void addMyTeamsToCommon(FlowPanel menuPanel) {
-		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true);
+		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true, this);
 		m_myTeamsBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (null == m_myTeamsMenuPopup) {
 						m_myTeamsMenuPopup = new MyTeamsMenuPopup();
 						m_myTeamsMenuPopup.setCurrentBinder(m_contextBinder);
-						m_myTeamsMenuPopup.showMenu(m_myTeamsBox);
+						showPopupMenu(m_myTeamsMenuPopup, m_myTeamsBox);
 						m_myTeamsMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
 							public void onClose(CloseEvent<PopupPanel> event) {
 								m_myTeamsMenuPopup = null;
 							}});
 					}
 					else {
-					     m_myTeamsMenuPopup.hideMenu();
+					     hidePopupMenu(m_myTeamsMenuPopup);
 					}
 				}
 			});
@@ -449,7 +458,7 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addMyWorkspaceToCommon(FlowPanel menuPanel) {
-		m_myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace());
+		m_myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace(), this);
 		m_myWorkspaceBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
@@ -468,13 +477,13 @@ public class MainMenuControl extends Composite
 		rpmp.setCurrentBinder(m_contextBinder);
 		rpmp.setToolbarItemList(toolbarItemList);
 		if (rpmp.shouldShowMenu()) {
-			final MenuBarBox rpBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), true);
+			final MenuBarBox rpBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), true, this);
 			rpBox.addClickHandler(
 				new ClickHandler() {
 					public void onClick(ClickEvent event) {
 						if (rpmp.isShowing())
-						     rpmp.hideMenu();
-						else rpmp.showMenu(rpBox);
+						     hidePopupMenu(rpmp);
+						else showPopupMenu(rpmp, rpBox);
 					}
 				});
 			m_contextPanel.add(rpBox);
@@ -486,6 +495,8 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
+		final VibeKBHook kbHook = this;
+		
 		ViewsMenuPopup.createAsync(inSearch, searchTabId, new ViewsMenuPopupClient() {			
 			@Override
 			public void onUnavailable() {
@@ -498,13 +509,13 @@ public class MainMenuControl extends Composite
 				vmp.setCurrentBinder(m_contextBinder);
 				vmp.setToolbarItemList(toolbarItemList);
 				if (vmp.shouldShowMenu()) {
-					final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), true);
+					final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), true, kbHook);
 					actionsBox.addClickHandler(
 						new ClickHandler() {
 							public void onClick(ClickEvent event) {
 								if (vmp.isShowing())
-								     vmp.hideMenu();
-								else vmp.showMenu(actionsBox);
+								     hidePopupMenu(vmp);
+								else showPopupMenu(vmp, actionsBox);
 							}
 						});
 					m_contextPanel.add(actionsBox);
@@ -517,7 +528,7 @@ public class MainMenuControl extends Composite
 	 * Adds the What's New item to the common portion of the menu bar.
 	 */
 	private void addWhatsNewToCommon(FlowPanel menuPanel) {
-		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew());
+		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew(), this);
 		m_whatsNewBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
@@ -626,6 +637,18 @@ public class MainMenuControl extends Composite
 		}
 	}
 
+	/*
+	 * Called to hide a popup menu.
+	 */
+	private void hidePopupMenu(MenuBarPopupBase popup) {
+		if (null != popup) {
+			popup.hideMenu();
+			if (popup.equals(m_openPopupMenu)) {
+				m_openPopupMenu = null;
+			}
+		}
+	}
+	
 	/**
 	 * Handles ContextChangedEvent's received by this class.
 	 * 
@@ -660,6 +683,47 @@ public class MainMenuControl extends Composite
 	@Override
 	public void onContextChanging(final ContextChangingEvent event) {
 		clearContextMenus();
+	}
+	
+	/**
+	 * Called when one of the MenuBarBox widgets processes an enter
+	 * key.
+	 * 
+	 * Implements the VibeKBHook.onEnter() method.
+	 * 
+	 * @param w
+	 */
+	public void onEnter(Widget w) {
+		if (w instanceof VibeAnchorTabstop) {
+			((VibeAnchorTabstop) w).fireClick();
+		}
+	}
+	
+	/**
+	 * Called when one of the MenuBarBox widgets processes a tab key.
+	 * 
+	 * Implements the VibeKBHook.onTab() method.
+	 * 
+	 * @param w
+	 */
+	public void onTab(Widget w) {
+		if (w instanceof MenuBarButton) {
+			MenuBarButton mbb = ((MenuBarButton) w);
+			if (mbb == m_bhButton) {
+				BrowseHierarchyExitEvent.fireOne();
+			}
+			
+			else if (mbb == m_soButton) {
+				if (null != m_soPopup) {
+					m_soPopup.hide();
+					m_soPopup = null;
+				}
+			}
+		}
+		
+		else if (w instanceof VibeAnchorTabstop) {
+			hidePopupMenu(m_openPopupMenu);
+		}
 	}
 	
 	/**
@@ -961,6 +1025,18 @@ public class MainMenuControl extends Composite
 				Scheduler.get().scheduleDeferred(getTMInfo);
 			}
 		});
+	}
+
+	/*
+	 * Called to show a popup menu opened from a menu bar box.
+	 */
+	private void showPopupMenu(MenuBarPopupBase popup, MenuBarBox box) {
+		if (null != m_openPopupMenu) {
+			m_openPopupMenu.hideMenu();
+			m_openPopupMenu = null;
+		}
+		popup.showMenu(box);
+		m_openPopupMenu = popup;
 	}
 	
 	/*
