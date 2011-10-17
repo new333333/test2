@@ -1687,21 +1687,11 @@ public class ExportHelper {
 			final Map rMap = reportMap;
 			final Map fNameCache = nameCache;
 			
-			// Bug #701024 - Flush out all uncommitted changes and clear the session
-			// to prevent NonUniqueObjectException exception.
-			coreDao.flush();
-			coreDao.clear();
-
 			// binder settings
 			importSettingsList(doc, binder, fDefIdMap, rMap, topBinder, fNameCache);
 
 			// workflows
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
-
-			// Bug #701024 - Flush out all uncommitted changes and clear the session
-			// to prevent NonUniqueObjectException exception.
-			coreDao.flush();
-			coreDao.clear();
 
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the binder " + newBinderId);
@@ -1816,10 +1806,13 @@ public class ExportHelper {
 			folderModule.indexEntry(entry, false);
 			
 			// We're done with the entry. Kick it out of cache.
+			// Do NOT clear the entire session here though, since it would cause a lot of trouble
+			// from the plenty of detached entities that are still floating around within VM
+			// and that will come into play in subsequent iterations of this whole action...
 			if(logger.isDebugEnabled())
-				logger.debug("Clearing the session");
+				logger.debug("Clearing the session of the entry");
 			coreDao.flush();
-			coreDao.clear();
+			coreDao.evict(entry);
 			
 			return newEntryId;
 		} catch (WriteFilesException e) {
