@@ -381,13 +381,16 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UpdateFavorites();
 
 	// Strings used to describe various split point load failures.
+	String codeSplitFailure_AccessoriesPanel();
 	String codeSplitFailure_ActivityStreamCtrl();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_EditBrandingDlg();
+	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
+	String codeSplitFailure_FilterPanel();
 	String codeSplitFailure_FindCtrl();
 	String codeSplitFailure_FolderOptionsDlg();
 	String codeSplitFailure_LandingPage();

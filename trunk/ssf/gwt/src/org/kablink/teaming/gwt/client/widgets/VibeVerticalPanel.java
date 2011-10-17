@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -52,6 +53,16 @@ public class VibeVerticalPanel extends VerticalPanel implements ProvidesResize, 
 		
 		setWidth( "100%");
 		setHeight("100%");
+	}
+
+	/**
+	 * Adds a row at the bottom of the panel that will fill it. 
+	 */
+	public void addBottomPad() {
+		InlineLabel nbsp = new InlineLabel();
+		nbsp.getElement().setInnerHTML("&nbsp;");
+		add(nbsp);
+		setCellHeight(nbsp, "100%");
 	}
 	
 	/**
