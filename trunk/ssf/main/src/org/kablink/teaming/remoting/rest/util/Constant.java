@@ -30,23 +30,19 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.resource;
+package org.kablink.teaming.remoting.rest.util;
 
-import org.kablink.teaming.util.AbstractAllModulesInjected;
+import javax.ws.rs.QueryParam;
 
-public class AbstractResource extends AbstractAllModulesInjected {
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+
+public interface Constant {
+	public static final String MIME_MEDIA_TYPE_DEFAULT = "application/json";
 	
-    protected String checkResponseFormat(String headerParam, String queryParam, String defaultVal) {
-    	// Precedence: header -> query -> default
-        String format = headerParam;
-        if (headerParam == null || headerParam.equals("*/*")) {
-            if (queryParam == null) {
-                format = defaultVal;
-            } else {
-                format = queryParam;
-            }
-        } 
-        return format;
-    }
-
+	public static final String ENTITY_TYPE_FOLDER_ENTRY = EntityType.folderEntry.name();
+	public static final String ENTITY_TYPE_FOLDER = EntityType.folder.name();
+	public static final String ENTITY_TYPE_WORKSPACE = EntityType.workspace.name();
+	public static final String ENTITY_TYPE_USER = EntityType.user.name();
+	
+	//public static final String FILE_DATA_ITEM_NAME_DEFAULT = "ss_attachFile1";
 }
