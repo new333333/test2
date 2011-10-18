@@ -46,12 +46,12 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
- * Class used for the content of the filters in the binder views.  
+ * Class used for the content of the footer panel in the binder views.  
  * 
  * @author drfoster@novell.com
  */
-public class FilterPanel extends ResizeComposite {
-	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose filters are being managed.
+public class FooterPanel extends ResizeComposite {
+	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose footer panel is being managed.
 	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
 	
 	/*
@@ -61,7 +61,7 @@ public class FilterPanel extends ResizeComposite {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FilterPanel(BinderInfo binderInfo) {
+	private FooterPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
 		super();
 		
@@ -70,60 +70,60 @@ public class FilterPanel extends ResizeComposite {
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-binderViewTools vibe-filterPanel");
+		m_fp.addStyleName("vibe-binderViewTools vibe-footerPanel");
 		initWidget(m_fp);
-		constructFilterPanelAsync();
+		constructFooterPanelAsync();
 	}
 
 	/*
-	 * Asynchronously construct's the contents of the filter panel
+	 * Asynchronously construct's the contents of the footer panel.
 	 */
-	private void constructFilterPanelAsync() {
-		ScheduledCommand constructFilterPanel = new ScheduledCommand() {
+	private void constructFooterPanelAsync() {
+		ScheduledCommand constructFooterPanel = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				constructFilterPanelNow();
+				constructFooterPanelNow();
 			}
 		};
-		Scheduler.get().scheduleDeferred(constructFilterPanel);
+		Scheduler.get().scheduleDeferred(constructFooterPanel);
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the filter panel
+	 * Synchronously construct's the contents of the footer panel.
 	 */
-	private void constructFilterPanelNow() {
+	private void constructFooterPanelNow() {
 //!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("FilterPanel.constructFilterPanel( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
+		m_fp.add(new InlineLabel("FooterPanel.constructFooterPanel( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
 	}
 	
 	/**
-	 * Callback interface to interact with the FilterPanel
+	 * Callback interface to interact with the FooterPanel
 	 * asynchronously after it loads. 
 	 */
-	public interface FilterPanelClient {
-		void onSuccess(FilterPanel fp);
+	public interface FooterPanelClient {
+		void onSuccess(FooterPanel fp);
 		void onUnavailable();
 	}
 
 	/**
-	 * Loads the FilterPanel split point and returns an instance
+	 * Loads the FooterPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param binderInfo
 	 * @param fpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final FilterPanelClient fpClient) {
-		GWT.runAsync(FilterPanel.class, new RunAsyncCallback()
+	public static void createAsync(final BinderInfo binderInfo, final FooterPanelClient fpClient) {
+		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FilterPanel fp = new FilterPanel(binderInfo);
+				FooterPanel fp = new FooterPanel(binderInfo);
 				fpClient.onSuccess(fp);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FilterPanel());
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FooterPanel());
 				fpClient.onUnavailable();
 			}
 		});

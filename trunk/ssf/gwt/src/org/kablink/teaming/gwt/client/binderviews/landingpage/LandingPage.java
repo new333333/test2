@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -58,14 +59,14 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  */
 public class LandingPage extends ViewBase
 {
-	private String m_binderId;
+	private BinderInfo m_binderInfo;
 	private ConfigData m_configData;
 	private VibeFlowPanel m_mainPanel;
 	
 	/**
 	 * 
 	 */
-	public LandingPage( final String binderId, final ViewReady viewReady )
+	public LandingPage( final BinderInfo binderInfo, final ViewReady viewReady )
 	{
 		super( viewReady );
 		
@@ -81,7 +82,7 @@ public class LandingPage extends ViewBase
 			public void execute()
 			{
 				// Initialize this landing page for the given binder.
-				buildLandingPage( binderId );
+				buildLandingPage( binderInfo );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -151,10 +152,11 @@ public class LandingPage extends ViewBase
 			return;
 		}
 
-		if ( m_binderId != null )
+		String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
+		if ( binderId != null )
 		{
 			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
-			GwtTeaming.getMainPage().handleLandingPageOptions( m_binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
+			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
 		}
 		
 		// Is a background color specified?
@@ -218,11 +220,13 @@ public class LandingPage extends ViewBase
 	
 	/**
 	 * Build the landing page with data from the given binder.
+	 * 
+	 * @param binderInfo
 	 */
-	public void buildLandingPage( String binderId )
+	public void buildLandingPage( BinderInfo binderInfo )
 	{
 		m_configData = null;
-		m_binderId = binderId;
+		m_binderInfo = binderInfo;
 
 		// Read the configuration data from the server.
 		readConfigurationData();
@@ -232,10 +236,11 @@ public class LandingPage extends ViewBase
 	/**
 	 * Loads the LandingPage split point and returns an instance of it
 	 * via the callback.
-	 * 
+	 *
+	 * @param binderInfo
 	 * @param landingPageClient
 	 */
-	public static void createAsync( final String binderId, final ViewReady viewReady, final LandingPageClient landingPageClient )
+	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final LandingPageClient landingPageClient )
 	{
 		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
 		{			
@@ -244,7 +249,7 @@ public class LandingPage extends ViewBase
 			{
 				LandingPage lp;
 				
-				lp = new LandingPage( binderId, viewReady );
+				lp = new LandingPage( binderInfo, viewReady );
 				landingPageClient.onSuccess( lp );
 			}
 			
@@ -303,12 +308,13 @@ public class LandingPage extends ViewBase
 	private void readConfigurationData()
 	{
 		GetLandingPageDataCmd cmd;
-		
-		if ( m_binderId == null )
+
+		final String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
+		if ( binderId == null )
 			return;
 		
 		// Issue an ajax request to get the landing page configuration data.
-		cmd = new GetLandingPageDataCmd( m_binderId );
+		cmd = new GetLandingPageDataCmd( binderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
@@ -319,7 +325,7 @@ public class LandingPage extends ViewBase
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetLandingPageData(),
-					m_binderId );
+					binderId );
 			}
 	
 			/**

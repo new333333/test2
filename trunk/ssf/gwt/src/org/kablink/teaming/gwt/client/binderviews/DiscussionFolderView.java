@@ -37,8 +37,8 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
-import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -56,12 +56,12 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param folderId
+	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public DiscussionFolderView(Long folderId, ViewReady viewReady) {
+	public DiscussionFolderView(BinderInfo folderInfo, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderId, FolderType.DISCUSSION, viewReady);
+		super(folderInfo, viewReady);
 	}
 	
 	/**
@@ -100,13 +100,15 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * Loads the DiscussionFolderView split point and returns an
 	 * instance of it via the callback.
 	 * 
+	 * @param folderInfo
+	 * @param viewReady
 	 * @param dfvClient
 	 */
-	public static void createAsync(final Long folderId, final ViewReady viewReady, final DiscussionFolderViewClient dfvClient) {
+	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final DiscussionFolderViewClient dfvClient) {
 		GWT.runAsync(DiscussionFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				DiscussionFolderView dfView = new DiscussionFolderView(folderId, viewReady);
+				DiscussionFolderView dfView = new DiscussionFolderView(folderInfo, viewReady);
 				dfvClient.onSuccess(dfView);
 			}
 			
