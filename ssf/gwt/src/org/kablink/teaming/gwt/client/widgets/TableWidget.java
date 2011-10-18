@@ -169,21 +169,35 @@ public class TableWidget extends VibeWidget
 		numColumns = props.getNumColumnsInt();
 		
 		m_table = new FlexTable();
-		m_table.addStyleName( "tableWidgetTable" );
-		m_table.setWidth( "100%" );
+		m_table.addStyleName( "tableWidget" );
+		m_table.setCellPadding( 4 );
 		
 		// Add 1 row to the table.
 		m_table.insertRow( 0 );
 		
+		cellFormatter = m_table.getFlexCellFormatter();
+
 		// Add the appropriate number of columns to the table.
 		for (i = 0; i < numColumns; ++i)
 		{
 			m_table.addCell( 0 );
+
+			// Turn borders on/off
+			if ( props.getShowBorderValue() )
+			{
+				cellFormatter.removeStyleName( 0, i, "tableWidgetNoBorder" );
+				cellFormatter.addStyleName( 0, i, "tableWidgetShowBorder" );
+			}
+			else
+			{
+				cellFormatter.removeStyleName( 0, i, "tableWidgetShowBorder" );
+				cellFormatter.addStyleName( 0, i, "tableWidgetNoBorder" );
+			}
+			
 		}
 
 		m_layoutPanel.add( m_table );
 	
-		cellFormatter = m_table.getFlexCellFormatter();
 		for (i = 0; i < m_table.getCellCount( 0 ); ++i )
 		{
 			ColWidthUnit unit;
