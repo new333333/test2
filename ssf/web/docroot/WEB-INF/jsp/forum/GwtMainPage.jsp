@@ -58,7 +58,6 @@
 			mode : "none",
 			editor_selector : "mceEditable_standard",
 			theme : "advanced", 
-			onpageload : "ss_addLanguageChanges",
 		    <c:choose><%--
 		    --%><c:when test="${ssUser.locale == 'zh_TW'}">language: 'tw',</c:when><%--
 		    --%><c:otherwise>language: '${ssUser.locale.language}',</c:otherwise><%--
@@ -88,30 +87,6 @@
 			theme_advanced_resizing_use_cookie : true
 		} );
 
-		tinyMCE.addI18n('${ss_user_lang}.ss_addimage_dlg',{
-			overQuota : "${ss_quotaMessage} ",
-			srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
-			addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
-			addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>",
-			imageName : "<ssf:nlt tag="editor.addimage.imageName"/>",
-			imageSelectBox : ss_imageSelections${element_id},
-			missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
-			});
-
-		tinyMCE.addI18n('${ss_user_lang}.pdw',{
-			description : "<ssf:nlt tag="editor.pdw.desc"/>"
-			});
-		tinyMCE.addI18n('${ss_user_lang}.ss_addimage',{
-			desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
-			});
-		tinyMCE.addI18n('${ss_user_lang}.ss_wikilink',{
-			desc : "<ssf:nlt tag="editor.wikilink.title"/>"
-			});
-		tinyMCE.addI18n('${ss_user_lang}.ss_youtube',{
-			desc : "<ssf:nlt tag="editor.youtube.title"/>",
-			youTubeUrl : "<ssf:nlt tag="__youTubeUrl"/>",
-			dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
-			});		
 
 		var ss_workareaIframeMinOffset = 12;
 		function ss_setWorkareaIframeSize() {
