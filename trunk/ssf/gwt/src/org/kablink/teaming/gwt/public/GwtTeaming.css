@@ -827,6 +827,28 @@ body, table td, select
 	padding: 4px 8px;
 }
 
+/* Styles used with the table widget on a landing page. */
+.tableWidget
+{
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.tableWidgetMainPanel
+{
+}
+
+.tableWidgetNoBorder
+{
+	border-width: 0px;
+}
+
+.tableWidgetShowBorder
+{
+	border-width: 1px;
+	border-style: solid;
+}
+
 /* Styles used with the actions control found on a widget in the landing page editor. */
 .lpeActionsControl
 {
