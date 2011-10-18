@@ -73,6 +73,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
 
+
 /**
  * This widget will display the Teaming content for a given
  * folder/workspace.
@@ -353,17 +354,16 @@ public class ContentControl extends Composite
 				// Regardless of the type, we'll need an ViewReady to
 				// clean up things after the view is loaded.  Create
 				// one now.
-				final String binderIdS = bi.getBinderId();
-				final Long   binderId  = Long.parseLong( binderIdS );
 				ViewReady viewReady = new ViewReady()
 				{
 					@Override
 					public void viewReady()
 					{
+						GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
 						GwtTeaming.fireEvent(
 							new ContextChangedEvent(
 								new OnSelectBinderInfo(
-									binderIdS,
+									bi.getBinderId(),
 									url,
 									bi.isBinderTrash(),
 									Instigator.CONTENT_AREA_CHANGED ) ) );
@@ -380,7 +380,7 @@ public class ContentControl extends Composite
 					switch ( ft )
 					{
 					case DISCUSSION:
-						GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( binderId, viewReady ) );
+						GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( bi, viewReady ) );
 						viHandled = true;
 						break;
 						
@@ -417,7 +417,7 @@ public class ContentControl extends Composite
 					switch ( wt )
 					{
 					case LANDING_PAGE:
-						GwtTeaming.fireEvent( new ShowLandingPageEvent( binderIdS, viewReady ) );
+						GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
 						viHandled = true;
 						break;
 						
@@ -509,11 +509,11 @@ public class ContentControl extends Composite
 	 * @param event
 	 */
 	@Override
-	public void onShowDiscussionFolder( ShowDiscussionFolderEvent event )
+	public void onShowDiscussionFolder( final ShowDiscussionFolderEvent event )
 	{
 		// Create a DiscussionFolderView widget for the selected binder.
 		DiscussionFolderView.createAsync(
-				event.getBinderId(),
+				event.getBinderInfo(),
 				event.getViewReady(),
 				new DiscussionFolderView.DiscussionFolderViewClient()
 		{
@@ -566,7 +566,7 @@ public class ContentControl extends Composite
 		};
 		
 		// Create a LandingPage widget for the selected binder.
-		LandingPage.createAsync( event.getBinderId(), event.getViewReady(), lpClient );
+		LandingPage.createAsync( event.getBinderInfo(), event.getViewReady(), lpClient );
 	}// end onShowLandingPage()
 	
 	/**

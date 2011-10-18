@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -45,13 +46,13 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
- * Class used for the content of the additional search options.  
+ * Class used for the content of the entry menus in the binder views.  
  * 
  * @author drfoster@novell.com
  */
 public class EntryMenuPanel extends ResizeComposite {
-	private VibeFlowPanel	m_fp;		// The panel holding the AccessoryPanel's contents.
-	private Long			m_binderId;	// The ID of the binder whose entry menus are being managed.
+	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose entry menus are being managed.
+	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -60,17 +61,16 @@ public class EntryMenuPanel extends ResizeComposite {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EntryMenuPanel(Long binderId) {
+	private EntryMenuPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super();
-		
+		super();		
 
 		// ...store the parameters....
-		m_binderId = binderId;
+		m_binderInfo = binderInfo;
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-entryMenuPanel");
+		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
 		initWidget(m_fp);
 		constructEntryMenuPanelAsync();
 	}
@@ -93,7 +93,7 @@ public class EntryMenuPanel extends ResizeComposite {
 	 */
 	private void constructEntryMenuPanelNow() {
 //!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("EntryMenuPanel.constructEntryMenuPanel( " + m_binderId + " ):  ...this needs to be implemented..."));
+		m_fp.add(new InlineLabel("EntryMenuPanel.constructEntryMenuPanel( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
 	}
 	
 	/**
@@ -109,15 +109,15 @@ public class EntryMenuPanel extends ResizeComposite {
 	 * Loads the EntryMenuPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
-	 * @param binderId
+	 * @param binderInfo
 	 * @param empClient
 	 */
-	public static void createAsync(final Long binderId, final EntryMenuPanelClient empClient) {
+	public static void createAsync(final BinderInfo binderInfo, final EntryMenuPanelClient empClient) {
 		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				EntryMenuPanel emp = new EntryMenuPanel(binderId);
+				EntryMenuPanel emp = new EntryMenuPanel(binderInfo);
 				empClient.onSuccess(emp);
 			}
 			

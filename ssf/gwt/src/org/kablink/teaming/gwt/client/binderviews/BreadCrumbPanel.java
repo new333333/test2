@@ -46,12 +46,13 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
- * Class used for the content of the filters in the binder views.  
+ * Class used for the content of the bread crumb tree in the binder
+ * views.  
  * 
  * @author drfoster@novell.com
  */
-public class FilterPanel extends ResizeComposite {
-	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose filters are being managed.
+public class BreadCrumbPanel extends ResizeComposite {
+	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose bread crumb tree is being managed.
 	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
 	
 	/*
@@ -61,7 +62,7 @@ public class FilterPanel extends ResizeComposite {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FilterPanel(BinderInfo binderInfo) {
+	private BreadCrumbPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
 		super();
 		
@@ -70,61 +71,62 @@ public class FilterPanel extends ResizeComposite {
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-binderViewTools vibe-filterPanel");
+		m_fp.addStyleName("vibe-binderViewTools vibe-breadCrumbPanel");
 		initWidget(m_fp);
-		constructFilterPanelAsync();
+		constructBreadCrumbPanelAsync();
 	}
 
 	/*
-	 * Asynchronously construct's the contents of the filter panel
+	 * Asynchronously construct's the contents of the bread crumb
+	 * panel.
 	 */
-	private void constructFilterPanelAsync() {
-		ScheduledCommand constructFilterPanel = new ScheduledCommand() {
+	private void constructBreadCrumbPanelAsync() {
+		ScheduledCommand constructBreadCrumbPanel = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				constructFilterPanelNow();
+				constructBreadCrumbPanelNow();
 			}
 		};
-		Scheduler.get().scheduleDeferred(constructFilterPanel);
+		Scheduler.get().scheduleDeferred(constructBreadCrumbPanel);
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the filter panel
+	 * Synchronously construct's the contents of the bread crumb panel.
 	 */
-	private void constructFilterPanelNow() {
+	private void constructBreadCrumbPanelNow() {
 //!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("FilterPanel.constructFilterPanel( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
+		m_fp.add(new InlineLabel("BreadCrumbPanel.constructBreadCrumbPanel( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
 	}
 	
 	/**
-	 * Callback interface to interact with the FilterPanel
+	 * Callback interface to interact with the BreadCrumbPanel
 	 * asynchronously after it loads. 
 	 */
-	public interface FilterPanelClient {
-		void onSuccess(FilterPanel fp);
+	public interface BreadCrumbPanelClient {
+		void onSuccess(BreadCrumbPanel bcp);
 		void onUnavailable();
 	}
 
 	/**
-	 * Loads the FilterPanel split point and returns an instance
+	 * Loads the BreadCrumbPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param binderInfo
-	 * @param fpClient
+	 * @param bcpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final FilterPanelClient fpClient) {
-		GWT.runAsync(FilterPanel.class, new RunAsyncCallback()
+	public static void createAsync(final BinderInfo binderInfo, final BreadCrumbPanelClient bcpClient) {
+		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FilterPanel fp = new FilterPanel(binderInfo);
-				fpClient.onSuccess(fp);
+				BreadCrumbPanel bcp = new BreadCrumbPanel(binderInfo);
+				bcpClient.onSuccess(bcp);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FilterPanel());
-				fpClient.onUnavailable();
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_BreadCrumbPanel());
+				bcpClient.onUnavailable();
 			}
 		});
 	}

@@ -385,6 +385,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ActivityStreamCtrl();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
+	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_EditBrandingDlg();
@@ -393,6 +394,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_FilterPanel();
 	String codeSplitFailure_FindCtrl();
 	String codeSplitFailure_FolderOptionsDlg();
+	String codeSplitFailure_FooterPanel();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LoginDlg();

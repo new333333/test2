@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.event;
 
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -48,7 +49,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class ShowDiscussionFolderEvent extends VibeEventBase<ShowDiscussionFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private Long m_binderId;
+	private BinderInfo m_binderInfo;
 	private ViewReady m_viewReady;
 
 	/**
@@ -61,13 +62,13 @@ public class ShowDiscussionFolderEvent extends VibeEventBase<ShowDiscussionFolde
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderId
+	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowDiscussionFolderEvent(Long binderId, ViewReady viewReady) {
+	public ShowDiscussionFolderEvent(BinderInfo binderInfo, ViewReady viewReady) {
 		super();
-		m_viewReady = viewReady;
-		m_binderId  = binderId;
+		m_viewReady  = viewReady;
+		m_binderInfo = binderInfo;
 	}
 	
 	/**
@@ -75,8 +76,8 @@ public class ShowDiscussionFolderEvent extends VibeEventBase<ShowDiscussionFolde
 	 * 
 	 * @return
 	 */
-	public Long      getBinderId()  {return m_binderId; }	
-	public ViewReady getViewReady() {return m_viewReady;}
+	public BinderInfo getBinderInfo() {return m_binderInfo;}	
+	public ViewReady  getViewReady()  {return m_viewReady; }
 	
 	/**
 	 * Dispatches this event when one is triggered.

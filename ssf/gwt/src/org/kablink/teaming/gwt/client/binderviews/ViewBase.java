@@ -50,6 +50,11 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class ViewBase extends ResizeComposite {
 	private ViewReady m_viewReady;	// Stores a ViewReady created for the classes that extends it.
 
+	// The following are used when setting the view's size to account
+	// for padding, ...
+	private int m_contentHeightAdjust	= GwtConstants.CONTENT_HEIGHT_ADJUST;
+	private int m_contentWidthAdjust	= GwtConstants.CONTENT_WIDTH_ADJUST;
+
 	/**
 	 * Constructor method.
 	 * 
@@ -63,13 +68,21 @@ public abstract class ViewBase extends ResizeComposite {
 	}
 
 	/**
-	 * Called by classes that extend this base class so that it can
-	 * inform the world that it's view is ready to go.
+	 * Get'er methods.
+	 * 
+	 * @return
 	 */
-	final public void viewReady() {
-		if ( m_viewReady != null )
-			m_viewReady.viewReady();
-	}
+	public int getContentHeightAdjust() {return m_contentHeightAdjust;}
+	public int getContentWidthAdjust()  {return m_contentWidthAdjust; }
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param contentHeightAdjust
+	 * @param contentWidthAdjust
+	 */
+	public void setContentHeightAdjust(int contentHeightAdjust) {m_contentHeightAdjust = contentHeightAdjust;}
+	public void setContentWidthAdjust( int contentWidthAdjust)  {m_contentWidthAdjust = contentWidthAdjust;  }
 
 	/**
 	 * Intercepts the initWidget call to the composite so that a
@@ -100,6 +113,16 @@ public abstract class ViewBase extends ResizeComposite {
 	 */
 	public void setViewSize() {
 		MainContentLayoutPanel clp = GwtTeaming.getMainPage().getMainContentLayoutPanel();
-		setPixelSize((clp.getOffsetWidth() + GwtConstants.CONTENT_WIDTH_ADJUST), (clp.getOffsetHeight() + GwtConstants.CONTENT_HEIGHT_ADJUST));
+		setPixelSize((clp.getOffsetWidth() + m_contentWidthAdjust), (clp.getOffsetHeight() + m_contentHeightAdjust));
+	}
+	
+	/**
+	 * Called by classes that extend this base class so that it can
+	 * inform the world that it's view is ready to go.
+	 */
+	final public void viewReady() {
+		if (null != m_viewReady) {
+			m_viewReady.viewReady();
+		}
 	}
 }
