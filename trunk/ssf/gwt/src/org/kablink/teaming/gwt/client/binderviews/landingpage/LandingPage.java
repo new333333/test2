@@ -70,11 +70,33 @@ public class LandingPage extends ViewBase
 		super( viewReady );
 		
 		Scheduler.ScheduledCommand cmd;
+
+		init();
 		
-		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName( "landingPageMainPanel" );
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			/**
+			 * 
+			 */
+			public void execute()
+			{
+				// Initialize this landing page for the given binder.
+				buildLandingPage( binderId );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * 
+	 */
+	public LandingPage( final ConfigData configData )
+	{
+		super( null );
 		
-		initWidget( m_mainPanel );
+		Scheduler.ScheduledCommand cmd;
+		
+		init();
 
 		cmd = new Scheduler.ScheduledCommand()
 		{
@@ -84,7 +106,7 @@ public class LandingPage extends ViewBase
 			public void execute()
 			{
 				// Initialize this landing page for the given binder.
-				initialize( binderId );
+				buildLandingPage( configData );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -107,9 +129,9 @@ public class LandingPage extends ViewBase
 	}
 
 	/**
-	 * Construct this landing page given the configuration data found in m_configData.
+	 * Build this landing page for the given ConfigData.
 	 */
-	private void constructLandingPage()
+	public void buildLandingPage( ConfigData configData )
 	{
 		int i;;
 		int numItems;
@@ -118,11 +140,22 @@ public class LandingPage extends ViewBase
 		
 		m_mainPanel.clear();
 		
+		m_configData = configData;
+		m_configData.parse();
+		
 		if ( m_configData == null )
+		{
+			// Tell the base class that we're done constructing the landing
+			// page view.
+			super.viewReady();
 			return;
+		}
 
-		// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
-		GwtTeaming.getMainPage().handleLandingPageOptions( m_binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
+		if ( m_binderId != null )
+		{
+			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
+			GwtTeaming.getMainPage().handleLandingPageOptions( m_binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
+		}
 		
 		// Is a background color specified?
 		bgColor = m_configData.getBackgroundColor();
@@ -184,6 +217,19 @@ public class LandingPage extends ViewBase
 	}
 	
 	/**
+	 * Build the landing page with data from the given binder.
+	 */
+	public void buildLandingPage( String binderId )
+	{
+		m_configData = null;
+		m_binderId = binderId;
+
+		// Read the configuration data from the server.
+		readConfigurationData();
+	}
+	
+	
+	/**
 	 * Loads the LandingPage split point and returns an instance of it
 	 * via the callback.
 	 * 
@@ -211,18 +257,45 @@ public class LandingPage extends ViewBase
 		} );
 	}
 	
-	/**
-	 * Initialize this landing page with data from the given binder.
-	 */
-	public void initialize( String binderId )
-	{
-		m_configData = null;
-		m_binderId = binderId;
 
-		// Read the configuration data from the server.
-		readConfigurationData();
+	/**
+	 * Loads the LandingPage split point and returns an instance of it
+	 * via the callback.
+	 * 
+	 * @param landingPageClient
+	 */
+	public static void createAsync( final ConfigData configData, final LandingPageClient landingPageClient )
+	{
+		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				LandingPage lp;
+				
+				lp = new LandingPage( configData );
+				landingPageClient.onSuccess( lp );
+			}
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPage() );
+				landingPageClient.onUnavailable();
+			}
+		} );
 	}
 	
+	/**
+	 * 
+	 */
+	private void init()
+	{
+		m_mainPanel = new VibeFlowPanel();
+		m_mainPanel.addStyleName( "landingPageMainPanel" );
+		
+		initWidget( m_mainPanel );
+	}
 	
 	/**
 	 * Issue an ajax call to read the configuration data for this landing page.
@@ -256,9 +329,9 @@ public class LandingPage extends ViewBase
 			public void onSuccess( VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
+				final ConfigData configData;
 				
-				m_configData = (ConfigData) response.getResponseData();
-				m_configData.parse();
+				configData = (ConfigData) response.getResponseData();
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
@@ -268,7 +341,7 @@ public class LandingPage extends ViewBase
 					public void execute()
 					{
 						// Add the landing page elements to the landing page.
-						constructLandingPage();
+						buildLandingPage( configData );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
