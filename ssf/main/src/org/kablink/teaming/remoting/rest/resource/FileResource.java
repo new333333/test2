@@ -32,30 +32,116 @@
  */
 package org.kablink.teaming.remoting.rest.resource;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.remoting.RemotingException;
+import org.kablink.teaming.remoting.rest.util.Constant;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
+import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 
-@Path("/file/{id}")
+@Path("/file")
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FileResource extends AbstractResource {
+
+	@POST
+	@Path("/name/{filename}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public FileProperties writeFileByName(@PathParam("filename") String filename,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId,
+			@QueryParam("data_item_name") String dataItemName,
+			@QueryParam("mod_date") String modDateISO8601,
+            @Context HttpServletRequest request) 
+			throws RuntimeException, IOException {
+		InputStream is;
+        try {
+            ServletFileUpload sfu = new ServletFileUpload(new DiskFileItemFactory());
+            FileItemIterator fii = sfu.getItemIterator(request);
+            if (fii.hasNext()) {
+                FileItemStream item = fii.next();
+                is = item.openStream();
+            }
+            else
+            {
+                throw new RuntimeException("Missing form data");
+            }
+        } catch (FileUploadException e) {
+            throw new RuntimeException("Received bad multipart form data", e);
+        }
+		// write the file to vibe
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		try {
+    			Date modDate = null;
+    			if(Validator.isNotNull(modDateISO8601)) {
+    				//modDate = dateFromISO8601(modDateISO8601);
+    			}
+    			if (Validator.isNull(dataItemName) && entry.getParentFolder().isLibrary()) {
+    				// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
+    				// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
+    				FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
+    			}
+    			else {
+    				if (Validator.isNull(dataItemName)) 
+    					dataItemName="ss_attachFile1";
+    				getFolderModule().modifyEntry(null, entityId, dataItemName, filename, is, null);
+    			}
+    		}
+    		catch(WriteFilesException e) {
+    			throw new RemotingException(e);
+    		}
+    		catch(WriteEntryDataException e) {
+    			throw new RemotingException(e);
+    		}
+    		FileAttachment fa = entry.getFileAttachment(filename);
+    		//return filePropertiesFromFileAttachment(fa);
+    		return null;
+        }
+        else {
+        	return null;
+        }
+	}
+	
 
 	// Read file content
 	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getFileContent(@PathParam("id") String id) {
+	public Response readFile(@PathParam("id") String id) {
 		File f = new File("C:/junk/Sunset.jpg");
 		
 		if(!f.exists())
@@ -73,13 +159,7 @@ public class FileResource extends AbstractResource {
 		return null;
 	}
 	
-	// Update file content
-	@PUT
-	public Response putFile(@PathParam("id") String id) {
-		// How do I receive file from client?
-		return null;
-	}
-	
+
 	// There is no method for updating file properties (at least yet). 
 	// File properties are modified only indirectly when file content is modified.
 
