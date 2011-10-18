@@ -67,7 +67,8 @@ public abstract class ViewBase extends ResizeComposite {
 	 * inform the world that it's view is ready to go.
 	 */
 	final public void viewReady() {
-		m_viewReady.viewReady();
+		if ( m_viewReady != null )
+			m_viewReady.viewReady();
 	}
 
 	/**
