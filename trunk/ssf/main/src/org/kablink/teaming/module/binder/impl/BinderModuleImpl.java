@@ -2708,8 +2708,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				if (c >= 0x20 && c < 0x7F) {
 					// it's ok
-				} else
+				} else {
+					//The file name has non-single byte characters. See if there is an extension we can use
+					if (fileName.lastIndexOf(".") > 0 && fallbackName.indexOf(".") < 0) {
+						String ext = fileName.substring(fileName.lastIndexOf("."));
+						for (int j = 0; j < ext.length(); j++) {
+							int c2 = (int) ext.charAt(j);
+
+							if (c2 >= 0x20 && c2 < 0x7F) {
+								//ok so far
+							} else {
+								return fallbackName;
+							}
+						}
+						//The extension is ok, stick that on the end of the fallback name
+						return fallbackName + ext;
+					}
 					return fallbackName;
+				}
 			}
 
 			return fileName;
