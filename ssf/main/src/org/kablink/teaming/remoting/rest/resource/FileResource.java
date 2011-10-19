@@ -61,8 +61,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoFileByTheIdException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -79,7 +82,7 @@ import org.kablink.util.search.Constants;
 public class FileResource extends AbstractResource {
 
 	@POST
-	@Path("/name/{filename}")
+	@Path("/name/{filename}/content")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public FileProperties writeFileByName(@PathParam("filename") String filename,
 			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
@@ -130,33 +133,132 @@ public class FileResource extends AbstractResource {
     			throw new RemotingException(e);
     		}
     		FileAttachment fa = entry.getFileAttachment(filename);
-    		//return filePropertiesFromFileAttachment(fa);
-    		return null;
+    		return filePropertiesFromFileAttachment(fa);
         }
         else {
         	return null;
         }
 	}
 	
+	@POST
+	@Path("/id/{fileid}/content")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public FileProperties writeFileById(@PathParam("fileid") String fileId,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId,
+			@QueryParam("data_item_name") String dataItemName,
+			@QueryParam("mod_date") String modDateISO8601,
+            @Context HttpServletRequest request) 
+			throws RuntimeException, IOException {
+		InputStream is;
+        try {
+            ServletFileUpload sfu = new ServletFileUpload(new DiskFileItemFactory());
+            FileItemIterator fii = sfu.getItemIterator(request);
+            if (fii.hasNext()) {
+                FileItemStream item = fii.next();
+                is = item.openStream();
+            }
+            else
+            {
+                throw new RuntimeException("Missing form data");
+            }
+        } catch (FileUploadException e) {
+            throw new RuntimeException("Received bad multipart form data", e);
+        }
+		// write the file to vibe
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FileAttachment fa = getFileAttachment(entry, fileId);
+    		try {
+    			Date modDate = null;
+    			if(Validator.isNotNull(modDateISO8601)) {
+    				//modDate = dateFromISO8601(modDateISO8601);
+    			}
+    			if (Validator.isNull(dataItemName) && entry.getParentFolder().isLibrary()) {
+    				// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
+    				// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
+    				FolderUtils.modifyLibraryEntry(entry, fa.getFileItem().getName(), is, modDate, true);
+    			}
+    			else {
+    				if (Validator.isNull(dataItemName)) 
+    					dataItemName="ss_attachFile1";
+    				getFolderModule().modifyEntry(null, entityId, dataItemName, fa.getFileItem().getName(), is, null);
+    			}
+    		}
+    		catch(WriteFilesException e) {
+    			throw new RemotingException(e);
+    		}
+    		catch(WriteEntryDataException e) {
+    			throw new RemotingException(e);
+    		}
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        else {
+        	return null;
+        }
+	}
 
 	// Read file content
 	@GET
-	public Response readFile(@PathParam("id") String id) {
-		File f = new File("C:/junk/Sunset.jpg");
-		
-		if(!f.exists())
-			new WebApplicationException(Response.Status.NOT_FOUND);
-		
-		String mt = new MimetypesFileTypeMap().getContentType(f);
-		return Response.ok(f, mt).build();
+	@Path("/name/{filename}/content")
+	public Response readFileByName(@PathParam("filename") String filename,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId) {
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FileAttachment fa = entry.getFileAttachment(filename);
+    		String mt = new MimetypesFileTypeMap().getContentType(filename);
+    		return Response.ok(getFileModule().readFile(entry.getParentBinder(), entry, fa)).build();
+        }
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+	}
+	
+	// Read file content
+	@GET
+	@Path("/id/{fileid}/content")
+	public Response readFileById(@PathParam("fileid") String fileId,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId) {
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FileAttachment fa = getFileAttachment(entry, fileId);
+    		String mt = new MimetypesFileTypeMap().getContentType(fa.getFileItem().getName());
+    		return Response.ok(getFileModule().readFile(entry.getParentBinder(), entry, fa)).build();
+        }
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
 	
 	// Read file properties
 	@GET
-	@Path("properties")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public FileProperties getFileProperties(@PathParam("id") String id) {
-		return null;
+	@Path("/name/{filename}/properties")
+	public FileProperties readFilePropertiesByName(@PathParam("filename") String filename,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId) {
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FileAttachment fa = entry.getFileAttachment(filename);
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+	}
+	
+	// Read file properties
+	@GET
+	@Path("/id/{fileid}/properties")
+	public FileProperties readFilePropertiesById(@PathParam("fileid") String fileId,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId) {
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FileAttachment fa = getFileAttachment(entry, fileId);
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
 	
 
@@ -173,5 +275,18 @@ public class FileResource extends AbstractResource {
 	@Path("versions")
 	public List<FileVersionProperties> getFileVersions(@PathParam("id") String id) {
 		return null;
+	}
+	
+	private FileProperties filePropertiesFromFileAttachment(FileAttachment fa) {
+		FileProperties fp = new FileProperties();
+		fp.setFilename(fa.getFileItem().getName());
+		fp.setFile_length(fa.getFileItem().getLength());
+		return fp;
+	}
+	private FileAttachment getFileAttachment(DefinableEntity entity, String attachmentId) {
+		Attachment att = entity.getAttachment(attachmentId);
+		if(att == null || !(att instanceof FileAttachment))
+			throw new NoFileByTheIdException(attachmentId);
+		return (FileAttachment) att;
 	}
 }

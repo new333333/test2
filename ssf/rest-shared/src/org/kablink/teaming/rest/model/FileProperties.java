@@ -34,4 +34,20 @@ package org.kablink.teaming.rest.model;
 
 public class FileProperties {
 
+	private String filename;
+	private long file_length;
+	
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	public long getFile_length() {
+		return file_length;
+	}
+	public void setFile_length(long file_length) {
+		this.file_length = file_length;
+	}
+	
 }
