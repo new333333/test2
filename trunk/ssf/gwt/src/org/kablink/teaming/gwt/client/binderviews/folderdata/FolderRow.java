@@ -30,61 +30,61 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Class used to communicate information about a folder columns between
- * the client and server.
+ * Class used to communicate information about a row of data from a
+ * folder.
  * 
  * @author drfoster@novell.com
- *
  */
-public class FolderColumnInfo implements IsSerializable, VibeRpcResponseData {
-	private String m_columnName;
-	private String m_columnTitle;
+public class FolderRow implements IsSerializable {
+	private List<FolderColumn>			m_columns;	//
+	private Map<FolderColumn, String>	m_rowData;	//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public FolderColumnInfo() {
-		// Nothing to do.
+	public FolderRow() {
+		// Simply initialize the super class.
+		super();
 	}
 
 	/**
 	 * Constructor method.
 	 * 
-	 * @param columnName
-	 * @param columnTitle
+	 * @param columns
+	 * @param rowData
 	 */
-	public FolderColumnInfo(String columnName, String columnTitle) {
+	public FolderRow(List<FolderColumn> columns, Map<FolderColumn, String> rowData) {
 		this();
 		
-		setColumnName( columnName );
-		setColumnTitle(columnTitle);
+		m_columns = columns;
+		m_rowData = rowData;
 	}
-	
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public String getColumnName()  {return m_columnName;}
-	public String getColumnTitle() {return m_columnTitle;}
+	public List<FolderColumn>        getColumns()                    {return m_columns;                                       }
+	public Map<FolderColumn, String> getRowData()                    {return m_rowData;                                       }
+	public String                    getColumnValue(FolderColumn fc) {return ((null == m_rowData) ? null : m_rowData.get(fc));}
 	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param columnName
-	 * @param columnTitle
+	 * @param fc
+	 * @param v
 	 */
-	public void setColumnName( String columnName)  {m_columnName  = columnName; }
-	public void setColumnTitle(String columnTitle) {m_columnTitle = columnTitle;}
+	public void setColumnValue(FolderColumn fc, String v) {m_rowData.put(fc, v);}
 }

@@ -532,6 +532,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_FOLDER_DISPLAY_DATA:
+		{
+			GetFolderDisplayDataCmd gfcCmd = ((GetFolderDisplayDataCmd) cmd);
+			FolderDisplayDataRpcResponseData responseData = GwtViewHelper.getFolderDisplayData(
+				this,
+				getRequest( ri ),
+				gfcCmd.getFolderId() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		{
 			GetGroupAssigneeMembershipCmd ggamCmd = ((GetGroupAssigneeMembershipCmd) cmd);

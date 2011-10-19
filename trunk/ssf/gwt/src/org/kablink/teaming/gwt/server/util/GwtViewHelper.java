@@ -51,11 +51,12 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
-import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -135,8 +136,8 @@ public class GwtViewHelper {
 	}
 
 	/**
-	 * Reads the current user's columns and sort information for a
-	 * folder and returns them it as a FolderColumnsRpcResponseData.
+	 * Reads the current user's columns for a folder and returns them
+	 * as a FolderColumnsRpcResponseData.
 	 * 
 	 * @param bs
 	 * @param request
@@ -240,9 +241,9 @@ public class GwtViewHelper {
 			}
 
 			// If we get here, we've got all the data we need to define
-			// the List<FolderColumnInf> for this folder.  Allocate the
+			// the List<FolderColumn> for this folder.  Allocate the
 			// list that we can fill from that data.
-			List<FolderColumnInfo> fciList = new ArrayList<FolderColumnInfo>();
+			List<FolderColumn> fcList = new ArrayList<FolderColumn>();
 			for (String columnName:  columnSortOrder) {
 				// Is this column to be shown?
 				String columnValue = ((String) columnNames.get(columnName));
@@ -258,11 +259,39 @@ public class GwtViewHelper {
 					columnTitle = NLT.get("folder.column." + columnName, columnName, true);
 				}
 
-				// Add a FolderColumnInfo for this to the list we're
+				// Add a FolderColumn for this to the list we're
 				// going to return.
-				fciList.add(new FolderColumnInfo(columnName, columnTitle));
+				fcList.add(new FolderColumn(columnName, columnTitle));
 			}
 
+			// Finally, use the data we obtained to create a
+			// FolderColumnsRpcResponseData and return that. 
+			return new FolderColumnsRpcResponseData(fcList);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
+	/**
+	 * Reads the current user's display data for a folder and returns
+	 * them as a FolderDisplayDataRpcResponseData.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 */
+	public static FolderDisplayDataRpcResponseData getFolderDisplayData(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+		try {
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userProperties       = bs.getProfileModule().getUserProperties(user.getId());
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+			
 			// How should the folder be sorted?
 			String	sortBy = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY));
 			boolean sortDescend;
@@ -275,13 +304,14 @@ public class GwtViewHelper {
 				sortDescend = true;
 			}
 
+			// How many entries per page should the folder display?
+			int pageSize;
+			try                  {pageSize = Integer.parseInt(MiscUtil.entriesPerPage(userProperties));}
+			catch (Exception ex) {pageSize = 25;                                                       }
+			
 			// Finally, use the data we obtained to create a
-			// FolderColumnsRpcResponseData and return that. 
-			FolderColumnsRpcResponseData reply = new FolderColumnsRpcResponseData(
-				fciList,
-				sortBy,
-				sortDescend);
-			return reply;
+			// FolderDisplayDataRpcResponseData and return that. 
+			return new FolderDisplayDataRpcResponseData(sortBy, sortDescend, pageSize);
 		}
 		
 		catch (Exception e) {
@@ -290,7 +320,7 @@ public class GwtViewHelper {
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
-
+	
 	/*
 	 * Returns a LinkedHashMap of the column names from a String[]
 	 * of them.

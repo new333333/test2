@@ -32,38 +32,42 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
- * This class holds the response data for the 'get folder columns' RPC
- * command.
+ * This class holds the response data for the 'get folder display data'
+ * RPC command.
  * 
  * @author drfoster@novell.com
  */
-public class FolderColumnsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private List<FolderColumn>	m_folderColumnsList;
+public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private boolean	m_folderSortDescend;	//
+	private int		m_folderPageSize;		//
+	private String	m_folderSortBy;			//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public FolderColumnsRpcResponseData() {
+	public FolderDisplayDataRpcResponseData() {
 		super();
 	}
 	
 	/**
 	 * Constructor method.
 	 *
-	 * @param folderColumnsList
+	 * @param folderSortBy
+	 * @param folderSortDescend
+	 * @param folderPageSize
 	 */
-	public FolderColumnsRpcResponseData(List<FolderColumn> folderColumnsList) {
+	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize) {
 		this();
-		m_folderColumnsList = folderColumnsList;
+		
+		m_folderSortBy      = folderSortBy;
+		m_folderSortDescend = folderSortDescend;
+		m_folderPageSize    = folderPageSize;
 	}
 	
 	/**
@@ -71,12 +75,18 @@ public class FolderColumnsRpcResponseData implements IsSerializable, VibeRpcResp
 	 * 
 	 * @return
 	 */
-	public List<FolderColumn> getFolderColumns() {return m_folderColumnsList;}
+	public boolean getFolderSortDescend() {return m_folderSortDescend;}
+	public int     getFolderPageSize()    {return m_folderPageSize;   }
+	public String  getFolderSortBy()      {return m_folderSortBy;     }
 
 	/**
 	 * Set'er methods.
 	 * 
+	 * @param folderSortDescend
 	 * @param folderColumnsList
+	 * @param folderSortBy
 	 */
-	public void setFolderColumns(List<FolderColumn> folderColumnsList) {m_folderColumnsList = folderColumnsList;}
+	public void setFolderSortDescend(boolean folderSortDescend) {m_folderSortDescend = folderSortDescend;}
+	public void setFolderPageSize(   int     folderPageSize)    {m_folderPageSize    = folderPageSize;   }
+	public void setFolderSortBy     (String  folderSortBy)      {m_folderSortBy      = folderSortBy;     }
 }

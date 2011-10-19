@@ -30,53 +30,61 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
- * This class holds the response data for the 'get folder columns' RPC
- * command.
+ * Class used to communicate information about a folder columns between
+ * the client and server.
  * 
  * @author drfoster@novell.com
+ *
  */
-public class FolderColumnsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private List<FolderColumn>	m_folderColumnsList;
+public class FolderColumn implements IsSerializable, VibeRpcResponseData {
+	private String m_columnName;
+	private String m_columnTitle;
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public FolderColumnsRpcResponseData() {
-		super();
+	public FolderColumn() {
+		// Nothing to do.
 	}
-	
+
 	/**
 	 * Constructor method.
-	 *
-	 * @param folderColumnsList
+	 * 
+	 * @param columnName
+	 * @param columnTitle
 	 */
-	public FolderColumnsRpcResponseData(List<FolderColumn> folderColumnsList) {
+	public FolderColumn(String columnName, String columnTitle) {
 		this();
-		m_folderColumnsList = folderColumnsList;
+		
+		setColumnName( columnName );
+		setColumnTitle(columnTitle);
 	}
+	
 	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public List<FolderColumn> getFolderColumns() {return m_folderColumnsList;}
-
+	public String getColumnName()  {return m_columnName;}
+	public String getColumnTitle() {return m_columnTitle;}
+	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param folderColumnsList
+	 * @param columnName
+	 * @param columnTitle
 	 */
-	public void setFolderColumns(List<FolderColumn> folderColumnsList) {m_folderColumnsList = folderColumnsList;}
+	public void setColumnName( String columnName)  {m_columnName  = columnName; }
+	public void setColumnTitle(String columnTitle) {m_columnTitle = columnTitle;}
 }
