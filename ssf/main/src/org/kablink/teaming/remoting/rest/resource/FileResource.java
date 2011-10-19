@@ -141,6 +141,50 @@ public class FileResource extends AbstractResource {
 	}
 	
 	@POST
+	@Path("/name/{filename}/content")
+	public FileProperties writeFileByName2(@PathParam("filename") String filename,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId,
+			@QueryParam("data_item_name") String dataItemName,
+			@QueryParam("mod_date") String modDateISO8601,
+            @Context HttpServletRequest request) 
+			throws RuntimeException, IOException {
+		InputStream is = request.getInputStream();
+		// write the file to vibe
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		try {
+    			Date modDate = null;
+    			if(Validator.isNotNull(modDateISO8601)) {
+    				//modDate = dateFromISO8601(modDateISO8601);
+    			}
+    			if (Validator.isNull(dataItemName) && entry.getParentFolder().isLibrary()) {
+    				// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
+    				// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
+    				FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
+    			}
+    			else {
+    				if (Validator.isNull(dataItemName)) 
+    					dataItemName="ss_attachFile1";
+    				getFolderModule().modifyEntry(null, entityId, dataItemName, filename, is, null);
+    			}
+    		}
+    		catch(WriteFilesException e) {
+    			throw new RemotingException(e);
+    		}
+    		catch(WriteEntryDataException e) {
+    			throw new RemotingException(e);
+    		}
+    		FileAttachment fa = entry.getFileAttachment(filename);
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        else {
+        	return null;
+        }
+	}
+
+	@POST
 	@Path("/id/{fileid}/content")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public FileProperties writeFileById(@PathParam("fileid") String fileId,
@@ -210,7 +254,7 @@ public class FileResource extends AbstractResource {
     		FolderEntry entry = getFolderModule().getEntry(null, entityId);
     		FileAttachment fa = entry.getFileAttachment(filename);
     		String mt = new MimetypesFileTypeMap().getContentType(filename);
-    		return Response.ok(getFileModule().readFile(entry.getParentBinder(), entry, fa)).build();
+    		return Response.ok(getFileModule().readFile(entry.getParentBinder(), entry, fa), mt).build();
         }
         throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}

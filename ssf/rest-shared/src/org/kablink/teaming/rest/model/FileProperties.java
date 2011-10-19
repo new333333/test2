@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.rest.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+//This annotation is necessary not only for XML but also for JSON representation.
+@XmlRootElement
 public class FileProperties {
 
 	private String filename;
