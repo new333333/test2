@@ -293,6 +293,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetFolderColumns();
 	String rpcFailure_GetFolderDisplayData();
+	String rpcFailure_GetFolderRows();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetListOfAttachments();
 	String rpcFailure_GetBinderInfo();
@@ -1065,6 +1066,9 @@ public interface GwtTeamingMessages extends Messages
 	String taskViewAssignedTasks();
 	String taskViewFromFolder();
 	
+	// Strings used by the discussion folder.
+	String discussionFolder_Empty();
+
 	// Strings used in the Landing Page Properties Dialog
 	String landingPagePropertiesDlgHeader();
 	String backgroundRepeatLabel();

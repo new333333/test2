@@ -534,11 +534,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_FOLDER_DISPLAY_DATA:
 		{
-			GetFolderDisplayDataCmd gfcCmd = ((GetFolderDisplayDataCmd) cmd);
+			GetFolderDisplayDataCmd gfddCmd = ((GetFolderDisplayDataCmd) cmd);
 			FolderDisplayDataRpcResponseData responseData = GwtViewHelper.getFolderDisplayData(
 				this,
 				getRequest( ri ),
-				gfcCmd.getFolderId() );
+				gfddCmd.getFolderId() );
+			return new VibeRpcResponse( responseData );
+		}
+		
+		case GET_FOLDER_ROWS:
+		{
+			GetFolderRowsCmd gfrCmd = ((GetFolderRowsCmd) cmd);
+			FolderRowsRpcResponseData responseData = GwtViewHelper.getFolderRows(
+				this,
+				getRequest( ri ),
+				gfrCmd.getFolderId(),
+				gfrCmd.getFolderColumns(),
+				gfrCmd.getStart(),
+				gfrCmd.getLength() );
 			return new VibeRpcResponse( responseData );
 		}
 		

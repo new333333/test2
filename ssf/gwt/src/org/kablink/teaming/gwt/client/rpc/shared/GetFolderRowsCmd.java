@@ -30,24 +30,70 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.view.client.ProvidesKey;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+
 
 /**
- * Common 'data table' base class for use by all Vibe folders that show
- * a simple list of entries.
+ * This class holds all of the information necessary to execute the
+ * 'Get Folder Rows' command.
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTable<T> extends DataGrid<T> {
+public class GetFolderRowsCmd extends VibeRpcCmd {
+	private int					m_length;			//
+	private int					m_start;			//
+	private List<FolderColumn>	m_folderColumns;	//
+	private Long				m_folderId;			//
+	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param pageSize
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public VibeDataTable(int pageSize, ProvidesKey<T> keyProvider) {
-		super(pageSize, keyProvider);
+	public GetFolderRowsCmd() {
+		super();
+	}
+	
+	/**
+	 * Constructor method
+	 * 
+	 * @param folderId
+	 * @param folderColumns
+	 * @param start
+	 * @param length
+	 */
+	public GetFolderRowsCmd(Long folderId, List<FolderColumn> folderColumns, int start, int length) {
+		this();
+		
+		m_folderId      = folderId;
+		m_folderColumns = folderColumns;
+		m_start         = start;
+		m_length        = length;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public int                getLength()        {return m_length;       }
+	public int                getStart()         {return m_start;        }
+	public List<FolderColumn> getFolderColumns() {return m_folderColumns;}
+	public Long               getFolderId()      {return m_folderId;     }
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_FOLDER_ROWS.ordinal();
 	}
 }

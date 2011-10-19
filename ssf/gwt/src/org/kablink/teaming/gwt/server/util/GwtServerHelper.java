@@ -3874,6 +3874,7 @@ public class GwtServerHelper {
 		case GET_FOLDER:
 		case GET_FOLDER_COLUMNS:
 		case GET_FOLDER_DISPLAY_DATA:
+		case GET_FOLDER_ROWS:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP:
 		case GET_GROUPS:

@@ -52,9 +52,11 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -319,6 +321,38 @@ public class GwtViewHelper {
 			// that.
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
+	}
+	
+	/**
+	 * Reads the row data from a folder and returns it as a
+	 * FolderRowsRpcResponseData.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param folderColumns
+	 * @param start
+	 * @param length
+	 * 
+	 * @return
+	 */
+	private static Long dummyEntryId = 1L;
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, Long folderId, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
+		// Generate a List<FolderRow> of the rows read.
+		List<FolderRow> folderRows = new ArrayList<FolderRow>();
+		
+//!		...this needs to be implemented...
+		for (int i = 0; i < length; i += 1) {
+			FolderRow fr = new FolderRow(dummyEntryId++, folderColumns);
+			for (FolderColumn fc:  folderColumns) {
+				fr.setColumnValue(fc, (folderId + ":" + start + ":" + fc.getColumnName() + ":" + fc.getColumnTitle()));
+			}
+			folderRows.add(fr);
+		}
+
+		// Finally, return the List<FolderRow> wrapped in a
+		// FolderRowsRpcResponseData.
+		return new FolderRowsRpcResponseData(folderRows);
 	}
 	
 	/*

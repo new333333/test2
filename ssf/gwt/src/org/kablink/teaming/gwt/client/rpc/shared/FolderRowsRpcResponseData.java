@@ -30,24 +30,55 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.view.client.ProvidesKey;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
- * Common 'data table' base class for use by all Vibe folders that show
- * a simple list of entries.
+ * This class holds the response data for the 'get folder rows' RPC
+ * command.
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTable<T> extends DataGrid<T> {
+public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private List<FolderRow> m_folderRows;	//
+	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param pageSize
+	 * No parameters as per GWT serialization requirements.
 	 */
-	public VibeDataTable(int pageSize, ProvidesKey<T> keyProvider) {
-		super(pageSize, keyProvider);
+	public FolderRowsRpcResponseData() {
+		super();
 	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param folderRows
+	 */
+	public FolderRowsRpcResponseData(List<FolderRow> folderRows) {
+		this();
+		
+		m_folderRows = folderRows;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public List<FolderRow >getFolderRows() {return m_folderRows;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param folderRows
+	 */
+	public void setFolderRows(List<FolderRow> folderRows) {m_folderRows = folderRows;}
 }
