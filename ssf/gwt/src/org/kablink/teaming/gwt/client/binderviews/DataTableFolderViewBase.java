@@ -41,16 +41,18 @@ import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.FilterPanel;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
@@ -65,14 +67,15 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public abstract class DataTableFolderViewBase extends ViewBase {
-	private final BinderInfo		m_folderInfo;							// A BinderInfo object that describes the folder being viewed.
-	private boolean					m_folderSortDescend;					// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
-	private List<FolderColumnInfo>	m_folderColumnsList;					// The list of columns to be displayed.
-	private List<ToolPanelBase>		m_toolPanels;							//
-	private String					m_folderSortBy;							// Which column the view is sorted on.
-	private VibeFlowPanel			m_mainPanel;							// The main panel holding the content of the view.
-	private VibeFlowPanel			m_flowPanel;							// The flow panel used to hold the view specific content of the view.
-	private VibeVerticalPanel		m_verticalPanel;						// The vertical panel that holds all components of the view, both common and view specific.
+	private final BinderInfo	m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
+	private boolean				m_folderSortDescend;	// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
+	private int					m_folderPageSize;		//
+	private List<FolderColumn>	m_folderColumnsList;	// The list of columns to be displayed.
+	private List<ToolPanelBase>	m_toolPanels;			//
+	private String				m_folderSortBy;			// Which column the view is sorted on.
+	private VibeFlowPanel		m_mainPanel;			// The main panel holding the content of the view.
+	private VibeFlowPanel		m_flowPanel;			// The flow panel used to hold the view specific content of the view.
+	private VibeVerticalPanel	m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
 
 	private final int BREADCRUMB_PANEL_INDEX	= 0;
 	private final int ACCESSORY_PANEL_INDEX		= 1;
@@ -109,12 +112,13 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * 
 	 * @return
 	 */
-	final public BinderInfo             getFolderInfo()        {return m_folderInfo;                    }
-	final public boolean				getFolderSortDescend() {return m_folderSortDescend;             }
-	final public List<FolderColumnInfo>	getFolderColumns()     {return m_folderColumnsList;             }
-	final public Long                   getFolderId()          {return m_folderInfo.getBinderIdAsLong();}
-	final public String					getFolderSortBy()      {return m_folderSortBy;                  }
-	final public VibeFlowPanel          getFlowPanel()         {return m_flowPanel;                     }
+	final public BinderInfo         getFolderInfo()        {return m_folderInfo;                    }
+	final public boolean			getFolderSortDescend() {return m_folderSortDescend;             }
+	final public int                getFolderPageSize()    {return m_folderPageSize;                }
+	final public List<FolderColumn>	getFolderColumns()     {return m_folderColumnsList;             }
+	final public Long               getFolderId()          {return m_folderInfo.getBinderIdAsLong();}
+	final public String				getFolderSortBy()      {return m_folderSortBy;                  }
+	final public VibeFlowPanel      getFlowPanel()         {return m_flowPanel;                     }
 	
 	/*
 	 * Creates the content panels, ... common to all data table folder
@@ -159,8 +163,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * @param folderSortBy
 	 * @param folderSortDescend
 	 */
-	public abstract void constructView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend);
-	public abstract void resetView(    List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend);
+	public abstract void constructView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
+	public abstract void resetView(    List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
 
 	/*
 	 * Asynchronously tells the implementing class to construct itself.
@@ -172,7 +176,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 				constructView(
 					m_folderColumnsList,
 					m_folderSortBy,
-					m_folderSortDescend);
+					m_folderSortDescend,
+					m_folderPageSize);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doConstructView);
@@ -398,12 +403,55 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Store the folder information and tell the
-				// implementing class to construct itself.
+				// Store the folder columns and continue loading.
 				FolderColumnsRpcResponseData responseData = ((FolderColumnsRpcResponseData) response.getResponseData());
 				m_folderColumnsList = responseData.getFolderColumns();
+				loadPart7Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the display data information for the folder.
+	 */
+	private void loadPart7Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart7Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+
+	/*
+	 * Synchronously loads the next part of the view.
+	 * 
+	 * Loads the display data information for the folder.
+	 */
+	private void loadPart7Now() {
+		final Long folderId = m_folderInfo.getBinderIdAsLong();
+		GwtClientHelper.executeCommand(
+				new GetFolderDisplayDataCmd(folderId),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetFolderDisplayData(),
+					folderId);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Store the folder display data and tell the
+				// implementing class to construct itself.
+				FolderDisplayDataRpcResponseData responseData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
 				m_folderSortBy      = responseData.getFolderSortBy();
 				m_folderSortDescend = responseData.getFolderSortDescend();
+				m_folderPageSize    = responseData.getFolderPageSize();
 				constructViewAsync();
 			}
 		});

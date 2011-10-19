@@ -32,38 +32,33 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for the 'get folder columns' RPC
- * command.
+ * This class holds all of the information necessary to execute the
+ * 'Get Folder Display Data' command.
  * 
  * @author drfoster@novell.com
  */
-public class FolderColumnsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private List<FolderColumn>	m_folderColumnsList;
+public class GetFolderDisplayDataCmd extends VibeRpcCmd {
+	private Long	m_folderId;	//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public FolderColumnsRpcResponseData() {
+	public GetFolderDisplayDataCmd() {
 		super();
 	}
 	
 	/**
-	 * Constructor method.
-	 *
-	 * @param folderColumnsList
+	 * Constructor method
+	 * 
+	 * @param folderId
 	 */
-	public FolderColumnsRpcResponseData(List<FolderColumn> folderColumnsList) {
+	public GetFolderDisplayDataCmd(Long folderId) {
 		this();
-		m_folderColumnsList = folderColumnsList;
+		m_folderId = folderId;
 	}
 	
 	/**
@@ -71,12 +66,17 @@ public class FolderColumnsRpcResponseData implements IsSerializable, VibeRpcResp
 	 * 
 	 * @return
 	 */
-	public List<FolderColumn> getFolderColumns() {return m_folderColumnsList;}
-
+	public Long getFolderId() {return m_folderId;}
+	
 	/**
-	 * Set'er methods.
+	 * Returns the command's enumeration value.
 	 * 
-	 * @param folderColumnsList
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	public void setFolderColumns(List<FolderColumn> folderColumnsList) {m_folderColumnsList = folderColumnsList;}
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_FOLDER_DISPLAY_DATA.ordinal();
+	}
 }

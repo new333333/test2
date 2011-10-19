@@ -35,9 +35,9 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -81,14 +81,15 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * @param folderColumnsList
 	 * @param folderSortBy
 	 * @param folderSortDescend
+	 * @param folderPageSize
 	 */
 	@Override
-	public void constructView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
+	public void constructView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
 		// Setup the appropriate styles for a discussion folder...
 		getFlowPanel().addStyleName("vibe-discussionFolderFlowPanel");
 
 		// ...populate the view's content...
-		populateView(folderColumnsList, folderSortBy, folderSortDescend);
+		populateView(folderColumnsList, folderSortBy, folderSortDescend, folderPageSize);
 		
 		// ...and tell the base class that we're done with the
 		// ...construction.
@@ -128,25 +129,27 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * @param folderColumnsList
 	 * @param folderSortBy
 	 * @param folderSortDescend
+	 * @param folderPageSize
 	 */
 	@Override
-	public void resetView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
+	public void resetView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
 		// Clear any existing content from the view and repopulate it.
 		resetContent();
-		populateView(folderColumnsList, folderSortBy, folderSortDescend);
+		populateView(folderColumnsList, folderSortBy, folderSortDescend, folderPageSize);
 	}
 	
 	/*
 	 * Called from the base class to reset the content of this
 	 * discussion folder view.
 	 */
-	private void populateView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
+	private void populateView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
 //!		...this needs to be implemented...
 		VibeVerticalPanel vp = new VibeVerticalPanel();
-		vp.add(new InlineLabel("Sort by:  " + folderSortBy));
+		vp.add(new InlineLabel("Sort by:  "         + folderSortBy));
 		vp.add(new InlineLabel("Sort descending:  " + folderSortDescend));
+		vp.add(new InlineLabel("Page size:  "       + folderPageSize));
 		vp.add(new HTML("<br/>"));
-		for (FolderColumnInfo fc:  folderColumnsList) {
+		for (FolderColumn fc:  folderColumnsList) {
 			vp.add(new InlineLabel(fc.getColumnName() + "='" + fc.getColumnTitle() + "'"));
 		}
 		getFlowPanel().add(vp);
