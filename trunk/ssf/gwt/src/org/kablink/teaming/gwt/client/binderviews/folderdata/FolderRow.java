@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -45,8 +46,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRow implements IsSerializable {
-	private List<FolderColumn>			m_columns;	//
-	private Map<FolderColumn, String>	m_rowData;	//
+	private List<FolderColumn>	m_columns;	//
+	private Long 				m_entryId;	//
+	private Map<String, String>	m_rowData;	//
 	
 	/**
 	 * Constructor method.
@@ -56,19 +58,20 @@ public class FolderRow implements IsSerializable {
 	public FolderRow() {
 		// Simply initialize the super class.
 		super();
+		m_rowData = new HashMap<String, String>();
 	}
 
 	/**
 	 * Constructor method.
 	 * 
+	 * @param entryId
 	 * @param columns
-	 * @param rowData
 	 */
-	public FolderRow(List<FolderColumn> columns, Map<FolderColumn, String> rowData) {
+	public FolderRow(Long entryId, List<FolderColumn> columns) {
 		this();
-		
+
+		m_entryId = entryId;
 		m_columns = columns;
-		m_rowData = rowData;
 	}
 
 	/**
@@ -76,15 +79,36 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public List<FolderColumn>        getColumns()                    {return m_columns;                                       }
-	public Map<FolderColumn, String> getRowData()                    {return m_rowData;                                       }
-	public String                    getColumnValue(FolderColumn fc) {return ((null == m_rowData) ? null : m_rowData.get(fc));}
+	public List<FolderColumn>  getColumns() {return m_columns;}
+	public Long                getEntryId() {return m_entryId;}
 	
 	/**
-	 * Set'er methods.
+	 * Stores the value for a specific column.
 	 * 
 	 * @param fc
 	 * @param v
 	 */
-	public void setColumnValue(FolderColumn fc, String v) {m_rowData.put(fc, v);}
+	public void setColumnValue(FolderColumn fc, String v) {
+		m_rowData.put(getValueKey(fc), v);
+	}
+	
+	/**
+	 * Returns the value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public String getColumnValue(FolderColumn fc) {
+		String reply = m_rowData.get(getValueKey(fc));
+		return ((null == reply) ? "" : reply); 
+	}
+
+	/*
+	 * Returns the key that we should use into the data map to
+	 * determine a column's value.
+	 */
+	private String getValueKey(FolderColumn fc) {
+		return fc.getColumnName().toLowerCase();
+	}
 }

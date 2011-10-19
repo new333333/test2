@@ -42,24 +42,36 @@ import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.FilterPanel;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.Range;
+import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.view.client.ProvidesKey;
 
 /**
  * Base object of 'data table' based folder views.
@@ -84,7 +96,114 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	@SuppressWarnings("unused")
 	private final int DATA_TABLE_PANEL_INDEX	= 4;
 	private final int FOOTER_PANEL_INDEX		= 5;
+
+	/**
+	 * Inner class used to provide asynchronous column sort handling
+	 * for FolderRow's.
+	 */
+	public class FolderRowAsyncHandler extends AsyncHandler {
+		/**
+		 * Constructor method.
+		 * 
+		 * @param hasData
+		 */
+		public FolderRowAsyncHandler(HasData<?> hasData) {
+			// Simply initialize the super class.
+			super(hasData);
+		}
+	}
+
+	/**
+	 * Inner class to provide a key to a FolderRow.
+	 */
+	public class FolderRowKeyProvider implements ProvidesKey<FolderRow> {
+		/**
+		 * Returns the key used to identity a FolderRow.
+		 * 
+		 * @param fr
+		 * 
+		 * Implements ProvidesKey.getKey()
+		 */
+		@Override
+		public Object getKey(FolderRow fr) {
+			// The key to a row is its entryId.
+			return fr.getEntryId();
+		}
+	}
+
+	/**
+	 * Inner class used to provide simple pager for FolderRow's.
+	 */
+	private final static SimplePager.Resources SIMPLE_PAGER_RESOURCES = GWT.create(SimplePager.Resources.class);
+	public class FolderRowPager extends SimplePager {
+		public FolderRowPager() {
+			// Simply initialize the super class.
+			super(TextLocation.CENTER, SIMPLE_PAGER_RESOURCES, false, 0, true);	// No fast pager, show last page button.
+		}
+	}
 	
+	/**
+	 * Inner class used to provide list of FolderRow's.
+	 */
+	public class FolderRowProvider extends AsyncDataProvider<FolderRow> {
+		private VibeDataTable<FolderRow> m_vdt;
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param keyProvider
+		 */
+		public FolderRowProvider(VibeDataTable<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
+			// Initialize the super class...
+			super(keyProvider);
+			
+			// ...and store the parameters.
+			m_vdt = vdt;
+		}
+
+		/**
+		 * Overrides AsyncDataProvider.onRowChanged()
+		 */
+		@Override
+		protected void onRangeChanged(HasData<FolderRow> display) {
+			final Long folderId = m_folderInfo.getBinderIdAsLong();
+			final Range range = display.getVisibleRange();
+			final int start = range.getStart();
+			GwtClientHelper.executeCommand(
+					new GetFolderRowsCmd(folderId, m_folderColumnsList, start, range.getLength()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetFolderRows(),
+						folderId);
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
+					m_vdt.setRowData(start, responseData.getFolderRows());
+				}
+			});
+		}
+	}
+
+	/**
+	 * Inner class used to provide row selection for FolderRow's.
+	 */
+	public class FolderRowSelectionModel extends MultiSelectionModel<FolderRow> {
+		/**
+		 * Constructor method.
+		 * 
+		 * @param keyProvider
+		 */
+		public FolderRowSelectionModel(FolderRowKeyProvider keyProvider) {
+			// Simply initialize the super class.
+			super(keyProvider);
+		}
+	}
+
 	/**
 	 * Constructor method.
 	 * 
