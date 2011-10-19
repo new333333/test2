@@ -42,7 +42,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
@@ -50,9 +49,8 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * 
  * @author drfoster@novell.com
  */
-public class FilterPanel extends ResizeComposite {
-	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose filters are being managed.
-	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
+public class FilterPanel extends ToolPanelBase {
+	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -63,10 +61,7 @@ public class FilterPanel extends ResizeComposite {
 	 */
 	private FilterPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super();
-		
-		// ...store the parameters....
-		m_binderInfo = binderInfo;
+		super(binderInfo);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -97,35 +92,37 @@ public class FilterPanel extends ResizeComposite {
 	}
 	
 	/**
-	 * Callback interface to interact with the FilterPanel
-	 * asynchronously after it loads. 
-	 */
-	public interface FilterPanelClient {
-		void onSuccess(FilterPanel fp);
-		void onUnavailable();
-	}
-
-	/**
 	 * Loads the FilterPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param binderInfo
-	 * @param fpClient
+	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final FilterPanelClient fpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
 		GWT.runAsync(FilterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
 				FilterPanel fp = new FilterPanel(binderInfo);
-				fpClient.onSuccess(fp);
+				tpClient.onSuccess(fp);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FilterPanel());
-				fpClient.onUnavailable();
+				tpClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Called from the binder view to allow the panel to do any
+	 * work required to reset itself.
+	 * 
+	 * Implements ToolPanelBase.resetPanel()
+	 */
+	@Override
+	public void resetPanel() {
+//!		...this needs to be implemented... 
 	}
 }

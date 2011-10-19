@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.FolderColumnInfo;
@@ -88,8 +87,8 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 		// Setup the appropriate styles for a discussion folder...
 		getFlowPanel().addStyleName("vibe-discussionFolderFlowPanel");
 
-		// ...reset the view's content...
-		resetView(folderColumnsList, folderSortBy, folderSortDescend);
+		// ...populate the view's content...
+		populateView(folderColumnsList, folderSortBy, folderSortDescend);
 		
 		// ...and tell the base class that we're done with the
 		// ...construction.
@@ -114,7 +113,7 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_DiscussionFolderView());
+				Window.alert(m_messages.codeSplitFailure_DiscussionFolderView());
 				dfvClient.onUnavailable();
 			}
 		});
@@ -132,9 +131,16 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	public void resetView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
-		// Clear any existing content from the view.
+		// Clear any existing content from the view and repopulate it.
 		resetContent();
-		
+		populateView(folderColumnsList, folderSortBy, folderSortDescend);
+	}
+	
+	/*
+	 * Called from the base class to reset the content of this
+	 * discussion folder view.
+	 */
+	private void populateView(List<FolderColumnInfo> folderColumnsList, String folderSortBy, boolean folderSortDescend) {
 //!		...this needs to be implemented...
 		VibeVerticalPanel vp = new VibeVerticalPanel();
 		vp.add(new InlineLabel("Sort by:  " + folderSortBy));
