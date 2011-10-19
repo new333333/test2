@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.binderviews.accessories;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -42,7 +43,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
@@ -50,9 +50,8 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * 
  * @author drfoster@novell.com
  */
-public class AccessoriesPanel extends ResizeComposite {
-	private BinderInfo		m_binderInfo;	// A BinderInfo describing the binder whose accessories are being managed.
-	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
+public class AccessoriesPanel extends ToolPanelBase {
+	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -63,10 +62,7 @@ public class AccessoriesPanel extends ResizeComposite {
 	 */
 	private AccessoriesPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super();
-		
-		// ...store the parameters....
-		m_binderInfo = binderInfo;
+		super(binderInfo);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -97,35 +93,37 @@ public class AccessoriesPanel extends ResizeComposite {
 	}
 	
 	/**
-	 * Callback interface to interact with the AccessoriesPanel
-	 * asynchronously after it loads. 
-	 */
-	public interface AccessoriesPanelClient {
-		void onSuccess(AccessoriesPanel ap);
-		void onUnavailable();
-	}
-
-	/**
 	 * Loads the AccessoriesPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param binderInfo
-	 * @param apClient
+	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final AccessoriesPanelClient apClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
 		GWT.runAsync(AccessoriesPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
 				AccessoriesPanel ap = new AccessoriesPanel(binderInfo);
-				apClient.onSuccess(ap);
+				tpClient.onSuccess(ap);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_AccessoriesPanel());
-				apClient.onUnavailable();
+				tpClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Called from the binder view to allow the panel to do any
+	 * work required to reset itself.
+	 * 
+	 * Implements ToolPanelBase.resetPanel()
+	 */
+	@Override
+	public void resetPanel() {
+//!		...this needs to be implemented... 
 	}
 }

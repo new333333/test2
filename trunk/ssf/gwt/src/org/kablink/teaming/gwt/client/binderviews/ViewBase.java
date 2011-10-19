@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
 
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -41,14 +42,14 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Base class that binder views MUST extend to work in that they'll used to say when the
- * view is ready to be used.
+ * Base class that binder views MUST extend to work in that they'll
+ * used to say when the view is ready to be used.
  * 
  * @author drfoster@novell.com
- *
  */
 public abstract class ViewBase extends ResizeComposite {
-	private ViewReady m_viewReady;	// Stores a ViewReady created for the classes that extends it.
+	private   final        ViewReady			m_viewReady;							// Stores a ViewReady created for the classes that extends it.
+	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
 
 	// The following are used when setting the view's size to account
 	// for padding, ...

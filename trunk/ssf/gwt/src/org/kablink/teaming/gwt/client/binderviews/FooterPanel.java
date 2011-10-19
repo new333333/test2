@@ -42,7 +42,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
@@ -50,9 +49,8 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * 
  * @author drfoster@novell.com
  */
-public class FooterPanel extends ResizeComposite {
-	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose footer panel is being managed.
-	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
+public class FooterPanel extends ToolPanelBase {
+	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -63,10 +61,7 @@ public class FooterPanel extends ResizeComposite {
 	 */
 	private FooterPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super();
-		
-		// ...store the parameters....
-		m_binderInfo = binderInfo;
+		super(binderInfo);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -97,35 +92,37 @@ public class FooterPanel extends ResizeComposite {
 	}
 	
 	/**
-	 * Callback interface to interact with the FooterPanel
-	 * asynchronously after it loads. 
-	 */
-	public interface FooterPanelClient {
-		void onSuccess(FooterPanel fp);
-		void onUnavailable();
-	}
-
-	/**
 	 * Loads the FooterPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param binderInfo
-	 * @param fpClient
+	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final FooterPanelClient fpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
 		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
 				FooterPanel fp = new FooterPanel(binderInfo);
-				fpClient.onSuccess(fp);
+				tpClient.onSuccess(fp);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FooterPanel());
-				fpClient.onUnavailable();
+				tpClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Called from the binder view to allow the panel to do any
+	 * work required to reset itself.
+	 * 
+	 * Implements ToolPanelBase.resetPanel()
+	 */
+	@Override
+	public void resetPanel() {
+//!		...this needs to be implemented... 
 	}
 }

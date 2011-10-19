@@ -42,7 +42,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
@@ -51,9 +50,8 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * 
  * @author drfoster@novell.com
  */
-public class BreadCrumbPanel extends ResizeComposite {
-	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose bread crumb tree is being managed.
-	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
+public class BreadCrumbPanel extends ToolPanelBase {
+	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -64,10 +62,7 @@ public class BreadCrumbPanel extends ResizeComposite {
 	 */
 	private BreadCrumbPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super();
-		
-		// ...store the parameters....
-		m_binderInfo = binderInfo;
+		super(binderInfo);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -99,35 +94,37 @@ public class BreadCrumbPanel extends ResizeComposite {
 	}
 	
 	/**
-	 * Callback interface to interact with the BreadCrumbPanel
-	 * asynchronously after it loads. 
-	 */
-	public interface BreadCrumbPanelClient {
-		void onSuccess(BreadCrumbPanel bcp);
-		void onUnavailable();
-	}
-
-	/**
 	 * Loads the BreadCrumbPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param binderInfo
-	 * @param bcpClient
+	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final BreadCrumbPanelClient bcpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
 		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
 				BreadCrumbPanel bcp = new BreadCrumbPanel(binderInfo);
-				bcpClient.onSuccess(bcp);
+				tpClient.onSuccess(bcp);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_BreadCrumbPanel());
-				bcpClient.onUnavailable();
+				tpClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Called from the binder view to allow the panel to do any
+	 * work required to reset itself.
+	 * 
+	 * Implements ToolPanelBase.resetPanel()
+	 */
+	@Override
+	public void resetPanel() {
+//!		...this needs to be implemented... 
 	}
 }

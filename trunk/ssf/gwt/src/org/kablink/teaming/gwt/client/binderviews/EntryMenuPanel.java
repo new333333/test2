@@ -42,7 +42,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
@@ -50,9 +49,8 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * 
  * @author drfoster@novell.com
  */
-public class EntryMenuPanel extends ResizeComposite {
-	private BinderInfo		m_binderInfo;	// A BinderInfo that describes the binder whose entry menus are being managed.
-	private VibeFlowPanel	m_fp;			// The panel holding the AccessoryPanel's contents.
+public class EntryMenuPanel extends ToolPanelBase {
+	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -63,11 +61,8 @@ public class EntryMenuPanel extends ResizeComposite {
 	 */
 	private EntryMenuPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super();		
+		super(binderInfo);		
 
-		// ...store the parameters....
-		m_binderInfo = binderInfo;
-		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
@@ -97,35 +92,37 @@ public class EntryMenuPanel extends ResizeComposite {
 	}
 	
 	/**
-	 * Callback interface to interact with the EntryMenuPanel
-	 * asynchronously after it loads. 
-	 */
-	public interface EntryMenuPanelClient {
-		void onSuccess(EntryMenuPanel emp);
-		void onUnavailable();
-	}
-
-	/**
 	 * Loads the EntryMenuPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 * @param binderInfo
-	 * @param empClient
+	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final EntryMenuPanelClient empClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
 		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
 				EntryMenuPanel emp = new EntryMenuPanel(binderInfo);
-				empClient.onSuccess(emp);
+				tpClient.onSuccess(emp);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_EntryMenuPanel());
-				empClient.onUnavailable();
+				tpClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Called from the binder view to allow the panel to do any
+	 * work required to reset itself.
+	 * 
+	 * Implements ToolPanelBase.resetPanel()
+	 */
+	@Override
+	public void resetPanel() {
+//!		...this needs to be implemented... 
 	}
 }
