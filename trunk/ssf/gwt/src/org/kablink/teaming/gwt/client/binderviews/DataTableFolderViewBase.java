@@ -161,7 +161,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			final Long folderId = m_folderInfo.getBinderIdAsLong();
 			final Range range = display.getVisibleRange();
 			GwtClientHelper.executeCommand(
-					new GetFolderRowsCmd(folderId, m_folderColumnsList, range.getStart(), range.getLength()),
+					new GetFolderRowsCmd(folderId, m_folderInfo.getFolderType(), m_folderColumnsList, range.getStart(), range.getLength()),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {

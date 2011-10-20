@@ -34,10 +34,12 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.text.Collator;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -2558,6 +2560,23 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns a formatted date string for the current user's locale
+	 * and time zone.
+	 * 
+	 * @param
+	 * 
+	 * @return
+	 */
+	public static String getDateTimeString(Date date) {
+		User user = GwtServerHelper.getCurrentUser();
+		
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG, user.getLocale());
+		df.setTimeZone(user.getTimeZone());
+		
+		return df.format(date);
+	}
+	
+	/**
 	 * Returns the ID of the default view definition of a folder.
 	 * 
 	 * @return
@@ -3338,8 +3357,47 @@ public class GwtServerHelper {
 		
 		return subscriptionData;
 	}
-	
-	
+		
+	/**
+	 * Returns a string for a value out of the entry map from a search
+	 * results.
+	 * 
+	 * @param em
+	 * @param key
+	 * 
+	 * @return
+	 */
+	public static String getStringFromEntryMap(Map em, String key) {
+		// Do we have entry data for this key?
+		String reply = "";
+		Object emData = em.get(key);
+		if (null != emData) {
+			// Yes!  Is it a string?
+			if (emData instanceof String) {
+				// Yes!  Return it directly.
+				reply = ((String) emData);
+			}
+			
+			// No, it isn't a string!  Is it a date?
+			else if (emData instanceof Date) {
+				// Yes!  Format it for the current user and return
+				// that.
+				reply = getDateTimeString((Date) emData);
+			}
+			
+			else {
+				// No, it isn't a date either!  Let the object convert
+				// itself to a string and return that.
+				reply = emData.toString();
+			}
+		}
+		
+		// If we get here, reply refers to an empty string or the
+		// appropriate string value for the key from the entry map.
+		// Return it.
+		return reply;
+	}
+
 	/**
 	 * Returns information about the teams of a specific user
 	 * @param bs

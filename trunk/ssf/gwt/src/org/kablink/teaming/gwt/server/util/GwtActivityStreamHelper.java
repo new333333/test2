@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -296,8 +295,8 @@ public class GwtActivityStreamHelper {
 
 			// ...and initialize everything else.
 			m_commentEntryDataList = new ArrayList<ASEntryData>();			
-			m_authorId    = Long.parseLong(getSFromEM(m_entryMap, Constants.CREATORID_FIELD   ));
-			m_authorTitle =                getSFromEM(m_entryMap, Constants.CREATOR_TITLE_FIELD);
+			m_authorId    = Long.parseLong(GwtServerHelper.getStringFromEntryMap(m_entryMap, Constants.CREATORID_FIELD   ));
+			m_authorTitle =                GwtServerHelper.getStringFromEntryMap(m_entryMap, Constants.CREATOR_TITLE_FIELD);
 		}
 		
 		/*
@@ -332,8 +331,8 @@ public class GwtActivityStreamHelper {
 			// Scan the search results Map's.
 			for (Map entryMap:  searchEntries) {
 				// Does this map contain both binder and entry IDs?
-				String binderId = getSFromEM(entryMap, Constants.BINDER_ID_FIELD);
-				String entryId  = getSFromEM(entryMap, Constants.DOCID_FIELD    );
+				String binderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
+				String entryId  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD    );
 				if ((!(MiscUtil.hasString(binderId))) || (!(MiscUtil.hasString(entryId)))) {
 					// No!  Skip it.
 					continue;
@@ -472,7 +471,7 @@ public class GwtActivityStreamHelper {
 			for (Map commentEntryMap:  searchEntries) {
 				// Can we find the ASEntryData for the top level entry
 				// for this comment?
-				String topEntryIdS = getSFromEM(commentEntryMap, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
+				String topEntryIdS = GwtServerHelper.getStringFromEntryMap(commentEntryMap, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
 				Long entryId = Long.parseLong(topEntryIdS);
 				ASEntryData topEntryData = ASEntryData.findEntryData(entryDataList, entryId);
 				if (null == topEntryData) {
@@ -482,8 +481,8 @@ public class GwtActivityStreamHelper {
 
 				// Does this comment Map contain both a binder and
 				// entry ID? 
-				String commentBinderId = getSFromEM(commentEntryMap, Constants.BINDER_ID_FIELD);
-				String commentEntryIdS = getSFromEM(commentEntryMap, Constants.DOCID_FIELD    );
+				String commentBinderId = GwtServerHelper.getStringFromEntryMap(commentEntryMap, Constants.BINDER_ID_FIELD);
+				String commentEntryIdS = GwtServerHelper.getStringFromEntryMap(commentEntryMap, Constants.DOCID_FIELD    );
 				if ((!(MiscUtil.hasString(commentBinderId))) || (!(MiscUtil.hasString(commentEntryIdS)))) {
 					// No!  Skip it.
 					continue;
@@ -912,7 +911,7 @@ public class GwtActivityStreamHelper {
 		reply.setAuthorName(       authorInfo.m_authorTitle    );
 		reply.setAuthorWorkspaceId(authorInfo.m_authorWsId     );
 		reply.setAuthorLogin(
-			getSFromEM(
+			GwtServerHelper.getStringFromEntryMap(
 				em,
 				Constants.CREATOR_NAME_FIELD));
 
@@ -928,11 +927,11 @@ public class GwtActivityStreamHelper {
 		reply.setEntryComments(         entryData.getCommentCount()                                     );
 		reply.setEntryDescription(      getEntryDescFromEM(      em, request                           ));	
 		reply.setEntryDescriptionFormat(getEntryDescFormatFromEM(em                                    ));	
-		reply.setEntryDocNum(           getSFromEM(              em, Constants.DOCNUMBER_FIELD         ));
-		reply.setEntryModificationDate( getSFromEM(              em, Constants.MODIFICATION_DATE_FIELD ));		
-		reply.setEntryTitle(            getSFromEM(              em, Constants.TITLE_FIELD             ));
-		reply.setEntryTopEntryId(       getSFromEM(              em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
-		reply.setEntryType(             getSFromEM(              em, Constants.ENTRY_TYPE_FIELD        ));
+		reply.setEntryDocNum(           GwtServerHelper.getStringFromEntryMap(              em, Constants.DOCNUMBER_FIELD         ));
+		reply.setEntryModificationDate( GwtServerHelper.getStringFromEntryMap(              em, Constants.MODIFICATION_DATE_FIELD ));		
+		reply.setEntryTitle(            GwtServerHelper.getStringFromEntryMap(              em, Constants.TITLE_FIELD             ));
+		reply.setEntryTopEntryId(       GwtServerHelper.getStringFromEntryMap(              em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
+		reply.setEntryType(             GwtServerHelper.getStringFromEntryMap(              em, Constants.ENTRY_TYPE_FIELD        ));
 		reply.setEntrySeen(             sm.checkIfSeen(          em                                    ));
 
 		// Finally, scan the comment ASEntryData...
@@ -1118,7 +1117,7 @@ public class GwtActivityStreamHelper {
 		try {
 			// Create an activity stream data object to return.
 			ActivityStreamData reply = new ActivityStreamData();
-			reply.setDateTime(getDateTimeString(new Date()));
+			reply.setDateTime(GwtServerHelper.getDateTimeString(new Date()));
 			
 			// If we weren't given a PagingData...
 			if (null == pd) {
@@ -1199,23 +1198,6 @@ public class GwtActivityStreamHelper {
 	}
 
 	/**
-	 * Returns a formatted date string for the current user's locale
-	 * and time zone.
-	 * 
-	 * @param
-	 * 
-	 * @return
-	 */
-	public static String getDateTimeString(Date date) {
-		User user = GwtServerHelper.getCurrentUser();
-		
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG, user.getLocale());
-		df.setTimeZone(user.getTimeZone());
-		
-		return df.format(date);
-	}
-	
-	/**
 	 * Returns the current user's default activity stream.  If they
 	 * don't have one set in their user profile, null is returned.
 	 * 
@@ -1268,7 +1250,7 @@ public class GwtActivityStreamHelper {
 	@SuppressWarnings("unchecked")
 	private static String getEntryDescFromEM(Map em, HttpServletRequest request) {
 		// Do we have a base description?
-		String reply = getSFromEM(em, Constants.DESC_FIELD);
+		String reply = GwtServerHelper.getStringFromEntryMap(em, Constants.DESC_FIELD);
 		if (MiscUtil.hasString(reply)) {
 			// Yes!  Fix the mark up.
 			reply = fixupDescription(request, em, reply);
@@ -1286,7 +1268,7 @@ public class GwtActivityStreamHelper {
 	@SuppressWarnings("unchecked")
 	private static int getEntryDescFormatFromEM(Map em) {
 		int reply = Description.FORMAT_HTML;
-		String descFmt = getSFromEM(em, Constants.DESC_FORMAT_FIELD);
+		String descFmt = GwtServerHelper.getStringFromEntryMap(em, Constants.DESC_FORMAT_FIELD);
 		if (MiscUtil.hasString(descFmt)) {
 			try {
 				reply = Integer.parseInt(descFmt);
@@ -1296,42 +1278,6 @@ public class GwtActivityStreamHelper {
 		return reply;
 	}
 	
-	/*
-	 * Returns a string for a value out of the entry map from a search
-	 * results.
-	 */
-	@SuppressWarnings("unchecked")
-	private static String getSFromEM(Map em, String key) {
-		// Do we have entry data for this key?
-		String reply = "";
-		Object emData = em.get(key);
-		if (null != emData) {
-			// Yes!  Is it a string?
-			if (emData instanceof String) {
-				// Yes!  Return it directly.
-				reply = ((String) emData);
-			}
-			
-			// No, it isn't a string!  Is it a date?
-			else if (emData instanceof Date) {
-				// Yes!  Format it for the current user and return
-				// that.
-				reply = getDateTimeString((Date) emData);
-			}
-			
-			else {
-				// No, it isn't a date either!  Let the object convert
-				// itself to a string and return that.
-				reply = emData.toString();
-			}
-		}
-		
-		// If we get here, reply refers to an empty string or the
-		// appropriate string value for the key from the entry map.
-		// Return it.
-		return reply;
-	}
-
 	/*
 	 * Returns the title for a target user, based on their ID, that we
 	 * should display to the current user based on their access to the
@@ -2116,7 +2062,7 @@ public class GwtActivityStreamHelper {
 					String dateStr;
 					
 					date = folderEntry.getLastActivity();
-					dateStr = getDateTimeString( date );
+					dateStr = GwtServerHelper.getDateTimeString( date );
 					asEntry.setEntryModificationDate( dateStr );
 				}
 				

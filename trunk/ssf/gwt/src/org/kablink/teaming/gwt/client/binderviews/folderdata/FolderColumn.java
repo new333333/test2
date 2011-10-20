@@ -45,8 +45,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class FolderColumn implements IsSerializable, VibeRpcResponseData {
-	private String m_columnName;
-	private String m_columnTitle;
+	private String m_columnName;		//
+	private String m_columnTitle;		//
+	private String m_columnSearchKey;	//
 	
 	/**
 	 * Constructor method.
@@ -62,12 +63,14 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @param columnName
 	 * @param columnTitle
+	 * @param columnSearchKey
 	 */
-	public FolderColumn(String columnName, String columnTitle) {
+	public FolderColumn(String columnName, String columnTitle, String columnSearchKey) {
 		this();
 		
-		setColumnName( columnName );
-		setColumnTitle(columnTitle);
+		setColumnName(     columnName     );
+		setColumnTitle(    columnTitle    );
+		setColumnSearchKey(columnSearchKey);
 	}
 	
 	
@@ -76,8 +79,9 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public String getColumnName()  {return m_columnName;}
-	public String getColumnTitle() {return m_columnTitle;}
+	public String getColumnName()      {return m_columnName;     }
+	public String getColumnTitle()     {return m_columnTitle;    }
+	public String getColumnSearchKey() {return m_columnSearchKey;}
 	
 	/**
 	 * Set'er methods.
@@ -85,6 +89,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * @param columnName
 	 * @param columnTitle
 	 */
-	public void setColumnName( String columnName)  {m_columnName  = columnName; }
-	public void setColumnTitle(String columnTitle) {m_columnTitle = columnTitle;}
+	public void setColumnName(     String columnName)      {m_columnName      = columnName;     }
+	public void setColumnTitle(    String columnTitle)     {m_columnTitle     = columnTitle;    }
+	public void setColumnSearchKey(String columnSearchKey) {m_columnSearchKey = columnSearchKey;}
 }

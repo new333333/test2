@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.util.FolderType;
 
 
 /**
@@ -44,6 +45,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
  * @author drfoster@novell.com
  */
 public class GetFolderRowsCmd extends VibeRpcCmd {
+	private FolderType			m_folderType;		//
 	private int					m_length;			//
 	private int					m_start;			//
 	private List<FolderColumn>	m_folderColumns;	//
@@ -62,14 +64,16 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	 * Constructor method
 	 * 
 	 * @param folderId
+	 * @param folderType
 	 * @param folderColumns
 	 * @param start
 	 * @param length
 	 */
-	public GetFolderRowsCmd(Long folderId, List<FolderColumn> folderColumns, int start, int length) {
+	public GetFolderRowsCmd(Long folderId, FolderType folderType, List<FolderColumn> folderColumns, int start, int length) {
 		this();
 		
 		m_folderId      = folderId;
+		m_folderType    = folderType;
 		m_folderColumns = folderColumns;
 		m_start         = start;
 		m_length        = length;
@@ -80,6 +84,7 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
+	public FolderType         getFolderType()    {return m_folderType;   }
 	public int                getLength()        {return m_length;       }
 	public int                getStart()         {return m_start;        }
 	public List<FolderColumn> getFolderColumns() {return m_folderColumns;}

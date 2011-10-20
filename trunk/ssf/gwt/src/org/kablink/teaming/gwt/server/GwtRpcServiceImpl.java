@@ -549,6 +549,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				this,
 				getRequest( ri ),
 				gfrCmd.getFolderId(),
+				gfrCmd.getFolderType(),
 				gfrCmd.getFolderColumns(),
 				gfrCmd.getStart(),
 				gfrCmd.getLength() );
