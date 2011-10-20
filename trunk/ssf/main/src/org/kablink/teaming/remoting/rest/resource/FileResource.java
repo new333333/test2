@@ -70,7 +70,9 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileByTheIdException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.rest.util.Constant;
@@ -78,11 +80,23 @@ import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.sun.jersey.api.core.InjectParam;
 
 @Path("/file")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FileResource extends AbstractResource {
 
+	@InjectParam("folderModule") private FolderModule folderModule;
+    @InjectParam("fileModule") private FileModule fileModule;
+
+	public FileResource() {
+		String s = "Hey, I'm being constructed!";
+	}
+	
 	@POST
 	@Path("/name/{filename}/content")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -111,7 +125,7 @@ public class FileResource extends AbstractResource {
 		// write the file to vibe
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
-    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
     		try {
     			Date modDate = null;
     			if(Validator.isNotNull(modDateISO8601)) {
@@ -125,7 +139,7 @@ public class FileResource extends AbstractResource {
     			else {
     				if (Validator.isNull(dataItemName)) 
     					dataItemName="ss_attachFile1";
-    				getFolderModule().modifyEntry(null, entityId, dataItemName, filename, is, null);
+    				folderModule.modifyEntry(null, entityId, dataItemName, filename, is, null);
     			}
     		}
     		catch(WriteFilesException e) {
@@ -155,7 +169,7 @@ public class FileResource extends AbstractResource {
 		// write the file to vibe
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
-    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
     		try {
     			Date modDate = null;
     			if(Validator.isNotNull(modDateISO8601)) {
@@ -169,7 +183,7 @@ public class FileResource extends AbstractResource {
     			else {
     				if (Validator.isNull(dataItemName)) 
     					dataItemName="ss_attachFile1";
-    				getFolderModule().modifyEntry(null, entityId, dataItemName, filename, is, null);
+    				folderModule.modifyEntry(null, entityId, dataItemName, filename, is, null);
     			}
     		}
     		catch(WriteFilesException e) {
@@ -228,7 +242,7 @@ public class FileResource extends AbstractResource {
 		// write the file to vibe
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
-    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
     		FileAttachment fa = getFileAttachment(entry, fileId);
     		try {
     			Date modDate = null;
@@ -243,7 +257,7 @@ public class FileResource extends AbstractResource {
     			else {
     				if (Validator.isNull(dataItemName)) 
     					dataItemName="ss_attachFile1";
-    				getFolderModule().modifyEntry(null, entityId, dataItemName, fa.getFileItem().getName(), is, null);
+    				folderModule.modifyEntry(null, entityId, dataItemName, fa.getFileItem().getName(), is, null);
     			}
     		}
     		catch(WriteFilesException e) {
@@ -267,10 +281,10 @@ public class FileResource extends AbstractResource {
 			@QueryParam("entity_id") long entityId) {
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
-    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
     		FileAttachment fa = entry.getFileAttachment(filename);
     		String mt = new MimetypesFileTypeMap().getContentType(filename);
-    		return Response.ok(getFileModule().readFile(entry.getParentBinder(), entry, fa), mt).build();
+    		return Response.ok(fileModule.readFile(entry.getParentBinder(), entry, fa), mt).build();
         }
         throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
@@ -283,10 +297,10 @@ public class FileResource extends AbstractResource {
 			@QueryParam("entity_id") long entityId) {
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
-    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
     		FileAttachment fa = getFileAttachment(entry, fileId);
     		String mt = new MimetypesFileTypeMap().getContentType(fa.getFileItem().getName());
-    		return Response.ok(getFileModule().readFile(entry.getParentBinder(), entry, fa)).build();
+    		return Response.ok(fileModule.readFile(entry.getParentBinder(), entry, fa)).build();
         }
         throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
@@ -299,7 +313,7 @@ public class FileResource extends AbstractResource {
 			@QueryParam("entity_id") long entityId) {
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
-    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
     		FileAttachment fa = entry.getFileAttachment(filename);
     		return filePropertiesFromFileAttachment(fa);
         }
@@ -314,7 +328,7 @@ public class FileResource extends AbstractResource {
 			@QueryParam("entity_id") long entityId) {
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
-    		FolderEntry entry = getFolderModule().getEntry(null, entityId);
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
     		FileAttachment fa = getFileAttachment(entry, fileId);
     		return filePropertiesFromFileAttachment(fa);
         }
@@ -349,6 +363,5 @@ public class FileResource extends AbstractResource {
 			throw new NoFileByTheIdException(attachmentId);
 		return (FileAttachment) att;
 	}
-
 
 }

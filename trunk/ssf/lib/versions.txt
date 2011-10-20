@@ -62,7 +62,7 @@ JBoss Portal 2.6.1.GA portal-identity-lib.jar
 JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.xml files http://jira.jboss.com/jira/browse/JBPM-982)
 JCR 1.0
 JDOM 1.0
-Jersey 1.9.1 (JAX-RS 1.1 JSR311 reference implementation; This includes client, core, json, and server libraries)
+Jersey 1.9.1 (JAX-RS 1.1 JSR311 reference implementation; This includes client, core, json, server, and spring libraries)
 Jettison 1.1 (A JSON Streaming API for XML (StAX) implementation needed by Jersey)
 Joda-Time 1.6
 JPA 2.0 1.0.0.Final (from Hibernate distribution, needed by Hibernate)

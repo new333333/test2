@@ -51,15 +51,23 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.rest.model.FolderEntry;
 import org.kablink.teaming.rest.model.Rating;
 import org.kablink.teaming.rest.model.Subscription;
 import org.kablink.teaming.rest.model.Tag;
 
+import com.sun.jersey.api.core.InjectParam;
+
 @Path("/folder_entry/{id}")
 public class FolderEntryResource extends AbstractResource {
 		
 	@Context UriInfo uriInfo;
+	
+	@InjectParam("folderModule") private FolderModule folderModule;
+    @InjectParam("fileModule") private FileModule fileModule;
+
 	
 	// Read folder entry
 	@GET
@@ -67,7 +75,7 @@ public class FolderEntryResource extends AbstractResource {
 	public FolderEntry getFolderEntry(
 			@PathParam("id") long id,
 			@QueryParam("attribute") List<String> attributes) {
-		org.kablink.teaming.domain.FolderEntry hEntry = getFolderModule().getEntry(null, id);
+		org.kablink.teaming.domain.FolderEntry hEntry = folderModule.getEntry(null, id);
 		FolderEntry entry = new FolderEntry();
 		entry.setId(hEntry.getId());
 		entry.setTitle(hEntry.getTitle());
@@ -86,7 +94,7 @@ public class FolderEntryResource extends AbstractResource {
 	@DELETE
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public void deleteFolderEntry(@PathParam("id") long id) {
-		getFolderModule().deleteEntry(null, id);
+		folderModule.deleteEntry(null, id);
 	}
 	
 	// Add a file as an attachment to the folder entry.
