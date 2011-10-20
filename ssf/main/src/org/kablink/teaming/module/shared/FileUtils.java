@@ -81,13 +81,10 @@ public class FileUtils {
     				//This is a minor version that is not the highest in its major class. It is subject to aging
     				//Binder aging has both agingEnabled=true and agingDate != null
     				//Zone aging has agingEnabled=true and agingDate=null
-    				if ((zoneVersionAgingEnabled.booleanValue() || versionAgingEnabled.booleanValue()) && 
-    						(va.getAgingEnabled() == null || !va.isAgingEnabled())) {
+    				if (va.getAgingEnabled() == null || !va.isAgingEnabled()) {
+    					//The current agingEnabled value was wrong, so make it correct.
     					va.setAgingEnabled(Boolean.TRUE);
-    				} else if (!zoneVersionAgingEnabled.booleanValue() && !versionAgingEnabled.booleanValue() && 
-    						(va.getAgingEnabled() != null && va.isAgingEnabled())) {
-    					va.setAgingEnabled(Boolean.FALSE);
-    				}
+    				} 
     				//Calculate the binder aging date (if any)
     				if (versionAgingDays != null) {
     					Date creationDate = va.getCreation().getDate();
