@@ -53,7 +53,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.PathParam;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -84,7 +86,7 @@ public class FileResource extends AbstractResource {
 	@POST
 	@Path("/name/{filename}/content")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public FileProperties writeFileByName(@PathParam("filename") String filename,
+	public FileProperties writeFileByName_MultipartFormData(@PathParam("filename") String filename,
 			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
 			@QueryParam("entity_id") long entityId,
 			@QueryParam("data_item_name") String dataItemName,
@@ -184,6 +186,20 @@ public class FileResource extends AbstractResource {
         }
 	}
 
+	@POST
+	@Path("/name/{filename}/content")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public FileProperties writeFileByName3(@PathParam("filename") String filename,
+			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
+			@QueryParam("entity_id") long entityId,
+			@QueryParam("data_item_name") String dataItemName,
+			@QueryParam("mod_date") String modDateISO8601,
+            @Context Request request) 
+			throws RuntimeException, IOException {
+		throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).
+				entity(MediaType.APPLICATION_FORM_URLENCODED + " format is not supported for uploading a file").build());
+	}
+	
 	@POST
 	@Path("/id/{fileid}/content")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -333,4 +349,6 @@ public class FileResource extends AbstractResource {
 			throw new NoFileByTheIdException(attachmentId);
 		return (FileAttachment) att;
 	}
+
+
 }
