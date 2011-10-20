@@ -33,28 +33,15 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
-//! import java.util.Comparator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-//! import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
 
 /**
  * Discussion folder view.
@@ -95,14 +82,11 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	public void constructView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
-		// Setup the appropriate styles for a discussion folder...
+		// Setup the appropriate styles for a discussion folder,
+		// populate the view's contents and tell the base class
+		// that we're done with the construction.
 		getFlowPanel().addStyleName("vibe-discussionFolderFlowPanel");
-
-		// ...populate the view's content...
-		populateView(folderColumnsList, folderSortBy, folderSortDescend, folderPageSize);
-		
-		// ...and tell the base class that we're done with the
-		// ...construction.
+		populateContent("vibe-discussionFolderDataTable");
 		super.viewReady();
 	}
 	
@@ -130,49 +114,6 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 		});
 	}
 	
-	/*
-	 * Add the columns to the table.
-	 */
-	private void initTableColumns(VibeDataTable<FolderRow> vdt, List<FolderColumn> folderColumnsList, final FolderRowSelectionModel selectionModel, FolderRowAsyncHandler sortHandler) {
-		// Add a column for a checkbox selector.
-	    Column<FolderRow, Boolean> cc =
-	        new Column<FolderRow, Boolean>(new CheckboxCell(true, false)) {
-	          @Override
-	          public Boolean getValue(FolderRow object) {
-	            return selectionModel.isSelected(object);
-	          }
-	        };
-	    vdt.addColumn(cc, SafeHtmlUtils.fromSafeConstant("<br/>"));
-
-	    // Scan the columns defined in this folder.
-		for (final FolderColumn fc:  folderColumnsList) {
-			// Define a TextColumn for each column...
-			TextColumn<FolderRow> tc = new TextColumn<FolderRow>() {
-				@Override
-				public String getValue(FolderRow fr) {
-					return fr.getColumnValue(fc);
-				}
-			};
-			
-			// ...that's can be sorted...
-			tc.setSortable(true);
-//!			...this needs to be implemented...
-/*
-			sortHandler.setComparator(tc, new Comparator<FolderRow>() {
-				@Override
-				public int compare(FolderRow o1, FolderRow o2) {
-					return
-						GwtClientHelper.jsStringCompare(
-							o1.getColumnValue(fc),
-							o2.getColumnValue(fc));
-				}
-			});
-*/
-			// ...and add it to the table.
-			vdt.addColumn(tc, fc.getColumnTitle());
-		}
-	}
-	  
 	/**
 	 * Called from the base class to reset the content of this
 	 * discussion folder view.
@@ -188,58 +129,6 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	public void resetView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
 		// Clear any existing content from the view and repopulate it.
 		resetContent();
-		populateView(folderColumnsList, folderSortBy, folderSortDescend, folderPageSize);
-	}
-	
-	/*
-	 * Called from the base class to reset the content of this
-	 * discussion folder view.
-	 */
-	private void populateView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
-		// Create a key provider that will provide a unique key for
-		// each row.
-		FolderRowKeyProvider keyProvider = new FolderRowKeyProvider();
-		
-		// Create the table.
-		VibeDataTable<FolderRow> vdt = new VibeDataTable<FolderRow>(folderPageSize, keyProvider);
-		vdt.setWidth("100%");
-		
-		// Set a message to display when the table is empty.
-		vdt.setEmptyTableWidget(new Label(m_messages.discussionFolder_Empty()));
-
-		// Attach a sort handler to sort the list.
-	    FolderRowAsyncHandler sortHandler = new FolderRowAsyncHandler(vdt);
-	    vdt.addColumnSortHandler(sortHandler);
-		
-		// Create a pager that lets the user page through the table.
-	    FolderRowPager pager = new FolderRowPager();
-	    pager.setDisplay(vdt);
-
-	    // Add a selection model so the user can select cells.
-	    final FolderRowSelectionModel selectionModel = new FolderRowSelectionModel(keyProvider);
-	    vdt.setSelectionModel(selectionModel, DefaultSelectionEventManager.<FolderRow> createCheckboxManager());
-
-	    // Initialize the table's columns.
-	    initTableColumns(vdt, folderColumnsList, selectionModel, sortHandler);
-	    
-	    // Add the provider that supplies FolderRow's for the table.
-		FolderRowProvider folderRowProvider = new FolderRowProvider(vdt, keyProvider);
-	    folderRowProvider.addDataDisplay(vdt);
-
-	    // Finally, add the table to the view.
-		getFlowPanel().add(vdt);
-		
-//!		...this needs to be implemented...
-		VibeVerticalPanel vp = new VibeVerticalPanel();
-		vp.add(new HTML("<br/>- - - - - Start:  Folder Display Data - - - - -<br/><br/>"));
-		vp.add(new InlineLabel("Sort by:  "         + folderSortBy));
-		vp.add(new InlineLabel("Sort descending:  " + folderSortDescend));
-		vp.add(new InlineLabel("Page size:  "       + folderPageSize));
-		vp.add(new HTML("<br/>"));
-		for (FolderColumn fc:  folderColumnsList) {
-			vp.add(new InlineLabel(fc.getColumnName() + "='" + fc.getColumnTitle() + "'"));
-		}
-		vp.add(new HTML("<br/>- - - - - End:  Folder Display Data - - - - -<br/>"));
-		getFlowPanel().add(vp);
+		populateContent("vibe-discussionFolderDataTable");
 	}
 }

@@ -340,8 +340,10 @@ public class GwtViewHelper {
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, Long folderId, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
 		// Generate a List<FolderRow> of the rows read.
 		List<FolderRow> folderRows = new ArrayList<FolderRow>();
+		int totalRows;
 		
 //!		...this needs to be implemented...
+		totalRows = 999;
 		for (int i = 0; i < length; i += 1) {
 			FolderRow fr = new FolderRow(dummyEntryId++, folderColumns);
 			for (FolderColumn fc:  folderColumns) {
@@ -352,7 +354,7 @@ public class GwtViewHelper {
 
 		// Finally, return the List<FolderRow> wrapped in a
 		// FolderRowsRpcResponseData.
-		return new FolderRowsRpcResponseData(folderRows);
+		return new FolderRowsRpcResponseData(folderRows, start, totalRows);
 	}
 	
 	/*

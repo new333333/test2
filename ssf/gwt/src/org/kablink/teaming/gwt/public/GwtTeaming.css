@@ -3550,11 +3550,7 @@ td.datePickerMonth {
 
 /* Start:  GWT folder view styles. */
 	/* ...Start:  Accessory styles. */
-		.vibe-accessoriesPanel
-		{
-			color: #333;
-			background-color: #EAEBE8;
-		}
+		.vibe-accessoriesPanel {color: #333; background-color: #EAEBE8;}
 	/* ...End:  Accessory styles. */
 	
 	/* ...Start:  Bread crumb panel styles. */
@@ -3578,12 +3574,14 @@ td.datePickerMonth {
 	/* ...End:  Generic folder view styles. */
 	
 	/* ...Start:  Generic data table folder view styles. */
+		.vibe-dataTableFolderDataTableBase     {}
 		.vibe-dataTableFolderFlowPanelBase     {}
 		.vibe-dataTableFolderViewBase          {}
 		.vibe-dataTableFolderVerticalPanelBase {}
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Discussion folder view styles. */
+		.vibe-discussionFolderDataTable {}
 		.vibe-discussionFolderFlowPanel {}
 	/* ...End:  Discussion folder view styles. */
 /* End:  GWT folder view styles. */
