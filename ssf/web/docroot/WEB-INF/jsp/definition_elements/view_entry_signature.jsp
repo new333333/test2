@@ -52,7 +52,7 @@
 			<td>
 				<span class="ss_entryContent ss_entrySignature"><ssf:nlt tag="entry.createdBy"/></span>
 	  		</td>
-			<td class="ss_clipped_signature">
+			<td class="ss_non_clipped_signature">
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 			</td>
 			<td>
@@ -67,7 +67,7 @@
 	    <td>
 		  <div class="ss_entryContent ss_entrySignature" ><ssf:nlt tag="entry.modifiedBy"/></div>
 	    </td>
-	    <td class="ss_clipped_signature">
+	    <td class="ss_non_clipped_signature">
 		  <div class="ss_entryContent ss_entrySignatureUser"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
 	    </td>
 	    <td>
@@ -89,7 +89,7 @@
 		  	    src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/></span>
 		  </div>
 	    </td>
-	    <td class="ss_clipped_signature">
+	    <td class="ss_non_clipped_signature">
 		  <div class="ss_entryContent margintop3">
 		    <div class="ss_entrySignatureUser">
 		      <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
@@ -113,7 +113,7 @@
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
-<td valign="top" class="ss_clipped_signature <c:if test="${!ssDefinitionEntry.top}">ss_replies_indent_picture" </c:if>" >
+<td valign="top" class="ss_non_clipped_signature <c:if test="${!ssDefinitionEntry.top}">ss_replies_indent_picture" </c:if>" >
 <c:if test="${!ss_hideEntrySignature}">
   <div>
   <c:out value="${property_caption}" />
@@ -132,7 +132,7 @@
   </c:if>
 		<table cellspacing="0" cellpadding="0" class="margintop1">
 		 <tr>
-		  <td class="ss_clipped_signature">
+		  <td class="ss_non_clipped_signature">
 			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 		  </td>
 		 </tr>
@@ -145,7 +145,7 @@
 		  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
 			ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 		   <tr>
-			<td class="ss_clipped_signature">
+			<td class="ss_non_clipped_signature">
 				<div class="ss_entryContent margintop2">
 				  <div style="padding-right:8px; font-weight: bold; font-size: 11px;"><ssf:nlt tag="entry.modifiedBy"/></div>
 				  <div class="ss_entrySignatureUser">
@@ -163,7 +163,7 @@
 		
 		  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 		   <tr>
-			<td class="ss_clipped_signature">
+			<td class="ss_non_clipped_signature">
 				<div class="ss_entryContent margintop3">
 				  <span style="padding-right:5px;">
 				  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
