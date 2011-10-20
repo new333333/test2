@@ -32,10 +32,6 @@
  */
 package org.kablink.teaming.remoting.rest.resource;
 
-import org.kablink.teaming.module.file.FileModule;
-import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.util.SpringContextUtil;
-
 public class AbstractResource {
 	
     protected String checkResponseFormat(String headerParam, String queryParam, String defaultVal) {
@@ -50,12 +46,5 @@ public class AbstractResource {
         } 
         return format;
     }
-
-    protected FolderModule getFolderModule() {
-    	return (FolderModule) SpringContextUtil.getBean("folderModule");
-    }
-
-    protected FileModule getFileModule() {
-    	return (FileModule) SpringContextUtil.getBean("fileModule");
-    }
+    
 }

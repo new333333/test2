@@ -42,7 +42,13 @@ import org.kablink.teaming.exception.UncheckedCodedException;
 @Provider
 public class UncheckedCodedMapper implements ExceptionMapper<UncheckedCodedException> {
 	public Response toResponse(UncheckedCodedException ex) {
-		return Response.status(ex.getHttpStatusCode()).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
+		int i = 0;
+		if(i == 1)
+			return Response.status(ex.getHttpStatusCode()).entity(ex.getMessage()).type(MediaType.APPLICATION_JSON).build();
+		else if(i == 2)
+			return Response.status(ex.getHttpStatusCode()).entity(ex.getMessage()).type(MediaType.APPLICATION_XML).build();
+		else
+			return Response.status(ex.getHttpStatusCode()).entity(ex.getMessage()).build();
 	}
 
 }
