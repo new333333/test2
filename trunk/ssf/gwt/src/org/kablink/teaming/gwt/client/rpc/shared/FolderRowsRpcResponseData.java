@@ -46,6 +46,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private int				m_startOffset;	//
+	private int				m_totalRows;	//
 	private List<FolderRow> m_folderRows;	//
 	
 	/**
@@ -61,11 +63,15 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * Constructor method.
 	 *
 	 * @param folderRows
+	 * @param startOffset
+	 * @param totalRows
 	 */
-	public FolderRowsRpcResponseData(List<FolderRow> folderRows) {
+	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows) {
 		this();
 		
-		m_folderRows = folderRows;
+		m_folderRows  = folderRows;
+		m_startOffset = startOffset;
+		m_totalRows   = totalRows;
 	}
 	
 	/**
@@ -73,7 +79,9 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * 
 	 * @return
 	 */
-	public List<FolderRow >getFolderRows() {return m_folderRows;}
+	public int             getStartOffset() {return m_startOffset;}
+	public int             getTotalRows()   {return m_totalRows;  }
+	public List<FolderRow> getFolderRows()  {return m_folderRows; }
 
 	/**
 	 * Set'er methods.
@@ -81,4 +89,13 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * @param folderRows
 	 */
 	public void setFolderRows(List<FolderRow> folderRows) {m_folderRows = folderRows;}
+
+	/**
+	 * Returns a count of the folder rows being tracked.
+	 * 
+	 * @return
+	 */
+	public int getFolderRowCount() {
+		return ((null == m_folderRows) ? 0 : m_folderRows.size());
+	}
 }
