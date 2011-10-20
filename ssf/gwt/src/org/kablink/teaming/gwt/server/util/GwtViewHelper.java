@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -66,6 +67,7 @@ import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
@@ -137,6 +139,29 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Maps a column name to the appropriate search key.
+	 */
+	private static String getColumnSearchKey(String columnName) {
+		String reply;
+		if (MiscUtil.hasString(columnName)) {
+			if      (columnName.equals("number"))   reply = Constants.DOCNUMBER_FIELD;
+			else if (columnName.equals("title"))    reply = Constants.TITLE_FIELD;
+			else if (columnName.equals("author"))   reply = "_principal";
+			else if (columnName.equals("comments")) reply = Constants.TOTALREPLYCOUNT_FIELD;
+			else if (columnName.equals("size"))     reply = Constants.FILE_SIZE_FIELD;
+			else if (columnName.equals("download")) reply = Constants.FILENAME_FIELD;
+			else if (columnName.equals("state"))    reply = Constants.WORKFLOW_STATE_CAPTION_FIELD;
+			else if (columnName.equals("date"))     reply = Constants.LASTACTIVITY_FIELD;
+			else                                    reply = columnName;
+		}
+		
+		else {
+			reply = columnName;
+		}
+		return reply;
+	}
+	
 	/**
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
@@ -263,7 +288,12 @@ public class GwtViewHelper {
 
 				// Add a FolderColumn for this to the list we're
 				// going to return.
-				fcList.add(new FolderColumn(columnName, columnTitle));
+				fcList.add(
+					new FolderColumn(
+						columnName,
+						columnTitle,
+						getColumnSearchKey(
+							columnName)));
 			}
 
 			// Finally, use the data we obtained to create a
@@ -274,6 +304,9 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getFolderColumns( SOURCE EXCEPTION ):  ", e);
+			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
@@ -319,42 +352,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getFolderDisplayData( SOURCE EXCEPTION ):  ", e);
+			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
-	}
-	
-	/**
-	 * Reads the row data from a folder and returns it as a
-	 * FolderRowsRpcResponseData.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderId
-	 * @param folderColumns
-	 * @param start
-	 * @param length
-	 * 
-	 * @return
-	 */
-	private static Long dummyEntryId = 1L;
-	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, Long folderId, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
-		// Generate a List<FolderRow> of the rows read.
-		List<FolderRow> folderRows = new ArrayList<FolderRow>();
-		int totalRows;
-		
-//!		...this needs to be implemented...
-		totalRows = 999;
-		for (int i = 0; i < length; i += 1) {
-			FolderRow fr = new FolderRow(dummyEntryId++, folderColumns);
-			for (FolderColumn fc:  folderColumns) {
-				fr.setColumnValue(fc, (folderId + ":" + start + ":" + fc.getColumnName() + ":" + fc.getColumnTitle()));
-			}
-			folderRows.add(fr);
-		}
-
-		// Finally, return the List<FolderRow> wrapped in a
-		// FolderRowsRpcResponseData.
-		return new FolderRowsRpcResponseData(folderRows, start, totalRows);
 	}
 	
 	/*
@@ -368,6 +370,88 @@ public class GwtViewHelper {
 			reply.put(columnName, columnName);
 		}
 		return reply;
+	}
+
+	/**
+	 * Reads the row data from a folder and returns it as a
+	 * FolderRowsRpcResponseData.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param folderType
+	 * @param folderColumns
+	 * @param start
+	 * @param length
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
+		try {
+			Folder			folder               = ((Folder) bs.getBinderModule().getBinder(folderId));
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+
+			// Setup the current search filter the user has selected
+			// on the folder.
+			Map options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
+			options.put(ObjectKeys.SEARCH_OFFSET,   start );
+			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
+
+			// Factor in the user's sorting selection.
+			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderId);
+			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
+
+			// Read the entries based on the search.
+			Map searchResults;
+			if (FolderType.TRASH == folderType)
+			     searchResults = TrashHelper.getTrashEntries(bs, new HashMap<String,Object>(), folder, options);
+			else searchResults = bs.getFolderModule().getEntries(folderId, options);
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+			
+			// Scan the entries we read...
+			List<FolderRow> folderRows = new ArrayList<FolderRow>();
+			for (Map entryMap:  searchEntries) {
+				// ...creating a FolderRow for each.
+				String entryId  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				FolderRow fr = new FolderRow(Long.parseLong(entryId), folderColumns);
+				for (FolderColumn fc:  folderColumns) {
+					String value = GwtServerHelper.getStringFromEntryMap(entryMap, fc.getColumnSearchKey());
+					fr.setColumnValue(fc, (null == (value) ? "" : value));
+				}
+				folderRows.add(fr);
+			}
+			
+			// Finally, return the List<FolderRow> wrapped in a
+			// FolderRowsRpcResponseData.
+			return new FolderRowsRpcResponseData(folderRows, start, totalRecords);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getFolderRows( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
+	/*
+	 * Returns a map containing the search filter to use to read the
+	 * rows from a folder.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getFolderSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties, String searchTitle) {
+		Map result = new HashMap();
+		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
+		if (MiscUtil.hasString(searchTitle)) {
+			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
+		}
+		return result;
 	}
 	
 	/*
