@@ -514,7 +514,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		getCoreDao().evict(tags);
 		
 		//Add any workflows
-		if (copyOptions.containsKey(ObjectKeys.WORKFLOW_START_WORKFLOW) && 
+		if (copyOptions != null && copyOptions.containsKey(ObjectKeys.WORKFLOW_START_WORKFLOW) && 
 				(ObjectKeys.WORKFLOW_START_WORKFLOW_START.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW)) ||
 				 ObjectKeys.WORKFLOW_START_WORKFLOW_COPY.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW)))) {
 			
@@ -544,7 +544,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 					entityIdentifier, def, options);
 					
 			}
-		} else if (copyOptions.containsKey(ObjectKeys.WORKFLOW_START_WORKFLOW) && 
+		} else if (copyOptions != null && copyOptions.containsKey(ObjectKeys.WORKFLOW_START_WORKFLOW) && 
 				ObjectKeys.WORKFLOW_START_WORKFLOW_NO_START.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW))) {
 			//Not starting the workflow that existed on the source entry, so check if one is configured for the folder
 	    	Map workflowAssociations = (Map) entry.getParentBinder().getWorkflowAssociations();
