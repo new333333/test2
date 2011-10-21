@@ -2563,17 +2563,24 @@ public class GwtServerHelper {
 	 * Returns a formatted date string for the current user's locale
 	 * and time zone.
 	 * 
-	 * @param
+	 * @param date
+	 * @param dateStyle
+	 * @param timeStyle
 	 * 
 	 * @return
 	 */
-	public static String getDateTimeString(Date date) {
+	public static String getDateTimeString(Date date, int dateStyle, int timeStyle) {
 		User user = GwtServerHelper.getCurrentUser();
 		
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG, user.getLocale());
+		DateFormat df = DateFormat.getDateTimeInstance(dateStyle, timeStyle, user.getLocale());
 		df.setTimeZone(user.getTimeZone());
 		
 		return df.format(date);
+	}
+	
+	public static String getDateTimeString(Date date) {
+		// Always use the initial form of the method.
+		return getDateTimeString(date, DateFormat.MEDIUM, DateFormat.LONG);
 	}
 	
 	/**
@@ -3364,31 +3371,56 @@ public class GwtServerHelper {
 	 * 
 	 * @param em
 	 * @param key
+	 * @param dateStyle
+	 * @param timeStyle
 	 * 
 	 * @return
 	 */
+	public static String getStringFromEntryMap(Map em, String key, int dateStyle, int timeStyle) {
+		return
+			getStringFromEntryMapValue(
+				getValueFromEntryMap(
+					em,
+					key),
+				dateStyle,
+				timeStyle);
+	}
+	
 	public static String getStringFromEntryMap(Map em, String key) {
-		// Do we have entry data for this key?
+		// Always use the initial form of the method.
+		return getStringFromEntryMap(em, key, DateFormat.MEDIUM, DateFormat.LONG);		
+	}
+	
+	/**
+	 * Returns a string for a value out of the entry map from a search
+	 * results.
+	 * 
+	 * @param emValue
+	 * @param dateStyle
+	 * @param timeStyle
+	 * 
+	 * @return
+	 */
+	public static String getStringFromEntryMapValue(Object emValue, int dateStyle, int timeStyle) {
 		String reply = "";
-		Object emData = em.get(key);
-		if (null != emData) {
+		if (null != emValue) {
 			// Yes!  Is it a string?
-			if (emData instanceof String) {
+			if (emValue instanceof String) {
 				// Yes!  Return it directly.
-				reply = ((String) emData);
+				reply = ((String) emValue);
 			}
 			
 			// No, it isn't a string!  Is it a date?
-			else if (emData instanceof Date) {
+			else if (emValue instanceof Date) {
 				// Yes!  Format it for the current user and return
 				// that.
-				reply = getDateTimeString((Date) emData);
+				reply = getDateTimeString(((Date) emValue), dateStyle, timeStyle);
 			}
 			
 			else {
 				// No, it isn't a date either!  Let the object convert
 				// itself to a string and return that.
-				reply = emData.toString();
+				reply = emValue.toString();
 			}
 		}
 		
@@ -3396,6 +3428,18 @@ public class GwtServerHelper {
 		// appropriate string value for the key from the entry map.
 		// Return it.
 		return reply;
+	}
+	
+	/**
+	 * Returns the Object from an entry map.
+	 * 
+	 * @param em
+	 * @param key
+	 * 
+	 * @return
+	 */
+	public static Object getValueFromEntryMap(Map em, String key) {
+		return em.get(key);
 	}
 
 	/**
