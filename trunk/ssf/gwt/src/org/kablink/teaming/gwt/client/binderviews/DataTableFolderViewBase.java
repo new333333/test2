@@ -120,17 +120,30 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private final static int DATA_TABLE_PANEL_INDEX	= 4;
 	private final static int FOOTER_PANEL_INDEX		= 5;
 
-	// The following the various internal names used columns in the
-	// data table.
+	// The following are the various predefined names used for columns
+	// in the data table.
+	private final static String COLUMN_AUTHOR	= "author";
+	private final static String COLUMN_COMMENTS	= "comments";
+	private final static String COLUMN_DATE		= "date";
+	private final static String COLUMN_DOWNLOAD	= "download";
+	private final static String COLUMN_HTML		= "html";
+	private final static String COLUMN_NUMBER	= "number";
+	private final static String COLUMN_RATING	= "rating";
+	private final static String COLUMN_SIZE		= "size";
+	private final static String COLUMN_STATE	= "state";
+	private final static String COLUMN_TITLE	= "title";
+	
+	// The following are the various internal names used for columns in
+	// the data table.
 	private final static String COLUMN_SELECT	= "--select--";
 	private final static String COLUMN_PIN		= "--pin--";
 	private final static String COLUMN_OTHER	= "--other--";
 
 	// The following are used to construct the style names applied
 	// to the columns and rows of the data table.
-	private final static String STYLE_COL_BASE		= "vibe-dataTableFolderColumn-";
+	private final static String STYLE_COL_BASE		= "vibe-dataTableFolderColumn";
 	private final static String STYLE_COL_SELECT	= "select";
-	private final static String STYLE_ROW_BASE		= "vibe-dataTableFolderRow-";
+	private final static String STYLE_ROW_BASE		= "vibe-dataTableFolderRow";
 	private final static String STYLE_ROW_EVEN		= "even";
 	private final static String STYLE_ROW_ODD		= "odd";
 
@@ -179,7 +192,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 					m_vdt.setRowCount(responseData.getTotalRows()                                );
 					
 					// ...and ensure the table has been sized.
-					setSizeAsync();
+//					onResizeAsync();
 				}
 			});
 		}
@@ -294,10 +307,10 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * view implementations.
 	 */
 	private void constructCommonContent() {
-		// Initialize various data members of the class.
+		// Initialize various data members of the class...
 		initDataMembers();
 		
-		// Create the main panel for the content...
+		// ...create the main panel for the content...
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName("vibe-folderViewBase vibe-dataTableFolderViewBase");
 
@@ -307,32 +320,21 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		setContentHeightAdjust(getContentHeightAdjust() - padAdjust);
 		setContentWidthAdjust( getContentWidthAdjust()  - padAdjust);
 
-		// ...create the vertical panel that holds the layout that
-		// ...flows down the view...
+		// ...create a vertical panel to holds the layout that flows
+		// ...down the view...
 		m_verticalPanel = new VibeVerticalPanel();
 		m_verticalPanel.addStyleName("vibe-dataTableFolderVerticalPanelBase");
 	
 		// ...create a flow panel for the implementing class to put
-		// ...its content.
+		// ...its content...
 		m_flowPanel = new VibeFlowPanel();
 		m_flowPanel.addStyleName("vibe-dataTableFolderFlowPanelBase");
 		
-		// ...and tie everything together.
+		// ...and finally, tie everything together.
 		m_verticalPanel.add(m_flowPanel);
 		m_verticalPanel.addBottomPad();
 		m_mainPanel.add(m_verticalPanel);
 	}
-	
-	/**
-	 * Called to allow the implementing class to complete the
-	 * construction of the view.
-	 * 
-	 * @param folderColumnsList
-	 * @param folderSortBy
-	 * @param folderSortDescend
-	 */
-	public abstract void constructView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
-	public abstract void resetView(    List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
 
 	/*
 	 * Asynchronously tells the implementing class to construct itself.
@@ -351,6 +353,28 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		Scheduler.get().scheduleDeferred(doConstructView);
 	}
 	
+	/**
+	 * Called to allow the implementing class to complete the
+	 * construction of the view.
+	 * 
+	 * @param folderColumnsList
+	 * @param folderSortBy
+	 * @param folderSortDescend
+	 */
+	public abstract void constructView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
+	public abstract void resetView(    List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
+
+	/*
+	 * Returns true if the column should show presence information and
+	 * false otherwise. 
+	 */
+	private static boolean isPresenceColumn(String columnName) {
+		return columnName.equals(COLUMN_AUTHOR);
+	}
+	
+	/*
+	 * Initializes various data members for the class.
+	 */
 	private void initDataMembers() {
 		// Allocate a List<ToolPanelBase> to track the tool panels
 		// created for the view.
@@ -358,25 +382,29 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 
 		// Initialize a map of the column widths used in the data
 		// table.  The values were extracted from the implementation
-		// of folder_view_common2.jsp.
+		// of folder_view_common2.jsp...
 		m_columnWidths = new HashMap<String, Integer>();
-		m_columnWidths.put("author",     24);
-		m_columnWidths.put("comments",    8);
-		m_columnWidths.put("date",       20);
-		m_columnWidths.put("download",    8);
-		m_columnWidths.put("html",       10);
-		m_columnWidths.put("rating",     10);
-		m_columnWidths.put("size",        8);
-		m_columnWidths.put("state",       8);
-		m_columnWidths.put("title",      28);
-		m_columnWidths.put("_sortNum",    5);
-		m_columnWidths.put(COLUMN_SELECT, 4);
-		m_columnWidths.put(COLUMN_PIN,    2);
-		m_columnWidths.put(COLUMN_OTHER, 20);
+
+		// ...first, the predefined column names...
+		m_columnWidths.put(COLUMN_AUTHOR,  24);
+		m_columnWidths.put(COLUMN_COMMENTS, 8);
+		m_columnWidths.put(COLUMN_DATE,    20);
+		m_columnWidths.put(COLUMN_DOWNLOAD, 8);
+		m_columnWidths.put(COLUMN_HTML,    10);
+		m_columnWidths.put(COLUMN_NUMBER,   5);
+		m_columnWidths.put(COLUMN_RATING,  10);
+		m_columnWidths.put(COLUMN_SIZE,     8);
+		m_columnWidths.put(COLUMN_STATE,    8);
+		m_columnWidths.put(COLUMN_TITLE,   28);
+
+		// ...and then the internal column names.
+		m_columnWidths.put(COLUMN_SELECT,   4);
+		m_columnWidths.put(COLUMN_PIN,      2);
+		m_columnWidths.put(COLUMN_OTHER,   20);
 	}
 	
 	/*
-	 * Add the columns to the table.
+	 * Initializes the columns in the data table.
 	 */
 	private void initTableColumns(final FolderRowSelectionModel selectionModel, FolderRowSortHandler sortHandler) {
 		// Add a column for a checkbox selector.
@@ -389,26 +417,59 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	          }
 	        };
 	    m_dataTable.addColumn(cc, SafeHtmlUtils.fromSafeConstant("<br/>"));
-	    m_dataTable.addColumnStyleName(colIndex++, (STYLE_COL_BASE + STYLE_COL_SELECT));
-	    setColumnWidth(COLUMN_SELECT, cc);
+	    setColumnStyles(cc, COLUMN_SELECT, colIndex++);
+	    setColumnWidth(     COLUMN_SELECT, cc);
 
 	    // Scan the columns defined in this folder.
 		for (final FolderColumn fc:  m_folderColumnsList) {
-			// Define a TextColumn for each column.
-			TextColumn<FolderRow> tc = new TextColumn<FolderRow>() {
-				@Override
-				public String getValue(FolderRow fr) {
-					return fr.getColumnValue(fc);
-				}
-			};
-			tc.setSortable(true);
-			String fcTitle = fc.getColumnTitle();
-			m_dataTable.addColumn(tc, fcTitle);
-		    m_dataTable.addColumnStyleName(colIndex++, (STYLE_COL_BASE + fcTitle));
-		    setColumnWidth(fc.getColumnTitle(), tc);
+			// We need to define a Column<FolderRow, ?> of some sort
+			// for each one.  Is this a column that should show
+			// presence? 
+			Column<FolderRow, ?> column;
+			String cName = fc.getColumnName();
+			if (isPresenceColumn(cName)) {
+				// Yes!  Create a PresenceColumn for it.
+//!				...this needs to be implemented...
+				column = new TextColumn<FolderRow>() {
+					@Override
+					public String getValue(FolderRow fr) {
+						return ("*Presence?*:  " + fr.getColumnValueAsString(fc));
+					}
+				};
+			}
+			
+			else {
+				// No, this column doesn't show presence!  Define a
+				// TextColumn for it.
+				column = new TextColumn<FolderRow>() {
+					@Override
+					public String getValue(FolderRow fr) {
+						return fr.getColumnValueAsString(fc);
+					}
+				};
+			}
+			
+			column.setSortable(true);
+			m_dataTable.addColumn(column, fc.getColumnTitle());
+		    setColumnStyles(      column, cName, colIndex++);
+		    setColumnWidth(               cName, column    );
 		}
 	}
-	  
+
+	/*
+	 * Returns true if a column is the title column and false
+	 * otherwise.
+	 */
+	private static boolean isColumnTitle(String columnName) {
+		return columnName.equals(COLUMN_TITLE);
+	}
+	
+	@SuppressWarnings("unused")
+	private static boolean isColumnTitle(FolderColumn column) {
+		// Always use the initial form of the method.
+		return isColumnTitle(column.getColumnName());
+	}
+	
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
@@ -684,9 +745,23 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		});
 	}
 	
+	/*
+	 * Asynchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
+	private void onResizeAsync() {
+		ScheduledCommand doResize = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onResize();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doResize);
+	}
+	
 	/**
-	 * Sets the size of the data table based on its position in the
-	 * view.
+	 * Synchronously sets the size of the data table based on its
+	 * position in the view.
 	 * 
 	 * Overrides ViewBase.onResize()
 	 */
@@ -741,8 +816,12 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		m_dataTable.setRowStyles(new RowStyles<FolderRow>() {
 			@Override
 			public String getStyleNames(FolderRow row, int rowIndex) {
-				boolean even = (0 == (rowIndex / 2));
-				return STYLE_ROW_BASE + (even ? STYLE_ROW_EVEN : STYLE_ROW_ODD);
+				StringBuffer reply = new StringBuffer(STYLE_ROW_BASE);
+				reply.append(" ");
+				reply.append(STYLE_ROW_BASE);
+				reply.append("-");
+				reply.append((0 == (rowIndex % 2)) ? STYLE_ROW_EVEN : STYLE_ROW_ODD);
+				return reply.toString();
 			}
 		});
 		
@@ -768,12 +847,15 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		FolderRowAsyncProvider folderRowProvider = new FolderRowAsyncProvider(m_dataTable, keyProvider);
 	    folderRowProvider.addDataDisplay(m_dataTable);
 
-	    // Finally, add the table and pager to the view.
+	    // Add the table and pager to the view.
 		vp = new VibeVerticalPanel();
 	    vp.add(m_dataTable);
 	    vp.add(m_dataTablePager);
 	    vp.setCellHorizontalAlignment(m_dataTablePager, HasHorizontalAlignment.ALIGN_CENTER);
 		m_flowPanel.add(vp);
+		
+		// Finally, ensure the table gets sized correctly.
+		onResizeAsync();
 	}
 	
 	public void populateContent() {
@@ -798,11 +880,27 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	}
 
 	/*
-	 * Sets the width of a column in the data table based on the
-	 * column's title.
+	 * Sets the style on a column in the data table based on the
+	 * column's name.
 	 */
-	private void setColumnWidth(String columnTitle, Column<FolderRow, ?> column) {
-		Integer width = m_columnWidths.get(columnTitle);
+	private void setColumnStyles(Column<FolderRow, ?> column, String columnName, int colIndex) {
+		if (!(isColumnTitle(columnName))) {
+			column.setCellStyleNames("gwtUI_nowrap");
+		}
+	    StringBuffer styles = new StringBuffer(STYLE_COL_BASE);
+	    styles.append(" ");
+	    styles.append(STYLE_COL_BASE);
+	    styles.append("-");
+	    styles.append(columnName.equals(COLUMN_SELECT) ? STYLE_COL_SELECT : columnName);
+	    m_dataTable.addColumnStyleName(colIndex, styles.toString());
+	}
+	
+	/*
+	 * Sets the width of a column in the data table based on the
+	 * column's name.
+	 */
+	private void setColumnWidth(String columnName, Column<FolderRow, ?> column) {
+		Integer width = m_columnWidths.get(columnName);
 		if (null == width) {
 			width = m_columnWidths.get(COLUMN_OTHER);
 			if (null == width) {
@@ -810,18 +908,5 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			}
 		}
 		m_dataTable.setColumnWidth(column, width, Unit.PCT);
-	}
-	
-	/*
-	 * Asynchronously forces the data table to be resized.
-	 */
-	private void setSizeAsync() {
-		ScheduledCommand doResize = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onResize();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doResize);
 	}
 }

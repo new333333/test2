@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,22 +51,27 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -147,7 +153,7 @@ public class GwtViewHelper {
 		if (MiscUtil.hasString(columnName)) {
 			if      (columnName.equals("number"))   reply = Constants.DOCNUMBER_FIELD;
 			else if (columnName.equals("title"))    reply = Constants.TITLE_FIELD;
-			else if (columnName.equals("author"))   reply = "_principal";
+			else if (columnName.equals("author"))   reply = Constants.PRINCIPAL_FIELD;
 			else if (columnName.equals("comments")) reply = Constants.TOTALREPLYCOUNT_FIELD;
 			else if (columnName.equals("size"))     reply = Constants.FILE_SIZE_FIELD;
 			else if (columnName.equals("download")) reply = Constants.FILENAME_FIELD;
@@ -419,8 +425,27 @@ public class GwtViewHelper {
 				String entryId  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
 				FolderRow fr = new FolderRow(Long.parseLong(entryId), folderColumns);
 				for (FolderColumn fc:  folderColumns) {
-					String value = GwtServerHelper.getStringFromEntryMap(entryMap, fc.getColumnSearchKey());
-					fr.setColumnValue(fc, (null == (value) ? "" : value));
+					// Can we construct a PrincipalInfo for this column
+					// using the value from Map?
+					String csk     = fc.getColumnSearchKey();
+					Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
+					PrincipalInfo pi;
+					if (emValue instanceof Principal)
+					     pi = getPIFromPId(((Principal) emValue).getId());
+					else pi = null;
+					if (null == pi) {
+						// No!  Extract its String value and use that.
+						String value = GwtServerHelper.getStringFromEntryMapValue(emValue, DateFormat.SHORT, DateFormat.SHORT);
+						if (csk.equals(Constants.FILE_SIZE_FIELD)) {
+							value = trimLeadingZeros(value);
+						}
+						fr.setColumnValue(fc, (null == (value) ? "" : value));
+					}
+					
+					else {
+						// Yes, we got a PrincipalInfo!  Use that.
+						fr.setColumnValue(fc, pi);
+					}
 				}
 				folderRows.add(fr);
 			}
@@ -438,6 +463,56 @@ public class GwtViewHelper {
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
+	}
+
+	/*
+	 * Given a Principal's ID read from an entry map, returns an
+	 * equivalent PrincipalInfo object.
+	 */
+	@SuppressWarnings("unchecked")
+	private static PrincipalInfo getPIFromPId(Long pId) {
+		// Can we resolve the ID to an actual Principal object?
+		PrincipalInfo reply = null;
+		List<Long> principalIds = new ArrayList<Long>();
+		principalIds.add(pId);
+		List principals = null;
+		try {principals = ResolveIds.getPrincipals(principalIds);}
+		catch (Exception ex) {/* Ignored. */}
+		if ((null != principals) && (!(principals.isEmpty()))) {
+			for (Object o:  principals) {
+				// Yes!  Is it a User?
+				Principal p = ((Principal) o);
+				boolean isUser = (p instanceof UserPrincipal);
+				if (isUser) {
+					// Yes!  Construct the rest of the PrincipalInfo
+					// required.
+					pId = p.getId();
+					reply = PrincipalInfo.construct(pId);
+					reply.setTitle(p.getTitle());
+					User user = ((User) p);
+					reply.setPresenceUserWSId(user.getWorkspaceId());
+					
+					// Is presence enabled in this Vibe environment?
+					if (GwtServerHelper.isPresenceEnabled()) {
+						// Yes!  Can we get the PresenceInfo for this
+						// user?
+						GwtPresenceInfo presenceInfo = GwtServerHelper.getPresenceInfo(user);
+						if (null != presenceInfo) {
+							// Yes!  Store it in the PrincipalInfo.
+							reply.setPresence(presenceInfo);
+							reply.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
+						}
+					}
+				}
+				
+				// There can only ever be one ID.
+				break;
+			}
+		}
+		
+		// If we get here, reply refers to the PrincipalInfo object
+		// for the principal ID we received or is null.  Return it.
+		return reply;
 	}
 
 	/*
@@ -712,5 +787,20 @@ public class GwtViewHelper {
 		vi.setBinderInfo(bi);
 		
 		return true;
+	}
+
+	/*
+	 * Strips the leading 0's off a String value and returns it.
+	 */
+	private static String trimLeadingZeros(String value) {
+		if (null != value) {
+	        while (value.startsWith("0")) {
+	        	value = value.substring(1, value.length());
+	        }
+	        if (value.equals("")) {
+	        	value = "0";
+	        }
+		}
+		return value;
 	}
 }
