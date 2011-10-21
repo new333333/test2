@@ -32,6 +32,27 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<c:choose>
+	<c:when test="${ssUser.locale.language == 'da'}"><c:set var="ss_user_lang" value="da" /></c:when>
+	<c:when test="${ssUser.locale.language == 'de'}"><c:set var="ss_user_lang" value="de" /></c:when>
+	<c:when test="${ssUser.locale.language == 'es'}"><c:set var="ss_user_lang" value="es" /></c:when>
+	<c:when test="${ssUser.locale.language == 'fr'}"><c:set var="ss_user_lang" value="fr" /></c:when>
+	<c:when test="${ssUser.locale.language == 'hu'}"><c:set var="ss_user_lang" value="hu" /></c:when>
+	<c:when test="${ssUser.locale.language == 'it'}"><c:set var="ss_user_lang" value="it" /></c:when>
+	<c:when test="${ssUser.locale.language == 'ja'}"><c:set var="ss_user_lang" value="ja" /></c:when>
+	<c:when test="${ssUser.locale.language == 'nl'}"><c:set var="ss_user_lang" value="nl" /></c:when>
+	<c:when test="${ssUser.locale.language == 'pl'}"><c:set var="ss_user_lang" value="pl" /></c:when>
+	<c:when test="${ssUser.locale.language == 'pt'}"><c:set var="ss_user_lang" value="pt" /></c:when>
+	<c:when test="${ssUser.locale.language == 'tr'}"><c:set var="ss_user_lang" value="tr" /></c:when>
+	<c:when test="${ssUser.locale.language == 'ru'}"><c:set var="ss_user_lang" value="ru" /></c:when>
+	<c:when test="${ssUser.locale.language == 'uk'}"><c:set var="ss_user_lang" value="uk" /></c:when>
+	<c:when test="${ssUser.locale.language == 'sv'}"><c:set var="ss_user_lang" value="sv" /></c:when>
+	<c:when test="${ssUser.locale.country == 'TW'}"><c:set var="ss_user_lang" value="tw" /></c:when>
+	<c:when test="${ssUser.locale.country == 'CN'}"><c:set var="ss_user_lang" value="zh" /></c:when>
+	<c:when test="${ssUser.locale.language == 'zh'}"><c:set var="ss_user_lang" value="zh" /></c:when>
+	<c:otherwise><c:set var="ss_user_lang" value="en" /></c:otherwise>
+</c:choose>
+
 <script type="text/javascript" language="javascript">
 //If you need to change a translated string in the advanced theme langs, do it as follows
 function ss_addLanguageChanges() {
