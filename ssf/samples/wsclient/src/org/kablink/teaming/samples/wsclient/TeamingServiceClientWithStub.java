@@ -575,11 +575,23 @@ public class TeamingServiceClientWithStub {
 	public static void addDicsussionEntryWithChineseInTitle() throws Exception {
 		TeamingServiceSoapBindingStub stub = getStub();
 		FolderEntry testEntry = new FolderEntry();
+		// Option 1 - This is the original Chinese text. To embed this literal Chinese characters 
+		// in Java source code, the .java file must be saved in UTF-8 encoding. In such case, you
+		// must also specify UTF-8 as encoding when compiling the source file into class file.
+		// When using this option, the underlying web services framework (Axis 1.4) will correctly
+		// encode the input text using numeric character reference as specified by the standard.
 		//String text = "下記.txt";
-		// Assign Chinese string to a variable by using Unicode code value representation 
-		// instead of the above literal characters. Alternatively you could use the literal
-		// value, save this Java file in UTF-8 and then compile it with UTF-8 as encoding.
+		// Option 2 - Assign Chinese string to a variable by using Unicode code value representation 
+		// instead of the above literal characters. This way, you can save this .java file in 
+		// more common ISO8859-1 encoding without losing the Chinese character values. 
+		// The underlying web services framework will correctly encode these Unicode characters 
+		// using numeric character reference representation before placing them into SOAP payload.
 		String text = "\u4e0b\u8a18\u002e\u0074\u0078\u0074";
+		// Option 3 - The application (this code) encodes the text in numeric character reference 
+		// and passes the result to the underlying framework. This will work ONLY IF the underlying
+		// framework does NOT perform additional encoding on the provided input string. Otherwise,
+		// the original string can be double encoded resulting in unexpected behavior.
+		//String text = "&#x4E0B;&#x8A18;.txt";
 		byte[] ba = text.getBytes("UTF-8");
 		for(byte b:ba) {
 			int i = b & 0xFF;
@@ -593,14 +605,14 @@ public class TeamingServiceClientWithStub {
 		System.out.println();
 		testEntry.setTitle(text);
 		testEntry.setDescription(new Description(1,text));
-		testEntry.setParentBinderId(new Long(44));
+		testEntry.setParentBinderId(new Long(48));
 		long testEntryId = stub.folder_addEntry(null, testEntry, null);
 		System.out.println("Successfully created a discussion entry with ID = " + testEntryId);
 		
 		// Attach a file to the entry. This file contains Chinese in both filename and content.
 		// The following two statements are equivalent.
 		//stub.folder_uploadFileAsByteArray(null, testEntryId, null, "下記.txt", "下記".getBytes("UTF-8"));
-		stub.folder_uploadFileAsByteArray(null, testEntryId, null, "\u4e0b\u8a18\u002e\u0074\u0078\u0074", "\u4e0b\u8a18".getBytes("UTF-8"));
+		stub.folder_uploadFileAsByteArray(null, testEntryId, null, text, "\u4e0b\u8a18".getBytes("UTF-8"));
 		System.out.println("Successfully uploaded primary file with Chinese in both filename and content");
 	}
 	
