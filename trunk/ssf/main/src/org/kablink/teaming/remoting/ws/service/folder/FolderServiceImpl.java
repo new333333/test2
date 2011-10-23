@@ -86,6 +86,7 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.RemotingException;
+import org.kablink.teaming.remoting.util.ServiceUtil;
 import org.kablink.teaming.remoting.ws.BaseService;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
@@ -621,15 +622,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		try {
-			if (Validator.isNull(fileUploadDataItemName) && entry.getParentFolder().isLibrary()) {
-				// This will attach the file to appropriate definition element of file type (which is by default "upload").
-				FolderUtils.modifyLibraryEntry(entry, fileName, new ByteArrayInputStream(fileContent), null, true);
-			}
-			else {
-				if (Validator.isNull(fileUploadDataItemName)) 
-					fileUploadDataItemName="ss_attachFile1";
-				getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
-			}
+			ServiceUtil.modifyEntryWithFile(entry, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -775,15 +768,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		FileAttachment fa = getFileAttachment(entry, attachmentId);
 	
 		try {
-			if (Validator.isNull(fileUploadDataItemName) && entry.getParentFolder().isLibrary()) {
-				// This will attach the file to appropriate definition element of file type (which is by default "upload").
-				FolderUtils.modifyLibraryEntry(entry, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null, true);
-			}
-			else {
-				if (Validator.isNull(fileUploadDataItemName)) 
-					fileUploadDataItemName="ss_attachFile1";
-				getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null);
-			}
+			ServiceUtil.modifyEntryWithFile(entry, fileUploadDataItemName, fa.getFileItem().getName(),  new ByteArrayInputStream(fileContent), null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

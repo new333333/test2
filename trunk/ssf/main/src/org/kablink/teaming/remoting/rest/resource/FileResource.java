@@ -63,6 +63,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
@@ -75,7 +80,9 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.RemotingException;
+import org.kablink.teaming.remoting.rest.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.util.Constant;
+import org.kablink.teaming.remoting.util.ServiceUtil;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
 import org.kablink.util.Validator;
@@ -88,72 +95,54 @@ import com.sun.jersey.api.core.InjectParam;
 
 @Path("/file")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FileResource extends AbstractResource {
+public class FileResource {
 
+	private static Log logger = LogFactory.getLog(FileResource.class);
+	
 	@InjectParam("folderModule") private FolderModule folderModule;
     @InjectParam("fileModule") private FileModule fileModule;
-
-	public FileResource() {
-		String s = "Hey, I'm being constructed!";
-	}
 	
 	@POST
-	@Path("/name/{filename}/content")
+	@Path("/name/{entityType}/{entityId}/{filename}/content")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public FileProperties writeFileByName_MultipartFormData(@PathParam("filename") String filename,
-			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
-			@QueryParam("entity_id") long entityId,
-			@QueryParam("data_item_name") String dataItemName,
-			@QueryParam("mod_date") String modDateISO8601,
-            @Context HttpServletRequest request) 
-			throws RuntimeException, IOException {
-		InputStream is;
-        try {
-            ServletFileUpload sfu = new ServletFileUpload(new DiskFileItemFactory());
-            FileItemIterator fii = sfu.getItemIterator(request);
-            if (fii.hasNext()) {
-                FileItemStream item = fii.next();
-                is = item.openStream();
-            }
-            else
-            {
-                throw new RuntimeException("Missing form data");
-            }
-        } catch (FileUploadException e) {
-            throw new RuntimeException("Received bad multipart form data", e);
-        }
-		// write the file to vibe
-        EntityType et = EntityType.valueOf(entityType);
-        if(et == EntityType.folderEntry) {
-    		FolderEntry entry = folderModule.getEntry(null, entityId);
-    		try {
-    			Date modDate = null;
-    			if(Validator.isNotNull(modDateISO8601)) {
-    				//modDate = dateFromISO8601(modDateISO8601);
-    			}
-    			if (Validator.isNull(dataItemName) && entry.getParentFolder().isLibrary()) {
-    				// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
-    				// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
-    				FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
-    			}
-    			else {
-    				if (Validator.isNull(dataItemName)) 
-    					dataItemName="ss_attachFile1";
-    				folderModule.modifyEntry(null, entityId, dataItemName, filename, is, null);
-    			}
-    		}
-    		catch(WriteFilesException e) {
-    			throw new RemotingException(e);
-    		}
-    		catch(WriteEntryDataException e) {
-    			throw new RemotingException(e);
-    		}
-    		FileAttachment fa = entry.getFileAttachment(filename);
-    		return filePropertiesFromFileAttachment(fa);
-        }
-        else {
-        	return null;
-        }
+	public FileProperties writeFileByName_MultipartFormData(
+			@PathParam("entityType") String entityType,
+			@PathParam("entityId") long entityId,
+			@PathParam("filename") String filename,
+			@QueryParam("dataName") String dataName,
+			@QueryParam("modDate") String modDateISO8601,
+            @Context HttpServletRequest request) {
+		InputStream is = getInputStreamFromMultipartFormdata(request);
+		try {
+	        EntityType et = EntityType.valueOf(entityType);
+	        if(et == EntityType.folderEntry) {
+	    		FolderEntry entry = folderModule.getEntry(null, entityId);
+	    		try {
+	    			Date modDate = dateFromISO8601(modDateISO8601);
+	    			ServiceUtil.modifyEntryWithFile(entry, dataName, filename, is, modDate);
+	    		}
+	    		catch(WriteFilesException e) {
+	    			throw new InternalServerErrorException(e.getMessage());
+	    		}
+	    		catch(WriteEntryDataException e) {
+	    			throw new InternalServerErrorException(e.getMessage());
+	    		}
+	    		FileAttachment fa = entry.getFileAttachment(filename);
+	    		return filePropertiesFromFileAttachment(fa);
+	        }
+	        else if(et == EntityType.user) {
+	        	return null;
+	        }
+	        else {
+	        	return null;
+	        }
+		}
+		finally {
+			try {
+				is.close();
+			}
+			catch(IOException ignore) {}
+		}
 	}
 	
 	@POST
@@ -310,7 +299,11 @@ public class FileResource extends AbstractResource {
 	@Path("/name/{filename}/properties")
 	public FileProperties readFilePropertiesByName(@PathParam("filename") String filename,
 			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
-			@QueryParam("entity_id") long entityId) {
+			@QueryParam("entity_id") long entityId) 
+	throws IOException {
+		if(1==1)
+			throw new IOException("Fake IO Exception");
+		
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
     		FolderEntry entry = folderModule.getEntry(null, entityId);
@@ -364,4 +357,37 @@ public class FileResource extends AbstractResource {
 		return (FileAttachment) att;
 	}
 
+	private InputStream getInputStreamFromMultipartFormdata(HttpServletRequest request) 
+	throws WebApplicationException, UncheckedIOException {
+		InputStream is;
+        try {
+            ServletFileUpload sfu = new ServletFileUpload(new DiskFileItemFactory());
+            FileItemIterator fii = sfu.getItemIterator(request);
+            if (fii.hasNext()) {
+                FileItemStream item = fii.next();
+                is = item.openStream();
+            }
+            else
+            {
+            	throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity("Missing form data").build());
+            }
+        } catch (FileUploadException e) {
+        	logger.warn("Received bad multipart form data", e);
+        	throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity("Received bad multipart form data").build());
+        } catch (IOException e) {
+        	logger.error("Error reading multipart form data", e);
+        	throw new UncheckedIOException(e);
+		}
+        return is;
+	}
+	
+	private Date dateFromISO8601(String modDateISO8601) {
+		if(Validator.isNotNull(modDateISO8601)) {
+			DateTime dateTime = ISODateTimeFormat.basicDateTime().parseDateTime(modDateISO8601);
+			return dateTime.toDate();
+		}
+		else {
+			return null;
+		}
+	}
 }
