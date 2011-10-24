@@ -49,4 +49,12 @@ public class TypeMismatchException extends VibeRuntimeException {
 	public TypeMismatchException(String msg) {
 		super(msg);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 500; // Internal Server Error
+	}
 }

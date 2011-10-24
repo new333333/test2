@@ -42,4 +42,12 @@ public class SingletonViolationException extends VibeRuntimeException {
     public SingletonViolationException(Class clazz) {
         super("Could not instantiate " + clazz.getName() + " more than once");
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 500; // Internal Server Error
+	}
 }

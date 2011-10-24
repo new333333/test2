@@ -47,5 +47,13 @@ public class ZoneException extends VibeRuntimeException {
 	public ZoneException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 500; // Internal Server Error
+	}
 }
 

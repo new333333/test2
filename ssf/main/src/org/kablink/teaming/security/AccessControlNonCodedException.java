@@ -54,4 +54,11 @@ public class AccessControlNonCodedException extends VibeRuntimeException {
     public AccessControlNonCodedException(Throwable cause) {
         super(cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 403; // Forbidden
+	}
 }

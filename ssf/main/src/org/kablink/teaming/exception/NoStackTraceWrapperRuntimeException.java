@@ -90,4 +90,16 @@ public class NoStackTraceWrapperRuntimeException extends VibeRuntimeException {
     	wrappedException.setStackTrace(stackTrace);
     }
 
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		if(wrappedException instanceof VibeRuntimeException)
+			return ((VibeRuntimeException) wrappedException).getHttpStatusCode();
+		else
+			return 500; // Internal Server Error
+	}
+
+    
 }

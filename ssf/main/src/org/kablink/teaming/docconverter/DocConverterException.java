@@ -58,4 +58,11 @@ public class DocConverterException extends VibeRuntimeException {
     public DocConverterException(Throwable cause) {
         super(cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 500; // Internal Server Error
+	}
 }

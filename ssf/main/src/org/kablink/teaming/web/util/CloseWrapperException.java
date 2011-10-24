@@ -94,4 +94,17 @@ public class CloseWrapperException extends VibeRuntimeException {
 	public String toString() {
 		return wrappedExc.toString();
 	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		if(wrappedExc instanceof VibeRuntimeException) {
+			return ((VibeRuntimeException) wrappedExc).getHttpStatusCode();
+		}
+		else {
+			return 500; // Internal Server Error
+		}
+	}
 }

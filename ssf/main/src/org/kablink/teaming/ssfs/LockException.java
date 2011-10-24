@@ -32,9 +32,7 @@
  */
 package org.kablink.teaming.ssfs;
 
-import org.kablink.util.VibeRuntimeException;
-
-public class LockException extends VibeRuntimeException {
+public class LockException extends RuntimeException {
 
 	public LockException() {
 	}

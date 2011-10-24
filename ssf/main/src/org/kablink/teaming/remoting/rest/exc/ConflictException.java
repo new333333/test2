@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,26 +30,23 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.ssfs.server;
 
-public class KablinkFileSystemException extends RuntimeException {
+package org.kablink.teaming.remoting.rest.exc;
 
-	// tells whether warning or error
-	private boolean warning = false; // default to 'error'
-	
-	public KablinkFileSystemException() {
-	}
-	
-	public KablinkFileSystemException(String msg) {
-		super(msg);
-	}
-	
-	public KablinkFileSystemException(String msg, boolean warning) {
-		this(msg);
-		this.warning = warning;
-	}
-	
-	public boolean isWarning() {
-		return warning;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
+import org.kablink.teaming.rest.model.ErrorInfo;
+
+/**
+ * @author jong
+ *
+ */
+public class ConflictException extends WebApplicationException {
+
+	private static final long serialVersionUID = 1L;
+
+	public ConflictException(String message) {
+		super(Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(message)).build());
 	}
 }

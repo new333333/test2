@@ -953,6 +953,13 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			this.state = state;
 			this.message = message;
 		}
+		/* (non-Javadoc)
+		 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+		 */
+		@Override
+		public int getHttpStatusCode() {
+			return 500; // Internal Server Error
+		}
 		
 	}
 }

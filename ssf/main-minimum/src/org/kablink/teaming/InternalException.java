@@ -51,4 +51,11 @@ public class InternalException extends VibeRuntimeException {
     public InternalException(Throwable cause) {
         super(cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 500; // Internal Server Error
+	}
 }

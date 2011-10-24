@@ -47,4 +47,11 @@ public class AuthenticationException extends VibeRuntimeException {
     public AuthenticationException(Throwable cause) {
         super(cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 401; // Unauthorized
+	}
 }

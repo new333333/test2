@@ -80,7 +80,6 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.FolderUtils;
-import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.rest.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.util.ServiceUtil;
@@ -205,10 +204,10 @@ public class FileResource {
     			}
     		}
     		catch(WriteFilesException e) {
-    			throw new RemotingException(e);
+    			throw new RuntimeException(e);
     		}
     		catch(WriteEntryDataException e) {
-    			throw new RemotingException(e);
+    			throw new RuntimeException(e);
     		}
     		FileAttachment fa = entry.getFileAttachment(filename);
     		return filePropertiesFromFileAttachment(fa);
@@ -279,10 +278,10 @@ public class FileResource {
     			}
     		}
     		catch(WriteFilesException e) {
-    			throw new RemotingException(e);
+    			throw new RuntimeException(e);
     		}
     		catch(WriteEntryDataException e) {
-    			throw new RemotingException(e);
+    			throw new RuntimeException(e);
     		}
     		return filePropertiesFromFileAttachment(fa);
         }
