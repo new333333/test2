@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.util;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  *
  * @author Jong Kim
  */
-public class ObjectPropertyNotFoundException extends RuntimeException {
+public class ObjectPropertyNotFoundException extends VibeRuntimeException {
     public ObjectPropertyNotFoundException() {
         super();
     }

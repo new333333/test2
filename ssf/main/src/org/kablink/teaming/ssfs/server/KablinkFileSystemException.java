@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.ssfs.server;
 
-public class KablinkFileSystemException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class KablinkFileSystemException extends VibeRuntimeException {
 
 	// tells whether warning or error
 	private boolean warning = false; // default to 'error'

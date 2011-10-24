@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.ssfs;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  * Thrown to indicate that the actual type of the object 
  * (either folder or file) does not match the expectation. 
@@ -39,7 +41,7 @@ package org.kablink.teaming.ssfs;
  * @author jong
  *
  */
-public class TypeMismatchException extends RuntimeException {
+public class TypeMismatchException extends VibeRuntimeException {
 
 	public TypeMismatchException() {
 	}

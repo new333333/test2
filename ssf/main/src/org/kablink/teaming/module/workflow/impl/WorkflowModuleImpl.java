@@ -94,6 +94,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
+import org.kablink.util.VibeRuntimeException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -943,7 +944,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         // in this method.
 		return (EntryProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(EntryProcessor.PROCESSOR_KEY));			
 	}
-	class TimerException extends RuntimeException {
+	class TimerException extends VibeRuntimeException {
 		protected Entry entry;
 		protected WorkflowState state;
 		protected String message;

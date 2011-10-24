@@ -38,12 +38,14 @@
  */
 package org.kablink.teaming.docconverter;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  * @author Roy Klein
  *
  */
 
-public class DocConverterException extends RuntimeException {
+public class DocConverterException extends VibeRuntimeException {
     public DocConverterException() {
         super();
     }

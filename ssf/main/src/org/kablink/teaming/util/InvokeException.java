@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.util;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  *
  * @author Jong Kim
  */
-public class InvokeException extends RuntimeException {
+public class InvokeException extends VibeRuntimeException {
     public InvokeException() {
         super();
     }

@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.ssfs;
 
-public class NoAccessException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class NoAccessException extends VibeRuntimeException {
 
 	public NoAccessException() {
 	}

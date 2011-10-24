@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.ssfs;
 
-public class AlreadyExistsException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class AlreadyExistsException extends VibeRuntimeException {
 
 	public AlreadyExistsException() {
 	}

@@ -32,7 +32,7 @@
  */
 package org.kablink.util;
 
-public class PropertyNotFoundException extends RuntimeException {
+public class PropertyNotFoundException extends VibeRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.util;
 
-public class ThumbnailException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class ThumbnailException extends VibeRuntimeException {
 	
 	public ThumbnailException() {
         super();

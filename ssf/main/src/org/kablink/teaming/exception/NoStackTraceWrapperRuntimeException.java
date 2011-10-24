@@ -35,7 +35,9 @@ package org.kablink.teaming.exception;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-public class NoStackTraceWrapperRuntimeException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class NoStackTraceWrapperRuntimeException extends VibeRuntimeException {
 
 	private Exception wrappedException;
 	

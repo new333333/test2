@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.module.zone;
 
-public class ZoneException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class ZoneException extends VibeRuntimeException {
 
 	public ZoneException(String message) {
 		super(message);
