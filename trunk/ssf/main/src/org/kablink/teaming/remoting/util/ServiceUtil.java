@@ -39,11 +39,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -60,7 +64,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public class ServiceUtil {
 
-	public static void modifyEntryWithFile(FolderEntry entry, String dataName, String filename, InputStream is, Date modDate) 
+	public static void modifyFolderEntryWithFile(FolderEntry entry, String dataName, String filename, InputStream is, Date modDate) 
 			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException 
 			 {
 		if (Validator.isNull(dataName) && entry.getParentFolder().isLibrary()) {
@@ -87,8 +91,47 @@ public class ServiceUtil {
 					new EmptyInputData(), fileItems, null, null, options);
 		}
 	}
-	
+
+	public static void modifyUserWithFile(Principal user, String dataName,
+			String filename, InputStream is, Date modDate)
+			throws AccessControlException, ReservedByAnotherUserException,
+			WriteFilesException, WriteEntryDataException {
+		if (Validator.isNull(dataName))
+			dataName = "ss_attachFile1";
+		Map options = null;
+		MultipartFile mf;
+		if (modDate != null) {
+			options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+			mf = new DatedMultipartFile(filename, is, modDate);
+		} else {
+			mf = new SimpleMultipartFile(filename, is);
+		}
+		Map fileItems = new HashMap();
+		fileItems.put(dataName, mf);
+		getProfileModule().modifyEntry(user.getId(), new EmptyInputData(), fileItems, null, null, options);
+	}
+
+	public static void modifyBinderWithFile(Binder binder, String dataName,
+			String filename, InputStream is)
+			throws AccessControlException, ReservedByAnotherUserException,
+			WriteFilesException, WriteEntryDataException {
+		if (Validator.isNull(dataName))
+			dataName = "ss_attachFile1";
+		MultipartFile mf = new SimpleMultipartFile(filename, is);
+		Map fileItems = new HashMap();
+		fileItems.put(dataName, mf);
+		getBinderModule().modifyBinder(binder.getId(), new EmptyInputData(), fileItems, null, null);
+	}
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+	private static ProfileModule getProfileModule() {
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
+	}
+
+	private static BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("profileModule");
 	}
 }

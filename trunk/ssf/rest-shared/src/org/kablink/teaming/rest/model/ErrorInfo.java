@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,21 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.rest.model;
 
-package org.kablink.teaming.remoting.rest.exc;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author jong
  *
  */
-public class InternalServerErrorException extends WebApplicationException {
+@XmlRootElement
+public class ErrorInfo {
 
-	private static final long serialVersionUID = 1L;
-
-	public InternalServerErrorException(String message) {
-		super(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build());
+	@XmlElement
+	private String message;
+	
+	private ErrorInfo() {}
+	
+	public ErrorInfo(String message) {
+		this.message = message;
 	}
 }

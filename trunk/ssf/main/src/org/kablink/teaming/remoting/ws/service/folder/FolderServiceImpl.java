@@ -622,7 +622,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		try {
-			ServiceUtil.modifyEntryWithFile(entry, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
+			ServiceUtil.modifyFolderEntryWithFile(entry, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -768,7 +768,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		FileAttachment fa = getFileAttachment(entry, attachmentId);
 	
 		try {
-			ServiceUtil.modifyEntryWithFile(entry, fileUploadDataItemName, fa.getFileItem().getName(),  new ByteArrayInputStream(fileContent), null);
+			ServiceUtil.modifyFolderEntryWithFile(entry, fileUploadDataItemName, fa.getFileItem().getName(),  new ByteArrayInputStream(fileContent), null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

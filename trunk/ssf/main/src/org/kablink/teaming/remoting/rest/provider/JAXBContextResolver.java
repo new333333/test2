@@ -62,7 +62,8 @@ public class JAXBContextResolver implements ContextResolver<JAXBContext> {
         // of FolderEntry, and we will need to figure out how to specify a name for it. 
         // So far, the default configuration seems to work fine for us, so we go with it. 
 		//this.context = new JSONJAXBContext(JSONConfiguration.natural().rootUnwrapping(false).build(), cTypes);
-
+        
+        // TODO jong
         this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), cTypes);
     }
     
