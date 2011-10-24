@@ -827,6 +827,17 @@ body, table td, select
 	padding: 4px 8px;
 }
 
+/* Style used for all widgets on a landing page. */
+.landingPageWidgetMainPanel
+{
+}
+
+/* Styles used with the html widget on a landing page. */
+.htmlWidgetMainPanel
+{
+}
+
+
 /* Styles used with the table widget on a landing page. */
 .tableWidget
 {

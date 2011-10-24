@@ -49,6 +49,7 @@ public class ConfigData
 	implements IsSerializable, VibeRpcResponseData
 {
 	private transient TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
+	private String m_binderId;
 	private String m_configStr;
 	private boolean m_hideMasthead;
 	private boolean m_hideNavPanel;
@@ -144,9 +145,11 @@ public class ConfigData
 	/**
 	 * 
 	 */
-	public ConfigData( String configStr )
+	public ConfigData( String configStr, String binderId )
 	{
 		init();
+		
+		m_binderId = binderId;
 		
 		// Does the string that holds the configuration have a ';' at the end?
 		m_configStr = configStr;
@@ -261,7 +264,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "html" ) )
 				{
-					configItem = new HtmlConfig( itemData[i] );
+					configItem = new HtmlConfig( itemData[i], getBinderId() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "enhancedView" ) )
@@ -389,6 +392,14 @@ public class ConfigData
 		return m_bgImgRepeat;
 	}
 	
+	/**
+	 * 
+	 */
+	public String getBinderId()
+	{
+		return m_binderId;
+	}
+	
 	
 	/**
 	 * Get the name of the item from the configuration string.  The name will be the
@@ -452,6 +463,7 @@ public class ConfigData
 	{
 		m_topLevelConfig = new TopLevelConfig();
 
+		m_binderId = null;
 		m_configStr = null;
 		m_hideFooter = false;
 		m_hideMasthead = false;
@@ -509,6 +521,15 @@ public class ConfigData
 	{
 		m_bgImgUrl = imgUrl;
 	}
+	
+	/**
+	 * 
+	 */
+	public void setBinderId( String binderId )
+	{
+		m_binderId = binderId;
+	}
+	
 	
 	/**
 	 * 
