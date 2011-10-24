@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.lucene;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  * @author Jong Kim
  *
  */
-public class LuceneException extends RuntimeException {
+public class LuceneException extends VibeRuntimeException {
     public LuceneException() {
         super();
     }

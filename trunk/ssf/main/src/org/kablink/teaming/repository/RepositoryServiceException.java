@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.repository;
 
-public class RepositoryServiceException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class RepositoryServiceException extends VibeRuntimeException {
 	
 	public RepositoryServiceException() {
         super();

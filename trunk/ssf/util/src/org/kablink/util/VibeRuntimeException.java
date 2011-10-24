@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,21 +30,27 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting;
+package org.kablink.util;
 
-import org.kablink.util.VibeRuntimeException;
+/**
+ * @author jong
+ *
+ */
+public abstract class VibeRuntimeException extends RuntimeException {
 
-public class RemotingException extends VibeRuntimeException {
-    public RemotingException() {
-        super();
-    }
-    public RemotingException(String message) {
-        super(message);
-    }
-    public RemotingException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public RemotingException(Throwable cause) {
-        super(cause);
-    }
+	public VibeRuntimeException() {
+		super();
+	}
+	
+	public VibeRuntimeException(String message) {
+		super(message);
+	}
+	
+	public VibeRuntimeException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+	public VibeRuntimeException(Throwable cause) {
+		super(cause);
+	}
 }

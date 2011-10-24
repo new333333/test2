@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.security.accesstoken;
 
-public class AccessTokenException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class AccessTokenException extends VibeRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

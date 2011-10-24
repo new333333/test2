@@ -32,13 +32,15 @@
  */
 package org.kablink.teaming.security;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  * Same as <code>AccessControlException</code> except that this is not a
  * <i>coded</i> exception.
  * 
  * @author Jong Kim
  */
-public class AccessControlNonCodedException extends RuntimeException {
+public class AccessControlNonCodedException extends VibeRuntimeException {
     
     public AccessControlNonCodedException() {
         super();

@@ -35,6 +35,8 @@ package org.kablink.teaming.web.util;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  * This class is used to wrap another exception within the web tier so that the 
  * framework can direct rendering of the exception object to defCodedErrorClose.jsp 
@@ -45,7 +47,7 @@ import java.io.PrintWriter;
  * @author Jong Kim
  *
  */
-public class CloseWrapperException extends RuntimeException {
+public class CloseWrapperException extends VibeRuntimeException {
 	private Exception wrappedExc;
 	
 	public CloseWrapperException(Exception wrappedExc) {

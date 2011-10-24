@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.security.authentication;
 
-public class AuthenticationException extends RuntimeException {
+import org.kablink.util.VibeRuntimeException;
+
+public class AuthenticationException extends VibeRuntimeException {
     public AuthenticationException() {
         super();
     }

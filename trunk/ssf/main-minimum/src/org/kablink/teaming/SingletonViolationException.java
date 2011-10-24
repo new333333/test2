@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming;
 
+import org.kablink.util.VibeRuntimeException;
+
 /**
  * @author Jong Kim
  *
  */
-public class SingletonViolationException extends RuntimeException {
+public class SingletonViolationException extends VibeRuntimeException {
     public SingletonViolationException(Class clazz) {
         super("Could not instantiate " + clazz.getName() + " more than once");
     }
