@@ -82,6 +82,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.exc.InternalServerErrorException;
+import org.kablink.teaming.remoting.rest.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.util.ServiceUtil;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
@@ -113,57 +114,7 @@ public class FileResource {
             @Context HttpServletRequest request) {
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
-	        EntityType et = EntityType.valueOf(entityType);
-	        if(et == EntityType.folderEntry) {
-	    		FolderEntry entry = folderModule.getEntry(null, entityId);
-	    		try {
-	    			Date modDate = dateFromISO8601(modDateISO8601);
-	    			ServiceUtil.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
-	    		}
-	    		catch(WriteFilesException e) {
-	    			throw new InternalServerErrorException(e.getMessage());
-	    		}
-	    		catch(WriteEntryDataException e) {
-	    			throw new InternalServerErrorException(e.getMessage());
-	    		}
-	    		FileAttachment fa = entry.getFileAttachment(filename);
-	    		return filePropertiesFromFileAttachment(fa);
-	        }
-	        else if(et == EntityType.user) {
-	        	Principal user = profileModule.getEntry(entityId);
-	        	if(!(user instanceof User))
-	        		throw new BadRequestException("entityId '" + entityId + "' does not represent a user");
-	        	try {
-	    			Date modDate = dateFromISO8601(modDateISO8601);
-	    			ServiceUtil.modifyUserWithFile(user, dataName, filename, is, modDate);
-	        	}
-	    		catch(WriteFilesException e) {
-	    			throw new InternalServerErrorException(e.getMessage());
-	    		}
-	    		catch(WriteEntryDataException e) {
-	    			throw new InternalServerErrorException(e.getMessage());
-	    		}
-	    		FileAttachment fa = user.getFileAttachment(filename);
-	    		return filePropertiesFromFileAttachment(fa);
-	        }
-	        else if(et == EntityType.workspace || et == EntityType.folder) {
-	    		Binder binder = binderModule.getBinder(entityId);
-	    		try {
-	    			// Ignore modDate param, since it isn't applicable in this case.
-	    			ServiceUtil.modifyBinderWithFile(binder, dataName, filename, is);
-	    		}
-	    		catch(WriteFilesException e) {
-	    			throw new InternalServerErrorException(e.getMessage());
-	    		}
-	    		catch(WriteEntryDataException e) {
-	    			throw new InternalServerErrorException(e.getMessage());
-	    		}
-	    		FileAttachment fa = binder.getFileAttachment(filename);
-	    		return filePropertiesFromFileAttachment(fa);
-	        }
-	        else {
-	        	throw new BadRequestException("entityType '" + entityType + "' is not supported by this method");
-	        }
+			return writeFileByName(entityType, entityId, filename, dataName, modDateISO8601, request, is);
 		}
 		finally {
 			try {
@@ -174,61 +125,37 @@ public class FileResource {
 	}
 	
 	@POST
-	@Path("/name/{filename}/content")
-	public FileProperties writeFileByName2(@PathParam("filename") String filename,
-			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
-			@QueryParam("entity_id") long entityId,
-			@QueryParam("data_item_name") String dataItemName,
-			@QueryParam("mod_date") String modDateISO8601,
-            @Context HttpServletRequest request) 
-			throws RuntimeException, IOException {
-		InputStream is = request.getInputStream();
-		// write the file to vibe
-        EntityType et = EntityType.valueOf(entityType);
-        if(et == EntityType.folderEntry) {
-    		FolderEntry entry = folderModule.getEntry(null, entityId);
-    		try {
-    			Date modDate = null;
-    			if(Validator.isNotNull(modDateISO8601)) {
-    				//modDate = dateFromISO8601(modDateISO8601);
-    			}
-    			if (Validator.isNull(dataItemName) && entry.getParentFolder().isLibrary()) {
-    				// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
-    				// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
-    				FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
-    			}
-    			else {
-    				if (Validator.isNull(dataItemName)) 
-    					dataItemName="ss_attachFile1";
-    				folderModule.modifyEntry(null, entityId, dataItemName, filename, is, null);
-    			}
-    		}
-    		catch(WriteFilesException e) {
-    			throw new RuntimeException(e);
-    		}
-    		catch(WriteEntryDataException e) {
-    			throw new RuntimeException(e);
-    		}
-    		FileAttachment fa = entry.getFileAttachment(filename);
-    		return filePropertiesFromFileAttachment(fa);
-        }
-        else {
-        	return null;
-        }
+	@Path("/name/{entityType}/{entityId}/{filename}/content")
+	public FileProperties writeFileByName_Raw(
+			@PathParam("entityType") String entityType,
+			@PathParam("entityId") long entityId,
+			@PathParam("filename") String filename,
+			@QueryParam("dataName") String dataName,
+			@QueryParam("modDate") String modDateISO8601,
+            @Context HttpServletRequest request) {
+		InputStream is = getRawInputStream(request);
+		try {
+			return writeFileByName(entityType, entityId, filename, dataName, modDateISO8601, request, is);
+		}
+		finally {
+			try {
+				is.close();
+			}
+			catch(IOException ignore) {}
+		}
 	}
 
 	@POST
-	@Path("/name/{filename}/content")
+	@Path("/name/{entityType}/{entityId}/{filename}/content")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public FileProperties writeFileByName3(@PathParam("filename") String filename,
-			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
-			@QueryParam("entity_id") long entityId,
-			@QueryParam("data_item_name") String dataItemName,
-			@QueryParam("mod_date") String modDateISO8601,
-            @Context Request request) 
-			throws RuntimeException, IOException {
-		throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).
-				entity(MediaType.APPLICATION_FORM_URLENCODED + " format is not supported for uploading a file").build());
+	public FileProperties writeFileByName_ApplicationFormUrlencoded(
+			@PathParam("entityType") String entityType,
+			@PathParam("entityId") long entityId,
+			@PathParam("filename") String filename,
+			@QueryParam("dataName") String dataName,
+			@QueryParam("modDate") String modDateISO8601,
+            @Context HttpServletRequest request) {
+		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
 	}
 	
 	@POST
@@ -382,6 +309,16 @@ public class FileResource {
 		return (FileAttachment) att;
 	}
 
+	private InputStream getRawInputStream(HttpServletRequest request) 
+	throws UncheckedIOException {
+		try {
+			return request.getInputStream();
+		} catch (IOException e) {
+        	logger.error("Error reading data", e);
+        	throw new UncheckedIOException(e);
+		}
+	}
+	
 	private InputStream getInputStreamFromMultipartFormdata(HttpServletRequest request) 
 	throws WebApplicationException, UncheckedIOException {
 		InputStream is;
@@ -415,4 +352,66 @@ public class FileResource {
 			return null;
 		}
 	}
+	
+	private FileProperties writeFileByName(
+			String entityType,
+			long entityId,
+			String filename,
+			String dataName,
+			String modDateISO8601,
+            HttpServletRequest request,
+            InputStream is) {
+        EntityType et = EntityType.valueOf(entityType);
+        if(et == EntityType.folderEntry) {
+    		FolderEntry entry = folderModule.getEntry(null, entityId);
+    		try {
+    			Date modDate = dateFromISO8601(modDateISO8601);
+    			ServiceUtil.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
+    		}
+    		catch(WriteFilesException e) {
+    			throw new InternalServerErrorException(e.getMessage());
+    		}
+    		catch(WriteEntryDataException e) {
+    			throw new InternalServerErrorException(e.getMessage());
+    		}
+    		FileAttachment fa = entry.getFileAttachment(filename);
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        else if(et == EntityType.user) {
+        	Principal user = profileModule.getEntry(entityId);
+        	if(!(user instanceof User))
+        		throw new BadRequestException("entityId '" + entityId + "' does not represent a user");
+        	try {
+    			Date modDate = dateFromISO8601(modDateISO8601);
+    			ServiceUtil.modifyUserWithFile(user, dataName, filename, is, modDate);
+        	}
+    		catch(WriteFilesException e) {
+    			throw new InternalServerErrorException(e.getMessage());
+    		}
+    		catch(WriteEntryDataException e) {
+    			throw new InternalServerErrorException(e.getMessage());
+    		}
+    		FileAttachment fa = user.getFileAttachment(filename);
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder) {
+    		Binder binder = binderModule.getBinder(entityId);
+    		try {
+    			// Ignore modDate param, since it isn't applicable in this case.
+    			ServiceUtil.modifyBinderWithFile(binder, dataName, filename, is);
+    		}
+    		catch(WriteFilesException e) {
+    			throw new InternalServerErrorException(e.getMessage());
+    		}
+    		catch(WriteEntryDataException e) {
+    			throw new InternalServerErrorException(e.getMessage());
+    		}
+    		FileAttachment fa = binder.getFileAttachment(filename);
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        else {
+        	throw new BadRequestException("entityType '" + entityType + "' is not supported by this method");
+        }
+	}
+
 }
