@@ -32,16 +32,16 @@
  */
 package org.kablink.teaming.remoting.rest.provider;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.kablink.teaming.rest.model.ErrorInfo;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 
 @Provider
 public class HibernateOptimisticLockingFailureMapper implements ExceptionMapper<HibernateOptimisticLockingFailureException> {
 	public Response toResponse(HibernateOptimisticLockingFailureException ex) {
-		return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
+		return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(ex.getMessage())).build();
 	}
 }

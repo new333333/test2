@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.remoting.rest.resource;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -45,7 +43,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -55,7 +52,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
 import javax.ws.rs.PathParam;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -69,27 +65,29 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileByTheIdException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.RemotingException;
+import org.kablink.teaming.remoting.rest.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.exc.InternalServerErrorException;
-import org.kablink.teaming.remoting.rest.util.Constant;
 import org.kablink.teaming.remoting.util.ServiceUtil;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.sun.jersey.api.core.InjectParam;
 
@@ -101,6 +99,8 @@ public class FileResource {
 	
 	@InjectParam("folderModule") private FolderModule folderModule;
     @InjectParam("fileModule") private FileModule fileModule;
+    @InjectParam("profileModule") private ProfileModule profileModule;
+    @InjectParam("binderModule") private BinderModule binderModule;
 	
 	@POST
 	@Path("/name/{entityType}/{entityId}/{filename}/content")
@@ -119,7 +119,7 @@ public class FileResource {
 	    		FolderEntry entry = folderModule.getEntry(null, entityId);
 	    		try {
 	    			Date modDate = dateFromISO8601(modDateISO8601);
-	    			ServiceUtil.modifyEntryWithFile(entry, dataName, filename, is, modDate);
+	    			ServiceUtil.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
 	    		}
 	    		catch(WriteFilesException e) {
 	    			throw new InternalServerErrorException(e.getMessage());
@@ -131,10 +131,39 @@ public class FileResource {
 	    		return filePropertiesFromFileAttachment(fa);
 	        }
 	        else if(et == EntityType.user) {
-	        	return null;
+	        	Principal user = profileModule.getEntry(entityId);
+	        	if(!(user instanceof User))
+	        		throw new BadRequestException("entityId '" + entityId + "' does not represent a user");
+	        	try {
+	    			Date modDate = dateFromISO8601(modDateISO8601);
+	    			ServiceUtil.modifyUserWithFile(user, dataName, filename, is, modDate);
+	        	}
+	    		catch(WriteFilesException e) {
+	    			throw new InternalServerErrorException(e.getMessage());
+	    		}
+	    		catch(WriteEntryDataException e) {
+	    			throw new InternalServerErrorException(e.getMessage());
+	    		}
+	    		FileAttachment fa = user.getFileAttachment(filename);
+	    		return filePropertiesFromFileAttachment(fa);
+	        }
+	        else if(et == EntityType.workspace || et == EntityType.folder) {
+	    		Binder binder = binderModule.getBinder(entityId);
+	    		try {
+	    			// Ignore modDate param, since it isn't applicable in this case.
+	    			ServiceUtil.modifyBinderWithFile(binder, dataName, filename, is);
+	    		}
+	    		catch(WriteFilesException e) {
+	    			throw new InternalServerErrorException(e.getMessage());
+	    		}
+	    		catch(WriteEntryDataException e) {
+	    			throw new InternalServerErrorException(e.getMessage());
+	    		}
+	    		FileAttachment fa = binder.getFileAttachment(filename);
+	    		return filePropertiesFromFileAttachment(fa);
 	        }
 	        else {
-	        	return null;
+	        	throw new BadRequestException("entityType '" + entityType + "' is not supported by this method");
 	        }
 		}
 		finally {
@@ -301,9 +330,6 @@ public class FileResource {
 			@DefaultValue(Constants.ENTITY_TYPE_FOLDER_ENTRY) @QueryParam("entity_type") String entityType,
 			@QueryParam("entity_id") long entityId) 
 	throws IOException {
-		if(1==1)
-			throw new IOException("Fake IO Exception");
-		
         EntityType et = EntityType.valueOf(entityType);
         if(et == EntityType.folderEntry) {
     		FolderEntry entry = folderModule.getEntry(null, entityId);
