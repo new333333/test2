@@ -32,9 +32,7 @@
  */
 package org.kablink.teaming.remoting;
 
-import org.kablink.util.VibeRuntimeException;
-
-public class RemotingException extends VibeRuntimeException {
+public class RemotingException extends RuntimeException {
     public RemotingException() {
         super();
     }

@@ -53,4 +53,7 @@ public abstract class VibeRuntimeException extends RuntimeException {
 	public VibeRuntimeException(Throwable cause) {
 		super(cause);
 	}
+	
+    public abstract int getHttpStatusCode();
+    
 }

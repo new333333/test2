@@ -42,4 +42,12 @@ public class AlreadyExistsException extends VibeRuntimeException {
 	public AlreadyExistsException(String msg) {
 		super(msg);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 409; // Conflict
+	}
 }

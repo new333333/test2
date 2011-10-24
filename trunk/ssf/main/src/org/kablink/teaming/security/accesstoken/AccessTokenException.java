@@ -46,4 +46,12 @@ public class AccessTokenException extends VibeRuntimeException {
 		super(msg);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 403; // Forbidden
+	}
+
 }

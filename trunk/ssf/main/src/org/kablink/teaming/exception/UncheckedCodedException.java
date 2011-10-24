@@ -73,8 +73,6 @@ public abstract class UncheckedCodedException extends VibeRuntimeException imple
         setErrorArgs(errorArgs);
     }
 
-    public abstract int getHttpStatusCode();
-    
     public String getLocalizedMessage() {
     	try {
     		String str = NLT.get(getErrorCode(), getErrorArgs());

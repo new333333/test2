@@ -59,4 +59,11 @@ public class LuceneException extends VibeRuntimeException {
     		return super.toString();
     	}
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		return 500; // Internal Server Error
+	}
 }

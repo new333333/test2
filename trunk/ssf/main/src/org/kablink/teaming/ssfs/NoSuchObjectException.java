@@ -32,9 +32,7 @@
  */
 package org.kablink.teaming.ssfs;
 
-import org.kablink.util.VibeRuntimeException;
-
-public class NoSuchObjectException extends VibeRuntimeException {
+public class NoSuchObjectException extends RuntimeException {
 
 	public NoSuchObjectException() {
 	}

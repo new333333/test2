@@ -22,15 +22,13 @@
 
 package org.kablink.util.dao.hibernate;
 
-import org.kablink.util.VibeRuntimeException;
-
 /**
  * <a href="DynamicDialectException.java.html"><b><i>View Source</i></b></a>
  *
  * @author  Brian Wing Shun Chan
  *
  */
-public class DynamicDialectException extends VibeRuntimeException {
+public class DynamicDialectException extends RuntimeException {
 
 	public DynamicDialectException() {
 		super();
