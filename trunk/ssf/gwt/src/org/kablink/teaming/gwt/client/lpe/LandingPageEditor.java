@@ -140,7 +140,7 @@ public class LandingPageEditor extends Composite
 		
 		// Get the configuration data that defines this landing page.
 		m_lpeConfig = getLandingPageConfig();
-		configData = new ConfigData( m_lpeConfig.getConfigStr() );
+		configData = new ConfigData( m_lpeConfig.getConfigStr(), m_lpeConfig.getBinderId() );
 		
 		// Parse the configuration data.
 		configData.parse();

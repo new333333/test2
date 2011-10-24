@@ -2788,6 +2788,7 @@ public class GwtServerHelper {
 		ConfigData configData;
 		
 		configData = new ConfigData();
+		configData.setBinderId( binderId );
 
 		try
 		{

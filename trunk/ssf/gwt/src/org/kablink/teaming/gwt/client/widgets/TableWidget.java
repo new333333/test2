@@ -71,6 +71,9 @@ public class TableWidget extends VibeWidget
 		
 		// Add a widget to this table as defined in the TableConfig data
 		addChildWidgetsToTable( config );
+
+		// All composites must call initWidget() in their constructors.
+		initWidget( m_layoutPanel );
 	}
 
 	/**
@@ -242,7 +245,7 @@ public class TableWidget extends VibeWidget
 			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
 		}
 	}
-
+	
 	
 	/**
 	 * 
@@ -250,11 +253,9 @@ public class TableWidget extends VibeWidget
 	private void init( TableProperties properties )
 	{
 		m_layoutPanel = new VibeFlowPanel();
+		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" );
 		m_layoutPanel.addStyleName( "tableWidgetMainPanel" );
 		
 		createTable( properties );
-
-		// All composites must call initWidget() in their constructors.
-		initWidget( m_layoutPanel );
 	}
 }

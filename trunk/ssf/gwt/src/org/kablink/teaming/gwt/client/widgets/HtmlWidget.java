@@ -31,108 +31,95 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.lpe;
+package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.lpe.HtmlConfig;
+import org.kablink.teaming.gwt.client.lpe.HtmlProperties;
 
-import org.kablink.teaming.gwt.client.widgets.HtmlWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-
+import com.google.gwt.user.client.Timer;
 
 
 /**
- * This class represents the configuration data for an Html widget
+ * 
  * @author jwootton
  *
  */
-public class HtmlConfig extends ConfigItem
+public class HtmlWidget extends VibeWidget
 {
-	private HtmlProperties	m_properties;
-	private String m_binderId;
-	
+	private VibeFlowPanel m_layoutPanel;
+	private HtmlProperties m_properties;
+	private Timer m_timer = null;
+
 	/**
 	 * 
 	 */
-	public HtmlConfig( String configStr, String binderId )
+	public HtmlWidget( HtmlConfig config )
 	{
-		String[] results;
+		HtmlProperties properties;
+		
+		properties = null;
+		if ( config != null )
+			properties = config.getProperties();
+		
+		init( properties, config.getBinderId() );
+		
+		// All composites must call initWidget() in their constructors.
+		initWidget( m_layoutPanel );
+	}
+
+	/**
+	 * 
+	 */
+	private void init( HtmlProperties properties, String binderId )
+	{
+		m_layoutPanel = new VibeFlowPanel();
+		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" );
+		m_layoutPanel.addStyleName( "htmlWidgetMainPanel" );
 		
 		m_properties = new HtmlProperties();
-		m_binderId = binderId;
+		if ( properties != null )
+			m_properties.copy( properties );
 		
-		// Split the configuration data into its parts.
-		results = configStr.split( "[,;]" );
-		if ( results != null )
+		// Replace any markup that may be in the html.
+		m_properties.replaceMarkup( binderId );
+		
+		updateWidget();
+	}
+
+
+	/**
+	 * 
+	 */
+	private void updateWidget()
+	{
+		// Are we waiting for the ajax call to do markup replacement?
+		if ( m_properties.isRpcInProgress() )
 		{
-			int i;
-			
-			for (i = 0; i < results.length; ++i)
+			// Yes
+			// Have we already created a timer?
+			if ( m_timer == null )
 			{
-				String[] results2;
-				
-				results2 = ConfigData.splitConfigItem( results[i] );
-				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
+				// No, create one.
+				m_timer = new Timer()
 				{
-					try
+					/**
+					 * 
+					 */
+					@Override
+					public void run()
 					{
-						if ( results2[0].equalsIgnoreCase( "data" ) )
-						{
-							String html;
-							
-							html = ConfigData.decodeSeparators( results2[1] );
-							m_properties.setHtmlWithMarkup( html );
-						}
+						updateWidget();
 					}
-					catch (Exception ex)
-					{
-						// Nothing to do.  This is here to handle the case when the data is
-						// not properly url encoded.
-					}
-				}
+				};
 			}
+			
+			m_timer.schedule( 250 );
+			return;
 		}
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void addChild( ConfigItem configItem )
-	{
-		// Nothing to do.
-	}
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget()
-	{
-		return new HtmlWidget( this );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public HtmlDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new HtmlDropWidget( lpe, this );
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public HtmlProperties getProperties()
-	{
-		return m_properties;
+
+		// Update this widget with the given html.
+		if ( m_layoutPanel != null )
+			m_layoutPanel.getElement().setInnerHTML( m_properties.getHtml() );
 	}
 }
+
