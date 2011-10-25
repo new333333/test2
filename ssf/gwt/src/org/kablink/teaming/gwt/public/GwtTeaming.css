@@ -830,11 +830,43 @@ body, table td, select
 /* Style used for all widgets on a landing page. */
 .landingPageWidgetMainPanel
 {
+	padding: 6px;
+}
+
+/* Style used for the title on widgets in a landing page. */
+.landingPageWidgetTitlePanel
+{
+  background: #949494;
+  color: #f6f6f6;
+  font-size: 14px;
+  font-weight:bold;
+  padding: 8px;
+  margin-bottom: 2px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
 }
 
 /* Styles used with the html widget on a landing page. */
 .htmlWidgetMainPanel
 {
+}
+
+
+/* Styles used with the list widget on a landing page. */
+.listWidgetMainPanel
+{
+}
+
+.listWidgetTitlePanel
+{
+}
+
+.listWidgetContentPanel
+{
+  background-color:#ededed; 
+  padding: 8px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
 }
 
 

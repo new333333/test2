@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.widgets.ListWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 import com.google.gwt.http.client.URL;
@@ -48,18 +49,20 @@ public class ListConfig extends ConfigItem
 {
 	private ListProperties m_properties;
 	private ArrayList<ConfigItem> m_configItems;
+	private String m_landingPageStyle;
 	
 	
 	/**
 	 * 
 	 */
-	public ListConfig( String configStr )
+	public ListConfig( String configStr, String landingPageStyle )
 	{
 		int i;
 		String[] propsStr;
 		
 		m_properties = new ListProperties();
 		m_configItems = new ArrayList<ConfigItem>();
+		m_landingPageStyle = landingPageStyle;
 
 		// Split the string "listStart,showBorder=1,title=xxx" into its parts.
 		propsStr = configStr.split( "[,;]" );
@@ -106,7 +109,10 @@ public class ListConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget()
 	{
-		return null;
+		ListWidget listWidget;
+		
+		listWidget = new ListWidget( this );
+		return listWidget;
 	}
 	
 	/**

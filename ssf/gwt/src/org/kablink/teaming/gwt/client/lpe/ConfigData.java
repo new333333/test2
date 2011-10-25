@@ -58,6 +58,7 @@ public class ConfigData
 	private String m_bgColor;
 	private String m_bgImgUrl;
 	private String m_bgImgRepeat;
+	private String m_lpStyle;		// The current values for this are mashup_dark.css or mashup.css
 	
 
 	/**
@@ -228,7 +229,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "listStart" ) )
 				{
-					configItem = new ListConfig( itemData[i] );
+					configItem = new ListConfig( itemData[i], getLandingPageStyle() );
 					
 					// Recursively call ourselves and add items to the ListConfig object we just created.
 					i = addConfigItems( configItem, itemData, i+1 );
@@ -455,6 +456,14 @@ public class ConfigData
 		return m_hideNavPanel;
 	}
 	
+	/**
+	 * 
+	 */
+	public String getLandingPageStyle()
+	{
+		return m_lpStyle;
+	}
+	
 	
 	/**
 	 * Initialized data members to their default value.
@@ -570,6 +579,14 @@ public class ConfigData
 	public void setHideNavPanel( boolean hideNavPanel )
 	{
 		m_hideNavPanel = hideNavPanel;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setLandingPageStyle( String style )
+	{
+		m_lpStyle = style;
 	}
 	
 	
