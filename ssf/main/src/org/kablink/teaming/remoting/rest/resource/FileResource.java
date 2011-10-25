@@ -214,7 +214,6 @@ public class FileResource {
 		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
 	}
 
-	// Read file content
 	@GET
 	@Path("/name/{entityType}/{entityId}/{filename}/content")
 	public Response readFileContentByName(
@@ -224,7 +223,6 @@ public class FileResource {
 		return readFileContent(entityType, entityId, filename);
 	}
 	
-	// Read file content
 	@GET
 	@Path("/id/{fileid}/content")
 	public Response readFileContentById(@PathParam("fileid") String fileId) {
@@ -233,7 +231,6 @@ public class FileResource {
 		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
 	}
 	
-	// Read file properties
 	@GET
 	@Path("/name/{entityType}/{entityId}/{filename}/properties")
 	public FileProperties readFilePropertiesByName(
@@ -243,7 +240,6 @@ public class FileResource {
 		return readFileProperties(entityType, entityId, filename);
 	}
 	
-	// Read file properties
 	@GET
 	@Path("/id/{fileid}/properties")
 	public FileProperties readFilePropertiesById(@PathParam("fileid") String fileId) {
@@ -255,10 +251,15 @@ public class FileResource {
 	// There is no method for updating file properties (at least yet). 
 	// File properties are modified only indirectly when file content is modified.
 
-	// Delete file content as well as the properties associated with the file.
+	// Delete the content as well as the properties associated with the file.
 	@DELETE
-	public void deleteFile(@PathParam("id") String id) {
-		// TODO jong
+	@Path("/name/{entityType}/{entityId}/{filename}/content")
+	public void deleteFile(
+			@PathParam("entityType") String entityType,
+			@PathParam("entityId") long entityId,
+			@PathParam("filename") String filename) {
+// TODO jong
+		
 	}
 	
 	@GET
