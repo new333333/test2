@@ -417,8 +417,11 @@ public class ContentControl extends Composite
 					switch ( wt )
 					{
 					case LANDING_PAGE:
-						GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
-						viHandled = true;
+						if ( Window.confirm( "Show new landing page?" ) )
+						{
+							GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
+							viHandled = true;
+						}
 						break;
 						
 					case DISCUSSIONS:

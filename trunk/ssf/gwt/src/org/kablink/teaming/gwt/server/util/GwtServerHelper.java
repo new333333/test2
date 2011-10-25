@@ -2794,6 +2794,7 @@ public class GwtServerHelper {
 		{
 			Binder binder;
 			CustomAttribute customAttr;
+			String style;
 			
 			binder = allModules.getBinderModule().getBinder( Long.parseLong( binderId ) );
 			
@@ -2821,6 +2822,17 @@ public class GwtServerHelper {
     		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_FOOTER );
     		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
     			configData.setHideFooter( ((Boolean) customAttr.getValue()).booleanValue() );
+    		
+    		// Get the value of the "landing page style" setting.
+    		style = "mashup_dark.css";
+    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_STYLE );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
+    		{
+    			style = (String) customAttr.getValue();
+    			if ( style == null || style.length() == 0 )
+    				style = "mashup_dark.css";
+    		}
+    		configData.setLandingPageStyle( style );
 			
 			// Get the other settings that are stored in the "mashup__properties" custom attribute
     		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_PROPERTIES );
