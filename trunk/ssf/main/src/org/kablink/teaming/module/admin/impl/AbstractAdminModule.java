@@ -653,11 +653,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	   	long zoneId = RequestContextHolder.getRequestContext().getZoneId();
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
  		if (info != null) {
- 			Long fileVersionMaxAge = getFileVersionsMaxAge();
- 			if (fileVersionMaxAge != null && fileVersionMaxAge > 0) {
- 				getFileVersionAgingObject().setScheduleInfo(info);
- 				getFileVersionAgingObject().enable(Boolean.TRUE, zoneId);
- 			}
+			getFileVersionAgingObject().setScheduleInfo(info);
+			getFileVersionAgingObject().enable(Boolean.TRUE, zoneId);
  		}
   	}
 
