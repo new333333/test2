@@ -254,12 +254,19 @@ public class FileResource {
 	// Delete the content as well as the properties associated with the file.
 	@DELETE
 	@Path("/name/{entityType}/{entityId}/{filename}/content")
-	public void deleteFile(
+	public void deleteFileByName(
 			@PathParam("entityType") String entityType,
 			@PathParam("entityId") long entityId,
 			@PathParam("filename") String filename) {
-// TODO jong
-		
+		deleteFile(entityType, entityId, filename);
+	}
+	
+	@DELETE
+	@Path("/id/{fileid}/content")
+	public void deleteFileById(@PathParam("fileid") String fileId) {
+		FileAttachment fa = getFileAttachment(fileId);
+		DefinableEntity entity = fa.getOwner().getEntity();
+		deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
 	}
 	
 	@GET
@@ -468,4 +475,27 @@ public class FileResource {
 		fa = entity.getFileAttachment(filename);
 		return filePropertiesFromFileAttachment(fa);
 	}
+	
+	private void deleteFile(String entityType, long entityId, String filename) 
+	throws BadRequestException {// TODO jong
+        EntityType et = EntityType.valueOf(entityType);
+        DefinableEntity entity;
+        FileAttachment fa;
+        if(et == EntityType.folderEntry) {
+    		entity = folderModule.getEntry(null, entityId);
+        }
+        else if(et == EntityType.user) {
+        	entity = profileModule.getEntry(entityId);
+        	if(!(entity instanceof User))
+        		throw new BadRequestException("entityId '" + entityId + "' does not represent a user");
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder) {
+    		entity = binderModule.getBinder(entityId);
+        }
+        else {
+        	throw new BadRequestException("entityType '" + entityType + "' is unknown or not supported by this method");
+        }
+		fa = entity.getFileAttachment(filename);
+	}
+
 }
