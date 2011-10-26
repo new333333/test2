@@ -39,3 +39,4 @@
 
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtTeaming.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtProfile.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtLandingPage.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />

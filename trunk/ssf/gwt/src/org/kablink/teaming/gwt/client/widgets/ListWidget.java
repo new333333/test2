@@ -56,6 +56,7 @@ public class ListWidget extends VibeWidget
 	private VibeFlowPanel m_layoutPanel;
 	private ListProperties m_properties;
 	private UListElement m_uList;
+	private String m_style;
 
 	/**
 	 * 
@@ -113,18 +114,29 @@ public class ListWidget extends VibeWidget
 		String title;
 		ListProperties properties;
 		
-		properties = null;
-		if ( config != null )
-			properties = config.getProperties();
+		properties = config.getProperties();
+		m_style = config.getLandingPageStyle();
 		
 		m_layoutPanel = new VibeFlowPanel();
-		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" );
-		m_layoutPanel.addStyleName( "listWidgetMainPanel" );
+		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
+		m_layoutPanel.addStyleName( "listWidgetMainPanel" + m_style );
 		
 		m_properties = new ListProperties();
 		if ( properties != null )
 			m_properties.copy( properties );
 		
+		// Turn borders on/off
+		if ( properties.getShowBorderValue() )
+		{
+			m_layoutPanel.removeStyleName( "landingPageWidgetNoBorder" );
+			m_layoutPanel.addStyleName( "landingPageWidgetShowBorder" );
+		}
+		else
+		{
+			m_layoutPanel.removeStyleName( "landingPageWidgetShowBorder" );
+			m_layoutPanel.addStyleName( "landingPageWidgetNoBorder" );
+		}
+
 		// Is there a title?
 		title = properties.getTitle();
 		if ( title != null && title.length() > 0 )
@@ -134,8 +146,8 @@ public class ListWidget extends VibeWidget
 			
 			// Yes, create a place for the title to live.
 			titlePanel = new VibeFlowPanel();
-			titlePanel.addStyleName( "landingPageWidgetTitlePanel" );
-			titlePanel.addStyleName( "listWidgetTitlePanel" );
+			titlePanel.addStyleName( "landingPageWidgetTitlePanel" + m_style );
+			titlePanel.addStyleName( "listWidgetTitlePanel" + m_style );
 			
 			label = new InlineLabel( title );
 			titlePanel.add( label );
@@ -148,7 +160,7 @@ public class ListWidget extends VibeWidget
 			VibeFlowPanel contentPanel;
 			
 			contentPanel = new VibeFlowPanel();
-			contentPanel.addStyleName( "listWidgetContentPanel" );
+			contentPanel.addStyleName( "listWidgetContentPanel" + m_style );
 			m_layoutPanel.add( contentPanel );
 			
 			// Create a <ul> element for the content of the list to live in

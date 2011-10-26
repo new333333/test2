@@ -199,7 +199,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "tableStart" ) )
 				{
-					configItem = new TableConfig( itemData[i] );
+					configItem = new TableConfig( itemData[i], getLandingPageStyle() );
 					
 					// Recursively call ourselves and add items to the TableConfig object we just created.
 					i = addConfigItems( configItem, itemData, i+1 );

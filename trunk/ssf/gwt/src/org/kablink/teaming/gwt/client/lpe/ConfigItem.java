@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.widgets.VibeWidget;
  */
 public abstract class ConfigItem
 {
+	private String m_landingPageStyle = "";
+	
 	/**
 	 * 
 	 */
@@ -59,4 +61,21 @@ public abstract class ConfigItem
 	 */
 	public abstract DropWidget createDropWidget( LandingPageEditor lpe );
 	
+	/**
+	 * 
+	 */
+	public String getLandingPageStyle()
+	{
+		return m_landingPageStyle;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setLandingPageStyle( String style )
+	{
+		m_landingPageStyle = "";
+		if ( style != null && style.equalsIgnoreCase( "mashup_dark.css" ) )
+			m_landingPageStyle = "_dark";
+	}
 }// end ConfigItem

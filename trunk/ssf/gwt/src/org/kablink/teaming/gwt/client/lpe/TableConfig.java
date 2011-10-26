@@ -54,7 +54,7 @@ public class TableConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public TableConfig( String configStr )
+	public TableConfig( String configStr, String landingPageStyle )
 	{
 		int i;
 		int numCols;
@@ -64,6 +64,7 @@ public class TableConfig extends ConfigItem
 		
 		m_properties = new TableProperties();
 		m_configItems = new ArrayList<ConfigItem>();
+		setLandingPageStyle( landingPageStyle );
 
 		// Split the string "tableStart,showBorder=n,cols=n,colWidths=xxxx" into its parts.
 		propsStr = configStr.split( "[,;]" );
