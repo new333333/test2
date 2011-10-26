@@ -1,0 +1,102 @@
+/* Style used for all widgets on a landing page. */
+.landingPageWidgetMainPanel 
+{
+	margin: 6px;
+}
+
+.landingPageWidgetMainPanel_dark 
+{
+	background-color: #ededed;
+	margin: 6px;
+}
+
+/* Style used for the title on widgets in a landing page. */
+.landingPageWidgetTitlePanel
+{
+	background-color:#ededed;
+	color: #777; 
+	font-size: 14px;
+	font-weight:bold;
+	padding: 8px;
+}
+
+.landingPageWidgetTitlePanel_dark
+{
+  background: #949494;
+  color: #f6f6f6;
+  font-size: 14px;
+  font-weight:bold;
+  padding: 5px;
+  margin-bottom: 2px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+}
+
+.landingPageWidgetNoBorder
+{
+	border-width: 0px;
+}
+
+.landingPageWidgetShowBorder
+{
+	border-color: #ccc;
+	border-style: solid;
+	border-width: 1px;
+}
+
+
+/* ######## Styles used with the html widget on a landing page. ######## */
+
+/* Styles used with the html widget on a landing page. */
+.htmlWidgetMainPanel
+{
+}
+
+/* ##################################################################### */
+
+
+/* ######## Styles used with the list widget on a landing page. ######## */
+
+.listWidgetMainPanel
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.listWidgetMainPanel_dark
+{
+}
+
+.listWidgetTitlePanel
+{
+}
+
+.listWidgetContentPanel, .listWidgetContentPanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+
+/* ####### Styles used with the table widget on a landing page. ######## */
+
+.tableWidget, .tableWidget_dark
+{
+  	background-color: transparent;
+	border-collapse: collapse;
+  	padding: 0px;
+  	text-align:left !important;
+  	width: 100%;
+}
+
+.tableWidgetMainPanel
+{
+}
+
+.tableWidgetMainPanel_dark
+{
+	background-color: transparent;
+}
+
+/* ##################################################################### */

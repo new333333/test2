@@ -49,6 +49,7 @@ public class HtmlWidget extends VibeWidget
 	private VibeFlowPanel m_layoutPanel;
 	private HtmlProperties m_properties;
 	private Timer m_timer = null;
+	private String m_style;
 
 	/**
 	 * 
@@ -57,9 +58,8 @@ public class HtmlWidget extends VibeWidget
 	{
 		HtmlProperties properties;
 		
-		properties = null;
-		if ( config != null )
-			properties = config.getProperties();
+		properties = config.getProperties();
+		m_style = config.getLandingPageStyle();
 		
 		init( properties, config.getBinderId() );
 		
@@ -73,8 +73,8 @@ public class HtmlWidget extends VibeWidget
 	private void init( HtmlProperties properties, String binderId )
 	{
 		m_layoutPanel = new VibeFlowPanel();
-		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" );
-		m_layoutPanel.addStyleName( "htmlWidgetMainPanel" );
+		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
+		m_layoutPanel.addStyleName( "htmlWidgetMainPanel" + m_style );
 		
 		m_properties = new HtmlProperties();
 		if ( properties != null )

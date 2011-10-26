@@ -55,6 +55,7 @@ public class TableWidget extends VibeWidget
 {
 	private VibeFlowPanel m_layoutPanel;
 	private FlexTable m_table;
+	private String m_style;
 
 	/**
 	 * 
@@ -63,9 +64,8 @@ public class TableWidget extends VibeWidget
 	{
 		TableProperties properties;
 		
-		properties = null;
-		if ( config != null )
-			properties = config.getProperties();
+		properties = config.getProperties();
+		m_style = config.getLandingPageStyle();
 		
 		init( properties );
 		
@@ -172,7 +172,7 @@ public class TableWidget extends VibeWidget
 		numColumns = props.getNumColumnsInt();
 		
 		m_table = new FlexTable();
-		m_table.addStyleName( "tableWidget" );
+		m_table.addStyleName( "tableWidget" + m_style );
 		m_table.setCellPadding( 4 );
 		
 		// Add 1 row to the table.
@@ -188,15 +188,14 @@ public class TableWidget extends VibeWidget
 			// Turn borders on/off
 			if ( props.getShowBorderValue() )
 			{
-				cellFormatter.removeStyleName( 0, i, "tableWidgetNoBorder" );
-				cellFormatter.addStyleName( 0, i, "tableWidgetShowBorder" );
+				cellFormatter.removeStyleName( 0, i, "landingPageWidgetNoBorder" );
+				cellFormatter.addStyleName( 0, i, "landingPageWidgetShowBorder" );
 			}
 			else
 			{
-				cellFormatter.removeStyleName( 0, i, "tableWidgetShowBorder" );
-				cellFormatter.addStyleName( 0, i, "tableWidgetNoBorder" );
+				cellFormatter.removeStyleName( 0, i, "landingPageWidgetShowBorder" );
+				cellFormatter.addStyleName( 0, i, "landingPageWidgetNoBorder" );
 			}
-			
 		}
 
 		m_layoutPanel.add( m_table );
@@ -253,8 +252,8 @@ public class TableWidget extends VibeWidget
 	private void init( TableProperties properties )
 	{
 		m_layoutPanel = new VibeFlowPanel();
-		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" );
-		m_layoutPanel.addStyleName( "tableWidgetMainPanel" );
+		m_layoutPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
+		m_layoutPanel.addStyleName( "tableWidgetMainPanel" + m_style );
 		
 		createTable( properties );
 	}

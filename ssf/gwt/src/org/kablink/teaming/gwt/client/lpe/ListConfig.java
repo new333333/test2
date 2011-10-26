@@ -49,7 +49,6 @@ public class ListConfig extends ConfigItem
 {
 	private ListProperties m_properties;
 	private ArrayList<ConfigItem> m_configItems;
-	private String m_landingPageStyle;
 	
 	
 	/**
@@ -62,7 +61,7 @@ public class ListConfig extends ConfigItem
 		
 		m_properties = new ListProperties();
 		m_configItems = new ArrayList<ConfigItem>();
-		m_landingPageStyle = landingPageStyle;
+		setLandingPageStyle( landingPageStyle );
 
 		// Split the string "listStart,showBorder=1,title=xxx" into its parts.
 		propsStr = configStr.split( "[,;]" );
