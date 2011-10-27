@@ -54,6 +54,7 @@ public class EntryProperties
 	private boolean m_showTitle;
 	private String m_entryId;
 	private String m_entryName;
+	private String m_entryDesc;
 	private String m_parentBinderName;	// Name of the binder the entry is found in.
 	private String m_zoneUUID;
 	private String m_viewEntryUrl;
@@ -101,6 +102,7 @@ public class EntryProperties
 				if ( gwtFolderEntry != null )
 				{
 					m_entryName = gwtFolderEntry.getEntryName();
+					m_entryDesc = gwtFolderEntry.getEntryDesc();
 					m_parentBinderName = gwtFolderEntry.getParentBinderName();
 					m_viewEntryUrl = gwtFolderEntry.getViewEntryUrl();
 				}
@@ -195,6 +197,14 @@ public class EntryProperties
 	
 	
 	/**
+	 * Return the entry's desc
+	 */
+	public String getEntryDecs()
+	{
+		return m_entryDesc;
+	}
+	
+	/**
 	 * Return the entry id.
 	 */
 	public String getEntryId()
@@ -210,6 +220,15 @@ public class EntryProperties
 	{
 		return m_entryName;
 	}// end getEntryName()
+	
+	
+	/**
+	 * Return the entry's title
+	 */
+	public String getEntryTitle()
+	{
+		return m_entryName;
+	}
 	
 	
 	/**
