@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -156,10 +158,7 @@ public class FileResource {
 	public FileProperties writeFileContentByName_ApplicationFormUrlencoded(
 			@PathParam("entityType") String entityType,
 			@PathParam("entityId") long entityId,
-			@PathParam("filename") String filename,
-			@QueryParam("dataName") String dataName,
-			@QueryParam("modDate") String modDateISO8601,
-            @Context HttpServletRequest request) {
+			@PathParam("filename") String filename) {
 		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
 	}
 	
@@ -207,10 +206,7 @@ public class FileResource {
 	@POST
 	@Path("/id/{fileid}/content")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public FileProperties writeFileContentById_ApplicationFormUrlencoded(@PathParam("fileid") String fileId,
-			@QueryParam("dataName") String dataName,
-			@QueryParam("modDate") String modDateISO8601,
-            @Context HttpServletRequest request) {
+	public FileProperties writeFileContentById_ApplicationFormUrlencoded(@PathParam("fileid") String fileId) {
 		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
 	}
 
@@ -271,16 +267,36 @@ public class FileResource {
 	
 	@GET
 	@Path("/name/{entityType}/{entityId}/{filename}/versions")
-	public List<FileVersionProperties> getFileVersions(@PathParam("id") String id) {
-		return null; // TODO jong
+	public List<FileVersionProperties> getFileVersionsByName(
+			@PathParam("entityType") String entityType,
+			@PathParam("entityId") long entityId,
+			@PathParam("filename") String filename) {
+		FileAttachment fa = findFileAttachment(entityType, entityId, filename);
+		return fileVersionsFromFileAttachment(fa);
+	}
+	
+	@GET
+	@Path("/id/{fileid}/versions")
+	public List<FileVersionProperties> getFileVersionsById(@PathParam("fileid") String fileId) {
+		FileAttachment fa = findFileAttachment(fileId);
+		return fileVersionsFromFileAttachment(fa);
 	}
 	
 	private FileProperties filePropertiesFromFileAttachment(FileAttachment fa) {
 		// TODO jong
 		FileProperties fp = new FileProperties();
-		fp.setFilename(fa.getFileItem().getName());
-		fp.setFile_length(fa.getFileItem().getLength());
+		fp.setName(fa.getFileItem().getName());
+		fp.setLength(fa.getFileItem().getLength());
 		return fp;
+	}
+	
+	private List<FileVersionProperties> fileVersionsFromFileAttachment(FileAttachment fa) {
+		Set<VersionAttachment> vas = fa.getFileVersions();
+		List<FileVersionProperties> list = new ArrayList<FileVersionProperties>(vas.size());
+		for(VersionAttachment va:vas) {
+			list.add(new FileVersionProperties(va.getId(), va.getVersionNumber()));
+		}
+		return list;
 	}
 	
 	private FileAttachment getFileAttachment(DefinableEntity entity, String filename) 
@@ -393,6 +409,27 @@ public class FileResource {
 			return fa;
 	}
 
+	private FileAttachment findFileAttachment(String entityType, long entityId, String filename)
+	throws BadRequestException, NotFoundException {
+        EntityType et = entityTypeFromString(entityType);
+        DefinableEntity entity;
+        if(et == EntityType.folderEntry) {
+    		entity = folderModule.getEntry(null, entityId);
+        }
+        else if(et == EntityType.user) {
+        	entity = profileModule.getEntry(entityId);
+        	if(!(entity instanceof User))
+        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder) {
+    		entity = binderModule.getBinder(entityId);
+        }
+        else {
+        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
+        }
+		return getFileAttachment(entity, filename);
+	}
+
 	private VersionAttachment findVersionAttachment(String fileId) 
 	throws NoFileByTheIdException {
 		FileAttachment fa = fileModule.getFileAttachmentById(fileId);
@@ -433,25 +470,8 @@ public class FileResource {
 	}
 	
 	private FileProperties readFileProperties(String entityType, long entityId, String filename) 
-	throws BadRequestException {
-        EntityType et = entityTypeFromString(entityType);
-        DefinableEntity entity;
-        FileAttachment fa;
-        if(et == EntityType.folderEntry) {
-    		entity = folderModule.getEntry(null, entityId);
-        }
-        else if(et == EntityType.user) {
-        	entity = profileModule.getEntry(entityId);
-        	if(!(entity instanceof User))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
-        }
-        else if(et == EntityType.workspace || et == EntityType.folder) {
-    		entity = binderModule.getBinder(entityId);
-        }
-        else {
-        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
-        }
-		fa = getFileAttachment(entity, filename);
+	throws BadRequestException, NotFoundException {
+		FileAttachment fa = findFileAttachment(entityType, entityId, filename);
 		return filePropertiesFromFileAttachment(fa);
 	}
 	

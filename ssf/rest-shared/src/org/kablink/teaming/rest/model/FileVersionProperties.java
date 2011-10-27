@@ -32,6 +32,29 @@
  */
 package org.kablink.teaming.rest.model;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name="fileVersion")
 public class FileVersionProperties {
+
+	private FileVersionProperties() {}
+	
+	public FileVersionProperties(String id, int versionNumber) {
+		this.id = id;
+		this.versionNumber = versionNumber;
+	}
+	
+	@XmlElement
+	private String id; // database id
+	@XmlElement
+	private int versionNumber; // 1-based increasing number
+	private int majorVersion; // 1-based increasing number
+	private int minorVersion; // 0-based increasing number
+	//private Timestamp creation;
+	//private Timestamp modification;
+	private long length; // length in bytes
+	private String note;
+	private int status;
 
 }
