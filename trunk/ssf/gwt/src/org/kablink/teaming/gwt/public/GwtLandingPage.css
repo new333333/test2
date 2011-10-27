@@ -1,3 +1,9 @@
+.landingPageOverflowAuto
+{
+	overflow: auto;
+}
+
+
 /* Style used for all widgets on a landing page. */
 .landingPageWidgetMainPanel 
 {

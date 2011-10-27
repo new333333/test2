@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
 import org.kablink.teaming.gwt.client.event.EditLandingPagePropertiesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -691,6 +693,31 @@ public class LandingPageEditor extends Composite
 		};
 		m_lpPropertiesDlg.setPopupPositionAndShow( posCallback );
 	}
+	
+	/**
+	 * Create a preview window so the user can see what the landing page will look
+	 * like without having to save the landing page.
+	 */
+	private void invokePreview()
+	{
+		String configStr;
+		ConfigData configData;
+		VibeFlowPanel previewPanel;
+		LandingPage lp;
+		
+		configStr = createConfigString();
+		configData = new ConfigData( configStr, m_lpeConfig.getBinderId() );
+		
+		previewPanel = new VibeFlowPanel();
+		previewPanel.setWidth( "800px" );
+		previewPanel.setHeight( "800px" );
+		previewPanel.getElement().setAttribute( "style", "position: absolute; left: 50px; top: 50px; overflow: auto; z-index: 100; bolder: 1 solid;" );
+		
+		lp = new LandingPage( configData );
+		previewPanel.add( lp );
+		
+		getWidget().getParent().getElement().insertFirst( previewPanel.getElement() );
+	}
 
 	/**
 	 * Return a boolean indicating whether or not the user is current dragging an item from
@@ -790,6 +817,7 @@ public class LandingPageEditor extends Composite
 	 */
 	public void onEditLPProperties( EditLandingPagePropertiesEvent event )
 	{
+		//!!!invokePreview();
 		invokeEditLandingPagePropertiesDlg();
 	}
 	
