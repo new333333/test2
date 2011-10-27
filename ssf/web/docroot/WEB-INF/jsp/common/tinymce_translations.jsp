@@ -101,18 +101,27 @@ function ss_addLanguageChanges() {
 		});
 	
 	<c:if test="${ss_user_lang == 'zh'}">
-	  tinyMCE.addI18n({zh:{
-		paste:{
-			paste_text_desc:"\u7EAF\u6587\u672C\u7C98\u8D34",
-			paste_word_desc:"\u4ECEWord\u7C98\u8D34"
-		},
-		table:{
-			split_cells_desc:"\u5206\u5272\u5355\u5143\u683C",
-			merge_cells_desc:"\u5408\u5E76\u5355\u5143\u683C",
-			row_desc:"\u884C\u5C5E\u6027",
-			cell_desc:"\u5355\u5143\u683C\u5C5E\u6027"
-			}
-	  }});
+	    tinyMCE.addI18n({zh:{
+			paste:{
+				paste_text_desc:"\u7EAF\u6587\u672C\u7C98\u8D34",
+				paste_word_desc:"\u4ECEWord\u7C98\u8D34"
+			},
+			ss_addimage:{
+				image_desc : "\u63D2\u5165/\u7F16\u8F91\u56FE\u7247"
+			},
+			advimage:{
+				image_desc : "\u63D2\u5165/\u7F16\u8F91\u56FE\u7247"
+			},
+			table:{
+				split_cells_desc:"\u5206\u5272\u5355\u5143\u683C",
+				merge_cells_desc:"\u5408\u5E76\u5355\u5143\u683C",
+				row_desc:"\u884C\u5C5E\u6027",
+				cell_desc:"\u5355\u5143\u683C\u5C5E\u6027"
+				}
+		  }});
+	    tinyMCE.addI18n('zh',{
+	    	more_colors : "\u66F4\u591A\u989C\u8272"
+	    	});
 	</c:if>
 }
 </script>
