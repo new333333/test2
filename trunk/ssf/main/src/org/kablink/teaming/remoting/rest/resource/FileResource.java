@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFileByTheIdException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheIdException;
@@ -93,13 +94,17 @@ import org.kablink.teaming.remoting.rest.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.util.ServiceUtil;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
+import org.kablink.teaming.rest.model.HistoryStamp;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 
 import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
 
 @Path("/file")
+@Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FileResource {
+public class FileResource extends AbstractResource {
 
 	private static Log logger = LogFactory.getLog(FileResource.class);
 	
@@ -109,6 +114,10 @@ public class FileResource {
     @InjectParam("binderModule") private BinderModule binderModule;
     @InjectParam("coreDao") private CoreDao coreDao;
 	
+    public FileResource() {
+    	System.out.println("Hey, I'm being created!!"); // TODO jong remove
+    }
+    
 	@POST
 	@Path("/name/{entityType}/{entityId}/{filename}/content")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -283,10 +292,18 @@ public class FileResource {
 	}
 	
 	private FileProperties filePropertiesFromFileAttachment(FileAttachment fa) {
-		// TODO jong
-		FileProperties fp = new FileProperties();
-		fp.setName(fa.getFileItem().getName());
-		fp.setLength(fa.getFileItem().getLength());
+		FileLock fl = fa.getFileLock();
+		FileProperties fp = new FileProperties(fa.getId(),
+				fa.getFileItem().getName(),
+				new HistoryStamp(Utils.redactUserPrincipalIfNecessary(fa.getCreation().getPrincipal()).getId(), fa.getCreation().getDate()),
+				new HistoryStamp(Utils.redactUserPrincipalIfNecessary(fa.getModification().getPrincipal()).getId(), fa.getModification().getDate()),
+				fa.getFileItem().getLength(),
+				fa.getHighestVersionNumber(),
+				fa.getMajorVersion(),
+				fa.getMinorVersion(),
+				fa.getFileItem().getDescription().getText(),
+				fa.getFileStatus(),
+				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null, (fl!= null)? fl.getExpirationDate():null);
 		return fp;
 	}
 	

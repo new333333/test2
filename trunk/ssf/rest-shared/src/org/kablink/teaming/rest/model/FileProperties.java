@@ -32,26 +32,162 @@
  */
 package org.kablink.teaming.rest.model;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 //This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement(name="file")
 public class FileProperties {
-
-	private String name;
-	private long length;
 	
+	private String id;
+	private String name;
+	private HistoryStamp creation;
+	private HistoryStamp modification;
+	private Long length; // in bytes
+	private Integer versionNumber;
+	private Integer majorVersion;
+	private Integer minorVersion;
+	private String note;
+	private Integer status;
+	private Long lockedBy;
+	private Calendar lockExpiration;
+	
+	private FileProperties() {}
+	
+	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
+			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
+			String note, Integer status, Long lockedBy, Calendar lockExpiration) {
+		this.id = id;
+		this.name = name;
+		this.creation = creation;
+		this.modification = modification;
+		this.length = length;
+		this.versionNumber = versionNumber;
+		this.majorVersion = majorVersion;
+		this.minorVersion = minorVersion;
+		this.note = note;
+		this.status = status;
+		this.lockedBy = lockedBy;
+		this.lockExpiration = lockExpiration;
+	}
+
+	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
+			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
+			String note, Integer status, Long lockedBy, Date lockExpiration) {
+		this.id = id;
+		this.name = name;
+		this.creation = creation;
+		this.modification = modification;
+		this.length = length;
+		this.versionNumber = versionNumber;
+		this.majorVersion = majorVersion;
+		this.minorVersion = minorVersion;
+		this.note = note;
+		this.status = status;
+		this.lockedBy = lockedBy;
+		if(lockExpiration != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(lockExpiration);
+			this.lockExpiration = cal;
+		}
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public long getLength() {
+
+	public HistoryStamp getCreation() {
+		return creation;
+	}
+
+	public void setCreation(HistoryStamp creation) {
+		this.creation = creation;
+	}
+
+	public HistoryStamp getModification() {
+		return modification;
+	}
+
+	public void setModification(HistoryStamp modification) {
+		this.modification = modification;
+	}
+
+	public Long getLength() {
 		return length;
 	}
-	public void setLength(long length) {
+
+	public void setLength(Long length) {
 		this.length = length;
+	}
+
+	public Integer getVersionNumber() {
+		return versionNumber;
+	}
+
+	public void setVersionNumber(Integer versionNumber) {
+		this.versionNumber = versionNumber;
+	}
+
+	public Integer getMajorVersion() {
+		return majorVersion;
+	}
+
+	public void setMajorVersion(Integer majorVersion) {
+		this.majorVersion = majorVersion;
+	}
+
+	public Integer getMinorVersion() {
+		return minorVersion;
+	}
+
+	public void setMinorVersion(Integer minorVersion) {
+		this.minorVersion = minorVersion;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Long getLockedBy() {
+		return lockedBy;
+	}
+
+	public void setLockedBy(Long lockedBy) {
+		this.lockedBy = lockedBy;
+	}
+
+	public Calendar getLockExpiration() {
+		return lockExpiration;
+	}
+
+	public void setLockExpiration(Calendar lockExpiration) {
+		this.lockExpiration = lockExpiration;
 	}
 	
 }

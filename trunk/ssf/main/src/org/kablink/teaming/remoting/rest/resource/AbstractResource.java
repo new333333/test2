@@ -32,19 +32,13 @@
  */
 package org.kablink.teaming.remoting.rest.resource;
 
-public class AbstractResource {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sun.jersey.spi.resource.Singleton;
+
+public abstract class AbstractResource {
 	
-    protected String checkResponseFormat(String headerParam, String queryParam, String defaultVal) {
-    	// Precedence: header -> query -> default
-        String format = headerParam;
-        if (headerParam == null || headerParam.equals("*/*")) {
-            if (queryParam == null) {
-                format = defaultVal;
-            } else {
-                format = queryParam;
-            }
-        } 
-        return format;
-    }
-    
+	protected Log logger = LogFactory.getLog(getClass());
+
 }
