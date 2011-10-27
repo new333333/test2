@@ -245,7 +245,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "entry" ) )
 				{
-					configItem = new EntryConfig( itemData[i] );
+					configItem = new EntryConfig( itemData[i], getLandingPageStyle() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "entryUrl" ) )

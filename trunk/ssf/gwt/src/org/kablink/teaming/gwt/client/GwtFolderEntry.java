@@ -48,6 +48,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 {
 	private String m_entryId;
 	private String m_entryName;
+	private String m_entryDesc;
 	
 	private Long m_parentBinderId;
 	private String m_parentBinderName;
@@ -60,11 +61,20 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		m_entryId = null;
 		m_entryName = null;
+		m_entryDesc = null;
 		m_parentBinderId = null;
 		m_parentBinderName = null;
 		m_viewUrl = null;
 	}// end GwtFolderEntry()
 	
+	
+	/**
+	 * 
+	 */
+	public String getEntryDesc()
+	{
+		return m_entryDesc;
+	}
 	
 	/**
 	 * 
@@ -137,7 +147,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 	 */
 	public String getTitle()
 	{
-		return "";
+		return m_entryName;
 	}
 	
 	/**
@@ -147,6 +157,15 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		return m_viewUrl;
 	}// end getViewEntryUrl()
+	
+	
+	/**
+	 * 
+	 */
+	public void setEntryDesc( String desc )
+	{
+		m_entryDesc = desc;
+	}
 	
 	
 	/**

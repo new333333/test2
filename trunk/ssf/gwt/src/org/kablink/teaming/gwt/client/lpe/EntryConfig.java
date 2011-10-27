@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.widgets.EntryWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 
@@ -48,11 +49,12 @@ public class EntryConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public EntryConfig( String configStr )
+	public EntryConfig( String configStr, String style )
 	{
 		String[] results;
 		
 		m_properties = new EntryProperties();
+		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie entryId=xxx showTitle=x
 		results = configStr.split( "[,;]" );
@@ -93,7 +95,7 @@ public class EntryConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget()
 	{
-		return null;
+		return new EntryWidget( this );
 	}
 	
 	/**

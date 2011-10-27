@@ -49,6 +49,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
@@ -2216,7 +2217,26 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String url;
 				
 				folderEntry.setEntryName( entry.getTitle() );
-			
+				
+				// Get the entry's description
+				{
+					Description desc;
+					
+					desc = entry.getDescription();
+					if ( desc != null )
+					{
+						String descStr;
+						
+						descStr = desc.getText();
+						
+						// Perform any fixups needed on the entry's description
+						descStr = markupStringReplacement( ri, entry, descStr, "view" );
+						
+						folderEntry.setEntryDesc( descStr );
+					}
+				}
+
+				parentBinderId = null;
 				parentBinder = entry.getParentBinder();
 				if ( parentBinder != null )
 				{
@@ -2226,7 +2246,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 				
 				// Create a url that can be used to view this entry.
-				url = PermaLinkUtil.getPermalink( getRequest( ri ), entry );
+				url = getViewFolderEntryUrl( ri, parentBinderId, entryIdL );
 				folderEntry.setViewEntryUrl( url );
 			}
 		}
@@ -3439,6 +3459,33 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
 					newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, binder, html, type );
 				}
+			}
+			catch (Exception e)
+			{
+				throw GwtServerHelper.getGwtTeamingException( e );
+			}
+		}
+		
+		return newHtml;
+	}
+	
+	
+	/*
+	 * Parse the given html and replace any markup with the appropriate url.  For example,
+	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+	 */
+	private String markupStringReplacement( HttpRequestInfo ri, FolderEntry entry, String html, String type ) throws GwtTeamingException
+	{
+		String newHtml;
+		
+		newHtml = "";
+		if ( html != null && html.length() > 0 )
+		{
+			try
+			{
+				// Parse the given html and replace any markup with the appropriate url.  For example,
+				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+				newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, entry, html, type );
 			}
 			catch (Exception e)
 			{
