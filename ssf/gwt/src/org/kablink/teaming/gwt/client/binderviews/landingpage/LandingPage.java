@@ -298,6 +298,7 @@ public class LandingPage extends ViewBase
 	{
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "landingPageMainPanel" );
+		m_mainPanel.addStyleName( "landingPageOverflowAuto" );
 		
 		initWidget( m_mainPanel );
 	}
