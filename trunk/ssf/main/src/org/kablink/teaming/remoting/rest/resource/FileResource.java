@@ -94,8 +94,11 @@ import org.kablink.teaming.remoting.rest.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.util.ServiceUtil;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
+import org.kablink.teaming.rest.model.FileVersionPropertiesCollection;
 import org.kablink.teaming.rest.model.HistoryStamp;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 
 import com.sun.jersey.api.core.InjectParam;
@@ -276,7 +279,7 @@ public class FileResource extends AbstractResource {
 	
 	@GET
 	@Path("/name/{entityType}/{entityId}/{filename}/versions")
-	public List<FileVersionProperties> getFileVersionsByName(
+	public FileVersionPropertiesCollection getFileVersionsByName(
 			@PathParam("entityType") String entityType,
 			@PathParam("entityId") long entityId,
 			@PathParam("filename") String filename) {
@@ -286,7 +289,7 @@ public class FileResource extends AbstractResource {
 	
 	@GET
 	@Path("/id/{fileid}/versions")
-	public List<FileVersionProperties> getFileVersionsById(@PathParam("fileid") String fileId) {
+	public FileVersionPropertiesCollection getFileVersionsById(@PathParam("fileid") String fileId) {
 		FileAttachment fa = findFileAttachment(fileId);
 		return fileVersionsFromFileAttachment(fa);
 	}
@@ -303,17 +306,30 @@ public class FileResource extends AbstractResource {
 				fa.getMinorVersion(),
 				fa.getFileItem().getDescription().getText(),
 				fa.getFileStatus(),
-				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null, (fl!= null)? fl.getExpirationDate():null);
+				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, fa),
+				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null, 
+				(fl!= null)? fl.getExpirationDate():null);
 		return fp;
 	}
 	
-	private List<FileVersionProperties> fileVersionsFromFileAttachment(FileAttachment fa) {
+	private FileVersionPropertiesCollection fileVersionsFromFileAttachment(FileAttachment fa) {
 		Set<VersionAttachment> vas = fa.getFileVersions();
 		List<FileVersionProperties> list = new ArrayList<FileVersionProperties>(vas.size());
 		for(VersionAttachment va:vas) {
-			list.add(new FileVersionProperties(va.getId(), va.getVersionNumber()));
+			list.add(new FileVersionProperties(
+					va.getId(),
+					new HistoryStamp(Utils.redactUserPrincipalIfNecessary(va.getCreation().getPrincipal()).getId(), va.getCreation().getDate()),
+					new HistoryStamp(Utils.redactUserPrincipalIfNecessary(va.getModification().getPrincipal()).getId(), va.getModification().getDate()),
+					Long.valueOf(va.getFileItem().getLength()),
+					Integer.valueOf(va.getVersionNumber()),
+					Integer.valueOf(va.getMajorVersion()),
+					Integer.valueOf(va.getMinorVersion()),
+					va.getFileItem().getDescription().getText(), 
+					va.getFileStatus(),
+					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, va)
+					));
 		}
-		return list;
+		return new FileVersionPropertiesCollection(list);
 	}
 	
 	private FileAttachment getFileAttachment(DefinableEntity entity, String filename) 

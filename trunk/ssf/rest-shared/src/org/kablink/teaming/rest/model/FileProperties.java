@@ -51,6 +51,7 @@ public class FileProperties {
 	private Integer minorVersion;
 	private String note;
 	private Integer status;
+	private String webUrl;
 	private Long lockedBy;
 	private Calendar lockExpiration;
 	
@@ -58,7 +59,7 @@ public class FileProperties {
 	
 	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
 			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
-			String note, Integer status, Long lockedBy, Calendar lockExpiration) {
+			String note, Integer status, String webUrl, Long lockedBy, Calendar lockExpiration) {
 		this.id = id;
 		this.name = name;
 		this.creation = creation;
@@ -69,13 +70,14 @@ public class FileProperties {
 		this.minorVersion = minorVersion;
 		this.note = note;
 		this.status = status;
+		this.webUrl = webUrl;
 		this.lockedBy = lockedBy;
 		this.lockExpiration = lockExpiration;
 	}
 
 	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
 			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
-			String note, Integer status, Long lockedBy, Date lockExpiration) {
+			String note, Integer status, String webUrl, Long lockedBy, Date lockExpiration) {
 		this.id = id;
 		this.name = name;
 		this.creation = creation;
@@ -86,6 +88,7 @@ public class FileProperties {
 		this.minorVersion = minorVersion;
 		this.note = note;
 		this.status = status;
+		this.webUrl = webUrl;
 		this.lockedBy = lockedBy;
 		if(lockExpiration != null) {
 			Calendar cal = Calendar.getInstance();
@@ -188,6 +191,14 @@ public class FileProperties {
 
 	public void setLockExpiration(Calendar lockExpiration) {
 		this.lockExpiration = lockExpiration;
+	}
+
+	public String getWebUrl() {
+		return webUrl;
+	}
+
+	public void setWebUrl(String webUrl) {
+		this.webUrl = webUrl;
 	}
 	
 }
