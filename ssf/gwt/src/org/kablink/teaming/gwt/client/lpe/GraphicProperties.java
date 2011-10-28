@@ -33,7 +33,15 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GetterCallback;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFileUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -47,6 +55,7 @@ public class GraphicProperties
 	private boolean m_showBorder;
 	private String m_graphicName;
 	private String m_graphicId;
+	private String m_binderId;
 	
 	/**
 	 * 
@@ -71,6 +80,7 @@ public class GraphicProperties
 			graphicProps = (GraphicProperties) props;
 			m_graphicName = graphicProps.getGraphicName();
 			m_graphicId = graphicProps.getGraphicId();
+			m_binderId = graphicProps.getBinderId();
 			m_showBorder = graphicProps.getShowBorderValue();
 		}
 	}// end copy()
@@ -106,6 +116,15 @@ public class GraphicProperties
 	
 	
 	/**
+	 * 
+	 */
+	public String getBinderId()
+	{
+		return m_binderId;
+	}
+	
+	
+	/**
 	 * Return the id of the graphic.
 	 */
 	public String getGraphicId()
@@ -135,6 +154,15 @@ public class GraphicProperties
 	/**
 	 * 
 	 */
+	public void setBinderId( String binderId )
+	{
+		m_binderId = binderId;
+	}
+	
+	
+	/**
+	 * 
+	 */
 	public void setGraphicId( String id )
 	{
 		m_graphicId = id;
@@ -148,6 +176,47 @@ public class GraphicProperties
 	{
 		m_graphicName = name;
 	}// end setGraphicName()
+	
+	
+	/**
+	 * Get the url needed to display this image
+	 */
+	public void getGraphicUrl( final GetterCallback<String> callback )
+	{
+		GetFileUrlCmd cmd;
+		
+		cmd = new GetFileUrlCmd( m_binderId, m_graphicName );
+		
+		// Issue an ajax request to get the url needed to display the graphic.
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetFileUrl(),
+						getGraphicName() );
+			}
+
+			/**
+			 * 
+			 */
+			public void onSuccess( VibeRpcResponse result )
+			{
+				String url;
+				StringRpcResponseData responseData;
+
+				responseData = ((StringRpcResponseData) result.getResponseData());
+				url = responseData.getStringValue();
+				
+				// Return the url
+				callback.returnValue( url );
+			}
+		} );
+	}
 	
 	
 	/**

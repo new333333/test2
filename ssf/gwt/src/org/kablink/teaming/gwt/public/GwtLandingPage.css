@@ -87,7 +87,22 @@
 {
 }
 
+
 /* ##################################################################### */
+
+/* ######## Styles used with the html widget on a landing page. ######## */
+
+.graphicWidgetMainPanel, .graphicWidgetMainPanel_dark
+{
+}
+
+.graphicWidgetImgPanel, .graphicWidgetImgPanel_dark
+{
+	padding: 5px;
+}
+
+/* ##################################################################### */
+
 
 
 /* ######## Styles used with the html widget on a landing page. ######## */
