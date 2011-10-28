@@ -334,6 +334,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case GOTO_URL:
+				// An GotoUrlEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof GotoUrlEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GotoUrlEvent.registerEvent( eventBus, ((GotoUrlEvent.Handler) eventHandler) );
+				}
+				break;
+				
 			case GOTO_MY_WORKSPACE:
 				// An GotoMyWorkspaceEvent!  Can the event handler we
 				// were given handle that?
@@ -1041,6 +1050,7 @@ public class EventHelper {
 			case GOTO_CONTENT_URL:                  	hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);                break;
 			case GOTO_MY_WORKSPACE:                 	hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);               break;
 			case GOTO_PERMALINK_URL:                	hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);              break;
+			case GOTO_URL:                  			hasHandler = (eventHandler instanceof GotoUrlEvent.Handler);                	   break;
 						
 			case INVOKE_ABOUT:							hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                   break;
 			case INVOKE_CLIPBOARD:						hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);               break;

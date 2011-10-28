@@ -33,12 +33,15 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
-import org.kablink.teaming.gwt.client.lpe.GraphicConfig;
-import org.kablink.teaming.gwt.client.lpe.GraphicProperties;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
+import org.kablink.teaming.gwt.client.lpe.LinkToUrlConfig;
+import org.kablink.teaming.gwt.client.lpe.LinkToUrlProperties;
 
-import com.google.gwt.user.client.ui.Image;
-
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 
 
@@ -47,16 +50,15 @@ import com.google.gwt.user.client.ui.Image;
  * @author jwootton
  *
  */
-public class GraphicWidget extends VibeWidget
+public class UrlWidget extends VibeWidget
 {
-	private GraphicProperties m_properties;
+	private LinkToUrlProperties m_properties;
 	private String m_style;
-	private Image m_img;
 
 	/**
 	 * 
 	 */
-	public GraphicWidget( GraphicConfig config )
+	public UrlWidget( LinkToUrlConfig config )
 	{
 		VibeFlowPanel mainPanel;
 		
@@ -69,13 +71,14 @@ public class GraphicWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( GraphicConfig config )
+	private VibeFlowPanel init( LinkToUrlConfig config )
 	{
-		GraphicProperties properties;
+		LinkToUrlProperties properties;
 		VibeFlowPanel mainPanel;
-		VibeFlowPanel imgPanel;
+		String title;
+		String url;
 		
-		m_properties = new GraphicProperties();
+		m_properties = new LinkToUrlProperties();
 		properties = config.getProperties();
 		m_properties.copy( properties );
 		
@@ -83,32 +86,46 @@ public class GraphicWidget extends VibeWidget
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
-		mainPanel.addStyleName( "graphicWidgetMainPanel" + m_style );
-		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+		mainPanel.addStyleName( "urlWidgetMainPanel" + m_style );
 		
-		imgPanel = new VibeFlowPanel();
-		imgPanel.addStyleName( "graphicWidgetImgPanel" + m_style );
-		mainPanel.add( imgPanel );
-		
-		m_img = new Image();
-		imgPanel.add( m_img );
-		if ( m_properties.getShowBorderValue() == true )
-			m_img.addStyleName( "landingPageWidgetShowBorder" );
-		
-
-		// Issue an ajax request to get the url needed to display the graphic.
-		m_properties.getGraphicUrl( new GetterCallback<String>()
+		title = m_properties.getTitle();
+		url = m_properties.getUrl();
+		if ( url != null && url.length() > 0 )
 		{
-			/**
-			 * 
-			 */
-			public void returnValue( String url )
+			InlineLabel link;
+			
+			if ( title == null || title.length() == 0 )
+				title = url;
+			
+			link = new InlineLabel( title );
+			link.addStyleName( "urlWidgetLink" + m_style );
+			
+			link.addClickHandler( new ClickHandler()
 			{
-				m_img.setUrl( url );
-			}
-		} );
+				/**
+				 * 
+				 */
+				public void onClick( ClickEvent event )
+				{
+					// Should we open the url in a new window?
+					if ( m_properties.getOpenInNewWindow() )
+					{
+						int height;
+						int width;
+
+						// Yes
+						width = Window.getClientWidth();
+						height = Window.getClientHeight();
+						Window.open( m_properties.getUrl(), "_urlWidget", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,width=" + String.valueOf( width ) );
+					}
+					else
+						GwtTeaming.fireEvent( new GotoUrlEvent( m_properties.getUrl() ) );
+				}
+			});
+			
+			mainPanel.add( link );
+		}
 		
 		return mainPanel;
 	}
 }
-

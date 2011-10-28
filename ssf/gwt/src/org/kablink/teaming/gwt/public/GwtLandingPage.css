@@ -160,3 +160,33 @@
 }
 
 /* ##################################################################### */
+
+
+
+/* ####### Styles used with the url widget on a landing page. ######## */
+
+.urlWidgetLink, .urlWidgetLink_dark
+{
+	color: #135C8F;
+	font-size: 0.75em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.urlWidgetLink:hover, .urlWidgetLink_dark:hover
+{
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.urlWidgetMainPanel, .urlWidgetMainPanel_dark
+{
+}
+
+/* ##################################################################### */
+
