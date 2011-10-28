@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
+import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
@@ -84,6 +85,7 @@ public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
 		ChangeContextEvent.Handler,
+		GotoUrlEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowLandingPageEvent.Handler
 {
@@ -99,6 +101,7 @@ public class ContentControl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Context events.
 		TeamingEvents.CHANGE_CONTEXT,
+		TeamingEvents.GOTO_URL,
 		
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
@@ -503,6 +506,19 @@ public class ContentControl extends Composite
 			setViewFromUrl( osbInfo.getBinderUrl() );
 		}
 	}// end onChangeContext()
+
+	
+	/**
+	 * Handles the GotoUrlEvents received by this class
+	 * 
+	 * Implements the GotoUrlEvent.Handler.onGotoUrl() method.
+	 */
+	@Override
+	public void onGotoUrl( GotoUrlEvent event )
+	{
+		setViewNow( null, event.getUrl() );
+	}
+
 	
 	/**
 	 * Handles ShowDiscussionFolderEvent's received by this class.

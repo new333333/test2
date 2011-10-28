@@ -71,6 +71,7 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_CONTENT_URL,					// Changes the current context to a non-permalink URL.
 	GOTO_MY_WORKSPACE,					// Changes the current context to the user's workspace.
 	GOTO_PERMALINK_URL,					// Changes the current context to a permalink URL.
+	GOTO_URL,							// Changes the content to the given url.
 
 	INVOKE_ABOUT,						// Invokes the About dialog.
 	INVOKE_CLIPBOARD,					// Invokes the Clipboard dialog.
