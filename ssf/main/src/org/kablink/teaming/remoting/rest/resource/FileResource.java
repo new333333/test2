@@ -53,23 +53,20 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFileByTheIdException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -87,11 +84,12 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.exc.UnsupportedMediaTypeException;
-import org.kablink.teaming.remoting.util.ServiceUtil;
+import org.kablink.teaming.remoting.rest.util.ResourceUtil;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionProperties;
 import org.kablink.teaming.rest.model.FileVersionPropertiesCollection;
@@ -108,18 +106,11 @@ import com.sun.jersey.spi.resource.Singleton;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FileResource extends AbstractResource {
-
-	private static Log logger = LogFactory.getLog(FileResource.class);
 	
 	@InjectParam("folderModule") private FolderModule folderModule;
     @InjectParam("fileModule") private FileModule fileModule;
     @InjectParam("profileModule") private ProfileModule profileModule;
     @InjectParam("binderModule") private BinderModule binderModule;
-    @InjectParam("coreDao") private CoreDao coreDao;
-	
-    public FileResource() {
-    	System.out.println("Hey, I'm being created!!"); // TODO jong remove
-    }
     
 	@POST
 	@Path("/name/{entityType}/{entityId}/{filename}/content")
@@ -261,7 +252,7 @@ public class FileResource extends AbstractResource {
 
 	// Delete the content as well as the properties associated with the file.
 	@DELETE
-	@Path("/name/{entityType}/{entityId}/{filename}/content")
+	@Path("/name/{entityType}/{entityId}/{filename}")
 	public void deleteFileByName(
 			@PathParam("entityType") String entityType,
 			@PathParam("entityId") long entityId,
@@ -270,7 +261,7 @@ public class FileResource extends AbstractResource {
 	}
 	
 	@DELETE
-	@Path("/id/{fileid}/content")
+	@Path("/id/{fileid}")
 	public void deleteFileById(@PathParam("fileid") String fileId) throws WriteFilesException, WriteEntryDataException {
 		FileAttachment fa = findFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
@@ -316,18 +307,7 @@ public class FileResource extends AbstractResource {
 		Set<VersionAttachment> vas = fa.getFileVersions();
 		List<FileVersionProperties> list = new ArrayList<FileVersionProperties>(vas.size());
 		for(VersionAttachment va:vas) {
-			list.add(new FileVersionProperties(
-					va.getId(),
-					new HistoryStamp(Utils.redactUserPrincipalIfNecessary(va.getCreation().getPrincipal()).getId(), va.getCreation().getDate()),
-					new HistoryStamp(Utils.redactUserPrincipalIfNecessary(va.getModification().getPrincipal()).getId(), va.getModification().getDate()),
-					Long.valueOf(va.getFileItem().getLength()),
-					Integer.valueOf(va.getVersionNumber()),
-					Integer.valueOf(va.getMajorVersion()),
-					Integer.valueOf(va.getMinorVersion()),
-					va.getFileItem().getDescription().getText(), 
-					va.getFileStatus(),
-					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, va)
-					));
+			list.add(ResourceUtil.fileVersionFromFileAttachment(va));
 		}
 		return new FileVersionPropertiesCollection(list);
 	}
@@ -406,7 +386,7 @@ public class FileResource extends AbstractResource {
         if(et == EntityType.folderEntry) {
     		FolderEntry entry = folderModule.getEntry(null, entityId);
     		Date modDate = dateFromISO8601(modDateISO8601);
-    		ServiceUtil.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
+    		FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
     		FileAttachment fa = getFileAttachment(entry, filename);
     		return filePropertiesFromFileAttachment(fa);
         }
@@ -415,14 +395,23 @@ public class FileResource extends AbstractResource {
         	if(!(user instanceof User))
         		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
     		Date modDate = dateFromISO8601(modDateISO8601);
-    		ServiceUtil.modifyUserWithFile(user, dataName, filename, is, modDate);
+    		FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
     		FileAttachment fa = getFileAttachment(user, filename);
     		return filePropertiesFromFileAttachment(fa);
         }
-        else if(et == EntityType.workspace || et == EntityType.folder) {
+        else if(et == EntityType.group) {
+        	Principal group = profileModule.getEntry(entityId);
+        	if(!(group instanceof Group))
+        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+    		Date modDate = dateFromISO8601(modDateISO8601);
+    		FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
+    		FileAttachment fa = getFileAttachment(group, filename);
+    		return filePropertiesFromFileAttachment(fa);
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
     		Binder binder = binderModule.getBinder(entityId);
     		// Ignore modDate param, since it isn't applicable in this case.
-    		ServiceUtil.modifyBinderWithFile(binder, dataName, filename, is);
+    		FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
     		FileAttachment fa = getFileAttachment(binder, filename);
     		return filePropertiesFromFileAttachment(fa);
         }
@@ -454,7 +443,12 @@ public class FileResource extends AbstractResource {
         	if(!(entity instanceof User))
         		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
         }
-        else if(et == EntityType.workspace || et == EntityType.folder) {
+        else if(et == EntityType.group) {
+        	entity = profileModule.getEntry(entityId);
+        	if(!(entity instanceof Group))
+        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
     		entity = binderModule.getBinder(entityId);
         }
         else {
@@ -463,17 +457,6 @@ public class FileResource extends AbstractResource {
 		return getFileAttachment(entity, filename);
 	}
 
-	private VersionAttachment findVersionAttachment(String fileId) 
-	throws NoFileByTheIdException {
-		FileAttachment fa = fileModule.getFileAttachmentById(fileId);
-		if(fa == null)
-			throw new NoFileVersionByTheIdException(fileId);
-		else if(!(fa instanceof VersionAttachment))
-			throw new NoFileVersionByTheIdException(fileId, "The specified file version ID represents a file rather than a file version");
-		else
-			return (VersionAttachment) fa;
-	}
-	
 	private Response readFileContent(String entityType, long entityId, String filename) 
 	throws BadRequestException {
         EntityType et = entityTypeFromString(entityType);
@@ -490,7 +473,13 @@ public class FileResource extends AbstractResource {
         		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
         	binder = entity.getParentBinder();
         }
-        else if(et == EntityType.workspace || et == EntityType.folder) {
+        else if(et == EntityType.group) {
+        	entity = profileModule.getEntry(entityId);
+        	if(!(entity instanceof Group))
+        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+        	binder = entity.getParentBinder();
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
     		entity = binderModule.getBinder(entityId);
     		binder = (Binder) entity;
         }
@@ -539,7 +528,23 @@ public class FileResource extends AbstractResource {
         		// The specified user no longer exists. This is OK for delete request.
         	}
         }
-        else if(et == EntityType.workspace || et == EntityType.folder) {
+        else if(et == EntityType.group) {
+        	try {
+	        	Principal group = profileModule.getEntry(entityId);
+	        	if(!(group instanceof User))
+	        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+				fa = group.getFileAttachment(filename);
+				if(fa != null) {
+					List deletes = new ArrayList();
+					deletes.add(fa.getId());
+					profileModule.modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);		
+				}
+        	}
+        	catch(NoPrincipalByTheIdException e) {
+        		// The specified user no longer exists. This is OK for delete request.
+        	}
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
         	try {
 	    		Binder binder = binderModule.getBinder(entityId);
 				fa = binder.getFileAttachment(filename);

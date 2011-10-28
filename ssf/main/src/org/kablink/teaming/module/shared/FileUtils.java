@@ -32,17 +32,37 @@
  */
 package org.kablink.teaming.module.shared;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoFileVersionByTheIdException;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.Validator;
+import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtils {
 
@@ -58,8 +78,7 @@ public class FileUtils {
 		Boolean versionAgingEnabled = binder.getVersionAgingEnabled();
 		if (versionAgingEnabled == null) versionAgingEnabled = Boolean.FALSE;
 		Boolean zoneVersionAgingEnabled = Boolean.FALSE;
-		AdminModule adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
-		Long zoneVersionAgingMaxDays = adminModule.getFileVersionsMaxAge();
+		Long zoneVersionAgingMaxDays =  getAdminModule().getFileVersionsMaxAge();
 		if (zoneVersionAgingMaxDays != null && zoneVersionAgingMaxDays > 0) {
 			zoneVersionAgingEnabled = Boolean.TRUE;
 		}
@@ -99,4 +118,109 @@ public class FileUtils {
     	}
 	}
     
+	public static void modifyFolderEntryWithFile(FolderEntry entry, String dataName, String filename, InputStream is, Date modDate) 
+			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException 
+			 {
+		if (Validator.isNull(dataName) && entry.getParentFolder().isLibrary()) {
+			// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
+			// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
+			FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
+		}
+		else {
+			if (Validator.isNull(dataName)) 
+				dataName="ss_attachFile1";
+			Map options = null;
+			MultipartFile mf;
+			if(modDate != null) {
+				options = new HashMap();
+				options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+				mf = new DatedMultipartFile(filename, is, modDate);
+			}
+			else {
+				mf = new SimpleMultipartFile(filename, is); 					
+			}
+			Map fileItems = new HashMap(); // Map of names to file items	
+			fileItems.put(dataName, mf); // single file item
+			getFolderModule().modifyEntry(null, entry.getId(), 
+					new EmptyInputData(), fileItems, null, null, options);
+		}
+	}
+
+	public static void modifyPrincipalWithFile(Principal principal, String dataName,
+			String filename, InputStream is, Date modDate)
+			throws AccessControlException, ReservedByAnotherUserException,
+			WriteFilesException, WriteEntryDataException {
+		if (Validator.isNull(dataName))
+			dataName = "ss_attachFile1";
+		Map options = null;
+		MultipartFile mf;
+		if (modDate != null) {
+			options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+			mf = new DatedMultipartFile(filename, is, modDate);
+		} else {
+			mf = new SimpleMultipartFile(filename, is);
+		}
+		Map fileItems = new HashMap();
+		fileItems.put(dataName, mf);
+		getProfileModule().modifyEntry(principal.getId(), new EmptyInputData(), fileItems, null, null, options);
+	}
+
+	public static void modifyBinderWithFile(Binder binder, String dataName,
+			String filename, InputStream is)
+			throws AccessControlException, ReservedByAnotherUserException,
+			WriteFilesException, WriteEntryDataException {
+		if (Validator.isNull(dataName))
+			dataName = "ss_attachFile1";
+		MultipartFile mf = new SimpleMultipartFile(filename, is);
+		Map fileItems = new HashMap();
+		fileItems.put(dataName, mf);
+		getBinderModule().modifyBinder(binder.getId(), new EmptyInputData(), fileItems, null, null);
+	}
+	
+	public static VersionAttachment findVersionAttachment(String fileVersionId) 
+	throws NoFileVersionByTheIdException {
+		FileAttachment fa = getFileModule().getFileAttachmentById(fileVersionId);
+		if(fa == null)
+			throw new NoFileVersionByTheIdException(fileVersionId);
+		else if(!(fa instanceof VersionAttachment))
+			throw new NoFileVersionByTheIdException(fileVersionId, "The specified file version ID represents a file rather than a file version");
+		else
+			return (VersionAttachment) fa;
+	}
+
+	public static void deleteFileVersion(VersionAttachment va) {
+		DefinableEntity entity = va.getOwner().getEntity();
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(FileUtils.isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().deleteFileVersion((entity instanceof Binder)? (Binder)entity : entity.getParentBinder(), entity, fa);
+	}
+	
+	public static boolean isTopMostVersion(VersionAttachment va) {
+		return (va.getParentAttachment().getHighestVersionNumber() == va.getVersionNumber());
+	}
+
+	private static FolderModule getFolderModule() {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+	private static ProfileModule getProfileModule() {
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
+	}
+
+	private static BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("profileModule");
+	}
+
+	private static AdminModule getAdminModule() {
+		return (AdminModule) SpringContextUtil.getBean("adminModule");
+	}
+
+	private static FileModule getFileModule() {
+		return (FileModule) SpringContextUtil.getBean("fileModule");
+	}
 }
