@@ -45,38 +45,66 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.NoFileByTheIdException;
+import org.kablink.teaming.domain.NoFileVersionByTheIdException;
+import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.remoting.rest.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.util.ResourceUtil;
 import org.kablink.teaming.rest.model.FileVersionProperties;
 
-@Path("/file_version/{id}")
+import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
+
+@Path("/fileVersion")
+@Singleton
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FileVersionResource extends AbstractResource {
+
+	@InjectParam("fileModule") private FileModule fileModule;
 
 	// Read file version content
 	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getFileVersion(@PathParam("id") String id) {
-		return null;
+	@Path("/id/{fileversionid}/content")
+	public Response readFileVersionContentById(@PathParam("fileversionid") String fileVersionId) {
+		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+		DefinableEntity entity = va.getOwner().getEntity();
+		Binder binder;
+		if(entity instanceof Binder) 
+			binder = (Binder) entity;
+		else
+			binder = entity.getParentBinder();
+		String mt = new MimetypesFileTypeMap().getContentType(va.getFileItem().getName());
+		return Response.ok(fileModule.readFile(binder, entity, va), mt).build();
 	}
 	
 	// Read file version properties
 	@GET
-	@Path("properties")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public FileVersionProperties getFileVersionProperties(@PathParam("id") String id) {
-		return null;
+	@Path("/id/{fileversionid}/properties")
+	public FileVersionProperties readFileVersionPropertiesById(@PathParam("fileversionid") String fileVersionId) {
+		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+		return ResourceUtil.fileVersionFromFileAttachment(va);
 	}
 	
 	// Delete file version. This deletes both the content and the properties associated with the version.
 	@DELETE
-	public void deleteFileVersion(@PathParam("id") String id) {
-		
-	}
-
-	
-	// Update file version resource
-	@PUT
-	public Response putFile(@PathParam("id") String id) {
-		// How do I receive file from client?
-		return null;
+	@Path("/id/{fileversionid}")
+	public void deleteFileVersionById(@PathParam("fileversionid") String fileVersionId) {
+		VersionAttachment va;
+		try {
+			va = FileUtils.findVersionAttachment(fileVersionId);
+		}
+		catch(NoFileVersionByTheIdException e) {
+			// The version isn't found. Since post-action condition is still met, 
+			// do not throw an exception. Return normally.
+			return;
+		}
+		FileUtils.deleteFileVersion(va);
 	}
 
 }
