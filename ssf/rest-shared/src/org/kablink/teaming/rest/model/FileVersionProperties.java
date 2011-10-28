@@ -35,114 +35,17 @@ package org.kablink.teaming.rest.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="fileVersion")
-public class FileVersionProperties {
+public class FileVersionProperties extends FileCommonProperties {
 
-	private String id;
-	private HistoryStamp creation;
-	private HistoryStamp modification;
-	private Long length; // in bytes
-	private Integer versionNumber;
-	private Integer majorVersion;
-	private Integer minorVersion;
-	private String note;
-	private Integer status;
-	private String webUrl;
 
-	private FileVersionProperties() {}
+	private FileVersionProperties() {
+		super();
+	}
 	
 	public FileVersionProperties(String id, HistoryStamp creation, HistoryStamp modification, 
 			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
 			String note, Integer status, String webUrl) {
-		this.id = id;
-		this.creation = creation;
-		this.modification = modification;
-		this.length = length;
-		this.versionNumber = versionNumber;
-		this.majorVersion = majorVersion;
-		this.minorVersion = minorVersion;
-		this.note = note;
-		this.status = status;
-		this.webUrl = webUrl;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public HistoryStamp getCreation() {
-		return creation;
-	}
-
-	public void setCreation(HistoryStamp creation) {
-		this.creation = creation;
-	}
-
-	public HistoryStamp getModification() {
-		return modification;
-	}
-
-	public void setModification(HistoryStamp modification) {
-		this.modification = modification;
-	}
-
-	public Long getLength() {
-		return length;
-	}
-
-	public void setLength(Long length) {
-		this.length = length;
-	}
-
-	public Integer getVersionNumber() {
-		return versionNumber;
-	}
-
-	public void setVersionNumber(Integer versionNumber) {
-		this.versionNumber = versionNumber;
-	}
-
-	public Integer getMajorVersion() {
-		return majorVersion;
-	}
-
-	public void setMajorVersion(Integer majorVersion) {
-		this.majorVersion = majorVersion;
-	}
-
-	public Integer getMinorVersion() {
-		return minorVersion;
-	}
-
-	public void setMinorVersion(Integer minorVersion) {
-		this.minorVersion = minorVersion;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
-	public String getWebUrl() {
-		return webUrl;
-	}
-
-	public void setWebUrl(String webUrl) {
-		this.webUrl = webUrl;
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
 	}
 
 }
