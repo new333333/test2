@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.widgets.GraphicWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 import com.google.gwt.http.client.URL;
@@ -50,11 +51,14 @@ public class GraphicConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public GraphicConfig( String configStr )
+	public GraphicConfig( String configStr, String style, String binderId )
 	{
 		String[] results;
 		
 		m_properties = new GraphicProperties();
+		m_properties.setBinderId( binderId );
+		
+		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie showBorder=1 graphic=xxx title=yyy
 		results = configStr.split( "[,;]" );
@@ -105,7 +109,7 @@ public class GraphicConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget()
 	{
-		return null;
+		return new GraphicWidget( this );
 	}
 	
 	/**

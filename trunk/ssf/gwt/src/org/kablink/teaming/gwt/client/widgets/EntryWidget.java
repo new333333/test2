@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.lpe.EntryConfig;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;

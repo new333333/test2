@@ -240,7 +240,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "graphic" ) )
 				{
-					configItem = new GraphicConfig( itemData[i] );
+					configItem = new GraphicConfig( itemData[i], getLandingPageStyle(), getBinderId() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "entry" ) )

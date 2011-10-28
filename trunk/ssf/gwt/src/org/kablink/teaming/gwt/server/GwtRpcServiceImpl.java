@@ -510,6 +510,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( fileSyncAppConfiguration );
 			return response;
 		}
+		
+		case GET_FILE_URL:
+		{
+			GetFileUrlCmd gfuCmd;
+			String url;
+			
+			gfuCmd = (GetFileUrlCmd) cmd;
+			url = GwtServerHelper.getFileUrl( this, getRequest( ri ), gfuCmd.getBinderId(), gfuCmd.getFileName() );
+			response = new VibeRpcResponse( new StringRpcResponseData( url ) );
+			return response;
+		}
 
 		case GET_FOLDER:
 		{

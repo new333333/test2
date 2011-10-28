@@ -2500,6 +2500,37 @@ public class GwtServerHelper {
 	
 	
 	/**
+	 * Return the url for the given binder and file
+	 */
+	public static String getFileUrl( AllModulesInjected ami, HttpServletRequest request, String binderId, String fileName )
+	{
+		String webPath;
+		String url = null;
+		
+		try
+		{
+			Binder binder;
+			
+			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
+
+			webPath = WebUrlUtil.getServletRootURL( request );
+			url = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, fileName );
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
+		
+		return url;
+	}
+	
+	
+	/**
 	 * Return a list of tags associated with the given entry.
 	 */
 	public static ArrayList<TagInfo> getEntryTags( AllModulesInjected bs, String entryId )
@@ -3986,6 +4017,7 @@ public class GwtServerHelper {
 		case GET_FAVORITES:
 		case GET_FILE_ATTACHMENTS:
 		case GET_FILE_SYNC_APP_CONFIGURATION:
+		case GET_FILE_URL:
 		case GET_FOLDER:
 		case GET_FOLDER_COLUMNS:
 		case GET_FOLDER_DISPLAY_DATA:
