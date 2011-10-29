@@ -76,7 +76,10 @@ public class FileUtils {
 			binder = (Binder)entity;
 		}
 		Boolean versionAgingEnabled = binder.getVersionAgingEnabled();
-		if (versionAgingEnabled == null) versionAgingEnabled = Boolean.FALSE;
+		if (versionAgingEnabled == null) {
+			//If this was never set, then we assume it is enabled (this is the default out-of-the-box behavior)
+			versionAgingEnabled = Boolean.TRUE;
+		}
 		Boolean zoneVersionAgingEnabled = Boolean.FALSE;
 		Long zoneVersionAgingMaxDays =  getAdminModule().getFileVersionsMaxAge();
 		if (zoneVersionAgingMaxDays != null && zoneVersionAgingMaxDays > 0) {
@@ -94,21 +97,29 @@ public class FileUtils {
     				//This is a new major version category, reset the counters and clear aging flag
     				currentMajorVersion = va.getMajorVersion();
     				if (va.isAgingEnabled()) {
+    					//Top level files in a major version category are not subject to aging
     					va.setAgingEnabled(Boolean.FALSE);
     				}
     			} else {
     				//This is a minor version that is not the highest in its major class. It is subject to aging
     				//Binder aging has both agingEnabled=true and agingDate != null
     				//Zone aging has agingEnabled=true and agingDate=null
-    				if (va.getAgingEnabled() == null || !va.isAgingEnabled()) {
+    				//If the binder aging was explicitly turned off, then no aging should occur in this binder
+    				if (versionAgingEnabled && (va.getAgingEnabled() == null || !va.isAgingEnabled())) {
     					//The current agingEnabled value was wrong, so make it correct.
     					va.setAgingEnabled(Boolean.TRUE);
-    				} 
-    				//Calculate the binder aging date (if any)
-    				if (versionAgingDays != null) {
+    				} else if (!versionAgingEnabled && va.getAgingEnabled() != null && va.getAgingEnabled()) {
+    					//Aging for this folder was turned off. So, make the enabled flag false (if it isn't already)
+    					va.setAgingEnabled(Boolean.FALSE);
+    				}
+    				//Calculate the binder aging date (if binder has a "agingDays" value and if the binder aging is enabled)
+    				if (versionAgingEnabled && versionAgingDays != null) {
     					Date creationDate = va.getCreation().getDate();
     					Date agingDate = new Date(creationDate.getTime() + versionAgingDays*24*60*60*1000);
-    					va.setAgingDate(agingDate);
+    					if (!agingDate.equals(va.getAgingDate())) {
+    						//Only change it when the date has changed
+    						va.setAgingDate(agingDate);
+    					}
     				} else if (va.getAgingDate() != null) {
     					//Make sure the aging days is null when binder aging is off so it is subject to zone wide aging
     					va.setAgingDate(null);
