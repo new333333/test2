@@ -1549,7 +1549,7 @@ body, table td, select
 }
 .mainBreadCrumb_Browser
 {
-	background: url(images/trans70_black.png) repeat;
+	background: url(images/trans50_black.png) repeat;
 	border: 0px;
 	padding: 0px;
 	right: 20px;
@@ -1558,7 +1558,7 @@ body, table td, select
 .breadCrumb_Browser
 {
 	background-color: #f6f6f6;
-	margin: 0 5px 5px;
+	margin: 0 8px 8px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
@@ -1808,7 +1808,7 @@ body, table td, select
 }
 .mainMenuSearchOptions_Browser
 {
-	background: url(images/trans70_black.png) repeat;
+	background: url(images/trans50_black.png) repeat;
 	border: 0px;
 	padding: 0px;
 	z-index: 351;
@@ -1858,7 +1858,7 @@ body, table td, select
 	color: #333 !important;
 	font-size: .85em;
 	background-color: #f6f6f6;
-	margin: 0 5px 5px;
+	margin: 0 8px 8px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
@@ -2469,7 +2469,7 @@ body, table td, select
 {
 	font-family: Arial,Helvetica,sans-serif;
 	background: url(images/trans30_black.png) repeat;
-	padding: 6px;
+	padding: 8px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
 	z-index: 1001;
