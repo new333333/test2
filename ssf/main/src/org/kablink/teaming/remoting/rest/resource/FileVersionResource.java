@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.remoting.rest.resource;
 
-import java.io.File;
-
 import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -46,8 +44,6 @@ import javax.ws.rs.core.Response;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.BinderModule;
