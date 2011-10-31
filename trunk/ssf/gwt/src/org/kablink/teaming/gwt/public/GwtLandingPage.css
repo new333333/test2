@@ -141,9 +141,35 @@
 {
 }
 
-
 /* ##################################################################### */
 
+
+/* ######## Styles used with the link to entry widget on a landing page. ######## */
+
+.linkToEntryWidgetLink, .linkToEntryWidgetLink_dark
+{
+	color: #135C8F;
+	font-size: 0.75em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.linkToEntryWidgetLink:hover, .linkToEntryWidgetLink_dark:hover
+{
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.linkToEntryWidgetMainPanel, .linkToEntryWidgetMainPanel_dark
+{
+}
+
+/* ##################################################################### */
 
 
 /* ######## Styles used with the list widget on a landing page. ######## */
