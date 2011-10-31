@@ -45,6 +45,9 @@ public class FileProperties extends FileCommonProperties {
 	private Long lockedBy;
 	private Calendar lockExpiration;
 	
+	// The following fields are processing instructions used for update only.
+	private Boolean incrementMajorVersion; // used for update only
+	
 	private FileProperties() {
 		super();
 	}
@@ -93,6 +96,14 @@ public class FileProperties extends FileCommonProperties {
 
 	public void setLockExpiration(Calendar lockExpiration) {
 		this.lockExpiration = lockExpiration;
+	}
+
+	public Boolean getIncrementMajorVersion() {
+		return incrementMajorVersion;
+	}
+
+	public void setIncrementMajorVersion(Boolean incrementMajorVersion) {
+		this.incrementMajorVersion = incrementMajorVersion;
 	}
 	
 }

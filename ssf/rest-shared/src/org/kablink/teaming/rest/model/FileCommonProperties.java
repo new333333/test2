@@ -46,8 +46,8 @@ public class FileCommonProperties {
 	private Integer versionNumber;
 	private Integer majorVersion;
 	private Integer minorVersion;
-	private String note;
-	private Integer status;
+	private String note; // used also for update
+	private Integer status; // used also for update
 	private String webUrl;
 
 	protected FileCommonProperties() {}

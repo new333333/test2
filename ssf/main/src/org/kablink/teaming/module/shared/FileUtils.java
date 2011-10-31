@@ -211,6 +211,39 @@ public class FileUtils {
 		getBinderModule().deleteFileVersion((entity instanceof Binder)? (Binder)entity : entity.getParentBinder(), entity, fa);
 	}
 	
+	public static void promoteFileVersionCurrent(VersionAttachment va) 
+	throws UnsupportedOperationException {
+		DefinableEntity entity = va.getOwner().getEntity();
+		if(entity instanceof FolderEntry) {
+			FolderEntry entry = (FolderEntry) entity;
+			if(entry.getParentBinder().isMirrored())
+				throw new UnsupportedOperationException("Mirrored file does not support version promotion");
+		}
+		if(FileUtils.isTopMostVersion(va))
+			throw new UnsupportedOperationException("Cannot promote a version that is already current");
+		getBinderModule().promoteFileVersionCurrent(entity, va);
+	}
+
+	public static void setFileVersionNote(VersionAttachment va, String note) {
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(FileUtils.isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().setFileVersionNote(va.getOwner().getEntity(), fa, note);
+	}
+
+	public static void setFileVersionStatus(VersionAttachment va, int status) {
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(FileUtils.isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().setFileVersionStatus(va.getOwner().getEntity(), fa, status);
+	}
+
 	public static boolean isTopMostVersion(VersionAttachment va) {
 		return (va.getParentAttachment().getHighestVersionNumber() == va.getVersionNumber());
 	}

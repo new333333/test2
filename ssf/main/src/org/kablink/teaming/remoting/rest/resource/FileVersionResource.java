@@ -37,24 +37,23 @@ import java.io.File;
 import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.NoFileByTheIdException;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.shared.FileUtils;
-import org.kablink.teaming.remoting.rest.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.util.ResourceUtil;
 import org.kablink.teaming.rest.model.FileVersionProperties;
 
@@ -67,6 +66,7 @@ import com.sun.jersey.spi.resource.Singleton;
 public class FileVersionResource extends AbstractResource {
 
 	@InjectParam("fileModule") private FileModule fileModule;
+	@InjectParam("binderModule") private BinderModule binderModule;
 
 	// Read file version content
 	@GET
@@ -88,6 +88,40 @@ public class FileVersionResource extends AbstractResource {
 	@Path("/id/{fileversionid}/properties")
 	public FileVersionProperties readFileVersionPropertiesById(@PathParam("fileversionid") String fileVersionId) {
 		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+		return ResourceUtil.fileVersionFromFileAttachment(va);
+	}
+	
+	// Update file version properties
+	@POST
+	@Path("/id/{fileversionid}/properties")
+	public FileVersionProperties updateFileVersionPropertiesById(
+			@PathParam("fileversionid") String fileVersionId,
+			FileVersionProperties fileVersionProperties) {
+		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+		DefinableEntity entity = va.getOwner().getEntity();
+		// Promote this version to current
+		if(fileVersionProperties.getPromoteCurrent() == Boolean.TRUE) {
+			try {
+				FileUtils.promoteFileVersionCurrent(va);
+			}
+			catch(UnsupportedOperationException e) {
+				throw new ConflictException(e.getLocalizedMessage());
+			}
+		}
+		
+		// Set note/comment for the file version
+		String note = fileVersionProperties.getNote();
+		if(note != null &&
+				!note.equals(va.getFileItem().getDescription().getText())) {
+			FileUtils.setFileVersionNote(va, note);
+		}
+		
+		// Set status for a file version.
+		Integer status = fileVersionProperties.getStatus();
+		if(status != null && !status.equals(va.getFileStatus())) {
+			FileUtils.setFileVersionStatus(va, status);
+		}
+		
 		return ResourceUtil.fileVersionFromFileAttachment(va);
 	}
 	

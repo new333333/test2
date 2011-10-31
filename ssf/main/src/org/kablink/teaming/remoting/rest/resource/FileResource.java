@@ -247,6 +247,34 @@ public class FileResource extends AbstractResource {
 		return readFileProperties(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
 	}
 	
+	@POST
+	@Path("/name/{entityType}/{entityId}/{filename}/properties")
+	public FileProperties updateFilePropertiesByName(
+	@PathParam("entityType") String entityType,
+	@PathParam("entityId") long entityId,
+	@PathParam("filename") String filename,
+	FileProperties fileProperties) {
+		if(fileProperties.getIncrementMajorVersion() == Boolean.TRUE) {
+			DefinableEntity entity = findDefinableEntity(entityType, entityId);
+			FileAttachment fa = getFileAttachment(entity, filename);
+			binderModule.incrementFileMajorVersion(entity, fa);
+		}
+		return readFileProperties(entityType, entityId, filename);
+	}
+	
+	@POST
+	@Path("/id/{fileid}/properties")
+	public FileProperties updateFilePropertiesById(
+			@PathParam("fileid") String fileId,
+			FileProperties fileProperties) {
+		FileAttachment fa = findFileAttachment(fileId);
+		DefinableEntity entity = fa.getOwner().getEntity();
+		if(fileProperties.getIncrementMajorVersion() == Boolean.TRUE) {
+			binderModule.incrementFileMajorVersion(entity, fa);
+		}
+		return readFileProperties(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+	}
+	
 	// There is no method for updating file properties (at least yet). 
 	// File properties are modified only indirectly when file content is modified.
 
@@ -433,27 +461,7 @@ public class FileResource extends AbstractResource {
 
 	private FileAttachment findFileAttachment(String entityType, long entityId, String filename)
 	throws BadRequestException, NotFoundException {
-        EntityType et = entityTypeFromString(entityType);
-        DefinableEntity entity;
-        if(et == EntityType.folderEntry) {
-    		entity = folderModule.getEntry(null, entityId);
-        }
-        else if(et == EntityType.user) {
-        	entity = profileModule.getEntry(entityId);
-        	if(!(entity instanceof User))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
-        }
-        else if(et == EntityType.group) {
-        	entity = profileModule.getEntry(entityId);
-        	if(!(entity instanceof Group))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
-        }
-        else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
-    		entity = binderModule.getBinder(entityId);
-        }
-        else {
-        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
-        }
+        DefinableEntity entity = findDefinableEntity(entityType, entityId);
 		return getFileAttachment(entity, filename);
 	}
 
@@ -563,7 +571,8 @@ public class FileResource extends AbstractResource {
         }
 	}
 
-	private EntityType entityTypeFromString(String entityTypeStr) {
+	private EntityType entityTypeFromString(String entityTypeStr) 
+	throws BadRequestException {
 		try {
 			return EntityType.valueOf(entityTypeStr);
 		}
@@ -572,4 +581,29 @@ public class FileResource extends AbstractResource {
 		}
 	}
 
+	private DefinableEntity findDefinableEntity(String entityType, long entityId) 
+	throws BadRequestException, NotFoundException {
+        EntityType et = entityTypeFromString(entityType);
+        DefinableEntity entity;
+        if(et == EntityType.folderEntry) {
+    		entity = folderModule.getEntry(null, entityId);
+        }
+        else if(et == EntityType.user) {
+        	entity = profileModule.getEntry(entityId);
+        	if(!(entity instanceof User))
+        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
+        }
+        else if(et == EntityType.group) {
+        	entity = profileModule.getEntry(entityId);
+        	if(!(entity instanceof Group))
+        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+        }
+        else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
+    		entity = binderModule.getBinder(entityId);
+        }
+        else {
+        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
+        }
+        return entity;
+	}
 }
