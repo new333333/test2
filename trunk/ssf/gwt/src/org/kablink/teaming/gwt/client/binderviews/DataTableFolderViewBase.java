@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
@@ -59,6 +60,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -428,12 +430,11 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			Column<FolderRow, ?> column;
 			String cName = fc.getColumnName();
 			if (isPresenceColumn(cName)) {
-				// Yes!  Create a PresenceColumn for it.
-//!				...this needs to be implemented...
-				column = new TextColumn<FolderRow>() {
+				// Yes!  Create a PresenceCell for it.
+				column = new PresenceColumn<FolderRow>() {
 					@Override
-					public String getValue(FolderRow fr) {
-						return ("*Presence?*:  " + fr.getColumnValueAsString(fc));
+					public PrincipalInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsPrincipalInfo(fc);
 					}
 				};
 			}
