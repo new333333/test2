@@ -940,13 +940,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			long entryId, String fileVersionId, String note) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
-		// Due to some odd design by another developer, I have to pass in top-level
-		// attachment object (as opposed to the top-most version attachment) to the
-		// lower level, if the specified version happens to be the top-most one.
-		FileAttachment fa = va;
-		if(FileUtils.isTopMostVersion(va))
-			fa = va.getParentAttachment();
-		getBinderModule().setFileVersionNote(entry, fa, note);
+		FileUtils.setFileVersionNote(va, note);
 	}
 
 	/* (non-Javadoc)
@@ -956,12 +950,8 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public void folder_promoteFileVersionCurrent(String accessToken,
 			long entryId, String fileVersionId) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
-		if(entry.getParentBinder().isMirrored())
-			throw new UnsupportedOperationException("Mirrored file does not support version promotion");
 		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
-		if(FileUtils.isTopMostVersion(va))
-			throw new UnsupportedOperationException("Cannot promote a version that is already current");
-		getBinderModule().promoteFileVersionCurrent(entry, va);
+		FileUtils.promoteFileVersionCurrent(va);
 	}
 
 	/* (non-Javadoc)
@@ -982,13 +972,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			String fileVersionId, int status) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
-		// Due to some odd design by another developer, I have to pass in top-level
-		// attachment object (as opposed to the top-most version attachment) to the
-		// lower level, if the specified version happens to be the top-most one.
-		FileAttachment fa = va;
-		if(FileUtils.isTopMostVersion(va))
-			fa = va.getParentAttachment();
-		getBinderModule().setFileVersionStatus(entry, fa, status);
+		FileUtils.setFileVersionStatus(va, status);
 	}
 
 	private void deleteFileVersion(DefinableEntity entity, String fileVersionId) {
