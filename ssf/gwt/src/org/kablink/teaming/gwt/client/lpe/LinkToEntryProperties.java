@@ -33,13 +33,12 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -58,8 +57,9 @@ public class LinkToEntryProperties
 	private String m_entryId;
 	private String m_entryName;
 	private String m_zoneUUID;
+	private String m_viewEntryUrl;
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
-	private boolean m_rpcInProgress;
+	private GetterCallback<Boolean> m_getterCallback;
 	
 	/**
 	 * 
@@ -71,7 +71,8 @@ public class LinkToEntryProperties
 		m_entryId = null;
 		m_entryName = null;
 		m_zoneUUID = null;
-		m_rpcInProgress = false;
+		m_viewEntryUrl = null;
+		m_getterCallback = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
@@ -86,7 +87,8 @@ public class LinkToEntryProperties
 					GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
 					m_entryId );
 				
-				m_rpcInProgress = false;
+				if ( m_getterCallback != null )
+					m_getterCallback.returnValue( Boolean.FALSE );
 			}// end onFailure()
 	
 			/**
@@ -100,9 +102,14 @@ public class LinkToEntryProperties
 				gwtFolderEntry = (GwtFolderEntry) response.getResponseData();
 				
 				if ( gwtFolderEntry != null )
+				{
 					m_entryName = gwtFolderEntry.getEntryName();
+					m_viewEntryUrl = gwtFolderEntry.getViewEntryUrl();
+				}
 				
-				m_rpcInProgress = false;
+				// Notify the callback
+				if ( m_getterCallback != null )
+					m_getterCallback.returnValue( Boolean.TRUE );
 			}
 		};
 	}
@@ -132,6 +139,7 @@ public class LinkToEntryProperties
 			setEntryName( entryProps.getEntryName() );
 			setTitle( entryProps.getTitle() );
 			setOpenInNewWindow( entryProps.getOpenInNewWindow() );
+			setViewEntryUrl( entryProps.getViewEntryUrl() );
 		}
 	}// end copy()
 	
@@ -168,15 +176,16 @@ public class LinkToEntryProperties
 	/**
 	 * Issue an ajax request to get the entry's name from the server.
 	 */
-	public void getDataFromServer()
+	public void getDataFromServer( GetterCallback<Boolean> callback )
 	{
+		m_getterCallback = callback;
+		
 		// Do we have an entry id?
 		if ( m_entryId != null )
 		{
 			GetEntryCmd cmd;
 			
 			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
-			m_rpcInProgress = true;
 			cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
 			GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
 		}
@@ -220,21 +229,20 @@ public class LinkToEntryProperties
 	
 	
 	/**
+	 * 
+	 */
+	public String getViewEntryUrl()
+	{
+		return m_viewEntryUrl;
+	}
+	
+	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
 	{
 		return m_zoneUUID;
 	}// end getZoneUUID()
-	
-	
-	/**
-	 * Return whether an rpc call is in progress.
-	 */
-	public boolean isRpcInProgress()
-	{
-		return m_rpcInProgress;
-	}// end isRpcInProgress()
 	
 	
 	/**
@@ -248,6 +256,7 @@ public class LinkToEntryProperties
 			// Yes
 			// Since we are changing the entry id clear out the entry name and the name of the parent binder.
 			m_entryName = "???";
+			m_viewEntryUrl = "";
 		}
 		
 		m_entryId = entryId;
@@ -281,6 +290,15 @@ public class LinkToEntryProperties
 	}// end setTitle()
 
 
+	/**
+	 * 
+	 */
+	public void setViewEntryUrl( String viewEntryUrl )
+	{
+		m_viewEntryUrl = viewEntryUrl;
+	}
+	
+	
 	/**
 	 * 
 	 */
