@@ -257,7 +257,7 @@ public class FileUtils {
 	}
 
 	private static BinderModule getBinderModule() {
-		return (BinderModule) SpringContextUtil.getBean("profileModule");
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
 	}
 
 	private static AdminModule getAdminModule() {
