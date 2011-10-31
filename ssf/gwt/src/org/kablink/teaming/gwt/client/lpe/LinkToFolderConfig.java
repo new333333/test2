@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.widgets.LinkToBinderWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 import com.google.gwt.http.client.URL;
@@ -105,7 +106,7 @@ public class LinkToFolderConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget()
 	{
-		return null;
+		return new LinkToBinderWidget( this );
 	}
 	
 	/**
