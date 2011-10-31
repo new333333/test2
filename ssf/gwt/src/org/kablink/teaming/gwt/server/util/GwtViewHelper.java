@@ -492,16 +492,18 @@ public class GwtViewHelper {
 					User user = ((User) p);
 					reply.setPresenceUserWSId(user.getWorkspaceId());
 					
-					// Is presence enabled in this Vibe environment?
-					if (GwtServerHelper.isPresenceEnabled()) {
-						// Yes!  Can we get the PresenceInfo for this
-						// user?
-						GwtPresenceInfo presenceInfo = GwtServerHelper.getPresenceInfo(user);
-						if (null != presenceInfo) {
-							// Yes!  Store it in the PrincipalInfo.
-							reply.setPresence(presenceInfo);
-							reply.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
-						}
+					// Setup an appropriate GwtPresenceInfo for the
+					// Vibe environment?
+					GwtPresenceInfo presenceInfo;
+					if (GwtServerHelper.isPresenceEnabled())
+					     presenceInfo = GwtServerHelper.getPresenceInfo(user);
+					else presenceInfo = null;
+					if (null == presenceInfo) {
+						presenceInfo = GwtServerHelper.getPresenceInfoDefault();
+					}
+					if (null != presenceInfo) {
+						reply.setPresence(presenceInfo);
+						reply.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
 					}
 				}
 				
