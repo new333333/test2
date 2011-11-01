@@ -84,6 +84,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_REPLY,						// Invokes the 'reply to entry' UI.
 	INVOKE_SEND_EMAIL_TO_TEAM,			// Invokes the Send Email To Team dialog.
 	INVOKE_SHARE,						// Invokes the 'share this entry' UI.
+	INVOKE_SHARE_BINDER,				// Invokes the 'share this binder' ui.
 	INVOKE_SIMPLE_PROFILE,				// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,					// Invokes the 'subscribe to this entry' UI.
 	INVOKE_TAG,							// Invokes the 'tag this entry' UI.
