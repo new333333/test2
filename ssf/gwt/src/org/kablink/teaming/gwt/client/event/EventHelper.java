@@ -460,6 +460,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_SHARE_BINDER:
+				// An InvokeShareBinderEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeShareBinderEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeShareBinderEvent.registerEvent( eventBus, ((InvokeShareBinderEvent.Handler) eventHandler) );
+				}
+				break;
+				
 			case INVOKE_SIMPLE_PROFILE:
 				// An InvokeSimpleProfileEvent!  Can the event handler
 				// we were given handle that?
@@ -1063,6 +1072,7 @@ public class EventHelper {
 			case INVOKE_REPLY:                      	hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                   break;
 			case INVOKE_SEND_EMAIL_TO_TEAM:             hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);         break;
 			case INVOKE_SHARE:                      	hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                   break;
+			case INVOKE_SHARE_BINDER:					hasHandler = (eventHandler instanceof InvokeShareBinderEvent.Handler);			   break;
 			case INVOKE_SIMPLE_PROFILE:             	hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);           break;
 			case INVOKE_SUBSCRIBE:                  	hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);               break;
 			case INVOKE_TAG:                        	hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                     break;

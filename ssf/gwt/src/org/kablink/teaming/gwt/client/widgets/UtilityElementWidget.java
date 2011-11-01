@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
+import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.lpe.UtilityElement;
@@ -167,7 +168,11 @@ public class UtilityElementWidget extends VibeWidget
 		}
 		else if ( type == UtilityElement.LINK_TO_SHARE_FOLDER_OR_WORKSPACE )
 		{
-			Window.alert( "Not yet implemented" );
+			InvokeShareBinderEvent isbEvent;
+			
+			// Fire the "invoke share binder" event.
+			isbEvent = new InvokeShareBinderEvent( m_properties.getBinderId() );
+			GwtTeaming.fireEvent( isbEvent );
 		}
 		else if ( type == UtilityElement.LINK_TO_ADMIN_PAGE )
 		{

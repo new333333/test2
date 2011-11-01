@@ -323,6 +323,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
 	String rpcFailure_GetSelfRegInfo();
+	String rpcFailure_GetShareBinderPageUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();

@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
+import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
@@ -87,6 +88,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetShareBinderPageUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
@@ -166,6 +168,7 @@ public class GwtMainPage extends ResizeComposite
 		GotoPermalinkUrlEvent.Handler,
 		InvokeHelpEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
+		InvokeShareBinderEvent.Handler,
 		LoginEvent.Handler,
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
@@ -237,6 +240,7 @@ public class GwtMainPage extends ResizeComposite
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY,
 		TeamingEvents.FULL_UI_RELOAD,
+		TeamingEvents.INVOKE_SHARE_BINDER,
 
 		// Goto events.
 		TeamingEvents.GOTO_CONTENT_URL,
@@ -2314,6 +2318,65 @@ public class GwtMainPage extends ResizeComposite
 		String searchUrl = GwtClientHelper.jsBuildTagSearchUrl( tagName );
 		gotoUrlAsync( searchUrl );
 	}// end onSearchTag()
+	
+	
+	/**
+	 * Handle the InvokeShareBinderEvents received by this class.
+	 */
+	@Override
+	public void onInvokeShareBinder( InvokeShareBinderEvent event )
+	{
+		GetShareBinderPageUrlCmd gsbpuCmd;
+		String binderId;
+		
+		// Issue an rpc request to get the url for the "share binder" page.
+		binderId = event.getBinderId();
+		gsbpuCmd = new GetShareBinderPageUrlCmd( binderId );
+		GwtClientHelper.executeCommand( gsbpuCmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetShareBinderPageUrl() );
+			}
+			
+			/**
+			 * 
+			 */
+			public void onSuccess( VibeRpcResponse response )
+			{
+				final String url;
+				StringRpcResponseData responseData;
+				ScheduledCommand cmd;
+
+				responseData = (StringRpcResponseData) response.getResponseData();
+				url = responseData.getStringValue();
+				
+				// Open the "share binder" page.
+				if ( url != null && url.length() > 0 )
+				{
+					cmd = new ScheduledCommand()
+					{
+						public void execute()
+						{
+							int height;
+							int width;
+	
+							// Yes
+							width = 550;
+							height = 750;
+							Window.open( url, "sharebinder", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,width=" + String.valueOf( width ) );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		});
+	}
 	
 	/**
 	 * Handles ShowContentControlEvent's received by this class.
