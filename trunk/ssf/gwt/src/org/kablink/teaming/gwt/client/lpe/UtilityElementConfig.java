@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.widgets.UtilityElementWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 /**
@@ -47,11 +48,12 @@ public class UtilityElementConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public UtilityElementConfig( String configStr )
+	public UtilityElementConfig( String configStr, String binderId )
 	{
 		String[] results;
 		
 		m_properties = new UtilityElementProperties();
+		m_properties.setBinderId( binderId );
 		
 		// Split the configuration data into its parts.  ie element=xxx
 		results = configStr.split( "[,;]" );
@@ -107,7 +109,7 @@ public class UtilityElementConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget()
 	{
-		return null;
+		return new UtilityElementWidget( this );
 	}
 	
 	/**

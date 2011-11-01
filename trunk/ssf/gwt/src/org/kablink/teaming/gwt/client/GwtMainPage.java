@@ -2384,6 +2384,9 @@ public class GwtMainPage extends ResizeComposite
 	public void onTrackCurrentBinder( TrackCurrentBinderEvent event )
 	{
 		TrackBinderCmd cmd;
+		final boolean forceUIReload;
+		
+		forceUIReload = event.getForceUIReload();
 		
 		cmd = new TrackBinderCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
@@ -2402,7 +2405,8 @@ public class GwtMainPage extends ResizeComposite
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				FullUIReloadEvent.fireOne();
+				if ( forceUIReload )
+					FullUIReloadEvent.fireOne();
 			}// end onSuccess()
 		});
 	}// end onTrackCurrentBinder()
@@ -2710,6 +2714,14 @@ public class GwtMainPage extends ResizeComposite
 	{
 		return m_inSearch;
 	}// end isInSearch()
+	
+	/**
+	 * Return whether the user is logged in.
+	 */
+	public boolean isUserLoggedIn()
+	{
+		return m_requestInfo.isUserLoggedIn();
+	}
 	
 	private void showAdminControl()
 	{

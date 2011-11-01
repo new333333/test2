@@ -184,7 +184,7 @@ public class ConfigData
 				
 				if ( itemName.equalsIgnoreCase( "utility" ) )
 				{
-					configItem = new UtilityElementConfig( itemData[i] );
+					configItem = new UtilityElementConfig( itemData[i], getBinderId() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "url" ) )
