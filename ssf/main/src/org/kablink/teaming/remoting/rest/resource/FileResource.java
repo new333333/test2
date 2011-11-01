@@ -112,7 +112,7 @@ public class FileResource extends AbstractResource {
     @InjectParam("binderModule") private BinderModule binderModule;
     
 	@POST
-	@Path("/name/{entityType}/{entityId}/{filename}/content")
+	@Path("/name/{entityType}/{entityId}/{filename}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public FileProperties writeFileContentByName_MultipartFormData(
 			@PathParam("entityType") String entityType,
@@ -134,7 +134,7 @@ public class FileResource extends AbstractResource {
 	}
 	
 	@POST
-	@Path("/name/{entityType}/{entityId}/{filename}/content")
+	@Path("/name/{entityType}/{entityId}/{filename}")
 	public FileProperties writeFileContentByName_Raw(
 			@PathParam("entityType") String entityType,
 			@PathParam("entityId") long entityId,
@@ -155,7 +155,7 @@ public class FileResource extends AbstractResource {
 	}
 
 	@POST
-	@Path("/name/{entityType}/{entityId}/{filename}/content")
+	@Path("/name/{entityType}/{entityId}/{filename}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public FileProperties writeFileContentByName_ApplicationFormUrlencoded(
 			@PathParam("entityType") String entityType,
@@ -165,7 +165,7 @@ public class FileResource extends AbstractResource {
 	}
 	
 	@POST
-	@Path("/id/{fileid}/content")
+	@Path("/id/{fileid}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public FileProperties writeFileContentById_MultipartFormData(@PathParam("fileid") String fileId,
 			@QueryParam("dataName") String dataName,
@@ -186,7 +186,7 @@ public class FileResource extends AbstractResource {
 	}
 
 	@POST
-	@Path("/id/{fileid}/content")
+	@Path("/id/{fileid}")
 	public FileProperties writeFileContentById_Raw(@PathParam("fileid") String fileId,
 			@QueryParam("dataName") String dataName,
 			@QueryParam("modDate") String modDateISO8601,
@@ -206,14 +206,14 @@ public class FileResource extends AbstractResource {
 	}
 
 	@POST
-	@Path("/id/{fileid}/content")
+	@Path("/id/{fileid}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public FileProperties writeFileContentById_ApplicationFormUrlencoded(@PathParam("fileid") String fileId) {
 		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
 	}
 
 	@GET
-	@Path("/name/{entityType}/{entityId}/{filename}/content")
+	@Path("/name/{entityType}/{entityId}/{filename}")
 	public Response readFileContentByName(
 			@PathParam("entityType") String entityType,
 			@PathParam("entityId") long entityId,
@@ -222,7 +222,7 @@ public class FileResource extends AbstractResource {
 	}
 	
 	@GET
-	@Path("/id/{fileid}/content")
+	@Path("/id/{fileid}")
 	public Response readFileContentById(@PathParam("fileid") String fileId) {
 		FileAttachment fa = findFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();

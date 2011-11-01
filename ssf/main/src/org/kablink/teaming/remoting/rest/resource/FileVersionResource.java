@@ -66,7 +66,7 @@ public class FileVersionResource extends AbstractResource {
 
 	// Read file version content
 	@GET
-	@Path("/id/{fileversionid}/content")
+	@Path("/id/{fileversionid}")
 	public Response readFileVersionContentById(@PathParam("fileversionid") String fileVersionId) {
 		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
 		DefinableEntity entity = va.getOwner().getEntity();
