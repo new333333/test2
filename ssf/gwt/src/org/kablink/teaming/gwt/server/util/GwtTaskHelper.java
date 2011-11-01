@@ -41,7 +41,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +55,6 @@ import org.apache.lucene.document.DateTools;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
@@ -90,14 +88,12 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.BasicIndexUtils;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.EventHelper;
@@ -117,44 +113,6 @@ import org.kablink.util.search.Constants;
  */
 public class GwtTaskHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtTaskHelper.class);
-
-	/**
-	 * Inner class used to compare two AssignmentInfo's.
-	 */
-	private static class AssignmentInfoComparator implements Comparator<AssignmentInfo> {
-		private boolean m_ascending;	//
-
-		/**
-		 * Class constructor.
-		 * 
-		 * @param ascending
-		 */
-		public AssignmentInfoComparator(boolean ascending) {
-			m_ascending = ascending;
-		}
-
-		/**
-		 * Compares two AssignmentInfo's by their assignee's name.
-		 * 
-		 * Implements the Comparator.compare() method.
-		 * 
-		 * @param ai1
-		 * @param ai2
-		 * 
-		 * @return
-		 */
-		@Override
-		public int compare(AssignmentInfo ai1, AssignmentInfo ai2) {
-			String assignee1 = ai1.getTitle();
-			String assignee2 = ai2.getTitle();
-
-			int reply;
-			if (m_ascending)
-			     reply = MiscUtil.safeSColatedCompare(assignee1, assignee2);
-			else reply = MiscUtil.safeSColatedCompare(assignee2, assignee1);
-			return reply;
-		}
-	}
 
 	/*
 	 * Inner class used to track event dates that are required for
@@ -204,29 +162,6 @@ public class GwtTaskHelper {
 	 */
 	private GwtTaskHelper() {
 		// Nothing to do.
-	}
-
-	/*
-	 * Converts a String to a Long, if possible, and adds it as the ID
-	 * of an AssignmentInfo to a List<AssignmentInfo>.
-	 */
-	private static void addAIFromStringToList(String s, List<AssignmentInfo> l) {
-		try {
-			Long lVal = Long.parseLong(s);
-			l.add(AssignmentInfo.construct(lVal));
-		}
-		catch (NumberFormatException nfe) {/* Ignored. */}
-	}
-
-	/*
-	 * Adds a Long to a List<Long> if it's not already there.
-	 */
-	private static void addLToLLIfUnique(List<Long> lList, Long l) {
-		// If the List<Long> doesn't contain the Long...
-		if (!(lList.contains(l))) {
-			// ...add it.
-			lList.add(l);
-		}
 	}
 
 	/*
@@ -452,19 +387,19 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's individual assignees...
 			for (AssignmentInfo ai:  ti.getAssignments()) {
 				// ...tracking each unique ID.
-				addLToLLIfUnique(principalIds, ai.getId());
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this TaskInfo's group assignees...
 			for (AssignmentInfo ai:  ti.getAssignmentGroups()) {
 				// ...tracking each unique ID.
-				addLToLLIfUnique(principalIds, ai.getId());
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this TaskInfo's team assignees...
 			for (AssignmentInfo ai:  ti.getAssignmentTeams()) {
 				// ...tracking each unique ID.
-				addLToLLIfUnique(teamIds, ai.getId());
+				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 		}
 
@@ -494,7 +429,7 @@ public class GwtTaskHelper {
 					boolean isUser = (p instanceof UserPrincipal);
 					principalTitles.put(pId, p.getTitle());					
 					if (p instanceof GroupPrincipal) {
-						groupCounts.put(pId, getGroupCount((GroupPrincipal) p));						
+						groupCounts.put(pId, GwtServerHelper.getGroupCount((GroupPrincipal) p));						
 					}
 					else if (isUser) {
 						User user = ((User) p);
@@ -519,7 +454,7 @@ public class GwtTaskHelper {
 				for (Binder b:  binders) {
 					Long bId = b.getId();
 					teamTitles.put(bId, b.getTitle());
-					teamCounts.put(bId, getTeamCount(bs, b));
+					teamCounts.put(bId, GwtServerHelper.getTeamCount(bs, b));
 				}
 			}
 		}
@@ -534,45 +469,45 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's individual assignees again...
 			for (AssignmentInfo ai:  ti.getAssignments()) {
 				// ...setting each one's title.
-				if (setAITitle(           ai, principalTitles )) {
-					setAIPresence(        ai, userPresence     );
-					setAIPresenceUserWSId(ai, presenceUserWSIds);
+				if (GwtServerHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
+					GwtServerHelper.setAssignmentInfoPresence(        ai, userPresence     );
+					GwtServerHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 				}
 				else {
 					removeList.add(ai);
 				}
 			}
-			removeUnresolvedAssignees(ti.getAssignments(), removeList);
+			GwtServerHelper.removeUnresolvedAssignees(ti.getAssignments(), removeList);
 			
 			// Scan this TaskInfo's group assignees again...
 			for (AssignmentInfo ai:  ti.getAssignmentGroups()) {
 				// ...setting each one's title and membership count.
-				if (setAITitle(  ai, principalTitles)) {
-					setAIMembers(ai, groupCounts     );
+				if (GwtServerHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
+					GwtServerHelper.setAssignmentInfoMembers(ai, groupCounts     );
 					ai.setPresenceDude("pics/group_icon_small.png");
 				}
 				else {
 					removeList.add(ai);
 				}
 			}
-			removeUnresolvedAssignees(ti.getAssignmentGroups(), removeList);
+			GwtServerHelper.removeUnresolvedAssignees(ti.getAssignmentGroups(), removeList);
 			
 			// Scan this TaskInfo's team assignees again...
 			for (AssignmentInfo ai:  ti.getAssignmentTeams()) {
 				// ...setting each one's title and membership count.
-				if (setAITitle(  ai, teamTitles)) {
-					setAIMembers(ai, teamCounts );
+				if (GwtServerHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
+					GwtServerHelper.setAssignmentInfoMembers(ai, teamCounts );
 					ai.setPresenceDude("pics/team_16.png");
 				}
 				else {
 					removeList.add(ai);
 				}
 			}
-			removeUnresolvedAssignees(ti.getAssignmentTeams(), removeList);
+			GwtServerHelper.removeUnresolvedAssignees(ti.getAssignmentTeams(), removeList);
 		}		
 
 		// Finally, one last scan through the List<TaskInfo>...
-		Comparator<AssignmentInfo> comparator = new AssignmentInfoComparator(true);
+		Comparator<AssignmentInfo> comparator = new GwtServerHelper.AssignmentInfoComparator(true);
 		for (TaskInfo ti:  tasks) {
 			// ...this time, to sort the assignee lists.
 			Collections.sort(ti.getAssignments(),      comparator);
@@ -595,7 +530,7 @@ public class GwtTaskHelper {
 		// Generate an List<Long> of the unique binder IDs.
 		List<Long> binderIds = new ArrayList<Long>();		
 		for (TaskInfo ti:  tasks) {
-			addLToLLIfUnique(binderIds, ti.getTaskId().getBinderId());
+			MiscUtil.addLongToListLongIfUnique(binderIds, ti.getTaskId().getBinderId());
 		}
 
 		// Do we have any binder IDs?
@@ -664,7 +599,7 @@ public class GwtTaskHelper {
 					if (p instanceof GroupPrincipal) {
 						Group group = ((Group) p);
 						groups.put(pId, group);
-						groupCounts.put(pId, getGroupCount(group));						
+						groupCounts.put(pId, GwtServerHelper.getGroupCount(group));						
 					}
 					else if (p instanceof UserPrincipal) {
 						User user = ((User) p);
@@ -685,17 +620,17 @@ public class GwtTaskHelper {
 			Long aiId = ai.getId();
 			if (null != users.get(aiId)) {
 				// Yes!  Set its title and presence information.
-				setAITitle(           ai, principalTitles  );
-				setAIPresence(        ai, presenceInfo     );
-				setAIPresenceUserWSId(ai, presenceUserWSIds);
+				GwtServerHelper.setAssignmentInfoTitle(           ai, principalTitles  );
+				GwtServerHelper.setAssignmentInfoPresence(        ai, presenceInfo     );
+				GwtServerHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 			}
 			
 			// No, this assignment isn't that of a user!  Is it that
 			// of a group?
 			else if (null != groups.get(aiId)) {
 				// Yes!  Set its title and membership count.
-				setAITitle(  ai, principalTitles);
-				setAIMembers(ai, groupCounts    );
+				GwtServerHelper.setAssignmentInfoTitle(  ai, principalTitles);
+				GwtServerHelper.setAssignmentInfoMembers(ai, groupCounts    );
 				ai.setPresenceDude("pics/group_icon_small.png");
 			}
 			
@@ -715,7 +650,7 @@ public class GwtTaskHelper {
 
 		// Finally, sort the list so that it appears nicely in the
 		// assigned to list.
-		Collections.sort(assignees, new AssignmentInfoComparator(true));
+		Collections.sort(assignees, new GwtServerHelper.AssignmentInfoComparator(true));
 	}
 
 	/*
@@ -793,7 +728,7 @@ public class GwtTaskHelper {
 			for (TaskId taskId:  taskIds) {
 				// ...deleting each.
 				Long binderId = taskId.getBinderId();
-				addLToLLIfUnique(binderIds, binderId);
+				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
 				TrashHelper.preDeleteEntry(
 					bs,
 					binderId,
@@ -996,50 +931,6 @@ public class GwtTaskHelper {
 	}
 
 	/*
-	 * Reads a List<AssignmentInfo> from a Map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static List<AssignmentInfo> getAIListFromMap(Map m, String key) {
-		// Is there value for the key?
-		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
-		Object o = m.get(key);
-		if (null != o) {
-			// Yes!  Is the value is a String?
-			if (o instanceof String) {
-				// Yes!  Added it as a Long to the List<Long>. 
-				addAIFromStringToList(((String) o), reply);
-			}
-
-			// No, the value isn't a String!  Is it a String[]?
-			else if (o instanceof String[]) {
-				// Yes!  Scan them and add each as a Long to the
-				// List<Long>. 
-				String[] strLs = ((String[]) o);
-				int c = strLs.length;
-				for (int i = 0; i < c; i += 1) {
-					addAIFromStringToList(strLs[i], reply);
-				}
-			}
-
-			// No, the value isn't a String[] either!  Is it a
-			// SearchFieldResult?
-			else if (o instanceof SearchFieldResult) {
-				// Yes!  Scan the value set from it and add each as a
-				// Long to the List<Long>. 
-				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
-				Set<String> strLs = ((Set<String>) sfr.getValueSet());
-				for (String strL:  strLs) {
-					addAIFromStringToList(strL, reply);
-				}
-			}
-		}
-		
-		// If we get here, reply refers to the List<Long> of values
-		// from the Map.  Return it.
-		return reply;
-	}
-
-	/*
 	 * Returns the Calendar equivalent of a TaskDate.
 	 */
 	private static Calendar getCFromTD(TaskDate td) {
@@ -1145,29 +1036,6 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
-	/*
-	 * Returns a count of the members of a group.
-	 */
-	private static int getGroupCount(GroupPrincipal group) {
-		Set<Long> groupMemberIds = getGroupMemberIds(group);
-		return ((null == groupMemberIds) ? 0 : groupMemberIds.size());
-	}
-
-	/*
-	 * Returns a Set<Long> of the IDs of the members of a group.
-	 */
-	private static Set<Long> getGroupMemberIds(GroupPrincipal group) {
-		List<Long> groupIds = new ArrayList<Long>();
-		groupIds.add(group.getId());
-		Set<Long> groupMemberIds = null;
-		try {
-			ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-			groupMemberIds = profileDao.explodeGroups(groupIds, group.getZoneId());
-		}
-		catch (Exception ex) {/* Ignored. */}
-		return validatePrincipalIds(groupMemberIds);
-	}
-	
 	/**
 	 * Returns a List<AssignmentInfo> containing information about the
 	 * membership of a group.
@@ -1194,7 +1062,7 @@ public class GwtTaskHelper {
 					Principal p = ((Principal) o);
 					if (p instanceof GroupPrincipal) {
 						// Yes!  Can we read its membership IDs?
-						Set<Long> groupMemberIds = getGroupMemberIds((GroupPrincipal) p);
+						Set<Long> groupMemberIds = GwtServerHelper.getGroupMemberIds((GroupPrincipal) p);
 						if (null != groupMemberIds) {
 							// Yes!  Add a base AssignmentInfo with
 							// each ID to the List<AssignmentInfo> that
@@ -1440,24 +1308,6 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
-	/*
-	 * Returns a count of the members of a team.
-	 */
-	private static int getTeamCount(AllModulesInjected bs, Binder binder) {
-		Set<Long> teamMemberIds = getTeamMemberIds(bs, binder.getId());
-		return ((null == teamMemberIds) ? 0 : teamMemberIds.size());
-	}
-
-	/*
-	 * Returns a Set<Long> of the member IDs of a team.
-	 */
-	private static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
-		Set<Long> teamMemberIds = null;
-		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, false);}
-		catch (Exception ex) {/* Ignored. */}
-		return validatePrincipalIds(teamMemberIds);
-	}
-	
 	/**
 	 * Returns a List<AssignmentInfo> containing information about the
 	 * membership of a team.
@@ -1476,7 +1326,7 @@ public class GwtTaskHelper {
 			
 			// Can we resolve the binder ID to a set of team member
 			// IDs?
-			Set<Long> teamMemberIds = getTeamMemberIds(bs, binderId);
+			Set<Long> teamMemberIds = GwtServerHelper.getTeamMemberIds(bs, binderId);
 			if (null != teamMemberIds) {
 				// Yes!  Add a base AssignmentInfo with each ID to the
 				// List<AssignmentInfo> that we're going to return.
@@ -1595,7 +1445,7 @@ public class GwtTaskHelper {
 			for (TaskId taskId:  taskIds) {
 				// ...deleting each.
 				Long binderId = taskId.getBinderId();
-				addLToLLIfUnique(binderIds, binderId);
+				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
 				fm.deleteEntry(
 					binderId,
 					taskId.getEntryId());
@@ -1731,16 +1581,16 @@ public class GwtTaskHelper {
 		for (Map taskEntry:  taskEntriesList) {			
 			TaskInfo ti = new TaskInfo();
 			
-			ti.setOverdue(         getOverdueFromMap(  taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
-			ti.setEvent(           getEventFromMap(    taskEntry, clientBundle                                               ));
-			ti.setStatus(          getStringFromMap(   taskEntry, "status"                                                   ));
-			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"                                                ));
-			ti.setSeen(            seenMap.checkIfSeen(taskEntry                                                             ));
-			ti.setEntityType(      getStringFromMap(   taskEntry, Constants.ENTITY_FIELD                                     ));
-			ti.setPriority(        getStringFromMap(   taskEntry, "priority"                                                 ));
-			ti.setAssignments(     getAIListFromMap(   taskEntry, "assignment"                                               ));
-			ti.setAssignmentGroups(getAIListFromMap(   taskEntry, "assignment_groups"                                        ));
-			ti.setAssignmentTeams( getAIListFromMap(   taskEntry, "assignment_teams"                                         ));
+			ti.setOverdue(                         getOverdueFromMap(                taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
+			ti.setEvent(                           getEventFromMap(                  taskEntry, clientBundle                                               ));
+			ti.setStatus(                          getStringFromMap(                 taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME                ));
+			ti.setCompleted(                       getStringFromMap(                 taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME             ));
+			ti.setSeen(                            seenMap.checkIfSeen(              taskEntry                                                             ));
+			ti.setEntityType(                      getStringFromMap(                 taskEntry, Constants.ENTITY_FIELD                                     ));
+			ti.setPriority(                        getStringFromMap(                 taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME              ));
+			ti.setAssignments(     GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME            ));
+			ti.setAssignmentGroups(GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME     ));
+			ti.setAssignmentTeams( GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME      ));
 			
 			String title = getStringFromMap(taskEntry, Constants.TITLE_FIELD);
 			if (!(MiscUtil.hasString(title))) {
@@ -1800,21 +1650,6 @@ public class GwtTaskHelper {
 		return saveTaskLinkage(bs, binder, null);
 	}
 
-	/*
-	 * Removes the AssignmentInfo's in a remove list from an assignee
-	 * list and clears the remove list.
-	 */
-	private static void removeUnresolvedAssignees(List<AssignmentInfo> assigneeList, List<AssignmentInfo> removeList) {
-		// Scan the remove list...
-		for (AssignmentInfo ai: removeList) {
-			// ...removing the assignments from the assignee list...
-			assigneeList.remove(ai);
-		}
-		
-		// ...and clearing the remove list.
-		removeList.clear();
-	}
-	
 	/**
 	 * Stores a new completed value for a task.
 	 * 
@@ -2204,50 +2039,6 @@ public class GwtTaskHelper {
 			reply = null;
 		}
 		return reply;
-	}
-
-	/*
-	 * Stores the membership count of an AssignmentInfo based on Map
-	 * lookup using its ID.
-	 */
-	private static void setAIMembers(AssignmentInfo ai, Map<Long, Integer> countMap) {
-		Integer count = countMap.get(ai.getId());
-		ai.setMembers((null == count) ? 0 : count.intValue());
-	}
-
-	/*
-	 * Stores the title of an AssignmentInfo based on Map lookup using
-	 * its ID.
-	 * 
-	 * Returns true if a title was stored and false otherwise.
-	 */
-	private static boolean setAITitle(AssignmentInfo ai, Map<Long, String> titleMap) {
-		String title = titleMap.get(ai.getId());
-		boolean reply = MiscUtil.hasString(title);
-		if (reply) {
-			ai.setTitle(title);
-		}
-		return reply;
-	}
-
-	/*
-	 * Stores a GwtPresenceInfo of an AssignmentInfo based on Map
-	 * lookup using its ID.
-	 */
-	private static void setAIPresence(AssignmentInfo ai, Map<Long, GwtPresenceInfo> presenceMap) {
-		GwtPresenceInfo pi = presenceMap.get(ai.getId());
-		if (null == pi) pi = GwtServerHelper.getPresenceInfoDefault();
-		ai.setPresence(pi);
-		ai.setPresenceDude(GwtServerHelper.getPresenceDude(pi));
-	}
-
-	/*
-	 * Stores a user's workspace ID of an AssignmentInfo based on a Map
-	 * lookup using its ID.
-	 */
-	private static void setAIPresenceUserWSId(AssignmentInfo ai, Map<Long, Long> presenceUserWSIdsMap) {
-		Long presenceUserWSId = presenceUserWSIdsMap.get(ai.getId());
-		ai.setPresenceUserWSId(presenceUserWSId);
 	}
 
 	/*
@@ -2688,27 +2479,6 @@ public class GwtTaskHelper {
 		
 		// If we get here, reply is true if we modified task's
 		// calculated start and or end and false otherwise.  Return it.
-		return reply;
-	}
-
-	/*
-	 * Validates that the Long's in a Set<Long> are valid principal
-	 * IDs.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Set<Long> validatePrincipalIds(Set<Long> principalIds) {
-		Set<Long> reply = new HashSet<Long>();
-		if ((null != principalIds) && (!(principalIds.isEmpty()))) {
-			List principals = null;
-			try {principals = ResolveIds.getPrincipals(principalIds);}
-			catch (Exception ex) {/* Ignored. */}
-			if ((null != principals) && (!(principals.isEmpty()))) {
-				for (Object o:  principals) {
-					Principal p = ((Principal) o);
-					reply.add(p.getId());
-				}
-			}
-		}
 		return reply;
 	}
 
