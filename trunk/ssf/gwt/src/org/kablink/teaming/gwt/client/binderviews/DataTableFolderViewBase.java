@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
@@ -369,6 +370,14 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	public abstract void resetView(    List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
 
 	/*
+	 * Returns true if the column should show a download link and false
+	 * otherwise. 
+	 */
+	private static boolean isDownloadColumn(String columnName) {
+		return columnName.equals(COLUMN_DOWNLOAD);
+	}
+	
+	/*
 	 * Returns true if the column should show presence information and
 	 * false otherwise. 
 	 */
@@ -436,10 +445,27 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		for (final FolderColumn fc:  m_folderColumnsList) {
 			// We need to define a Column<FolderRow, ?> of some sort
 			// for each one.  Is this a column that should show
-			// presence? 
+			// a download link for? 
 			Column<FolderRow, ?> column;
 			String cName = fc.getColumnName();
-			if (isPresenceColumn(cName)) {
+			if (isDownloadColumn(cName)) {
+				// Yes!  Create a DownloadColumn for it.
+				column = new DownloadColumn<FolderRow>() {
+					@Override
+					public Long getValue(FolderRow fr) {
+						String value = fr.getColumnValueAsString(fc);
+						Long reply;
+						if (GwtClientHelper.hasString(value))
+						     reply = fr.getEntryId();
+						else reply = null;
+						return reply;
+					}
+				};
+			}
+			
+			// No, this column doesn't show a download link!  Does it
+			// show presence?
+			else if (isPresenceColumn(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>() {
 					@Override

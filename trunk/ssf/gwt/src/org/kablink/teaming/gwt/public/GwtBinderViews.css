@@ -46,6 +46,7 @@
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
+		.vibe-dataTableEntry-download     {border: 0px solid #666666; background: url(images/move_down.gif); background-repeat: no-repeat; background-position:  left center; padding-left: 15px; padding-right: 0px; line-height: 11px;}
 		.vibe-dataTableEntry-title        {cursor: pointer; color: #135c8f !important;}
 		.vibe-dataTableEntry-unseenMarker {display: inline; cursor: pointer;}
 		.vibe-dataTableLink-hover         {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
