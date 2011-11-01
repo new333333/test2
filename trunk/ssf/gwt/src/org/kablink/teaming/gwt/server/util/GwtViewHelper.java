@@ -37,12 +37,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,6 +54,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -66,14 +70,17 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
@@ -87,6 +94,138 @@ import org.kablink.util.search.Constants;
 public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 
+	/*
+	 * When initially built, the AssignmentInfo's in the
+	 * List<AssignmentInfo>'s only contain the assignee IDs.  We need
+	 * to complete them with each assignee's title, ...
+	 */
+	@SuppressWarnings("unchecked")
+	private static void completeAIs(AllModulesInjected bs, List<FolderRow> folderRows) {
+		// If we don't have any FolderRows's to complete...
+		if ((null == folderRows) || folderRows.isEmpty()) {
+			// ..bail.
+			return;
+		}
+
+		// Allocate List<Long>'s to track the assignees that need to be
+		// completed.
+		List<Long> principalIds = new ArrayList<Long>();
+		List<Long> teamIds      = new ArrayList<Long>();
+
+		// Scan the List<FolderRow>'s.
+		for (FolderRow fr:  folderRows) {
+			// Scan this FolderRow's individual assignees tracking each
+			// unique ID.
+			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
+			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
+			
+			// Scan this FolderRow's group assignees tracking each
+			// unique ID.
+			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
+			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
+			
+			// Scan this FolderRow's team assignees tracking each
+			// unique ID.
+			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+			}
+			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+			}
+		}
+
+		// If we don't have any assignees to complete...
+		boolean hasPrincipals = (!(principalIds.isEmpty()));
+		boolean hasTeams      = (!(teamIds.isEmpty()));		
+		if ((!hasPrincipals) && (!hasTeams)) {
+			// ...bail.
+			return;
+		}
+
+		// Construct Maps, mapping the principal IDs to their titles
+		// and membership counts.
+		Map<Long, String>          principalTitles   = new HashMap<Long, String>();
+		Map<Long, Integer>         groupCounts       = new HashMap<Long, Integer>();
+		Map<Long, GwtPresenceInfo> userPresence      = new HashMap<Long, GwtPresenceInfo>();
+		Map<Long, Long>            presenceUserWSIds = new HashMap<Long, Long>();
+		boolean                    isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
+		if (hasPrincipals) {
+			List principals = null;
+			try {principals = ResolveIds.getPrincipals(principalIds);}
+			catch (Exception ex) {/* Ignored. */}
+			if ((null != principals) && (!(principals.isEmpty()))) {
+				for (Object o:  principals) {
+					Principal p = ((Principal) o);
+					Long pId = p.getId();
+					boolean isUser = (p instanceof UserPrincipal);
+					principalTitles.put(pId, p.getTitle());					
+					if (p instanceof GroupPrincipal) {
+						groupCounts.put(pId, GwtServerHelper.getGroupCount((GroupPrincipal) p));						
+					}
+					else if (isUser) {
+						User user = ((User) p);
+						presenceUserWSIds.put(pId, user.getWorkspaceId());
+						if (isPresenceEnabled) {
+							userPresence.put(pId, GwtServerHelper.getPresenceInfo(user));
+						}
+					}
+				}
+			}
+		}
+		
+		// Construct Maps, mapping the team IDs to their titles and
+		// membership counts.
+		Map<Long, String>  teamTitles = new HashMap<Long, String>();
+		Map<Long, Integer> teamCounts = new HashMap<Long, Integer>();
+		if (hasTeams) {
+			SortedSet<Binder> binders = null;
+			try {binders = bs.getBinderModule().getBinders(teamIds);}
+			catch (Exception ex) {/* Ignored. */}
+			if ((null != binders) && (!(binders.isEmpty()))) {
+				for (Binder b:  binders) {
+					Long bId = b.getId();
+					teamTitles.put(bId, b.getTitle());
+					teamCounts.put(bId, GwtServerHelper.getTeamCount(bs, b));
+				}
+			}
+		}
+		
+		// Scan the List<FolderRow>'s again...
+		for (FolderRow fr:  folderRows) {
+			// ...this time, fixing the individual assignees...
+			fixupAIs(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, userPresence, presenceUserWSIds);
+			fixupAIs(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, userPresence, presenceUserWSIds);
+			
+			// ...group assignees...
+			fixupAIGroups(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts);
+			fixupAIGroups(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts);
+			
+			// ...and team assignees.
+			fixupAITeams(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),      teamTitles, teamCounts);
+			fixupAITeams(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME), teamTitles, teamCounts);
+		}		
+
+		// Finally, one last scan through the List<FolderRow>'s...
+		Comparator<AssignmentInfo> comparator = new GwtServerHelper.AssignmentInfoComparator(true);
+		for (FolderRow fr:  folderRows) {
+			// ...this time, to sort the assignee lists.
+			Collections.sort(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             comparator);
+			Collections.sort(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        comparator);
+			Collections.sort(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      comparator);
+			Collections.sort(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), comparator);
+			Collections.sort(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
+			Collections.sort(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
+		}
+	}
+	
 	/*
 	 * Dumps the contents of a ViewInfo object.
 	 */
@@ -146,6 +285,75 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Fixes up the group assignees in an List<AssignmentInfo>'s.
+	 */
+	private static void fixupAIGroups(List<AssignmentInfo> aiGroupsList, Map<Long, String> principalTitles, Map<Long, Integer> groupCounts) {
+		// The removeList is used to handle cases where an ID could
+		// not be resolved (e.g., an 'Assigned To' group has been
+		// deleted.)
+		List<AssignmentInfo> removeList = new ArrayList<AssignmentInfo>();
+		
+		// Scan this AssignmentInfo's group assignees again...
+		for (AssignmentInfo ai:  aiGroupsList) {
+			// ...setting each one's title and membership count.
+			if (GwtServerHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
+				GwtServerHelper.setAssignmentInfoMembers(ai, groupCounts     );
+				ai.setPresenceDude("pics/group_icon_small.png");
+			}
+			else {
+				removeList.add(ai);
+			}
+		}
+		GwtServerHelper.removeUnresolvedAssignees(aiGroupsList, removeList);
+	}
+	
+	/*
+	 * Fixes up the team assignees in an List<AssignmentInfo>'s.
+	 */
+	private static void fixupAITeams(List<AssignmentInfo> aiTeamsList, Map<Long, String> teamTitles, Map<Long, Integer> teamCounts) {
+		// The removeList is used to handle cases where an ID could
+		// not be resolved (e.g., an 'Assigned To' team has been
+		// deleted.)
+		List<AssignmentInfo> removeList = new ArrayList<AssignmentInfo>();
+		
+		// Scan this AssignmentInfo's team assignees again...
+		for (AssignmentInfo ai:  aiTeamsList) {
+			// ...setting each one's title and membership count.
+			if (GwtServerHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
+				GwtServerHelper.setAssignmentInfoMembers(ai, teamCounts );
+				ai.setPresenceDude("pics/team_16.png");
+			}
+			else {
+				removeList.add(ai);
+			}
+		}
+		GwtServerHelper.removeUnresolvedAssignees(aiTeamsList, removeList);
+	}
+	
+	/*
+	 * Fixes up the individual assignees in an List<AssignmentInfo>'s.
+	 */
+	private static void fixupAIs(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds) {
+		// The removeList is used to handle cases where an ID could
+		// not be resolved (e.g., an 'Assigned To' user has been
+		// deleted.)
+		List<AssignmentInfo> removeList = new ArrayList<AssignmentInfo>();
+		
+		// Scan this AssignmentInfo's individual assignees...
+		for (AssignmentInfo ai:  aiList) {
+			// ...setting each one's title.
+			if (GwtServerHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
+				GwtServerHelper.setAssignmentInfoPresence(        ai, userPresence     );
+				GwtServerHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+			}
+			else {
+				removeList.add(ai);
+			}
+		}
+		GwtServerHelper.removeUnresolvedAssignees(aiList, removeList);
+	}
+	
+	/*
 	 * Maps a column name to the appropriate search key.
 	 */
 	private static String getColumnSearchKey(String columnName) {
@@ -165,6 +373,7 @@ public class GwtViewHelper {
 		else {
 			reply = columnName;
 		}
+
 		return reply;
 	}
 	
@@ -419,6 +628,7 @@ public class GwtViewHelper {
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 			
 			// Scan the entries we read...
+			boolean addedAssignments = false;
 			List<FolderRow> folderRows = new ArrayList<FolderRow>();
 			for (Map entryMap:  searchEntries) {
 				// ...creating a FolderRow for each.
@@ -434,12 +644,24 @@ public class GwtViewHelper {
 					     pi = getPIFromPId(((Principal) emValue).getId());
 					else pi = null;
 					if (null == pi) {
-						// No!  Extract its String value and use that.
-						String value = GwtServerHelper.getStringFromEntryMapValue(emValue, DateFormat.SHORT, DateFormat.SHORT);
-						if (csk.equals(Constants.FILE_SIZE_FIELD)) {
-							value = trimLeadingZeros(value);
+						// No!  Does the column contain assignment
+						// information?
+						if (isAssignmentColumnSearchKey(csk)) {
+							// Yes!  Process it for a
+							// List<AssignmentInfo>'s.
+							addedAssignments = true;
+							fr.setColumnValue(fc, GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk));
 						}
-						fr.setColumnValue(fc, (null == (value) ? "" : value));
+						else {
+							// No, the column doesn't contain
+							// assignment information either!  Extract
+							// its String value and use that.
+							String value = GwtServerHelper.getStringFromEntryMapValue(emValue, DateFormat.SHORT, DateFormat.SHORT);
+							if (csk.equals(Constants.FILE_SIZE_FIELD)) {
+								value = trimLeadingZeros(value);
+							}
+							fr.setColumnValue(fc, (null == (value) ? "" : value));
+						}
 					}
 					
 					else {
@@ -448,6 +670,10 @@ public class GwtViewHelper {
 					}
 				}
 				folderRows.add(fr);
+			}
+			
+			if (addedAssignments) {
+				completeAIs(bs, folderRows);
 			}
 			
 			// Finally, return the List<FolderRow> wrapped in a
@@ -791,6 +1017,24 @@ public class GwtViewHelper {
 		return true;
 	}
 
+	/*
+	 * Returns true if a column search key corresponds to an
+	 * 'assignment' attribute or false otherwise.
+	 */
+	private static boolean isAssignmentColumnSearchKey(String csk) {
+		boolean reply = false;
+		if (MiscUtil.hasString(csk)) {
+			reply =
+				(csk.equals(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)             ||
+				 csk.equals(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)      ||
+				 csk.equals(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)       ||
+				 csk.equals(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)        ||
+				 csk.equals(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME) ||
+				 csk.equals(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME));
+		}
+		return reply;
+	}
+	
 	/*
 	 * Strips the leading 0's off a String value and returns it.
 	 */

@@ -92,6 +92,20 @@ public final class MiscUtil
 	
 	
 	/**
+	 * Adds a Long to a List<Long> if it's not already there.
+	 * 
+	 * @param lList
+	 * @param l
+	 */
+	public static void addLongToListLongIfUnique(List<Long> lList, Long l) {
+		// If the List<Long> doesn't contain the Long...
+		if (!(lList.contains(l))) {
+			// ...add it.
+			lList.add(l);
+		}
+	}
+
+	/**
 	 * Add all of the information needed to support the "Create new account" ui to the response.
 	 */
 	@SuppressWarnings("unchecked")

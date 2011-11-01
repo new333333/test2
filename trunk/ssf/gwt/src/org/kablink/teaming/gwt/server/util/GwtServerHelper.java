@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -106,6 +107,7 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
@@ -155,6 +157,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -206,6 +209,44 @@ public class GwtServerHelper {
 	private static final String VIEW_WORKSPACE_USER        = "_userWorkspace";
 	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
 	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
+
+	/**
+	 * Inner class used to compare two AssignmentInfo's.
+	 */
+	public static class AssignmentInfoComparator implements Comparator<AssignmentInfo> {
+		private boolean m_ascending;	//
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ascending
+		 */
+		public AssignmentInfoComparator(boolean ascending) {
+			m_ascending = ascending;
+		}
+
+		/**
+		 * Compares two AssignmentInfo's by their assignee's name.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param ai1
+		 * @param ai2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(AssignmentInfo ai1, AssignmentInfo ai2) {
+			String assignee1 = ai1.getTitle();
+			String assignee2 = ai2.getTitle();
+
+			int reply;
+			if (m_ascending)
+			     reply = MiscUtil.safeSColatedCompare(assignee1, assignee2);
+			else reply = MiscUtil.safeSColatedCompare(assignee2, assignee1);
+			return reply;
+		}
+	}
 
 	/*
 	 * Inner class used assist in the construction of the
@@ -477,6 +518,18 @@ public class GwtServerHelper {
 	 */
 	private GwtServerHelper() {
 		// Nothing to do.
+	}
+
+	/*
+	 * Converts a String to a Long, if possible, and adds it as the ID
+	 * of an AssignmentInfo to a List<AssignmentInfo>.
+	 */
+	private static void addAIFromStringToList(String s, List<AssignmentInfo> l) {
+		try {
+			Long lVal = Long.parseLong(s);
+			l.add(AssignmentInfo.construct(lVal));
+		}
+		catch (NumberFormatException nfe) {/* Ignored. */}
 	}
 
 	/**
@@ -1969,6 +2022,55 @@ public class GwtServerHelper {
 	
 	
 	/**
+	 * Reads a List<AssignmentInfo> from a Map.
+	 * 
+	 * @param m
+	 * @param key
+	 * 
+	 * @return
+	 */
+	public static List<AssignmentInfo> getAssignmentInfoListFromEntryMap(Map m, String key) {
+		// Is there value for the key?
+		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
+		Object o = m.get(key);
+		if (null != o) {
+			// Yes!  Is the value is a String?
+			if (o instanceof String) {
+				// Yes!  Added it as a Long to the List<Long>. 
+				addAIFromStringToList(((String) o), reply);
+			}
+
+			// No, the value isn't a String!  Is it a String[]?
+			else if (o instanceof String[]) {
+				// Yes!  Scan them and add each as a Long to the
+				// List<Long>. 
+				String[] strLs = ((String[]) o);
+				int c = strLs.length;
+				for (int i = 0; i < c; i += 1) {
+					addAIFromStringToList(strLs[i], reply);
+				}
+			}
+
+			// No, the value isn't a String[] either!  Is it a
+			// SearchFieldResult?
+			else if (o instanceof SearchFieldResult) {
+				// Yes!  Scan the value set from it and add each as a
+				// Long to the List<Long>. 
+				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
+				Set<String> strLs = ((Set<String>) sfr.getValueSet());
+				for (String strL:  strLs) {
+					addAIFromStringToList(strL, reply);
+				}
+			}
+		}
+		
+		// If we get here, reply refers to the List<AssignmentInfo> of
+		// values from the Map.  Return it.
+		return reply;
+	}
+	
+
+	/**
 	 * Return the branding data for the given binder.
 	 */
 	public static GwtBrandingData getBinderBrandingData( AbstractAllModulesInjected allModules, String binderId, HttpServletRequest request ) throws GwtTeamingException
@@ -2748,6 +2850,37 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns a count of the members of a group.
+	 * 
+	 * @param group
+	 * 
+	 * @return
+	 */
+	public static int getGroupCount(GroupPrincipal group) {
+		Set<Long> groupMemberIds = getGroupMemberIds(group);
+		return ((null == groupMemberIds) ? 0 : groupMemberIds.size());
+	}
+
+	/**
+	 * Returns a Set<Long> of the IDs of the members of a group.
+	 * 
+	 * @param group
+	 * 
+	 * @return
+	 */
+	public static Set<Long> getGroupMemberIds(GroupPrincipal group) {
+		List<Long> groupIds = new ArrayList<Long>();
+		groupIds.add(group.getId());
+		Set<Long> groupMemberIds = null;
+		try {
+			ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+			groupMemberIds = profileDao.explodeGroups(groupIds, group.getZoneId());
+		}
+		catch (Exception ex) {/* Ignored. */}
+		return validatePrincipalIds(groupMemberIds);
+	}
+	
+	/**
 	 * Returns a GwtTeamingException from a generic Exception.
 	 * 
 	 * Note:  The mappings between an instance of an exception and the
@@ -3472,6 +3605,34 @@ public class GwtServerHelper {
 		// appropriate string value for the key from the entry map.
 		// Return it.
 		return reply;
+	}
+	
+	/**
+	 * Returns a count of the members of a team.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static int getTeamCount(AllModulesInjected bs, Binder binder) {
+		Set<Long> teamMemberIds = getTeamMemberIds(bs, binder.getId());
+		return ((null == teamMemberIds) ? 0 : teamMemberIds.size());
+	}
+
+	/**
+	 * Returns a Set<Long> of the member IDs of a team.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
+		Set<Long> teamMemberIds = null;
+		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, false);}
+		catch (Exception ex) {/* Ignored. */}
+		return validatePrincipalIds(teamMemberIds);
 	}
 	
 	/**
@@ -4210,6 +4371,24 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Removes the AssignmentInfo's in a remove list from an assignee
+	 * list and clears the remove list.
+	 * 
+	 * @param assigneeList
+	 * @param removeList
+	 */
+	public static void removeUnresolvedAssignees(List<AssignmentInfo> assigneeList, List<AssignmentInfo> removeList) {
+		// Scan the remove list...
+		for (AssignmentInfo ai: removeList) {
+			// ...removing the assignments from the assignee list...
+			assigneeList.remove(ai);
+		}
+		
+		// ...and clearing the remove list.
+		removeList.clear();
+	}
+	
+	/**
 	 * Save the given File Sync App configuration
 	 */
 	public static Boolean saveFileSyncAppConfiguration( AllModulesInjected allModules, GwtFileSyncAppConfiguration fsaConfiguration )
@@ -4370,6 +4549,66 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 	
+	/**
+	 * Stores the membership count of an AssignmentInfo based on Map
+	 * lookup using its ID.
+	 * 
+	 * @param ai
+	 * @param countMap
+	 * 
+	 * @return
+	 */
+	public static void setAssignmentInfoMembers(AssignmentInfo ai, Map<Long, Integer> countMap) {
+		Integer count = countMap.get(ai.getId());
+		ai.setMembers((null == count) ? 0 : count.intValue());
+	}
+
+	/**
+	 * Stores the title of an AssignmentInfo based on Map lookup using
+	 * its ID.
+	 * 
+	 * Returns true if a title was stored and false otherwise.
+	 * 
+	 * @param ai
+	 * @param titleMap
+	 * 
+	 * @return
+	 */
+	public static boolean setAssignmentInfoTitle(AssignmentInfo ai, Map<Long, String> titleMap) {
+		String title = titleMap.get(ai.getId());
+		boolean reply = MiscUtil.hasString(title);
+		if (reply) {
+			ai.setTitle(title);
+		}
+		return reply;
+	}
+
+	/**
+	 * Stores a GwtPresenceInfo of an AssignmentInfo based on Map
+	 * lookup using its ID.
+	 * 
+	 * @param ai
+	 * @param presenceMap
+	 */
+	public static void setAssignmentInfoPresence(AssignmentInfo ai, Map<Long, GwtPresenceInfo> presenceMap) {
+		GwtPresenceInfo pi = presenceMap.get(ai.getId());
+		if (null == pi) pi = GwtServerHelper.getPresenceInfoDefault();
+		ai.setPresence(pi);
+		ai.setPresenceDude(GwtServerHelper.getPresenceDude(pi));
+	}
+
+	/**
+	 * Stores a user's workspace ID of an AssignmentInfo based on a Map
+	 * lookup using its ID.
+	 * 
+	 * @param ai
+	 * @param presenceUserWSIdsMap
+	 */
+	public static void setAssignmentInfoPresenceUserWSId(AssignmentInfo ai, Map<Long, Long> presenceUserWSIdsMap) {
+		Long presenceUserWSId = presenceUserWSIdsMap.get(ai.getId());
+		ai.setPresenceUserWSId(presenceUserWSId);
+	}
+
 	/*
 	 * Stores the expanded Binder's List in a UserProperties.
 	 */
@@ -4674,5 +4913,25 @@ public class GwtServerHelper {
 		catch (Exception e)
 		{
 		}
+	}
+	
+	/*
+	 * Validates that the Long's in a Set<Long> are valid principal
+	 * IDs.
+	 */
+	private static Set<Long> validatePrincipalIds(Set<Long> principalIds) {
+		Set<Long> reply = new HashSet<Long>();
+		if ((null != principalIds) && (!(principalIds.isEmpty()))) {
+			List principals = null;
+			try {principals = ResolveIds.getPrincipals(principalIds);}
+			catch (Exception ex) {/* Ignored. */}
+			if ((null != principals) && (!(principals.isEmpty()))) {
+				for (Object o:  principals) {
+					Principal p = ((Principal) o);
+					reply.add(p.getId());
+				}
+			}
+		}
+		return reply;
 	}
 }

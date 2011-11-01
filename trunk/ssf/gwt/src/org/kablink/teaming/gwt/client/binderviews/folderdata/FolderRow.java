@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -48,10 +49,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRow implements IsSerializable {
-	private List<FolderColumn>			m_columns;			// The FolderColumns that contribute to this FolderRow.
-	private Long 						m_entryId;			// The entry ID of the FolderEntry this FolderRow corresponds to.
-	private Map<String, PrincipalInfo>	m_rowPrincipals;	// A map of column names to PrincipalInfo's possibly stored for the column.
-	private Map<String, String>			m_rowStrings;		// A map of column names to String values   possible stored for the column.
+	private List<FolderColumn>					m_columns;				// The FolderColumns that contribute to this FolderRow.
+	private Long 								m_entryId;				// The entry ID of the FolderEntry this FolderRow corresponds to.
+	private Map<String, List<AssignmentInfo>>	m_rowAssigneeInfoLists;	// A map of column names to List<AssignmentInfo>'s possibly stored for the column.
+	private Map<String, PrincipalInfo>			m_rowPrincipals;		// A map of column names to PrincipalInfo's        possibly stored for the column.
+	private Map<String, String>					m_rowStrings;			// A map of column names to String values          possible stored for the column.
 	
 	/**
 	 * Constructor method.
@@ -87,8 +89,11 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public List<FolderColumn>  getColumns() {return m_columns;}
-	public Long                getEntryId() {return m_entryId;}
+	public List<FolderColumn>                getColumns()                 {return m_columns;             }
+	public Long                              getEntryId()                 {return m_entryId;             }
+	public Map<String, List<AssignmentInfo>> getRowAssigneeInfoListsMap() {return m_rowAssigneeInfoLists;}
+	public Map<String, PrincipalInfo>        getRowPrincipalsMap()        {return m_rowPrincipals;       }
+	public Map<String, String>               getRowStringsMap()           {return m_rowStrings;          }
 	
 	/**
 	 * Stores the value for a specific column.
@@ -96,13 +101,26 @@ public class FolderRow implements IsSerializable {
 	 * @param fc
 	 * @param v
 	 */
+	@SuppressWarnings("unchecked")
 	public void setColumnValue(FolderColumn fc, Object v) {
 		String vk = getValueKey(fc);
-		if (v instanceof String)
-		     m_rowStrings.put(   vk, ((String) v));
-		else m_rowPrincipals.put(vk, ((PrincipalInfo) v));
+		if      (v instanceof String)        m_rowStrings.put(          vk, ((String)               v));
+		else if (v instanceof List<?>)       m_rowAssigneeInfoLists.put(vk, ((List<AssignmentInfo>) v));
+		else if (v instanceof PrincipalInfo) m_rowPrincipals.put(       vk, ((PrincipalInfo)        v));
+		else                                 m_rowStrings.put(          vk, v.toString());
 	}
 	
+	/**
+	 * Returns the AssignmentInfo value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public List<AssignmentInfo> getColumnValueAsAssignmentInfoList(FolderColumn fc) {
+		return m_rowAssigneeInfoLists.get(getValueKey(fc));
+	}
+
 	/**
 	 * Returns the PrincipalInfo value for a specific column.
 	 * 
@@ -139,6 +157,18 @@ public class FolderRow implements IsSerializable {
 	 */
 	private String getValueKey(FolderColumn fc) {
 		return fc.getColumnName().toLowerCase();
+	}
+
+	/**
+	 * Returns true if a column's value is a PrincipalInfo and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueAssigneeInfoList(FolderColumn fc) {
+		return (null != m_rowAssigneeInfoLists.get(getValueKey(fc)));
 	}
 
 	/**
