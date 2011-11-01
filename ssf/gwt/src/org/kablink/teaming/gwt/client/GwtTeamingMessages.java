@@ -1086,4 +1086,13 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppOff();
 	String fileSyncAppOn();
 	String fileSyncAppOnOffLabel();
+	
+	// String used in the Landing Page
+	String nowFollowingBinder();
+	String utilityElementAdminPage();
+	String utilityElementFollowWorkspace();
+	String utilityElementLogIn();
+	String utilityElementMyWorkspace();
+	String utilityElementShareWorkspace();
+
 }// end GwtTeamingMessages
