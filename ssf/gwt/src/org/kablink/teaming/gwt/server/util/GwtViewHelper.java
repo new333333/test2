@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
@@ -68,6 +69,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseDat
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
@@ -607,6 +609,7 @@ public class GwtViewHelper {
 			Folder			folder               = ((Folder) bs.getBinderModule().getBinder(folderId));
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
 
 			// Setup the current search filter the user has selected
 			// on the folder.
@@ -632,8 +635,9 @@ public class GwtViewHelper {
 			List<FolderRow> folderRows = new ArrayList<FolderRow>();
 			for (Map entryMap:  searchEntries) {
 				// ...creating a FolderRow for each.
-				String entryId  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
-				FolderRow fr = new FolderRow(Long.parseLong(entryId), folderColumns);
+				String entryIdS  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				Long entryId = Long.parseLong(entryIdS);
+				FolderRow fr = new FolderRow(entryId, folderColumns);
 				for (FolderColumn fc:  folderColumns) {
 					// Can we construct a PrincipalInfo for this column
 					// using the value from Map?
@@ -657,10 +661,19 @@ public class GwtViewHelper {
 							// assignment information either!  Extract
 							// its String value and use that.
 							String value = GwtServerHelper.getStringFromEntryMapValue(emValue, DateFormat.SHORT, DateFormat.SHORT);
-							if (csk.equals(Constants.FILE_SIZE_FIELD)) {
-								value = trimLeadingZeros(value);
+							if (csk.equals(Constants.TITLE_FIELD)) {
+								EntryTitleInfo eti = new EntryTitleInfo();
+								eti.setSeen(seenMap.checkIfSeen(entryMap));
+								eti.setTitle(value);
+								eti.setEntryId(entryId);
+								fr.setColumnValue(fc, eti);
 							}
-							fr.setColumnValue(fc, (null == (value) ? "" : value));
+							else {
+								if (csk.equals(Constants.FILE_SIZE_FIELD)) {
+									value = trimLeadingZeros(value);
+								}
+								fr.setColumnValue(fc, (null == (value) ? "" : value));
+							}
 						}
 					}
 					

@@ -1087,6 +1087,9 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppOn();
 	String fileSyncAppOnOffLabel();
 	
+	// Strings used by various widgets of the Vibe Data table.
+	String vibeDataTable_Alt_Unread();
+	
 	// String used in the Landing Page
 	String nowFollowingBinder();
 	String utilityElementAdminPage();
@@ -1094,5 +1097,4 @@ public interface GwtTeamingMessages extends Messages
 	String utilityElementLogIn();
 	String utilityElementMyWorkspace();
 	String utilityElementShareWorkspace();
-
 }// end GwtTeamingMessages

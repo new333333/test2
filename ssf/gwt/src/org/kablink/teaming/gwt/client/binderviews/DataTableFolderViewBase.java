@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
@@ -59,6 +60,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -375,6 +377,14 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	}
 	
 	/*
+	 * Returns true if the column should show title information and
+	 * false otherwise. 
+	 */
+	private static boolean isTitleColumn(String columnName) {
+		return columnName.equals(COLUMN_TITLE);
+	}
+	
+	/*
 	 * Initializes various data members for the class.
 	 */
 	private void initDataMembers() {
@@ -430,7 +440,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			Column<FolderRow, ?> column;
 			String cName = fc.getColumnName();
 			if (isPresenceColumn(cName)) {
-				// Yes!  Create a PresenceCell for it.
+				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>() {
 					@Override
 					public PrincipalInfo getValue(FolderRow fr) {
@@ -438,10 +448,22 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 					}
 				};
 			}
+
+			// No, this column doesn't show presence!  Does it show an
+			// entry title?
+			else if (isTitleColumn(cName)) {
+				// Yes!  Create a EntryTitleColumn for it.
+				column = new EntryTitleColumn<FolderRow>() {
+					@Override
+					public EntryTitleInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsEntryTitle(fc);
+					}
+				};
+			}
 			
 			else {
-				// No, this column doesn't show presence!  Define a
-				// TextColumn for it.
+				// No, this column doesn't show an entry title either!
+				// Define a TextColumn for it.
 				column = new TextColumn<FolderRow>() {
 					@Override
 					public String getValue(FolderRow fr) {

@@ -32,30 +32,25 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Class used to bundle information about a Principal through GWT RPC
- * requests.
+ * Class used to bundle information regarding an entry's title through
+ * GWT RPC requests.
  *  
  * @author drfoster
  */
-public class PrincipalInfo implements IsSerializable {
-	private GwtPresenceInfo m_presence;			// Only used for individual assignees.
-	private int             m_members = (-1);	// Only used for group and team assignees.
-	private Long            m_id;				//
-	private Long			m_presenceUserWSId;	// Only used for individual assignees.
-	private String			m_presenceDude;		// Used for all assignees.
-	private String          m_title;			//
+public class EntryTitleInfo implements IsSerializable {
+	private boolean	m_seen;			//
+	private Long	m_entryId;		//
+	private String  m_title;		//
 
 	/**
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public PrincipalInfo() {
+	public EntryTitleInfo() {
 		// Nothing to do.
 	}
 	
@@ -64,44 +59,34 @@ public class PrincipalInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public GwtPresenceInfo getPresence()         {return m_presence;        }
-	public int             getMembers()          {return m_members;         }
-	public Long            getId()               {return m_id;              }
-	public Long            getPresenceUserWSId() {return m_presenceUserWSId;}
-	public String          getPresenceDude()     {return m_presenceDude;    }
-	public String          getTitle()            {return m_title;           }
+	public boolean getSeen()    {return m_seen;   }
+	public Long    getEntryId() {return m_entryId;}
+	public String  getTitle()   {return m_title;  }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setPresence(        GwtPresenceInfo presence)         {m_presence         = presence;        }
-	public void setMembers(         int             members)          {m_members          = members;         }
-	public void setId(              Long            id)               {m_id               = id;              }
-	public void setPresenceUserWSId(Long            presenceUserWSId) {m_presenceUserWSId = presenceUserWSId;}
-	public void setPresenceDude(    String          presenceDude)     {m_presenceDude     = presenceDude;    }
-	public void setTitle(           String          title)            {m_title            = title;           }
+	public void setSeen(   boolean seen)    {m_seen    = seen;   }
+	public void setEntryId(Long    entryId) {m_entryId = entryId;}
+	public void setTitle(  String  title)   {m_title   = title;  }
 	
 	/**
-	 * Constructs an PrincipalInfo from the parameters.
-	 * 
-	 * @param id
+	 * Constructs an EntryTitleInfo from the parameters.
+	 *
+	 * @param seen
 	 * @param title
 	 * 
 	 * @return
 	 */
-	public static PrincipalInfo construct(Long id, String title) {
-		PrincipalInfo reply = new PrincipalInfo();
+	public static EntryTitleInfo construct(Long entryId, boolean seen, String title) {
+		EntryTitleInfo reply = new EntryTitleInfo();
 		
-		reply.setId(   id   );
-		reply.setTitle(title);
+		reply.setEntryId(entryId);
+		reply.setSeen(   seen   );
+		reply.setTitle(  title  );
 		
 		return reply;
 	}
-	
-	public static PrincipalInfo construct(Long id) {
-		// Always use the initial form of the method.
-		return construct(id, "");
-	}		
 }
