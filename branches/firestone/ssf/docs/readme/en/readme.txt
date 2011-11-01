@@ -1,15 +1,15 @@
-﻿Kablink Vibe OnPrem 3.1
+﻿Kablink Vibe 3.2
 
 1.0  Getting Started
 
      Complete system requirements and detailed software installation instructions
-     are provided for the Kablink Vibe administrator in the "Vibe OnPrem 3.1
+     are provided for the Kablink Vibe administrator in the "Vibe 3.2
      Installation Guide." Vibe site setup as well as ongoing site administration
-     and maintenance instructions are available in the "Vibe OnPrem 3.1
-     Administration Guide."
+     and maintenance instructions are available in the "Vibe 3.2 Administration
+     Guide."
 
      After your Vibe site is set up, Vibe users can obtain instructions in the
-     "Vibe OnPrem 3.1 User Guide" and the "Vibe OnPrem 3.1 Advanced User Guide".
+     "Vibe 3.2 User Guide" and the "Vibe 3.2 Advanced User Guide".
 
      You can display the Vibe online help when you log in to your Vibe site.
 
@@ -17,18 +17,16 @@
 2.0  Known Issues
 
      For an up-to-date list of known issues for this release, see the full
-     Kablink Vibe 3.1 product Readme located on the Kablink Vibe OnPrem 3.1
-     Documentation Web site
-     (http://www.novell.com/documentation/kablinkvibe_onprem31).
+     Kablink Vibe 3.2 product Readme located on the Kablink Vibe 3.2
+     Documentation Web site (http://www.novell.com/documentation/kablinkvibe32).
 
 
 3.0  Documentation
 
-     All Kablink Vibe 3.1 documentation is available at the Kablink Vibe OnPrem
-     3.1 Documentation Web site
-     (http://www.novell.com/documentation/vibe_onprem31):
+     All Kablink Vibe 3.2 documentation is available at the Kablink Vibe 3.2
+     Documentation Web site (http://www.novell.com/documentation/kablinkvibe32):
 
-     -  Full Vibe 3.1 product Readme
+     -  Full Vibe 3.2 product Readme
 
      -  "Installation Guide"
 
