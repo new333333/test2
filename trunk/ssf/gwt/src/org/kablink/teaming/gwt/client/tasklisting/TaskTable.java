@@ -106,7 +106,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -881,22 +880,6 @@ public class TaskTable extends Composite
 	}
 
 	/*
-	 * Returns a base Image widget.
-	 */
-	private Image buildImage(ImageResource res, String title) {
-		Image reply = new Image(res);
-		reply.getElement().setAttribute("align", "absmiddle");
-		if (GwtClientHelper.hasString(title)) {
-			reply.setTitle(title);
-		}
-		return reply;
-	}
-	
-	private Image buildImage(ImageResource res) {
-		return buildImage(res, null);
-	}
-
-	/*
 	 * Builds and adds Widgets for a 'More...' link (when there are
 	 * more than the number of AssignmentInfo's we display at a time)
 	 * to a VerticalPanel.
@@ -1007,7 +990,7 @@ public class TaskTable extends Composite
 		if (null == selectedOption) {
 			selectedOption = taskOptions.get(0);
 		}
-		Image img = buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
+		Image img = GwtClientHelper.buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
 		final Element imgElement = img.getElement();
 		if      (taskMenu == m_priorityMenu)    uid.setTaskPriorityImage(   img);
 		else if (taskMenu == m_statusMenu)      uid.setTaskStatusImage(     img);
@@ -1020,7 +1003,7 @@ public class TaskTable extends Composite
 			Anchor  a  = buildAnchor(anchorStyle);
 			Element aE = a.getElement();
 			aE.appendChild(imgElement);
-			aE.appendChild(buildImage(m_images.menu()).getElement());
+			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntryId()));
 			aE.setAttribute(ATTR_OPTION_MENU, taskMenu.getTaskEventEnum().toString());
 			EventWrapper.addHandler(a, m_taskOptionClickHandler);
@@ -2625,7 +2608,7 @@ public class TaskTable extends Composite
 		if (m_sortColumn == col) {
 			// Yes!  Add the appropriate directional arrow
 			// (i.e., ^/v)...
-			Image i = buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
+			Image i = GwtClientHelper.buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
 			i.addStyleName("gwtTaskList_sortImage");
 			a.getElement().appendChild(i.getElement());
 			
@@ -3023,7 +3006,7 @@ public class TaskTable extends Composite
 			Anchor a = buildAnchor();
 			Element aE = a.getElement();
 			aE.appendChild(il.getElement());
-			aE.appendChild(buildImage(m_images.menu()).getElement());
+			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(ti.getTaskId().getEntryId()));
 			EventWrapper.addHandler(a, m_dueDateClickHandler);
 			dueDateWidget = a;
@@ -3069,7 +3052,7 @@ public class TaskTable extends Composite
 			String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
 			menuElement.setAttribute(ATTR_ENTRY_ID, entryId);
 			EventWrapper.addHandler(menuAnchor, m_newTaskClickHandler);
-			Image newTaskMenuImg = buildImage(m_images.newTaskButton1());
+			Image newTaskMenuImg = GwtClientHelper.buildImage(m_images.newTaskButton1());
 			getUIData(task).setTaskNewTaskMenuImage(newTaskMenuImg);
 			menuElement.appendChild(newTaskMenuImg.getElement());
 			m_flexTable.setWidget(row, newTaskMenuIndex, menuAnchor);
@@ -3199,7 +3182,7 @@ public class TaskTable extends Composite
 		fp.add(cb);
 		if (0 < task.getSubtasks().size()) {
 			Anchor a = buildAnchor();
-			Image  i = buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
+			Image  i = GwtClientHelper.buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
 			Element aE = a.getElement();
 			aE.appendChild(i.getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, entryId);
@@ -3270,13 +3253,13 @@ public class TaskTable extends Composite
 		if (ti.isTaskClosed()) {
 			taStyles        += " gwtTaskList_task-strike_Inner";
 			namePanelStyles += " gwtTaskList_task-strike_Outer";
-			Image i          = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
+			Image i          = GwtClientHelper.buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
 			marker           = i;
 		}
 		else if (ti.isTaskUnseen()) {
 			Anchor a = buildAnchor();
 			uid.setTaskUnseenAnchor(a);
-			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
+			Image i = GwtClientHelper.buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
 			Element aE = a.getElement();
 			aE.appendChild(i.getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, entryId);

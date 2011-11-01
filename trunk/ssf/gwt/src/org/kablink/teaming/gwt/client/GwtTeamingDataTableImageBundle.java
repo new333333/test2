@@ -30,39 +30,22 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
 
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.view.client.ProvidesKey;
+package org.kablink.teaming.gwt.client;
+
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.ImageResource.RepeatStyle;
+
 
 /**
- * Common 'data table' base class for use by all Vibe folders that show
- * a simple list of entries.
+ * Images used by the GWT Teaming 'Data Table' implementation.
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTable<T> extends DataGrid<T> {
-	// The following are used as event names that are captured by
-	// various data table cell handlers. 
-	public final static String CELL_EVENT_CLICK		= "click";
-	public final static String CELL_EVENT_KEYDOWN	= "keydown";
-	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
-	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
-	
-	// The following are used to name widgets stored in the various
-	// cells of a data table.
-	public final static String CELL_WIDGET_ATTRIBUTE			= "n-cellWidget";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL	= "entryTitleLabel";
-	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE	= "entryUnseenImg";
-	public final static String CELL_WIDGET_PRESENCE				= "presenceControl";
-	public final static String CELL_WIDGET_PRESENCE_LABEL		= "presenceLabel";
-
-	/**
-	 * Constructor method.
-	 * 
-	 * @param pageSize
-	 */
-	public VibeDataTable(int pageSize, ProvidesKey<T> keyProvider) {
-		super(pageSize, keyProvider);
-	}
+public interface GwtTeamingDataTableImageBundle extends ClientBundle {
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
+	public ImageResource unread();
 }

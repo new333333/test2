@@ -53,9 +53,11 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -128,6 +130,25 @@ public class GwtClientHelper {
 	
 	public static boolean bFromS(String s) {
 		return bFromS(s, false);
+	}
+
+	/**
+	 * Returns a base Image widget.
+	 * 
+	 * @param res
+	 * @param title
+	 */
+	public static Image buildImage(ImageResource res, String title) {
+		Image reply = new Image(res);
+		reply.getElement().setAttribute("align", "absmiddle");
+		if (GwtClientHelper.hasString(title)) {
+			reply.setTitle(title);
+		}
+		return reply;
+	}
+	
+	public static Image buildImage(ImageResource res) {
+		return buildImage(res, null);
 	}
 
 	/**
