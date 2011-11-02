@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
@@ -52,6 +53,8 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
+import org.kablink.teaming.gwt.client.datatable.StringColumn;
+import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
@@ -60,6 +63,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
@@ -82,10 +86,10 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -269,8 +273,34 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		 */
 		@Override
 		public void onColumnSort(ColumnSortEvent event) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.FolderRowSortHandler.onColumnSort():  ...this needs to be implemented...");
+			final Column<?, ?> column = event.getColumn();
+			if (column instanceof VibeColumn) {
+				@SuppressWarnings("unchecked")
+				final FolderColumn fc = ((VibeColumn) column).getFolderColumn();
+				final String  folderSortBy        = fc.getColumnSearchKey();
+				final boolean folderSortByChanged = (!(folderSortBy.equalsIgnoreCase(m_folderSortBy)));
+				final boolean folderSortDescend   = (folderSortByChanged ? m_folderSortDescend : (!m_folderSortDescend));
+				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(m_folderInfo.getBinderIdAsLong(), fc.getColumnSearchKey(), (!folderSortDescend));
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							GwtTeaming.getMessages().rpcFailure_SaveFolderSort());
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse result) {
+						// Store the sort change...
+						setFolderSortBy(     folderSortBy     );
+						setFolderSortDescend(folderSortDescend);
+						
+						// ...and reset the view to redisplay things
+						// ...with it.
+						resetViewAsync();
+					}
+				});
+			} 
 		}
 	}
 
@@ -309,6 +339,16 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	final public String				getFolderSortBy()      {return m_folderSortBy;                  }
 	final public VibeFlowPanel      getFlowPanel()         {return m_flowPanel;                     }
 	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	final public void setFolderSortDescend(boolean            folderSortDescend) {m_folderSortDescend = folderSortDescend;}
+	final public void setFolderPageSize(   int                folderPageSize)    {m_folderPageSize    = folderPageSize;   }
+	final public void setFolderColumns(    List<FolderColumn> folderColumnsList) {m_folderColumnsList = folderColumnsList;}
+	final public void setFolderSortBy(     String             folderSortBy)      {m_folderSortBy      = folderSortBy;     }
+	
 	/*
 	 * Creates the content panels, ... common to all data table folder
 	 * view implementations.
@@ -343,6 +383,15 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		m_mainPanel.add(m_verticalPanel);
 	}
 
+	/**
+	 * Abstract methods.
+	 * 
+	 * Called to allow the implementing class to complete the
+	 * construction of the view.
+	 */
+	public abstract void constructView();
+	public abstract void resetView();
+
 	/*
 	 * Asynchronously tells the implementing class to construct itself.
 	 */
@@ -350,27 +399,12 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		ScheduledCommand doConstructView = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				constructView(
-					m_folderColumnsList,
-					m_folderSortBy,
-					m_folderSortDescend,
-					m_folderPageSize);
+				constructView();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doConstructView);
 	}
 	
-	/**
-	 * Called to allow the implementing class to complete the
-	 * construction of the view.
-	 * 
-	 * @param folderColumnsList
-	 * @param folderSortBy
-	 * @param folderSortDescend
-	 */
-	public abstract void constructView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
-	public abstract void resetView(    List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize);
-
 	/*
 	 * Returns true if the column should show a download link and false
 	 * otherwise. 
@@ -438,6 +472,10 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * Initializes the columns in the data table.
 	 */
 	private void initTableColumns(final FolderRowSelectionModel selectionModel, FolderRowSortHandler sortHandler) {
+		// Clear the data table's column sort list.
+		ColumnSortList csl = m_dataTable.getColumnSortList();
+		csl.clear();
+		
 		// Add a column for a checkbox selector.
 		int colIndex = 0;
 	    Column<FolderRow, Boolean> cc =
@@ -453,14 +491,14 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 
 	    // Scan the columns defined in this folder.
 		for (final FolderColumn fc:  m_folderColumnsList) {
-			// We need to define a Column<FolderRow, ?> of some sort
-			// for each one.  Is this a column that should show
+			// We need to define a VibeColumn<FolderRow, ?> of some
+			// sort for each one.  Is this a column that should show
 			// a download link for? 
-			Column<FolderRow, ?> column;
+			VibeColumn<FolderRow, ?> column;
 			String cName = fc.getColumnName();
 			if (isDownloadColumn(cName)) {
 				// Yes!  Create a DownloadColumn for it.
-				column = new DownloadColumn<FolderRow>() {
+				column = new DownloadColumn<FolderRow>(fc) {
 					@Override
 					public Long getValue(FolderRow fr) {
 						String value = fr.getColumnValueAsString(fc);
@@ -477,7 +515,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			// show a view link?
 			else if (isViewColumn(cName)) {
 				// Yes!  Create a ViewColumn for it.
-				column = new ViewColumn<FolderRow>() {
+				column = new ViewColumn<FolderRow>(fc) {
 					@Override
 					public ViewFileInfo getValue(FolderRow fr) {
 						return fr.getColumnValueAsViewFile(fc);
@@ -489,7 +527,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			// it show presence?
 			else if (isPresenceColumn(cName)) {
 				// Yes!  Create a PresenceColumn for it.
-				column = new PresenceColumn<FolderRow>() {
+				column = new PresenceColumn<FolderRow>(fc) {
 					@Override
 					public PrincipalInfo getValue(FolderRow fr) {
 						return fr.getColumnValueAsPrincipalInfo(fc);
@@ -501,7 +539,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			// entry title?
 			else if (isTitleColumn(cName)) {
 				// Yes!  Create a EntryTitleColumn for it.
-				column = new EntryTitleColumn<FolderRow>() {
+				column = new EntryTitleColumn<FolderRow>(fc) {
 					@Override
 					public EntryTitleInfo getValue(FolderRow fr) {
 						return fr.getColumnValueAsEntryTitle(fc);
@@ -511,19 +549,26 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			
 			else {
 				// No, this column doesn't show an entry title either!
-				// Define a TextColumn for it.
-				column = new TextColumn<FolderRow>() {
+				// Define a StringColumn for it.
+				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {
 						return fr.getColumnValueAsString(fc);
 					}
 				};
 			}
-			
+
+			// Complete the initialization of the column.
 			column.setSortable(true);
 			m_dataTable.addColumn(column, fc.getColumnTitle());
 		    setColumnStyles(      column, cName, colIndex++);
 		    setColumnWidth(               cName, column    );
+
+		    // Is this the column we're sorted on?
+		    if (fc.getColumnSearchKey().equalsIgnoreCase(m_folderSortBy)) {
+		    	// Yes!  Tell the data table about it.
+				csl.push(new ColumnSortInfo(column, (!m_folderSortDescend)));
+		    }
 		}
 	}
 
@@ -883,7 +928,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		if (GwtClientHelper.hasString(styleName)) {
 			m_dataTable.addStyleName(styleName);
 		}
-		m_dataTable.setWidth( "100%");
+		m_dataTable.setWidth("100%");
 		m_dataTable.setRowStyles(new RowStyles<FolderRow>() {
 			@Override
 			public String getStyleNames(FolderRow row, int rowIndex) {
@@ -950,6 +995,19 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		// ...and reset anything else that's necessary.
 	}
 
+	/*
+	 * Asynchronously resets the view.
+	 */
+	private void resetViewAsync() {
+		ScheduledCommand doResetView = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				resetView();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doResetView);
+	}
+	
 	/*
 	 * Sets the style on a column in the data table based on the
 	 * column's name.

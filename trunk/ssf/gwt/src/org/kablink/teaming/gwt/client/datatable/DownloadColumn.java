@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-import com.google.gwt.user.cellview.client.Column;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 
 /**
  * A column that displays a download link for a file.
@@ -41,11 +41,11 @@ import com.google.gwt.user.cellview.client.Column;
  * 
  * @author drfoster@novell.com
  */
-public abstract class DownloadColumn<T> extends Column<T, Long> {
+public abstract class DownloadColumn<T> extends VibeColumn<T, Long> {
   /**
    * Constructor method.
    */
-  public DownloadColumn() {
-    super(new DownloadCell());
+  public DownloadColumn(FolderColumn fc) {
+	  super(fc, new DownloadCell());
   }
 }

@@ -359,6 +359,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SaveFileSyncAppConfiguration();
+	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();

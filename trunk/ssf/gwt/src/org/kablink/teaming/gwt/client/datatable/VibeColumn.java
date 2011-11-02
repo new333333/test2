@@ -33,20 +33,34 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.user.cellview.client.Column;
 
 /**
- * A column that displays its contents with a presence control.
- *
- * @param <T> is a FolderRow.
+ * Common 'data table column' base class for use by all Vibe folders
+ * that show a simple list of entries.
  * 
  * @author drfoster@novell.com
  */
-public abstract class PresenceColumn<T> extends VibeColumn<T, PrincipalInfo> {
-  /**
-   * Constructor method.
-   */
-  public PresenceColumn(FolderColumn fc) {
-	  super(fc, new PresenceCell());
-  }
+public abstract class VibeColumn<T, C> extends Column<T, C> {
+	private FolderColumn m_fc;	// The FolderColumn this data table column is tracking.
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param fc
+	 * @param cell
+	 */
+	public VibeColumn(FolderColumn fc, Cell<C> cell) {
+		super(cell);
+		m_fc = fc;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	final public FolderColumn getFolderColumn() {return m_fc;}
 }

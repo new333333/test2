@@ -33,20 +33,21 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+
+import com.google.gwt.cell.client.TextCell;
 
 /**
- * A column that displays its contents with a presence control.
+ * A column that displays a simple String value.
  *
  * @param <T> is a FolderRow.
  * 
  * @author drfoster@novell.com
  */
-public abstract class PresenceColumn<T> extends VibeColumn<T, PrincipalInfo> {
+public abstract class StringColumn<T> extends VibeColumn<T, String> {
   /**
    * Constructor method.
    */
-  public PresenceColumn(FolderColumn fc) {
-	  super(fc, new PresenceCell());
+  public StringColumn(FolderColumn fc) {
+	  super(fc, new TextCell());
   }
 }

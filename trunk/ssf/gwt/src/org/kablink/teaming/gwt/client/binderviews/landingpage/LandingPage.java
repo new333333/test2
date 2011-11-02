@@ -114,22 +114,6 @@ public class LandingPage extends ViewBase
 	}
 	
 	/**
-	 * Callback interface to interact with a Landing Page asynchronously after it loads. 
-	 */
-	public interface LandingPageClient
-	{
-		/**
-		 * 
-		 */
-		void onSuccess( LandingPage landingPage );
-		
-		/**
-		 * 
-		 */
-		void onUnavailable();
-	}
-
-	/**
 	 * Build this landing page for the given ConfigData.
 	 */
 	public void buildLandingPage( ConfigData configData )
@@ -238,9 +222,9 @@ public class LandingPage extends ViewBase
 	 * via the callback.
 	 *
 	 * @param binderInfo
-	 * @param landingPageClient
+	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final LandingPageClient landingPageClient )
+	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
 		{			
@@ -250,14 +234,14 @@ public class LandingPage extends ViewBase
 				LandingPage lp;
 				
 				lp = new LandingPage( binderInfo, viewReady );
-				landingPageClient.onSuccess( lp );
+				vClient.onSuccess( lp );
 			}
 			
 			@Override
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPage() );
-				landingPageClient.onUnavailable();
+				vClient.onUnavailable();
 			}
 		} );
 	}
@@ -267,9 +251,9 @@ public class LandingPage extends ViewBase
 	 * Loads the LandingPage split point and returns an instance of it
 	 * via the callback.
 	 * 
-	 * @param landingPageClient
+	 * @param vClient
 	 */
-	public static void createAsync( final ConfigData configData, final LandingPageClient landingPageClient )
+	public static void createAsync( final ConfigData configData, final ViewClient vClient )
 	{
 		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
 		{			
@@ -279,14 +263,14 @@ public class LandingPage extends ViewBase
 				LandingPage lp;
 				
 				lp = new LandingPage( configData );
-				landingPageClient.onSuccess( lp );
+				vClient.onSuccess( lp );
 			}
 			
 			@Override
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPage() );
-				landingPageClient.onUnavailable();
+				vClient.onUnavailable();
 			}
 		} );
 	}
