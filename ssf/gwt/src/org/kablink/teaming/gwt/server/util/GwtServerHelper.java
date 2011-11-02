@@ -4271,6 +4271,7 @@ public class GwtServerHelper {
 		case REMOVE_TASK_LINKAGE:
 		case REMOVE_SAVED_SEARCH:
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
+		case SAVE_FOLDER_SORT:
 		case SAVE_PERSONAL_PREFERENCES:
 		case SAVE_SUBSCRIPTION_DATA:
 		case SAVE_TASK_COMPLETED:
@@ -4438,6 +4439,36 @@ public class GwtServerHelper {
 	}
 	
 	
+	/**
+	 * Saves the folder sort options on the specified binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param sortKey
+	 * @param sortAscending
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveFolderSort(AllModulesInjected bs, Long binderId, String sortKey, boolean sortAscending) throws GwtTeamingException {
+		try {
+			Long          userId = GwtServerHelper.getCurrentUser().getId();
+			ProfileModule pm     = bs.getProfileModule();
+			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_BY,                      sortKey       );
+			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(!sortAscending));
+			
+			if (m_logger.isDebugEnabled()) {
+				m_logger.debug("GwtTaskHelper.saveFolderSort( Stored folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
+			}
+			return Boolean.FALSE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+
 	/**
 	 * Saves a search based on its tab ID and SavedSearchInfo.
 	 *

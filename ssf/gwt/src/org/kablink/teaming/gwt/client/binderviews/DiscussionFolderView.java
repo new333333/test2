@@ -33,9 +33,6 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
@@ -61,27 +58,13 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	}
 	
 	/**
-	 * Callback interface used to interact with a discussion folder
-	 * view asynchronously after it loads. 
-	 */
-	public interface DiscussionFolderViewClient {
-		void onSuccess(DiscussionFolderView dfView);
-		void onUnavailable();
-	}
-
-	/**
 	 * Called from the base class to complete the construction of this
 	 * discussion folder view.
 	 * 
 	 * Implements DataTableFolderViewBase.constructView().
-	 * 
-	 * @param folderColumnsList
-	 * @param folderSortBy
-	 * @param folderSortDescend
-	 * @param folderPageSize
 	 */
 	@Override
-	public void constructView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
+	public void constructView() {
 		// Setup the appropriate styles for a discussion folder,
 		// populate the view's contents and tell the base class
 		// that we're done with the construction.
@@ -96,20 +79,20 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * 
 	 * @param folderInfo
 	 * @param viewReady
-	 * @param dfvClient
+	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final DiscussionFolderViewClient dfvClient) {
+	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(DiscussionFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
 				DiscussionFolderView dfView = new DiscussionFolderView(folderInfo, viewReady);
-				dfvClient.onSuccess(dfView);
+				vClient.onSuccess(dfView);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(m_messages.codeSplitFailure_DiscussionFolderView());
-				dfvClient.onUnavailable();
+				vClient.onUnavailable();
 			}
 		});
 	}
@@ -119,14 +102,9 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * discussion folder view.
 	 * 
 	 * Implements DataTableFolderViewBase.resetView().
-	 * 
-	 * @param folderColumnsList
-	 * @param folderSortBy
-	 * @param folderSortDescend
-	 * @param folderPageSize
 	 */
 	@Override
-	public void resetView(List<FolderColumn> folderColumnsList, String folderSortBy, boolean folderSortDescend, int folderPageSize) {
+	public void resetView() {
 		// Clear any existing content from the view and repopulate it.
 		resetContent();
 		populateContent("vibe-discussionFolderDataTable");

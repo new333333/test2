@@ -30,23 +30,67 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
 
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
 
 /**
- * A column that displays its contents with a presence control.
- *
- * @param <T> is a FolderRow.
+ * This class holds all of the information necessary to execute the
+ * 'save folder sort' command.
  * 
  * @author drfoster@novell.com
  */
-public abstract class PresenceColumn<T> extends VibeColumn<T, PrincipalInfo> {
-  /**
-   * Constructor method.
-   */
-  public PresenceColumn(FolderColumn fc) {
-	  super(fc, new PresenceCell());
-  }
+public class SaveFolderSortCmd extends VibeRpcCmd {
+	private boolean	m_sortAscending;	// true -> Sort ascending.  false -> Sort descending.
+	private Long	m_binderId;			// The ID of the binder whose sort criteria is being saved.
+	private String	m_sortKey;			// The sort key to save.
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
+	 */
+	public SaveFolderSortCmd() {
+		// Initialize the super class.
+		super();		
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param binderId
+	 * @param sortKey
+	 * @param sortAscending
+	 */
+	public SaveFolderSortCmd(Long binderId, String sortKey, boolean sortAscending) {
+		// Initialize the class...
+		this();		
+		
+		// ...and store the parameters.
+		m_binderId      = binderId;
+		m_sortKey       = sortKey;
+		m_sortAscending = sortAscending;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean getSortAscending() {return m_sortAscending;}	
+	public Long    getBinderId()      {return m_binderId;     }	
+	public String  getSortKey()       {return m_sortKey;      }	
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_FOLDER_SORT.ordinal();
+	}
 }

@@ -32,9 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
-
-import com.google.gwt.user.cellview.client.Column;
 
 /**
  * A column that displays the contents for a title cell.
@@ -43,11 +42,11 @@ import com.google.gwt.user.cellview.client.Column;
  * 
  * @author drfoster@novell.com
  */
-public abstract class EntryTitleColumn<T> extends Column<T, EntryTitleInfo> {
+public abstract class EntryTitleColumn<T> extends VibeColumn<T, EntryTitleInfo> {
   /**
    * Constructor method.
    */
-  public EntryTitleColumn() {
-    super(new EntryTitleCell());
+  public EntryTitleColumn(FolderColumn fc) {
+	  super(fc, new EntryTitleCell());
   }
 }

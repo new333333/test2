@@ -57,6 +57,15 @@ public abstract class ViewBase extends ResizeComposite {
 	private int m_contentWidthAdjust	= GwtConstants.CONTENT_WIDTH_ADJUST;
 
 	/**
+	 * Callback interface used to interact with a view asynchronously
+	 * after it loads. 
+	 */
+	public interface ViewClient {
+		void onSuccess(ViewBase view);
+		void onUnavailable();
+	}
+
+	/**
 	 * Constructor method.
 	 * 
 	 * MUST be called by classes that extend this base class.

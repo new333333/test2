@@ -1916,36 +1916,6 @@ public class GwtTaskHelper {
 	}
 
 	/**
-	 * Save a task folder sort options on the specified binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param sortKey
-	 * @param sortAscending
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean saveTaskSort(AllModulesInjected bs, Long binderId, String sortKey, boolean sortAscending) throws GwtTeamingException {
-		try {
-			Long          userId = GwtServerHelper.getCurrentUser().getId();
-			ProfileModule pm     = bs.getProfileModule();
-			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_BY,                      sortKey       );
-			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(!sortAscending));
-			
-			if (m_logger.isDebugEnabled()) {
-				m_logger.debug("GwtTaskHelper.saveTaskSort( Stored task sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
-			}
-			return Boolean.FALSE;
-		}
-		
-		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
-
-	/**
 	 * Stores a new status value for a task.
 	 * 
 	 * @param bs

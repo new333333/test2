@@ -34,6 +34,8 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
+import org.kablink.teaming.gwt.client.binderviews.ViewBase;
+import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -534,7 +536,7 @@ public class ContentControl extends Composite
 		DiscussionFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new DiscussionFolderView.DiscussionFolderViewClient()
+				new ViewClient()
 		{
 			@Override
 			public void onUnavailable()
@@ -543,7 +545,7 @@ public class ContentControl extends Composite
 			}// end onUnavailable()
 
 			@Override
-			public void onSuccess( DiscussionFolderView dfView )
+			public void onSuccess( ViewBase dfView )
 			{
 				dfView.setViewSize();
 				m_mainPage.getMainContentLayoutPanel().showWidget( dfView );
@@ -560,24 +562,18 @@ public class ContentControl extends Composite
 	public void onShowLandingPage( ShowLandingPageEvent event )
 	{
 		// Display a landing page for the given binder id.
-		LandingPage.LandingPageClient lpClient;
+		ViewClient vClient;
 		
-		lpClient = new LandingPage.LandingPageClient()
+		vClient = new ViewClient()
 		{
-			/**
-			 * 
-			 */
 			@Override
 			public void onUnavailable()
 			{
 				// Nothing to do.  Error handled in asynchronous provider.
 			}
 			
-			/**
-			 * 
-			 */
 			@Override
-			public void onSuccess( LandingPage landingPage )
+			public void onSuccess( ViewBase landingPage )
 			{
 				landingPage.setViewSize();
 				m_mainPage.getMainContentLayoutPanel().showWidget( landingPage );
@@ -585,7 +581,7 @@ public class ContentControl extends Composite
 		};
 		
 		// Create a LandingPage widget for the selected binder.
-		LandingPage.createAsync( event.getBinderInfo(), event.getViewReady(), lpClient );
+		LandingPage.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}// end onShowLandingPage()
 	
 	/**

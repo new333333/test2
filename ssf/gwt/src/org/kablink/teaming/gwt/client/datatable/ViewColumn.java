@@ -32,9 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
-
-import com.google.gwt.user.cellview.client.Column;
 
 /**
  * A column that displays a view link for a file.
@@ -43,11 +42,11 @@ import com.google.gwt.user.cellview.client.Column;
  * 
  * @author drfoster@novell.com
  */
-public abstract class ViewColumn<T> extends Column<T, ViewFileInfo> {
+public abstract class ViewColumn<T> extends VibeColumn<T, ViewFileInfo> {
   /**
    * Constructor method.
    */
-  public ViewColumn() {
-	  super(new ViewCell());
+  public ViewColumn(FolderColumn fc) {
+	  super(fc, new ViewCell());
   }
 }
