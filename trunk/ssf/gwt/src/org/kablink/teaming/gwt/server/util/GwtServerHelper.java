@@ -106,6 +106,7 @@ import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
@@ -3878,6 +3879,34 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return a view file URL that can be used to view an entry's file
+	 * as HTML.
+	 * 
+	 * @param request
+	 * @param vfi
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static String getViewFileUrl(HttpServletRequest request, ViewFileInfo vfi) throws GwtTeamingException {
+		try {
+			StringBuffer webUrl = new StringBuffer(WebUrlUtil.getServletRootURL(request) + WebKeys.ACTION_VIEW_FILE);
+			webUrl.append(org.kablink.teaming.util.Constants.QUESTION  + WebKeys.URL_BINDER_ID   + org.kablink.teaming.util.Constants.EQUAL + vfi.getBinderId()  );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTRY_ID    + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntryId()   );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTITY_TYPE + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntityType());
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_ID     + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileId()    );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_TIME   + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileTime()  );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_VIEW_TYPE   + org.kablink.teaming.util.Constants.EQUAL + vfi.getViewType()  );
+			return webUrl.toString();
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}		
+	}
+	
+	/**
 	 * Return the "show setting" (show all or show unread) for the "What's new" page.
 	 */
 	public static ShowSetting getWhatsNewShowSetting( UserProperties userProperties )
@@ -4226,6 +4255,7 @@ public class GwtServerHelper {
 		case GET_VERTICAL_ACTIVITY_STREAMS_TREE:
 		case GET_VERTICAL_NODE:
 		case GET_VERTICAL_TREE:
+		case GET_VIEW_FILE_URL:
 		case GET_VIEW_FOLDER_ENTRY_URL:
 		case GET_VIEW_INFO:
 		case HAS_ACTIVITY_STREAM_CHANGED:

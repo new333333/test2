@@ -73,9 +73,11 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -369,6 +371,7 @@ public class GwtViewHelper {
 			else if (columnName.equals("download")) reply = Constants.FILENAME_FIELD;
 			else if (columnName.equals("state"))    reply = Constants.WORKFLOW_STATE_CAPTION_FIELD;
 			else if (columnName.equals("date"))     reply = Constants.LASTACTIVITY_FIELD;
+			else if (columnName.equals("html"))     reply = Constants.FILE_ID_FIELD;
 			else                                    reply = columnName;
 		}
 		
@@ -659,19 +662,68 @@ public class GwtViewHelper {
 						else {
 							// No, the column doesn't contain
 							// assignment information either!  Extract
-							// its String value and use that.
-							String value = GwtServerHelper.getStringFromEntryMapValue(emValue, DateFormat.SHORT, DateFormat.SHORT);
+							// its String value.
+							String value = GwtServerHelper.getStringFromEntryMapValue(
+								emValue,
+								DateFormat.SHORT,
+								DateFormat.SHORT);
+							
+							// Are we working on a title field?
 							if (csk.equals(Constants.TITLE_FIELD)) {
+								// Yes!  Construct an EntryTitleInfo for it.
 								EntryTitleInfo eti = new EntryTitleInfo();
 								eti.setSeen(seenMap.checkIfSeen(entryMap));
 								eti.setTitle(value);
 								eti.setEntryId(entryId);
 								fr.setColumnValue(fc, eti);
 							}
+							
+							// No, we aren't working on a title field!
+							// Are we working on a file ID field?
+							else if (csk.equals(Constants.FILE_ID_FIELD)) {
+								// Yes!  Do we have a single file ID?
+								if ((!(MiscUtil.hasString(value))) || ((-1) != value.indexOf(','))) {
+									// No!  Ignore the value.
+									value = null;
+								}
+								
+								else {
+									// Yes, we have a single file ID!
+									// Do we have a file path that we
+									// support viewing of?
+									String relativeFilePath = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
+									if ((!(MiscUtil.hasString(relativeFilePath))) || (!(SsfsUtil.supportsViewAsHtml(relativeFilePath)))) {
+										// No!  Ignore the value.
+										value = null;
+									}
+								}
+								
+								// Do we have a file ID to work with?
+								if (MiscUtil.hasString(value)) {
+									// Yes!  Construct a ViewFileInfo
+									// for it.
+									ViewFileInfo vfi = new ViewFileInfo();
+									vfi.setFileId(     value);
+									vfi.setBinderId(   Long.parseLong(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD)));
+									vfi.setEntryId(    entryId);
+									vfi.setEntityType( GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD));
+									vfi.setFileTime(   GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
+									vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(       request,  vfi));
+									fr.setColumnValue(fc, vfi);
+								}
+							}
+							
 							else {
+								// No, we aren't working on a file ID
+								// field either!  Are we working on a
+								// file size field?
 								if (csk.equals(Constants.FILE_SIZE_FIELD)) {
+									// Yes!  Trim any leading 0's from the value.
 									value = trimLeadingZeros(value);
 								}
+								
+								// Use what ever String value we
+								// arrived at.
 								fr.setColumnValue(fc, (null == (value) ? "" : value));
 							}
 						}

@@ -344,6 +344,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserWorkspaceUrl();
+	String rpcFailure_GetViewFileUrl();
 	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_GetViewInfo();
 	String rpcFailure_IsAllUsersGroup();
@@ -1091,7 +1092,9 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by various widgets of the Vibe Data table.
 	String vibeDataTable_Alt_Unread();
+	String vibeDataTable_Alt_View();
 	String vibeDataTable_Download();
+	String vibeDataTable_View();
 	
 	// String used in the Landing Page
 	String nowFollowingBinder();

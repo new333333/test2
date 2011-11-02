@@ -33,12 +33,11 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -47,27 +46,26 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
- * Data table cell that represents an entry's title.
+ * Data table cell that represents a file view link.
  * 
  * @author drfoster@novell.com
  */
-public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
+public class ViewCell extends AbstractCell<ViewFileInfo> {
 	/**
 	 * Constructor method.
 	 */
-	public EntryTitleCell() {
+	public ViewCell() {
 		/*
-		 * Sink the events we need to process an entry title.
+		 * Sink the events we need to process a view link.
 	     */
 		super(
 			VibeDataTable.CELL_EVENT_CLICK,
@@ -77,81 +75,62 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	}
 
 	/*
-	 * Invokes an entry viewer on the entry.
+	 * Invokes a file view on an entry's file.
 	 */
-	private void invokeViewEntry(final EntryTitleInfo eti, Element pElement) {
-		GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(null, eti.getEntryId());
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-					String.valueOf(eti.getEntryId()));
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				String viewFolderEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-				GwtClientHelper.jsShowForumEntry(viewFolderEntryUrl);
-				markEntryUISeenAsync(eti);
-			}
-		});
-	}
-	
-	/*
-	 * Marks the entry as having been seen.
-	 */
-	private void markEntrySeen(final EntryTitleInfo eti, final Element pElement) {
-		final Long entryId = eti.getEntryId();
-		SetSeenCmd cmd = new SetSeenCmd(entryId);
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_SetSeen(),
-					String.valueOf(entryId));
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				markEntryUISeenAsync(eti);
-			}
-		});
+	private void invokeFileView(final ViewFileInfo vfi, Element pElement) {
+		// Have we store the view file HREF on the Anchor yet?
+		final Element viewAE = DOM.getElementById(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_ANCHOR + "_" + vfi.getFileId());
+		if (!(GwtClientHelper.hasString(viewAE.getAttribute("href")))) {
+			// No!  Build one now...
+			GetViewFileUrlCmd cmd = new GetViewFileUrlCmd(vfi);
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetViewFileUrl(),
+						vfi.getFileId());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// ...store it on the Anchor...
+					String viewFileUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();					
+					viewAE.setAttribute("href", viewFileUrl);
+					
+					// ...and invoke it.
+					invokeFileViewUIAsync(viewAE);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've stored the HREF on the anchor already!
+			// Nothing more to do as the native click stuff will have
+			// taken care of invoking it.
+		}
 	}
 
 	/*
-	 * Asynchronously marks the UI components to show that the entry
-	 * has been seen.
+	 * Asynchronously runs the file view based on the give file view
+	 * Anchor Element.
 	 */
-	private void markEntryUISeenAsync(final EntryTitleInfo eti) {
-		ScheduledCommand doMarkEntrySeen = new ScheduledCommand() {
+	private void invokeFileViewUIAsync(final Element viewAE) {
+		ScheduledCommand doFileView = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				markEntryUISeenNow(eti);
+				invokeFileViewUINow(viewAE);
 			}
 		};
-		Scheduler.get().scheduleDeferred(doMarkEntrySeen);
+		Scheduler.get().scheduleDeferred(doFileView);
 	}
 	
 	/*
-	 * Synchronously marks the UI components to show that the entry
-	 * has been seen.
+	 * Synchronously runs the file view based on the give file view
+	 * Anchor Element.
 	 */
-	private void markEntryUISeenNow(final EntryTitleInfo eti) {
-		// Hide the marker to set the entry unseen...
-		String entryIdS = String.valueOf(eti.getEntryId());
-		Element e = DOM.getElementById(VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
-		if (null != e) {
-			e.getStyle().setDisplay(Display.NONE);
-		}
-
-		// ...and take the bold off the title.
-		e = DOM.getElementById(VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
-		if (null != e) {
-			e.removeClassName("bold");
-		}
+	private void invokeFileViewUINow(Element viewAE) {
+		GwtClientHelper.simulateElementClick(viewAE);
 	}
 	
 	/**
@@ -162,26 +141,25 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
      * 
      * @param context
      * @param parent
-     * @param eti
+     * @param fileId
      * @param event
      * @param valueUpdater
      * 
      * Overrides AbstractCell.onBrowserEvent()
      */
     @Override
-    public void onBrowserEvent(Context context, Element parent, EntryTitleInfo eti, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
-    	// Which of our entry title widgets is being operated on? 
+    public void onBrowserEvent(Context context, Element parent, ViewFileInfo fileId, NativeEvent event, ValueUpdater<ViewFileInfo> valueUpdater) {
+    	// Which of our view widgets is being operated on? 
 		Element eventTarget = Element.as(event.getEventTarget());
 		String wt = eventTarget.getAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE);
-		boolean isLabel     = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL ));
-		boolean isUnseenImg = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE));
+		boolean isLabel = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_LABEL ));
 
 		// What type of event are we processing?
     	String eventType = event.getType();
     	if (VibeDataTable.CELL_EVENT_KEYDOWN.equals(eventType)) {
         	// A key down!  Let AbstractCell handle it.  It will
     		// convert it to an entry key down, ... as necessary.
-        	super.onBrowserEvent(context, parent, eti, event, valueUpdater);
+        	super.onBrowserEvent(context, parent, fileId, event, valueUpdater);
     	}
 
     	else if (VibeDataTable.CELL_EVENT_CLICK.equals(eventType)) {
@@ -189,11 +167,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     		if (isLabel) {
     			// Yes!  Strip off any over style.
     			eventTarget.removeClassName("vibe-dataTableLink-hover");
-    			invokeViewEntry(eti, eventTarget);
-    		}
-    		
-    		else if (isUnseenImg) {
-    			markEntrySeen(eti, eventTarget);
+    			invokeFileView(fileId, eventTarget);
     		}
     	}
     	
@@ -217,53 +191,49 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
      * Overrides AbstractCell.onEnterKeyDown()
      */
     @Override
-    protected void onEnterKeyDown(Context context, Element parent, EntryTitleInfo value, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
-    	invokeViewEntry(value, Element.as(event.getEventTarget()));
+    protected void onEnterKeyDown(Context context, Element parent, ViewFileInfo value, NativeEvent event, ValueUpdater<ViewFileInfo> valueUpdater) {
+    	invokeFileView(value, Element.as(event.getEventTarget()));
     }
     
 	/**
 	 * Called to render an instance of this cell.
 	 * 
 	 * @param context
-	 * @param eti
+	 * @param fileId
 	 * @param sb
 	 * 
 	 * Overrides AbstractCell.render()
 	 */
 	@Override
-	public void render(Context context, EntryTitleInfo eti, SafeHtmlBuilder sb) {
-		// If we weren't given a EntryTitleInfo...
-		if (null == eti) {
+	public void render(Context context, ViewFileInfo vfi, SafeHtmlBuilder sb) {
+		// If we weren't given a single fileId...
+		String fileId = ((null == vfi) ? null : vfi.getFileId());
+		if ((!(GwtClientHelper.hasString(fileId))) || ((-1) != fileId.indexOf(','))) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
 			return;
 		}
 
-		// If the entry has not been seen...
-		String entryIdS = String.valueOf(eti.getEntryId());
+		// Create the view link...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		boolean entryUnseen = (!(eti.getSeen()));
-		if (entryUnseen) {
-			// ...add a widget so the user can mark it so.
-			Image i = GwtClientHelper.buildImage(GwtTeaming.getDataTableImageBundle().unread(), GwtTeaming.getMessages().vibeDataTable_Alt_Unread());
-			i.addStyleName("vibe-dataTableEntry-unseenMarker");
-			Element iE = i.getElement();
-			iE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE);
-			iE.setId(VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
-			fp.add(i);
-		}
-
-		// ...and the title link...
-		InlineLabel entryLabel = new InlineLabel(eti.getTitle());
-		entryLabel.addStyleName("vibe-dataTableEntry-title");
-		if (entryUnseen) {
-			entryLabel.addStyleName("bold");
-		}
-		Element elE = entryLabel.getElement(); 
-		elE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL);
-		elE.setId(VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
-		fp.add(entryLabel);
+		Anchor viewA = new Anchor();
+		viewA.addStyleName("vibe-dataTableEntry-viewAnchor");
+		viewA.setTarget("_blank");
+		viewA.setHref(vfi.getViewFileUrl());
+		Element viewAE = viewA.getElement();
+		viewAE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_VIEW_ANCHOR);
+		viewAE.setId(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_ANCHOR + "_" + fileId);
+		
+		InlineLabel viewL = new InlineLabel(GwtTeaming.getMessages().vibeDataTable_View());
+		viewL.setTitle(GwtTeaming.getMessages().vibeDataTable_Alt_View());
+		viewL.addStyleName("vibe-dataTableEntry-viewLabel");
+		Element viewLE = viewL.getElement(); 
+		viewLE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_VIEW_LABEL);
+		viewLE.setId(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_LABEL + "_" + fileId);
+		
+		viewAE.appendChild(viewLE);
+		fp.add(viewA);
 		
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());

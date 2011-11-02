@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
+import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
@@ -64,6 +65,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -394,6 +396,14 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	}
 	
 	/*
+	 * Returns true if the column should show a view link and false
+	 * otherwise. 
+	 */
+	private static boolean isViewColumn(String columnName) {
+		return columnName.equals(COLUMN_HTML);
+	}
+	
+	/*
 	 * Initializes various data members for the class.
 	 */
 	private void initDataMembers() {
@@ -464,7 +474,19 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			}
 			
 			// No, this column doesn't show a download link!  Does it
-			// show presence?
+			// show a view link?
+			else if (isViewColumn(cName)) {
+				// Yes!  Create a ViewColumn for it.
+				column = new ViewColumn<FolderRow>() {
+					@Override
+					public ViewFileInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsViewFile(fc);
+					}
+				};
+			}
+			
+			// No, this column doesn't show a view link either!  Does
+			// it show presence?
 			else if (isPresenceColumn(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>() {
