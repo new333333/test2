@@ -33,6 +33,10 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFileUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -42,7 +46,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
@@ -66,11 +70,25 @@ public class DownloadCell extends AbstractCell<Long> {
 	}
 
 	/*
-	 * Invokes a file download on an entry.
+	 * Invokes a file download on an entry's file.
 	 */
 	private void invokeFileDownload(final Long entryId, Element pElement) {
-//!		...this needs to be implemented...
-		Window.alert("DownloadCell.invokeFileDownload()");
+		GetDownloadFileUrlCmd cmd = new GetDownloadFileUrlCmd(null, entryId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetDownloadFileUrl(),
+					String.valueOf(entryId));
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				String downloadFileUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				GwtClientHelper.jsLaunchUrlInWindow(downloadFileUrl, "_blank");
+			}
+		});
 	}
 	
 	/**
