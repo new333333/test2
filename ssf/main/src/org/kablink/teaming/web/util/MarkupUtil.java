@@ -98,7 +98,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
-	protected final static Pattern uploadImagePattern = Pattern.compile("(<img[^>]*\\ssrc\\s*=\\s*\"[^{}\"]*viewType=ss_viewUploadFile[^>]*>)");
+	// Fix for bug 727558, uploadImagePattern was changed to be case insensitive.  In IE, the tinyMCE editor is adding <IMG instead of the normal <img
+	protected final static Pattern uploadImagePattern = Pattern.compile("(<img[^>]*\\ssrc\\s*=\\s*\"[^{}\"]*viewType=ss_viewUploadFile[^>]*>)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern urlSrcPattern = Pattern.compile("\\ssrc\\s*=\\s*\"([^{}\"]*)\"");
 	protected final static String uploadImageViewTypePattern = "viewType=ss_viewUploadFile(&amp%3b)?";
 	
