@@ -635,6 +635,10 @@ public class GwtClientHelper {
 	public static native void jsLaunchUrlInWindow(String url, String windowName, int windowHeight, int windowWidth) /*-{
 		$wnd.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
 	}-*/;
+	
+	public static native void jsLaunchUrlInWindow(String url, String windowName) /*-{
+		$wnd.top.ss_openUrlInWindow({href: url}, windowName);
+	}-*/;
 
 	/**
 	 * Loads a URL into the current window.
