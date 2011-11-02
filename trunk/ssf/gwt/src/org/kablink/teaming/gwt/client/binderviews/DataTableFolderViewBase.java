@@ -73,23 +73,29 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
+import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.Range;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
+import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -158,6 +164,63 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private final static String STYLE_ROW_EVEN		= "even";
 	private final static String STYLE_ROW_ODD		= "odd";
 
+	/*
+	 * Inner class used to represent a select all check box in a data
+	 * table's header.
+	 */
+	private class CheckBoxHeader extends Header<Boolean> {
+		private boolean m_checked;	//
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param cell
+		 */
+		public CheckBoxHeader(CheckboxCell cell) {
+			super(cell);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * Overrides Header.getValue()
+		 * 
+		 * @return
+		 */
+		@Override
+		public Boolean getValue() {return m_checked;}
+		 
+		/**
+		 * Set'er methods.
+		 * 
+		 * Set the state of the selection.  If a row is unselected, we
+		 * can call this method to deselect the header checkbox
+		 * 
+		 * @param checked
+		 */
+		public void setValue(boolean checked) {m_checked = checked;}
+		 
+		/**
+		 * Called to handle events captured by a check box header.
+		 * 
+		 * @param context
+		 * @param elem
+		 * @param event
+		 * 
+		 * Overrides Header.onBroserEvent()
+		 */
+		@Override
+		public void onBrowserEvent(Context context, Element elem, NativeEvent event) {
+			Event evt = Event.as(event);
+			int eventType = evt.getTypeInt();
+			switch (eventType) {
+			case Event.ONCHANGE:
+				m_checked = !m_checked;
+			}
+			super.onBrowserEvent(context, elem, event);
+		}
+	}
+	
 	/*
 	 * Inner class used to provide list of FolderRow's.
 	 */
@@ -348,7 +411,52 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	final public void setFolderPageSize(   int                folderPageSize)    {m_folderPageSize    = folderPageSize;   }
 	final public void setFolderColumns(    List<FolderColumn> folderColumnsList) {m_folderColumnsList = folderColumnsList;}
 	final public void setFolderSortBy(     String             folderSortBy)      {m_folderSortBy      = folderSortBy;     }
-	
+
+	/*
+	 * Adds a CheckBoxHeader to the data table.
+	 */
+	private void addSelectAllCBHeader(final FolderRowSelectionModel selectionModel, int colIndex) {
+		// Define the check box header...
+		CheckboxCell cbCell = new CheckboxCell();
+		final CheckBoxHeader cbHeader = new CheckBoxHeader(cbCell);
+		cbHeader.setUpdater(new ValueUpdater<Boolean>() {
+			@Override
+			public void update(Boolean checked) {
+				List<FolderRow> rows = m_dataTable.getVisibleItems();
+				if (null != rows) {
+					for (FolderRow row : rows) {
+						selectionModel.setSelected(row, checked);
+					}
+				}
+			}
+		});
+
+		// ...define a column for it...
+		final Column<FolderRow, Boolean> column = new Column<FolderRow, Boolean>(cbCell) {
+			@Override
+			public Boolean getValue(FolderRow row) {
+				return selectionModel.isSelected(row);
+			}
+		};
+
+		// ...connect updating the contents of the table when the
+		// ...check box is checked or unchecked...
+		column.setFieldUpdater(new FieldUpdater<FolderRow, Boolean>() {
+			@Override
+			public void update(int index, FolderRow row, Boolean checked) {
+				selectionModel.setSelected(row, checked);
+				if (!checked) {
+					cbHeader.setValue(checked);
+				}
+			};
+		});
+
+		// ...and connect it all together.
+	    m_dataTable.addColumn(column, cbHeader);
+	    setColumnStyles(column, COLUMN_SELECT, colIndex);
+	    setColumnWidth(         COLUMN_SELECT, column  );
+	}
+
 	/*
 	 * Creates the content panels, ... common to all data table folder
 	 * view implementations.
@@ -478,16 +586,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		
 		// Add a column for a checkbox selector.
 		int colIndex = 0;
-	    Column<FolderRow, Boolean> cc =
-	        new Column<FolderRow, Boolean>(new CheckboxCell(true, false)) {
-	          @Override
-	          public Boolean getValue(FolderRow fr) {
-	            return selectionModel.isSelected(fr);
-	          }
-	        };
-	    m_dataTable.addColumn(cc, SafeHtmlUtils.fromSafeConstant("<br/>"));
-	    setColumnStyles(cc, COLUMN_SELECT, colIndex++);
-	    setColumnWidth(     COLUMN_SELECT, cc);
+		addSelectAllCBHeader(selectionModel, colIndex++);
 
 	    // Scan the columns defined in this folder.
 		for (final FolderColumn fc:  m_folderColumnsList) {
