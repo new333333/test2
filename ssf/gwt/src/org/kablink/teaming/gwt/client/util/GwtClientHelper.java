@@ -49,7 +49,9 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -906,6 +908,16 @@ public class GwtClientHelper {
 		scrollUIForPopup(popup, ScrollType.VERTICAL);
 	}
 
+	/**
+	 * Simulates a click event on the given element.
+	 * 
+	 * @param e
+	 */
+	public static void simulateElementClick(Element e) {
+		NativeEvent clickEvent = Document.get().createClickEvent(1, 0, 0, 0, 0, false, false, false, false);
+		e.dispatchEvent(clickEvent);
+	}
+	
 	/**
 	 * Validates we have a URL in an OnSelectBinderInfo object.
 	 * 

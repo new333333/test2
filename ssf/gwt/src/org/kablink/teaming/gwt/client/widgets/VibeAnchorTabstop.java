@@ -33,10 +33,9 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.VibeKBHook;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -129,7 +128,6 @@ public class VibeAnchorTabstop extends Anchor {
 	 * Fires a click event to the anchor.
 	 */
 	public void fireClick() {
-		NativeEvent clickEvent = Document.get().createClickEvent(1, 0, 0, 0, 0, false, false, false, false);
-		getElement().dispatchEvent(clickEvent);
+		GwtClientHelper.simulateElementClick(getElement());
 	}
 }

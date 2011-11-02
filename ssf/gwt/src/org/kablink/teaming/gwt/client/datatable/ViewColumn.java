@@ -32,40 +32,22 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.view.client.ProvidesKey;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+
+import com.google.gwt.user.cellview.client.Column;
 
 /**
- * Common 'data table' base class for use by all Vibe folders that show
- * a simple list of entries.
+ * A column that displays a view link for a file.
+ *
+ * @param <T> is a FolderRow.
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTable<T> extends DataGrid<T> {
-	// The following are used as event names that are captured by
-	// various data table cell handlers. 
-	public final static String CELL_EVENT_CLICK		= "click";
-	public final static String CELL_EVENT_KEYDOWN	= "keydown";
-	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
-	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
-	
-	// The following are used to name widgets stored in the various
-	// cells of a data table.
-	public final static String CELL_WIDGET_ATTRIBUTE			= "n-cellWidget";
-	public final static String CELL_WIDGET_ENTRY_DOWNLOAD_LABEL	= "entryDownloadLabel";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL	= "entryTitleLabel";
-	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE	= "entryUnseenImg";
-	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR	= "entryViewAnchor";
-	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL		= "entryViewLabel";
-	public final static String CELL_WIDGET_PRESENCE				= "presenceControl";
-	public final static String CELL_WIDGET_PRESENCE_LABEL		= "presenceLabel";
-
-	/**
-	 * Constructor method.
-	 * 
-	 * @param pageSize
-	 */
-	public VibeDataTable(int pageSize, ProvidesKey<T> keyProvider) {
-		super(pageSize, keyProvider);
-	}
+public abstract class ViewColumn<T> extends Column<T, ViewFileInfo> {
+  /**
+   * Constructor method.
+   */
+  public ViewColumn() {
+	  super(new ViewCell());
+  }
 }

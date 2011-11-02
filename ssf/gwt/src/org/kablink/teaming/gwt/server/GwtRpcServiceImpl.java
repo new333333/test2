@@ -125,6 +125,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
@@ -1028,6 +1029,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gvtCmd = (GetVerticalTreeCmd) cmd;
 			result = getVerticalTree( ri, gvtCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_VIEW_FILE_URL:
+		{
+			GetViewFileUrlCmd gvfuCmd = ((GetViewFileUrlCmd) cmd);
+			String result = getViewFileUrl( ri, gvfuCmd.getViewFileInfo() );
+			StringRpcResponseData responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -2208,14 +2218,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	private String getDownloadFileUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		try {
-			String reply = null;
+		try
+		{
 			FolderEntry entry = getFolderModule().getEntry( null, entryId );
 			Set<FileAttachment> atts = entry.getFileAttachments(); 
+			String reply;
 			if ( !atts.isEmpty() )
-			{
-				reply = WebUrlUtil.getFileUrl( getRequest( ri ), WebKeys.ACTION_READ_FILE, atts.iterator().next(), false, true );
-			}
+				 reply = WebUrlUtil.getFileUrl( getRequest( ri ), WebKeys.ACTION_READ_FILE, atts.iterator().next(), false, true );
+			else reply = null;
 			return reply;
 		}
 		catch ( Exception ex )
@@ -2321,6 +2331,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return folderEntry;
 	}// end getEntry()
 	
+	
+	/**
+	 * Return a view file URL that can be used to view an entry's file
+	 * as HTML.
+	 * 
+	 * @param ri
+	 * @param vfi
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	private String getViewFileUrl( HttpRequestInfo ri, ViewFileInfo vfi ) throws GwtTeamingException {
+		return GwtServerHelper.getViewFileUrl( getRequest( ri ), vfi );
+	}// end getViewFileUrl()
 	
 	/**
 	 * Return a base view folder entry URL that can be used directly in the
