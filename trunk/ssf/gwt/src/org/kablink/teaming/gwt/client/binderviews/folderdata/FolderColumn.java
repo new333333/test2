@@ -48,6 +48,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String m_columnName;		//
 	private String m_columnTitle;		//
 	private String m_columnSearchKey;	//
+	private String m_columnSortKey;		//
 	
 	/**
 	 * Constructor method.
@@ -63,16 +64,28 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @param columnName
 	 * @param columnTitle
-	 * @param columnSearchKey
 	 */
-	public FolderColumn(String columnName, String columnTitle, String columnSearchKey) {
+	public FolderColumn(String columnName, String columnTitle) {
 		this();
 		
-		setColumnName(     columnName     );
-		setColumnTitle(    columnTitle    );
-		setColumnSearchKey(columnSearchKey);
+		setColumnName( columnName );
+		setColumnTitle(columnTitle);
 	}
 	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param columnName
+	 * @param columnTitle
+	 * @param columnSearchKey
+	 * @param columnSortKey
+	 */
+	public FolderColumn(String columnName, String columnTitle, String columnSearchKey, String columnSortKey) {
+		this(columnName, columnTitle);
+		
+		setColumnSearchKey(columnSearchKey);
+		setColumnSortKey(  columnSortKey  );
+	}
 	
 	/**
 	 * Get'er methods.
@@ -82,6 +95,13 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public String getColumnName()      {return m_columnName;     }
 	public String getColumnTitle()     {return m_columnTitle;    }
 	public String getColumnSearchKey() {return m_columnSearchKey;}
+	public String getColumnSortKey() {
+		String reply = m_columnSortKey;
+		if ((null == reply) || (0 == reply.length())) {
+			reply = m_columnSearchKey;
+		}
+		return reply;
+	}
 	
 	/**
 	 * Set'er methods.
@@ -92,4 +112,5 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public void setColumnName(     String columnName)      {m_columnName      = columnName;     }
 	public void setColumnTitle(    String columnTitle)     {m_columnTitle     = columnTitle;    }
 	public void setColumnSearchKey(String columnSearchKey) {m_columnSearchKey = columnSearchKey;}
+	public void setColumnSortKey(  String columnSortKey)   {m_columnSortKey   = columnSortKey;  }
 }
