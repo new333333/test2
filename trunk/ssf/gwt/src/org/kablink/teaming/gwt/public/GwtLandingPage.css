@@ -116,6 +116,28 @@
 
 
 
+/* ######## Styles used with the iFrame widget on a landing page. ######## */
+
+.iFrameWidgetMainPanel, .iFrameWidgetMainPanel_dark
+{
+}
+
+.iFrameWidgetNoBorder
+{
+	border-width: 0px;
+}
+
+.iFrameWidgetShowBorder
+{
+	border-color: #666666 #BBBBBB #BBBBBB #666666;
+	bolder-style: solid;
+	border-width: 2px;
+}
+
+/* ##################################################################### */
+
+
+
 /* ######## Styles used with the link to binder widget on a landing page. ######## */
 
 .linkToBinderWidgetLink, .linkToBinderWidgetLink_dark
