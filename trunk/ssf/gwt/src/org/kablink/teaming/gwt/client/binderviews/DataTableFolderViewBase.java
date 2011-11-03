@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
+import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
@@ -144,6 +145,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private final static String COLUMN_DATE		= "date";
 	private final static String COLUMN_DOWNLOAD	= "download";
 	private final static String COLUMN_HTML		= "html";
+	private final static String COLUMN_LOCATION	= "location";
 	private final static String COLUMN_NUMBER	= "number";
 	private final static String COLUMN_RATING	= "rating";
 	private final static String COLUMN_SIZE		= "size";
@@ -514,36 +516,13 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	}
 	
 	/*
-	 * Returns true if the column should show a download link and false
-	 * otherwise. 
+	 * Various column type detectors.
 	 */
-	private static boolean isDownloadColumn(String columnName) {
-		return columnName.equals(COLUMN_DOWNLOAD);
-	}
-	
-	/*
-	 * Returns true if the column should show presence information and
-	 * false otherwise. 
-	 */
-	private static boolean isPresenceColumn(String columnName) {
-		return columnName.equals(COLUMN_AUTHOR);
-	}
-	
-	/*
-	 * Returns true if the column should show title information and
-	 * false otherwise. 
-	 */
-	private static boolean isTitleColumn(String columnName) {
-		return columnName.equals(COLUMN_TITLE);
-	}
-	
-	/*
-	 * Returns true if the column should show a view link and false
-	 * otherwise. 
-	 */
-	private static boolean isViewColumn(String columnName) {
-		return columnName.equals(COLUMN_HTML);
-	}
+	private static boolean isColumnDownload(String columnName) {return columnName.equals(COLUMN_DOWNLOAD);}
+	private static boolean isColumnRating(  String columnName) {return columnName.equals(COLUMN_RATING);  }
+	private static boolean isColumnPresence(String columnName) {return columnName.equals(COLUMN_AUTHOR);  }
+	private static boolean isColumnTitle(   String columnName) {return columnName.equals(COLUMN_TITLE);   }
+	private static boolean isColumnView(    String columnName) {return columnName.equals(COLUMN_HTML);    }
 	
 	/*
 	 * Initializes various data members for the class.
@@ -559,21 +538,23 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		m_columnWidths = new HashMap<String, Integer>();
 
 		// ...first, the predefined column names...
-		m_columnWidths.put(COLUMN_AUTHOR,  24);
-		m_columnWidths.put(COLUMN_COMMENTS, 8);
-		m_columnWidths.put(COLUMN_DATE,    20);
-		m_columnWidths.put(COLUMN_DOWNLOAD, 8);
-		m_columnWidths.put(COLUMN_HTML,    10);
-		m_columnWidths.put(COLUMN_NUMBER,   5);
-		m_columnWidths.put(COLUMN_RATING,  10);
-		m_columnWidths.put(COLUMN_SIZE,     8);
-		m_columnWidths.put(COLUMN_STATE,    8);
-		m_columnWidths.put(COLUMN_TITLE,   28);
+		m_columnWidths.put(COLUMN_AUTHOR,   24);
+		m_columnWidths.put(COLUMN_COMMENTS,  8);
+		m_columnWidths.put(COLUMN_DATE,     20);
+		m_columnWidths.put(COLUMN_DOWNLOAD,  8);
+		m_columnWidths.put(COLUMN_HTML,     10);
+		m_columnWidths.put(COLUMN_LOCATION, 30);
+		m_columnWidths.put(COLUMN_NUMBER,    5);
+		m_columnWidths.put(COLUMN_RATING,   10);
+		m_columnWidths.put(COLUMN_SIZE,      8);
+		m_columnWidths.put(COLUMN_STATE,     8);
+		m_columnWidths.put(COLUMN_RATING,   10);
+		m_columnWidths.put(COLUMN_TITLE,    28);
 
 		// ...and then the internal column names.
-		m_columnWidths.put(COLUMN_SELECT,   4);
-		m_columnWidths.put(COLUMN_PIN,      2);
-		m_columnWidths.put(COLUMN_OTHER,   20);
+		m_columnWidths.put(COLUMN_SELECT,    4);
+		m_columnWidths.put(COLUMN_PIN,       2);
+		m_columnWidths.put(COLUMN_OTHER,    20);
 	}
 	
 	/*
@@ -595,7 +576,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			// a download link for? 
 			VibeColumn<FolderRow, ?> column;
 			String cName = fc.getColumnName();
-			if (isDownloadColumn(cName)) {
+			if (isColumnDownload(cName)) {
 				// Yes!  Create a DownloadColumn for it.
 				column = new DownloadColumn<FolderRow>(fc) {
 					@Override
@@ -611,20 +592,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			}
 			
 			// No, this column doesn't show a download link!  Does it
-			// show a view link?
-			else if (isViewColumn(cName)) {
-				// Yes!  Create a ViewColumn for it.
-				column = new ViewColumn<FolderRow>(fc) {
-					@Override
-					public ViewFileInfo getValue(FolderRow fr) {
-						return fr.getColumnValueAsViewFile(fc);
-					}
-				};
-			}
-			
-			// No, this column doesn't show a view link either!  Does
-			// it show presence?
-			else if (isPresenceColumn(cName)) {
+			// show presence?
+			else if (isColumnPresence(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>(fc) {
 					@Override
@@ -634,9 +603,28 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 				};
 			}
 
-			// No, this column doesn't show presence!  Does it show an
-			// entry title?
-			else if (isTitleColumn(cName)) {
+			// No, this column doesn't show presence either!  Does it
+			// show a rating?
+			else if (isColumnRating(cName)) {
+				// Yes!  Create a RatingColumn for it.
+				column = new RatingColumn<FolderRow>(fc) {
+					@Override
+					public Integer getValue(FolderRow fr) {
+						String value = fr.getColumnValueAsString(fc);
+						if (null != value) value = value.trim();
+						Integer reply;
+						if (GwtClientHelper.hasString(value)) {
+							reply = Math.round(Float.valueOf(value));
+						}
+						else reply = null;
+						return reply;
+					}
+				};
+			}
+			
+			// No, this column doesn't show a rating either!  Does it
+			// show an entry title?
+			else if (isColumnTitle(cName)) {
 				// Yes!  Create a EntryTitleColumn for it.
 				column = new EntryTitleColumn<FolderRow>(fc) {
 					@Override
@@ -646,8 +634,20 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 				};
 			}
 			
+			// No, this column doesn't show an entry title either!
+			// Does it show a view link?
+			else if (isColumnView(cName)) {
+				// Yes!  Create a ViewColumn for it.
+				column = new ViewColumn<FolderRow>(fc) {
+					@Override
+					public ViewFileInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsViewFile(fc);
+					}
+				};
+			}
+			
 			else {
-				// No, this column doesn't show an entry title either!
+				// No, this column doesn't show a view link either!
 				// Define a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
@@ -671,20 +671,6 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		}
 	}
 
-	/*
-	 * Returns true if a column is the title column and false
-	 * otherwise.
-	 */
-	private static boolean isColumnTitle(String columnName) {
-		return columnName.equals(COLUMN_TITLE);
-	}
-	
-	@SuppressWarnings("unused")
-	private static boolean isColumnTitle(FolderColumn column) {
-		// Always use the initial form of the method.
-		return isColumnTitle(column.getColumnName());
-	}
-	
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 

@@ -1083,17 +1083,58 @@ public class GwtViewHelper {
 	 */
 	private static void setColumnSearchAndSortKeys(List<FolderColumn> fcList) {
 		for (FolderColumn fc:  fcList) {
-			String columnName = fc.getColumnName();
-			if      (columnName.equals("number"))   {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                                                                 }
-			else if (columnName.equals("title"))    {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);   }
-			else if (columnName.equals("author"))   {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD);}
-			else if (columnName.equals("comments")) {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                           }
-			else if (columnName.equals("size"))     {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                 }
-			else if (columnName.equals("download")) {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                  }
-			else if (columnName.equals("state"))    {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD);                                                    }
-			else if (columnName.equals("date"))     {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                              }
-			else if (columnName.equals("html"))     {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                   }
-			else                                    {fc.setColumnSearchKey(columnName);                                                                                }
+			String colName = fc.getColumnName();
+			if      (colName.equals("author"))   {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
+			else if (colName.equals("comments")) {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
+			else if (colName.equals("date"))     {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
+			else if (colName.equals("download")) {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
+			else if (colName.equals("html"))     {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
+			else if (colName.equals("location")) {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
+			else if (colName.equals("number"))   {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
+			else if (colName.equals("rating"))   {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
+			else if (colName.equals("size"))     {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
+			else if (colName.equals("state"))    {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
+			else if (colName.equals("title"))    {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
+			else {
+				// Does the column name contain multiple parts wrapped
+				// in a single value?
+				String defId      = null;
+				String eleType    = null;
+				String eleName    = null;
+				String eleCaption = null;
+				if (colName.contains(",")) {
+					String[] temp = colName.split(",");
+					if (4 == temp.length) {
+						defId      = temp[0];
+						eleType    = temp[1];
+						eleName    = temp[2];
+						eleCaption = temp[3];
+					}
+				}
+				if (MiscUtil.hasString(defId)) {
+					// Yes!  Update the FolderColumn components based
+					// on the information extracted from the field.
+					fc.setColumnName(eleName);
+					
+					if (!(MiscUtil.hasString(fc.getColumnTitle()))) {
+						fc.setColumnTitle(eleCaption);
+					}
+					
+					String eleSortName;
+					if      (eleType.equals("selectbox") || eleType.equals("radio"))  eleSortName = ("_caption_" + eleName);
+					else if (eleType.equals("text")      || eleType.equals("hidden")) eleSortName = ("_sort_"    + eleName);
+					else if (eleType.equals("event"))                                 eleSortName = (eleName + "#LogicalStartDate");
+					else                                                              eleSortName = eleName;
+					fc.setColumnSortKey(eleSortName);
+				}
+				
+				else {
+					// No, the name doesn't have multiple parts wrapped
+					// in a single value!  Just use the name for the
+					// search and sort keys.
+					fc.setColumnSearchKey(colName);
+				}
+			}
 		}
 	}
 

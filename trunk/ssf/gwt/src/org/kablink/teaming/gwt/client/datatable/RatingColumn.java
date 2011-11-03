@@ -30,30 +30,22 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.datatable;
 
-package org.kablink.teaming.gwt.client;
-
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.resources.client.ImageResource.RepeatStyle;
-
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 
 /**
- * Images used by the GWT Teaming 'Data Table' implementation.
+ * A column that displays a rating for an entry.
+ *
+ * @param <T> is a FolderRow.
  * 
  * @author drfoster@novell.com
  */
-public interface GwtTeamingDataTableImageBundle extends ClientBundle {
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gold.png")
-	public ImageResource goldStar();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gray.png")
-	public ImageResource grayStar();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
-	public ImageResource unread();
+public abstract class RatingColumn<T> extends VibeColumn<T, Integer> {
+  /**
+   * Constructor method.
+   */
+  public RatingColumn(FolderColumn fc) {
+	  super(fc, new RatingCell());
+  }
 }
