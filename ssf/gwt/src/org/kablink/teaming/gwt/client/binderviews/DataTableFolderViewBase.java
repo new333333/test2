@@ -340,10 +340,10 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			if (column instanceof VibeColumn) {
 				@SuppressWarnings("unchecked")
 				final FolderColumn fc = ((VibeColumn) column).getFolderColumn();
-				final String  folderSortBy        = fc.getColumnSearchKey();
+				final String  folderSortBy        = fc.getColumnSortKey();
 				final boolean folderSortByChanged = (!(folderSortBy.equalsIgnoreCase(m_folderSortBy)));
 				final boolean folderSortDescend   = (folderSortByChanged ? m_folderSortDescend : (!m_folderSortDescend));
-				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(m_folderInfo.getBinderIdAsLong(), fc.getColumnSearchKey(), (!folderSortDescend));
+				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(m_folderInfo.getBinderIdAsLong(), fc.getColumnSortKey(), (!folderSortDescend));
 				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -664,7 +664,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		    setColumnWidth(               cName, column    );
 
 		    // Is this the column we're sorted on?
-		    if (fc.getColumnSearchKey().equalsIgnoreCase(m_folderSortBy)) {
+		    if (fc.getColumnSortKey().equalsIgnoreCase(m_folderSortBy)) {
 		    	// Yes!  Tell the data table about it.
 				csl.push(new ColumnSortInfo(column, (!m_folderSortDescend)));
 		    }

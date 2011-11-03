@@ -357,31 +357,6 @@ public class GwtViewHelper {
 		GwtServerHelper.removeUnresolvedAssignees(aiList, removeList);
 	}
 	
-	/*
-	 * Maps a column name to the appropriate search key.
-	 */
-	private static String getColumnSearchKey(String columnName) {
-		String reply;
-		if (MiscUtil.hasString(columnName)) {
-			if      (columnName.equals("number"))   reply = Constants.DOCNUMBER_FIELD;
-			else if (columnName.equals("title"))    reply = Constants.TITLE_FIELD;
-			else if (columnName.equals("author"))   reply = Constants.PRINCIPAL_FIELD;
-			else if (columnName.equals("comments")) reply = Constants.TOTALREPLYCOUNT_FIELD;
-			else if (columnName.equals("size"))     reply = Constants.FILE_SIZE_FIELD;
-			else if (columnName.equals("download")) reply = Constants.FILENAME_FIELD;
-			else if (columnName.equals("state"))    reply = Constants.WORKFLOW_STATE_CAPTION_FIELD;
-			else if (columnName.equals("date"))     reply = Constants.LASTACTIVITY_FIELD;
-			else if (columnName.equals("html"))     reply = Constants.FILE_ID_FIELD;
-			else                                    reply = columnName;
-		}
-		
-		else {
-			reply = columnName;
-		}
-
-		return reply;
-	}
-	
 	/**
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
@@ -508,13 +483,12 @@ public class GwtViewHelper {
 
 				// Add a FolderColumn for this to the list we're
 				// going to return.
-				fcList.add(
-					new FolderColumn(
-						columnName,
-						columnTitle,
-						getColumnSearchKey(
-							columnName)));
+				fcList.add(new FolderColumn(columnName, columnTitle));
 			}
+
+			// Walk the List<FolderColumn>'s setting the search and
+			// sort keys appropriately for each.
+			setColumnSearchAndSortKeys(fcList);
 
 			// Finally, use the data we obtained to create a
 			// FolderColumnsRpcResponseData and return that. 
@@ -720,6 +694,9 @@ public class GwtViewHelper {
 								if (csk.equals(Constants.FILE_SIZE_FIELD)) {
 									// Yes!  Trim any leading 0's from the value.
 									value = trimLeadingZeros(value);
+									if (MiscUtil.hasString(value)) {
+										value += "KB";
+									}
 								}
 								
 								// Use what ever String value we
@@ -1099,7 +1076,27 @@ public class GwtViewHelper {
 		}
 		return reply;
 	}
-	
+
+	/*
+	 * Walks the List<FolderColumn>'s setting the search and sort keys
+	 * appropriately for each.
+	 */
+	private static void setColumnSearchAndSortKeys(List<FolderColumn> fcList) {
+		for (FolderColumn fc:  fcList) {
+			String columnName = fc.getColumnName();
+			if      (columnName.equals("number"))   {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                                                                 }
+			else if (columnName.equals("title"))    {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);   }
+			else if (columnName.equals("author"))   {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD);}
+			else if (columnName.equals("comments")) {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                           }
+			else if (columnName.equals("size"))     {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                 }
+			else if (columnName.equals("download")) {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                  }
+			else if (columnName.equals("state"))    {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD);                                                    }
+			else if (columnName.equals("date"))     {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                              }
+			else if (columnName.equals("html"))     {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                   }
+			else                                    {fc.setColumnSearchKey(columnName);                                                                                }
+		}
+	}
+
 	/*
 	 * Strips the leading 0's off a String value and returns it.
 	 */
