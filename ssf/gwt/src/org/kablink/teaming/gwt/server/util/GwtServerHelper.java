@@ -2694,8 +2694,8 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Returns a formatted date string for the current user's locale
-	 * and time zone.
+	 * Returns a formatted date/time string for the current user's
+	 * locale and time zone.
 	 * 
 	 * @param date
 	 * @param dateStyle
@@ -2715,6 +2715,29 @@ public class GwtServerHelper {
 	public static String getDateTimeString(Date date) {
 		// Always use the initial form of the method.
 		return getDateTimeString(date, DateFormat.MEDIUM, DateFormat.LONG);
+	}
+	
+	/**
+	 * Returns a formatted date string for the current user's locale
+	 * and time zone.
+	 * 
+	 * @param date
+	 * @param dateStyle
+	 * 
+	 * @return
+	 */
+	public static String getDateString(Date date, int dateStyle) {
+		User user = GwtServerHelper.getCurrentUser();
+		
+		DateFormat df = DateFormat.getDateInstance(dateStyle, user.getLocale());
+		df.setTimeZone(user.getTimeZone());
+		
+		return df.format(date);
+	}
+	
+	public static String getDateString(Date date) {
+		// Always use the initial form of the method.
+		return getDateString(date, DateFormat.MEDIUM);
 	}
 	
 	/**

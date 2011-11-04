@@ -36,9 +36,12 @@ package org.kablink.teaming.gwt.server.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -51,9 +54,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -69,6 +75,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseDat
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.EntryEventInfo;
+import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -77,14 +85,19 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
@@ -357,6 +370,115 @@ public class GwtViewHelper {
 		GwtServerHelper.removeUnresolvedAssignees(aiList, removeList);
 	}
 	
+	/*
+	 * Walks the List<FolderColumn>'s setting the search and sort keys
+	 * appropriately for each.
+	 */
+	private static void fixupFCs(List<FolderColumn> fcList) {
+		for (FolderColumn fc:  fcList) {
+			String colName = fc.getColumnName();
+			if      (colName.equals("author"))   {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
+			else if (colName.equals("comments")) {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
+			else if (colName.equals("date"))     {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
+			else if (colName.equals("download")) {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
+			else if (colName.equals("html"))     {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
+			else if (colName.equals("location")) {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
+			else if (colName.equals("number"))   {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
+			else if (colName.equals("rating"))   {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
+			else if (colName.equals("size"))     {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
+			else if (colName.equals("state"))    {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
+			else if (colName.equals("title"))    {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
+			else {
+				// Does the column name contain multiple parts wrapped
+				// in a single value?
+				String defId      = null;
+				String eleType    = null;
+				String eleName    = null;
+				String eleCaption = null;
+				if (colName.contains(",")) {
+					String[] temp = colName.split(",");
+					if (4 == temp.length) {
+						defId      = temp[0];
+						eleType    = temp[1];
+						eleName    = temp[2];
+						eleCaption = temp[3];
+					}
+				}
+				if (MiscUtil.hasString(defId)) {
+					// Yes!  Update the FolderColumn components based
+					// on the information extracted from the field.
+					fc.setColumnName( eleName);
+					
+					if (!(MiscUtil.hasString(fc.getColumnTitle()))) {
+						fc.setColumnTitle(eleCaption);
+					}
+					
+					String eleSortName;
+					if      (eleType.equals("selectbox") || eleType.equals("radio"))  eleSortName = ("_caption_" + eleName);
+					else if (eleType.equals("text")      || eleType.equals("hidden")) eleSortName = ("_sort_"    + eleName);
+					else if (eleType.equals("event"))                                 eleSortName = (eleName + "#LogicalStartDate");
+					else                                                              eleSortName = eleName;
+					fc.setColumnSortKey(eleSortName);
+					
+					fc.setColumnDefId(defId  );
+					fc.setColumnType( eleType);
+				}
+				
+				else {
+					// No, the name doesn't have multiple parts wrapped
+					// in a single value!  Just use the name for the
+					// search and sort keys.
+					fc.setColumnSearchKey(colName);
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Scans the List<FolderRow> and sets the access rights for the
+	 * current user for each row.
+	 */
+	private static void fixupFRs(AllModulesInjected bs, List<FolderRow> frList) {
+		// If we don't have any FolderRow's to complete...
+		if ((null == frList) || frList.isEmpty()) {
+			// ..bail.
+			return;
+		}
+
+		// Collect the entry IDs of the rows from the List<FolderRow>.
+		List<Long> entryIds = new ArrayList<Long>();
+		for (FolderRow fr:  frList) {
+			entryIds.add(fr.getEntryId());
+		}
+		
+		try {
+			// Read the FolderEntry's for the rows...
+			FolderModule fm = bs.getFolderModule();
+			SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
+			
+			// ...mapping each FolderEntry to its ID.
+			Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
+			for (FolderEntry entry: entries) {
+				entryMap.put(entry.getId(), entry);
+			}
+
+			// Scan the List<FolderRow> again.
+			for (FolderRow fr:  frList) {
+				// Do we have a FolderEntry for this row?
+				FolderEntry entry = entryMap.get(fr.getEntryId());
+				if (null != entry) {
+					// Yes!  Store the user's rights to that
+					// FolderEntry.
+					fr.setCanModify(fm.testAccess(entry, FolderOperation.modifyEntry   ));
+					fr.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
+					fr.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
+				}
+			}
+			
+		}
+		catch (Exception ex) {/* Ignored. */}
+	}
+
 	/**
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
@@ -486,9 +608,9 @@ public class GwtViewHelper {
 				fcList.add(new FolderColumn(columnName, columnTitle));
 			}
 
-			// Walk the List<FolderColumn>'s setting the search and
-			// sort keys appropriately for each.
-			setColumnSearchAndSortKeys(fcList);
+			// Walk the List<FolderColumn>'s performing fixups on each
+			// as necessary.
+			fixupFCs(fcList);
 
 			// Finally, use the data we obtained to create a
 			// FolderColumnsRpcResponseData and return that. 
@@ -616,107 +738,136 @@ public class GwtViewHelper {
 				Long entryId = Long.parseLong(entryIdS);
 				FolderRow fr = new FolderRow(entryId, folderColumns);
 				for (FolderColumn fc:  folderColumns) {
-					// Can we construct a PrincipalInfo for this column
-					// using the value from Map?
-					String csk     = fc.getColumnSearchKey();
-					Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
-					PrincipalInfo pi;
-					if (emValue instanceof Principal)
-					     pi = getPIFromPId(((Principal) emValue).getId());
-					else pi = null;
-					if (null == pi) {
-						// No!  Does the column contain assignment
-						// information?
-						if (isAssignmentColumnSearchKey(csk)) {
-							// Yes!  Process it for a
-							// List<AssignmentInfo>'s.
-							addedAssignments = true;
-							fr.setColumnValue(fc, GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk));
-						}
-						else {
-							// No, the column doesn't contain
-							// assignment information either!  Extract
-							// its String value.
-							String value = GwtServerHelper.getStringFromEntryMapValue(
-								emValue,
-								DateFormat.SHORT,
-								DateFormat.SHORT);
-							
-							// Are we working on a title field?
-							if (csk.equals(Constants.TITLE_FIELD)) {
-								// Yes!  Construct an EntryTitleInfo for it.
-								EntryTitleInfo eti = new EntryTitleInfo();
-								eti.setSeen(seenMap.checkIfSeen(entryMap));
-								eti.setTitle(value);
-								eti.setEntryId(entryId);
-								fr.setColumnValue(fc, eti);
-							}
-							
-							// No, we aren't working on a title field!
-							// Are we working on a file ID field?
-							else if (csk.equals(Constants.FILE_ID_FIELD)) {
-								// Yes!  Do we have a single file ID?
-								if ((!(MiscUtil.hasString(value))) || ((-1) != value.indexOf(','))) {
-									// No!  Ignore the value.
-									value = null;
-								}
-								
-								else {
-									// Yes, we have a single file ID!
-									// Do we have a file path that we
-									// support viewing of?
-									String relativeFilePath = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
-									if ((!(MiscUtil.hasString(relativeFilePath))) || (!(SsfsUtil.supportsViewAsHtml(relativeFilePath)))) {
-										// No!  Ignore the value.
-										value = null;
-									}
-								}
-								
-								// Do we have a file ID to work with?
-								if (MiscUtil.hasString(value)) {
-									// Yes!  Construct a ViewFileInfo
-									// for it.
-									ViewFileInfo vfi = new ViewFileInfo();
-									vfi.setFileId(     value);
-									vfi.setBinderId(   Long.parseLong(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD)));
-									vfi.setEntryId(    entryId);
-									vfi.setEntityType( GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD));
-									vfi.setFileTime(   GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
-									vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(       request,  vfi));
-									fr.setColumnValue(fc, vfi);
-								}
-							}
-							
-							else {
-								// No, we aren't working on a file ID
-								// field either!  Are we working on a
-								// file size field?
-								if (csk.equals(Constants.FILE_SIZE_FIELD)) {
-									// Yes!  Trim any leading 0's from the value.
-									value = trimLeadingZeros(value);
-									if (MiscUtil.hasString(value)) {
-										value += "KB";
-									}
-								}
-								
-								// Use what ever String value we
-								// arrived at.
-								fr.setColumnValue(fc, (null == (value) ? "" : value));
-							}
-						}
+					// Is this a custom column?
+					if (fc.isCustomColumn()) {
+						// Yes!  Generate a value for it.
+						setValueForCustomColumn(bs, entryMap, fr, fc);
 					}
 					
 					else {
-						// Yes, we got a PrincipalInfo!  Use that.
-						fr.setColumnValue(fc, pi);
+						// No, this isn't a custom column!  Can we
+						// construct a PrincipalInfo for this column
+						// using the value from Map?
+						String csk     = fc.getColumnSearchKey();
+						Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
+						PrincipalInfo pi;
+						if (emValue instanceof Principal)
+						     pi = getPIFromPId(((Principal) emValue).getId());
+						else pi = null;
+						if (null == pi) {
+							// No!  Does the column contain assignment
+							// information?
+							if (isAssignmentColumnSearchKey(csk)) {
+								// Yes!  Process it for a
+								// List<AssignmentInfo>'s.
+								addedAssignments = true;
+								fr.setColumnValue(fc, GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk));
+							}
+							else {
+								// No, the column doesn't contain
+								// assignment information either!
+								// Extract its String value.
+								String value = GwtServerHelper.getStringFromEntryMapValue(
+									emValue,
+									DateFormat.SHORT,
+									DateFormat.SHORT);
+								
+								// Are we working on a title field?
+								if (csk.equals(Constants.TITLE_FIELD)) {
+									// Yes!  Construct an
+									// EntryTitleInfo for it.
+									EntryTitleInfo eti = new EntryTitleInfo();
+									eti.setSeen(seenMap.checkIfSeen(entryMap));
+									eti.setTitle(value);
+									eti.setEntryId(entryId);
+									fr.setColumnValue(fc, eti);
+								}
+								
+								// No, we aren't working on a title
+								// field!  Are we working on a file ID
+								// field?
+								else if (csk.equals(Constants.FILE_ID_FIELD)) {
+									// Yes!  Do we have a single file
+									// ID?
+									if ((!(MiscUtil.hasString(value))) || ((-1) != value.indexOf(','))) {
+										// No!  Ignore the value.
+										value = null;
+									}
+									
+									else {
+										// Yes, we have a single file
+										// ID!  Do we have a file path
+										// that we support viewing of?
+										String relativeFilePath = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
+										if ((!(MiscUtil.hasString(relativeFilePath))) || (!(SsfsUtil.supportsViewAsHtml(relativeFilePath)))) {
+											// No!  Ignore the value.
+											value = null;
+										}
+									}
+									
+									// Do we have a file ID to work
+									// with?
+									if (MiscUtil.hasString(value)) {
+										// Yes!  Construct a
+										// ViewFileInfo for it.
+										ViewFileInfo vfi = new ViewFileInfo();
+										vfi.setFileId(     value);
+										vfi.setBinderId(   Long.parseLong(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD)));
+										vfi.setEntryId(    entryId);
+										vfi.setEntityType( GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD));
+										vfi.setFileTime(   GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
+										vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(       request,  vfi));
+										fr.setColumnValue(fc, vfi);
+									}
+								}
+								
+								else {
+									// No, we aren't working on a file
+									// ID field either!  Are we working
+									// on a file size field?
+									if (csk.equals(Constants.FILE_SIZE_FIELD)) {
+										// Yes!  Trim any leading 0's
+										// from the value.
+										value = trimLeadingZeros(value);
+										if (MiscUtil.hasString(value)) {
+											value += "KB";
+										}
+									}
+									
+									// Use what ever String value we
+									// arrived at.
+									fr.setColumnValue(fc, (null == (value) ? "" : value));
+								}
+							}
+						}
+						
+						else {
+							// Yes, we got a PrincipalInfo!  Use that.
+							fr.setColumnValue(fc, pi);
+						}
 					}
 				}
+				
+				// Add the FolderRow we just built to the
+				// List<FolderRow> of them.
 				folderRows.add(fr);
 			}
-			
+
+			// Did we add any rows with assignment information?
 			if (addedAssignments) {
+				// Yes!  We need to complete the definition of the
+				// AssignmentInfo objects.
+				//
+				// When initially built, the AssignmentInfo's in the
+				// List<AssignmentInfo>'s only contain the assignee
+				// IDs.  We need to complete them with each assignee's
+				// title, ...
 				completeAIs(bs, folderRows);
 			}
+			
+			// Walk the List<FolderRow>'s performing any remaining
+			// fixups on each as necessary.
+			fixupFRs(bs, folderRows);
 			
 			// Finally, return the List<FolderRow> wrapped in a
 			// FolderRowsRpcResponseData.
@@ -1078,63 +1229,169 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Walks the List<FolderColumn>'s setting the search and sort keys
-	 * appropriately for each.
+	 * Generates a value for a custom column in a row.
+	 * 
+	 * The algorithm used in this method was reverse engineered from
+	 * that used by folder_view_common2.jsp.
 	 */
-	private static void setColumnSearchAndSortKeys(List<FolderColumn> fcList) {
-		for (FolderColumn fc:  fcList) {
-			String colName = fc.getColumnName();
-			if      (colName.equals("author"))   {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
-			else if (colName.equals("comments")) {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
-			else if (colName.equals("date"))     {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
-			else if (colName.equals("download")) {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
-			else if (colName.equals("html"))     {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
-			else if (colName.equals("location")) {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
-			else if (colName.equals("number"))   {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
-			else if (colName.equals("rating"))   {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
-			else if (colName.equals("size"))     {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
-			else if (colName.equals("state"))    {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
-			else if (colName.equals("title"))    {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
-			else {
-				// Does the column name contain multiple parts wrapped
-				// in a single value?
-				String defId      = null;
-				String eleType    = null;
-				String eleName    = null;
-				String eleCaption = null;
-				if (colName.contains(",")) {
-					String[] temp = colName.split(",");
-					if (4 == temp.length) {
-						defId      = temp[0];
-						eleType    = temp[1];
-						eleName    = temp[2];
-						eleCaption = temp[3];
-					}
-				}
-				if (MiscUtil.hasString(defId)) {
-					// Yes!  Update the FolderColumn components based
-					// on the information extracted from the field.
-					fc.setColumnName(eleName);
-					
-					if (!(MiscUtil.hasString(fc.getColumnTitle()))) {
-						fc.setColumnTitle(eleCaption);
-					}
-					
-					String eleSortName;
-					if      (eleType.equals("selectbox") || eleType.equals("radio"))  eleSortName = ("_caption_" + eleName);
-					else if (eleType.equals("text")      || eleType.equals("hidden")) eleSortName = ("_sort_"    + eleName);
-					else if (eleType.equals("event"))                                 eleSortName = (eleName + "#LogicalStartDate");
-					else                                                              eleSortName = eleName;
-					fc.setColumnSortKey(eleSortName);
+	@SuppressWarnings("unchecked")
+	private static void setValueForCustomColumn(AllModulesInjected bs, Map entryMap, FolderRow fr, FolderColumn fc) throws ParseException {
+		try {
+			String eleName = fc.getColumnName();
+			if (!MiscUtil.hasString(eleName)) {
+				fr.setColumnValue(fc, "");
+				return;
+			}
+			
+			Object eleValue = entryMap.get(eleName);
+			String eleType = fc.getColumnType();
+			if (null == eleType) eleType = "";
+			if ((null != eleValue) || eleType.equals("event")) {
+				Definition entryDef = bs.getDefinitionModule().getDefinition(fc.getColumnDefId());
+				if (eleType.equals("selectbox")           ||
+					    eleType.equals("radio")           ||
+					    eleType.equals("checkbox")        ||
+					    eleType.equals("text")            ||
+					    eleType.equals("entryAttributes") ||
+					    eleType.equals("hidden")          ||
+					    eleType.equals("number")) {
+					String eleValues = DefinitionHelper.getCaptionsFromValues(entryDef, eleName, eleValue.toString());
+					fr.setColumnValue(fc, eleValues);
 				}
 				
-				else {
-					// No, the name doesn't have multiple parts wrapped
-					// in a single value!  Just use the name for the
-					// search and sort keys.
-					fc.setColumnSearchKey(colName);
+				else if (eleType.equals("url")) {
+		         	String eleValues = DefinitionHelper.getCaptionsFromValues(entryDef, eleName, eleValue.toString());
+		         	Element ele = ((Element) DefinitionHelper.findAttribute(eleName, entryDef.getDefinition()));
+		         	String linkText = DefinitionHelper.getItemProperty(ele, "linkText");
+		         	String target = DefinitionHelper.getItemProperty(ele, "target");
+		         	
+		         	if (!(MiscUtil.hasString(linkText))) linkText = eleValues;
+		         	if ((null == target) || target.equals("false")) target = "";
+		         	if ((null != target) && target.equals("true" )) target = "_blank";
+		         	
+		         	// Construct an EntryLinkInfo for the data.
+		         	EntryLinkInfo eli = new EntryLinkInfo(eleValues, target, linkText);
+					fr.setColumnValue(fc, eli);
+				}
+				
+				else if (eleType.equals("date")) {
+					if (null != eleValue) {
+						String tdStamp = ((String) eleValue);
+					    String year    = tdStamp.substring(0, 4);
+						String month   = tdStamp.substring(4, 6);
+						String day     = tdStamp.substring(6, 8);
+						String dateValue;
+						if (8 < tdStamp.length()) {
+							String time = tdStamp.substring(8);
+							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HHmm");
+							Date date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
+							dateValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
+						}
+						else {
+							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+							Date date = formatter.parse(year + "-" + month + "-" + day);
+							dateValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
+						}
+						fr.setColumnValue(fc, dateValue);
+					}
+				}
+				
+				else if (eleType.equals("date_time")) {
+					if (null != eleValue) {
+						String tdStamp = ((String) eleValue);
+					    String year    = tdStamp.substring(0, 4);
+						String month   = tdStamp.substring(4, 6);
+						String day     = tdStamp.substring(6, 8);
+						String dateValue;
+						if (8 < tdStamp.length()) {
+							String time = tdStamp.substring(8, 12);
+							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HHmm");
+							Date date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
+							dateValue = GwtServerHelper.getDateTimeString(date, DateFormat.SHORT, DateFormat.SHORT);
+						}
+						else {
+							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+							Date date = formatter.parse(year + "-" + month + "-" + day);
+							dateValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
+						}
+						fr.setColumnValue(fc, dateValue);
+					}
+				}
+				
+				else if (eleType.equals("event")) {
+					String eventTimeZoneId = ((String) entryMap.get(eleName + "#TimeZoneID"));
+					boolean showTime = false;
+					Date startDate = ((Date) entryMap.get(eleName + "#LogicalStartDate"));
+					Date endDate   = ((Date) entryMap.get(eleName + "#LogicalEndDate"));
+					if ((null != startDate) && (null != endDate)) {
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+						if (sdf.format(startDate).equals(sdf.format(endDate))) {
+							// The two dates are the same, so show the
+							// time field.
+							showTime = true;
+						}
+					}
+					
+					String endDateS     = null;
+					String startDateS   = null;
+					boolean allDayEvent = (null == eventTimeZoneId);
+					if (allDayEvent) {
+						//All day event.
+						if (null != startDate) {
+							startDateS = GwtServerHelper.getDateString(startDate, DateFormat.SHORT);
+						}
+						
+					} else {
+						// Regular event.
+						if (null != startDate) {
+							if (showTime)
+							     startDateS = GwtServerHelper.getDateTimeString(startDate, DateFormat.SHORT, DateFormat.SHORT);
+							else startDateS = GwtServerHelper.getDateString(    startDate, DateFormat.SHORT                  );
+							
+						}
+						if (null != endDate) {
+							if (showTime)
+							     endDateS = GwtServerHelper.getDateTimeString(endDate, DateFormat.SHORT, DateFormat.SHORT);
+							else endDateS = GwtServerHelper.getDateString(    endDate, DateFormat.SHORT                  );
+						}
+					}
+		         	
+					// Construct an EntryEventInfo for the data.
+					EntryEventInfo eei = new EntryEventInfo(allDayEvent, startDateS, endDateS);
+					fr.setColumnValue(fc, eei);
+				}
+				
+				else if (eleType.equals("user_list") || eleType.equals("userListSelectbox")) {
+					String sr = eleValue.toString();
+					Set ids = LongIdUtil.getIdsAsLongSet(sr, ",");
+					List principals = ResolveIds.getPrincipals(ids, false);
+					StringBuffer eleValues = new StringBuffer("");
+					boolean first = true;
+					for (Object principalO:  principals) {
+						Principal p = ((Principal) principalO);
+						if (!first) {
+							eleValues.append(", ");
+						}
+						eleValues.append(p.getTitle());
+						first = false;
+					}
+					fr.setColumnValue(fc, eleValues.toString());
 				}
 			}
+		}
+		
+		catch (Exception ex) {
+			// Log the exception...
+			m_logger.debug("GwtViewHelper.setValueForCustomColumn( EXCEPTION ):  ", ex);
+			m_logger.debug("...Column:  " + fc.getColumnName());
+			m_logger.debug("...Row:  "    + fr.getEntryId());
+
+			// ...and store something for the column to display.
+			fr.setColumnValue(
+				fc,
+				(GwtUIHelper.isVibeUiDebug()         ?
+					("Exception:  " + ex.toString()) :
+					""));
 		}
 	}
 

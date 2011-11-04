@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.util.EntryEventInfo;
+import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
@@ -51,8 +53,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRow implements IsSerializable {
+	private boolean								m_canModify;		//
+	private boolean								m_canPurge;			//
+	private boolean								m_canTrash;			//
 	private List<FolderColumn>					m_columns;			// The FolderColumns that contribute to this FolderRow.
 	private Long 								m_entryId;			// The entry ID of the FolderEntry this FolderRow corresponds to.
+	private Map<String, EntryEventInfo>			m_rowEntryEvents;	// A map of column names to EntryEventInfo's       possibly stored for a column.
+	private Map<String, EntryLinkInfo>			m_rowEntryLinks;	// A map of column names to EntryLinkInfo's        possibly stored for a column.
 	private Map<String, EntryTitleInfo>			m_rowEntryTitles;	// A map of column names to EntryTitleInfo's       possibly stored for a column.
 	private Map<String, List<AssignmentInfo>>	m_rowAssigneeInfos;	// A map of column names to List<AssignmentInfo>'s possibly stored for a column.
 	private Map<String, PrincipalInfo>			m_rowPrincipals;	// A map of column names to PrincipalInfo's        possibly stored for a column.
@@ -65,15 +72,8 @@ public class FolderRow implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public FolderRow() {
-		// Initialize the super class...
+		// Simply initialize the super class.
 		super();
-		
-		// ...and allocate the maps.
-		m_rowEntryTitles	= new HashMap<String, EntryTitleInfo>();
-		m_rowAssigneeInfos	= new HashMap<String, List<AssignmentInfo>>();
-		m_rowPrincipals		= new HashMap<String, PrincipalInfo>();
-		m_rowViewFiles		= new HashMap<String, ViewFileInfo>();
-		m_rowStrings		= new HashMap<String, String>();
 	}
 
 	/**
@@ -96,13 +96,27 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public List<FolderColumn>                getColumns()                 {return m_columns;         }
-	public Long                              getEntryId()                 {return m_entryId;         }
-	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()       {return m_rowEntryTitles;  }
-	public Map<String, List<AssignmentInfo>> getRowAssigneeInfoListsMap() {return m_rowAssigneeInfos;}
-	public Map<String, PrincipalInfo>        getRowPrincipalsMap()        {return m_rowPrincipals;   }
-	public Map<String, ViewFileInfo>         getRowViewFilesMap()         {return m_rowViewFiles;    }
-	public Map<String, String>               getRowStringsMap()           {return m_rowStrings;      }
+	public boolean                           getCanModify()               {                         return m_canModify;       }
+	public boolean                           getCanPurge()                {                         return m_canPurge;        }
+	public boolean                           getCanTrash()                {                         return m_canTrash;        }
+	public List<FolderColumn>                getColumns()                 {                         return m_columns;         }
+	public Long                              getEntryId()                 {                         return m_entryId;         }
+	public Map<String, EntryEventInfo>       getRowEntryEventMap()        {validateMapEvents();     return m_rowEntryEvents;  }
+	public Map<String, EntryLinkInfo>        getRowEntryLinkMap()         {validateMapLinks();      return m_rowEntryLinks;   }
+	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()       {validateMapTitles();     return m_rowEntryTitles;  }
+	public Map<String, List<AssignmentInfo>> getRowAssigneeInfoListsMap() {validateMapAssignees();  return m_rowAssigneeInfos;}
+	public Map<String, PrincipalInfo>        getRowPrincipalsMap()        {validateMapPrincipals(); return m_rowPrincipals;   }
+	public Map<String, ViewFileInfo>         getRowViewFilesMap()         {validateMapViews();      return m_rowViewFiles;    }
+	public Map<String, String>               getRowStringsMap()           {validateMapStrings();    return m_rowStrings;      }
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setCanModify(boolean canModify) {m_canModify = canModify;}
+	public void setCanPurge( boolean canPurge)  {m_canPurge  = canPurge; }
+	public void setCanTrash( boolean canTrash)  {m_canTrash  = canTrash; }
 	
 	/**
 	 * Stores the value for a specific column.
@@ -113,12 +127,14 @@ public class FolderRow implements IsSerializable {
 	@SuppressWarnings("unchecked")
 	public void setColumnValue(FolderColumn fc, Object v) {
 		String vk = getValueKey(fc);
-		if      (v instanceof String)         m_rowStrings.put(      vk, ((String)               v));
-		else if (v instanceof List<?>)        m_rowAssigneeInfos.put(vk, ((List<AssignmentInfo>) v));
-		else if (v instanceof EntryTitleInfo) m_rowEntryTitles.put(  vk, ((EntryTitleInfo)       v));
-		else if (v instanceof PrincipalInfo)  m_rowPrincipals.put(   vk, ((PrincipalInfo)        v));
-		else if (v instanceof ViewFileInfo)   m_rowViewFiles.put(    vk, ((ViewFileInfo)         v));
-		else                                  m_rowStrings.put(      vk, v.toString());
+		if      (v instanceof String)         {validateMapStrings();    m_rowStrings.put(      vk, ((String)               v));}
+		else if (v instanceof List<?>)        {validateMapAssignees();  m_rowAssigneeInfos.put(vk, ((List<AssignmentInfo>) v));}
+		else if (v instanceof EntryEventInfo) {validateMapEvents();     m_rowEntryEvents.put(  vk, ((EntryEventInfo)       v));}
+		else if (v instanceof EntryLinkInfo)  {validateMapLinks();      m_rowEntryLinks.put(   vk, ((EntryLinkInfo)        v));}
+		else if (v instanceof EntryTitleInfo) {validateMapTitles();     m_rowEntryTitles.put(  vk, ((EntryTitleInfo)       v));}
+		else if (v instanceof PrincipalInfo)  {validateMapPrincipals(); m_rowPrincipals.put(   vk, ((PrincipalInfo)        v));}
+		else if (v instanceof ViewFileInfo)   {validateMapViews();      m_rowViewFiles.put(    vk, ((ViewFileInfo)         v));}
+		else                                  {validateMapStrings();    m_rowStrings.put(      vk, v.toString());              }
 	}
 	
 	/**
@@ -129,7 +145,29 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public List<AssignmentInfo> getColumnValueAsAssignmentInfos(FolderColumn fc) {
-		return m_rowAssigneeInfos.get(getValueKey(fc));
+		return ((null == m_rowAssigneeInfos) ? null : m_rowAssigneeInfos.get(getValueKey(fc)));
+	}
+
+	/**
+	 * Returns the EntryEventInfo value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public EntryEventInfo getColumnValueAsEntryEvent(FolderColumn fc) {
+		return ((null == m_rowEntryEvents) ? null : m_rowEntryEvents.get(getValueKey(fc)));
+	}
+
+	/**
+	 * Returns the EntryLinkInfo value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public EntryLinkInfo getColumnValueAsEntryLink(FolderColumn fc) {
+		return ((null == m_rowEntryLinks) ? null : m_rowEntryLinks.get(getValueKey(fc)));
 	}
 
 	/**
@@ -140,7 +178,7 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public EntryTitleInfo getColumnValueAsEntryTitle(FolderColumn fc) {
-		return m_rowEntryTitles.get(getValueKey(fc));
+		return ((null == m_rowEntryTitles) ? null : m_rowEntryTitles.get(getValueKey(fc)));
 	}
 
 	/**
@@ -151,7 +189,7 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public PrincipalInfo getColumnValueAsPrincipalInfo(FolderColumn fc) {
-		return m_rowPrincipals.get(getValueKey(fc));
+		return ((null == m_rowPrincipals) ? null : m_rowPrincipals.get(getValueKey(fc)));
 	}
 
 	/**
@@ -162,7 +200,7 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public ViewFileInfo getColumnValueAsViewFile(FolderColumn fc) {
-		return m_rowViewFiles.get(getValueKey(fc));
+		return ((null == m_rowViewFiles) ? null : m_rowViewFiles.get(getValueKey(fc)));
 	}
 
 	/**
@@ -173,6 +211,10 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public String getColumnValueAsString(FolderColumn fc) {
+		if (null == m_rowStrings) {
+			return "";
+		}
+		
 		String vk = getValueKey(fc);
 		String reply = m_rowStrings.get(vk);
 		if (null == reply) {
@@ -201,7 +243,31 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public boolean isColumnValueAssigneeInfos(FolderColumn fc) {
-		return (null != m_rowAssigneeInfos.get(getValueKey(fc)));
+		return ((null != m_rowAssigneeInfos) && (null != m_rowAssigneeInfos.get(getValueKey(fc))));
+	}
+
+	/**
+	 * Returns true if a column's value is an EntryEventInfo and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueEntryEventInfo(FolderColumn fc) {
+		return ((null != m_rowEntryEvents) && (null != m_rowEntryEvents.get(getValueKey(fc))));
+	}
+
+	/**
+	 * Returns true if a column's value is an EntryLinkInfo and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueEntryLinkInfo(FolderColumn fc) {
+		return ((null != m_rowEntryLinks) && (null != m_rowEntryLinks.get(getValueKey(fc))));
 	}
 
 	/**
@@ -213,7 +279,7 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public boolean isColumnValueEntryTitleInfo(FolderColumn fc) {
-		return (null != m_rowEntryTitles.get(getValueKey(fc)));
+		return ((null != m_rowEntryTitles) && (null != m_rowEntryTitles.get(getValueKey(fc))));
 	}
 
 	/**
@@ -225,7 +291,7 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public boolean isColumnValuePrincipalInfo(FolderColumn fc) {
-		return (null != m_rowPrincipals.get(getValueKey(fc)));
+		return ((null != m_rowPrincipals) && (null != m_rowPrincipals.get(getValueKey(fc))));
 	}
 
 	/**
@@ -237,6 +303,17 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public boolean isColumnValueString(FolderColumn fc) {
-		return (null != m_rowStrings.get(getValueKey(fc)));
+		return ((null != m_rowStrings) && (null != m_rowStrings.get(getValueKey(fc))));
 	}
+	
+	/*
+	 * Validates that the various Maps have been defined.
+	 */
+	private void validateMapAssignees()  {if (null == m_rowAssigneeInfos)	m_rowAssigneeInfos	= new HashMap<String, List<AssignmentInfo>>();}
+	private void validateMapEvents()     {if (null == m_rowEntryEvents)		m_rowEntryEvents	= new HashMap<String, EntryEventInfo>();}
+	private void validateMapLinks()      {if (null == m_rowEntryLinks)		m_rowEntryLinks		= new HashMap<String, EntryLinkInfo>();}
+	private void validateMapPrincipals() {if (null == m_rowPrincipals)		m_rowPrincipals		= new HashMap<String, PrincipalInfo>();}
+	private void validateMapTitles()     {if (null == m_rowEntryTitles)		m_rowEntryTitles	= new HashMap<String, EntryTitleInfo>();}
+	private void validateMapStrings()    {if (null == m_rowStrings)			m_rowStrings		= new HashMap<String, String>();}
+	private void validateMapViews()      {if (null == m_rowViewFiles)		m_rowViewFiles		= new HashMap<String, ViewFileInfo>();}
 }
