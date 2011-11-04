@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
@@ -642,6 +643,21 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 					@Override
 					public ViewFileInfo getValue(FolderRow fr) {
 						return fr.getColumnValueAsViewFile(fc);
+					}
+				};
+			}
+			
+			// No, this column doesn't show a view link either!  Is it
+			// a custom column?
+			else if (fc.isCustomColumn()) {
+				// Yes!  Create a CustomColumn for it.
+				column = new CustomColumn<FolderRow>(fc) {
+					@Override
+					public Object getValue(FolderRow fr) {
+						Object             reply = fr.getColumnValueAsEntryEvent(fc);
+						if (null == reply) reply = fr.getColumnValueAsEntryLink(fc);
+						if (null == reply) reply = fr.getColumnValueAsString(fc);
+						return reply;
 					}
 				};
 			}

@@ -45,10 +45,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class FolderColumn implements IsSerializable, VibeRpcResponseData {
-	private String m_columnName;		//
-	private String m_columnTitle;		//
-	private String m_columnSearchKey;	//
-	private String m_columnSortKey;		//
+	private String	m_columnName;		//
+	private String	m_columnTitle;		//
+	private String	m_columnSearchKey;	//
+	private String	m_columnSortKey;	//
+	
+	private String	m_columnDefId;		// The definition ID for this column (only used for custom columns.)
+	private String	m_columnType;		// The type          for this column (only used for custom columns.)
 	
 	/**
 	 * Constructor method.
@@ -56,7 +59,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public FolderColumn() {
-		// Nothing to do.
+		// Simply initialize the super class.
+		super();
 	}
 
 	/**
@@ -66,8 +70,10 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * @param columnTitle
 	 */
 	public FolderColumn(String columnName, String columnTitle) {
+		// Initialize the object...
 		this();
 		
+		// ...and store the parameters.
 		setColumnName( columnName );
 		setColumnTitle(columnTitle);
 	}
@@ -81,10 +87,31 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * @param columnSortKey
 	 */
 	public FolderColumn(String columnName, String columnTitle, String columnSearchKey, String columnSortKey) {
+		// Initialize the object...
 		this(columnName, columnTitle);
 		
+		// ...and store the parameters.
 		setColumnSearchKey(columnSearchKey);
 		setColumnSortKey(  columnSortKey  );
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param columnName
+	 * @param columnTitle
+	 * @param columnSearchKey
+	 * @param columnSortKey
+	 * @param columnDefId
+	 * @param columnType
+	 */
+	public FolderColumn(String columnName, String columnTitle, String columnSearchKey, String columnSortKey, String columnDefId, String columnType) {
+		// Initialize the object...
+		this(columnName, columnTitle, columnSearchKey, columnSortKey);
+		
+		// ...and store the parameters.
+		setColumnDefId(columnDefId);
+		setColumnType( columnType );
 	}
 	
 	/**
@@ -102,15 +129,28 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 		}
 		return reply;
 	}
+	public String getColumnDefId() {return m_columnDefId;}
+	public String getColumnType()  {return m_columnType; }
 	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param columnName
-	 * @param columnTitle
+	 * @param
 	 */
 	public void setColumnName(     String columnName)      {m_columnName      = columnName;     }
 	public void setColumnTitle(    String columnTitle)     {m_columnTitle     = columnTitle;    }
 	public void setColumnSearchKey(String columnSearchKey) {m_columnSearchKey = columnSearchKey;}
 	public void setColumnSortKey(  String columnSortKey)   {m_columnSortKey   = columnSortKey;  }
+	public void setColumnDefId(    String columnDefId)     {m_columnDefId     = columnDefId;    }
+	public void setColumnType(     String columnType)      {m_columnType      = columnType;     }
+
+	/**
+	 * Returns true if the columns is a custom column (i.e., has a
+	 * definition ID) and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isCustomColumn() {
+		return ((null != m_columnDefId) && (0 < m_columnDefId.length()));
+	}
 }

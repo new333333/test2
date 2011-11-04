@@ -1108,6 +1108,16 @@ public class GwtUIHelper {
 		return sessionCaptive.booleanValue();
 	}
 
+	/**
+	 * Returns true if the Vibe UI is in debug mode and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isVibeUiDebug() {
+		return SPropsUtil.getBoolean("ssf.ui.debug.enabled", false);
+	}
+	
 	/*
 	 * Returns true if a request is a Vibe root URL or refers to a Vibe
 	 * root URL and returns false otherwise.
@@ -1281,7 +1291,7 @@ public class GwtUIHelper {
 		// Put out the flag indicating whether the UI should be in
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
-		model.put(WebKeys.VIBE_UI_DEBUG, SPropsUtil.getBoolean("ssf.ui.debug.enabled", false));
+		model.put(WebKeys.VIBE_UI_DEBUG, isVibeUiDebug());
 		
 		// Put out the flag indicating whether the new GWT UI features
 		// for Granite should be enabled.
