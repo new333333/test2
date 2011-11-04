@@ -111,19 +111,19 @@ import com.google.gwt.view.client.ProvidesKey;
  * @author drfoster@novell.com
  */
 public abstract class DataTableFolderViewBase extends ViewBase {
-	private final BinderInfo			m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
-	private boolean						m_folderSortDescend;	// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
-	private int							m_folderPageSize;		//
-	private FolderRowPager 				m_dataTablePager;		//
-	private FooterPanel					m_footerPanel;			//
-	private HashMap<String, Integer>	m_columnWidths;			//
-	private List<FolderColumn>			m_folderColumnsList;	// The list of columns to be displayed.
-	private List<ToolPanelBase>			m_toolPanels;			//
-	private String						m_folderSortBy;			// Which column the view is sorted on.
-	private VibeDataTable<FolderRow>	m_dataTable;			//
-	private VibeFlowPanel				m_mainPanel;			// The main panel holding the content of the view.
-	private VibeFlowPanel				m_flowPanel;			// The flow panel used to hold the view specific content of the view.
-	private VibeVerticalPanel			m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
+	private final BinderInfo				m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
+	private boolean							m_folderSortDescend;	// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
+	private int								m_folderPageSize;		//
+	private FolderRowPager 					m_dataTablePager;		//
+	private FooterPanel						m_footerPanel;			//
+	private HashMap<String, ColumnWidth>	m_columnWidths;			//
+	private List<FolderColumn>				m_folderColumnsList;	// The list of columns to be displayed.
+	private List<ToolPanelBase>				m_toolPanels;			//
+	private String							m_folderSortBy;			// Which column the view is sorted on.
+	private VibeDataTable<FolderRow>		m_dataTable;			//
+	private VibeFlowPanel					m_mainPanel;			// The main panel holding the content of the view.
+	private VibeFlowPanel					m_flowPanel;			// The flow panel used to hold the view specific content of the view.
+	private VibeVerticalPanel				m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
 
 	// The following controls whether the display data read from the
 	// server is dumped as part of the content of the view.
@@ -222,6 +222,45 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			}
 			super.onBrowserEvent(context, elem, event);
 		}
+	}
+
+	/*
+	 * Inner class used to specify column widths.
+	 */
+	private static class ColumnWidth {
+		private int		m_width;	//
+		private Unit	m_units;	//
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param width
+		 * @param units
+		 */
+		public ColumnWidth(int width, Unit units) {
+			super();
+			
+			m_width = width;
+			m_units = units;
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param width
+		 */
+		public ColumnWidth(int width) {
+			// Always use the initial form of the method.
+			this(width, Unit.PCT);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public int  getWidth() {return m_width;}
+		public Unit getUnits() {return m_units;}
 	}
 	
 	/*
@@ -527,6 +566,10 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	
 	/*
 	 * Initializes various data members for the class.
+	 * 
+	 * Note:  Except for the select, the values for the column width
+	 *    were extracted from the implementation of
+	 *    folder_view_common2.jsp.
 	 */
 	private void initDataMembers() {
 		// Allocate a List<ToolPanelBase> to track the tool panels
@@ -534,28 +577,27 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		m_toolPanels = new ArrayList<ToolPanelBase>();
 
 		// Initialize a map of the column widths used in the data
-		// table.  The values were extracted from the implementation
-		// of folder_view_common2.jsp...
-		m_columnWidths = new HashMap<String, Integer>();
+		// table...
+		m_columnWidths = new HashMap<String, ColumnWidth>();
 
 		// ...first, the predefined column names...
-		m_columnWidths.put(COLUMN_AUTHOR,   24);
-		m_columnWidths.put(COLUMN_COMMENTS,  8);
-		m_columnWidths.put(COLUMN_DATE,     20);
-		m_columnWidths.put(COLUMN_DOWNLOAD,  8);
-		m_columnWidths.put(COLUMN_HTML,     10);
-		m_columnWidths.put(COLUMN_LOCATION, 30);
-		m_columnWidths.put(COLUMN_NUMBER,    5);
-		m_columnWidths.put(COLUMN_RATING,   10);
-		m_columnWidths.put(COLUMN_SIZE,      8);
-		m_columnWidths.put(COLUMN_STATE,     8);
-		m_columnWidths.put(COLUMN_RATING,   10);
-		m_columnWidths.put(COLUMN_TITLE,    28);
+		m_columnWidths.put(COLUMN_AUTHOR,   new ColumnWidth( 24));	// Unless otherwise specified...
+		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth(  8));	// ...the widths will default...
+		m_columnWidths.put(COLUMN_DATE,     new ColumnWidth( 20));	// ...to be a percentage value.
+		m_columnWidths.put(COLUMN_DOWNLOAD, new ColumnWidth(  8));
+		m_columnWidths.put(COLUMN_HTML,     new ColumnWidth( 10));
+		m_columnWidths.put(COLUMN_LOCATION, new ColumnWidth( 30));
+		m_columnWidths.put(COLUMN_NUMBER,   new ColumnWidth(  5));
+		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth( 10));
+		m_columnWidths.put(COLUMN_SIZE,     new ColumnWidth(  8));
+		m_columnWidths.put(COLUMN_STATE,    new ColumnWidth(  8));
+		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth( 10));
+		m_columnWidths.put(COLUMN_TITLE,    new ColumnWidth( 28));
 
 		// ...and then the internal column names.
-		m_columnWidths.put(COLUMN_SELECT,    4);
-		m_columnWidths.put(COLUMN_PIN,       2);
-		m_columnWidths.put(COLUMN_OTHER,    20);
+		m_columnWidths.put(COLUMN_SELECT,   new ColumnWidth( 40, Unit.PX));
+		m_columnWidths.put(COLUMN_PIN,      new ColumnWidth(  2));
+		m_columnWidths.put(COLUMN_OTHER,    new ColumnWidth( 20));	// All columns not otherwise listed.
 	}
 	
 	/*
@@ -1029,7 +1071,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		if (GwtClientHelper.hasString(styleName)) {
 			m_dataTable.addStyleName(styleName);
 		}
-		m_dataTable.setWidth("100%");
+//!		m_dataTable.setWidth("100%");
+//!		m_dataTable.setTableWidth(100, Unit.PCT);
 		m_dataTable.setRowStyles(new RowStyles<FolderRow>() {
 			@Override
 			public String getStyleNames(FolderRow row, int rowIndex) {
@@ -1130,13 +1173,19 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * column's name.
 	 */
 	private void setColumnWidth(String columnName, Column<FolderRow, ?> column) {
-		Integer width = m_columnWidths.get(columnName);
+		// Determine the width for the column...
+		ColumnWidth width = m_columnWidths.get(columnName);
 		if (null == width) {
 			width = m_columnWidths.get(COLUMN_OTHER);
-			if (null == width) {
-				width = 20;
-			}
 		}
-		m_dataTable.setColumnWidth(column, width, Unit.PCT);
+		
+		// ...and if we have a one...
+		if (null != width) {
+			// ...put it into affect.
+			m_dataTable.setColumnWidth(
+				column,
+				width.getWidth(),
+				width.getUnits());
+		}
 	}
 }
