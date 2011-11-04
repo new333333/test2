@@ -373,6 +373,10 @@ public class GwtViewHelper {
 	/*
 	 * Walks the List<FolderColumn>'s setting the search and sort keys
 	 * appropriately for each.
+	 * 
+	 * Note:  The algorithm used in this method for columns whose names
+	 *    contain multiple parts was reverse engineered from that used
+	 *    by folder_view_common2.jsp.
 	 */
 	private static void fixupFCs(List<FolderColumn> fcList) {
 		for (FolderColumn fc:  fcList) {
@@ -483,6 +487,9 @@ public class GwtViewHelper {
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
 	 * 
+	 * The algorithm used in this method was reverse engineered from
+	 * that used by folder_view_common2.jsp.
+	 * 
 	 * @param bs
 	 * @param request
 	 * @param folderId
@@ -588,24 +595,29 @@ public class GwtViewHelper {
 			// the List<FolderColumn> for this folder.  Allocate the
 			// list that we can fill from that data.
 			List<FolderColumn> fcList = new ArrayList<FolderColumn>();
-			for (String columnName:  columnSortOrder) {
+			for (String colName:  columnSortOrder) {
 				// Is this column to be shown?
-				String columnValue = ((String) columnNames.get(columnName));
+				String columnValue = ((String) columnNames.get(colName));
 				if (!(MiscUtil.hasString(columnValue))) {
 					// No!  Skip it.
 					continue;
 				}
 
 				// Is there a custom title for this column?
-				String columnTitle = ((String) columnTitles.get(columnName));
-				if (!(MiscUtil.hasString(columnTitle))) {
+				String colTitle = ((String) columnTitles.get(colName));
+				if (!(MiscUtil.hasString(colTitle))) {
 					// No!  Use the default.
-					columnTitle = NLT.get("folder.column." + columnName, columnName, true);
+					if (colName.contains(","))
+					     colTitle = "";
+					else colTitle = NLT.get(
+						("folder.column." + colName),	// Key to find the resource.
+						colName,						// Default if not defined.
+						true);							// true -> Silent.  Don't generate an error if undefined.
 				}
 
 				// Add a FolderColumn for this to the list we're
 				// going to return.
-				fcList.add(new FolderColumn(columnName, columnTitle));
+				fcList.add(new FolderColumn(colName, colTitle));
 			}
 
 			// Walk the List<FolderColumn>'s performing fixups on each
@@ -1237,92 +1249,100 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	private static void setValueForCustomColumn(AllModulesInjected bs, Map entryMap, FolderRow fr, FolderColumn fc) throws ParseException {
 		try {
-			String eleName = fc.getColumnName();
-			if (!MiscUtil.hasString(eleName)) {
+			// If we don't have a column name...
+			String colName = fc.getColumnName();
+			if (!MiscUtil.hasString(colName)) {
+				// ...just render it as an empty string.
 				fr.setColumnValue(fc, "");
 				return;
 			}
-			
-			Object eleValue = entryMap.get(eleName);
-			String eleType = fc.getColumnType();
-			if (null == eleType) eleType = "";
-			if ((null != eleValue) || eleType.equals("event")) {
+
+			// Do we have a value or event for this column?
+			Object colValue = entryMap.get(colName);
+			String colType = fc.getColumnType();
+			if (null == colType) colType = "";
+			if ((null != colValue) || colType.equals("event")) {
+				// Yes!  Handles those that are a simple list of values.
 				Definition entryDef = bs.getDefinitionModule().getDefinition(fc.getColumnDefId());
-				if (eleType.equals("selectbox")           ||
-					    eleType.equals("radio")           ||
-					    eleType.equals("checkbox")        ||
-					    eleType.equals("text")            ||
-					    eleType.equals("entryAttributes") ||
-					    eleType.equals("hidden")          ||
-					    eleType.equals("number")) {
-					String eleValues = DefinitionHelper.getCaptionsFromValues(entryDef, eleName, eleValue.toString());
-					fr.setColumnValue(fc, eleValues);
+				if (colType.equals("selectbox")           ||
+					    colType.equals("radio")           ||
+					    colType.equals("checkbox")        ||
+					    colType.equals("text")            ||
+					    colType.equals("entryAttributes") ||
+					    colType.equals("hidden")          ||
+					    colType.equals("number")) {
+					String strValue = DefinitionHelper.getCaptionsFromValues(entryDef, colName, colValue.toString());
+					fr.setColumnValue(fc, strValue);
 				}
-				
-				else if (eleType.equals("url")) {
-		         	String eleValues = DefinitionHelper.getCaptionsFromValues(entryDef, eleName, eleValue.toString());
-		         	Element ele = ((Element) DefinitionHelper.findAttribute(eleName, entryDef.getDefinition()));
-		         	String linkText = DefinitionHelper.getItemProperty(ele, "linkText");
-		         	String target = DefinitionHelper.getItemProperty(ele, "target");
+
+				// Handle those that are a URL.
+				else if (colType.equals("url")) {
+		         	String  strValue   = DefinitionHelper.getCaptionsFromValues(entryDef, colName, colValue.toString());
+		         	Element colElement = ((Element) DefinitionHelper.findAttribute(colName, entryDef.getDefinition()));
+		         	String  linkText   = DefinitionHelper.getItemProperty(colElement, "linkText");
+		         	String  target     = DefinitionHelper.getItemProperty(colElement, "target"  );
 		         	
-		         	if (!(MiscUtil.hasString(linkText))) linkText = eleValues;
+		         	if (!(MiscUtil.hasString(linkText))) linkText = strValue;
 		         	if ((null == target) || target.equals("false")) target = "";
 		         	if ((null != target) && target.equals("true" )) target = "_blank";
 		         	
 		         	// Construct an EntryLinkInfo for the data.
-		         	EntryLinkInfo eli = new EntryLinkInfo(eleValues, target, linkText);
-					fr.setColumnValue(fc, eli);
+		         	EntryLinkInfo linkValue = new EntryLinkInfo(strValue, target, linkText);
+					fr.setColumnValue(fc, linkValue);
 				}
-				
-				else if (eleType.equals("date")) {
-					if (null != eleValue) {
-						String tdStamp = ((String) eleValue);
+
+				// Handle date stamps.
+				else if (colType.equals("date")) {
+					if (null != colValue) {
+						String tdStamp = ((String) colValue);
 					    String year    = tdStamp.substring(0, 4);
 						String month   = tdStamp.substring(4, 6);
 						String day     = tdStamp.substring(6, 8);
-						String dateValue;
+						String strValue;
 						if (8 < tdStamp.length()) {
 							String time = tdStamp.substring(8);
 							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HHmm");
 							Date date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
-							dateValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
+							strValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
 						}
 						else {
 							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 							Date date = formatter.parse(year + "-" + month + "-" + day);
-							dateValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
+							strValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
 						}
-						fr.setColumnValue(fc, dateValue);
+						fr.setColumnValue(fc, strValue);
 					}
 				}
-				
-				else if (eleType.equals("date_time")) {
-					if (null != eleValue) {
-						String tdStamp = ((String) eleValue);
+
+				// Handle time/date stamps.
+				else if (colType.equals("date_time")) {
+					if (null != colValue) {
+						String tdStamp = ((String) colValue);
 					    String year    = tdStamp.substring(0, 4);
 						String month   = tdStamp.substring(4, 6);
 						String day     = tdStamp.substring(6, 8);
-						String dateValue;
+						String strValue;
 						if (8 < tdStamp.length()) {
 							String time = tdStamp.substring(8, 12);
 							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HHmm");
 							Date date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
-							dateValue = GwtServerHelper.getDateTimeString(date, DateFormat.SHORT, DateFormat.SHORT);
+							strValue = GwtServerHelper.getDateTimeString(date, DateFormat.SHORT, DateFormat.SHORT);
 						}
 						else {
 							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 							Date date = formatter.parse(year + "-" + month + "-" + day);
-							dateValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
+							strValue = GwtServerHelper.getDateString(date, DateFormat.SHORT);
 						}
-						fr.setColumnValue(fc, dateValue);
+						fr.setColumnValue(fc, strValue);
 					}
 				}
-				
-				else if (eleType.equals("event")) {
-					String eventTimeZoneId = ((String) entryMap.get(eleName + "#TimeZoneID"));
+
+				// Handle events.
+				else if (colType.equals("event")) {
+					String eventTimeZoneId = ((String) entryMap.get(colName + "#TimeZoneID"));
 					boolean showTime = false;
-					Date startDate = ((Date) entryMap.get(eleName + "#LogicalStartDate"));
-					Date endDate   = ((Date) entryMap.get(eleName + "#LogicalEndDate"));
+					Date startDate = ((Date) entryMap.get(colName + "#LogicalStartDate"));
+					Date endDate   = ((Date) entryMap.get(colName + "#LogicalEndDate"));
 					if ((null != startDate) && (null != endDate)) {
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 						if (sdf.format(startDate).equals(sdf.format(endDate))) {
@@ -1357,25 +1377,26 @@ public class GwtViewHelper {
 					}
 		         	
 					// Construct an EntryEventInfo for the data.
-					EntryEventInfo eei = new EntryEventInfo(allDayEvent, startDateS, endDateS);
-					fr.setColumnValue(fc, eei);
+					EntryEventInfo eventValue = new EntryEventInfo(allDayEvent, startDateS, endDateS);
+					fr.setColumnValue(fc, eventValue);
 				}
-				
-				else if (eleType.equals("user_list") || eleType.equals("userListSelectbox")) {
-					String sr = eleValue.toString();
-					Set ids = LongIdUtil.getIdsAsLongSet(sr, ",");
-					List principals = ResolveIds.getPrincipals(ids, false);
-					StringBuffer eleValues = new StringBuffer("");
-					boolean first = true;
-					for (Object principalO:  principals) {
-						Principal p = ((Principal) principalO);
-						if (!first) {
-							eleValues.append(", ");
+
+				// Handle lists of users.
+				else if (colType.equals("user_list") || colType.equals("userListSelectbox")) {
+					String       idList     = colValue.toString();
+					Set          ids        = LongIdUtil.getIdsAsLongSet(idList, ","  );
+					List         principals = ResolveIds.getPrincipals(  ids,    false);
+					StringBuffer strValue   = new StringBuffer("");
+					boolean      firstP     = true;
+					for (Object pO:  principals) {
+						Principal p = ((Principal) pO);
+						if (!firstP) {
+							strValue.append(", ");
 						}
-						eleValues.append(p.getTitle());
-						first = false;
+						strValue.append(p.getTitle());
+						firstP = false;
 					}
-					fr.setColumnValue(fc, eleValues.toString());
+					fr.setColumnValue(fc, strValue.toString());
 				}
 			}
 		}
