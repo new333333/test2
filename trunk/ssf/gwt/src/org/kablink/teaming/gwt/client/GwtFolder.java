@@ -47,6 +47,7 @@ public class GwtFolder extends GwtTeamingItem
 {
 	private String m_folderId;
 	private String m_folderName;
+	private String m_folderDesc;
 	private String m_parentBinderName;
 	private String m_viewUrl;
 	
@@ -57,10 +58,19 @@ public class GwtFolder extends GwtTeamingItem
 	{
 		m_folderId = null;
 		m_folderName = null;
+		m_folderDesc = null;
 		m_parentBinderName = null;
 		m_viewUrl = null;
 	}// end GwtFolder()
 	
+	
+	/**
+	 * 
+	 */
+	public String getFolderDesc()
+	{
+		return m_folderDesc;
+	}
 	
 	/**
 	 * 
@@ -136,6 +146,14 @@ public class GwtFolder extends GwtTeamingItem
 		return m_viewUrl;
 	}// end getViewFolderUrl()
 	
+	
+	/**
+	 * 
+	 */
+	public void setFolderDesc( String folderDesc )
+	{
+		m_folderDesc = folderDesc;
+	}
 	
 	/**
 	 * 

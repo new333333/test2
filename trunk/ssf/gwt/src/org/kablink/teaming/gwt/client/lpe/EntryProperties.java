@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
@@ -59,7 +60,7 @@ public class EntryProperties
 	private String m_zoneUUID;
 	private String m_viewEntryUrl;
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
-	private boolean m_rpcInProgress;
+	private GetterCallback<Boolean> m_getterCallback;
 	
 	/**
 	 * 
@@ -72,6 +73,7 @@ public class EntryProperties
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_viewEntryUrl = null;
+		m_getterCallback = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
@@ -86,7 +88,9 @@ public class EntryProperties
 					GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
 					m_entryId );
 				
-				m_rpcInProgress = false;
+				// Inform the callback that the rpc request failed.
+				if ( m_getterCallback != null )
+					m_getterCallback.returnValue( Boolean.FALSE );
 			}// end onFailure()
 	
 			/**
@@ -107,10 +111,11 @@ public class EntryProperties
 					m_viewEntryUrl = gwtFolderEntry.getViewEntryUrl();
 				}
 				
-				m_rpcInProgress = false;
+				// Inform the callback that the rpc request finished.
+				if ( m_getterCallback != null )
+					m_getterCallback.returnValue( Boolean.TRUE );
 			}// end onSuccess()
 		};
-		m_rpcInProgress = false;
 	}// end EntryProperties()
 	
 	
@@ -181,7 +186,7 @@ public class EntryProperties
 	/**
 	 * Issue an ajax request to get the entry's name from the server.
 	 */
-	public void getDataFromServer()
+	public void getDataFromServer( GetterCallback<Boolean> callback )
 	{
 		// Do we have an entry id?
 		if ( m_entryId != null )
@@ -189,7 +194,7 @@ public class EntryProperties
 			GetEntryCmd cmd;
 			
 			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
-			m_rpcInProgress = true;
+			m_getterCallback = callback;
 			cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
 			GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
 		}
@@ -256,15 +261,6 @@ public class EntryProperties
 	{
 		return m_zoneUUID;
 	}// end getZoneUUID()
-	
-	
-	/**
-	 * Return whether an rpc call is in progress.
-	 */
-	public boolean isRpcInProgress()
-	{
-		return m_rpcInProgress;
-	}// end isRpcInProgress()
 	
 	
 	/**

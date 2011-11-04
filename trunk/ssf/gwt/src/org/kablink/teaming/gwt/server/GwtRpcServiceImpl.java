@@ -2503,6 +2503,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( binder != null )
 			{
 				String url;
+				Description desc;
 
 				folder.setFolderName( MiscUtil.hasString( folderTitle ) ? folderTitle : binder.getTitle() );
 			
@@ -2513,6 +2514,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				// Create a url that can be used to view this folder.
 				url = PermaLinkUtil.getPermalink( request, binder );
 				folder.setViewFolderUrl( url );
+				
+				desc = binder.getDescription();
+				if ( desc != null )
+				{
+					String descStr;
+					
+					descStr = desc.getText();
+					
+					// Perform any fixups needed on the entry's description
+					descStr = markupStringReplacementImpl( request, folderId, descStr, "view" );
+					
+					folder.setFolderDesc( descStr );
+				}
 			}
 		}
 		catch (Exception e)
@@ -3547,6 +3561,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private String markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type ) throws GwtTeamingException
 	{
+		return markupStringReplacementImpl( getRequest( ri ), binderId, html, type );
+	}
+	
+	
+	/*
+	 * Parse the given html and replace any markup with the appropriate url.  For example,
+	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+	 */
+	private String markupStringReplacementImpl( HttpServletRequest request, String binderId, String html, String type ) throws GwtTeamingException
+	{
 		String newHtml;
 		
 		newHtml = "";
@@ -3568,7 +3592,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 					// Parse the given html and replace any markup with the appropriate url.  For example,
 					// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-					newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, binder, html, type );
+					newHtml = MarkupUtil.markupStringReplacement( null, null, request, null, binder, html, type );
 				}
 			}
 			catch (Exception e)
