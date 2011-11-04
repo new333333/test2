@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
@@ -57,11 +58,12 @@ public class FolderProperties
 	private int m_numEntriesToBeShown;
 	private String m_folderId;
 	private String m_folderName;
+	private String m_folderDesc;
 	private String m_parentBinderName;	// Name of the binder the folder is found in.
 	private String m_zoneUUID;
 	private String m_viewFolderUrl;
 	private AsyncCallback<VibeRpcResponse> m_folderCallback;
-	private boolean m_rpcInProgress;
+	private GetterCallback<Boolean> m_getterCallback;
 	
 	/**
 	 * 
@@ -74,9 +76,11 @@ public class FolderProperties
 		m_numEntriesToBeShown = 0;
 		m_folderId = null;
 		m_folderName = null;
+		m_folderDesc = null;
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_viewFolderUrl = null;
+		m_getterCallback = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
@@ -90,7 +94,10 @@ public class FolderProperties
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetFolder(),
 					m_folderId );
-				m_rpcInProgress = false;
+
+				// Inform the callback that the rpc request failed.
+				if ( m_getterCallback != null )
+					m_getterCallback.returnValue( Boolean.FALSE );
 			}// end onFailure()
 	
 			/**
@@ -106,14 +113,16 @@ public class FolderProperties
 				if ( gwtFolder != null )
 				{
 					setFolderName( gwtFolder.getFolderName() );
+					setFolderDesc( gwtFolder.getFolderDesc() );
 					setParentBinderName( gwtFolder.getParentBinderName() );
 					setViewFolderUrl( gwtFolder.getViewFolderUrl() );
 				}
 				
-				m_rpcInProgress = false;
+				// Inform the callback that the rpc request finished.
+				if ( m_getterCallback != null )
+					m_getterCallback.returnValue( Boolean.TRUE );
 			}// end onSuccess()
 		};
-		m_rpcInProgress = false;
 	}// end FolderProperties()
 	
 	
@@ -139,6 +148,7 @@ public class FolderProperties
 			
 			m_folderId = newFolderId;
 			m_folderName = folderProps.getFolderName();
+			m_folderDesc = folderProps.getFolderDesc();
 			m_parentBinderName = folderProps.getParentBinderName();
 			m_showTitle = folderProps.getShowTitleValue();
 			m_showDesc = folderProps.getShowDescValue();
@@ -184,7 +194,7 @@ public class FolderProperties
 	/**
 	 * Issue an ajax request to get the folder's name from the server.
 	 */
-	public void getDataFromServer()
+	public void getDataFromServer( GetterCallback<Boolean> callback )
 	{
 		// Do we have a folder id?
 		if ( m_folderId != null )
@@ -192,10 +202,19 @@ public class FolderProperties
 			GetFolderCmd cmd;
 			
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
-			m_rpcInProgress = true;
+			m_getterCallback = callback;
 			cmd = new GetFolderCmd( m_zoneUUID, m_folderId );
 			GwtClientHelper.executeCommand( cmd, m_folderCallback );
 		}
+	}
+	
+	
+	/**
+	 * Return the folder's description.
+	 */
+	public String getFolderDesc()
+	{
+		return m_folderDesc;
 	}
 	
 	
@@ -281,12 +300,12 @@ public class FolderProperties
 	
 	
 	/**
-	 * Return whether an rpc call is in progress.
+	 * 
 	 */
-	public boolean isRpcInProgress()
+	public void setFolderDesc( String folderDesc )
 	{
-		return m_rpcInProgress;
-	}// end isRpcInProgress()
+		m_folderDesc = folderDesc;
+	}
 	
 	
 	/**
@@ -300,6 +319,7 @@ public class FolderProperties
 			// Yes
 			// Since we are changing the folder id clear out the folder name and the name of the parent binder.
 			m_folderName = "???";
+			m_folderDesc = "???";
 			m_parentBinderName = "???";
 		}
 		

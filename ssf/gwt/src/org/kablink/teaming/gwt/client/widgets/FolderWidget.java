@@ -35,16 +35,16 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
-import org.kablink.teaming.gwt.client.lpe.EntryConfig;
-import org.kablink.teaming.gwt.client.lpe.EntryProperties;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.lpe.FolderConfig;
+import org.kablink.teaming.gwt.client.lpe.FolderProperties;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -52,20 +52,22 @@ import com.google.gwt.user.client.ui.Label;
 
 /**
  * 
+ * This class is used to display a folder widget in a landing page.  We will display the first
+ * n entries found in the given folder.
  * @author jwootton
  *
  */
-public class EntryWidget extends VibeWidget
+public class FolderWidget extends VibeWidget
 {
-	private Element m_titleElement;
-	private Element m_descElement;
-	private EntryProperties m_properties;
+	private FolderProperties m_properties;
 	private String m_style;
+	private Element m_folderTitleElement;
+	private Element m_folderDescElement;
 
 	/**
 	 * 
 	 */
-	public EntryWidget( EntryConfig config )
+	public FolderWidget( FolderConfig config )
 	{
 		VibeFlowPanel mainPanel;
 		
@@ -74,35 +76,28 @@ public class EntryWidget extends VibeWidget
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}
-
+	
 	/**
-	 * 
+	 * When the user clicks on the folder's title, fire the ChangeContextEvent event
 	 */
-	private void handleClickOnTitle()
+	private void handleClickOnFolderTitle()
 	{
-		String viewEntryUrl;
+		OnSelectBinderInfo binderInfo;
 		
-		viewEntryUrl = m_properties.getViewEntryUrl();
-		
-		if ( GwtClientHelper.hasString( viewEntryUrl ) )
-		{
-			// Fire the "view entry" event.
-			GwtTeaming.fireEvent( new ViewForumEntryEvent( viewEntryUrl ) );
-		}
-		else
-			Window.alert( GwtTeaming.getMessages().cantAccessEntry() );
+		binderInfo = new OnSelectBinderInfo( m_properties.getFolderId(), m_properties.getViewFolderUrl(), false, Instigator.UNKNOWN );
+		GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
 	}
+	
 	
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( EntryConfig config )
+	private VibeFlowPanel init( FolderConfig config )
 	{
-		EntryProperties properties;
-		VibeFlowPanel titlePanel;
+		FolderProperties properties;
 		VibeFlowPanel mainPanel;
 		
-		m_properties = new EntryProperties();
+		m_properties = new FolderProperties();
 		properties = config.getProperties();
 		m_properties.copy( properties );
 		
@@ -110,22 +105,22 @@ public class EntryWidget extends VibeWidget
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
-		mainPanel.addStyleName( "entryWidgetMainPanel" + m_style );
-		
-		mainPanel.removeStyleName( "landingPageWidgetNoBorder" );
+		mainPanel.addStyleName( "folderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
-
-		// Create a place for the title to live.
+		
+		// Should we show the name of the folder?
+		if ( m_properties.getShowTitleValue() )
 		{
 			InlineLabel label;
+			VibeFlowPanel titlePanel;
 			
 			// Yes, create a place for the title to live.
 			titlePanel = new VibeFlowPanel();
 			titlePanel.addStyleName( "landingPageWidgetTitlePanel" + m_style );
-			titlePanel.addStyleName( "entryWidgetTitlePanel" + m_style );
+			titlePanel.addStyleName( "folderWidgetTitlePanel" + m_style );
 			
 			label = new InlineLabel( " " );
-			label.addStyleName( "entryWidgetTitleLabel" + m_style );
+			label.addStyleName( "folderWidgetTitleLabel" + m_style );
 			label.addClickHandler( new ClickHandler()
 			{
 				/**
@@ -134,40 +129,42 @@ public class EntryWidget extends VibeWidget
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
-
+					
 					cmd = new Scheduler.ScheduledCommand()
 					{
 						public void execute()
 						{
-							handleClickOnTitle();
+							handleClickOnFolderTitle();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
 			titlePanel.add( label );
-			m_titleElement = label.getElement();
+			m_folderTitleElement = label.getElement();
 			
 			mainPanel.add( titlePanel );
 		}
 		
-		// Create a panel for the description of the entry to live in.
+		// Should we show the folder description?
 		{
 			VibeFlowPanel contentPanel;
 			Label label;
 			
+			// Yes
+			// Create a panel for the description to live in.
 			contentPanel = new VibeFlowPanel();
-			contentPanel.addStyleName( "entryWidgetContentPanel" + m_style );
+			contentPanel.addStyleName( "folderWidgetContentPanel" + m_style );
 			
 			label = new Label( " " );
-			label.addStyleName( "entryWidgetDesc" + m_style );
+			label.addStyleName( "folderWidgetDesc" + m_style );
 			contentPanel.add( label );
-			m_descElement = label.getElement();
+			m_folderDescElement = label.getElement();
 			
 			mainPanel.add( contentPanel );
 		}
 		
-		// Issue an ajax request to get the entry's title and description
+		// Issue an rpc request to get information about the folder.
 		m_properties.getDataFromServer( new GetterCallback<Boolean>()
 		{
 			/**
@@ -176,45 +173,53 @@ public class EntryWidget extends VibeWidget
 			public void returnValue( Boolean value )
 			{
 				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+
+				// Did we successfully get the folder information?
+				if ( value )
 				{
-					public void execute()
+					// Yes
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						updateWidget();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+						public void execute()
+						{
+							// Update this widget with the folder information
+							updateWidget();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
 			}
 		} );
 		
 		return mainPanel;
 	}
 	
+	
 	/**
-	 * 
+	 * Update the folder's title and description. 
 	 */
 	private void updateWidget()
 	{
-		// Update this widget with the entry's title.
+		// Update the title if we are showing it.
+		if ( m_properties.getShowTitleValue() && m_folderTitleElement != null )
 		{
 			String title;
-		
-			title = m_properties.getEntryTitle();
+			
+			title = m_properties.getFolderName();
 			if ( title == null || title.length() == 0 )
 				title = GwtTeaming.getMessages().noTitle();
 
-			m_titleElement.setInnerHTML( title );
+			m_folderTitleElement.setInnerHTML( title );
 		}
 		
-		// Update this widget with the entry's description.
+		// Update the description if we are showing it.
+		if ( m_properties.getShowDescValue() && m_folderDescElement != null )
 		{
 			String desc;
 			
-			desc = m_properties.getEntryDecs();
+			desc = m_properties.getFolderDesc();
 			if ( desc != null )
-				m_descElement.setInnerHTML( desc );
+				m_folderDescElement.setInnerHTML( desc );
 		}
 	}
 }
-

@@ -32,17 +32,18 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -60,7 +61,6 @@ public class EntryDropWidget extends DropWidget
 	private InlineLabel		m_entryName = null;
 	private InlineLabel		m_binderName = null;
 	private String				m_viewEntryUrl = null;
-	private Timer				m_timer = null;
 	
 	/**
 	 * 
@@ -262,9 +262,26 @@ public class EntryDropWidget extends DropWidget
 			m_properties.copy( (PropertiesObj) props );
 		
 		// Get the needed information from the server.
-		m_properties.getDataFromServer();
-		
-		updateWidget();
+		m_properties.getDataFromServer( new GetterCallback<Boolean>()
+		{
+			/**
+			 * 
+			 */
+			public void returnValue( Boolean value )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						updateWidget();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
+
 	}// end updateWidget()
 	
 	
@@ -275,31 +292,6 @@ public class EntryDropWidget extends DropWidget
 	{
 		String entryName;
 		String binderName;
-
-		// Are we waiting for the ajax call to get the entry name to finish?
-		if ( m_properties.isRpcInProgress() )
-		{
-			// Yes
-			// Have we already created a timer?
-			if ( m_timer == null )
-			{
-				// No, create one.
-				m_timer = new Timer()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void run()
-					{
-						updateWidget();
-					}// end run()
-				};
-			}
-			
-			m_timer.schedule( 250 );
-			return;
-		}
 
 		// Update the entry name
 		// Get the entry's name.

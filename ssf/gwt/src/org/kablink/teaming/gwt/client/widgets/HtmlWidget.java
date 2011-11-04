@@ -33,10 +33,11 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.lpe.HtmlConfig;
 import org.kablink.teaming.gwt.client.lpe.HtmlProperties;
 
-import com.google.gwt.user.client.Timer;
+import com.google.gwt.core.client.Scheduler;
 
 
 /**
@@ -48,7 +49,6 @@ public class HtmlWidget extends VibeWidget
 {
 	private VibeFlowPanel m_layoutPanel;
 	private HtmlProperties m_properties;
-	private Timer m_timer = null;
 	private String m_style;
 
 	/**
@@ -81,7 +81,28 @@ public class HtmlWidget extends VibeWidget
 			m_properties.copy( properties );
 		
 		// Replace any markup that may be in the html.
-		m_properties.replaceMarkup( binderId );
+		m_properties.replaceMarkup( binderId, new GetterCallback<String>()
+		{
+			/**
+			 * 
+			 */
+			public void returnValue( String value )
+			{
+				Scheduler.ScheduledCommand cmd;
+
+				// Yes
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						// Update this widget with the folder information
+						updateWidget();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
+
 		
 		updateWidget();
 	}
@@ -92,31 +113,6 @@ public class HtmlWidget extends VibeWidget
 	 */
 	private void updateWidget()
 	{
-		// Are we waiting for the ajax call to do markup replacement?
-		if ( m_properties.isRpcInProgress() )
-		{
-			// Yes
-			// Have we already created a timer?
-			if ( m_timer == null )
-			{
-				// No, create one.
-				m_timer = new Timer()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void run()
-					{
-						updateWidget();
-					}
-				};
-			}
-			
-			m_timer.schedule( 250 );
-			return;
-		}
-
 		// Update this widget with the given html.
 		if ( m_layoutPanel != null )
 			m_layoutPanel.getElement().setInnerHTML( m_properties.getHtml() );
