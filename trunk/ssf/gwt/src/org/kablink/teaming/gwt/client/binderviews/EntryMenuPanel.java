@@ -32,8 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -41,6 +48,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 
@@ -50,7 +58,8 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class EntryMenuPanel extends ToolPanelBase {
-	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
+	private List<ToolbarItem>	m_toolbarIems;	//
+	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -67,28 +76,67 @@ public class EntryMenuPanel extends ToolPanelBase {
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
 		initWidget(m_fp);
-		constructEntryMenuPanelAsync();
+		loadPart1Async();
 	}
 
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
-	private void constructEntryMenuPanelAsync() {
-		ScheduledCommand constructEntryMenuPanel = new ScheduledCommand() {
+	private void loadPart1Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				constructEntryMenuPanelNow();
+				loadPart1Now();
 			}
 		};
-		Scheduler.get().scheduleDeferred(constructEntryMenuPanel);
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
 	 * Synchronously construct's the contents of the entry menu panel.
 	 */
-	private void constructEntryMenuPanelNow() {
+	private void loadPart1Now() {
+		final Long folderId = m_binderInfo.getBinderIdAsLong();
+		GwtClientHelper.executeCommand(
+				new GetFolderToolbarItemsCmd(folderId),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetFolderToolbarItems(),
+					folderId);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Store the toolbar items and continue loading.
+				GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
+				m_toolbarIems = responseData.getToolbarItems();
+				loadPart2Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously construct's the contents of the entry menu panel.
+	 */
+	private void loadPart2Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously construct's the contents of the entry menu panel.
+	 */
+	private void loadPart2Now() {
 //!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("EntryMenuPanel.constructEntryMenuPanel( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
+		m_fp.add(new InlineLabel("EntryMenuPanel.loadPart2Now( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
 	}
 	
 	/**
@@ -123,6 +171,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 */
 	@Override
 	public void resetPanel() {
-//!		...this needs to be implemented... 
+		m_fp.clear();
+		loadPart1Async();
 	}
 }

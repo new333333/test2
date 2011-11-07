@@ -578,6 +578,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_FOLDER_TOOLBAR_ITEMS:
+		{
+			GetFolderToolbarItemsCmd gftiCmd;
+			List<ToolbarItem> result;
+			GetToolbarItemsRpcResponseData responseData;
+			
+			gftiCmd = ((GetFolderToolbarItemsCmd) cmd);
+		    result = GwtMenuHelper.getFolderToolbarItems( this, getRequest( ri ), gftiCmd.getBinderId() );
+			responseData = new GetToolbarItemsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		{
 			GetGroupAssigneeMembershipCmd ggamCmd = ((GetGroupAssigneeMembershipCmd) cmd);
@@ -940,6 +953,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
+		
 		case GET_TOOLBAR_ITEMS:
 		{
 			GetToolbarItemsCmd gtiCmd;

@@ -31,37 +31,53 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
-
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.resources.client.ImageResource.RepeatStyle;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * Images used by the GWT Teaming 'Data Table' implementation.
+ * This class holds all of the information necessary to execute the
+ * 'get folder toolbar items' command.
  * 
  * @author drfoster@novell.com
  */
-public interface GwtTeamingDataTableImageBundle extends ClientBundle {
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gold.png")
-	public ImageResource goldStar();
+public class GetFolderToolbarItemsCmd extends VibeRpcCmd {
+	private Long m_folderId;	//
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_gray.png")
-	public ImageResource grayPin();
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public GetFolderToolbarItemsCmd() {
+		super();
+	}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gray.png")
-	public ImageResource grayStar();
+	/**
+	 * Constructor method.
+	 *
+	 * @param folderId
+	 */
+	public GetFolderToolbarItemsCmd(Long folderId) {
+		this();
+		m_folderId = folderId;
+	}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_orange.png")
-	public ImageResource orangePin();
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Long getBinderId() {return m_folderId;}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
-	public ImageResource unread();
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_FOLDER_TOOLBAR_ITEMS.ordinal();
+	}
 }
