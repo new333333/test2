@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,41 +30,22 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.servlet;
 
-import java.io.IOException;
+package org.kablink.teaming.remoting.rest.provider;
 
-import javax.servlet.GenericServlet;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-public class RestInvokingServlet extends GenericServlet { 
-	
-	private static RequestDispatcher ssfRestDispatcher;
-	
-	@Override
-	public void service(ServletRequest req, ServletResponse res)
-			throws ServletException, IOException {
-		initInternal();
-		ssfRestDispatcher.forward(req, res);
+import org.kablink.teaming.rest.model.ErrorInfo;
+
+/**
+ * @author jong
+ *
+ */
+@Provider
+public class IllegalArgumentMapper implements ExceptionMapper<IllegalArgumentException> {
+	public Response toResponse(IllegalArgumentException ex) {
+		return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(ex.getMessage())).build();
 	}
-
-	private void initInternal() {
-		if(ssfRestDispatcher == null) {		
-			ServletConfig restServletConfig = getServletConfig();
-			
-			String ssfContextPath = restServletConfig.getInitParameter("ssfContextPath");
-			if(ssfContextPath == null || ssfContextPath.equals(""))
-				ssfContextPath = "/ssf";
-
-			ServletContext ssfContext = restServletConfig.getServletContext().getContext(ssfContextPath);
-			
-			ssfRestDispatcher = ssfContext.getNamedDispatcher("jerseyServlet");
-		}
-	}
-
 }

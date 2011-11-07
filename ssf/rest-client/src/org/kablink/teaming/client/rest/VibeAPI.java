@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,41 +30,41 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.servlet;
 
-import java.io.IOException;
+package org.kablink.teaming.client.rest;
 
-import javax.servlet.GenericServlet;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import java.net.URI;
 
-public class RestInvokingServlet extends GenericServlet { 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
+
+import org.kablink.teaming.rest.model.FileProperties;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+
+/**
+ * @author jong
+ *
+ */
+public class VibeAPI {
 	
-	private static RequestDispatcher ssfRestDispatcher;
+	private static MediaType[] DEFAULT_MEDIA_TYPES = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
 	
-	@Override
-	public void service(ServletRequest req, ServletResponse res)
-			throws ServletException, IOException {
-		initInternal();
-		ssfRestDispatcher.forward(req, res);
+	private static final String FILE_TEMPLATE_BY_NAME = "rest/file/name/{entityType}/{entityId}/{filename}";
+	
+	public static FileProperties readFileProperties(VibeConnection conn, String entityType, long entityId, String filename) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
+		WebResource r = c.resource(resourceUri);
+		return r.accept(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).get(FileProperties.class);
 	}
-
-	private void initInternal() {
-		if(ssfRestDispatcher == null) {		
-			ServletConfig restServletConfig = getServletConfig();
-			
-			String ssfContextPath = restServletConfig.getInitParameter("ssfContextPath");
-			if(ssfContextPath == null || ssfContextPath.equals(""))
-				ssfContextPath = "/ssf";
-
-			ServletContext ssfContext = restServletConfig.getServletContext().getContext(ssfContextPath);
-			
-			ssfRestDispatcher = ssfContext.getNamedDispatcher("jerseyServlet");
-		}
+	
+	public static void main(String[] args) {
+		VibeConnection conn = VibeConnection.getInstance("http://localhost:8079", "admin", "admin");
+		FileProperties fp = readFileProperties(conn, "folderEntry", 13, "debug5.txt");
+		FileProperties fp2 = readFileProperties(conn, "folderEntry", 13, "debug5.txt");
+		conn.destroy();
 	}
 
 }
