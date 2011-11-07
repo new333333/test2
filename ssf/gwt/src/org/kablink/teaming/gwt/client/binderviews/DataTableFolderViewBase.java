@@ -39,6 +39,7 @@ import java.util.HashMap;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
@@ -90,17 +91,22 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.Range;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.RowStyles;
+import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.view.client.ProvidesKey;
@@ -124,6 +130,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private VibeFlowPanel					m_mainPanel;			// The main panel holding the content of the view.
 	private VibeFlowPanel					m_flowPanel;			// The flow panel used to hold the view specific content of the view.
 	private VibeVerticalPanel				m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
+	
+	protected GwtTeamingDataTableImageBundle m_images;	//
 
 	// The following controls whether the display data read from the
 	// server is dumped as part of the content of the view.
@@ -166,65 +174,6 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private final static String STYLE_ROW_BASE		= "vibe-dataTableFolderRow";
 	private final static String STYLE_ROW_EVEN		= "even";
 	private final static String STYLE_ROW_ODD		= "odd";
-
-	/*
-	 * Inner class used to represent a select all check box in a data
-	 * table's header.
-	 * 
-	 * @author rvasudevan@novell.com
-	 */
-	private class CheckBoxHeader extends Header<Boolean> {
-		private boolean m_checked;	//
-
-		/**
-		 * Constructor method.
-		 * 
-		 * @param cell
-		 */
-		public CheckBoxHeader(CheckboxCell cell) {
-			super(cell);
-		}
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * Overrides Header.getValue()
-		 * 
-		 * @return
-		 */
-		@Override
-		public Boolean getValue() {return m_checked;}
-		 
-		/**
-		 * Set'er methods.
-		 * 
-		 * Set the state of the selection.  If a row is unselected, we
-		 * can call this method to deselect the header checkbox
-		 * 
-		 * @param checked
-		 */
-		public void setValue(boolean checked) {m_checked = checked;}
-		 
-		/**
-		 * Called to handle events captured by a check box header.
-		 * 
-		 * @param context
-		 * @param elem
-		 * @param event
-		 * 
-		 * Overrides Header.onBroserEvent()
-		 */
-		@Override
-		public void onBrowserEvent(Context context, Element elem, NativeEvent event) {
-			Event evt = Event.as(event);
-			int eventType = evt.getTypeInt();
-			switch (eventType) {
-			case Event.ONCHANGE:
-				m_checked = (!m_checked);
-			}
-			super.onBrowserEvent(context, elem, event);
-		}
-	}
 
 	/*
 	 * Inner class used to specify column widths.
@@ -408,6 +357,65 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		}
 	}
 
+	/*
+	 * Inner class used to represent a select all check box in a data
+	 * table's header.
+	 * 
+	 * @author rvasudevan@novell.com
+	 */
+	private class SelectAllHeader extends Header<Boolean> {
+		private boolean m_checked;	//
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param cell
+		 */
+		public SelectAllHeader(CheckboxCell cell) {
+			super(cell);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * Overrides Header.getValue()
+		 * 
+		 * @return
+		 */
+		@Override
+		public Boolean getValue() {return m_checked;}
+		 
+		/**
+		 * Set'er methods.
+		 * 
+		 * Set the state of the selection.  If a row is unselected, we
+		 * can call this method to deselect the header checkbox
+		 * 
+		 * @param checked
+		 */
+		public void setValue(boolean checked) {m_checked = checked;}
+		 
+		/**
+		 * Called to handle events captured by a check box header.
+		 * 
+		 * @param context
+		 * @param elem
+		 * @param event
+		 * 
+		 * Overrides Header.onBroserEvent()
+		 */
+		@Override
+		public void onBrowserEvent(Context context, Element elem, NativeEvent event) {
+			Event evt = Event.as(event);
+			int eventType = evt.getTypeInt();
+			switch (eventType) {
+			case Event.ONCHANGE:
+				m_checked = (!m_checked);
+			}
+			super.onBrowserEvent(context, elem, event);
+		}
+	}
+
 	/**
 	 * Constructor method.
 	 * 
@@ -420,6 +428,9 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 
 		// ...store the parameters...
 		m_folderInfo = folderInfo;
+		
+		// ...initialize any other data members...
+		m_images = GwtTeaming.getDataTableImageBundle();
 		
 		// ...create the main content panels and initialize the
 		// ...composite...
@@ -454,15 +465,42 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	final public void setFolderSortBy(     String             folderSortBy)      {m_folderSortBy      = folderSortBy;     }
 
 	/*
-	 * Adds a CheckBoxHeader to the data table.
+	 * Adds a column to manage pinning entries.
+	 */
+	private void addPinColumn(final FolderRowSelectionModel selectionModel, int colIndex) {
+		// Define the pin header...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		Image i = new Image(m_images.grayPin());
+		i.setTitle(m_messages.vibeDataTable_Alt_PinHeader());
+		fp.add(i);
+		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
+		final SafeHtmlHeader pinHeader = new SafeHtmlHeader(rendered);
+
+		// ...define a column for it...
+//!		...this needs to be implemented...
+		TextColumn<FolderRow> column = new TextColumn<FolderRow>() {
+			@Override
+			public String getValue(FolderRow fr) {
+				return "";
+			}
+		};
+		
+		// ...and connect it all together.
+	    m_dataTable.addColumn(column, pinHeader);
+	    setColumnStyles(column, COLUMN_PIN, colIndex);
+	    setColumnWidth(         COLUMN_PIN, column  );
+	}
+	
+	/*
+	 * Adds a select all column to the data table.
 	 * 
 	 * @author rvasudevan@novell.com
 	 */
-	private void addSelectAllCBHeader(final FolderRowSelectionModel selectionModel, int colIndex) {
+	private void addSelectAllColumn(final FolderRowSelectionModel selectionModel, int colIndex) {
 		// Define the check box header...
 		CheckboxCell cbCell = new CheckboxCell();
-		final CheckBoxHeader cbHeader = new CheckBoxHeader(cbCell);
-		cbHeader.setUpdater(new ValueUpdater<Boolean>() {
+		final SelectAllHeader saHeader = new SelectAllHeader(cbCell);
+		saHeader.setUpdater(new ValueUpdater<Boolean>() {
 			@Override
 			public void update(Boolean checked) {
 				List<FolderRow> rows = m_dataTable.getVisibleItems();
@@ -489,13 +527,13 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			public void update(int index, FolderRow row, Boolean checked) {
 				selectionModel.setSelected(row, checked);
 				if (!checked) {
-					cbHeader.setValue(checked);
+					saHeader.setValue(checked);
 				}
 			};
 		});
 
 		// ...and connect it all together.
-	    m_dataTable.addColumn(column, cbHeader);
+	    m_dataTable.addColumn(column, saHeader);
 	    setColumnStyles(column, COLUMN_SELECT, colIndex);
 	    setColumnWidth(         COLUMN_SELECT, column  );
 	}
@@ -569,8 +607,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	/*
 	 * Initializes various data members for the class.
 	 * 
-	 * Note:  Except for the select, the values for the column width
-	 *    were extracted from the implementation of
+	 * Note:  Except for the select and pin columns, the values for the
+	 *    column width were extracted from the implementation of
 	 *    folder_view_common2.jsp.
 	 */
 	private void initDataMembers() {
@@ -598,7 +636,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 
 		// ...and then the internal column names.
 		m_columnWidths.put(COLUMN_SELECT,   new ColumnWidth( 40, Unit.PX));
-		m_columnWidths.put(COLUMN_PIN,      new ColumnWidth(  2));
+		m_columnWidths.put(COLUMN_PIN,      new ColumnWidth( 40, Unit.PX));
 		m_columnWidths.put(COLUMN_OTHER,    new ColumnWidth( 20));	// All columns not otherwise listed.
 	}
 	
@@ -612,7 +650,10 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		
 		// Add a column for a checkbox selector.
 		int colIndex = 0;
-		addSelectAllCBHeader(selectionModel, colIndex++);
+		addSelectAllColumn(selectionModel, colIndex++);
+		
+		// Add a column to manage pinning the entry.
+		addPinColumn(selectionModel, colIndex++);
 
 	    // Scan the columns defined in this folder.
 		for (final FolderColumn fc:  m_folderColumnsList) {

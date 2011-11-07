@@ -1294,18 +1294,28 @@ public class GwtViewHelper {
 
 				// Handle those that are a URL.
 				else if (colType.equals("url")) {
-		         	String  strValue   = DefinitionHelper.getCaptionsFromValues(entryDef, colName, colValue.toString());
+					// Can we find the definition of the column?
 		         	Element colElement = ((Element) DefinitionHelper.findAttribute(colName, entryDef.getDefinition()));
-		         	String  linkText   = DefinitionHelper.getItemProperty(colElement, "linkText");
-		         	String  target     = DefinitionHelper.getItemProperty(colElement, "target"  );
+		         	if (null == colElement) {
+		         		// No!  Just render the column as an empty string.
+						fr.setColumnValue(fc, "");
+		         	}
 		         	
-		         	if (!(MiscUtil.hasString(linkText))) linkText = strValue;
-		         	if ((null == target) || target.equals("false")) target = "";
-		         	if ((null != target) && target.equals("true" )) target = "_blank";
-		         	
-		         	// Construct an EntryLinkInfo for the data.
-		         	EntryLinkInfo linkValue = new EntryLinkInfo(strValue, target, linkText);
-					fr.setColumnValue(fc, linkValue);
+		         	else {
+						// Yes, we found the definition of the column!
+		         		// Extract what we need to render it.
+			         	String linkText = DefinitionHelper.getItemProperty(colElement, "linkText");
+			         	String target   = DefinitionHelper.getItemProperty(colElement, "target"  );
+			         	
+			         	String  strValue   = DefinitionHelper.getCaptionsFromValues(entryDef, colName, colValue.toString());
+			         	if (!(MiscUtil.hasString(linkText))) linkText = strValue;
+			         	if ((null == target) || target.equals("false")) target = "";
+			         	if ((null != target) && target.equals("true" )) target = "_blank";
+			         	
+			         	// Construct an EntryLinkInfo for the data.
+			         	EntryLinkInfo linkValue = new EntryLinkInfo(strValue, target, linkText);
+						fr.setColumnValue(fc, linkValue);
+		         	}
 				}
 
 				// Handle date stamps.

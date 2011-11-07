@@ -892,6 +892,32 @@ public class GwtMenuHelper {
 	}
 	
 	/**
+	 * Returns a List<ToolbarItem> of the ToolbarItem's for a folder
+	 * given the current user's rights to that folder.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 */
+	public static List<ToolbarItem> getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long folderId) {
+		SimpleProfiler.start("GwtMenuHelper.getFolderToolbarItems()");
+		try {
+			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
+			// that we'll return...
+			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
+
+//!			...this needs to be implemented...
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtMenuHelper.getFolderToolbarItems()");
+		}
+	}
+	
+	/**
 	 * Returns information about the recent places the current user has
 	 * visited.
 	 *
