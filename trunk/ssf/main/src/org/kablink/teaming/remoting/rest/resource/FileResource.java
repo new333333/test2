@@ -96,6 +96,7 @@ import org.kablink.teaming.rest.model.HistoryStamp;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.HttpHeaders;
 import org.kablink.util.Validator;
 
 import com.sun.jersey.api.core.InjectParam;
@@ -217,16 +218,18 @@ public class FileResource extends AbstractResource {
 	public Response readFileContentByName(
 			@PathParam("entityType") String entityType,
 			@PathParam("entityId") long entityId,
-			@PathParam("filename") String filename) {
-		return readFileContent(entityType, entityId, filename);
+			@PathParam("filename") String filename,
+			@Context HttpServletRequest request) {
+		return readFileContent(entityType, entityId, filename, getIfModifiedSinceDate(request));
 	}
 	
 	@GET
 	@Path("/id/{fileid}")
-	public Response readFileContentById(@PathParam("fileid") String fileId) {
+	public Response readFileContentById(@PathParam("fileid") String fileId,
+			@Context HttpServletRequest request) {
 		FileAttachment fa = findFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
-		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request));
 	}
 	
 	@GET
@@ -464,7 +467,7 @@ public class FileResource extends AbstractResource {
 		return getFileAttachment(entity, filename);
 	}
 
-	private Response readFileContent(String entityType, long entityId, String filename) 
+	private Response readFileContent(String entityType, long entityId, String filename, Date ifModifiedSinceDate) 
 	throws BadRequestException {
         EntityType et = entityTypeFromString(entityType);
         Binder binder;
@@ -494,8 +497,16 @@ public class FileResource extends AbstractResource {
         	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
         }
 		fa = getFileAttachment(entity, filename);
+		Date lastModDate = fa.getModification().getDate();
+		if(ifModifiedSinceDate != null) {
+			// If-Modified-Since header was specified (i.e., conditional GET)
+			if(!ifModifiedSinceDate.before(lastModDate)) {
+				// The file has not been modified since the specified date.
+				return Response.status(Response.Status.NOT_MODIFIED).build();
+			}
+		}
 		String mt = new MimetypesFileTypeMap().getContentType(filename);
-		return Response.ok(fileModule.readFile(binder, entity, fa), mt).build();
+		return Response.ok(fileModule.readFile(binder, entity, fa), mt).lastModified(lastModDate).build();
 	}
 	
 	private FileProperties readFileProperties(String entityType, long entityId, String filename) 
@@ -605,4 +616,13 @@ public class FileResource extends AbstractResource {
         }
         return entity;
 	}
+	
+	private Date getIfModifiedSinceDate(HttpServletRequest request) {
+		Date date = null;
+		long longDate = request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
+		if(longDate != -1)
+			date = new Date(longDate);
+		return date;
+	}
+	
 }
