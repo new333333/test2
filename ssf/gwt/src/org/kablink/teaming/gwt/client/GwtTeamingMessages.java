@@ -1097,6 +1097,10 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_StarGray();
 	String vibeDataTable_Alt_View();
 	String vibeDataTable_Download();
+	String vibeDataTable_Event_AllDay();
+	String vibeDataTable_Event_End();
+	String vibeDataTable_Event_Duration(String days);
+	String vibeDataTable_Event_Start();
 	String vibeDataTable_View();
 	
 	// String used in the Landing Page

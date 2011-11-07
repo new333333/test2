@@ -113,14 +113,14 @@ import com.google.gwt.view.client.ProvidesKey;
 public abstract class DataTableFolderViewBase extends ViewBase {
 	private final BinderInfo				m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
 	private boolean							m_folderSortDescend;	// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
-	private int								m_folderPageSize;		//
-	private FolderRowPager 					m_dataTablePager;		//
-	private FooterPanel						m_footerPanel;			//
-	private HashMap<String, ColumnWidth>	m_columnWidths;			//
-	private List<FolderColumn>				m_folderColumnsList;	// The list of columns to be displayed.
-	private List<ToolPanelBase>				m_toolPanels;			//
+	private int								m_folderPageSize;		// Page size as per the user's personal preferences.
+	private FolderRowPager 					m_dataTablePager;		// Pager widgets at the bottom of the data table.
+	private FooterPanel						m_footerPanel;			// Panel that holds the links, ... displayed at the bottom of the view.
+	private HashMap<String, ColumnWidth>	m_columnWidths;			// Map of column names -> ColumWidth objects.
+	private List<FolderColumn>				m_folderColumnsList;	// The List<FolderColumn>' of the columns to be displayed.
+	private List<ToolPanelBase>				m_toolPanels;			// List<ToolPanelBase>'s of the various tools panels that appear above the table.
 	private String							m_folderSortBy;			// Which column the view is sorted on.
-	private VibeDataTable<FolderRow>		m_dataTable;			//
+	private VibeDataTable<FolderRow>		m_dataTable;			// The actual data table holding the view's information.
 	private VibeFlowPanel					m_mainPanel;			// The main panel holding the content of the view.
 	private VibeFlowPanel					m_flowPanel;			// The flow panel used to hold the view specific content of the view.
 	private VibeVerticalPanel				m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
@@ -170,6 +170,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	/*
 	 * Inner class used to represent a select all check box in a data
 	 * table's header.
+	 * 
+	 * @author rvasudevan@novell.com
 	 */
 	private class CheckBoxHeader extends Header<Boolean> {
 		private boolean m_checked;	//
@@ -218,7 +220,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			int eventType = evt.getTypeInt();
 			switch (eventType) {
 			case Event.ONCHANGE:
-				m_checked = !m_checked;
+				m_checked = (!m_checked);
 			}
 			super.onBrowserEvent(context, elem, event);
 		}
@@ -302,13 +304,10 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 				
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
-					// Apply the rows we read...
+					// Apply the rows we read.
 					FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
 					m_vdt.setRowData( responseData.getStartOffset(), responseData.getFolderRows());
 					m_vdt.setRowCount(responseData.getTotalRows()                                );
-					
-					// ...and ensure the table has been sized.
-//					onResizeAsync();
 				}
 			});
 		}
@@ -416,7 +415,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * @param viewReady
 	 */
 	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady) {
-		// Initialize the base class...
+		// Initialize the super class...
 		super(viewReady);
 
 		// ...store the parameters...
@@ -436,13 +435,13 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * 
 	 * @return
 	 */
-	final public BinderInfo         getFolderInfo()        {return m_folderInfo;                    }
-	final public boolean			getFolderSortDescend() {return m_folderSortDescend;             }
-	final public int                getFolderPageSize()    {return m_folderPageSize;                }
-	final public List<FolderColumn>	getFolderColumns()     {return m_folderColumnsList;             }
-	final public Long               getFolderId()          {return m_folderInfo.getBinderIdAsLong();}
-	final public String				getFolderSortBy()      {return m_folderSortBy;                  }
-	final public VibeFlowPanel      getFlowPanel()         {return m_flowPanel;                     }
+	final public BinderInfo         getFolderInfo()        {return m_folderInfo;                    }	// The binder being viewed.
+	final public boolean			getFolderSortDescend() {return m_folderSortDescend;             }	//
+	final public int                getFolderPageSize()    {return m_folderPageSize;                }	//
+	final public List<FolderColumn>	getFolderColumns()     {return m_folderColumnsList;             }	// Columns, in order, to be shown in the data table.
+	final public Long               getFolderId()          {return m_folderInfo.getBinderIdAsLong();}	//
+	final public String				getFolderSortBy()      {return m_folderSortBy;                  }	//
+	final public VibeFlowPanel      getFlowPanel()         {return m_flowPanel;                     }	// Flow panel holding the data table content (no toolbars, ...)
 	
 	/**
 	 * Set'er methods.
@@ -456,6 +455,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 
 	/*
 	 * Adds a CheckBoxHeader to the data table.
+	 * 
+	 * @author rvasudevan@novell.com
 	 */
 	private void addSelectAllCBHeader(final FolderRowSelectionModel selectionModel, int colIndex) {
 		// Define the check box header...
@@ -558,11 +559,12 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	/*
 	 * Various column type detectors.
 	 */
-	private static boolean isColumnDownload(String columnName) {return columnName.equals(COLUMN_DOWNLOAD);}
-	private static boolean isColumnRating(  String columnName) {return columnName.equals(COLUMN_RATING);  }
-	private static boolean isColumnPresence(String columnName) {return columnName.equals(COLUMN_AUTHOR);  }
-	private static boolean isColumnTitle(   String columnName) {return columnName.equals(COLUMN_TITLE);   }
-	private static boolean isColumnView(    String columnName) {return columnName.equals(COLUMN_HTML);    }
+	private static boolean isColumnCustom(  FolderColumn column)     {return column.isCustomColumn();           }
+	private static boolean isColumnDownload(String       columnName) {return columnName.equals(COLUMN_DOWNLOAD);}
+	private static boolean isColumnRating(  String       columnName) {return columnName.equals(COLUMN_RATING);  }
+	private static boolean isColumnPresence(String       columnName) {return columnName.equals(COLUMN_AUTHOR);  }
+	private static boolean isColumnTitle(   String       columnName) {return columnName.equals(COLUMN_TITLE);   }
+	private static boolean isColumnView(    String       columnName) {return columnName.equals(COLUMN_HTML);    }
 	
 	/*
 	 * Initializes various data members for the class.
@@ -582,8 +584,8 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 
 		// ...first, the predefined column names...
 		m_columnWidths.put(COLUMN_AUTHOR,   new ColumnWidth( 24));	// Unless otherwise specified...
-		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth(  8));	// ...the widths will default...
-		m_columnWidths.put(COLUMN_DATE,     new ColumnWidth( 20));	// ...to be a percentage value.
+		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth(  8));	// ...the widths default to...
+		m_columnWidths.put(COLUMN_DATE,     new ColumnWidth( 20));	// ...be a percentage value.
 		m_columnWidths.put(COLUMN_DOWNLOAD, new ColumnWidth(  8));
 		m_columnWidths.put(COLUMN_HTML,     new ColumnWidth( 10));
 		m_columnWidths.put(COLUMN_LOCATION, new ColumnWidth( 30));
@@ -691,7 +693,7 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 			
 			// No, this column doesn't show a view link either!  Is it
 			// a custom column?
-			else if (fc.isCustomColumn()) {
+			else if (isColumnCustom(fc)) {
 				// Yes!  Create a CustomColumn for it.
 				column = new CustomColumn<FolderRow>(fc) {
 					@Override

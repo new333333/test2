@@ -302,6 +302,23 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns the days duration value if only days were found. 
+	 * Otherwise returns -1.
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getDurDaysFromEntryMap(String colName, Map entryMap) {
+		int days = (-1);
+		int seconds = MiscUtil.safeSToInt(((String) entryMap.get(colName + "#Duration#S")), (-1));
+		int minutes = MiscUtil.safeSToInt(((String) entryMap.get(colName + "#Duration#M")),  (-1));
+		int hours   = MiscUtil.safeSToInt(((String) entryMap.get(colName + "#Duration#H")),  (-1));
+		int weeks   = MiscUtil.safeSToInt(((String) entryMap.get(colName + "#Duration#W")),  (-1));
+		if ((0 >= seconds) && (0 >= minutes) && (0 >= hours) && (0 >= weeks)) {
+			days = MiscUtil.safeSToInt(((String) entryMap.get(colName + "#Duration#D")),  (-1));
+		}		
+		return days;
+	}
+	
+	/*
 	 * Fixes up the group assignees in an List<AssignmentInfo>'s.
 	 */
 	private static void fixupAIGroups(List<AssignmentInfo> aiGroupsList, Map<Long, String> principalTitles, Map<Long, Integer> groupCounts) {
@@ -1339,45 +1356,54 @@ public class GwtViewHelper {
 
 				// Handle events.
 				else if (colType.equals("event")) {
-					String eventTimeZoneId = ((String) entryMap.get(colName + "#TimeZoneID"));
-					boolean showTime = false;
-					Date startDate = ((Date) entryMap.get(colName + "#LogicalStartDate"));
-					Date endDate   = ((Date) entryMap.get(colName + "#LogicalEndDate"));
-					if ((null != startDate) && (null != endDate)) {
+					String tzId = ((String) entryMap.get(colName + "#TimeZoneID"));
+					boolean showTimes = false;
+					Date logicalEnd   = ((Date) entryMap.get(colName + "#LogicalEndDate"));
+					Date logicalStart = ((Date) entryMap.get(colName + "#LogicalStartDate"));
+					if ((null != logicalStart) && (null != logicalEnd)) {
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-						if (sdf.format(startDate).equals(sdf.format(endDate))) {
+						if (sdf.format(logicalStart).equals(sdf.format(logicalEnd))) {
 							// The two dates are the same, so show the
 							// time field.
-							showTime = true;
+							showTimes = true;
 						}
 					}
 					
-					String endDateS     = null;
-					String startDateS   = null;
-					boolean allDayEvent = (null == eventTimeZoneId);
+					String logicalEndS   = null;
+					String logicalEtartS = null;
+					boolean allDayEvent  = (null == tzId);
 					if (allDayEvent) {
 						//All day event.
-						if (null != startDate) {
-							startDateS = GwtServerHelper.getDateString(startDate, DateFormat.SHORT);
-						}
-						
-					} else {
+						if (null != logicalStart) logicalEtartS = GwtServerHelper.getDateString(logicalStart, DateFormat.SHORT);
+						if (null != logicalEnd)   logicalEndS   = GwtServerHelper.getDateString(logicalEnd,   DateFormat.SHORT);
+					}
+					
+					else {
 						// Regular event.
-						if (null != startDate) {
-							if (showTime)
-							     startDateS = GwtServerHelper.getDateTimeString(startDate, DateFormat.SHORT, DateFormat.SHORT);
-							else startDateS = GwtServerHelper.getDateString(    startDate, DateFormat.SHORT                  );
+						if (null != logicalStart) {
+							if (showTimes)
+							     logicalEtartS = GwtServerHelper.getDateTimeString(logicalStart, DateFormat.SHORT, DateFormat.SHORT);
+							else logicalEtartS = GwtServerHelper.getDateString(    logicalStart, DateFormat.SHORT                  );
 							
 						}
-						if (null != endDate) {
-							if (showTime)
-							     endDateS = GwtServerHelper.getDateTimeString(endDate, DateFormat.SHORT, DateFormat.SHORT);
-							else endDateS = GwtServerHelper.getDateString(    endDate, DateFormat.SHORT                  );
+						if (null != logicalEnd) {
+							if (showTimes)
+							     logicalEndS = GwtServerHelper.getDateTimeString(logicalEnd, DateFormat.SHORT, DateFormat.SHORT);
+							else logicalEndS = GwtServerHelper.getDateString(    logicalEnd, DateFormat.SHORT                  );
 						}
+					}
+					
+					EntryEventInfo eventValue = new EntryEventInfo(allDayEvent, logicalEtartS, logicalEndS);
+					Date actualEnd   = ((Date) entryMap.get(colName + "#EndDate"));
+					int  durDays     = getDurDaysFromEntryMap(colName, entryMap);
+					boolean daysOnly = ((null == actualEnd) && (0 < durDays));
+					if (daysOnly) {
+						// Duration only.
+						eventValue.setDurationDaysOnly(true   );
+						eventValue.setDurationDays(    durDays);
 					}
 		         	
 					// Construct an EntryEventInfo for the data.
-					EntryEventInfo eventValue = new EntryEventInfo(allDayEvent, startDateS, endDateS);
 					fr.setColumnValue(fc, eventValue);
 				}
 
