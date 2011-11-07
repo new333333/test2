@@ -38,6 +38,11 @@
 		.vibe-dataTableFolderColumn            {}
 		.vibe-dataTableFolderColumn-select     {}
 		.vibe-dataTableFolderDataTableBase     {}
+		.vibe-dataTableFolderEvent             {}
+		.vibe-dataTableFolderEvent-allDay      {}
+		.vibe-dataTableFolderEvent-start       {}
+		.vibe-dataTableFolderEvent-end         {}
+		.vibe-dataTableFolderEvent-duration    {}
 		.vibe-dataTableFolderFlowPanelBase     {}
 		.vibe-dataTableFolderRow               {}
 		.vibe-dataTableFolderRow-select        {}

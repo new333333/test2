@@ -64,6 +64,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -95,6 +96,17 @@ public class GwtClientHelper {
 	 */
 	private GwtClientHelper() {
 		// Inhibits this class from being instantiated.
+	}
+
+	/**
+	 * Appends a <br /> to the HTML of a Widget.
+	 * 
+	 * @param w
+	 */
+	public static void appendBR(Widget w) {
+		Element wE = w.getElement();
+		String html = wE.getInnerHTML();
+		wE.setInnerHTML(html + "<br />");
 	}
 	
 	/**

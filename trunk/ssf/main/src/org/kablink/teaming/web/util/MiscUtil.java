@@ -478,6 +478,23 @@ public final class MiscUtil
    }
 
 	/**
+	 * Converts a String to an int protected against any exceptions.
+	 * 
+	 * @param s
+	 * @param def
+	 * 
+	 * @return
+	 */
+	public static int safeSToInt(String s, int def) {
+		int reply = def;
+		if (hasString(s)) {
+			try                  {reply = Integer.parseInt(s);}
+			catch (Exception ex) {reply = def;                }
+		}
+		return reply;
+	}
+	
+	/**
 	 * Returns the ZoneInfo for the zone we're currently running under.
 	 * 
 	 * @return

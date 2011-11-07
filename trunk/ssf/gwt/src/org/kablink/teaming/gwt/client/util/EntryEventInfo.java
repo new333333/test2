@@ -41,9 +41,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class EntryEventInfo implements IsSerializable {
-	private boolean	m_allDayEvent;	//
-	private String	m_endDate;		//
-	private String  m_startDate;	//
+	private boolean	m_allDayEvent;			//
+	private boolean	m_durationDaysOnly;		//
+	private int		m_durationDays = (-1);	//
+	private String	m_endDate;				//
+	private String  m_startDate;			//
 
 	/**
 	 * Constructor method.
@@ -70,20 +72,40 @@ public class EntryEventInfo implements IsSerializable {
 	}
 	
 	/**
+	 * Constructor method.
+	 * 
+	 * @param durationDays
+	 * @param startDate
+	 * @param endDate
+	 */
+	public EntryEventInfo(int durationDays, String startDate, String endDate) {
+		super();
+		
+		setDurationDaysOnly((-1) != durationDays);
+		setDurationDays(            durationDays);
+		setStartDate(               startDate    );
+		setEndDate(                 endDate      );
+	}
+	
+	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public boolean getAllDayEvent() {return m_allDayEvent;}
-	public String  getEndDate()     {return m_endDate;    }
-	public String  getStartDate()   {return m_startDate;  }
+	public boolean getAllDayEvent()      {return m_allDayEvent;     }
+	public boolean getDurationDaysOnly() {return m_durationDaysOnly;}
+	public int     getDurationDays()     {return m_durationDays;    }
+	public String  getEndDate()          {return m_endDate;         }
+	public String  getStartDate()        {return m_startDate;       }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setAllDayEvent(boolean allDayEvent) {m_allDayEvent = allDayEvent;}
-	public void setEndDate(    String  endDate)     {m_endDate     = endDate;    }
-	public void setStartDate(  String  startDate)   {m_startDate   = startDate;  }
+	public void setAllDayEvent(     boolean allDayEvent)      {m_allDayEvent      = allDayEvent;     }
+	public void setDurationDaysOnly(boolean durationDaysOnly) {m_durationDaysOnly = durationDaysOnly;}
+	public void setDurationDays(    int     durationDays)     {m_durationDays     = durationDays;    }
+	public void setEndDate(         String  endDate)          {m_endDate          = endDate;         }
+	public void setStartDate(       String  startDate)        {m_startDate        = startDate;       }
 }

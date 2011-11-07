@@ -32,8 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -48,6 +51,8 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class CustomCell extends AbstractCell<Object> {
+	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
+	
 	/**
 	 * Constructor method.
 	 */
@@ -55,6 +60,22 @@ public class CustomCell extends AbstractCell<Object> {
 		super();
 	}
 
+	/*
+	 * Creates an appends a styled InlineLabel to a VibeFlowPanel
+	 * optionally followed by a hard line break.
+	 */
+	private static void appendIL(VibeFlowPanel fp, String label, String style, boolean appendBR) {
+		InlineLabel il = new InlineLabel(label);
+		if (GwtClientHelper.hasString(style)) {
+			il.addStyleName(style);
+		}
+		il.setWordWrap(false);
+		fp.add(il);
+		if (appendBR) {
+			GwtClientHelper.appendBR(fp);
+		}
+	}
+	
 	/**
 	 * Called to render an instance of this cell.
 	 * 
@@ -89,12 +110,18 @@ public class CustomCell extends AbstractCell<Object> {
 	 * Renders an EntryEventInfo into a flow panel.
 	 */
 	private void renderEvent(VibeFlowPanel fp, EntryEventInfo eei) {
-//!		...this needs to be implemented...
-		InlineLabel label = new InlineLabel("custom event");
-		label.setWordWrap(false);
-		fp.add(label);
+		// Is there any event information to display?
+		String end     = eei.getEndDate();      boolean hasEnd     = GwtClientHelper.hasString(end  );
+		String start   = eei.getStartDate();    boolean hasStart   = GwtClientHelper.hasString(start);
+		int    durDays = eei.getDurationDays(); boolean hasDurDays = (0 < durDays);
+		if (hasEnd || hasStart || hasDurDays) {
+			if (eei.getAllDayEvent()) appendIL(fp, (m_messages.vibeDataTable_Event_AllDay()),                          "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-allDay",  (hasStart || hasEnd || hasDurDays));
+			if (hasStart)             appendIL(fp, (m_messages.vibeDataTable_Event_Start() + " " + start),             "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-start",               (hasEnd || hasDurDays));
+			if (hasEnd)               appendIL(fp, (m_messages.vibeDataTable_Event_End()   + " " + end),               "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-end",                            hasDurDays );
+			if (hasDurDays)           appendIL(fp, (m_messages.vibeDataTable_Event_Duration(String.valueOf(durDays))), "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-duration", false                            );
+		}
 	}
-	
+
 	/*
 	 * Renders an EntryLinkInfo into a flow panel.
 	 */
