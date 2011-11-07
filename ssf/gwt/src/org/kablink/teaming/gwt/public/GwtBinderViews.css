@@ -38,11 +38,6 @@
 		.vibe-dataTableFolderColumn            {}
 		.vibe-dataTableFolderColumn-select     {}
 		.vibe-dataTableFolderDataTableBase     {}
-		.vibe-dataTableFolderEvent             {}
-		.vibe-dataTableFolderEvent-allDay      {}
-		.vibe-dataTableFolderEvent-start       {}
-		.vibe-dataTableFolderEvent-end         {}
-		.vibe-dataTableFolderEvent-duration    {}
 		.vibe-dataTableFolderFlowPanelBase     {}
 		.vibe-dataTableFolderRow               {}
 		.vibe-dataTableFolderRow-select        {}
@@ -51,20 +46,33 @@
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
-		.vibe-dataTableEntry-download     {border: 0px solid #666666; background: url(images/move_down.gif); background-repeat: no-repeat; background-position:  left center; padding-left: 15px; padding-right: 0px; line-height: 11px;}
-		.vibe-dataTableEntry-title        {cursor: pointer; color: #135c8f !important;}
-		.vibe-dataTableEntry-unseenMarker {display: inline; cursor: pointer;}
-		.vibe-dataTableEntry-viewAnchor   {text-decoration: none;}
-		.vibe-dataTableEntry-viewLabel    {}
-		.vibe-dataTableLink-hover         {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
-		.vibe-dataTablePresence-control   {}
-		.vibe-dataTablePresence-label     {display: inline; font-weight: bold; padding-left: 2px !important;}
-		.vibe-dataTablePresence-disabled  {color: #c4c4c4;}
-		.vibe-dataTablePresence-enabled   {color: #353838;}
-/* ...End:  Data table cell styles. */
+		.vibe-dataTableCustom-anchor         {}
+		.vibe-dataTableCustom-anchor-label   {}
+		.vibe-dataTableCustom-event          {}
+		.vibe-dataTableCustom-event-allDay   {}
+		.vibe-dataTableCustom-event-start    {}
+		.vibe-dataTableCustom-event-end      {}
+		.vibe-dataTableCustom-event-duration {}
+		.vibe-dataTableCustom-string         {}
+		.vibe-dataTableEntry-download        {border: 0px solid #666666; background: url(images/move_down.gif); background-repeat: no-repeat; background-position:  left center; padding-left: 15px; padding-right: 0px; line-height: 11px;}
+		.vibe-dataTableEntry-title           {cursor: pointer; color: #135c8f !important;}
+		.vibe-dataTableEntry-unseenMarker    {display: inline; cursor: pointer;}
+		.vibe-dataTableEntry-viewAnchor      {text-decoration: none;}
+		.vibe-dataTableEntry-viewLabel       {}
+		.vibe-dataTableLink-hover            {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-dataTablePresence-control      {}
+		.vibe-dataTablePresence-label        {display: inline; font-weight: bold; padding-left: 2px !important;}
+		.vibe-dataTablePresence-disabled     {color: #c4c4c4;}
+		.vibe-dataTablePresence-enabled      {color: #353838;}
+	/* ...End:  Data table cell styles. */
 
 	/* ...Start:  Discussion folder view styles. */
 		.vibe-discussionFolderDataTable {}
 		.vibe-discussionFolderFlowPanel {}
 	/* ...End:  Discussion folder view styles. */
+
+	/* ...Start:  File folder view styles. */
+		.vibe-fileFolderDataTable {}
+		.vibe-fileFolderFlowPanel {}
+	/* ...End:  File folder view styles. */
 /* End:  GWT folder view styles. */

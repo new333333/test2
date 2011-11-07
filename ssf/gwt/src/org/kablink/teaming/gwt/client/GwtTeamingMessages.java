@@ -399,6 +399,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
 	String codeSplitFailure_FilterPanel();
+	String codeSplitFailure_FileFolderView();
 	String codeSplitFailure_FindCtrl();
 	String codeSplitFailure_FolderOptionsDlg();
 	String codeSplitFailure_FooterPanel();

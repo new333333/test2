@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
+import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -44,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -89,6 +91,7 @@ public class ContentControl extends Composite
 		ChangeContextEvent.Handler,
 		GotoUrlEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
+		ShowFileFolderEvent.Handler,
 		ShowLandingPageEvent.Handler
 {
 	private boolean m_isAdminContent;
@@ -107,6 +110,7 @@ public class ContentControl extends Composite
 		
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
+		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_LANDING_PAGE,
 	};
 	
@@ -390,9 +394,14 @@ public class ContentControl extends Composite
 						break;
 						
 						
+					case FILE:
+						GwtTeaming.fireEvent( new ShowFileFolderEvent( bi, viewReady ) );
+						viHandled = true;
+						break;
+						
+						
 					case BLOG:
 					case CALENDAR:
-					case FILE:
 					case GUESTBOOK:
 					case MILESTONE:
 					case MINIBLOG:
@@ -552,6 +561,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowDiscussionFolder()
+	
+	/**
+	 * Handles ShowFileFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowFileFolderEvent.Handler.onShowFileFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowFileFolder( final ShowFileFolderEvent event )
+	{
+		// Create a FileFolderView widget for the selected binder.
+		FileFolderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase dfView )
+			{
+				dfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( dfView );
+			}// end onSuccess()
+		});
+	}// end onShowFileFolder()
 	
 	/**
 	 * Handles ShowLandingPageEvent's received by this class.
