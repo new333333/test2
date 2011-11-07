@@ -1073,8 +1073,6 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		if (GwtClientHelper.hasString(styleName)) {
 			m_dataTable.addStyleName(styleName);
 		}
-//!		m_dataTable.setWidth("100%");
-//!		m_dataTable.setTableWidth(100, Unit.PCT);
 		m_dataTable.setRowStyles(new RowStyles<FolderRow>() {
 			@Override
 			public String getStyleNames(FolderRow row, int rowIndex) {

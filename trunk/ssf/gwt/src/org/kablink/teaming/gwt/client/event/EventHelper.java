@@ -649,6 +649,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_FILE_FOLDER:
+				// A ShowFileFolderEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowFileFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowFileFolderEvent.registerEvent(eventBus, ((ShowFileFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SHOW_LANDING_PAGE:
 				// A ShowLandingPageEvent!  Can the event handler we
 				// were given handle that?
@@ -1093,6 +1102,7 @@ public class EventHelper {
 			
 			case SHOW_CONTENT_CONTROL:                  hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);            break;
 			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
+			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			
 			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;

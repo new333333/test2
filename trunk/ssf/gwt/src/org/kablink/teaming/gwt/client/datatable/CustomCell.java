@@ -43,6 +43,7 @@ import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
@@ -115,10 +116,10 @@ public class CustomCell extends AbstractCell<Object> {
 		String start   = eei.getStartDate();    boolean hasStart   = GwtClientHelper.hasString(start);
 		int    durDays = eei.getDurationDays(); boolean hasDurDays = (0 < durDays);
 		if (hasEnd || hasStart || hasDurDays) {
-			if (eei.getAllDayEvent()) appendIL(fp, (m_messages.vibeDataTable_Event_AllDay()),                          "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-allDay",  (hasStart || hasEnd || hasDurDays));
-			if (hasStart)             appendIL(fp, (m_messages.vibeDataTable_Event_Start() + " " + start),             "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-start",               (hasEnd || hasDurDays));
-			if (hasEnd)               appendIL(fp, (m_messages.vibeDataTable_Event_End()   + " " + end),               "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-end",                            hasDurDays );
-			if (hasDurDays)           appendIL(fp, (m_messages.vibeDataTable_Event_Duration(String.valueOf(durDays))), "vibe-dataTableFolderEvent vibe-dataTableFolderEvent-duration", false                            );
+			if (eei.getAllDayEvent()) appendIL(fp, (m_messages.vibeDataTable_Event_AllDay()),                          "vibe-dataTableCustom-event vibe-dataTableCustom-event-allDay",  (hasStart || hasEnd || hasDurDays));
+			if (hasStart)             appendIL(fp, (m_messages.vibeDataTable_Event_Start() + " " + start),             "vibe-dataTableCustom-event vibe-dataTableCustom-event-start",               (hasEnd || hasDurDays));
+			if (hasEnd)               appendIL(fp, (m_messages.vibeDataTable_Event_End()   + " " + end),               "vibe-dataTableCustom-event vibe-dataTableCustom-event-end",                            hasDurDays );
+			if (hasDurDays)           appendIL(fp, (m_messages.vibeDataTable_Event_Duration(String.valueOf(durDays))), "vibe-dataTableCustom-event vibe-dataTableCustom-event-duration", false                            );
 		}
 	}
 
@@ -126,10 +127,37 @@ public class CustomCell extends AbstractCell<Object> {
 	 * Renders an EntryLinkInfo into a flow panel.
 	 */
 	private void renderLink(VibeFlowPanel fp, EntryLinkInfo eli) {
-//!		...this needs to be implemented...
-		InlineLabel label = new InlineLabel("custom link");
-		label.setWordWrap(false);
-		fp.add(label);
+		// If there's no HREF...
+		String linkText = eli.getText();
+		String href     = eli.getHref();
+		String target   = eli.getTarget();
+		if (!(GwtClientHelper.hasString(href))) {
+			// ...we don't render anything.
+			return;
+		}
+
+		// If there's no text for the link...
+		if (!(GwtClientHelper.hasString(linkText))) {
+			// ...display the HREF.
+			linkText = href;
+		}
+
+		// Create the Anchor...
+		Anchor a = new Anchor();
+		a.addStyleName("vibe-dataTableCustom-anchor");
+		a.setHref(href);
+		if (GwtClientHelper.hasString(target)) {
+			a.setTarget(target);
+		}
+
+		// ...create the label for the anchor...
+		InlineLabel il = new InlineLabel(linkText);
+		il.addStyleName("vibe-dataTableCustom-anchor-label");
+		il.setWordWrap(false);
+
+		// ...and tie it all together.
+		a.getElement().appendChild(il.getElement());
+		fp.add(a);
 	}
 	
 	/*
@@ -137,6 +165,7 @@ public class CustomCell extends AbstractCell<Object> {
 	 */
 	private void renderString(VibeFlowPanel fp, String value) {
 		InlineLabel label = new InlineLabel(value);
+		label.addStyleName("vibe-dataTableCustom-string");
 		label.setWordWrap(false);
 		fp.add(label);
 	}

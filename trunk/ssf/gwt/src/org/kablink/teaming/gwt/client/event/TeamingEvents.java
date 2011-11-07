@@ -111,6 +111,7 @@ public enum TeamingEvents implements IsSerializable {
 	
 	SHOW_CONTENT_CONTROL,				// Shows the ContentControl.
 	SHOW_DISCUSSION_FOLDER,				// Shows a discussion folder.
+	SHOW_FILE_FOLDER,					// Shows a file       folder.
 	SHOW_LANDING_PAGE,					// Shows a landing page.
 	
 	SIDEBAR_HIDE,						// Hides the left navigation panel.
