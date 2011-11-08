@@ -57,7 +57,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @author jong
  *
  */
-public class VibeApiImpl {
+public class VibeApiImpl implements VibeApi {
 	
 	private final String FILE_TEMPLATE_BY_NAME = "rest/file/name/{entityType}/{entityId}/{filename}";
 	private final String FILE_TEMPLATE_BY_ID = "rest/file/id/{fileid}";
@@ -157,14 +157,6 @@ public class VibeApiImpl {
 		return r.accept(conn.getAcceptableMediaTypes()).get(FileVersionPropertiesCollection.class);
 	}
 
-	public static void main(String[] args) {
-		VibeClient conn = new VibeClient("http://localhost:8079", "admin", "admin");
-		VibeApiImpl client = conn.createClient();
-		FileProperties fp = client.readFileProperties("folderEntry", 13, "debug5.txt");
-		FileProperties fp2 = client.readFileProperties("folderEntry", 13, "debug5.txt");
-		conn.destroy();
-	}
-
 	private String ISO8601FromDate(Date date) {
 		String dateStr = null;
 		if(date != null) {
@@ -200,4 +192,14 @@ public class VibeApiImpl {
 		WebResource r = c.resource(resourceUri);
 		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mimeType).post(FileProperties.class);
 	}
+	
+	public static void main(String[] args) {
+		VibeClient client = VibeClient.create("http://localhost:8079", "admin", "admin");
+		VibeApi api = client.getVibeApi();
+		FileProperties fp = api.readFileProperties("folderEntry", 13, "debug5.txt");
+		FileProperties fp2 = api.readFileProperties("folderEntry", 13, "debug5.txt");
+		client.destroy();
+	}
+
+
 }

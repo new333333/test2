@@ -52,11 +52,20 @@ public class VibeClient {
 	private static final MediaType[] ACCEPTABLE_MEDIA_TYPES_DEFAULT = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
 	
 	private String baseUrl;
-	private Client client;
+	private Client client; // underlying Jersey client
 	private MediaType[] acceptableMediaTypes = ACCEPTABLE_MEDIA_TYPES_DEFAULT;
+	private VibeApi vibeApi;
 	
-	public VibeClient(String baseUrl, String username, String password)
-	{
+	/**
+	 * Create a <code>VibeClient</code> instance with the base URL for Vibe server and the login credential
+	 * which will be used for HTTP Basic Authentication.
+	 *  
+	 * @param baseUrl
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public static VibeClient create(String baseUrl, String username, String password) {
 		if(!baseUrl.endsWith("/"))
 			baseUrl += "/";
 		
@@ -69,15 +78,41 @@ public class VibeClient {
 	     config.getState().setCredentials(null, null, -1, username, password);
 	     
 	     ApacheHttpClient c = ApacheHttpClient.create(config);
-	     
-	     this.baseUrl = baseUrl;
-	     this.client = c;
+
+	     return new VibeClient(baseUrl, c);
 	}
 	
+	private VibeClient(String baseUrl, Client c)
+	{
+		this.baseUrl = baseUrl;
+		this.client = c;
+		this.vibeApi = new VibeApiImpl(this);
+	}
+	
+	/**
+	 * Return base URL for Vibe server.
+	 * 
+	 * @return
+	 */
 	public String getBaseUrl() {
 		return baseUrl;
 	}
-	
+
+	/**
+	 * Return a <code>VibeApi</code> object on which application can invoke API calls.
+	 *  
+	 * @return
+	 */
+	public VibeApi getVibeApi() {
+		return vibeApi;
+	}
+
+	/**
+	 * Return a handle on the underlying Jersey client object. This method can be used to set custom settings
+	 * before making API calls.
+	 * 
+	 * @return
+	 */
 	public Client getClient() {
 		return client;
 	}
@@ -90,15 +125,18 @@ public class VibeClient {
 		return acceptableMediaTypes;
 	}
 
+	/**
+	 * Set an array of acceptable media types. This method can be used to override the default settings.
+	 * @param acceptableMediaTypes
+	 */
 	public void setAcceptableMediaTypes(MediaType[] acceptableMediaTypes) {
 		this.acceptableMediaTypes = acceptableMediaTypes;
 	}
 
+	/**
+	 * Release the resources associated with this client. The application must call this method when done with a client.
+	 */
 	public void destroy() {
 		client.destroy();
-	}
-
-	public VibeApiImpl createClient() {
-		return new VibeApiImpl(this);
 	}
 }
