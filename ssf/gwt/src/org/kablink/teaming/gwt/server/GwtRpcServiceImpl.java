@@ -564,6 +564,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_FOLDER_ENTRIES:
+		{
+			GetFolderEntriesRpcResponseData responseData;
+			GetFolderEntriesCmd gfeCmd;
+			ArrayList<GwtFolderEntry> result;
+			
+			gfeCmd = (GetFolderEntriesCmd) cmd;
+			result = getFolderEntries( ri, gfeCmd.getFolderId(), gfeCmd.getNumEntries() );
+			responseData = new GetFolderEntriesRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_FOLDER_ROWS:
 		{
 			GetFolderRowsCmd gfrCmd = ((GetFolderRowsCmd) cmd);
@@ -2551,6 +2564,74 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return folder;
 	}// end getFolder()
 	
+	
+	/**
+	 * Return a list of the first n entries in the given folder.
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String folderId, int numEntriesToRead ) throws GwtTeamingException
+	{
+		ArrayList<GwtFolderEntry> entries;
+		
+		entries = new ArrayList<GwtFolderEntry>();
+		
+		try
+		{
+			Long folderIdL;
+			FolderModule folderModule;
+			Map options;
+			Map searchResults;
+			List<Map> folderEntries;
+			int totalEntries;
+			
+			folderModule = getFolderModule();
+
+			folderIdL = new Long( folderId );
+			
+			// Get the ids of the first n entries in the given folder.
+			options = new HashMap();
+			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE );
+			options.put( ObjectKeys.SEARCH_SORT_BY, Constants.LASTACTIVITY_FIELD );
+			options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf( numEntriesToRead ) );
+			searchResults = folderModule.getEntries( folderIdL, options );
+			
+			// Scan the entries we read
+			folderEntries = (List<Map>) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
+			totalEntries = 0;
+			for (Map entryMap: folderEntries)
+			{
+				GwtFolderEntry folderEntry;
+				String entryId;
+
+				// Have we reached the max number of entries to return?
+				if ( totalEntries >= numEntriesToRead )
+					break;
+				
+				// Get the entry id
+				entryId = (String) entryMap.get( Constants.DOCID_FIELD );
+				
+				try
+				{
+					// Get a GwtFolderEntry from the given entry id.
+					folderEntry = getEntry( ri, null, entryId );
+					entries.add( folderEntry );
+					
+					++totalEntries;
+				}
+				catch (Exception e)
+				{
+					// Nothing to do.
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			throw GwtServerHelper.getGwtTeamingException( e );
+		}
+		
+		return entries;
+	}
 	
 	/*
 	 * Return a GwtUser object for the given user id

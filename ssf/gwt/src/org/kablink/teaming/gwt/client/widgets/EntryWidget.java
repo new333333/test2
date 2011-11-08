@@ -69,7 +69,20 @@ public class EntryWidget extends VibeWidget
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
+		
+		// All composites must call initWidget() in their constructors.
+		initWidget( mainPanel );
+	}
+	
+	/**
+	 * 
+	 */
+	public EntryWidget( EntryProperties properties, String landingPageStyle )
+	{
+		VibeFlowPanel mainPanel;
+		
+		mainPanel = init( properties, landingPageStyle );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -96,17 +109,15 @@ public class EntryWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( EntryConfig config )
+	private VibeFlowPanel init( EntryProperties properties, String landingPageStyle )
 	{
-		EntryProperties properties;
 		VibeFlowPanel titlePanel;
 		VibeFlowPanel mainPanel;
 		
 		m_properties = new EntryProperties();
-		properties = config.getProperties();
 		m_properties.copy( properties );
 		
-		m_style = config.getLandingPageStyle();
+		m_style = landingPageStyle;
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
