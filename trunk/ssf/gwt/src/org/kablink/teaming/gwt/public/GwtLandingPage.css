@@ -51,6 +51,7 @@
 }
 
 
+
 /* ######## Styles used with the entry widget on a landing page. ######## */
 
 .entryWidgetContentPanel, .entryWidgetContentPanel_dark
@@ -103,6 +104,25 @@
 	padding-right: 4px;	
 }
 
+.folderWidgetListOfEntriesPanel, .folderWidgetListOfEntriesPanel_dark
+{
+}
+
+.folderWidgetLinkToEntryPanel, .folderWidgetLinkToEntryPanel_dark
+{
+	margin: 6px;
+}
+
+.folderWidgetLinkToEntry, .folderWidgetLinkToEntry_dark
+{
+	color: #135c8f;
+	font-size: 14px;
+	line-height: 15px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+
 .folderWidgetMainPanel
 {
 }
@@ -114,7 +134,7 @@
 	line-height: 15px;
 }
 
-.folderWidgetTitleLabel:hover, .folderWidgetTitleLabel_dark:hover
+.folderWidgetTitleLabel:hover, .folderWidgetTitleLabel_dark:hover, .folderWidgetLinkToEntry:hover, .folderWidgetLinkToEntry_dark:hover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;

@@ -53,6 +53,8 @@ public class EntryProperties
 	implements PropertiesObj
 {
 	private boolean m_showTitle;
+	private boolean m_showAuthor;
+	private boolean m_showDate;
 	private String m_entryId;
 	private String m_entryName;
 	private String m_entryDesc;
@@ -68,6 +70,8 @@ public class EntryProperties
 	public EntryProperties()
 	{
 		m_showTitle = false;
+		m_showAuthor = false;
+		m_showDate = false;
 		m_entryId = null;
 		m_entryName = null;
 		m_parentBinderName = null;
@@ -105,10 +109,7 @@ public class EntryProperties
 				
 				if ( gwtFolderEntry != null )
 				{
-					m_entryName = gwtFolderEntry.getEntryName();
-					m_entryDesc = gwtFolderEntry.getEntryDesc();
-					m_parentBinderName = gwtFolderEntry.getParentBinderName();
-					m_viewEntryUrl = gwtFolderEntry.getViewEntryUrl();
+					setEntryData( gwtFolderEntry );
 				}
 				
 				// Inform the callback that the rpc request finished.
@@ -141,8 +142,11 @@ public class EntryProperties
 			
 			m_entryId = newEntryId;
 			m_entryName = entryProps.getEntryName();
+			m_entryDesc = entryProps.getEntryDecs();
 			m_parentBinderName = entryProps.getBinderName();
 			m_showTitle = entryProps.getShowTitleValue();
+			m_showAuthor = entryProps.getShowAuthor();
+			m_showDate = entryProps.getShowDate();
 			m_viewEntryUrl = entryProps.getViewEntryUrl();
 		}
 	}// end copy()
@@ -191,12 +195,24 @@ public class EntryProperties
 		// Do we have an entry id?
 		if ( m_entryId != null )
 		{
-			GetEntryCmd cmd;
-			
-			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
-			m_getterCallback = callback;
-			cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
-			GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
+			// Yes, Do we already have data for this entry?
+			if ( m_entryName == null )
+			{
+				GetEntryCmd cmd;
+				
+				// No, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
+				m_getterCallback = callback;
+				cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
+				GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
+			}
+			else
+			{
+				// Yes, tell the callback.
+				if ( callback != null )
+				{
+					callback.returnValue( Boolean.TRUE );
+				}
+			}
 		}
 	}// end getDataFromServer()
 	
@@ -235,6 +251,21 @@ public class EntryProperties
 		return m_entryName;
 	}
 	
+	/**
+	 * 
+	 */
+	public boolean getShowAuthor()
+	{
+		return m_showAuthor;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getShowDate()
+	{
+		return m_showDate;
+	}
 	
 	/**
 	 * Return the "show title" property.
@@ -264,12 +295,23 @@ public class EntryProperties
 	
 	
 	/**
+	 * Save the data about the given entry
+	 */
+	public void setEntryData( GwtFolderEntry entry )
+	{
+		m_entryName = entry.getEntryName();
+		m_entryDesc = entry.getEntryDesc();
+		m_parentBinderName = entry.getParentBinderName();
+		m_viewEntryUrl = entry.getViewEntryUrl();
+	}
+	
+	/**
 	 * 
 	 */
 	public void setEntryId( String entryId )
 	{
 		// Did the entry id change?
-		if ( m_entryId != null && m_entryId.equalsIgnoreCase( entryId ) )
+		if ( m_entryId != null && m_entryId.equalsIgnoreCase( entryId ) == false )
 		{
 			// Yes
 			// Since we are changing the entry id clear out the entry name and the name of the parent binder.
@@ -280,6 +322,21 @@ public class EntryProperties
 		m_entryId = entryId;
 	}// end setEntryId()
 	
+	/**
+	 * 
+	 */
+	public void setShowAuthor( boolean show )
+	{
+		m_showAuthor = show;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setShowDate( boolean show )
+	{
+		m_showDate = show;
+	}
 	
 	/**
 	 * 

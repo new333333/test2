@@ -33,11 +33,20 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GetterCallback;
+import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
+import org.kablink.teaming.gwt.client.lpe.EntryProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderConfig;
 import org.kablink.teaming.gwt.client.lpe.FolderProperties;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntriesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
@@ -45,6 +54,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -59,10 +69,60 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class FolderWidget extends VibeWidget
 {
+	/**
+	 * This class is used as the click handler when the user clicks on the title of an entry.
+	 *
+	 */
+	private class EntryClickHandler implements ClickHandler
+	{
+		private String m_viewEntryUrl;
+		
+		/**
+		 * 
+		 */
+		public EntryClickHandler( String entryUrl )
+		{
+			super();
+			
+			m_viewEntryUrl = entryUrl;
+		}
+
+		/**
+		 * 
+		 */
+		private void handleClickOnLink()
+		{
+			if ( GwtClientHelper.hasString( m_viewEntryUrl ) )
+			{
+				// Fire the "view entry" event.
+				GwtTeaming.fireEvent( new ViewForumEntryEvent( m_viewEntryUrl ) );
+			}
+			
+		}
+		
+		/**
+		 * 
+		 */
+		public void onClick( ClickEvent event )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					handleClickOnLink();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
 	private FolderProperties m_properties;
 	private String m_style;
 	private Element m_folderTitleElement;
 	private Element m_folderDescElement;
+	private VibeFlowPanel m_listOfEntriesPanel;
 
 	/**
 	 * 
@@ -75,6 +135,64 @@ public class FolderWidget extends VibeWidget
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
+	}
+	
+	/**
+	 * Add the given entries to this widget
+	 */
+	private void addEntries( ArrayList<GwtFolderEntry> entries )
+	{
+		if ( entries == null || entries.size() == 0 )
+			return;
+		
+		// Do we have a panel to put the entries in?
+		if ( m_listOfEntriesPanel != null )
+		{
+			int i;
+			
+			// Yes
+			for (i = 0; i < entries.size(); ++i)
+			{
+				GwtFolderEntry entry;
+				
+				entry = entries.get( i );
+				
+				// Should we display the entry's name and description?
+				if ( m_properties.getShowEntriesOpenedValue() )
+				{
+					EntryProperties entryProperties;
+					EntryWidget entryWidget;
+					
+					// Yes
+					entryProperties = new EntryProperties();
+					entryProperties.setEntryId( entry.getEntryId() );
+					entryProperties.setEntryData( entry );
+					entryProperties.setShowTitle( true );
+					
+					entryWidget = new EntryWidget( entryProperties, m_style );
+					m_listOfEntriesPanel.add( entryWidget );
+				}
+				else
+				{
+					VibeFlowPanel panel;
+					InlineLabel link;
+					EntryClickHandler clickHandler;
+					
+					// No, just create a link from the entry's title
+					panel = new VibeFlowPanel();
+					panel.addStyleName( "folderWidgetLinkToEntryPanel" + m_style );
+					
+					link = new InlineLabel( entry.getEntryName() );
+					link.addStyleName( "folderWidgetLinkToEntry" + m_style );
+					
+					clickHandler = new EntryClickHandler( entry.getViewEntryUrl() );
+					link.addClickHandler( clickHandler );
+					
+					panel.add( link );
+					m_listOfEntriesPanel.add( panel );
+				}
+			}
+		}
 	}
 	
 	/**
@@ -96,6 +214,7 @@ public class FolderWidget extends VibeWidget
 	{
 		FolderProperties properties;
 		VibeFlowPanel mainPanel;
+		int numEntries;
 		
 		m_properties = new FolderProperties();
 		properties = config.getProperties();
@@ -190,6 +309,66 @@ public class FolderWidget extends VibeWidget
 				}
 			}
 		} );
+		
+		// Are we supposed to show entries from this folder?
+		numEntries = m_properties.getNumEntriesToBeShownValue();
+		if ( numEntries > 0 )
+		{
+			GetFolderEntriesCmd cmd;
+			
+			// Yes, create a panel for the entries to live in.
+			m_listOfEntriesPanel = new VibeFlowPanel();
+			m_listOfEntriesPanel.addStyleName( "folderWidgetListOfEntriesPanel" + m_style );
+			mainPanel.add( m_listOfEntriesPanel );
+
+			// Issue an rpc request to get the last n entries from the folder.
+			cmd = new GetFolderEntriesCmd( m_properties.getFolderId(), numEntries );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolderEntries(),
+						m_properties.getFolderId() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( VibeRpcResponse response )
+				{
+					GetFolderEntriesRpcResponseData gfeResponse;
+					
+					gfeResponse = (GetFolderEntriesRpcResponseData) response.getResponseData();
+					
+					if ( gfeResponse != null )
+					{
+						final ArrayList<GwtFolderEntry> entries;
+						
+						entries = gfeResponse.getEntries();
+						if ( entries != null )
+						{
+							Scheduler.ScheduledCommand cmd;
+	
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								public void execute()
+								{
+									// Add the entries to this widget
+									addEntries( entries );
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					}
+				}
+			} );
+		}
 		
 		return mainPanel;
 	}
