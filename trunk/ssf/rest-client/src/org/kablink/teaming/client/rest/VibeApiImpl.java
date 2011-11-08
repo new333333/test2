@@ -62,9 +62,9 @@ public class VibeApiImpl {
 	private final String FILE_TEMPLATE_BY_NAME = "rest/file/name/{entityType}/{entityId}/{filename}";
 	private final String FILE_TEMPLATE_BY_ID = "rest/file/id/{fileid}";
 	
-	private VibeClientConnection conn;
+	private VibeClient conn;
 	
-	VibeApiImpl(VibeClientConnection conn) {
+	VibeApiImpl(VibeClient conn) {
 		this.conn = conn;
 	}
 	
@@ -158,7 +158,7 @@ public class VibeApiImpl {
 	}
 
 	public static void main(String[] args) {
-		VibeClientConnection conn = new VibeClientConnection("http://localhost:8079", "admin", "admin");
+		VibeClient conn = new VibeClient("http://localhost:8079", "admin", "admin");
 		VibeApiImpl client = conn.createClient();
 		FileProperties fp = client.readFileProperties("folderEntry", 13, "debug5.txt");
 		FileProperties fp2 = client.readFileProperties("folderEntry", 13, "debug5.txt");
