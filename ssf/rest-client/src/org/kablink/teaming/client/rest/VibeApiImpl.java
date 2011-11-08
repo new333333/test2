@@ -34,7 +34,9 @@
 package org.kablink.teaming.client.rest;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.Date;
 
@@ -48,6 +50,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.model.FileProperties;
 import org.kablink.teaming.rest.model.FileVersionPropertiesCollection;
+import org.kablink.util.FileUtil;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -68,23 +71,36 @@ public class VibeApiImpl implements VibeApi {
 		this.conn = conn;
 	}
 	
+	@Override
 	public FileProperties writeFile(String entityType, long entityId, String filename, String dataName, Date modDate, File file) {
 		return writeFileContent(entityType, entityId, filename, dataName, modDate, file);
 	}
 	
+	@Override
 	public FileProperties writeFile(String entityType, long entityId, String filename, String dataName, Date modDate, InputStream file) {
 		return writeFileContent(entityType, entityId, filename, dataName, modDate, file);
 	}
 	
+	@Override
 	public FileProperties writeFile(String fileId, String dataName, Date modDate, File file) {
 		String mt = new MimetypesFileTypeMap().getContentType(file.getName());
 		return writeFileContent(fileId, dataName, modDate, file, mt);
 	}
 	
+	@Override
 	public FileProperties writeFile(String fileId, String dataName, Date modDate, InputStream file, String mimeType) {
 		return writeFileContent(fileId, dataName, modDate, file, mimeType);
 	}
 	
+	public File readFileAsFile(String entityType, long entityId, String filename) {
+		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
+		URI resourceUri = ub.build(entityType, entityId, filename);
+		Client c = conn.getClient();		
+		WebResource r = c.resource(resourceUri);
+		return r.accept(MediaType.WILDCARD).get(File.class);
+	}
+	
+	@Override
 	public InputStream readFile(String entityType, long entityId, String filename) {
 		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
 		URI resourceUri = ub.build(entityType, entityId, filename);
@@ -93,6 +109,16 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(MediaType.WILDCARD).get(InputStream.class);
 	}
 	
+	@Override
+	public File readFileAsFile(String fileId) {
+		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
+		URI resourceUri = ub.build(fileId);
+		Client c = conn.getClient();		
+		WebResource r = c.resource(resourceUri);
+		return r.accept(MediaType.WILDCARD).get(File.class);
+	}
+	
+	@Override
 	public InputStream readFile(String fileId) {
 		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
 		URI resourceUri = ub.build(fileId);
@@ -101,6 +127,7 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(MediaType.WILDCARD).get(InputStream.class);
 	}
 	
+	@Override
 	public FileProperties readFileProperties(String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
@@ -108,6 +135,7 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
 	}
 	
+	@Override
 	public FileProperties readFileProperties(String fileId) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
@@ -115,6 +143,7 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
 	}
 	
+	@Override
 	public FileProperties updateFileProperties(String entityType, long entityId, String filename, FileProperties fileProperties) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
@@ -122,6 +151,7 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
 	}
 	
+	@Override
 	public FileProperties updateFileProperties(String fileId, FileProperties fileProperties) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
@@ -129,6 +159,7 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
 	}
 	
+	@Override
 	public void deleteFile(String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).build(entityType, entityId, filename);
@@ -136,6 +167,7 @@ public class VibeApiImpl implements VibeApi {
 		r.accept(conn.getAcceptableMediaTypes()).delete();
 	}
 	
+	@Override
 	public void deleteFile(String fileId) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).build(fileId);
@@ -143,6 +175,7 @@ public class VibeApiImpl implements VibeApi {
 		r.accept(conn.getAcceptableMediaTypes()).delete();
 	}
 	
+	@Override
 	public FileVersionPropertiesCollection getFileVersions(String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("versions").build(entityType, entityId, filename);
@@ -150,6 +183,7 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(conn.getAcceptableMediaTypes()).get(FileVersionPropertiesCollection.class);
 	}
 	
+	@Override
 	public FileVersionPropertiesCollection getFileVersions(String fileId) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("versions").build(fileId);
@@ -193,12 +227,34 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mimeType).post(FileProperties.class);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		/*
 		VibeClient client = VibeClient.create("http://localhost:8079", "admin", "admin");
 		VibeApi api = client.getVibeApi();
 		FileProperties fp = api.readFileProperties("folderEntry", 13, "debug5.txt");
 		FileProperties fp2 = api.readFileProperties("folderEntry", 13, "debug5.txt");
 		client.destroy();
+		*/
+		
+		VibeClient client = VibeClient.create("http://positive:8080", "admin", "admin");
+		VibeApi api = client.getVibeApi();
+		System.out.println("Start time: " + new Date());
+		for(int i = 0; i < 2; i++) {
+			//File file = api.readFileAsFile("folderEntry", 749, "catalina.out");
+			//System.out.println("File path: " + file.getAbsolutePath());
+			//System.out.println("File length: " + file.length());
+			//InputStream is = api.readFile("folderEntry", 749, "catalina.out");
+			InputStream is = api.readFile("24e350ea3383b149013383e583af0030");
+			//File file = new File("C:/temp/rest/file_" + i + ".out");
+			//OutputStream os = new FileOutputStream(file);
+			//FileUtil.copy(is, os);
+			//os.close();
+			is.close();
+			System.out.println("(" + i + ") file downloaded");
+		}
+		System.out.println("End time: " + new Date());
+		client.destroy();
+
 	}
 
 
