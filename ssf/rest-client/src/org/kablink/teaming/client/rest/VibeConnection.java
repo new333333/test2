@@ -35,6 +35,8 @@ package org.kablink.teaming.client.rest;
 
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.client.apache.ApacheHttpClient;
@@ -47,8 +49,11 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
  */
 public class VibeConnection {
 
+	private static final MediaType[] ACCEPTABLE_MEDIA_TYPES_DEFAULT = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
+	
 	private String baseUrl;
 	private Client client;
+	private MediaType[] acceptableMediaTypes = ACCEPTABLE_MEDIA_TYPES_DEFAULT;
 	
 	public static VibeConnection getInstance(String baseUrl, String username, String password)
 	{
@@ -84,4 +89,17 @@ public class VibeConnection {
 	public void destroy() {
 		client.destroy();
 	}
+
+	/**
+	 * Return an array of acceptable media types. The returned array should never be modified.
+	 * @return
+	 */
+	public MediaType[] getAcceptableMediaTypes() {
+		return acceptableMediaTypes;
+	}
+
+	public void setAcceptableMediaTypes(MediaType[] acceptableMediaTypes) {
+		this.acceptableMediaTypes = acceptableMediaTypes;
+	}
+
 }

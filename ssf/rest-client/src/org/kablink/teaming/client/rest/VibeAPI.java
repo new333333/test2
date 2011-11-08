@@ -33,15 +33,25 @@
 
 package org.kablink.teaming.client.rest;
 
+import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
+import java.util.Date;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.model.FileProperties;
+import org.kablink.teaming.rest.model.FileVersionPropertiesCollection;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * @author jong
@@ -49,17 +59,98 @@ import com.sun.jersey.api.client.WebResource;
  */
 public class VibeAPI {
 	
-	private static MediaType[] DEFAULT_MEDIA_TYPES = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
-	
 	private static final String FILE_TEMPLATE_BY_NAME = "rest/file/name/{entityType}/{entityId}/{filename}";
+	private static final String FILE_TEMPLATE_BY_ID = "rest/file/id/{fileid}";
+	
+	public static FileProperties writeFile(VibeConnection conn, String entityType, long entityId, String filename, String dataName, Date modDate, File file) {
+		return writeFileContent(conn, entityType, entityId, filename, dataName, modDate, file);
+	}
+	
+	public static FileProperties writeFile(VibeConnection conn, String entityType, long entityId, String filename, String dataName, Date modDate, InputStream file) {
+		return writeFileContent(conn, entityType, entityId, filename, dataName, modDate, file);
+	}
+	
+	public static FileProperties writeFile(VibeConnection conn, String fileId, String dataName, Date modDate, File file) {
+		String mt = new MimetypesFileTypeMap().getContentType(file.getName());
+		return writeFileContent(conn, fileId, dataName, modDate, file, mt);
+	}
+	
+	public static FileProperties writeFile(VibeConnection conn, String fileId, String dataName, Date modDate, InputStream file, String mimeType) {
+		return writeFileContent(conn, fileId, dataName, modDate, file, mimeType);
+	}
+	
+	public static InputStream readFile(VibeConnection conn, String entityType, long entityId, String filename) {
+		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
+		URI resourceUri = ub.build(entityType, entityId, filename);
+		Client c = conn.getClient();		
+		WebResource r = c.resource(resourceUri);
+		return r.accept(MediaType.WILDCARD).get(InputStream.class);
+	}
+	
+	public static InputStream readFile(VibeConnection conn, String fileId) {
+		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
+		URI resourceUri = ub.build(fileId);
+		Client c = conn.getClient();		
+		WebResource r = c.resource(resourceUri);
+		return r.accept(MediaType.WILDCARD).get(InputStream.class);
+	}
 	
 	public static FileProperties readFileProperties(VibeConnection conn, String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
 		WebResource r = c.resource(resourceUri);
-		return r.accept(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).get(FileProperties.class);
+		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
 	}
 	
+	public static FileProperties readFileProperties(VibeConnection conn, String fileId) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
+		WebResource r = c.resource(resourceUri);
+		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
+	}
+	
+	public static FileProperties updateFileProperties(VibeConnection conn, String entityType, long entityId, String filename, FileProperties fileProperties) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
+		WebResource r = c.resource(resourceUri);
+		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
+	}
+	
+	public static FileProperties updateFileProperties(VibeConnection conn, String fileId, FileProperties fileProperties) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
+		WebResource r = c.resource(resourceUri);
+		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
+	}
+	
+	public static void deleteFile(VibeConnection conn, String entityType, long entityId, String filename) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).build(entityType, entityId, filename);
+		WebResource r = c.resource(resourceUri);
+		r.accept(conn.getAcceptableMediaTypes()).delete();
+	}
+	
+	public static void deleteFile(VibeConnection conn, String fileId) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).build(fileId);
+		WebResource r = c.resource(resourceUri);
+		r.accept(conn.getAcceptableMediaTypes()).delete();
+	}
+	
+	public static FileVersionPropertiesCollection getFileVersions(VibeConnection conn, String entityType, long entityId, String filename) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("versions").build(entityType, entityId, filename);
+		WebResource r = c.resource(resourceUri);
+		return r.accept(conn.getAcceptableMediaTypes()).get(FileVersionPropertiesCollection.class);
+	}
+	
+	public static FileVersionPropertiesCollection getFileVersions(VibeConnection conn, String fileId) {
+		Client c = conn.getClient();		
+		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("versions").build(fileId);
+		WebResource r = c.resource(resourceUri);
+		return r.accept(conn.getAcceptableMediaTypes()).get(FileVersionPropertiesCollection.class);
+	}
+
 	public static void main(String[] args) {
 		VibeConnection conn = VibeConnection.getInstance("http://localhost:8079", "admin", "admin");
 		FileProperties fp = readFileProperties(conn, "folderEntry", 13, "debug5.txt");
@@ -67,4 +158,39 @@ public class VibeAPI {
 		conn.destroy();
 	}
 
+	private static String ISO8601FromDate(Date date) {
+		String dateStr = null;
+		if(date != null) {
+			DateTime dateTime = new DateTime(date);
+			dateStr = ISODateTimeFormat.dateTime().print(dateTime);
+		}
+		return dateStr;
+	}
+	
+	private static FileProperties writeFileContent(VibeConnection conn, String entityType, long entityId, String filename, String dataName, Date modDate, Object file) {
+		String modDateStr = ISO8601FromDate(modDate);
+		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
+		if(dataName != null)
+			ub.queryParam("dataName", dataName);
+		if(modDateStr != null)
+			ub.queryParam("modDate", modDateStr);
+		URI resourceUri = ub.build(entityType, entityId, filename);
+		Client c = conn.getClient();		
+		WebResource r = c.resource(resourceUri);
+		String mt = new MimetypesFileTypeMap().getContentType(filename);
+		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mt).post(FileProperties.class);
+	}
+
+	private static FileProperties writeFileContent(VibeConnection conn, String fileId, String dataName, Date modDate, Object file, String mimeType) {
+		String modDateStr = ISO8601FromDate(modDate);
+		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
+		if(dataName != null)
+			ub.queryParam("dataName", dataName);
+		if(modDateStr != null)
+			ub.queryParam("modDate", modDateStr);
+		URI resourceUri = ub.build(fileId);
+		Client c = conn.getClient();		
+		WebResource r = c.resource(resourceUri);
+		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mimeType).post(FileProperties.class);
+	}
 }
