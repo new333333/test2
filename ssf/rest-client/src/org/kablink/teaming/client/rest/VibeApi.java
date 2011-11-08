@@ -53,11 +53,11 @@ public interface VibeApi {
 	
 	public FileProperties writeFile(String fileId, String dataName, Date modDate, InputStream file, String mimeType);
 	
-	public File readFileAsFile(String entityType, long entityId, String filename);
+	//public File readFileAsFile(String entityType, long entityId, String filename);
 	
 	public InputStream readFile(String entityType, long entityId, String filename);
 	
-	public File readFileAsFile(String fileId);
+	//public File readFileAsFile(String fileId);
 	
 	public InputStream readFile(String fileId);
 	

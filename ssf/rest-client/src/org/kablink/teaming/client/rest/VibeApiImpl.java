@@ -109,7 +109,6 @@ public class VibeApiImpl implements VibeApi {
 		return r.accept(MediaType.WILDCARD).get(InputStream.class);
 	}
 	
-	@Override
 	public File readFileAsFile(String fileId) {
 		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
 		URI resourceUri = ub.build(fileId);
@@ -244,12 +243,12 @@ public class VibeApiImpl implements VibeApi {
 			//System.out.println("File path: " + file.getAbsolutePath());
 			//System.out.println("File length: " + file.length());
 			//InputStream is = api.readFile("folderEntry", 749, "catalina.out");
-			InputStream is = api.readFile("24e350ea3383b149013383e583af0030");
+			//InputStream is = api.readFile("24e350ea3383b149013383e583af0030");
 			//File file = new File("C:/temp/rest/file_" + i + ".out");
 			//OutputStream os = new FileOutputStream(file);
 			//FileUtil.copy(is, os);
 			//os.close();
-			is.close();
+			//is.close();
 			System.out.println("(" + i + ") file downloaded");
 		}
 		System.out.println("End time: " + new Date());
