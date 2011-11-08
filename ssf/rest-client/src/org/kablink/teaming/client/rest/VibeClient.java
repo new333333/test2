@@ -47,7 +47,7 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
  * @author jong
  *
  */
-public class VibeClientConnection {
+public class VibeClient {
 
 	private static final MediaType[] ACCEPTABLE_MEDIA_TYPES_DEFAULT = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
 	
@@ -55,7 +55,7 @@ public class VibeClientConnection {
 	private Client client;
 	private MediaType[] acceptableMediaTypes = ACCEPTABLE_MEDIA_TYPES_DEFAULT;
 	
-	public VibeClientConnection(String baseUrl, String username, String password)
+	public VibeClient(String baseUrl, String username, String password)
 	{
 		if(!baseUrl.endsWith("/"))
 			baseUrl += "/";
