@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="rest-client/src"/>
+	<classpathentry kind="src" path="indexer-lucene/test/src"/>
 	<classpathentry kind="src" path="ssr/src"/>
 	<classpathentry kind="src" path="rest/src"/>
 	<classpathentry kind="src" path="rest-shared/src"/>
@@ -161,5 +163,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-memcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spymemcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmemcached.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-apache-client.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
