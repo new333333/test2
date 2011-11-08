@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
+import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
@@ -69,7 +70,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
@@ -101,7 +104,6 @@ import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
@@ -218,30 +220,35 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	 * Inner class used to provide list of FolderRow's.
 	 */
 	private class FolderRowAsyncProvider extends AsyncDataProvider<FolderRow> {
-		private VibeDataTable<FolderRow> m_vdt;
+		private VibeDataTable<FolderRow> m_vdt;	// The data table we're providing data for.
 		
 		/**
 		 * Constructor method.
-		 * 
+		 *
+		 * @param vdt
 		 * @param keyProvider
 		 */
 		public FolderRowAsyncProvider(VibeDataTable<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
-			// Initialize the super class...
+			// Initialize the super class and keep track of the data
+			// table.
 			super(keyProvider);
-			
-			// ...and store the parameters.
 			m_vdt = vdt;
 		}
 
 		/**
+		 * Called to asynchronously page through the data.
+		 * 
+		 * @param display
+		 * 
 		 * Overrides AsyncDataProvider.onRowChanged()
 		 */
 		@Override
 		protected void onRangeChanged(HasData<FolderRow> display) {
 			final Long folderId = m_folderInfo.getBinderIdAsLong();
 			final Range range = display.getVisibleRange();
+			final int rowsRequested = range.getLength();
 			GwtClientHelper.executeCommand(
-					new GetFolderRowsCmd(folderId, m_folderInfo.getFolderType(), m_folderColumnsList, range.getStart(), range.getLength()),
+					new GetFolderRowsCmd(folderId, m_folderInfo.getFolderType(), m_folderColumnsList, range.getStart(), rowsRequested),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -253,10 +260,20 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 				
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
-					// Apply the rows we read.
+					// Did we read more rows than we asked for?
 					FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
-					m_vdt.setRowData( responseData.getStartOffset(), responseData.getFolderRows());
-					m_vdt.setRowCount(responseData.getTotalRows()                                );
+					List<FolderRow> folderRows = responseData.getFolderRows();
+					int rowsRead = folderRows.size();
+					if (rowsRead > rowsRequested) {
+						// Yes!  This can happen with pinned entries. 
+						// When it does, we end up not displaying all
+						// the entries.  As of yet, I don't have a fix.
+//!						...this needs to be implemented...
+					}
+					
+					// Apply the rows we read.
+					m_vdt.setRowData(responseData.getStartOffset(), folderRows);
+					m_vdt.setRowCount(responseData.getTotalRows());
 				}
 			});
 		}
@@ -477,11 +494,14 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		final SafeHtmlHeader pinHeader = new SafeHtmlHeader(rendered);
 
 		// ...define a column for it...
-//!		...this needs to be implemented...
-		TextColumn<FolderRow> column = new TextColumn<FolderRow>() {
+		EntryPinColumn<FolderRow> column = new EntryPinColumn<FolderRow>() {
 			@Override
-			public String getValue(FolderRow fr) {
-				return "";
+			public EntryPinInfo getValue(FolderRow fr) {
+				return
+					new EntryPinInfo(
+						fr.getPinned(),
+						m_folderInfo.getBinderIdAsLong(),
+						fr.getEntryId());
 			}
 		};
 		
@@ -651,9 +671,12 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 		// Add a column for a checkbox selector.
 		int colIndex = 0;
 		addSelectAllColumn(selectionModel, colIndex++);
-		
-		// Add a column to manage pinning the entry.
-		addPinColumn(selectionModel, colIndex++);
+
+		// For discussion folders...
+		if (FolderType.DISCUSSION == m_folderInfo.getFolderType()) {
+			// ...add a column to manage pinning the entry.
+			addPinColumn(selectionModel, colIndex++);
+		}
 
 	    // Scan the columns defined in this folder.
 		for (final FolderColumn fc:  m_folderColumnsList) {

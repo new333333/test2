@@ -30,43 +30,60 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
 
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.view.client.ProvidesKey;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
 
 /**
- * Common 'data table' base class for use by all Vibe folders that show
- * a simple list of entries.
+ * This class holds all of the information necessary to execute the
+ * 'pin entry' command.
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTable<T> extends DataGrid<T> {
-	// The following are used as event names that are captured by
-	// various data table cell handlers. 
-	public final static String CELL_EVENT_CLICK		= "click";
-	public final static String CELL_EVENT_KEYDOWN	= "keydown";
-	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
-	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
+public class PinEntryCmd extends VibeRpcCmd {
+	private Long	m_entryId;	//
+	private Long	m_folderId;	//
 	
-	// The following are used to name widgets stored in the various
-	// cells of a data table.
-	public final static String CELL_WIDGET_ATTRIBUTE			= "n-cellWidget";
-	public final static String CELL_WIDGET_ENTRY_DOWNLOAD_LABEL	= "entryDownloadLabel";
-	public final static String CELL_WIDGET_ENTRY_PIN_IMAGE		= "entryPinImg";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL	= "entryTitleLabel";
-	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE	= "entryUnseenImg";
-	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR	= "entryViewAnchor";
-	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL		= "entryViewLabel";
-	public final static String CELL_WIDGET_PRESENCE				= "presenceControl";
-	public final static String CELL_WIDGET_PRESENCE_LABEL		= "presenceLabel";
+	/**
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
+	 */
+	public PinEntryCmd() {
+		super();		
+	}
 
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
-	 * @param pageSize
+	 * @param folderId
+	 * @param entryId
 	 */
-	public VibeDataTable(int pageSize, ProvidesKey<T> keyProvider) {
-		super(pageSize, keyProvider);
+	public PinEntryCmd(Long folderId, Long entryId) {
+		this();
+		
+		m_folderId = folderId;
+		m_entryId  = entryId;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Long getFolderId() {return m_folderId;}	
+	public Long getEntryId()  {return m_entryId; }	
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.PIN_ENTRY.ordinal();
 	}
 }

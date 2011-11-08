@@ -1175,6 +1175,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case PIN_ENTRY:
+		{
+			PinEntryCmd peCmd = ((PinEntryCmd) cmd);
+			Boolean result = GwtServerHelper.pinEntry( this, getRequest( ri ), peCmd.getFolderId(), peCmd.getEntryId() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case PURGE_TASKS:
 		{
 			PurgeTasksCmd dtCmd = ((PurgeTasksCmd) cmd);
@@ -1480,6 +1488,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = updateFavorites( ri, ufCmd.getFavoritesList() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case UNPIN_ENTRY:
+		{
+			UnpinEntryCmd upeCmd = ((UnpinEntryCmd) cmd);
+			Boolean result = GwtServerHelper.unpinEntry( this, getRequest( ri ), upeCmd.getFolderId(), upeCmd.getEntryId() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		

@@ -354,6 +354,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
+	String rpcFailure_PinEntry();
 	String rpcFailure_PurgeTasks();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
@@ -383,6 +384,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_UnknownCause();
 	String rpcFailure_UnknownException();
+	String rpcFailure_UnpinEntry();
 	String rpcFailure_UntrackingBinder();
 	String rpcFailure_UntrackingPerson();
 	String rpcFailure_UpdateCalculatedDatesBinder();

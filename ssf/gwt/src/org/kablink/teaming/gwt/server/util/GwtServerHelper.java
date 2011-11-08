@@ -4290,6 +4290,7 @@ public class GwtServerHelper {
 		case PERSIST_ACTIVITY_STREAM_SELECTION:
 		case PERSIST_NODE_COLLAPSE:
 		case PERSIST_NODE_EXPAND:
+		case PIN_ENTRY:
 		case PURGE_TASKS:
 		case REMOVE_EXTENSION:
 		case REMOVE_FAVORITE:
@@ -4315,6 +4316,7 @@ public class GwtServerHelper {
 		case UPDATE_CALCULATED_DATES:
 		case UPDATE_ENTRY_TAGS:
 		case UPDATE_FAVORITES:
+		case UNPIN_ENTRY:
 		case UNTRACK_BINDER:
 		case UNTRACK_PERSON:
 		case VALIDATE_ENTRY_EVENTS:
@@ -4398,6 +4400,20 @@ public class GwtServerHelper {
 			usersExpandedBindersList.add(0, binderId);
 			setExpandedBindersList(bs, usersExpandedBindersList);
 		}
+	}
+
+	/**
+	 * Marks an entry as being pinned.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static Boolean pinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
+		return setEntryPinState(bs, request, folderId, entryId, true);
 	}
 	
 	/**
@@ -4697,6 +4713,74 @@ public class GwtServerHelper {
 		ai.setPresenceUserWSId(presenceUserWSId);
 	}
 
+	/**
+	 * Sets an entry's pin state.
+	 */
+	private static Boolean setEntryPinState(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId, boolean pin) throws GwtTeamingException {
+		try {
+			// If we weren't given a folder ID...
+			if (null == folderId) {
+				// ...extract it from the entry.
+				FolderEntry fe = bs.getFolderModule().getEntry(null, entryId);
+				folderId = fe.getParentBinder().getId();
+			}
+
+			// Read the user's folder properties for the folder.
+			Long userId = getCurrentUser().getId();
+			ProfileModule pm = bs.getProfileModule();
+			UserProperties userFolderProperties = pm.getUserProperties(userId, folderId);
+			Map properties = userFolderProperties.getProperties();
+
+			// Parse the pinned entries from it.
+			String pinnedEntries;
+			if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES))
+			     pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
+			else pinnedEntries = "";
+			List<Long> peList = new ArrayList<Long>();
+			String[] peArray = pinnedEntries.split(",");
+			for (int i = 0; i < peArray.length; i += 1) {
+				String pe = peArray[i];
+				if (MiscUtil.hasString(pe)) {
+					peList.add(Long.valueOf(peArray[i]));
+				}
+			}
+			
+			// Add (pin)/remove (unpin) the entry as requested.
+			boolean isPinned = peList.contains(entryId);
+			if (pin != isPinned) {
+				if (pin)
+				     peList.add(   entryId);
+				else peList.remove(entryId);
+			}
+			
+			// Scan the entries in the pinned list.
+			StringBuffer finalPinnedEntries = new StringBuffer("");
+			SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peList);
+			for (FolderEntry entry:  pinnedFolderEntriesSet) {
+				// Is the entry still viable in this folder?
+				if (entry.getParentBinder().getId().equals(folderId) && (!(entry.isPreDeleted()))) {
+					// Yes!  Add it to the final pinned entries string.
+					if (0 < finalPinnedEntries.length()) {
+						finalPinnedEntries.append(",");
+					}
+					finalPinnedEntries.append(entry.getId().toString());
+				}
+			}
+			
+			// Write the final pinned entries list to the user's folder
+			// properties.
+			pm.setUserProperty(userId, folderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, finalPinnedEntries.toString());
+
+			// If we get here, setting the pin state was successful!
+			// Return true.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}		
+	}
+	
 	/*
 	 * Stores the expanded Binder's List in a UserProperties.
 	 */
@@ -4877,6 +4961,20 @@ public class GwtServerHelper {
 		return results;
 	}
 
+	/**
+	 * Marks an entry as being unpinned.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static Boolean unpinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
+		return setEntryPinState(bs, request, folderId, entryId, false);
+	}
+	
 	/**
 	 * Update the tags for the given binder.
 	 */

@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
@@ -87,6 +88,7 @@ import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -738,7 +740,7 @@ public class GwtViewHelper {
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
-
+			
 			// Setup the current search filter the user has selected
 			// on the folder.
 			Map options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
@@ -757,15 +759,37 @@ public class GwtViewHelper {
 			else searchResults = bs.getFolderModule().getEntries(folderId, options);
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-			
-			// Scan the entries we read...
+
+			// Is this the first page of a discussion folder?
+			List<Long> pinnedEntryIds = new ArrayList<Long>();
+			if ((0 == start) && (FolderType.DISCUSSION == folderType)) {
+				// Yes!  Are there any entries pinned in the folder?
+				List<Map>  pinnedEntrySearchMaps = getPinnedEntries(bs, folder, userFolderProperties, pinnedEntryIds);
+				if (!(pinnedEntrySearchMaps.isEmpty())) {
+					// Yes!  Add them to the beginning of the search
+					// entries.
+					searchEntries.addAll(0, pinnedEntrySearchMaps);
+				}
+			}
+
+			// Scan the entries we read.
 			boolean addedAssignments = false;
 			List<FolderRow> folderRows = new ArrayList<FolderRow>();
 			for (Map entryMap:  searchEntries) {
-				// ...creating a FolderRow for each.
+				// Have we already process this entry's ID?
 				String entryIdS  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
 				Long entryId = Long.parseLong(entryIdS);
+				if (isEntryIInList(entryId, folderRows)) {
+					// Yes!  Skip it now.  Note that we may have
+					// duplicates because of pinning.
+					continue;
+				}
+				
+				// Creating a FolderRow for each entry.
 				FolderRow fr = new FolderRow(entryId, folderColumns);
+				if (pinnedEntryIds.contains(entryId)) {
+					fr.setPinned(true);
+				}
 				for (FolderColumn fc:  folderColumns) {
 					// Is this a custom column?
 					if (fc.isCustomColumn()) {
@@ -977,6 +1001,64 @@ public class GwtViewHelper {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
 		}
 		return result;
+	}
+
+	/*
+	 * Returns a List<Long> of the entry ID's of the entries that are
+	 * pinned in the given folder. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<Map> getPinnedEntries(AllModulesInjected bs, Folder folder, UserProperties userFolderProperties, List<Long> pinnedEntryIds) {
+		// Allocate a List<Map> for the search results for the entries
+		// pinned in this folder.
+		List<Map> pinnedEntrySearchMaps = new ArrayList<Map>();
+
+		// Are there any pinned entries stored in the user's folder
+		// properties on this folder?
+		Map properties = userFolderProperties.getProperties();
+		String pinnedEntries;
+		if ((null != properties) && properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES))
+		     pinnedEntries = ((String) properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES));
+		else pinnedEntries = null;
+		if (MiscUtil.hasString(pinnedEntries)) {
+			// Yes!  Parse them converting the String ID's to Long's.
+			if (pinnedEntries.lastIndexOf(",") == (pinnedEntries.length() - 1)) { 
+				pinnedEntries = pinnedEntries.substring(0, (pinnedEntries.length() - 1));
+			}
+			String[] peArray = pinnedEntries.split(",");
+			List<Long> peSet = new ArrayList();
+			for (int i = 0; i < peArray.length; i += 1) {
+				String pe = peArray[i];
+				if (MiscUtil.hasString(pe)) {
+					peSet.add(Long.valueOf(pe));
+				}
+			}
+
+			// Scan the pinned entries.
+			FolderModule fm = bs.getFolderModule();
+			List<Document> pinnedFolderEntriesList = new ArrayList<Document>();
+			SortedSet<FolderEntry> pinnedFolderEntriesSet = fm.getEntries(peSet);
+			for (FolderEntry entry:  pinnedFolderEntriesSet) {
+				// Is this entry still viable in this folder?
+				if (!(entry.isPreDeleted()) && entry.getParentBinder().equals(folder)) {
+					// Yes!  Track its ID...
+					pinnedEntryIds.add(entry.getId());
+
+					// ...and indexDoc.
+					Document indexDoc = fm.buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
+					pinnedFolderEntriesList.add(indexDoc);
+				}
+			}
+
+			// Construct search Map's from the indexDoc's for the
+			// pinned entries.
+			pinnedEntrySearchMaps = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
+			bs.getFolderModule().getEntryPrincipals(pinnedEntrySearchMaps);
+		}
+		
+		// If we get here, pinnedEntrySearchMaps refers to a List<Map>
+		// search Map's for the pinned entries.  Return it.
+		return pinnedEntrySearchMaps;
 	}
 	
 	/*
@@ -1257,6 +1339,19 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns true if a FolderRow with the specified entry ID is in
+	 * a List<FolderRow> or false otherwise.
+	 */
+	private static boolean isEntryIInList(Long entryId, List<FolderRow> folderRows) {
+		for (FolderRow fr:  folderRows) {
+			if (fr.getEntryId().equals(entryId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/*
 	 * Generates a value for a custom column in a row.
 	 * 

@@ -56,6 +56,7 @@ public class FolderRow implements IsSerializable {
 	private boolean								m_canModify;		//
 	private boolean								m_canPurge;			//
 	private boolean								m_canTrash;			//
+	private boolean								m_pinned;			//
 	private List<FolderColumn>					m_columns;			// The FolderColumns that contribute to this FolderRow.
 	private Long 								m_entryId;			// The entry ID of the FolderEntry this FolderRow corresponds to.
 	private Map<String, EntryEventInfo>			m_rowEntryEvents;	// A map of column names to EntryEventInfo's       possibly stored for a column.
@@ -99,6 +100,7 @@ public class FolderRow implements IsSerializable {
 	public boolean                           getCanModify()               {                         return m_canModify;       }
 	public boolean                           getCanPurge()                {                         return m_canPurge;        }
 	public boolean                           getCanTrash()                {                         return m_canTrash;        }
+	public boolean                           getPinned()                  {                         return m_pinned;          }
 	public List<FolderColumn>                getColumns()                 {                         return m_columns;         }
 	public Long                              getEntryId()                 {                         return m_entryId;         }
 	public Map<String, EntryEventInfo>       getRowEntryEventMap()        {validateMapEvents();     return m_rowEntryEvents;  }
@@ -117,6 +119,7 @@ public class FolderRow implements IsSerializable {
 	public void setCanModify(boolean canModify) {m_canModify = canModify;}
 	public void setCanPurge( boolean canPurge)  {m_canPurge  = canPurge; }
 	public void setCanTrash( boolean canTrash)  {m_canTrash  = canTrash; }
+	public void setPinned(   boolean pinned)    {m_pinned    = pinned;   }
 	
 	/**
 	 * Stores the value for a specific column.
