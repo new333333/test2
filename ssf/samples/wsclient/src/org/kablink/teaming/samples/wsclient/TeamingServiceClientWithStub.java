@@ -38,6 +38,7 @@ import static org.kablink.util.search.Restrictions.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
@@ -169,6 +170,8 @@ public class TeamingServiceClientWithStub {
 		//getDeletedAndRestoredEntries();
 		
 		//addDicsussionEntryWithChineseInTitle();
+		
+		//downloadSameFileMultipleTimes();
 	}
 	
 	public static void addMicroBlog() throws Exception {
@@ -1200,4 +1203,19 @@ public class TeamingServiceClientWithStub {
 		}
 		return sb.toString();
 	}
+	
+	public static void downloadSameFileMultipleTimes() throws Exception {
+		// To measure download time
+		TeamingServiceSoapBindingStub stub = getStub();
+		Long entryId = 123L;
+		String attachmentId = "24e350ea3383b149013383dd2bf90025";
+		System.out.println("Start time: " + new Date());
+		for(int i = 0; i < 10; i++) {
+			byte[] content = stub.folder_getAttachmentAsByteArray(null, entryId, attachmentId);
+			System.out.println("(" + i + ") Downloaded file length: " + content.length);
+		}
+		System.out.println("End time: " + new Date());
+	}
+	
+
 }
