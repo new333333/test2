@@ -47,7 +47,7 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
  * @author jong
  *
  */
-public class VibeConnection {
+public class VibeClientConnection {
 
 	private static final MediaType[] ACCEPTABLE_MEDIA_TYPES_DEFAULT = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
 	
@@ -55,7 +55,7 @@ public class VibeConnection {
 	private Client client;
 	private MediaType[] acceptableMediaTypes = ACCEPTABLE_MEDIA_TYPES_DEFAULT;
 	
-	public static VibeConnection getInstance(String baseUrl, String username, String password)
+	public VibeClientConnection(String baseUrl, String username, String password)
 	{
 		if(!baseUrl.endsWith("/"))
 			baseUrl += "/";
@@ -70,12 +70,8 @@ public class VibeConnection {
 	     
 	     ApacheHttpClient c = ApacheHttpClient.create(config);
 	     
-	     return new VibeConnection(baseUrl, c);
-	}
-	
-	private VibeConnection(String baseUrl, Client client) {
-		this.baseUrl = baseUrl;
-		this.client = client;
+	     this.baseUrl = baseUrl;
+	     this.client = c;
 	}
 	
 	public String getBaseUrl() {
@@ -86,10 +82,6 @@ public class VibeConnection {
 		return client;
 	}
 	
-	public void destroy() {
-		client.destroy();
-	}
-
 	/**
 	 * Return an array of acceptable media types. The returned array should never be modified.
 	 * @return
@@ -102,4 +94,11 @@ public class VibeConnection {
 		this.acceptableMediaTypes = acceptableMediaTypes;
 	}
 
+	public void destroy() {
+		client.destroy();
+	}
+
+	public VibeClient createClient() {
+		return new VibeClient(this);
+	}
 }
