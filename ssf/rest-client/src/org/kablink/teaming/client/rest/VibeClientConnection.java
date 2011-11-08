@@ -98,7 +98,7 @@ public class VibeClientConnection {
 		client.destroy();
 	}
 
-	public VibeClient createClient() {
-		return new VibeClient(this);
+	public VibeApiImpl createClient() {
+		return new VibeApiImpl(this);
 	}
 }
