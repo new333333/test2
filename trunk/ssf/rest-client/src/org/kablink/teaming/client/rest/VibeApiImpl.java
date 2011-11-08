@@ -57,14 +57,14 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @author jong
  *
  */
-public class VibeClient {
+public class VibeApiImpl {
 	
 	private final String FILE_TEMPLATE_BY_NAME = "rest/file/name/{entityType}/{entityId}/{filename}";
 	private final String FILE_TEMPLATE_BY_ID = "rest/file/id/{fileid}";
 	
 	private VibeClientConnection conn;
 	
-	VibeClient(VibeClientConnection conn) {
+	VibeApiImpl(VibeClientConnection conn) {
 		this.conn = conn;
 	}
 	
@@ -159,7 +159,7 @@ public class VibeClient {
 
 	public static void main(String[] args) {
 		VibeClientConnection conn = new VibeClientConnection("http://localhost:8079", "admin", "admin");
-		VibeClient client = conn.createClient();
+		VibeApiImpl client = conn.createClient();
 		FileProperties fp = client.readFileProperties("folderEntry", 13, "debug5.txt");
 		FileProperties fp2 = client.readFileProperties("folderEntry", 13, "debug5.txt");
 		conn.destroy();
