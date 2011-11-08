@@ -53,4 +53,9 @@ public class FileVersionPropertiesCollection {
 	public FileVersionPropertiesCollection(List<FileVersionProperties> list) {
 		this.list = list;
 	}
+
+	public List<FileVersionProperties> asList() {
+		return list;
+	}
+	
 }
