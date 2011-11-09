@@ -450,7 +450,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtFolderEntry result;
 			
 			geCmd = (GetEntryCmd) cmd;
-			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId() );
+			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId(), geCmd.getNumReplies() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2298,7 +2298,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException
+	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, int numRepliesToGet ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
 		FolderEntry entry = null;
@@ -2448,6 +2448,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					dateStr = GwtServerHelper.getDateTimeString( date );
 					
 					folderEntry.setModificationDate( dateStr );
+				}
+				
+				// Do we need to get the ids of any replies to this entry?
+				if ( numRepliesToGet > 0 )
+				{
+					Map replies;
+					
+					// Get the replies to this entry.
+					replies = folderModule.getEntryTree( parentBinderId, Long.valueOf( entryId ), false );
+					if ( replies != null )
+					{
+						List<FolderEntry> replyList;
+
+						replyList = (List<FolderEntry>) replies.get( ObjectKeys.FOLDER_ENTRY_DESCENDANTS );
+						if ( replyList != null && replyList.size() > 0 )
+						{
+							int i;
+							
+							for (i = 0; i < replyList.size() && i < numRepliesToGet; ++i)
+							{
+								FolderEntry replyEntry;
+								Long replyId;
+							
+								// Get the next reply entry.
+								replyEntry = replyList.get( i );
+								replyId = replyEntry.getId();
+								if ( replyId != null )
+									folderEntry.addReplyId( replyId.toString() );
+							}
+						}
+					}
 				}
 			}
 		}
@@ -2709,7 +2740,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				try
 				{
 					// Get a GwtFolderEntry from the given entry id.
-					folderEntry = getEntry( ri, null, entryId );
+					folderEntry = getEntry( ri, null, entryId, 0 );
 					entries.add( folderEntry );
 					
 					++totalEntries;

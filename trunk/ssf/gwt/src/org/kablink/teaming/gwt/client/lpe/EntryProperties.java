@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -65,6 +67,7 @@ public class EntryProperties
 	private String m_author;
 	private String m_authorWsId;	// Id of the author's workspace
 	private String m_modificationDate;
+	private ArrayList<String> m_replyIds;
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
 	private GetterCallback<Boolean> m_getterCallback;
 	
@@ -230,7 +233,7 @@ public class EntryProperties
 				
 				// No, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
 				m_getterCallback = callback;
-				cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
+				cmd = new GetEntryCmd( m_zoneUUID, m_entryId, m_numRepliesToShow );
 				GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
 			}
 			else
@@ -293,6 +296,14 @@ public class EntryProperties
 	public int getNumRepliesToShow()
 	{
 		return m_numRepliesToShow;
+	}
+	
+	/**
+	 * Return the ids of the replies to this entry.
+	 */
+	public ArrayList<String> getReplyIds()
+	{
+		return m_replyIds;
 	}
 	
 	/**
@@ -366,6 +377,7 @@ public class EntryProperties
 		m_author = entry.getAuthor();
 		m_authorWsId = entry.getAuthorWorkspaceId();
 		m_modificationDate = entry.getModificationDate();
+		m_replyIds = entry.getReplyIds();
 	}
 	
 	/**
