@@ -2664,6 +2664,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
+	@SuppressWarnings("unchecked")
 	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String folderId, int numEntriesToRead ) throws GwtTeamingException
 	{
 		ArrayList<GwtFolderEntry> entries;

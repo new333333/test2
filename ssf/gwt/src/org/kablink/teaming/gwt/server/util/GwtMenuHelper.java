@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -374,7 +375,7 @@ public class GwtMenuHelper {
 		if ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) {
 			// Yes!  Does the folder support more than one entry type?
 			if (1 < defaultEntryDefs) {
-				// Yes!
+				// Yes!  Define the toolbar items for them.
 				ToolbarItem addTBI = new ToolbarItem("1_add");
 				markTBITitle(addTBI, "toolbar.new");
 				entryToolbar.addNestedItem(addTBI);
@@ -411,7 +412,7 @@ public class GwtMenuHelper {
 			// No, the folder doesn't support more than one entry type!
 			// Does it support one and only one entry type?
 			else if (1 == defaultEntryDefs) {
-				// Yes!
+				// Yes!  Define the toolbar item for it.
 				Definition def = (Definition) defaultEntryDefinitions.get(0);
 				url = createActionUrl(request);
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
@@ -422,7 +423,7 @@ public class GwtMenuHelper {
 				
 				ToolbarItem addTBI = new ToolbarItem("1_add");
 				markTBITitleRes( addTBI, title);
-//!				markTBIHighlight(addTBI       );	// How was this used.
+				markTBIHighlight(addTBI       );
 				markTBIPopup(    addTBI       );
 				markTBIUrl(      addTBI, url  );
 				entryToolbar.addNestedItem(addTBI);
@@ -1203,13 +1204,57 @@ public class GwtMenuHelper {
 	}
 
 	/*
-	 * Dumps the contents of a toolbar list.
+	 * Dumps a string.
 	 */
-	private static void dumpToolbarItems(List<ToolbarItem> tbiList) {
-		// If debug logging isn't enabled...
-		if (!(m_logger.isDebugEnabled())) {
-			// ...bail.
-			return;
+	private static void dumpString(String dumpThis) {
+		// Simply dump the string.
+		m_logger.debug(dumpThis);
+	}
+	
+	private static void dumpString(String dumpStart, String dumpThis) {
+		// If we have a string to dump...
+		if (MiscUtil.hasString(dumpThis)) {
+			// ...dump it.
+			dumpString(dumpStart + dumpThis);
+		}
+	}
+	
+	/*
+	 * Dumps the contents of a toolbar item.
+	 */
+	private static void dumpToolbarItem(ToolbarItem tbi, String dumpStart) {
+		// Dump the base information about the toolbar item...
+		dumpString(dumpStart + ":toolbar=" + tbi.getName() );
+		dumpString(dumpStart + "...:title=", tbi.getTitle());
+		dumpString(dumpStart + "...:url=",   tbi.getUrl()  );
+		
+		// ...if there's an event in it...
+		if (TeamingEvents.UNDEFINED != tbi.getTeamingEvent()) {
+			// ...dump that...
+			dumpString(dumpStart + "...:event=", tbi.getTeamingEvent().name());
+		}
+		
+		// ...scan the toolbar's qualifier list...
+		for (NameValuePair nvp:  tbi.getQualifiersList()) {
+			// ...dumping the contents of each...
+			dumpString(dumpStart + "...:qualifier:name:value=", nvp.getName() + ":" + nvp.getValue());
+		}
+		
+		// ...and finally, dump its nested toolbar items.
+		dumpToolbarItems(tbi.getNestedItemsList(), (dumpStart + "..."));
+	}
+	
+	/*
+	 * Dumps the contents of a toolbar item list.
+	 */
+	private static void dumpToolbarItems(List<ToolbarItem> tbiList, String dumpStart) {
+		// If debug logging is enabled...
+		if (m_logger.isDebugEnabled()) {
+			// ...scan the toolbar items...
+			for (ToolbarItem tbi:  tbiList) {
+				// ...dumping the contents of each.
+				dumpToolbarItem(tbi, dumpStart);
+			}
 		}
 	}
 	
@@ -1285,7 +1330,8 @@ public class GwtMenuHelper {
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the folder toolbar.  Return it.
-			dumpToolbarItems(reply);
+			m_logger.debug("GwtMenuHelper.getFooterToolbarItems():");
+			dumpToolbarItems(reply, "...");
 			return reply;
 		}
 		
@@ -1428,7 +1474,8 @@ public class GwtMenuHelper {
 			
 			// If we get here, reply refers to the List<ToolbarItem> of
 			// the ToolbarItem's for the binder.  Return it.
-			dumpToolbarItems(reply);
+//			m_logger.debug("GwtMenuHelper.getToolbarItems():");
+//			dumpToolbarItems(reply, "...");
 			return reply;
 		}
 		
@@ -1460,6 +1507,13 @@ public class GwtMenuHelper {
 	 */
 	private static void markTBIEvent(ToolbarItem tbi, TeamingEvents event) {
 		tbi.setTeamingEvent(event);
+	}
+	
+	/*
+	 * Marks a ToolbarItem as being highlighted in some way.
+	 */
+	private static void markTBIHighlight(ToolbarItem tbi) {
+		tbi.addQualifier("highlight", "true");
 	}
 	
 	/*
