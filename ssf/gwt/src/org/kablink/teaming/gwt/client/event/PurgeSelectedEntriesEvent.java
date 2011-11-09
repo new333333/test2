@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -46,6 +44,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntriesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
+    
+    public Long m_folderId;	//
     
 	/**
 	 * Handler interface for this event.
@@ -60,6 +60,30 @@ public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntrie
 	public PurgeSelectedEntriesEvent() {
 		super();
 	}
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param folderId
+	 */
+	public PurgeSelectedEntriesEvent(Long folderId) {
+		super();
+		m_folderId = folderId;
+	}
+
+	/**
+	 * Get'er method.
+	 * 
+	 * @return
+	 */
+	public Long getFolderId() {return m_folderId;}
+	
+	/**
+	 * Set'er method.
+	 * 
+	 * @param folderId
+	 */
+	public void setFolderId(Long folderId) {m_folderId = folderId;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -98,13 +122,6 @@ public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntrie
 		return TeamingEvents.PURGE_SELECTED_ENTRIES;
 	}
 		
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new PurgeSelectedEntriesEvent());
-	}
-	
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

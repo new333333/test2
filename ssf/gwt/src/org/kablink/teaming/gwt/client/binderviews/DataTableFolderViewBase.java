@@ -61,6 +61,11 @@ import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
@@ -105,6 +110,7 @@ import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -118,7 +124,13 @@ import com.google.gwt.view.client.ProvidesKey;
  * 
  * @author drfoster@novell.com
  */
-public abstract class DataTableFolderViewBase extends ViewBase {
+public abstract class DataTableFolderViewBase extends ViewBase
+	implements
+	// Event handlers implemented by this class.
+		DeleteSelectedEntriesEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler,
+		InvokeDropBoxEvent.Handler
+{
 	private final BinderInfo				m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
 	private boolean							m_folderSortDescend;	// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
 	private int								m_folderPageSize;		// Page size as per the user's personal preferences.
@@ -176,7 +188,16 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	private final static String STYLE_ROW_BASE		= "vibe-dataTableFolderRow";
 	private final static String STYLE_ROW_EVEN		= "even";
 	private final static String STYLE_ROW_ODD		= "odd";
-
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
+		TeamingEvents.INVOKE_DROPBOX,
+	};
+	
 	/*
 	 * Inner class used to specify column widths.
 	 */
@@ -442,6 +463,12 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady) {
 		// Initialize the super class...
 		super(viewReady);
+
+		// ...register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
 
 		// ...store the parameters...
 		m_folderInfo = folderInfo;
@@ -1068,6 +1095,60 @@ public abstract class DataTableFolderViewBase extends ViewBase {
 				constructViewAsync();
 			}
 		});
+	}
+	
+	/**
+	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
+			// Yes!  Delete the selected entries from the folder.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onDeleteSelectedEntries(" + event.getFolderId() + "):  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles InvokeDropBoxEvent's received by this class.
+	 * 
+	 * Implements the InvokeDropBoxEvent.Handler.onInvokeDropBox() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeDropBox(InvokeDropBoxEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
+			// Yes!  Invoke the add file applet on the folder.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onInvokeDropBox(" + event.getFolderId() + "):  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles PurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
+			// Yes!  Purge the selected entries from the folder.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onPurgeSelectedEntries(" + event.getFolderId() + "):  ...this needs to be implemented...");
+		}
 	}
 	
 	/*
