@@ -77,6 +77,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_CLIPBOARD,					// Invokes the Clipboard dialog.
 	INVOKE_CONFIGURE_COLUMNS,			// Invokes the Configure Columns dialog.
 	INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,	// Invokes the Configure File Sync App dialog.
+	INVOKE_DROPBOX,						// Invokes the files drop box (i.e., the file drag&drop applet.)
 	INVOKE_EMAIL_NOTIFICATION,			// Invokes the Email Notification dialog.
 	INVOKE_HELP,						// Invokes the Vibe OnPrem online help.
 	INVOKE_IMPORT_ICAL_FILE,			// Invokes the dialog to import an iCal by uploading  a file.
@@ -148,6 +149,9 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_UNREAD_ENTRIES,				// Show unread entries.
 	VIEW_WHATS_UNSEEN_IN_BINDER,		// Shows the items that are unseen in the current binder.
 	VIEW_WHATS_NEW_IN_BINDER,			// Shows the items that are new    in the current binder.
+	
+	DELETE_SELECTED_ENTRIES,			// Deletes the Selected Entries.
+	PURGE_SELECTED_ENTRIES,				// Deletes and Immediately Purges the Selected Entries.
 		
 	UNDEFINED;							// Undefined event - Should never be fired !!!
 

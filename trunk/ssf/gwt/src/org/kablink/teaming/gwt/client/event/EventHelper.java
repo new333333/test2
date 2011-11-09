@@ -84,6 +84,7 @@ public class EventHelper {
 		case ADMINISTRATION_EXIT:               	reply = new AdministrationExitEvent();            break;
 		case ADMINISTRATION_UPGRADE_CHECK:      	reply = new AdministrationUpgradeCheckEvent();    break;
 		case BROWSE_HIERARCHY_EXIT:             	reply = new BrowseHierarchyExitEvent();           break;
+		case DELETE_SELECTED_ENTRIES:               reply = new DeleteSelectedEntriesEvent();         break;
 		case EDIT_CURRENT_BINDER_BRANDING:      	reply = new EditCurrentBinderBrandingEvent();     break;
 		case EDIT_LANDING_PAGE_PROPERTIES:			reply = new EditLandingPagePropertiesEvent();	  break;
 		case EDIT_PERSONAL_PREFERENCES:         	reply = new EditPersonalPreferencesEvent();       break;
@@ -94,6 +95,7 @@ public class EventHelper {
 		case INVOKE_CLIPBOARD:						reply = new InvokeClipboardEvent();               break;
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
+		case INVOKE_DROPBOX:						reply = new InvokeDropBoxEvent();                 break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_SEND_EMAIL_TO_TEAM:             reply = new InvokeSendEmailToTeamEvent();         break;
@@ -103,6 +105,7 @@ public class EventHelper {
 		case MASTHEAD_SHOW:                     	reply = new MastheadShowEvent();                  break;
 		case MENU_HIDE:								reply = new MenuHideEvent();					  break;
 		case MENU_SHOW:								reply = new MenuShowEvent();					  break;
+		case PURGE_SELECTED_ENTRIES:                reply = new PurgeSelectedEntriesEvent();          break;
 		case SEARCH_ADVANCED:                   	reply = new SearchAdvancedEvent();                break;
 		case SHOW_CONTENT_CONTROL:                 	reply = new ShowContentControlEvent();            break;
 		case SIDEBAR_HIDE:                      	reply = new SidebarHideEvent();                   break;
@@ -280,6 +283,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DELETE_SELECTED_ENTRIES:
+				// A DeleteSelectedEntriesEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof DeleteSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DeleteSelectedEntriesEvent.registerEvent(eventBus, ((DeleteSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case EDIT_CURRENT_BINDER_BRANDING:
 				// A EditCurrentBinderBrandingEvent!  Can the event
 				// handler we were given handle that?
@@ -397,6 +409,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_DROPBOX:
+				// An InvokeDropBoxEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof InvokeDropBoxEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeDropBoxEvent.registerEvent(eventBus, ((InvokeDropBoxEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_EMAIL_NOTIFICATION:
 				// An InvokeEmailNotificationEvent!  Can the event
 				// handler we were given handle that?
@@ -523,6 +544,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case PURGE_SELECTED_ENTRIES:
+				// A PurgeSelectedEntriesEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof PurgeSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = PurgeSelectedEntriesEvent.registerEvent(eventBus, ((PurgeSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case MARK_ENTRY_READ:
 				// An MarkEntryReadEvent!  Can the event handler we
 				// were given handle that?
@@ -1074,6 +1104,7 @@ public class EventHelper {
 			case INVOKE_CLIPBOARD:						hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);               break;
 			case INVOKE_CONFIGURE_COLUMNS:				hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);        break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler); break;
+			case INVOKE_DROPBOX:						hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                 break;
 			case INVOKE_EMAIL_NOTIFICATION:         	hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);       break;
 			case INVOKE_HELP:                       	hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                    break;
 			case INVOKE_IMPORT_ICAL_FILE:           	hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);          break;
@@ -1139,6 +1170,9 @@ public class EventHelper {
 			case VIEW_UNREAD_ENTRIES:               	hasHandler = (eventHandler instanceof ViewUnreadEntriesEvent.Handler);             break;
 			case VIEW_WHATS_NEW_IN_BINDER:				hasHandler = (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler);          break;
 			case VIEW_WHATS_UNSEEN_IN_BINDER:			hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);       break;
+			
+			case DELETE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);         break;
+			case PURGE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);          break;
 			
 			case UNDEFINED:
 				// Ignore.
