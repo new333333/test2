@@ -84,7 +84,6 @@ public class EventHelper {
 		case ADMINISTRATION_EXIT:               	reply = new AdministrationExitEvent();            break;
 		case ADMINISTRATION_UPGRADE_CHECK:      	reply = new AdministrationUpgradeCheckEvent();    break;
 		case BROWSE_HIERARCHY_EXIT:             	reply = new BrowseHierarchyExitEvent();           break;
-		case DELETE_SELECTED_ENTRIES:               reply = new DeleteSelectedEntriesEvent();         break;
 		case EDIT_CURRENT_BINDER_BRANDING:      	reply = new EditCurrentBinderBrandingEvent();     break;
 		case EDIT_LANDING_PAGE_PROPERTIES:			reply = new EditLandingPagePropertiesEvent();	  break;
 		case EDIT_PERSONAL_PREFERENCES:         	reply = new EditPersonalPreferencesEvent();       break;
@@ -95,7 +94,6 @@ public class EventHelper {
 		case INVOKE_CLIPBOARD:						reply = new InvokeClipboardEvent();               break;
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
-		case INVOKE_DROPBOX:						reply = new InvokeDropBoxEvent();                 break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_SEND_EMAIL_TO_TEAM:             reply = new InvokeSendEmailToTeamEvent();         break;
@@ -105,7 +103,6 @@ public class EventHelper {
 		case MASTHEAD_SHOW:                     	reply = new MastheadShowEvent();                  break;
 		case MENU_HIDE:								reply = new MenuHideEvent();					  break;
 		case MENU_SHOW:								reply = new MenuShowEvent();					  break;
-		case PURGE_SELECTED_ENTRIES:                reply = new PurgeSelectedEntriesEvent();          break;
 		case SEARCH_ADVANCED:                   	reply = new SearchAdvancedEvent();                break;
 		case SHOW_CONTENT_CONTROL:                 	reply = new ShowContentControlEvent();            break;
 		case SIDEBAR_HIDE:                      	reply = new SidebarHideEvent();                   break;

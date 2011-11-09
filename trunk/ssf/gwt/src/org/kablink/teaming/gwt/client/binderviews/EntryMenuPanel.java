@@ -35,21 +35,30 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.MenuBar;
 
 
 /**
@@ -58,7 +67,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class EntryMenuPanel extends ToolPanelBase {
+	private BinderInfo			m_binderInfo;	//
 	private List<ToolbarItem>	m_toolbarIems;	//
+	private MenuBar				m_menuBar;		//
 	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
 	
 	/*
@@ -70,15 +81,57 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 */
 	private EntryMenuPanel(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super(binderInfo);		
+		super(binderInfo);
+		
+		// ...store the parameters...
+		m_binderInfo = binderInfo;
 
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
+		m_menuBar = new MenuBar();
+		m_fp.add(m_menuBar);
 		initWidget(m_fp);
 		loadPart1Async();
 	}
 
+	/**
+	 * Loads the EntryMenuPanel split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 * @param binderInfo
+	 * @param tpClient
+	 */
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess() {
+				EntryMenuPanel emp = new EntryMenuPanel(binderInfo);
+				tpClient.onSuccess(emp);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_EntryMenuPanel());
+				tpClient.onUnavailable();
+			}
+		});
+	}
+
+	/*
+	 * Returns a named ToolbarItem from a List<ToolbarItem>.  It no
+	 * such item exists, returns null.
+	 */
+	private static ToolbarItem findNamedTBI(List<ToolbarItem> tbiList, String tbiName) {
+		for (ToolbarItem tbi:  tbiList) {
+			if (tbi.getName().equals(tbiName)) {
+				return tbi;
+			}
+		}
+		return null;
+	}
+	
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
@@ -135,30 +188,117 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart2Now() {
-//!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("EntryMenuPanel.loadPart2Now( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
-	}
-	
-	/**
-	 * Loads the EntryMenuPanel split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 * @param binderInfo
-	 * @param tpClient
-	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
-		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				EntryMenuPanel emp = new EntryMenuPanel(binderInfo);
-				tpClient.onSuccess(emp);
+		// Do we have an entry toolbar?
+		ToolbarItem entryTBI = findNamedTBI(m_toolbarIems, "ssEntryToolbar");
+		if (null != entryTBI) {
+			// Yes!  If it contains an add item...
+			List<ToolbarItem> nestedTBIs = entryTBI.getNestedItemsList();
+			ToolbarItem addTBI = findNamedTBI(nestedTBIs, "1_add");
+			if (null != addTBI) {
+				// ...add it to the menu.
+				renderAddTBI(addTBI);
+			}
+
+			// If it contains a delete selected item...
+			ToolbarItem deleteTBI = findNamedTBI(nestedTBIs, "1_deleteSelected");
+			if (null != deleteTBI) {
+				// ...add it to the menu.
+				renderSimpleTBI(deleteTBI);
 			}
 			
+			// If it contains a purge selected item...
+			ToolbarItem purgeTBI = findNamedTBI(nestedTBIs, "1_purgeSelected");
+			if (null != purgeTBI) {
+				// ...add it to the menu.
+				renderSimpleTBI(purgeTBI);
+			}
+			
+			// If it contains a drop box...
+			ToolbarItem dropBoxTBI = findNamedTBI(nestedTBIs, "dropBox");
+			if (null != dropBoxTBI) {
+				// ...add it to the menu.
+				renderSimpleTBI(dropBoxTBI);
+			}
+		}
+	}
+
+	/*
+	 * Renders the 'add an entry' toolbar item.
+	 */
+	private void renderAddTBI(final ToolbarItem addTBI) {
+		// Is there more than one add option?
+		List<ToolbarItem>	entryTBIs = addTBI.getNestedItemsList();
+		if (entryTBIs.isEmpty()) {
+			// No!  Add the single item to the menu.
+			m_menuBar.addItem(addTBI.getTitle(), new Command() {
+				@Override
+				public void execute() {
+					// Launch the toolbar item's URL in the content
+					// frame.
+					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+						addTBI.getUrl(),
+						false,	// false -> Not trash.
+						Instigator.GOTO_CONTENT_URL);
+					
+					if (GwtClientHelper.validateOSBI(osbInfo)) {
+						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+					}
+				}
+			});
+		}
+		
+		else {
+			// Yes, there's more than one add option!  Create a drop
+			// down menu for them...
+			MenuBar	addMenu = new MenuBar(true);	// true -> Vertical drop down menu.
+			m_menuBar.addItem(addTBI.getTitle(), addMenu);
+			
+			// ...scan the add options...
+			for (final ToolbarItem entryTBI:  entryTBIs) {
+				// ...and add a single item to the drop down for each
+				// ...of them.
+				addMenu.addItem(entryTBI.getTitle(), new Command() {
+					@Override
+					public void execute() {
+						// Launch the toolbar item's URL in the content
+						// frame.
+						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+							entryTBI.getUrl(),
+							false,	// false -> Not trash.
+							Instigator.GOTO_CONTENT_URL);
+						
+						if (GwtClientHelper.validateOSBI(osbInfo)) {
+							GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+						}
+					}
+				});
+			}
+		}
+	}
+	
+	/*
+	 * Renders any of several event base toolbar items.
+	 */
+	private void renderSimpleTBI(final ToolbarItem simpleTBI) {
+		m_menuBar.addItem(simpleTBI.getTitle(), new Command() {
 			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_EntryMenuPanel());
-				tpClient.onUnavailable();
+			public void execute() {
+				TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
+				Long folderId = m_binderInfo.getBinderIdAsLong();
+				
+				VibeEventBase<?> event;
+				switch (simpleEvent) {
+				case PURGE_SELECTED_ENTRIES:   event = new PurgeSelectedEntriesEvent( folderId); break;
+				case DELETE_SELECTED_ENTRIES:  event = new DeleteSelectedEntriesEvent(folderId); break;
+				case INVOKE_DROPBOX:           event = new InvokeDropBoxEvent(        folderId); break;
+					
+				default:
+				case UNDEFINED:
+					Window.alert(GwtTeaming.getMessages().eventHandling_NoEntryMenuHandler(simpleEvent.name()));
+					return;
+				}
+				
+				GwtTeaming.fireEvent(event);
 			}
 		});
 	}
@@ -171,7 +311,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 */
 	@Override
 	public void resetPanel() {
+		// Reset the widgets...
 		m_fp.clear();
+		m_menuBar = new MenuBar();
+		m_fp.add(m_menuBar);
+
+		// ...and reload the menu.
 		loadPart1Async();
 	}
 }

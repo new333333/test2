@@ -427,6 +427,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used to describe various event handling errors.
 	String eventHandling_NoContextMenuEventHandler(String eventName                  );
+	String eventHandling_NoEntryMenuHandler(       String eventName                  );
 	String eventHandling_NoEventHandlerDefined(    String eventName, String className);
 	String eventHandling_NonSimpleEvent(           String eventName, String className);
 	String eventHandling_UnhandledEvent(           String eventName, String className);

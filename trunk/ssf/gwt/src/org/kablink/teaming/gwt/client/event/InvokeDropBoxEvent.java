@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -46,6 +44,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class InvokeDropBoxEvent extends VibeEventBase<InvokeDropBoxEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
+    
+    public Long m_folderId;	//
 
 	/**
 	 * Handler interface for this event.
@@ -62,6 +62,30 @@ public class InvokeDropBoxEvent extends VibeEventBase<InvokeDropBoxEvent.Handler
 	}
 
 	/**
+	 * Class constructor.
+	 * 
+	 * @param folderId
+	 */
+	public InvokeDropBoxEvent(Long folderId) {
+		this();
+		m_folderId = folderId;
+	}
+
+	/**
+	 * Get'er method.
+	 * 
+	 * @return
+	 */
+	public Long getFolderId() {return m_folderId;}
+	
+	/**
+	 * Set'er method.
+	 * 
+	 * @param folderId
+	 */
+	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	
+	/**
 	 * Dispatches this event when one is triggered.
 	 * 
 	 * Implements GwtEvent.dispatch()
@@ -73,13 +97,6 @@ public class InvokeDropBoxEvent extends VibeEventBase<InvokeDropBoxEvent.Handler
         handler.onInvokeDropBox(this);
     }
 	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new InvokeDropBoxEvent());
-	}
-    
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 *
