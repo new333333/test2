@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client;
 
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -57,6 +59,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 	private Long m_parentBinderId;
 	private String m_parentBinderName;
 	private String m_viewUrl;
+	private ArrayList<String> m_replyIds;	// Ids of the first n replies.
 	
 	/**
 	 * 
@@ -73,8 +76,19 @@ public class GwtFolderEntry extends GwtTeamingItem
 		m_parentBinderId = null;
 		m_parentBinderName = null;
 		m_viewUrl = null;
+		m_replyIds = null;
 	}// end GwtFolderEntry()
 	
+	/**
+	 * Add the given reply id to our list or reply ids. 
+	 */
+	public void addReplyId( String replyId )
+	{
+		if ( m_replyIds == null )
+			m_replyIds = new ArrayList<String>();
+		
+		m_replyIds.add( replyId );
+	}
 	
 	/**
 	 * 
@@ -157,6 +171,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 	}// end getParentBinderName()
 
 
+	/**
+	 * Return the list of the reply ids
+	 */
+	public ArrayList<String> getReplyIds()
+	{
+		return m_replyIds;
+	}
+	
 	/**
 	 * Return the name of the parent binder.
 	 */

@@ -80,6 +80,10 @@
 	-webkit-border-radius: 5px;
 }
 
+.entryWidgetContentPanel, .entryWidgetContentPanel_dark
+{
+}
+
 .entryWidgetDateLabel
 {
 	font-size: 10px;
@@ -90,10 +94,6 @@
 	vertical-align: top;
 }
 
-.entryWidgetContentPanel, .entryWidgetContentPanel_dark
-{
-}
-
 .entryWidgetDesc, .entryWidgetDesc_dark
 {
 	padding-left: 4px;
@@ -102,6 +102,11 @@
 
 .entryWidgetMainPanel
 {
+}
+
+.entryWidgetRepliesPanel
+{
+	margin-left: 10px;
 }
 
 .entryWidgetTitleLabel, .entryWidgetTitleLabel_dark

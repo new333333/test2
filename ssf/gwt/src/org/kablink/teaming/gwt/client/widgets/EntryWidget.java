@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
@@ -63,6 +65,7 @@ public class EntryWidget extends VibeWidget
 	private Element m_descElement;
 	private Element m_authorElement;
 	private Element m_dateElement;
+	private VibeFlowPanel m_repliesPanel;
 	private EntryProperties m_properties;
 	private String m_style;
 
@@ -251,6 +254,16 @@ public class EntryWidget extends VibeWidget
 			mainPanel.add( contentPanel );
 		}
 		
+		// Are we supposed to show replies?
+		if ( m_properties.getNumRepliesToShow() > 0 )
+		{
+			// Yes, create a panel for the replies to go in.
+			m_repliesPanel = new VibeFlowPanel();
+			m_repliesPanel.addStyleName( "entryWidgetRepliesPanel" );
+			
+			mainPanel.add( m_repliesPanel );
+		}
+		
 		// Issue an ajax request to get the entry's data.
 		m_properties.getDataFromServer( new GetterCallback<Boolean>()
 		{
@@ -318,6 +331,35 @@ public class EntryWidget extends VibeWidget
 			desc = m_properties.getEntryDecs();
 			if ( desc != null )
 				m_descElement.setInnerHTML( desc );
+		}
+		
+		// Are we supposed to show replies?
+		if ( m_repliesPanel != null )
+		{
+			ArrayList<String> replyIds;
+			
+			// Yes, do we have any replies?
+			replyIds = m_properties.getReplyIds();
+			if ( replyIds != null && replyIds.size() > 0 )
+			{
+				// Yes
+				for (String replyId: replyIds)
+				{
+					EntryWidget entryWidget;
+					EntryProperties entryProperties;
+					
+					entryProperties = new EntryProperties();
+					entryProperties.setEntryId( replyId );
+					entryProperties.setShowAuthor( true );
+					entryProperties.setShowDate( true );
+					entryProperties.setShowTitle( true );
+					entryProperties.setNumRepliesToShow( 0 );
+					
+					// Add an EntryWidget to the panel that holds all the replies.
+					entryWidget = new EntryWidget( entryProperties, m_style );
+					m_repliesPanel.add( entryWidget );
+				}
+			}
 		}
 	}
 }
