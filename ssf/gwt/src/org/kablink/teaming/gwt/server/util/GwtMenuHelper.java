@@ -33,13 +33,18 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -47,6 +52,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -63,18 +69,22 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.GwtUIHelper.TrackInfo;
 import org.kablink.util.BrowserSniffer;
+import org.kablink.util.search.Constants;
 
 
 /**
@@ -327,6 +337,307 @@ public class GwtMenuHelper {
 		// If we get here, reply refers to the ToolbarItem requested.
 		// Return it.
 		return reply;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for the add files applet.
+	 * 
+	 * At the point this gets called, we know the following:
+	 * 1. The user has rights to add entries to the folder;
+	 * 2. Applets are supported;
+	 * 3. The folder is not a mini-blog; and
+	 * 4. The folder is not a mirror file folder or it's a configured,
+	 *    writable mirrored file folder. 
+	 */
+	private static void constructEntryDropBoxItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		ToolbarItem dropBoxTBI = new ToolbarItem("dropBox");
+		markTBITitle(dropBoxTBI, "toolbar.menu.dropBox");
+		markTBIEvent(dropBoxTBI, TeamingEvents.INVOKE_DROPBOX);
+		entryToolbar.addNestedItem(dropBoxTBI);
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for adding entries to a folder.
+	 * 
+	 * At the point this gets called, we know that the user has rights
+	 * to add entries to the folder.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void constructEntryAddItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		// Read the folder's entry definitions.
+		List defaultEntryDefinitions = folder.getEntryDefinitions();
+		int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
+		
+		// Is the folder other than a mirrored folder or is it a
+		// mirrored folder that can be written to?
+		AdaptedPortletURL url;
+		if ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) {
+			// Yes!  Does the folder support more than one entry type?
+			if (1 < defaultEntryDefs) {
+				// Yes!
+				ToolbarItem addTBI = new ToolbarItem("1_add");
+				markTBITitle(addTBI, "toolbar.new");
+				entryToolbar.addNestedItem(addTBI);
+				
+				int count = 1;
+				int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
+					RequestContextHolder.getRequestContext().getUser().getId(),
+					bs.getProfileModule(),
+					folder,
+					defaultEntryDefinitions);
+				Map<String, Boolean> usedTitles = new HashMap<String, Boolean>();
+				for (int i = 0; i < defaultEntryDefinitions.size(); i += 1) {
+					Definition def = ((Definition) defaultEntryDefinitions.get(i));
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (null != usedTitles.get("title")) {
+						title = (title + " (" + String.valueOf(count++) + ")");
+					}
+					
+					ToolbarItem entriesTBI = new ToolbarItem("entries");
+					markTBITitleRes(entriesTBI, title);
+					markTBIPopup(   entriesTBI       );
+					markTBIUrl(     entriesTBI, url  );
+					if (i == defaultEntryDefIndex) {
+						markTBIDefault(entriesTBI);
+					}
+					addTBI.addNestedItem(entriesTBI);
+				}
+			}
+				
+			// No, the folder doesn't support more than one entry type!
+			// Does it support one and only one entry type?
+			else if (1 == defaultEntryDefs) {
+				// Yes!
+				Definition def = (Definition) defaultEntryDefinitions.get(0);
+				url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+				String title = NLT.get("toolbar.new_with_arg", nltArgs);
+				
+				ToolbarItem addTBI = new ToolbarItem("1_add");
+				markTBITitleRes( addTBI, title);
+//!				markTBIHighlight(addTBI       );	// How was this used.
+				markTBIPopup(    addTBI       );
+				markTBIUrl(      addTBI, url  );
+				entryToolbar.addNestedItem(addTBI);
+			}
+		}
+
+		if (MiscUtil.hasString(viewType)) {
+			BinderModule bm = bs.getBinderModule();
+			TemplateModule tm = bs.getTemplateModule();
+			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+				if (bm.testAccess(folder, BinderOperation.addFolder)) {
+					TemplateBinder blogTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_BLOG);
+					if (blogTemplate != null) {
+						url = createActionUrl(request);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+		        		url.setParameter(WebKeys.URL_BINDER_ID, getFolderSetFolderId(bs, folder, viewType).toString());
+						url.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_BLOG);
+						
+						ToolbarItem addTBI = new ToolbarItem("1_add_folder");
+						markTBITitle(addTBI, "toolbar.menu.add_blog_folder");
+						markTBIPopup(addTBI                                );
+						markTBIUrl(  addTBI, url                           );
+						entryToolbar.addNestedItem(addTBI);
+					}
+				}
+			}
+			
+			else if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+				if (bm.testAccess(folder, BinderOperation.addFolder)) {
+					TemplateBinder photoTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
+					if (photoTemplate != null) {
+						url = createActionUrl(request);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+		        		url.setParameter(WebKeys.URL_BINDER_ID, getFolderSetFolderId(bs, folder, viewType).toString());
+						url.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
+						
+						ToolbarItem addTBI = new ToolbarItem("1_add_folder"       );
+						markTBITitle(addTBI, "toolbar.menu.add_photo_album_folder");
+						markTBIPopup(addTBI                                       );
+						markTBIUrl(  addTBI, url                                  );
+						entryToolbar.addNestedItem(addTBI);
+					}
+				}
+			}
+			
+			else if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+				if (bm.testAccess(folder, BinderOperation.addFolder)) {
+					TemplateBinder wikiTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_WIKI);
+					if (wikiTemplate != null) {
+						url = createActionUrl(request);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+		        		url.setParameter(WebKeys.URL_BINDER_ID, getFolderSetFolderId(bs, folder, viewType).toString());
+						url.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_WIKI);
+						
+						ToolbarItem addTBI = new ToolbarItem("1_add_folder");
+						markTBITitle(addTBI, "toolbar.menu.add_wiki_folder");
+						markTBIPopup(addTBI                                );
+						markTBIUrl(  addTBI, url                           );
+						entryToolbar.addNestedItem(addTBI);
+					}
+				}
+			}
+			
+			else if ((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) || viewType.equals(Definition.VIEW_STYLE_TABLE) || viewType.equals(Definition.VIEW_STYLE_FILE)) &&
+					(!(folder.isMirrored()))) {
+				// Add the Delete and Purge buttons.
+				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
+					ToolbarItem deleteTBI = new ToolbarItem("1_deleteSelected");
+					markTBITitle(deleteTBI, "toolbar.delete");
+					markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
+					entryToolbar.addNestedItem(deleteTBI);
+					
+					ToolbarItem purgeTBI = new ToolbarItem("1_purgeSelected");
+					markTBITitle(purgeTBI, "toolbar.purge");
+					markTBIEvent(purgeTBI, TeamingEvents.PURGE_SELECTED_ENTRIES);
+					entryToolbar.addNestedItem(purgeTBI);
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for sorting certain folder types.
+	 * 
+	 * At the point this gets called, we know that the folder is a blog
+	 * or photo album, the only two view types that require 'sort by'
+	 * items.
+	 */
+	private static void constructEntrySortByItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		Long folderId = folder.getId();
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), folderId);
+		String searchSortBy = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY));
+		if (searchSortBy == null) searchSortBy = "";
+		String[] sortOptions;
+		boolean isPhotoAlbum = viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM);
+		if (isPhotoAlbum)
+		     sortOptions = new String[] {"number", "title",                    "activity"};	// For photo album.
+		else sortOptions = new String[] {"number", "title", "state", "author", "activity"};	// For blog.
+		Set<String> so = new HashSet<String>();
+		for (String s:  sortOptions) {
+			so.add(s);
+		}
+		
+		ToolbarItem displayStylesTBI = new ToolbarItem("2_display_styles");
+		markTBITitle(displayStylesTBI, "toolbar.folder_sortBy");
+		entryToolbar.addNestedItem(displayStylesTBI);
+		
+		// Number.
+		ToolbarItem sortByTBI;
+		AdaptedPortletURL url;
+		String folderIdS = String.valueOf(folderId);
+		if (so.contains("number")) {
+			url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
+			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
+			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.DOCID_FIELD                  );
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true"                                 );
+			String nltTag;
+			if (isPhotoAlbum)
+			     nltTag = "folder.column.CreationDate";
+			else nltTag = "folder.column.Number";
+			
+			sortByTBI = new ToolbarItem("sortby");
+			markTBITitle(sortByTBI, nltTag);
+			if (searchSortBy.equals(Constants.DOCID_FIELD)) {
+				markTBIDefault(sortByTBI);
+			}
+			displayStylesTBI.addNestedItem(sortByTBI);
+		}
+		
+		// Title.
+		if (so.contains("title")) {
+			url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
+			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
+			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.SORT_TITLE_FIELD             );
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false"                                );
+			
+			sortByTBI = new ToolbarItem("sortby");
+			markTBITitle(sortByTBI, "folder.column.Title");
+			if (searchSortBy.equals(Constants.SORT_TITLE_FIELD)) {
+				markTBIDefault(sortByTBI);
+			}
+			displayStylesTBI.addNestedItem(sortByTBI);
+		}
+		
+		// State.
+		if (so.contains("state")) {
+			url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
+			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
+			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.WORKFLOW_STATE_CAPTION_FIELD );
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false"                                );
+			
+			sortByTBI = new ToolbarItem("sortby");
+			markTBITitle(sortByTBI, "folder.column.State");
+			if (searchSortBy.equals(Constants.WORKFLOW_STATE_CAPTION_FIELD)) {
+				markTBIDefault(sortByTBI);
+			}
+			displayStylesTBI.addNestedItem(sortByTBI);
+		}
+		
+		// Author.
+		if (so.contains("author")) {
+			url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
+			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
+			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.CREATOR_TITLE_FIELD          );
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false"                                );
+			
+			sortByTBI = new ToolbarItem("sortby");
+			markTBITitle(sortByTBI, "folder.column.Author");
+			if (searchSortBy.equals(Constants.CREATOR_TITLE_FIELD)) {
+				markTBIDefault(sortByTBI);
+			}
+			displayStylesTBI.addNestedItem(sortByTBI);
+		}
+		
+		// Last activity date.
+		if (so.contains("activity")) {
+			url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
+			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
+			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.LASTACTIVITY_FIELD           );
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true"                                 );
+			
+			sortByTBI = new ToolbarItem("sortby");
+			markTBITitle(sortByTBI, "folder.column.LastActivity");
+			if (searchSortBy.equals(Constants.LASTACTIVITY_FIELD)) {
+				markTBIDefault(sortByTBI);
+			}
+			displayStylesTBI.addNestedItem(sortByTBI);
+		}
+		
+		// Rating.
+		if (so.contains("rating")) {
+			url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
+			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
+			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.RATING_FIELD                 );
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true"                                 );
+			
+			sortByTBI = new ToolbarItem("sortby");
+			markTBITitle(sortByTBI, "folder.column.Rating");
+			if (searchSortBy.equals(Constants.RATING_FIELD)) {
+				markTBIDefault(sortByTBI);
+			}
+			displayStylesTBI.addNestedItem(sortByTBI);
+		}
 	}
 	
 	/*
@@ -890,6 +1201,38 @@ public class GwtMenuHelper {
 	private static AdaptedPortletURL createActionUrl(HttpServletRequest request) {
 		return new AdaptedPortletURL(request, SS_FORUM, true);
 	}
+
+	/*
+	 * Dumps the contents of a toolbar list.
+	 */
+	private static void dumpToolbarItems(List<ToolbarItem> tbiList) {
+		// If debug logging isn't enabled...
+		if (!(m_logger.isDebugEnabled())) {
+			// ...bail.
+			return;
+		}
+	}
+	
+	/*
+	 * Walks up the parentage change of a folder looking for the
+	 * topmost containing folder of the same type.
+	 * 
+	 * Logic lifted from ListFolderHelper.buildBlogPageBeans()
+	 */
+	private static Long getFolderSetFolderId(AllModulesInjected bs, Folder folder, String viewType) {
+		Binder parentBinder = folder.getParentBinder();
+		Binder topBinder = folder;
+		while (null != parentBinder) {
+			Integer pbDefType = parentBinder.getDefinitionType();
+			if ((null != pbDefType) && (!(pbDefType.equals(Definition.FOLDER_VIEW))) || 
+					(!(viewType.equals(BinderHelper.getViewType(bs, parentBinder))))) {
+				break;
+			}
+			topBinder = parentBinder;
+			parentBinder = parentBinder.getParentBinder();
+		}
+		return topBinder.getId();
+	}
 	
 	/**
 	 * Returns a List<ToolbarItem> of the ToolbarItem's for a folder
@@ -907,8 +1250,42 @@ public class GwtMenuHelper {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return...
 			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
+			ToolbarItem entryToolbar = new ToolbarItem(WebKeys.ENTRY_TOOLBAR);
+			reply.add(entryToolbar);
 
-//!			...this needs to be implemented...
+			// Can the user can add entries to the folder?
+			FolderModule fm			= bs.getFolderModule();
+			Folder       folder		= fm.getFolder(folderId);
+			String       viewType	= DefinitionUtils.getViewType(folder);
+			boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry); 
+			if (addAllowed) {				
+				// Yes!  Add the necessary 'add entry' items.
+				constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
+			}
+
+			// Can we determine the folder's view type?
+			if (MiscUtil.hasString(viewType)) {
+				// Yes!  Is it a blog or photo album?
+				if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+					// Yes!  Add the necessary 'sort by' items. 
+					constructEntrySortByItems(entryToolbar, bs, request, viewType, folder);
+				}
+
+				// Can the user add entries to the folder and are applets
+				// supported?
+				if (addAllowed && SsfsUtil.supportApplets(request)) {
+					// Yes!  Is it other than a mini-blog or a mirrored
+					// file that can't be written to?
+					if ((!(viewType.equals(Definition.VIEW_STYLE_MINIBLOG))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
+						// Yes!  The the 'drop box' item.
+						constructEntryDropBoxItem(entryToolbar, bs, request, viewType, folder);
+					}
+				}
+			}
+
+			// If we get here, reply refers to the List<ToolbarItem>
+			// for the folder toolbar.  Return it.
+			dumpToolbarItems(reply);
 			return reply;
 		}
 		
@@ -1051,6 +1428,7 @@ public class GwtMenuHelper {
 			
 			// If we get here, reply refers to the List<ToolbarItem> of
 			// the ToolbarItem's for the binder.  Return it.
+			dumpToolbarItems(reply);
 			return reply;
 		}
 		
@@ -1059,6 +1437,24 @@ public class GwtMenuHelper {
 		}
 	}
 
+	/*
+	 * Returns true if a folder is writable mirrored folder and false
+	 * otherwise.
+	 */
+	private static boolean isFolderWritableMirrored(Folder folder) {
+		return
+			(folder.isMirrored() &&										// Is mirrored...
+				(!(folder.isMirroredAndReadOnly())) &&					// ...and is not read-only...
+				MiscUtil.hasString(folder.getResourceDriverName()));	// ...and the resource driver is configured.
+	}
+
+	/*
+	 * Marks a ToolbarItem as being the default of some sort.
+	 */
+	private static void markTBIDefault(ToolbarItem tbi) {
+		tbi.addQualifier("default", "true");
+	}
+	
 	/*
 	 * Marks a ToolbarItem's event.
 	 */
@@ -1095,8 +1491,15 @@ public class GwtMenuHelper {
 	/*
 	 * Marks a ToolbarItem's title based on a resource key.
 	 */
+	private static void markTBITitleRes(ToolbarItem tbi, String title) {
+		tbi.setTitle(title);
+	}
+	
+	/*
+	 * Marks a ToolbarItem's title based on a resource key.
+	 */
 	private static void markTBITitle(ToolbarItem tbi, String key) {
-		tbi.setTitle(NLT.get(key));
+		markTBITitleRes(tbi, NLT.get(key));
 	}
 	
 	/*
