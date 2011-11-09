@@ -35,10 +35,12 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.lpe.EntryConfig;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -59,6 +61,8 @@ public class EntryWidget extends VibeWidget
 {
 	private Element m_titleElement;
 	private Element m_descElement;
+	private Element m_authorElement;
+	private Element m_dateElement;
 	private EntryProperties m_properties;
 	private String m_style;
 
@@ -88,6 +92,18 @@ public class EntryWidget extends VibeWidget
 		initWidget( mainPanel );
 	}
 
+	/**
+	 * 
+	 */
+	private void handleClickOnAuthor()
+	{
+		SimpleProfileParams params;
+		
+		// Invoke the Simple Profile dialog.
+		params = new SimpleProfileParams( m_authorElement, m_properties.getAuthorWorkspaceId(), m_properties.getAuthor() );
+		GwtTeaming.fireEvent(new InvokeSimpleProfileEvent( params ));
+	}
+	
 	/**
 	 * 
 	 */
@@ -162,6 +178,63 @@ public class EntryWidget extends VibeWidget
 			mainPanel.add( titlePanel );
 		}
 		
+		// Are we supposed to show the author or date?
+		if ( m_properties.getShowAuthor() || m_properties.getShowDate()  )
+		{
+			VibeFlowPanel authorPanel;
+			
+			// Yes
+			authorPanel = new VibeFlowPanel();
+			authorPanel.addStyleName( "entryWidgetAuthorPanel" + m_style );
+			
+			// Are we suppose to show the author?
+			if ( m_properties.getShowAuthor() )
+			{
+				InlineLabel authorLabel;
+				
+				// Yes
+				authorLabel = new InlineLabel( " " );
+				authorLabel.addStyleName( "entryWidgetAuthorLabel" );
+				authorLabel.addClickHandler( new ClickHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								handleClickOnAuthor();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+				m_authorElement = authorLabel.getElement();
+				
+				authorPanel.add( authorLabel );
+			}
+			
+			// Are we suppose to show the date?
+			if ( m_properties.getShowDate() )
+			{
+				InlineLabel dateLabel;
+				
+				// Yes
+				dateLabel = new InlineLabel( " " );
+				dateLabel.addStyleName( "entryWidgetDateLabel" );
+				m_dateElement = dateLabel.getElement();
+				
+				authorPanel.add( dateLabel );
+			}
+			
+			mainPanel.add( authorPanel );
+		}
+		
 		// Create a panel for the description of the entry to live in.
 		{
 			VibeFlowPanel contentPanel;
@@ -178,7 +251,7 @@ public class EntryWidget extends VibeWidget
 			mainPanel.add( contentPanel );
 		}
 		
-		// Issue an ajax request to get the entry's title and description
+		// Issue an ajax request to get the entry's data.
 		m_properties.getDataFromServer( new GetterCallback<Boolean>()
 		{
 			/**
@@ -216,6 +289,26 @@ public class EntryWidget extends VibeWidget
 				title = GwtTeaming.getMessages().noTitle();
 
 			m_titleElement.setInnerHTML( title );
+		}
+		
+		// Update the author's name
+		if ( m_authorElement != null )
+		{
+			String author;
+			
+			author = m_properties.getAuthor();
+			if ( author != null )
+				m_authorElement.setInnerHTML( author );
+		}
+		
+		// Update the modification date
+		if ( m_dateElement != null )
+		{
+			String date;
+			
+			date = m_properties.getModificationDate();
+			if ( date != null )
+				m_dateElement.setInnerHTML( date );
 		}
 		
 		// Update this widget with the entry's description.
