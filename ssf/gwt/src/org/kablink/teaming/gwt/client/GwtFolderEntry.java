@@ -49,6 +49,10 @@ public class GwtFolderEntry extends GwtTeamingItem
 	private String m_entryId;
 	private String m_entryName;
 	private String m_entryDesc;
+	private String m_author;
+	private String m_authorId;
+	private String m_authorWsId;		// Id of the author's workspace
+	private String m_modificationDate;
 	
 	private Long m_parentBinderId;
 	private String m_parentBinderName;
@@ -62,11 +66,39 @@ public class GwtFolderEntry extends GwtTeamingItem
 		m_entryId = null;
 		m_entryName = null;
 		m_entryDesc = null;
+		m_author = null;
+		m_authorId = null;
+		m_authorWsId = null;
+		m_modificationDate = null;
 		m_parentBinderId = null;
 		m_parentBinderName = null;
 		m_viewUrl = null;
 	}// end GwtFolderEntry()
 	
+	
+	/**
+	 * 
+	 */
+	public String getAuthor()
+	{
+		return m_author;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getAuthorId()
+	{
+		return m_authorId;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getAuthorWorkspaceId()
+	{
+		return m_authorWsId;
+	}
 	
 	/**
 	 * 
@@ -91,6 +123,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		return m_entryName;
 	}// end getEntryName()
+	
+	/**
+	 * 
+	 */
+	public String getModificationDate()
+	{
+		return m_modificationDate;
+	}
 	
 	/**
 	 * 
@@ -162,6 +202,30 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * 
 	 */
+	public void setAuthor( String author )
+	{
+		m_author = author;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAuthorId( String authorId )
+	{
+		m_authorId = authorId;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAuthorWorkspaceId( String workspaceId )
+	{
+		m_authorWsId = workspaceId;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setEntryDesc( String desc )
 	{
 		m_entryDesc = desc;
@@ -183,6 +247,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		m_entryName = entryName;
 	}// end setEntryName()
+	
+	/**
+	 * 
+	 */
+	public void setModificationDate( String date )
+	{
+		m_modificationDate = date;
+	}
 	
 	/**
 	 * 

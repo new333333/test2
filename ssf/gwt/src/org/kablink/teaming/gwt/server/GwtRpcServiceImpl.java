@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -150,6 +151,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -2371,6 +2373,82 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				// Create a url that can be used to view this entry.
 				url = getViewFolderEntryUrl( ri, parentBinderId, entryIdL );
 				folderEntry.setViewEntryUrl( url );
+				
+				// Get the entry's author information
+				{
+					Long authorId;
+					
+					authorId = entry.getOwnerId();
+					if ( authorId != null )
+					{
+						// Get the author's name
+						{
+							String authorName;
+							String authorIdS;
+							ArrayList<String> authorIdList;
+							List resolvedList;
+							
+							authorIdS = authorId.toString();
+							folderEntry.setAuthorId( authorIdS );
+	
+							// Does the user have rights to see the name of the author?
+							authorIdList = new ArrayList<String>();
+							authorIdList.add( authorIdS );
+							resolvedList = ResolveIds.getPrincipals( authorIdList );
+							if ( resolvedList != null && resolvedList.isEmpty() == false )
+							{
+								User author;
+								
+								// Yes
+								author = (User) resolvedList.get( 0 );
+								authorName = author.getTitle();
+							}
+							else
+							{
+								// No
+								authorName = NLT.get( "user.redacted.title" );
+							}
+							
+							folderEntry.setAuthor( authorName );
+						}
+						
+						// Get the author's workspace id
+						{
+							SortedSet<Principal> authorPrincipals;
+							ArrayList<Long> authorIds;
+
+							authorIds = new ArrayList<Long>();
+							authorIds.add( authorId );
+							authorPrincipals = getProfileModule().getPrincipals( authorIds );
+							
+							if ( authorPrincipals != null && authorPrincipals.isEmpty() == false )
+							{
+								Principal authorPrincipal;
+								
+								authorPrincipal = authorPrincipals.first();
+								if ( authorPrincipal != null )
+								{
+									Long workspaceId;
+									
+									workspaceId = authorPrincipal.getWorkspaceId();
+									if ( workspaceId != null )
+										folderEntry.setAuthorWorkspaceId( workspaceId.toString() );
+								}
+							}
+						}
+					}
+				}
+				
+				// Get the entry's modification date
+				{
+					Date date;
+					String dateStr;
+					
+					date = entry.getLastActivity();
+					dateStr = GwtServerHelper.getDateTimeString( date );
+					
+					folderEntry.setModificationDate( dateStr );
+				}
 			}
 		}
 		catch (Exception e)

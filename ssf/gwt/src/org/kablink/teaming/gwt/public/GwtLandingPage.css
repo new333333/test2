@@ -54,6 +54,42 @@
 
 /* ######## Styles used with the entry widget on a landing page. ######## */
 
+.entryWidgetAuthorPanel, .entryWidgetAuthorPanel_dark
+{
+}
+
+.entryWidgetAuthorLabel
+{
+	color: #353838;
+	display: inline;
+	font-size: 11px;
+	font-weight: bold;
+	margin-left: 4px;
+	padding-right: 6px;
+	padding-left: 1px;
+	vertical-align: top;
+}
+
+.entryWidgetAuthorLabel:hover, .entryWidgetAuthorLable_dark:hover
+{
+	color: #135c8f;
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.entryWidgetDateLabel
+{
+	font-size: 10px;
+	color: #666666;
+	display: inline;
+	padding-right: 10px;
+	white-space: nowrap;
+	vertical-align: top;
+}
+
 .entryWidgetContentPanel, .entryWidgetContentPanel_dark
 {
 }

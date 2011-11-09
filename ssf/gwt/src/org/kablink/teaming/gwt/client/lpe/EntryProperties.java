@@ -55,12 +55,16 @@ public class EntryProperties
 	private boolean m_showTitle;
 	private boolean m_showAuthor;
 	private boolean m_showDate;
+	private int m_numRepliesToShow;
 	private String m_entryId;
 	private String m_entryName;
 	private String m_entryDesc;
 	private String m_parentBinderName;	// Name of the binder the entry is found in.
 	private String m_zoneUUID;
 	private String m_viewEntryUrl;
+	private String m_author;
+	private String m_authorWsId;	// Id of the author's workspace
+	private String m_modificationDate;
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
 	private GetterCallback<Boolean> m_getterCallback;
 	
@@ -72,11 +76,15 @@ public class EntryProperties
 		m_showTitle = false;
 		m_showAuthor = false;
 		m_showDate = false;
+		m_numRepliesToShow = 0;
 		m_entryId = null;
 		m_entryName = null;
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_viewEntryUrl = null;
+		m_author = null;
+		m_authorWsId = null;
+		m_modificationDate = null;
 		m_getterCallback = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
@@ -147,7 +155,11 @@ public class EntryProperties
 			m_showTitle = entryProps.getShowTitleValue();
 			m_showAuthor = entryProps.getShowAuthor();
 			m_showDate = entryProps.getShowDate();
+			m_numRepliesToShow = entryProps.getNumRepliesToShow();
 			m_viewEntryUrl = entryProps.getViewEntryUrl();
+			m_author = entryProps.getAuthor();
+			m_authorWsId = entryProps.getAuthorWorkspaceId();
+			m_modificationDate = entryProps.getModificationDate();
 		}
 	}// end copy()
 	
@@ -177,6 +189,22 @@ public class EntryProperties
 		return str;
 	}// end createConfigString()
 	
+	
+	/**
+	 * 
+	 */
+	public String getAuthor()
+	{
+		return m_author;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getAuthorWorkspaceId()
+	{
+		return m_authorWsId;
+	}
 	
 	/**
 	 * Return the name of the binder the entry lives in.
@@ -250,6 +278,22 @@ public class EntryProperties
 	{
 		return m_entryName;
 	}
+
+	/**
+	 * 
+	 */
+	public String getModificationDate()
+	{
+		return m_modificationDate;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getNumRepliesToShow()
+	{
+		return m_numRepliesToShow;
+	}
 	
 	/**
 	 * 
@@ -293,6 +337,22 @@ public class EntryProperties
 		return m_zoneUUID;
 	}// end getZoneUUID()
 	
+
+	/**
+	 * 
+	 */
+	public void setAuthorWorkspaceId( String workspaceId )
+	{
+		m_authorWsId = workspaceId;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAuthor( String author )
+	{
+		m_author = author;
+	}
 	
 	/**
 	 * Save the data about the given entry
@@ -303,6 +363,9 @@ public class EntryProperties
 		m_entryDesc = entry.getEntryDesc();
 		m_parentBinderName = entry.getParentBinderName();
 		m_viewEntryUrl = entry.getViewEntryUrl();
+		m_author = entry.getAuthor();
+		m_authorWsId = entry.getAuthorWorkspaceId();
+		m_modificationDate = entry.getModificationDate();
 	}
 	
 	/**
@@ -321,6 +384,14 @@ public class EntryProperties
 		
 		m_entryId = entryId;
 	}// end setEntryId()
+	
+	/**
+	 * 
+	 */
+	public void setNumRepliesToShow( int numReplies )
+	{
+		m_numRepliesToShow = numReplies;
+	}
 	
 	/**
 	 * 

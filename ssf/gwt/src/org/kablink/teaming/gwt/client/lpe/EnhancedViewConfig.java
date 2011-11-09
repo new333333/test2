@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.widgets.EnhancedViewWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
 import com.google.gwt.dom.client.Style;
@@ -221,7 +222,7 @@ public class EnhancedViewConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget()
 	{
-		return null;
+		return EnhancedViewWidget.createWidget( this );
 	}
 	
 	/**
