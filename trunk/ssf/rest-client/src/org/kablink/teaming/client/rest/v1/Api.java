@@ -44,7 +44,7 @@ import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
  * @author jong
  *
  */
-public interface VibeApi {
+public interface Api {
 	public FileProperties writeFile(String entityType, long entityId, String filename, String dataName, Date modDate, File file);
 	
 	public FileProperties writeFile(String entityType, long entityId, String filename, String dataName, Date modDate, InputStream file);

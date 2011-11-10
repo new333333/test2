@@ -60,14 +60,14 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @author jong
  *
  */
-public class VibeApiImpl implements VibeApi {
+public class ApiImpl implements Api {
 	
 	private final String FILE_TEMPLATE_BY_NAME = "rest/file/name/{entityType}/{entityId}/{filename}";
 	private final String FILE_TEMPLATE_BY_ID = "rest/file/id/{fileid}";
 	
-	private VibeClient conn;
+	private ApiClient conn;
 	
-	VibeApiImpl(VibeClient conn) {
+	ApiImpl(ApiClient conn) {
 		this.conn = conn;
 	}
 	
@@ -235,8 +235,8 @@ public class VibeApiImpl implements VibeApi {
 		client.destroy();
 		*/
 		
-		VibeClient client = VibeClient.create("http://positive:8080", "admin", "admin");
-		VibeApi api = client.getVibeApi();
+		ApiClient client = ApiClient.create("http://positive:8080", "admin", "admin");
+		Api api = client.getApi();
 		System.out.println("Start time: " + new Date());
 		for(int i = 0; i < 2; i++) {
 			//File file = api.readFileAsFile("folderEntry", 749, "catalina.out");
