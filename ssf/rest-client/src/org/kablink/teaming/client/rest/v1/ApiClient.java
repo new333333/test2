@@ -38,7 +38,6 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
@@ -51,23 +50,24 @@ public class ApiClient {
 
 	private static final MediaType[] ACCEPTABLE_MEDIA_TYPES_DEFAULT = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
 	
-	private String baseUrl;
+	private String serverUrl; // Vibe server URL including scheme (http/https), hostname, and optional port (e.g. http://mycompany:8080)
+	private String baseUrl; // Base URL for REST API (e.g. http://mycompany:8080/rest/v1) - This is constructed from server URL.
 	private Client client; // underlying Jersey client
 	private MediaType[] acceptableMediaTypes = ACCEPTABLE_MEDIA_TYPES_DEFAULT;
 	private Api api;
 	
 	/**
-	 * Create a <code>ApiClient</code> instance with the base URL for Vibe server and the login credential
+	 * Create a <code>ApiClient</code> instance with the URL for Vibe server and the login credential
 	 * which will be used for HTTP Basic Authentication.
 	 *  
-	 * @param baseUrl
+	 * @param serverUrl
 	 * @param username
 	 * @param password
 	 * @return
 	 */
-	public static ApiClient create(String baseUrl, String username, String password) {
-		if(!baseUrl.endsWith("/"))
-			baseUrl += "/";
+	public static ApiClient create(String serverUrl, String username, String password) {
+		if(!serverUrl.endsWith("/"))
+			serverUrl += "/";
 		
 	     DefaultApacheHttpClientConfig config = new DefaultApacheHttpClientConfig();
 	     Map<String,Object> props = config.getProperties();
@@ -79,23 +79,24 @@ public class ApiClient {
 	     
 	     ApacheHttpClient c = ApacheHttpClient.create(config);
 
-	     return new ApiClient(baseUrl, c);
+	     return new ApiClient(serverUrl, serverUrl + "rest//v1", c);
 	}
 	
-	private ApiClient(String baseUrl, Client c)
+	private ApiClient(String serverUrl, String baseUrl, Client c)
 	{
+		this.serverUrl = serverUrl;
 		this.baseUrl = baseUrl;
 		this.client = c;
 		this.api = new ApiImpl(this);
 	}
 	
 	/**
-	 * Return base URL for Vibe server.
+	 * Return URL for Vibe server.
 	 * 
 	 * @return
 	 */
-	public String getBaseUrl() {
-		return baseUrl;
+	public String getServerUrl() {
+		return serverUrl;
 	}
 
 	/**
@@ -138,5 +139,9 @@ public class ApiClient {
 	 */
 	public void destroy() {
 		client.destroy();
+	}
+	
+	String getBaseUrl() {
+		return baseUrl;
 	}
 }
