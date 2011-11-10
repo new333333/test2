@@ -34,6 +34,8 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
@@ -221,6 +223,13 @@ public class FolderWidget extends VibeWidget
 			int i;
 			
 			// Yes
+			// Are we suppose to sort the entries by title?
+			if ( m_properties.getSortEntriesByTitle() )
+			{
+				// Yes, sort the entries by title
+				sortEntriesByTitle( entries );
+			}
+			
 			for (i = 0; i < entries.size(); ++i)
 			{
 				GwtFolderEntry entry;
@@ -483,7 +492,30 @@ public class FolderWidget extends VibeWidget
 		return mainPanel;
 	}
 	
-	
+	/**
+	 * Sort the given list of entries by title
+	 */
+	@SuppressWarnings("unchecked")
+	private void sortEntriesByTitle( ArrayList<GwtFolderEntry> entries )
+	{
+		if ( entries == null || entries.size() == 0 )
+			return;
+		
+		Collections.sort( entries, new Comparator()
+		{
+			public int compare( Object obj1, Object obj2 )
+			{
+				GwtFolderEntry entry1;
+				GwtFolderEntry entry2;
+				
+				entry1 = (GwtFolderEntry) obj1;
+				entry2 = (GwtFolderEntry) obj2;
+				
+				return entry1.getTitle().compareToIgnoreCase( entry2.getTitle() );
+			}
+		} );
+	}
+
 	/**
 	 * Update the folder's title and description. 
 	 */
