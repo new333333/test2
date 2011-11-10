@@ -47,17 +47,17 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
  * @author jong
  *
  */
-public class VibeClient {
+public class ApiClient {
 
 	private static final MediaType[] ACCEPTABLE_MEDIA_TYPES_DEFAULT = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
 	
 	private String baseUrl;
 	private Client client; // underlying Jersey client
 	private MediaType[] acceptableMediaTypes = ACCEPTABLE_MEDIA_TYPES_DEFAULT;
-	private VibeApi vibeApi;
+	private Api api;
 	
 	/**
-	 * Create a <code>VibeClient</code> instance with the base URL for Vibe server and the login credential
+	 * Create a <code>ApiClient</code> instance with the base URL for Vibe server and the login credential
 	 * which will be used for HTTP Basic Authentication.
 	 *  
 	 * @param baseUrl
@@ -65,7 +65,7 @@ public class VibeClient {
 	 * @param password
 	 * @return
 	 */
-	public static VibeClient create(String baseUrl, String username, String password) {
+	public static ApiClient create(String baseUrl, String username, String password) {
 		if(!baseUrl.endsWith("/"))
 			baseUrl += "/";
 		
@@ -79,14 +79,14 @@ public class VibeClient {
 	     
 	     ApacheHttpClient c = ApacheHttpClient.create(config);
 
-	     return new VibeClient(baseUrl, c);
+	     return new ApiClient(baseUrl, c);
 	}
 	
-	private VibeClient(String baseUrl, Client c)
+	private ApiClient(String baseUrl, Client c)
 	{
 		this.baseUrl = baseUrl;
 		this.client = c;
-		this.vibeApi = new VibeApiImpl(this);
+		this.api = new ApiImpl(this);
 	}
 	
 	/**
@@ -99,12 +99,12 @@ public class VibeClient {
 	}
 
 	/**
-	 * Return a <code>VibeApi</code> object on which application can invoke API calls.
+	 * Return a <code>Api</code> object on which application can invoke API calls.
 	 *  
 	 * @return
 	 */
-	public VibeApi getVibeApi() {
-		return vibeApi;
+	public Api getApi() {
+		return api;
 	}
 
 	/**
