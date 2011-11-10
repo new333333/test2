@@ -57,6 +57,7 @@ public class FolderProperties
 	private boolean m_showEntriesOpened;
 	private boolean m_showEntryAuthor;
 	private boolean m_showEntryDate;
+	private boolean m_sortEntriesByTitle;
 	private int m_numEntriesToBeShown;
 	private int m_numRepliesToShow;
 	private String m_folderId;
@@ -78,6 +79,7 @@ public class FolderProperties
 		m_showEntriesOpened = false;
 		m_showEntryAuthor = false;
 		m_showEntryDate = false;
+		m_sortEntriesByTitle = false;
 		m_numEntriesToBeShown = 0;
 		m_numRepliesToShow = 0;
 		m_folderId = null;
@@ -161,6 +163,7 @@ public class FolderProperties
 			m_showEntriesOpened = folderProps.getShowEntriesOpenedValue();
 			m_showEntryAuthor = folderProps.getShowEntryAuthor();
 			m_showEntryDate = folderProps.getShowEntryDate();
+			m_sortEntriesByTitle = folderProps.getSortEntriesByTitle();
 			m_numEntriesToBeShown = folderProps.getNumEntriesToBeShownValue();
 			m_numRepliesToShow = folderProps.getNumRepliesToShow();
 			m_viewFolderUrl = folderProps.getViewFolderUrl();
@@ -312,6 +315,14 @@ public class FolderProperties
 		return m_showTitle;
 	}// end getShowTitleValue()
 	
+	/**
+	 * 
+	 */
+	public boolean getSortEntriesByTitle()
+	{
+		return m_sortEntriesByTitle;
+	}
+	
 	
 	/**
 	 * Return the url that can be used to view this folder.
@@ -433,6 +444,14 @@ public class FolderProperties
 	{
 		m_showTitle = showTitle;
 	}// end setShowBorder()
+	
+	/**
+	 * 
+	 */
+	public void setSortEntriesByTitle( boolean sort )
+	{
+		m_sortEntriesByTitle = sort;
+	}
 
 
 	/**
