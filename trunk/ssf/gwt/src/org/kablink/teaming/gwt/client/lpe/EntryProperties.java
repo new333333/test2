@@ -163,6 +163,7 @@ public class EntryProperties
 			m_author = entryProps.getAuthor();
 			m_authorWsId = entryProps.getAuthorWorkspaceId();
 			m_modificationDate = entryProps.getModificationDate();
+			m_replyIds = entryProps.getReplyIds();
 		}
 	}// end copy()
 	
