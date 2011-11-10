@@ -85,10 +85,10 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
-import org.kablink.teaming.remoting.rest.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
@@ -111,10 +111,6 @@ public class FileResource extends AbstractResource {
     @InjectParam("fileModule") private FileModule fileModule;
     @InjectParam("profileModule") private ProfileModule profileModule;
     @InjectParam("binderModule") private BinderModule binderModule;
-    
-    public FileResource() {
-    	System.out.println("Being created");
-    }
     
 	@POST
 	@Path("/name/{entityType}/{entityId}/{filename}")
