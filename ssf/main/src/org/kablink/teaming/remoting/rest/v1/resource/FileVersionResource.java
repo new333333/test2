@@ -49,8 +49,8 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.shared.FileUtils;
-import org.kablink.teaming.remoting.rest.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 
 import com.sun.jersey.api.core.InjectParam;

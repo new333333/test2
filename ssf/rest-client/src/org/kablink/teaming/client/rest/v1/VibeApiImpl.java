@@ -31,7 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.client.rest;
+package org.kablink.teaming.client.rest.v1;
 
 import java.io.File;
 import java.io.FileOutputStream;
