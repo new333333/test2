@@ -2298,6 +2298,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
+	@SuppressWarnings("unchecked")
 	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, int numRepliesToGet ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
@@ -4102,8 +4103,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param viCmd
 	 * 
 	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	private ViewInfo getViewInfo( HttpRequestInfo ri, GetViewInfoCmd viCmd )
+	private ViewInfo getViewInfo( HttpRequestInfo ri, GetViewInfoCmd viCmd ) throws GwtTeamingException
 	{
 		return GwtViewHelper.getViewInfo( this, getRequest( ri ), viCmd.getUrl() );
 	}//end getBinderInfo()

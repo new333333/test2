@@ -549,6 +549,7 @@ public class GwtMenuHelper {
 			
 			sortByTBI = new ToolbarItem("sortby");
 			markTBITitle(sortByTBI, nltTag);
+			markTBIUrl(  sortByTBI, url   );
 			if (searchSortBy.equals(Constants.DOCID_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -566,6 +567,7 @@ public class GwtMenuHelper {
 			
 			sortByTBI = new ToolbarItem("sortby");
 			markTBITitle(sortByTBI, "folder.column.Title");
+			markTBIUrl(  sortByTBI, url                  );
 			if (searchSortBy.equals(Constants.SORT_TITLE_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -583,6 +585,7 @@ public class GwtMenuHelper {
 			
 			sortByTBI = new ToolbarItem("sortby");
 			markTBITitle(sortByTBI, "folder.column.State");
+			markTBIUrl(  sortByTBI, url                  );
 			if (searchSortBy.equals(Constants.WORKFLOW_STATE_CAPTION_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -600,6 +603,7 @@ public class GwtMenuHelper {
 			
 			sortByTBI = new ToolbarItem("sortby");
 			markTBITitle(sortByTBI, "folder.column.Author");
+			markTBIUrl(  sortByTBI, url                   );
 			if (searchSortBy.equals(Constants.CREATOR_TITLE_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -617,6 +621,7 @@ public class GwtMenuHelper {
 			
 			sortByTBI = new ToolbarItem("sortby");
 			markTBITitle(sortByTBI, "folder.column.LastActivity");
+			markTBIUrl(  sortByTBI, url                         );
 			if (searchSortBy.equals(Constants.LASTACTIVITY_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -634,6 +639,7 @@ public class GwtMenuHelper {
 			
 			sortByTBI = new ToolbarItem("sortby");
 			markTBITitle(sortByTBI, "folder.column.Rating");
+			markTBIUrl(  sortByTBI, url                   );
 			if (searchSortBy.equals(Constants.RATING_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -1330,7 +1336,7 @@ public class GwtMenuHelper {
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the folder toolbar.  Return it.
-			m_logger.debug("GwtMenuHelper.getFooterToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getFolderToolbarItems():");
 			dumpToolbarItems(reply, "...");
 			return reply;
 		}
@@ -1474,8 +1480,8 @@ public class GwtMenuHelper {
 			
 			// If we get here, reply refers to the List<ToolbarItem> of
 			// the ToolbarItem's for the binder.  Return it.
-//			m_logger.debug("GwtMenuHelper.getToolbarItems():");
-//			dumpToolbarItems(reply, "...");
+			m_logger.debug("GwtMenuHelper.getToolbarItems():");
+			dumpToolbarItems(reply, "...");
 			return reply;
 		}
 		

@@ -1202,8 +1202,10 @@ public class GwtViewHelper {
 	 * @param url
 	 * 
 	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
-	public static ViewInfo getViewInfo(AllModulesInjected bs, HttpServletRequest request, String url) {
+	public static ViewInfo getViewInfo(AllModulesInjected bs, HttpServletRequest request, String url) throws GwtTeamingException {
 		// Trace the URL we're working with.
 		m_logger.debug("GwtViewHelper.getViewInfo():  " + url);
 
@@ -1244,12 +1246,34 @@ public class GwtViewHelper {
 		}
 		
 		else if (action.equals(WebKeys.ACTION_VIEW_WS_LISTING) || action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
-			// A view workspace listing!  Setup a binder view based
-			// on the binder ID.
+			// A view workspace or folder listing!  Setup a binder view
+			// based on the binder ID.
 			if (!(initVIFromBinderId(bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
 				m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
 				return null;
 			}
+
+			// Is this a view folder list?
+			if (action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
+				// Yes!  Does it also contain changes to the folder
+				// sorting?
+				String sortBy       = getQueryParameterString(nvMap, WebKeys.FOLDER_SORT_BY);		
+				String sortDescendS = getQueryParameterString(nvMap, WebKeys.FOLDER_SORT_DESCEND);
+				if (MiscUtil.hasString(sortBy) && MiscUtil.hasString(sortDescendS)) {
+					// Yes!  Apply the sort changes.
+					Boolean sortDescend = Boolean.parseBoolean(sortDescendS);
+					GwtServerHelper.saveFolderSort(
+						bs,
+						vi.getBinderInfo().getBinderIdAsLong(),
+						sortBy,
+						(!sortDescend));
+				}
+			}
+		}
+
+		else if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
+			// An add folder entry!  Simply mark the ViewInfo as such.
+			vi.setViewType(ViewType.ADD_FOLDER_ENTRY);
 		}
 		
 		else if (action.equals(WebKeys.ACTION_ADVANCED_SEARCH)) {
