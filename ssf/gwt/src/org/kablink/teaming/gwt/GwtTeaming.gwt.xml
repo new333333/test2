@@ -23,18 +23,12 @@
 			value="org.kablink.teaming.gwt.client.GwtMainPage"/>
 	-->
     
-    <!-- Specify the application specific style sheet.              -->
-    <!-- Note:  DRF - 20100913                                      -->
-    <!--    Our CSS style sheets are also brought in via link tags  -->
-    <!--    in initializeGWT.jsp.  This change was made so that     -->
-    <!--    their inclusion honors our 'must-revalidate' browser    -->
-    <!--    caching.  When they were included here alone, they only -->
-    <!--    got brought in by gwtteaming.nocache.js which bypassed  -->
-    <!--    the cache re-validation handling.                       -->
-	<stylesheet src='GwtTeaming.css?v3'     />
-    <stylesheet src='GwtProfile.css?v3'     />		
-    <stylesheet src='GwtLandingPage.css?v3' />		
-    <stylesheet src='GwtBinderViews.css?v3' />		
+    <!-- Specify the application specific style sheet. -->
+	<stylesheet src='GwtTeaming.css'     />
+    <stylesheet src='GwtProfile.css'     />		
+    <stylesheet src='GwtLandingPage.css' />		
+    <stylesheet src='GwtBinderViews.css' />		
+    <stylesheet src='VibeDataTable.css'  />		
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
