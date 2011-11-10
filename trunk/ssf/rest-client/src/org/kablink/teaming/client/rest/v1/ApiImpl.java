@@ -228,8 +228,8 @@ public class ApiImpl implements Api {
 	
 	public static void main(String[] args) throws Exception {
 		/*
-		VibeClient client = VibeClient.create("http://localhost:8079", "admin", "admin");
-		VibeApi api = client.getVibeApi();
+		ApiClient client = ApiClient.create("http://localhost:8079", "admin", "admin");
+		Api api = client.getApi();
 		FileProperties fp = api.readFileProperties("folderEntry", 13, "debug5.txt");
 		FileProperties fp2 = api.readFileProperties("folderEntry", 13, "debug5.txt");
 		client.destroy();
