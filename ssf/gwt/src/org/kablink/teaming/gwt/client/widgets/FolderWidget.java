@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderConfig;
@@ -48,6 +49,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntriesRpcResponseData
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
@@ -98,6 +100,61 @@ public class FolderWidget extends VibeWidget
 				GwtTeaming.fireEvent( new ViewForumEntryEvent( m_viewEntryUrl ) );
 			}
 			
+		}
+		
+		/**
+		 * 
+		 */
+		public void onClick( ClickEvent event )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					handleClickOnLink();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * This class is used as the click handler when the user clicks on the author of an entry.
+	 *
+	 */
+	private class AuthorClickHandler implements ClickHandler
+	{
+		private Element m_element;
+		private String m_authorWorkspaceId;
+		private String m_authorName;
+		
+		/**
+		 * 
+		 */
+		public AuthorClickHandler( Element element, String authorWorkspaceId, String authorName )
+		{
+			super();
+			
+			m_element = element;
+			m_authorWorkspaceId = authorWorkspaceId;
+			m_authorName = authorName;
+		}
+
+		/**
+		 * 
+		 */
+		private void handleClickOnLink()
+		{
+			if ( GwtClientHelper.hasString( m_authorWorkspaceId ) )
+			{
+				SimpleProfileParams params;
+				
+				// Invoke the Simple Profile dialog.
+				params = new SimpleProfileParams( m_element, m_authorWorkspaceId, m_authorName );
+				GwtTeaming.fireEvent(new InvokeSimpleProfileEvent( params ));
+			}
 		}
 		
 		/**
@@ -200,11 +257,50 @@ public class FolderWidget extends VibeWidget
 					
 					link = new InlineLabel( entry.getEntryName() );
 					link.addStyleName( "folderWidgetLinkToEntry" + m_style );
+					panel.add( link );
 					
 					clickHandler = new EntryClickHandler( entry.getViewEntryUrl() );
 					link.addClickHandler( clickHandler );
 					
-					panel.add( link );
+					// Should we show the author or date?
+					if ( m_properties.getShowEntryAuthor() || m_properties.getShowEntryDate() )
+					{
+						VibeFlowPanel miscPanel;
+						
+						// Create a panel that will hold the author and date
+						miscPanel = new VibeFlowPanel();
+						miscPanel.addStyleName( "folderWidgetMiscPanel" + m_style );
+						panel.add( miscPanel );
+
+						// Are we suppose to show the author?
+						if ( m_properties.getShowEntryAuthor() )
+						{
+							InlineLabel authorLabel;
+							AuthorClickHandler authorClickHandler;
+							
+							// Yes
+							authorLabel = new InlineLabel( entry.getAuthor() );
+							authorLabel.addStyleName( "entryWidgetAuthorLabel" );
+							
+							authorClickHandler = new AuthorClickHandler( authorLabel.getElement(), entry.getAuthorWorkspaceId(), entry.getAuthor() );
+							authorLabel.addClickHandler( authorClickHandler );
+							
+							miscPanel.add( authorLabel );
+						}
+						
+						// Are we suppose to show the date?
+						if ( m_properties.getShowEntryDate() )
+						{
+							InlineLabel dateLabel;
+							
+							// Yes
+							dateLabel = new InlineLabel( entry.getModificationDate() );
+							dateLabel.addStyleName( "entryWidgetDateLabel" );
+							
+							miscPanel.add( dateLabel );
+						}
+					}
+					
 					m_listOfEntriesPanel.add( panel );
 				}
 			}

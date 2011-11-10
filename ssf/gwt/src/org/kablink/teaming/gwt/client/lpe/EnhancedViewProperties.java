@@ -531,7 +531,7 @@ public class EnhancedViewProperties
 			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
 				m_viewType = EnhancedViewType.DISPLAY_RECENT_ENTRIES;
 			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_RECENT_ENTRIES;
+				m_viewType = EnhancedViewType.DISPLAY_LIST_OF_RECENT_ENTRIES;
 			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list_sorted.jsp" ) )
 				m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_RECENT_ENTRIES;
 			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list_sorted_files.jsp" ) )

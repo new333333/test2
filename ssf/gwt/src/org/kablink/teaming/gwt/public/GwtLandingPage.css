@@ -168,6 +168,11 @@
 {
 }
 
+.folderWidgetMiscPanel, .folderWidgetMiscPanel_dark
+{
+	padding-left: 8px;
+}
+
 .folderWidgetTitleLabel, .folderWidgetTitleLabel_dark
 {
 	color: #135c8f;

@@ -95,9 +95,26 @@ public class EnhancedViewWidget extends VibeWidget
 			break;
 		}
 
+		case DISPLAY_LIST_OF_RECENT_ENTRIES:
+		{
+			FolderProperties folderProperties;
+			
+			folderProperties = new FolderProperties();
+			folderProperties.setFolderId( properties.getFolderId() );
+			folderProperties.setShowTitle( true );
+			folderProperties.setShowDescValue( true );
+			folderProperties.setShowEntriesOpenedValue( false );
+			folderProperties.setShowEntryAuthor( true );
+			folderProperties.setShowEntryDate( true );
+			folderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
+			folderProperties.setNumRepliesToShow( 0 );
+			
+			widget = new FolderWidget( folderProperties, landingPageStyle );
+			break;
+		}
+		
 		case DISPLAY_CALENDAR:
 		case DISPLAY_FULL_ENTRY:
-		case DISPLAY_LIST_OF_RECENT_ENTRIES:
 		case DISPLAY_SORTED_LIST_FILES:
 		case DISPLAY_SORTED_LIST_RECENT_ENTRIES:
 		case DISPLAY_SURVEY:
