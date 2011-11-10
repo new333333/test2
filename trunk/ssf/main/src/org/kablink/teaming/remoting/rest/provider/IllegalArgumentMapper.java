@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.kablink.teaming.rest.model.ErrorInfo;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
  * @author jong

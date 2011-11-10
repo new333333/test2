@@ -30,23 +30,32 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.provider;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author jong
  *
  */
-@Provider
-public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
-	public Response toResponse(WriteEntryDataException ex) {
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ex.getMessage())).build();
+@XmlRootElement(name="fileVersions")
+public class FileVersionPropertiesCollection {
+
+	@XmlElement(name="fileVersion")
+	private List<FileVersionProperties> list; 
+	
+	private FileVersionPropertiesCollection() {}
+	
+	public FileVersionPropertiesCollection(List<FileVersionProperties> list) {
+		this.list = list;
 	}
+
+	public List<FileVersionProperties> asList() {
+		return list;
+	}
+	
 }

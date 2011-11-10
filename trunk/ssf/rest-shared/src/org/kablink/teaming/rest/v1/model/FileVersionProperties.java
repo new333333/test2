@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,23 +30,31 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.provider;
+package org.kablink.teaming.rest.v1.model;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.rest.v1.model.ErrorInfo;
+@XmlRootElement(name="fileVersion")
+public class FileVersionProperties extends FileCommonProperties {
 
-/**
- * @author jong
- *
- */
-@Provider
-public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
-	public Response toResponse(WriteEntryDataException ex) {
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ex.getMessage())).build();
+	private Boolean promoteCurrent; // processing instruction - used for update only
+	
+	private FileVersionProperties() {
+		super();
 	}
+	
+	public FileVersionProperties(String id, HistoryStamp creation, HistoryStamp modification, 
+			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
+			String note, Integer status, String webUrl) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+	}
+
+	public Boolean getPromoteCurrent() {
+		return promoteCurrent;
+	}
+
+	public void setPromoteCurrent(Boolean promoteCurrent) {
+		this.promoteCurrent = promoteCurrent;
+	}
+
 }

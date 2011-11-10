@@ -34,8 +34,8 @@
 package org.kablink.teaming.remoting.rest.util;
 
 import org.kablink.teaming.domain.VersionAttachment;
-import org.kablink.teaming.rest.model.FileVersionProperties;
-import org.kablink.teaming.rest.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;

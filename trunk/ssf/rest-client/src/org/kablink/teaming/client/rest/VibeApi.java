@@ -37,8 +37,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
 
-import org.kablink.teaming.rest.model.FileProperties;
-import org.kablink.teaming.rest.model.FileVersionPropertiesCollection;
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
 
 /**
  * @author jong
