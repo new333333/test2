@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public enum ViewType implements IsSerializable {
+	ADD_FOLDER_ENTRY,
 	ADVANCED_SEARCH,
 	BINDER,
 	

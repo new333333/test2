@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -69,7 +70,7 @@ import com.google.gwt.user.client.ui.MenuBar;
 public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo			m_binderInfo;	//
 	private List<ToolbarItem>	m_toolbarIems;	//
-	private MenuBar				m_menuBar;		//
+	private MenuBar				m_entryMenu;	//
 	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
 	
 	/*
@@ -86,12 +87,14 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// ...store the parameters...
 		m_binderInfo = binderInfo;
 
-		// ...and construct the panel.
+		// ...construct and initialize the panel...
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
-		m_menuBar = new MenuBar();
-		m_fp.add(m_menuBar);
+		m_entryMenu = new MenuBar();
+		m_fp.add(m_entryMenu);
 		initWidget(m_fp);
+		
+		// ...and load the menu.
 		loadPart1Async();
 	}
 
@@ -119,19 +122,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 		});
 	}
 
-	/*
-	 * Returns a named ToolbarItem from a List<ToolbarItem>.  It no
-	 * such item exists, returns null.
-	 */
-	private static ToolbarItem findNamedTBI(List<ToolbarItem> tbiList, String tbiName) {
-		for (ToolbarItem tbi:  tbiList) {
-			if (tbi.getName().equals(tbiName)) {
-				return tbi;
-			}
-		}
-		return null;
-	}
-	
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
@@ -189,54 +179,32 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 */
 	private void loadPart2Now() {
 		// Do we have an entry toolbar?
-		ToolbarItem entryTBI = findNamedTBI(m_toolbarIems, "ssEntryToolbar");
+		ToolbarItem entryTBI = ToolbarItem.getNestedToolbarItem(m_toolbarIems, "ssEntryToolbar");
 		if (null != entryTBI) {
-			// Yes!  If it contains an add item...
-			List<ToolbarItem> nestedTBIs = entryTBI.getNestedItemsList();
-			ToolbarItem addTBI = findNamedTBI(nestedTBIs, "1_add");
-			if (null != addTBI) {
-				// ...add it to the menu.
-				renderAddTBI(addTBI);
-			}
-
-			// If it contains a delete selected item...
-			ToolbarItem deleteTBI = findNamedTBI(nestedTBIs, "1_deleteSelected");
-			if (null != deleteTBI) {
-				// ...add it to the menu.
-				renderSimpleTBI(deleteTBI);
-			}
-			
-			// If it contains a purge selected item...
-			ToolbarItem purgeTBI = findNamedTBI(nestedTBIs, "1_purgeSelected");
-			if (null != purgeTBI) {
-				// ...add it to the menu.
-				renderSimpleTBI(purgeTBI);
-			}
-			
-			// If it contains a drop box...
-			ToolbarItem dropBoxTBI = findNamedTBI(nestedTBIs, "dropBox");
-			if (null != dropBoxTBI) {
-				// ...add it to the menu.
-				renderSimpleTBI(dropBoxTBI);
+			// Yes!  Scan its nested items..
+			for (ToolbarItem perEntryTBI:  entryTBI.getNestedItemsList()) {
+				// ...rendering each of them.
+				if (perEntryTBI.hasNestedToolbarItems())
+				     renderStructuredTBI(m_entryMenu, perEntryTBI);
+				else renderSimpleTBI(    m_entryMenu, perEntryTBI);
 			}
 		}
 	}
 
 	/*
-	 * Renders the 'add an entry' toolbar item.
+	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderAddTBI(final ToolbarItem addTBI) {
-		// Is there more than one add option?
-		List<ToolbarItem>	entryTBIs = addTBI.getNestedItemsList();
-		if (entryTBIs.isEmpty()) {
-			// No!  Add the single item to the menu.
-			m_menuBar.addItem(addTBI.getTitle(), new Command() {
-				@Override
-				public void execute() {
-					// Launch the toolbar item's URL in the content
-					// frame.
+	private void renderSimpleTBI(MenuBar menuBar, final ToolbarItem simpleTBI) {
+		menuBar.addItem(simpleTBI.getTitle(), new Command() {
+			@Override
+			public void execute() {
+				// Does the simple toolbar item contain a URL to
+				// launch?
+				final String simpleUrl = simpleTBI.getUrl();
+				if (GwtClientHelper.hasString(simpleUrl)) {
+					// Yes!  Launch it in the content frame.
 					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-						addTBI.getUrl(),
+						simpleUrl,
 						false,	// false -> Not trash.
 						Instigator.GOTO_CONTENT_URL);
 					
@@ -244,63 +212,47 @@ public class EntryMenuPanel extends ToolPanelBase {
 						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 					}
 				}
-			});
-		}
-		
-		else {
-			// Yes, there's more than one add option!  Create a drop
-			// down menu for them...
-			MenuBar	addMenu = new MenuBar(true);	// true -> Vertical drop down menu.
-			m_menuBar.addItem(addTBI.getTitle(), addMenu);
-			
-			// ...scan the add options...
-			for (final ToolbarItem entryTBI:  entryTBIs) {
-				// ...and add a single item to the drop down for each
-				// ...of them.
-				addMenu.addItem(entryTBI.getTitle(), new Command() {
-					@Override
-					public void execute() {
-						// Launch the toolbar item's URL in the content
-						// frame.
-						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-							entryTBI.getUrl(),
-							false,	// false -> Not trash.
-							Instigator.GOTO_CONTENT_URL);
-						
-						if (GwtClientHelper.validateOSBI(osbInfo)) {
-							GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
-						}
+				
+				else {
+					// No, the simple toolbar item didn't contain a
+					// URL!  The only other option is an event.
+					TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
+					Long folderId = m_binderInfo.getBinderIdAsLong();
+					
+					VibeEventBase<?> event;
+					switch (simpleEvent) {
+					default:                       event = EventHelper.createSimpleEvent( simpleEvent); break;
+					case PURGE_SELECTED_ENTRIES:   event = new PurgeSelectedEntriesEvent( folderId   ); break;
+					case DELETE_SELECTED_ENTRIES:  event = new DeleteSelectedEntriesEvent(folderId   ); break;
+					case INVOKE_DROPBOX:           event = new InvokeDropBoxEvent(        folderId   ); break;
+					case UNDEFINED:
+						Window.alert(GwtTeaming.getMessages().eventHandling_NoEntryMenuHandler(simpleEvent.name()));
+						event = null;
 					}
-				});
+					
+					if (null != event) {
+						GwtTeaming.fireEvent(event);
+					}
+				}
 			}
-		}
+		});
 	}
 	
 	/*
-	 * Renders any of several event base toolbar items.
+	 * Renders any toolbar item that contains nested toolbar items.
 	 */
-	private void renderSimpleTBI(final ToolbarItem simpleTBI) {
-		m_menuBar.addItem(simpleTBI.getTitle(), new Command() {
-			@Override
-			public void execute() {
-				TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
-				Long folderId = m_binderInfo.getBinderIdAsLong();
-				
-				VibeEventBase<?> event;
-				switch (simpleEvent) {
-				case PURGE_SELECTED_ENTRIES:   event = new PurgeSelectedEntriesEvent( folderId); break;
-				case DELETE_SELECTED_ENTRIES:  event = new DeleteSelectedEntriesEvent(folderId); break;
-				case INVOKE_DROPBOX:           event = new InvokeDropBoxEvent(        folderId); break;
-					
-				default:
-				case UNDEFINED:
-					Window.alert(GwtTeaming.getMessages().eventHandling_NoEntryMenuHandler(simpleEvent.name()));
-					return;
-				}
-				
-				GwtTeaming.fireEvent(event);
-			}
-		});
+	private void renderStructuredTBI(MenuBar menuBar, ToolbarItem structuredTBI) {
+		// Create a drop down menu for the structured toolbar item...
+		MenuBar	structuredMenuBar = new MenuBar(true);	// true -> Vertical drop down menu.
+		menuBar.addItem(structuredTBI.getTitle(), structuredMenuBar);
+		
+		// ...scan the nested items...
+		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
+			// ...rendering each of them.
+			if (nestedTBI.hasNestedToolbarItems())
+			     renderStructuredTBI(structuredMenuBar, nestedTBI);
+			else renderSimpleTBI(    structuredMenuBar, nestedTBI);
+		}
 	}
 	
 	/**
@@ -313,8 +265,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 	public void resetPanel() {
 		// Reset the widgets...
 		m_fp.clear();
-		m_menuBar = new MenuBar();
-		m_fp.add(m_menuBar);
+		m_entryMenu = new MenuBar();
+		m_fp.add(m_entryMenu);
 
 		// ...and reload the menu.
 		loadPart1Async();

@@ -472,6 +472,7 @@ public class ContentControl extends Composite
 				}
 				break;
 				
+			case ADD_FOLDER_ENTRY:
 			case ADVANCED_SEARCH:
 				// These aren't handled!  Let things take the default
 				// flow.

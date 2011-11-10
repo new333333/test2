@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -192,17 +191,17 @@ public class ToolbarItem implements IsSerializable {
 	}
 
 	/**
-	 * Returns nested toolbar item based on its name.
-	 * 
+	 * Returns a nested toolbar item based on its name.
+	 *
+	 * @param tbiList
 	 * @param name
 	 * 
 	 * @return
 	 */
-	public ToolbarItem getNestedToolbarItem(String name) {
+	public static ToolbarItem getNestedToolbarItem(List<ToolbarItem> tbiList, String name) {
 		name = ((null == name) ? "" : name.toLowerCase());
 		boolean noName = (0 == name.length());
-		for (Iterator<ToolbarItem> tbiIT = m_nestedItemsAL.iterator(); tbiIT.hasNext(); ) {
-			ToolbarItem tbi = tbiIT.next();
+		for (ToolbarItem tbi:  tbiList) {
 			String tbName = tbi.getName();
 			tbName = ((null == tbName) ? "" : tbName.toLowerCase());
 			boolean noTBName = (0 == tbName.length());
@@ -213,13 +212,17 @@ public class ToolbarItem implements IsSerializable {
 		return null;
 	}
 	
+	public ToolbarItem getNestedToolbarItem(String name) {
+		// Always use the initial form of the method.
+		return getNestedToolbarItem(m_nestedItemsAL, name);
+	}
+	
 	/*
 	 * Returns the name/value pair for a qualifier based on its name.
 	 */
 	private NameValuePair getQualifier(String name) {
 		name = name.toLowerCase();
-		for (Iterator<NameValuePair> qIT = m_qualifiersAL.iterator(); qIT.hasNext(); ) {
-			NameValuePair nvp = qIT.next();
+		for (NameValuePair nvp:  m_qualifiersAL) {
 			String nvpName = nvp.getName().toLowerCase();
 			if (nvpName.endsWith(name)) {
 				return nvp;
