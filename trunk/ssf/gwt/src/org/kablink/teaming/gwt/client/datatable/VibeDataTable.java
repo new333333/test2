@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.view.client.ProvidesKey;
 
@@ -62,11 +63,31 @@ public class VibeDataTable<T> extends DataGrid<T> {
 	public final static String CELL_WIDGET_PRESENCE_LABEL		= "presenceLabel";
 
 	/**
+	 * Interface to load data table styles that can override the
+	 * default styles.
+	 * 
+	 * This provides Lynn a way to easily edit the defaults.
+	 */ 
+	public interface VibeDataTableResources extends Resources {
+		@Source({DataGrid.Style.DEFAULT_CSS, "../../public/VibeDataTable.css"})
+		DataGrid.Style dataGridStyle();
+	}
+	
+	/**
 	 * Constructor method.
 	 * 
 	 * @param pageSize
+	 * @param keyProvider
 	 */
 	public VibeDataTable(int pageSize, ProvidesKey<T> keyProvider) {
-		super(pageSize, keyProvider);
+		super(pageSize, getVibeDataTableResources(), keyProvider);
+	}
+
+	/*
+	 * Loads the resource file Vibe uses to overwrite those GWT defines
+	 * by default.
+	 */
+	private static DataGrid.Resources getVibeDataTableResources() { 
+		return GWT.create(VibeDataTableResources.class);
 	}
 }

@@ -236,7 +236,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		public int  getWidth() {return m_width;}
 		public Unit getUnits() {return m_units;}
 	}
-	
+
 	/*
 	 * Inner class used to provide list of FolderRow's.
 	 */

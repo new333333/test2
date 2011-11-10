@@ -60,6 +60,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
@@ -91,6 +92,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
 		m_entryMenu = new MenuBar();
+		m_entryMenu.addStyleName("vibe-entryMenuBar");
 		m_fp.add(m_entryMenu);
 		initWidget(m_fp);
 		
@@ -195,7 +197,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
 	private void renderSimpleTBI(MenuBar menuBar, final ToolbarItem simpleTBI) {
-		menuBar.addItem(simpleTBI.getTitle(), new Command() {
+		MenuItem menuItem = new MenuItem(simpleTBI.getTitle(), new Command() {
 			@Override
 			public void execute() {
 				// Does the simple toolbar item contain a URL to
@@ -236,6 +238,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 				}
 			}
 		});
+		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
+		menuBar.addItem(menuItem);
 	}
 	
 	/*
@@ -244,6 +248,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private void renderStructuredTBI(MenuBar menuBar, ToolbarItem structuredTBI) {
 		// Create a drop down menu for the structured toolbar item...
 		MenuBar	structuredMenuBar = new MenuBar(true);	// true -> Vertical drop down menu.
+		structuredMenuBar.addStyleName("vibe-entryMenuPopup");
 		menuBar.addItem(structuredTBI.getTitle(), structuredMenuBar);
 		
 		// ...scan the nested items...
@@ -266,6 +271,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// Reset the widgets...
 		m_fp.clear();
 		m_entryMenu = new MenuBar();
+		m_entryMenu.addStyleName("vibe-entryMenuBar");
 		m_fp.add(m_entryMenu);
 
 		// ...and reload the menu.
