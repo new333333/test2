@@ -30,23 +30,23 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.provider;
 
+package org.kablink.teaming.remoting.rest.v1.exc;
+
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
  * @author jong
  *
  */
-@Provider
-public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
-	public Response toResponse(WriteEntryDataException ex) {
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ex.getMessage())).build();
+public class InternalServerErrorException extends WebApplicationException {
+
+	private static final long serialVersionUID = 1L;
+
+	public InternalServerErrorException(String message) {
+		super(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(message)).build());
 	}
 }

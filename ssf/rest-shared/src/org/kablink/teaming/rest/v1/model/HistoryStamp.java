@@ -30,23 +30,50 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.provider;
+package org.kablink.teaming.rest.v1.model;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import java.util.Calendar;
+import java.util.Date;
 
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author jong
  *
  */
-@Provider
-public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
-	public Response toResponse(WriteEntryDataException ex) {
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ex.getMessage())).build();
+@XmlRootElement
+public class HistoryStamp {
+
+	private Long principalId;
+	private Calendar date;
+	
+	private HistoryStamp() {}
+	
+	public HistoryStamp(Long principalId, Calendar date) {
+		this.principalId = principalId;
+		this.date = date;
+	}
+	
+	public HistoryStamp(Long principalId, Date date) {
+		this.principalId = principalId;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		this.date = cal;
+	}
+
+	public Long getPrincipalId() {
+		return principalId;
+	}
+
+	public void setPrincipalId(Long principalId) {
+		this.principalId = principalId;
+	}
+
+	public Calendar getDate() {
+		return date;
+	}
+
+	public void setDate(Calendar date) {
+		this.date = date;
 	}
 }

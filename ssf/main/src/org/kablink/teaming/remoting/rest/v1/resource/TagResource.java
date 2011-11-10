@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,23 +30,31 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.provider;
+package org.kablink.teaming.remoting.rest.v1.resource;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.teaming.rest.v1.model.Tag;
 
-/**
- * @author jong
- *
- */
-@Provider
-public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
-	public Response toResponse(WriteEntryDataException ex) {
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ex.getMessage())).build();
+@Path("/tag/{id}")
+public class TagResource extends AbstractResource {
+
+	// Read tag
+	@GET
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Tag getTag(@PathParam("id") String id) {
+		return null;
+	}
+
+	// Delete tag
+	@DELETE
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void deleteTag(@PathParam("id") String id) {
+
 	}
 }
