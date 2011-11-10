@@ -131,7 +131,20 @@ public class FolderWidget extends VibeWidget
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
+		
+		// All composites must call initWidget() in their constructors.
+		initWidget( mainPanel );
+	}
+	
+	/**
+	 * 
+	 */
+	public FolderWidget( FolderProperties properties, String landingPageStyle )
+	{
+		VibeFlowPanel mainPanel;
+		
+		mainPanel = init( properties, landingPageStyle );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -168,6 +181,9 @@ public class FolderWidget extends VibeWidget
 					entryProperties.setEntryId( entry.getEntryId() );
 					entryProperties.setEntryData( entry );
 					entryProperties.setShowTitle( true );
+					entryProperties.setShowAuthor( m_properties.getShowEntryAuthor() );
+					entryProperties.setShowDate( m_properties.getShowEntryDate() );
+					entryProperties.setNumRepliesToShow( m_properties.getNumRepliesToShow() );
 					
 					entryWidget = new EntryWidget( entryProperties, m_style );
 					m_listOfEntriesPanel.add( entryWidget );
@@ -210,17 +226,15 @@ public class FolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( FolderConfig config )
+	private VibeFlowPanel init( FolderProperties properties, String landingPageStyle )
 	{
-		FolderProperties properties;
 		VibeFlowPanel mainPanel;
 		int numEntries;
 		
 		m_properties = new FolderProperties();
-		properties = config.getProperties();
 		m_properties.copy( properties );
 		
-		m_style = config.getLandingPageStyle();
+		m_style = landingPageStyle;
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
@@ -322,7 +336,7 @@ public class FolderWidget extends VibeWidget
 			mainPanel.add( m_listOfEntriesPanel );
 
 			// Issue an rpc request to get the last n entries from the folder.
-			cmd = new GetFolderEntriesCmd( m_properties.getFolderId(), numEntries );
+			cmd = new GetFolderEntriesCmd( m_properties.getFolderId(), numEntries, m_properties.getNumRepliesToShow() );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				/**

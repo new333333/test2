@@ -573,7 +573,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ArrayList<GwtFolderEntry> result;
 			
 			gfeCmd = (GetFolderEntriesCmd) cmd;
-			result = getFolderEntries( ri, gfeCmd.getFolderId(), gfeCmd.getNumEntries() );
+			result = getFolderEntries( ri, gfeCmd.getFolderId(), gfeCmd.getNumEntries(), gfeCmd.getNumReplies() );
 			responseData = new GetFolderEntriesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2696,7 +2696,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException 
 	 */
 	@SuppressWarnings("unchecked")
-	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String folderId, int numEntriesToRead ) throws GwtTeamingException
+	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String folderId, int numEntriesToRead, int numReplies ) throws GwtTeamingException
 	{
 		ArrayList<GwtFolderEntry> entries;
 		
@@ -2740,7 +2740,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				try
 				{
 					// Get a GwtFolderEntry from the given entry id.
-					folderEntry = getEntry( ri, null, entryId, 0 );
+					folderEntry = getEntry( ri, null, entryId, numReplies );
 					entries.add( folderEntry );
 					
 					++totalEntries;

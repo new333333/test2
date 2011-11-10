@@ -44,6 +44,7 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 {
 	private String m_folderId;
 	private int m_numEntries;	// The number of entries to read
+	private int m_numReplies;	// The number of replies in an entry to get
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -56,11 +57,12 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GetFolderEntriesCmd( String folderId, int numEntries )
+	public GetFolderEntriesCmd( String folderId, int numEntries, int numReplies )
 	{
 		this();
 		m_folderId = folderId;
 		m_numEntries = numEntries;
+		m_numReplies = numReplies;
 	}
 	
 	/**
@@ -77,6 +79,14 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 	public int getNumEntries()
 	{
 		return m_numEntries;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getNumReplies()
+	{
+		return m_numReplies;
 	}
 	
 	/**

@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewConfig;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
+import org.kablink.teaming.gwt.client.lpe.FolderProperties;
 
 import com.google.gwt.user.client.ui.Label;
 
@@ -54,8 +55,10 @@ public class EnhancedViewWidget extends VibeWidget
 	public static VibeWidget createWidget( EnhancedViewConfig config )
 	{
 		EnhancedViewProperties properties;
+		String landingPageStyle;
 		VibeWidget widget;
 		
+		landingPageStyle = config.getLandingPageStyle();
 		properties = config.getProperties();
 		switch ( properties.getViewType() )
 		{
@@ -70,14 +73,31 @@ public class EnhancedViewWidget extends VibeWidget
 			entryProperties.setShowTitle( true );
 			entryProperties.setNumRepliesToShow( 10 );
 			
-			widget = new EntryWidget( entryProperties, config.getLandingPageStyle() );
+			widget = new EntryWidget( entryProperties, landingPageStyle );
+			break;
+		}
+
+		case DISPLAY_RECENT_ENTRIES:
+		{
+			FolderProperties folderProperties;
+			
+			folderProperties = new FolderProperties();
+			folderProperties.setFolderId( properties.getFolderId() );
+			folderProperties.setShowTitle( true );
+			folderProperties.setShowDescValue( false );
+			folderProperties.setShowEntriesOpenedValue( true );
+			folderProperties.setShowEntryAuthor( true );
+			folderProperties.setShowEntryDate( true );
+			folderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
+			folderProperties.setNumRepliesToShow( 10 );
+			
+			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
 		}
 
 		case DISPLAY_CALENDAR:
 		case DISPLAY_FULL_ENTRY:
 		case DISPLAY_LIST_OF_RECENT_ENTRIES:
-		case DISPLAY_RECENT_ENTRIES:
 		case DISPLAY_SORTED_LIST_FILES:
 		case DISPLAY_SORTED_LIST_RECENT_ENTRIES:
 		case DISPLAY_SURVEY:

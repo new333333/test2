@@ -55,7 +55,10 @@ public class FolderProperties
 	private boolean m_showTitle;
 	private boolean m_showDesc;
 	private boolean m_showEntriesOpened;
+	private boolean m_showEntryAuthor;
+	private boolean m_showEntryDate;
 	private int m_numEntriesToBeShown;
+	private int m_numRepliesToShow;
 	private String m_folderId;
 	private String m_folderName;
 	private String m_folderDesc;
@@ -73,7 +76,10 @@ public class FolderProperties
 		m_showTitle = false;
 		m_showDesc = false;
 		m_showEntriesOpened = false;
+		m_showEntryAuthor = false;
+		m_showEntryDate = false;
 		m_numEntriesToBeShown = 0;
+		m_numRepliesToShow = 0;
 		m_folderId = null;
 		m_folderName = null;
 		m_folderDesc = null;
@@ -153,7 +159,10 @@ public class FolderProperties
 			m_showTitle = folderProps.getShowTitleValue();
 			m_showDesc = folderProps.getShowDescValue();
 			m_showEntriesOpened = folderProps.getShowEntriesOpenedValue();
+			m_showEntryAuthor = folderProps.getShowEntryAuthor();
+			m_showEntryDate = folderProps.getShowEntryDate();
 			m_numEntriesToBeShown = folderProps.getNumEntriesToBeShownValue();
+			m_numRepliesToShow = folderProps.getNumRepliesToShow();
 			m_viewFolderUrl = folderProps.getViewFolderUrl();
 		}
 	}// end copy()
@@ -246,6 +255,14 @@ public class FolderProperties
 	
 	
 	/**
+	 * Return the number of replies that should be shown if folder entries are displayed open.
+	 */
+	public int getNumRepliesToShow()
+	{
+		return m_numRepliesToShow;
+	}
+	
+	/**
 	 * Return the name of the binder the folder lives in.
 	 */
 	public String getParentBinderName()
@@ -271,6 +288,21 @@ public class FolderProperties
 		return m_showEntriesOpened;
 	}// end getShowEntriesOpenedValue()
 	
+	/**
+	 * Return the property that indicates whether to show the entry's author
+	 */
+	public boolean getShowEntryAuthor()
+	{
+		return m_showEntryAuthor;
+	}
+	
+	/**
+	 * Return the property that indicates whether to show the entry's date.
+	 */
+	public boolean getShowEntryDate()
+	{
+		return m_showEntryDate;
+	}
 	
 	/**
 	 * Return the "show title" property.
@@ -344,6 +376,13 @@ public class FolderProperties
 		m_numEntriesToBeShown = numEntries;
 	}// end setNumEntriesToBeShownValue()
 	
+	/**
+	 * 
+	 */
+	public void setNumRepliesToShow( int numReplies )
+	{
+		m_numRepliesToShow = numReplies;
+	}
 	
 	/**
 	 * 
@@ -371,6 +410,21 @@ public class FolderProperties
 		m_showEntriesOpened = showEntriesOpened;
 	}// end setShowEntriesOpenedValue()
 	
+	/**
+	 * Set the property that indicates whether to show the entry's author
+	 */
+	public void setShowEntryAuthor( boolean show )
+	{
+		m_showEntryAuthor = show;
+	}
+	
+	/**
+	 * Set the property that indicates whether to show the entry's date.
+	 */
+	public void setShowEntryDate( boolean show )
+	{
+		m_showEntryDate = show;
+	}
 	
 	/**
 	 * 
