@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<project name="samples-rest-client" basedir="." default="build">
+	<property name="project.dir" value="../.." />
+	<import file="${project.dir}/build-common.xml"/>
+	
+	<target name="clean-libraries">
+		<delete dir="lib"/>
+	</target>
+	
+	<target name="clean-all" >
+		<antcall target="clean"/>
+		<antcall target="clean-libraries"/>
+	</target>
+	
+	<target name="copy-libraries">
+		<mkdir dir="lib"/>
+		<!-- Copy REST client and shared libraries -->
+		<copy file="${project.dir}/rest-client/kablink-teaming-rest-client-v1.jar" todir="lib"/>
+		<copy file="${project.dir}/rest-shared/kablink-teaming-rest-shared-v1.jar" todir="lib"/>
+		<!-- Copy 3rd party libraries needed by the Vibe REST -->
+		<copy todir="lib">
+			<fileset dir="${project.dir}/lib"
+				includes="${libraries.restclient}" />
+		</copy>
+		<!-- Copy additional libraries needed by the sample -->
+		<copy todir="lib">
+			<fileset dir="${project.dir}/lib">
+				<include name="junit.jar" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="build">
+		<antcall target="compile"/>
+		<antcall target="copy-libraries"/>
+	</target>
+	
+	<target name="clean-build">
+		<antcall target="clean-all"/>
+		<antcall target="build"/>
+	</target>
+</project>
