@@ -1842,6 +1842,13 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
 				}
 			} else if (self.window.name == "gwtContentIframe") {
 				// This is in the main content iframe
+				if (window.top.ss_getUrlFromContentHistory) {
+					var url = window.top.ss_getUrlFromContentHistory(-1);
+					if (url && (0 < url.length)) {
+						window.top.ss_gotoContentUrl(url);
+						return false;
+					}
+				}
 				self.history.back();
 				return false;
 			}
