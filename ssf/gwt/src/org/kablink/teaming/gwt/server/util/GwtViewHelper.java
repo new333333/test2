@@ -831,7 +831,7 @@ public class GwtViewHelper {
 									// EntryTitleInfo for it.
 									EntryTitleInfo eti = new EntryTitleInfo();
 									eti.setSeen(seenMap.checkIfSeen(entryMap));
-									eti.setTitle(value);
+									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntryId(entryId);
 									fr.setColumnValue(fc, eti);
 								}

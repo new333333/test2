@@ -67,12 +67,14 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -136,6 +138,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private final BinderInfo				m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
 	private boolean							m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
 	private int								m_folderPageSize;			// Page size as per the user's personal preferences.
+	private EntryMenuPanel					m_entryMenuPanel;			// Panel that holds the entry menu.
 	private FolderRowPager 					m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	private FooterPanel						m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
 	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
@@ -544,12 +547,13 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 	
 	/*
-	 * Adds a select all column to the data table.
+	 * Adds a select column to the data table including a select all
+	 * checkbox in the header.
 	 * 
 	 * @author rvasudevan@novell.com
 	 */
-	private void addSelectAllColumn(final FolderRowSelectionModel selectionModel, int colIndex) {
-		// Define the check box header...
+	private void addSelectColumn(final FolderRowSelectionModel selectionModel, int colIndex) {
+		// Define the select all checkbox in the header...
 		CheckboxCell cbCell = new CheckboxCell();
 		final SelectAllHeader saHeader = new SelectAllHeader(cbCell);
 		saHeader.setUpdater(new ValueUpdater<Boolean>() {
@@ -580,6 +584,13 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				selectionModel.setSelected(row, checked);
 				if (!checked) {
 					saHeader.setValue(checked);
+					checked = areEntriesSelected();
+				}
+
+				// If we have an entry menu...
+				if (null != m_entryMenuPanel) {
+					// ...tell it to update the state of the delete and purge.
+					m_entryMenuPanel.setDeleteAndPurgeState(checked);
 				}
 			};
 		});
@@ -590,6 +601,28 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	    setColumnWidth(         COLUMN_SELECT, column  );
 	}
 
+	/*
+	 * Returns true if any rows are selected and false otherwise.
+	 */
+	private boolean areEntriesSelected() {
+		// Are there any visible rows in the table?
+		List<FolderRow> rows  = m_dataTable.getVisibleItems();
+		if (null != rows) {
+			// Yes!  Scan them
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
+			for (FolderRow row : rows) {
+				// Is this row selected?
+				if (fsm.isSelected(row)) {
+					// Yes!  Return true.  No need to look any further.
+					return true;
+				}
+			}
+		}
+		
+		// If we get here, no rows were selected.  Return false.
+		return false;
+	}
+	
 	/*
 	 * Creates the content panels, ... common to all data table folder
 	 * view implementations.
@@ -655,6 +688,33 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private static boolean isColumnPresence(String       columnName) {return columnName.equals(COLUMN_AUTHOR);  }
 	private static boolean isColumnTitle(   String       columnName) {return columnName.equals(COLUMN_TITLE);   }
 	private static boolean isColumnView(    String       columnName) {return columnName.equals(COLUMN_HTML);    }
+
+	/**
+	 * Returns a List<Long> of the IDs of the selected rows from the
+	 * table.
+	 * 
+	 * @return
+	 */
+	public List<Long> getSelectedEntryIds() {
+		// Are there any visible rows in the table?
+		List<Long>      reply = new ArrayList<Long>();
+		List<FolderRow> rows  = m_dataTable.getVisibleItems();
+		if (null != rows) {
+			// Yes!  Scan them
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
+			for (FolderRow row : rows) {
+				// Is this row selected?
+				if (fsm.isSelected(row)) {
+					// Yes!  Add its entry ID to the List<Long>.
+					reply.add(row.getEntryId());
+				}
+			}
+		}
+		
+		// If we get here, reply refers to List<Long> of the entry IDs
+		// of the selected rows from the data table.  Return it.
+		return reply;
+	}
 	
 	/*
 	 * Initializes various data members for the class.
@@ -702,7 +762,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		
 		// Add a column for a checkbox selector.
 		int colIndex = 0;
-		addSelectAllColumn(selectionModel, colIndex++);
+		addSelectColumn(selectionModel, colIndex++);
 
 		// For discussion folders...
 		if (FolderType.DISCUSSION == m_folderInfo.getFolderType()) {
@@ -968,6 +1028,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
+				m_entryMenuPanel = ((EntryMenuPanel) tpb);
 				m_toolPanels.add(tpb);
 				m_verticalPanel.insert(tpb, ENTRY_MENU_PANEL_INDEX);
 				loadPart5Async();
@@ -1114,9 +1175,44 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
-			// Yes!  Delete the selected entries from the folder.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onDeleteSelectedEntries(" + event.getFolderId() + "):  ...this needs to be implemented...");
+			// Yes!  Asynchronously delete the selected entries.
+			ScheduledCommand doDelete = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					onDeleteSelectedEntriesNow();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doDelete);
+		}
+	}
+	
+	/*
+	 * Synchronously deletes the selected entries.
+	 */
+	private void onDeleteSelectedEntriesNow() {
+		// Are there any entries to selected to delete?  
+		List<Long> selectedIds = getSelectedEntryIds();
+		if (!(selectedIds.isEmpty())) {
+			// Yes!  Is the user sure they want to delete them?
+			if (Window.confirm(m_messages.vibeDataTable_Confirm_Delete())) {
+				// Yes!  Delete them from the folder.
+				DeleteFolderEntriesCmd cmd = new DeleteFolderEntriesCmd(m_folderInfo.getBinderIdAsLong(), selectedIds);
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries());
+					}
+	
+					@Override
+					public void onSuccess(VibeRpcResponse result) {
+						// Reset the view to redisplay things with the entries
+						// deleted.
+						resetViewAsync();
+					}
+				});
+			}
 		}
 	}
 	
@@ -1162,9 +1258,44 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
-			// Yes!  Purge the selected entries from the folder.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onPurgeSelectedEntries(" + event.getFolderId() + "):  ...this needs to be implemented...");
+			// Yes!  Asynchronously purge the selected entries.
+			ScheduledCommand doPurge = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					onPurgeSelectedEntriesNow();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doPurge);
+		}
+	}
+	
+	/*
+	 * Synchronously purges the selected entries.
+	 */
+	private void onPurgeSelectedEntriesNow() {
+		// Are there any entries selected to purge?
+		List<Long> selectedIds = getSelectedEntryIds();
+		if (!(selectedIds.isEmpty())) {
+			// Yes!  Is the user sure they want to purge them?
+			if (Window.confirm(m_messages.vibeDataTable_Confirm_Purge())) {
+				// Yes!  Purge them from the folder.
+				PurgeFolderEntriesCmd cmd = new PurgeFolderEntriesCmd(m_folderInfo.getBinderIdAsLong(), selectedIds);
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							GwtTeaming.getMessages().rpcFailure_PurgeFolderEntries());
+					}
+	
+					@Override
+					public void onSuccess(VibeRpcResponse result) {
+						// Reset the view to redisplay things with the entries
+						// purged.
+						resetViewAsync();
+					}
+				});
+			}
 		}
 	}
 	
@@ -1291,7 +1422,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	public void resetContent() {
 		// Clear the flow panel's content...
 		m_flowPanel.clear();
-
+		
 		// ...tell the tool panels to perform any resetting they need
 		// ...to do...
 		for (ToolPanelBase tpb:  m_toolPanels) {

@@ -186,6 +186,7 @@ import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 
@@ -1060,6 +1061,43 @@ public class GwtServerHelper {
 		tagId = tag.getTagId();
 		if ( tagId != null && tagId.length() > 0 )
 			bm.deleteTag( binder.getId(), tagId );
+	}
+	
+	/**
+	 * Deletes the specified folder entries.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
+		try {
+			// Before we delete any of them... 
+			FolderModule fm = bs.getFolderModule();
+			for (Long entryId:  entryIds) {
+				// ...make sure we can delete all of them.
+				fm.checkAccess(fm.getEntry(binderId, entryId), FolderOperation.preDeleteEntry);
+			}
+
+			// If we get here, we have rights to delete all the entries
+			// that we were given.  Scan them...
+			for (Long entryId:  entryIds) {
+				// ...deleting each.
+				TrashHelper.preDeleteEntry(bs, binderId, entryId);
+			}
+
+			// If we get here, the deletes were successful.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
 	}
 	
 	/**
@@ -4206,6 +4244,7 @@ public class GwtServerHelper {
 		case ADD_FAVORITE:
 		case CAN_MODIFY_BINDER:
 		case COLLAPSE_SUBTASKS:
+		case DELETE_FOLDER_ENTRIES:
 		case DELETE_TASKS:
 		case EXECUTE_SEARCH:
 		case EXPAND_HORIZONTAL_BUCKET:
@@ -4291,6 +4330,7 @@ public class GwtServerHelper {
 		case PERSIST_NODE_COLLAPSE:
 		case PERSIST_NODE_EXPAND:
 		case PIN_ENTRY:
+		case PURGE_FOLDER_ENTRIES:
 		case PURGE_TASKS:
 		case REMOVE_EXTENSION:
 		case REMOVE_FAVORITE:
@@ -4414,6 +4454,43 @@ public class GwtServerHelper {
 	 */
 	public static Boolean pinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
 		return setEntryPinState(bs, request, folderId, entryId, true);
+	}
+	
+	/**
+	 * Purges the specified folder entries.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
+		try {
+			// Before we purge any of them... 
+			FolderModule fm = bs.getFolderModule();
+			for (Long entryId:  entryIds) {
+				// ...make sure we can purge all of them.
+				fm.checkAccess(fm.getEntry(binderId, entryId), FolderOperation.deleteEntry);
+			}
+
+			// If we get here, we have rights to purge all the entries
+			// that we were given.  Scan them...
+			for (Long entryId:  entryIds) {
+				// ...deleting each.
+				fm.deleteEntry(binderId, entryId);
+			}
+			
+			// If we get here, the purges were successful.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
 	}
 	
 	/**
