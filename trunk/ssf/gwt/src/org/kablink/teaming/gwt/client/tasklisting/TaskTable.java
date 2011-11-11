@@ -2060,7 +2060,7 @@ public class TaskTable extends Composite
 		renderTaskBundle(m_taskBundle);		
 
 		// Persist whatever changed in the linkage information.
-		final long binderId;
+		final Long binderId;
 		final Long entryId;
 		if ((null != taskList) && (1 == taskList.size())) {
 		    TaskId taskId = taskList.get(0).getTask().getTaskId();
@@ -2068,7 +2068,7 @@ public class TaskTable extends Composite
 		    entryId       = taskId.getEntryId();
 		}
 		else {
-			binderId =
+			binderId = m_taskBundle.getBinderId();
 			entryId  = null;
 		}
 		persistLinkageChangeAsync(
