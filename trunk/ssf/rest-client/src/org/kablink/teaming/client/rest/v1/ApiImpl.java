@@ -226,35 +226,4 @@ public class ApiImpl implements Api {
 		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mimeType).post(FileProperties.class);
 	}
 	
-	public static void main(String[] args) throws Exception {
-		/*
-		ApiClient client = ApiClient.create("http://localhost:8079", "admin", "admin");
-		Api api = client.getApi();
-		FileProperties fp = api.readFileProperties("folderEntry", 13, "debug5.txt");
-		FileProperties fp2 = api.readFileProperties("folderEntry", 13, "debug5.txt");
-		client.destroy();
-		*/
-		
-		ApiClient client = ApiClient.create("http://positive:8080", "admin", "admin");
-		Api api = client.getApi();
-		System.out.println("Start time: " + new Date());
-		for(int i = 0; i < 2; i++) {
-			//File file = api.readFileAsFile("folderEntry", 749, "catalina.out");
-			//System.out.println("File path: " + file.getAbsolutePath());
-			//System.out.println("File length: " + file.length());
-			//InputStream is = api.readFile("folderEntry", 749, "catalina.out");
-			//InputStream is = api.readFile("24e350ea3383b149013383e583af0030");
-			//File file = new File("C:/temp/rest/file_" + i + ".out");
-			//OutputStream os = new FileOutputStream(file);
-			//FileUtil.copy(is, os);
-			//os.close();
-			//is.close();
-			System.out.println("(" + i + ") file downloaded");
-		}
-		System.out.println("End time: " + new Date());
-		client.destroy();
-
-	}
-
-
 }
