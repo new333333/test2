@@ -72,6 +72,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo			m_binderInfo;	//
 	private List<ToolbarItem>	m_toolbarIems;	//
 	private MenuBar				m_entryMenu;	//
+	private MenuItem			m_deleteMenu;	//
+	private MenuItem			m_purgeMenu;	//
 	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
 	
 	/*
@@ -191,6 +193,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 				else renderSimpleTBI(    m_entryMenu, perEntryTBI);
 			}
 		}
+		setDeleteAndPurgeState(false);
 	}
 
 	/*
@@ -238,6 +241,10 @@ public class EntryMenuPanel extends ToolPanelBase {
 				}
 			}
 		});
+		switch (simpleTBI.getTeamingEvent()) {
+		case DELETE_SELECTED_ENTRIES:  m_deleteMenu = menuItem; break;
+		case PURGE_SELECTED_ENTRIES:   m_purgeMenu  = menuItem; break;
+		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		menuBar.addItem(menuItem);
 	}
@@ -276,5 +283,16 @@ public class EntryMenuPanel extends ToolPanelBase {
 
 		// ...and reload the menu.
 		loadPart1Async();
+	}
+
+	/**
+	 * Called to enable/disable the delete an purge menu
+	 * items.
+	 * 
+	 * @param enable
+	 */
+	public void setDeleteAndPurgeState(boolean enable) {
+		if (null != m_deleteMenu) {m_deleteMenu.setEnabled(enable); if (enable) m_deleteMenu.removeStyleName("vibe-entryMenuDisabled"); else m_deleteMenu.addStyleName("vibe-entryMenuDisabled");}
+		if (null != m_purgeMenu)  {m_purgeMenu.setEnabled( enable); if (enable) m_purgeMenu.removeStyleName( "vibe-entryMenuDisabled"); else m_purgeMenu.addStyleName( "vibe-entryMenuDisabled");}
 	}
 }

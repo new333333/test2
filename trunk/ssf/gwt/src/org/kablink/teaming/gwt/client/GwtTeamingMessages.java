@@ -282,6 +282,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
+	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_ExpandBucket();
@@ -355,6 +356,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
 	String rpcFailure_PinEntry();
+	String rpcFailure_PurgeFolderEntries();
 	String rpcFailure_PurgeTasks();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
@@ -1105,6 +1107,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_StarGray();
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
+	String vibeDataTable_Confirm_Delete();
+	String vibeDataTable_Confirm_Purge();
 	String vibeDataTable_Download();
 	String vibeDataTable_Event_AllDay();
 	String vibeDataTable_Event_End();

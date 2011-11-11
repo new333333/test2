@@ -24,6 +24,7 @@
 		.vibe-entryMenuBarItem {}
 		.vibe-entryMenuPopup {}
 		.vibe-entryMenuPopupItem {}
+		.vibe-entryMenuDisabled {color: silver !important;}
 /* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
