@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -118,6 +119,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.view.client.ProvidesKey;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Base object of 'data table' based folder views.
@@ -131,19 +133,20 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		PurgeSelectedEntriesEvent.Handler,
 		InvokeDropBoxEvent.Handler
 {
-	private final BinderInfo				m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
-	private boolean							m_folderSortDescend;	// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
-	private int								m_folderPageSize;		// Page size as per the user's personal preferences.
-	private FolderRowPager 					m_dataTablePager;		// Pager widgets at the bottom of the data table.
-	private FooterPanel						m_footerPanel;			// Panel that holds the links, ... displayed at the bottom of the view.
-	private HashMap<String, ColumnWidth>	m_columnWidths;			// Map of column names -> ColumWidth objects.
-	private List<FolderColumn>				m_folderColumnsList;	// The List<FolderColumn>' of the columns to be displayed.
-	private List<ToolPanelBase>				m_toolPanels;			// List<ToolPanelBase>'s of the various tools panels that appear above the table.
-	private String							m_folderSortBy;			// Which column the view is sorted on.
-	private VibeDataTable<FolderRow>		m_dataTable;			// The actual data table holding the view's information.
-	private VibeFlowPanel					m_mainPanel;			// The main panel holding the content of the view.
-	private VibeFlowPanel					m_flowPanel;			// The flow panel used to hold the view specific content of the view.
-	private VibeVerticalPanel				m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
+	private final BinderInfo				m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
+	private boolean							m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
+	private int								m_folderPageSize;			// Page size as per the user's personal preferences.
+	private FolderRowPager 					m_dataTablePager;			// Pager widgets at the bottom of the data table.
+	private FooterPanel						m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
+	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
+	private List<HandlerRegistration>		m_registeredEventHandlers;	//
+	private List<ToolPanelBase>				m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
+	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> ColumWidth objects.
+	private String							m_folderSortBy;				// Which column the view is sorted on.
+	private VibeDataTable<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
+	private VibeFlowPanel					m_mainPanel;				// The main panel holding the content of the view.
+	private VibeFlowPanel					m_flowPanel;				// The flow panel used to hold the view specific content of the view.
+	private VibeVerticalPanel				m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
 	
 	protected GwtTeamingDataTableImageBundle m_images;	//
 
@@ -465,10 +468,12 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		super(viewReady);
 
 		// ...register the events to be handled by this class...
+		m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 		EventHelper.registerEventHandlers(
 			GwtTeaming.getEventBus(),
 			m_registeredEvents,
-			this);
+			this,
+			m_registeredEventHandlers);
 
 		// ...store the parameters...
 		m_folderInfo = folderInfo;
@@ -1113,6 +1118,18 @@ public abstract class DataTableFolderViewBase extends ViewBase
 //!			...this needs to be implemented...
 			Window.alert("DataTableFolderViewBase.onDeleteSelectedEntries(" + event.getFolderId() + "):  ...this needs to be implemented...");
 		}
+	}
+	
+	/**
+	 * Called when the data table is detached.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and unregister our event handlers.
+		super.onDetach();
+		EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
 	}
 	
 	/**

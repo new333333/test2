@@ -33,6 +33,9 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
@@ -113,6 +116,10 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_LANDING_PAGE,
 	};
+
+	// Maximum number of URLs tracked in the content history stack.
+	public final static int CONTENT_HISTORY_MAXDEPTH	= 2;
+	
 	
 	/*
 	 * Constructor method.
@@ -141,6 +148,9 @@ public class ContentControl extends Composite
 				m_registeredEvents,
 				this );
 		}
+		
+		// Initialize the JavaScript for tracking content history.
+		initContentHistoryJS( this, CONTENT_HISTORY_MAXDEPTH );
 		
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
@@ -188,6 +198,118 @@ public class ContentControl extends Composite
 		return reply;
 	}// end getContentFrame()
 
+	/**
+	 * Returns a List<String> of the URLs currently store in the
+	 * content history.
+	 * 
+	 * @return
+	 */
+	public List<String> getContentHistory()
+	{
+		// Scan the URLs from the content history...
+		List<String> reply = new ArrayList<String>();
+		for ( int i = 0; true; i += 1 )
+		{
+			String url = jsGetContentHistoryUrl( i );
+			if ( null == url )
+			{
+				break;
+			}
+			
+			// ...adding each to the List<String>.
+			reply.add( url );
+		}
+		
+		// If we get here, reply refers to a List<String> of the URLs
+		// from the content history stack.  Return it.
+		return reply;
+	}// end getContentHistory()
+	
+	/**
+	 * Returns the URL from the content history at the specified index.
+	 * 
+	 * If there aren't enough items being tracked to satisfy the
+	 * request, null is returned.
+	 * 
+	 * @param index
+	 * 
+	 * @return
+	 */
+	public String getContentHistoryUrl( int index )
+	{
+		// Simply call the JavaScript implementation method.
+		return jsGetContentHistoryUrl( index );
+	}// end getContentHistoryUrl()
+
+	/*
+	 * Initializes the JavaScript for tracking content history.
+	 */
+	private native void initContentHistoryJS( ContentControl contentControl, int contentHistoryDepth ) /*-{
+		// Have we defined the JavaScript elements for tracking content
+		// history yet?
+		if ( ! $wnd.top.ss_contentHistory )
+		{
+			// No!  Define them now.
+			$wnd.top.ss_contentHistoryDepth = contentHistoryDepth;
+			$wnd.top.ss_contentHistory = new Array();
+			$wnd.top.ss_getUrlFromContentHistory = function( index )
+			{
+				return contentControl.@org.kablink.teaming.gwt.client.widgets.ContentControl::jsGetContentHistoryUrl(Ljava/lang/Integer;)( index );
+			}//end ss_getUrlFromContentHistory()
+		}
+	}-*/;
+
+	/*
+	 * Returns the URL from the content history at the specified index.
+	 * 
+	 * If there aren't enough items being tracked to satisfy the
+	 * request, null is returned.
+	 */
+	private native String jsGetContentHistoryUrl( Integer index ) /*-{
+		// If we were given a negative index...
+		if ( 0 > index )
+		{
+			// ...invert it.
+			index = ( -index );
+		}
+
+		// If the request index is beyond what's in the history...
+		if ( index >= $wnd.top.ss_contentHistory.length )
+		{
+			// ...return null.
+			return null;
+		}
+
+		// Return the URL from the history at the requested index.
+		return $wnd.top.ss_contentHistory[index];
+	}-*/;
+
+	/*
+	 * Pushes a URL on the content history stack.
+	 */
+	private native void jsPushContentHistoryUrl( String url ) /*-{
+		// Push the URL.
+		$wnd.top.ss_contentHistory.unshift( url );
+		
+		// While the stack contains more items that we track...
+		while ( $wnd.top.ss_contentHistory.length > $wnd.top.ss_contentHistoryDepth )
+		{
+			// ...remove the last one from the list.
+			$wnd.top.ss_contentHistory.pop();
+		}
+	}-*/;
+
+	/**
+	 * Pushes a URL on the content history stack.
+	 * 
+	 * @param url
+	 */
+	private void pushContentHistoryUrl( String url )
+	{
+		// Simply call the JavaScript implementation method.
+		jsPushContentHistoryUrl( url );
+	}// end pushContentHistoryUrl()
+	
 	/**
 	 * Reload the page that is currently being displayed.
 	 */
@@ -496,6 +618,10 @@ public class ContentControl extends Composite
 			setUrl( url );			
 			ShowContentControlEvent.fireOne();
 		}
+
+		// Finally, push the URL we just processed on the content
+		// history stack.
+		pushContentHistoryUrl( url );
 	}// end setViewNow()
 	
 	/**
