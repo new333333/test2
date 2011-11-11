@@ -3,16 +3,30 @@
 <project name="rest-client" basedir="." default="jar">
 	<import file="../build-common.xml"/>
 
-	<property name="jar.file" value="kablink-teaming-rest-client.jar"/>
+	<property name="jar.file" value="kablink-teaming-rest-client-v1.jar"/>
 	
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
-	<pathelement path="${project.dir}/rest-client/classes" />
+		<pathelement path="${project.dir}/rest-client/classes" />
 		<pathelement path="${project.dir}/util/classes" />
 		<pathelement path="${project.dir}/rest-shared/classes" />
 		<fileset dir="../lib" includes="commons-httpclient.jar" />
+		<fileset dir="../lib" includes="jersey-apache-client.jar" />
 		<fileset dir="../lib" includes="jersey-core.jar" />
 		<fileset dir="../lib" includes="jersey-client.jar" />
+		<fileset dir="../lib" includes="joda-time.jar" />
 	</path>
 
+	<!-- This overrides the imported definition -->
+	<target name="jar" depends="compile">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+			includes="**/rest/v1/**"
+		/>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+	</target>
+	
 </project>

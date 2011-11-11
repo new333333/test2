@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="samples/rest-client/src"/>
 	<classpathentry kind="src" path="rest-client/src"/>
 	<classpathentry kind="src" path="indexer-lucene/test/src"/>
 	<classpathentry kind="src" path="ssr/src"/>

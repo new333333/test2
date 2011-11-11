@@ -62,8 +62,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 public class ApiImpl implements Api {
 	
-	private final String FILE_TEMPLATE_BY_NAME = "rest/file/name/{entityType}/{entityId}/{filename}";
-	private final String FILE_TEMPLATE_BY_ID = "rest/file/id/{fileid}";
+	private final String FILE_TEMPLATE_BY_NAME = "file/name/{entityType}/{entityId}/{filename}";
+	private final String FILE_TEMPLATE_BY_ID = "file/id/{fileid}";
 	
 	private ApiClient conn;
 	

@@ -50,8 +50,8 @@ public class ApiClient {
 
 	private static final MediaType[] ACCEPTABLE_MEDIA_TYPES_DEFAULT = new MediaType[] {MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE};
 	
-	private String serverUrl; // Vibe server URL including scheme (http/https), hostname, and optional port (e.g. http://mycompany:8080)
-	private String baseUrl; // Base URL for REST API (e.g. http://mycompany:8080/rest/v1) - This is constructed from server URL.
+	private String serverUrl; // Vibe server URL including scheme (http/https), hostname, and optional port (e.g. http://mycompany:8080/)
+	private String baseUrl; // Base URL for REST API (e.g. http://mycompany:8080/rest/v1/) - This is constructed from server URL.
 	private Client client; // underlying Jersey client
 	private MediaType[] acceptableMediaTypes = ACCEPTABLE_MEDIA_TYPES_DEFAULT;
 	private Api api;
@@ -79,7 +79,7 @@ public class ApiClient {
 	     
 	     ApacheHttpClient c = ApacheHttpClient.create(config);
 
-	     return new ApiClient(serverUrl, serverUrl + "rest//v1", c);
+	     return new ApiClient(serverUrl, serverUrl + "rest/v1/", c);
 	}
 	
 	private ApiClient(String serverUrl, String baseUrl, Client c)
