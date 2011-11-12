@@ -50,7 +50,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
-import org.kablink.util.FileUtil;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;

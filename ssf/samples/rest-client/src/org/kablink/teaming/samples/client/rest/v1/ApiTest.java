@@ -66,12 +66,14 @@ public class ApiTest {
 	
 	@Test
 	public void testReadingFilePropertiesByName() throws Exception {
+		System.out.println("Invoking testReadingFilePropertiesByName");
 		FileProperties fp = api.readFileProperties("folderEntry", 750, "test.txt");
 		Assert.assertEquals("test.txt", fp.getName());
 	}
 	
 	@Test
 	public void testReadingFilePropertiesById() throws Exception {
+		System.out.println("Invoking testReadingFilePropertiesById");
 		FileProperties fp = api.readFileProperties("24e3531933933d270133934991be0011");
 		Assert.assertEquals("test.txt", fp.getName());
 	}
