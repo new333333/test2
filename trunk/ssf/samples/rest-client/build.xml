@@ -4,6 +4,11 @@
 	<property name="project.dir" value="../.." />
 	<import file="${project.dir}/build-common.xml"/>
 	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<fileset dir="lib" includes="**" />
+	</path>
+
 	<target name="clean-libraries">
 		<delete dir="lib"/>
 	</target>
@@ -32,8 +37,8 @@
 	</target>
 	
 	<target name="build">
-		<antcall target="compile"/>
 		<antcall target="copy-libraries"/>
+		<antcall target="compile"/>
 	</target>
 	
 	<target name="clean-build">
@@ -44,6 +49,7 @@
 	<target name="run-test" depends="build">
 		<junit printsummary="true" haltonfailure="true" haltonerror="true">
 			<classpath>
+				<pathelement path="${classes.dir}" />
 				<fileset dir="lib"
 					includes="**" />
 			</classpath>
