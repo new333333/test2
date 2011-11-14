@@ -48,6 +48,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Description;
@@ -67,6 +68,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtAttachment;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
@@ -458,7 +460,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtFolderEntry result;
 			
 			geCmd = (GetEntryCmd) cmd;
-			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId(), geCmd.getNumReplies() );
+			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId(), geCmd.getNumReplies(), geCmd.getFileAttachmentsValue() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -521,7 +523,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
-		
+
+
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		{
 			GwtFileSyncAppConfiguration fileSyncAppConfiguration; 
@@ -581,7 +584,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ArrayList<GwtFolderEntry> result;
 			
 			gfeCmd = (GetFolderEntriesCmd) cmd;
-			result = getFolderEntries( ri, gfeCmd.getFolderId(), gfeCmd.getNumEntries(), gfeCmd.getNumReplies() );
+			result = getFolderEntries( ri, gfeCmd.getFolderId(), gfeCmd.getNumEntries(), gfeCmd.getNumReplies(), gfeCmd.getFileAttachmentsValue() );
 			responseData = new GetFolderEntriesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -693,6 +696,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_LIST_OF_FILES:
+		{
+			GetListOfFilesCmd gffeCmd;
+			GetListOfFilesRpcResponseData responseData;
+			ArrayList<GwtAttachment> listOfFiles;
+			
+			// Get a list of files from the given folder.
+			gffeCmd = (GetListOfFilesCmd) cmd;
+			listOfFiles = getListOfFiles( ri, gffeCmd.getFolderId(), gffeCmd.getNumFiles() );
+			responseData = new GetListOfFilesRpcResponseData( listOfFiles );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+	
+
 		case GET_LOGIN_INFO:
 		{
 			GwtLoginInfo loginInfo;
@@ -2315,7 +2333,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException 
 	 */
 	@SuppressWarnings("unchecked")
-	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, int numRepliesToGet ) throws GwtTeamingException
+	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, int numRepliesToGet, boolean getFileAttachments ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
 		FolderEntry entry = null;
@@ -2496,6 +2514,38 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							}
 						}
 					}
+				}
+				
+				// Do we need to get file attachment information?
+				if ( getFileAttachments )
+				{
+					Set<Attachment> attachments;
+					
+					// Yes
+					attachments = entry.getAttachments();
+			    	for (Iterator iter=attachments.iterator(); iter.hasNext();)
+			    	{
+				    	Attachment att;
+				    	
+			    		att = (Attachment)iter.next();
+			    		if ( att instanceof FileAttachment )
+			    		{
+					    	FileAttachment fatt;
+					    	GwtAttachment gwtAttachment;
+					    	String fileUrl;
+
+					    	gwtAttachment = new GwtAttachment();
+					    	
+					    	fatt = (FileAttachment) att;
+					    	
+					    	gwtAttachment.setFileName( fatt.getFileItem().getName() );
+					    	
+					    	fileUrl = WebUrlUtil.getFileUrl( getRequest( ri ), WebKeys.ACTION_READ_FILE, fatt, false, true );
+					    	gwtAttachment.setViewFileUrl( fileUrl );
+					    	
+					    	folderEntry.addAttachment( gwtAttachment );
+			    		}
+			    	}
 				}
 			}
 		}
@@ -2713,7 +2763,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException 
 	 */
 	@SuppressWarnings("unchecked")
-	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String folderId, int numEntriesToRead, int numReplies ) throws GwtTeamingException
+	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String folderId, int numEntriesToRead, int numReplies, boolean getFileAttachments ) throws GwtTeamingException
 	{
 		ArrayList<GwtFolderEntry> entries;
 		
@@ -2757,7 +2807,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				try
 				{
 					// Get a GwtFolderEntry from the given entry id.
-					folderEntry = getEntry( ri, null, entryId, numReplies );
+					folderEntry = getEntry( ri, null, entryId, numReplies, getFileAttachments );
 					entries.add( folderEntry );
 					
 					++totalEntries;
@@ -4378,6 +4428,55 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.getSavedSearches( this );
 	}// end getSavedSearches()
+	
+	
+	/**
+	 * Return a list of files from the given folder.
+	 */
+	private ArrayList<GwtAttachment> getListOfFiles( HttpRequestInfo ri, String folderId, int numFiles ) throws GwtTeamingException
+	{
+		ArrayList<GwtAttachment> listOfFiles;
+		ArrayList<GwtFolderEntry> entries;
+		
+		listOfFiles = new ArrayList<GwtAttachment>();
+		
+		// Get a list of the first n entries in the folder.
+		entries = getFolderEntries( ri, folderId, numFiles, 0, true );
+		if ( entries != null )
+		{
+			for (GwtFolderEntry entry: entries)
+			{
+				ArrayList<GwtAttachment> files;
+				
+				// Get the files attached to this entry
+				files = entry.getFiles();
+				if ( files != null )
+				{
+					for (GwtAttachment file: files)
+					{
+						// Have we reached the max number of files to return?
+						if ( listOfFiles.size() >= numFiles )
+						{
+							// Yes
+							break;
+						}
+						
+						// Add this file to the list.
+						listOfFiles.add( file );
+					}
+				}
+				
+				// Have we reached the max number of files to return?
+				if ( listOfFiles.size() >= numFiles )
+				{
+					// Yes
+					break;
+				}
+			}
+		}
+		
+		return listOfFiles;
+	}
 	
 	
 	/**

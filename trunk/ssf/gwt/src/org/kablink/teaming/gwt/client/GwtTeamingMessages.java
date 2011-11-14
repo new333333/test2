@@ -293,6 +293,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetDownloadFileUrl();
+	String rpcFailure_GetFileFolderEntries();
 	String rpcFailure_GetFileUrl();
 	String rpcFailure_GetFolderColumns();
 	String rpcFailure_GetFolderDisplayData();

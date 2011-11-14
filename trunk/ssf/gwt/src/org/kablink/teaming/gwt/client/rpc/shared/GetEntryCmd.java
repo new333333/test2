@@ -45,6 +45,7 @@ public class GetEntryCmd extends VibeRpcCmd
 	private String m_zoneUUId;
 	private String m_entryId;
 	private int m_numRepliesToGet;
+	private boolean m_getFileAttachments;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -55,6 +56,7 @@ public class GetEntryCmd extends VibeRpcCmd
 		m_zoneUUId = null;
 		m_entryId = null;
 		m_numRepliesToGet = 0;
+		m_getFileAttachments = false;
 	}
 	
 	/**
@@ -66,6 +68,7 @@ public class GetEntryCmd extends VibeRpcCmd
 		m_zoneUUId = zoneUUId;
 		m_entryId = entryId;
 		m_numRepliesToGet = 0;
+		m_getFileAttachments = false;
 	}
 	
 	/**
@@ -85,6 +88,14 @@ public class GetEntryCmd extends VibeRpcCmd
 	public String getEntryId()
 	{
 		return m_entryId;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getFileAttachmentsValue()
+	{
+		return m_getFileAttachments;
 	}
 	
 	/**

@@ -133,6 +133,63 @@
 
 
 
+/* ######## Styles used with the file folder widget on a landing page. ######## */
+
+.fileFolderWidgetDesc, .fileFolderWidgetDesc_dark
+{
+	padding-left: 4px;
+	padding-right: 4px;	
+}
+
+
+.fileFolderWidgetLinkToFilePanel, .fileFolderWidgetLinkToFilePanel_dark
+{
+	margin: 6px;
+}
+
+.fileFolderWidgetLinkToFile, .fileFolderWidgetLinkToFile_dark
+{
+	color: #135c8f;
+	font-size: 14px;
+	line-height: 15px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.fileFolderWidgetListOfEntriesPanel, .fileFolderWidgetListOfEntriesPanel_dark
+{
+}
+
+.fileFolderWidgetMainPanel, .fileFolderWidgetMainPanel_dark
+{
+}
+
+.fileFolderWidgetTitleLabel, .fileFolderWidgetTitleLabel_dark
+{
+	color: #135c8f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.fileFolderWidgetTitleLabel:hover, .fileFolderWidgetTitleLabel_dark:hover, .fileFolderWidgetLinkToFile:hover, .fileFolderWidgetLinkToFile_dark:hover
+{
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+
+.fileFolderWidgetTitlePanel, .fileFolderWidgetTitlePanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+
+
 /* ######## Styles used with the folder widget on a landing page. ######## */
 
 .folderWidgetContentPanel, .folderWidgetContentPanel_dark
@@ -164,7 +221,7 @@
 }
 
 
-.folderWidgetMainPanel
+.folderWidgetMainPanel, .folderWidgetMainPanel_dark
 {
 }
 

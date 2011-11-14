@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewConfig;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
+import org.kablink.teaming.gwt.client.lpe.FileFolderProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderProperties;
 
 import com.google.gwt.user.client.ui.Label;
@@ -133,10 +134,22 @@ public class EnhancedViewWidget extends VibeWidget
 			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
 		}
+
+		case DISPLAY_SORTED_LIST_FILES:
+		{
+			FileFolderProperties fileFolderProperties;
+			
+			fileFolderProperties = new FileFolderProperties();
+			fileFolderProperties.setFolderId( properties.getFolderId() );
+			fileFolderProperties.setShowTitle( properties.getShowTitleValue() );
+			fileFolderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
+			
+			widget = new FileFolderWidget( fileFolderProperties, landingPageStyle );
+			break;
+		}
 		
 		case DISPLAY_CALENDAR:
 		case DISPLAY_FULL_ENTRY:
-		case DISPLAY_SORTED_LIST_FILES:
 		case DISPLAY_SURVEY:
 		case DISPLAY_TASK_FOLDER:
 		case UNKNOWN:

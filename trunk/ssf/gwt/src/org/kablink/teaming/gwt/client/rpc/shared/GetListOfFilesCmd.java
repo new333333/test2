@@ -35,22 +35,20 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * This class holds all of the information necessary to execute the "get folder entries" command.
+ * This class holds all of the information necessary to execute the "get list of files" command.
  * 
  * @author jwootton
  *
  */
-public class GetFolderEntriesCmd extends VibeRpcCmd
+public class GetListOfFilesCmd extends VibeRpcCmd
 {
 	private String m_folderId;
-	private int m_numEntries;	// The number of entries to read
-	private int m_numReplies;	// The number of replies in an entry to get
-	private boolean m_getFileAttachments;	// Should we get the file attachments for each entry
+	private int m_numFiles;	// The number of files to read
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetFolderEntriesCmd()
+	public GetListOfFilesCmd()
 	{
 		super();
 	}
@@ -58,13 +56,11 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GetFolderEntriesCmd( String folderId, int numEntries, int numReplies )
+	public GetListOfFilesCmd( String folderId, int numFiles )
 	{
 		this();
 		m_folderId = folderId;
-		m_numEntries = numEntries;
-		m_numReplies = numReplies;
-		m_getFileAttachments = false;
+		m_numFiles = numFiles;
 	}
 	
 	/**
@@ -78,25 +74,9 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public boolean getFileAttachmentsValue()
+	public int getNumFiles()
 	{
-		return m_getFileAttachments;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getNumEntries()
-	{
-		return m_numEntries;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getNumReplies()
-	{
-		return m_numReplies;
+		return m_numFiles;
 	}
 	
 	/**
@@ -105,6 +85,6 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.GET_FOLDER_ENTRIES.ordinal();
+		return VibeRpcCmdType.GET_LIST_OF_FILES.ordinal();
 	}
 }
