@@ -30,81 +30,63 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
+
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds all of the information necessary to execute the "get folder entries" command.
- * 
+ * This class is used in rpc calls and represents a serializable File class.
  * @author jwootton
  *
  */
-public class GetFolderEntriesCmd extends VibeRpcCmd
+public class GwtAttachment
+	implements IsSerializable, VibeRpcResponseData
 {
-	private String m_folderId;
-	private int m_numEntries;	// The number of entries to read
-	private int m_numReplies;	// The number of replies in an entry to get
-	private boolean m_getFileAttachments;	// Should we get the file attachments for each entry
+	private String m_fileName;
+	private String m_viewUrl;
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * 
 	 */
-	public GetFolderEntriesCmd()
+	public GwtAttachment()
 	{
-		super();
+		m_fileName = null;
+		m_viewUrl = null;
 	}
 	
 	/**
 	 * 
 	 */
-	public GetFolderEntriesCmd( String folderId, int numEntries, int numReplies )
+	public String getFileName()
 	{
-		this();
-		m_folderId = folderId;
-		m_numEntries = numEntries;
-		m_numReplies = numReplies;
-		m_getFileAttachments = false;
+		return m_fileName;
+	}
+	
+	/**
+	 * Return the url that can be used to view this file.
+	 */
+	public String getViewFileUrl()
+	{
+		return m_viewUrl;
 	}
 	
 	/**
 	 * 
 	 */
-	public String getFolderId()
+	public void setFileName( String fileName )
 	{
-		return m_folderId;
+		m_fileName = fileName;
 	}
 	
 	/**
-	 * 
+	 * Set the url that can be used to view this file.
 	 */
-	public boolean getFileAttachmentsValue()
+	public void setViewFileUrl( String url)
 	{
-		return m_getFileAttachments;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getNumEntries()
-	{
-		return m_numEntries;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getNumReplies()
-	{
-		return m_numReplies;
-	}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 */
-	@Override
-	public int getCmdType()
-	{
-		return VibeRpcCmdType.GET_FOLDER_ENTRIES.ordinal();
+		m_viewUrl = url;
 	}
 }

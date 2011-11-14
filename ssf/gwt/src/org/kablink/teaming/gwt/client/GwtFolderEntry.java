@@ -61,6 +61,8 @@ public class GwtFolderEntry extends GwtTeamingItem
 	private String m_viewUrl;
 	private ArrayList<String> m_replyIds;	// Ids of the first n replies.
 	
+	private ArrayList<GwtAttachment> m_fileAttachments;	// List of attachments this entry has
+	
 	/**
 	 * 
 	 */
@@ -77,7 +79,19 @@ public class GwtFolderEntry extends GwtTeamingItem
 		m_parentBinderName = null;
 		m_viewUrl = null;
 		m_replyIds = null;
+		m_fileAttachments = null;
 	}// end GwtFolderEntry()
+	
+	/**
+	 * Add the given file to our list of file attachments. 
+	 */
+	public void addAttachment( GwtAttachment file )
+	{
+		if ( m_fileAttachments == null )
+			m_fileAttachments = new ArrayList<GwtAttachment>();
+		
+		m_fileAttachments.add( file );
+	}
 	
 	/**
 	 * Add the given reply id to our list or reply ids. 
@@ -137,6 +151,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		return m_entryName;
 	}// end getEntryName()
+	
+	/**
+	 * Return the list of file attachments for this entry
+	 */
+	public ArrayList<GwtAttachment> getFiles()
+	{
+		return m_fileAttachments;
+	}
 	
 	/**
 	 * 

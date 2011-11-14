@@ -30,81 +30,44 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.ArrayList;
+
+import org.kablink.teaming.gwt.client.GwtAttachment;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the "get folder entries" command.
- * 
+ * This class holds the response data for the "get file folder entries" rpc command
  * @author jwootton
  *
  */
-public class GetFolderEntriesCmd extends VibeRpcCmd
+public class GetListOfFilesRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	private String m_folderId;
-	private int m_numEntries;	// The number of entries to read
-	private int m_numReplies;	// The number of replies in an entry to get
-	private boolean m_getFileAttachments;	// Should we get the file attachments for each entry
+	private ArrayList<GwtAttachment> m_files;
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * 
 	 */
-	public GetFolderEntriesCmd()
+	public GetListOfFilesRpcResponseData()
 	{
-		super();
 	}
 	
 	/**
 	 * 
 	 */
-	public GetFolderEntriesCmd( String folderId, int numEntries, int numReplies )
+	public GetListOfFilesRpcResponseData( ArrayList<GwtAttachment> files )
 	{
-		this();
-		m_folderId = folderId;
-		m_numEntries = numEntries;
-		m_numReplies = numReplies;
-		m_getFileAttachments = false;
+		m_files = files;
 	}
 	
 	/**
 	 * 
 	 */
-	public String getFolderId()
+	public ArrayList<GwtAttachment> getFiles()
 	{
-		return m_folderId;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getFileAttachmentsValue()
-	{
-		return m_getFileAttachments;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getNumEntries()
-	{
-		return m_numEntries;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getNumReplies()
-	{
-		return m_numReplies;
-	}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 */
-	@Override
-	public int getCmdType()
-	{
-		return VibeRpcCmdType.GET_FOLDER_ENTRIES.ordinal();
+		return m_files;
 	}
 }
