@@ -787,15 +787,17 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		FileAttachment fa = getFileAttachment(entry, attachmentId);
 		boolean result;
-		if(lastVersionNumber != null || lastMajorVersionNumber != null || lastMinorVersionNumber != null) {
+		if((lastVersionNumber != null && lastVersionNumber.intValue() >= 0) || 
+				(lastMajorVersionNumber != null && lastMajorVersionNumber.intValue() >= 0) || 
+				(lastMinorVersionNumber != null && lastMinorVersionNumber.intValue() >= 0)) {
 			result = false;
 			VersionAttachment va = fa.getHighestVersion();
 			if(va != null) {
-				if(lastVersionNumber != null) {
+				if(lastVersionNumber != null && lastVersionNumber.intValue() >= 0) {
 					if(lastVersionNumber.intValue() == va.getVersionNumber())
 						result = true;
 				}
-				else if(lastMajorVersionNumber != null && lastMinorVersionNumber != null) {
+				else if(lastMajorVersionNumber != null && lastMajorVersionNumber.intValue() >= 0 && lastMinorVersionNumber != null && lastMinorVersionNumber.intValue() >= 0) {
 					if(lastMajorVersionNumber.intValue() == va.getMajorVersion() && 
 						lastMinorVersionNumber.intValue() == va.getMinorVersion())
 						result = true;
