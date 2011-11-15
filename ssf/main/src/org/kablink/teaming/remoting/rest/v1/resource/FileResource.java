@@ -86,6 +86,7 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -121,10 +122,13 @@ public class FileResource extends AbstractResource {
 			@PathParam("filename") String filename,
 			@QueryParam("dataName") String dataName,
 			@QueryParam("modDate") String modDateISO8601,
+			@QueryParam("lastVersionNumber") Integer lastVersionNumber,
+			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
+			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
-			return writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, request, is);
+			return writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is);
 		}
 		finally {
 			try {
@@ -142,10 +146,13 @@ public class FileResource extends AbstractResource {
 			@PathParam("filename") String filename,
 			@QueryParam("dataName") String dataName,
 			@QueryParam("modDate") String modDateISO8601,
+			@QueryParam("lastVersionNumber") Integer lastVersionNumber,
+			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
+			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
 		InputStream is = getRawInputStream(request);
 		try {
-			return writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, request, is);
+			return writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is);
 		}
 		finally {
 			try {
@@ -171,12 +178,15 @@ public class FileResource extends AbstractResource {
 	public FileProperties writeFileContentById_MultipartFormData(@PathParam("fileid") String fileId,
 			@QueryParam("dataName") String dataName,
 			@QueryParam("modDate") String modDateISO8601,
+			@QueryParam("lastVersionNumber") Integer lastVersionNumber,
+			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
+			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
 		FileAttachment fa = findFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
-			return writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName, modDateISO8601, request, is);
+			return writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName, modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is);
 		}
 		finally {
 			try {
@@ -191,12 +201,15 @@ public class FileResource extends AbstractResource {
 	public FileProperties writeFileContentById_Raw(@PathParam("fileid") String fileId,
 			@QueryParam("dataName") String dataName,
 			@QueryParam("modDate") String modDateISO8601,
+			@QueryParam("lastVersionNumber") Integer lastVersionNumber,
+			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
+			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
 		FileAttachment fa = findFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
 		InputStream is = getRawInputStream(request);
 		try {
-			return writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName, modDateISO8601, request, is);
+			return writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName, modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is);
 		}
 		finally {
 			try {
@@ -402,52 +415,70 @@ public class FileResource extends AbstractResource {
 			return null;
 		}
 	}
-	
+		
 	private FileProperties writeFileContentByName(
 			String entityType,
 			long entityId,
 			String filename,
 			String dataName,
 			String modDateISO8601,
+			Integer lastVersionNumber,
+			Integer lastMajorVersionNumber,
+			Integer lastMinorVersionNumber,
             HttpServletRequest request,
             InputStream is) 
 	throws WriteFilesException, WriteEntryDataException {
         EntityType et = entityTypeFromString(entityType);
+        FileAttachment fa;
+        boolean result = false;
+        Date modDate;
         if(et == EntityType.folderEntry) {
     		FolderEntry entry = folderModule.getEntry(null, entityId);
-    		Date modDate = dateFromISO8601(modDateISO8601);
-    		FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
-    		FileAttachment fa = getFileAttachment(entry, filename);
-    		return filePropertiesFromFileAttachment(fa);
+    		fa = getFileAttachment(entry, filename);
+    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    		if(result) {
+    			modDate = dateFromISO8601(modDateISO8601);
+	    		FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
+    		}
         }
         else if(et == EntityType.user) {
         	Principal user = profileModule.getEntry(entityId);
-        	if(!(user instanceof User))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
-    		Date modDate = dateFromISO8601(modDateISO8601);
-    		FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
-    		FileAttachment fa = getFileAttachment(user, filename);
-    		return filePropertiesFromFileAttachment(fa);
+    		fa = getFileAttachment(user, filename);
+    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    		if(result) {
+	        	if(!(user instanceof User))
+	        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
+	        	modDate = dateFromISO8601(modDateISO8601);
+	    		FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
+    		}
         }
         else if(et == EntityType.group) {
         	Principal group = profileModule.getEntry(entityId);
-        	if(!(group instanceof Group))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
-    		Date modDate = dateFromISO8601(modDateISO8601);
-    		FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
-    		FileAttachment fa = getFileAttachment(group, filename);
-    		return filePropertiesFromFileAttachment(fa);
+    		fa = getFileAttachment(group, filename);
+    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    		if(result) {
+	        	if(!(group instanceof Group))
+	        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+	        	modDate = dateFromISO8601(modDateISO8601);
+	    		FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
+    		}
         }
         else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
     		Binder binder = binderModule.getBinder(entityId);
-    		// Ignore modDate param, since it isn't applicable in this case.
-    		FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
-    		FileAttachment fa = getFileAttachment(binder, filename);
-    		return filePropertiesFromFileAttachment(fa);
+    		fa = getFileAttachment(binder, filename);
+    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    		if(result) {
+	    		// Ignore modDate param, since it isn't applicable in this case.
+	    		FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
+    		}
         }
         else {
         	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
         }
+        if(result)
+        	return filePropertiesFromFileAttachment(fa);
+        else
+        	throw new ConflictException("Specified version number does not reflect the current state of the file");
 	}
 
 	private FileAttachment findFileAttachment(String fileId) 

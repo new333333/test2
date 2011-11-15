@@ -248,6 +248,31 @@ public class FileUtils {
 		return (va.getParentAttachment().getHighestVersionNumber() == va.getVersionNumber());
 	}
 
+	public static boolean matchesTopMostVersion(FileAttachment fa, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+		boolean result;
+		if((lastVersionNumber != null && lastVersionNumber.intValue() >= 0) || 
+				(lastMajorVersionNumber != null && lastMajorVersionNumber.intValue() >= 0) || 
+				(lastMinorVersionNumber != null && lastMinorVersionNumber.intValue() >= 0)) {
+			result = false;
+			VersionAttachment va = fa.getHighestVersion();
+			if(va != null) {
+				if(lastVersionNumber != null && lastVersionNumber.intValue() >= 0) {
+					if(lastVersionNumber.intValue() == va.getVersionNumber())
+						result = true;
+				}
+				else if(lastMajorVersionNumber != null && lastMajorVersionNumber.intValue() >= 0 && lastMinorVersionNumber != null && lastMinorVersionNumber.intValue() >= 0) {
+					if(lastMajorVersionNumber.intValue() == va.getMajorVersion() && 
+						lastMinorVersionNumber.intValue() == va.getMinorVersion())
+						result = true;
+				}
+			}
+		}
+		else {
+			result = true;
+		}
+		return result;
+	}
+	
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
