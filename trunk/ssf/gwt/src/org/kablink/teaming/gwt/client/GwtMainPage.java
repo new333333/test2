@@ -98,6 +98,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.Agent;
+import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -312,9 +314,19 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private GwtMainPage()
 	{
-		constructMainPage_Start();
+		// If the UI debug toggle is turned on...
+		if (m_requestInfo.isDebugUI()) {
+			// ...display the GWT user agent we loaded in the status
+			// ...bar and tab.
+			AgentBase agent = GWT.create(Agent.class);
+			String userAgent = ("GWT user.agent: " + agent.getAgentName());
+//			Window.alert(userAgent);
+			Window.setStatus(userAgent);
+			Window.setTitle( userAgent);
+		}
 		
-		// All composites must call initWidget() in their constructors.
+		// Construct and initialize the page.
+		constructMainPage_Start();
 		initWidget( m_mainPanel );
 	}
 	
