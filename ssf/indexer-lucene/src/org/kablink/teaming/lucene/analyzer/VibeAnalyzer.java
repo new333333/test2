@@ -55,7 +55,7 @@ public abstract class VibeAnalyzer extends Analyzer {
 	protected boolean decomposeToken = false;
 	protected boolean useStandard = true;
 
-	protected static final Version VERSION = Version.LUCENE_29;
+	protected static final Version VERSION = Version.LUCENE_34;
 
 	public VibeAnalyzer() {
 		init();
@@ -150,7 +150,6 @@ public abstract class VibeAnalyzer extends Analyzer {
 	}
 
 	private void init() {
-		setOverridesTokenStreamMethod(getClass());
 	}
 
 	protected class SavedStreams {

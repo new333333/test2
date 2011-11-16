@@ -35,12 +35,12 @@ package org.kablink.teaming.module.rss.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,10 +54,14 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -71,8 +75,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
-import org.kablink.teaming.module.binder.impl.EntryDataErrors;
-import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.rss.RssModule;
@@ -98,7 +100,7 @@ import org.w3c.tidy.TidyMessage;
 public class RssModuleImpl extends CommonDependencyInjection implements
 		RssModule, RssModuleImplMBean {
 
-	private static QueryParser qp = new QueryParser("guid",
+	private static QueryParser qp = new QueryParser(Version.LUCENE_34, "guid",
 			new SsfQueryAnalyzer());
 
 	private final String ALL_FIELD = "allField";
@@ -165,6 +167,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		return rssRootDir + FilePathUtil.getBinderDirPath(binder);
 		
 	}
+	private Directory getRssIndexDirectory(Binder binder) throws IOException {
+		return FSDirectory.open(getRssIndexPath(binder));
+	}
 	//path of actual lucene index
 	private File getRssIndexPath(Binder binder) {
 		return new File(getRssPath(binder) + "index" + File.separatorChar);
@@ -225,7 +230,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
-			IndexReader indexReader = IndexReader.open(indexPath);
+			IndexReader indexReader = IndexReader.open(getRssIndexDirectory(binder), false);
 			// see if the current entry is already in the index, if it is,
 			// delete it. 
 			for (Entry e: entries) {
@@ -238,11 +243,11 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			rfl.releaseLock();
 		}
 	}
-	private void generateRssFeed(Binder binder) {
+	private void generateRssFeed(Binder binder) throws IOException {
 
 		// See if the feed already exists
 		File rssdir = getRssIndexPath(binder);
-		if (IndexReader.indexExists(rssdir.getPath()))
+		if (IndexReader.indexExists(getRssIndexDirectory(binder)))
 			return;
 
 		// Make sure the rss directory exists
@@ -260,7 +265,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				logger.info("Couldn't get the RssFeedLock");
 			}
 			IndexWriter indexWriter = new IndexWriter(this
-					.getRssIndexPath(binder), new SsfIndexAnalyzer(), true);
+					.getRssIndexDirectory(binder), new SsfIndexAnalyzer(), true, IndexWriter.MaxFieldLength.UNLIMITED);
 
 			long startDate = new Date().getTime() - (maxDays * DAYMILLIS);
 			Date start = new Date(startDate);
@@ -376,27 +381,30 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 			List<Integer> delDocIds = new ArrayList<Integer>();
 
-			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
+			IndexSearcher indexSearcher = new IndexSearcher(getRssIndexDirectory(entry.getParentBinder()));
 			// see if the current entry is already in the index, if it is,
 			// delete it. 
 			String qString = "guid:" + entry.getId().toString();
 			Query q = qp.parse(qString);
-			Hits hits = indexSearcher.search(q);
+			TopDocs topDocs = indexSearcher.search(q, Integer.MAX_VALUE);
+			ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 
-			for (int i = 0; i < hits.length(); i++) {
-				delDocIds.add(hits.id(i));
+			for (int i = 0; i < topDocs.totalHits; i++) {
+				delDocIds.add(scoreDocs[i].doc);
 			}
 			// trim the rss file based on number of entries, and/or elapsed time
 			qString = "age:[" + dateRange + "]";
-			hits = indexSearcher.search(qp.parse(qString));
+			topDocs = indexSearcher.search(qp.parse(qString), Integer.MAX_VALUE);
+			scoreDocs = topDocs.scoreDocs;
 
-			for (int i = 0; i < hits.length(); i++) {
-				delDocIds.add(hits.id(i));
+			for (int i = 0; i < topDocs.totalHits; i++) {
+				delDocIds.add(scoreDocs[i].doc);
 			}
 
+			Directory directory = getRssIndexDirectory(entry.getParentBinder());
 			indexSearcher.close();
 			if (delDocIds.size() > 0) {
-				IndexReader ir = IndexReader.open(indexPath);
+				IndexReader ir = IndexReader.open(directory, false);
 				for (int i = 0; i < delDocIds.size(); i++) {
 					ir.deleteDocument((int) delDocIds.get(i));
 				}
@@ -404,8 +412,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			}
 
 			// now add the entry
-			IndexWriter indexWriter = new IndexWriter(indexPath,
-					new SsfIndexAnalyzer(), false);
+			IndexWriter indexWriter = new IndexWriter(directory,
+					new SsfIndexAnalyzer(), false, IndexWriter.MaxFieldLength.UNLIMITED);
 			indexWriter.addDocument(this.createDocumentFromEntry(entry));
 			indexWriter.close();
 		} catch (Exception e) {
@@ -453,13 +461,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 			updateTimestamp(binder);
 
-			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
+			IndexSearcher indexSearcher = new IndexSearcher(getRssIndexDirectory(binder));
 
 			// this will add acls to the query
 			SearchObject so = buildRssQuery();
 
 			// get the matching entries
-			Hits hits = indexSearcher.search(so.getLuceneQuery(),so.getSortBy());
+			TopDocs topDocs = indexSearcher.search(so.getLuceneQuery(), null, Integer.MAX_VALUE, so.getSortBy());
 
 			// create the return string, add the channel info
 			String rss = addRssHeader(request, binder, binder.getTitle());
@@ -469,8 +477,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			// step thru the hits and add them to the rss return string
 			int count = 0;
 			String item;
-			while (count < hits.length()) {
-				org.apache.lucene.document.Document doc = hits.doc(count);
+			ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+			while (count < topDocs.totalHits) {
+				org.apache.lucene.document.Document doc = indexSearcher.doc(scoreDocs[count].doc);
 				item = doc.getField("rssItem").stringValue();
 				item = fixupSchemeHostPort(item, adapterRoot);
 				item = fixupAuthor(item, adapterRoot);
@@ -522,13 +531,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 			updateTimestamp(binder);
 
-			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
+			IndexSearcher indexSearcher = new IndexSearcher(getRssIndexDirectory(binder));
 
 			// this will add acls to the query
 			SearchObject so = buildRssQuery();
 
 			// get the matching entries
-			Hits hits = indexSearcher.search(so.getLuceneQuery(), so.getSortBy());
+			TopDocs topDocs = indexSearcher.search(so.getLuceneQuery(), null, Integer.MAX_VALUE, so.getSortBy());
 
 			// create the return string, add the channel info
 			String atom = addAtomHeader(binder.getTitle());
@@ -538,8 +547,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			// step thru the hits and add them to the rss return string
 			int count = 0;
 			String item;
-			while (count < hits.length()) {
-				org.apache.lucene.document.Document doc = hits.doc(count);
+			ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+			while (count < topDocs.totalHits) {
+				org.apache.lucene.document.Document doc = indexSearcher.doc(scoreDocs[count].doc);
 				item = doc.getField("atomItem").stringValue();
 				item = fixupSchemeHostPort(item, adapterRoot);
 				item = fixupAuthorName(item, adapterRoot);
