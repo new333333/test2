@@ -42,6 +42,7 @@ import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
@@ -50,15 +51,15 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.search.HitCollector;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -186,7 +187,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			IndexWriter.unlock(dir);
 		}
 		
-		int maxFields = PropsUtil.getInt("lucene.max.fieldlength", 10000);
+		int maxFields = PropsUtil.getInt("lucene.max.fieldlength", 100000);
 		int maxMerge = PropsUtil.getInt("lucene.max.merge.docs", UNSPECIFIED_INT);
 		int mergeFactor = PropsUtil.getInt("lucene.merge.factor", 10);
 		int ramBufferSizeMb = PropsUtil.getInt("lucene.ram.buffer.size.mb", 256);
@@ -481,13 +482,13 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		try {
-			org.apache.lucene.search.Hits hits = indexSearcherHandle.getIndexSearcher()
-					.search(query);
 			if (size < 0)
-				size = hits.length();
+				size = Integer.MAX_VALUE;
+			
+			TopDocs topDocs = indexSearcherHandle.getIndexSearcher().search(query, size);
+			
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(hits, offset, size);
-			tempHits.setTotalHits(hits.length());
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
 
 			end(startTime, "search(Query,int,int)", query, tempHits.length());
 			
@@ -512,22 +513,21 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
-		Hits hits = null;
+		TopDocs topDocs = null;
 
 		try {
+			if (size < 0)
+				size = Integer.MAX_VALUE;
 			if (sort == null)
-				hits = indexSearcherHandle.getIndexSearcher().search(query);
+				topDocs = indexSearcherHandle.getIndexSearcher().search(query, size);
 			else
 				try {
-					hits = indexSearcherHandle.getIndexSearcher().search(query, sort);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, null, size, sort);
 				} catch (Exception ex) {
-					hits = indexSearcherHandle.getIndexSearcher().search(query);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, size);
 				}
-			if (size < 0)
-				size = hits.length();
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(hits, offset, size);
-			tempHits.setTotalHits(hits.length());
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
 
 			end(startTime, "search(Query,Sort,int,int)", query, tempHits.length());
 			
@@ -584,9 +584,24 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		try {
 			final BitSet userDocIds = new BitSet(indexSearcherHandle.getIndexSearcher().getIndexReader().maxDoc());
 			if (!isSuper) {
-				indexSearcherHandle.getIndexSearcher().search(query, new HitCollector() {
-					public void collect(int doc, float score) {
+				indexSearcherHandle.getIndexSearcher().search(query, new Collector() {
+					@Override
+					public void collect(int doc) {
 						userDocIds.set(doc);
+					}
+
+					@Override
+					public boolean acceptsDocsOutOfOrder() {
+						return true;
+					}
+
+					@Override
+					public void setNextReader(IndexReader arg0, int arg1)
+							throws IOException {
+					}
+
+					@Override
+					public void setScorer(Scorer arg0) throws IOException {
 					}
 				});
 			} else {
@@ -698,9 +713,24 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		try {
 			final BitSet userDocIds = new BitSet(indexSearcherHandle.getIndexSearcher().getIndexReader().maxDoc());
 			
-			indexSearcherHandle.getIndexSearcher().search(query, new HitCollector() {
-				public void collect(int doc, float score) {
+			indexSearcherHandle.getIndexSearcher().search(query, new Collector() {
+				@Override
+				public void collect(int doc) {
 					userDocIds.set(doc);
+				}
+
+				@Override
+				public boolean acceptsDocsOutOfOrder() {
+					return true;
+				}
+
+				@Override
+				public void setNextReader(IndexReader arg0, int arg1)
+						throws IOException {
+				}
+
+				@Override
+				public void setScorer(Scorer arg0) throws IOException {
 				}
 			});
 			if(sortTitleFieldName == null)
