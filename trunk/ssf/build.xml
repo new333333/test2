@@ -91,6 +91,9 @@
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="gwt-unitCache" />
 		</delete>
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="lucene-contrib" />
+		</delete>
 		
 		<ant dir="util" target="clean" inheritAll="false"/>
 		<ant dir="util-search" target="clean" inheritAll="false"/>
