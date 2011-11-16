@@ -22,7 +22,7 @@
 			name="compiler.splitpoint.initial.sequence"
 			value="org.kablink.teaming.gwt.client.GwtMainPage"/>
 	-->
-    
+	
     <!-- Specify the application specific style sheet. -->
 	<stylesheet src='GwtTeaming.css'     />
     <stylesheet src='GwtProfile.css'     />		
@@ -40,4 +40,31 @@
 	<!--    ie9:       IE9.                                         -->
 	<!--    opera:     Opera, all versions.                         -->
 	<!--    safari:    Safari and Chrome (webkit), all versions.    -->
+
+	<!-- Using deferred binder, when requested, load the -->
+	<!-- appropriate agent class.                        -->	
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentGecko18">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="gecko1_8" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE6">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="ie6" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE8">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="ie8" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE9">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="ie9" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentOpera">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="opera" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentSafari">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="safari" />
+	</replace-with>
 </module>
