@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFooterToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
@@ -47,6 +49,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -56,7 +60,14 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.TextBox;
 
 
 /**
@@ -65,9 +76,13 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class FooterPanel extends ToolPanelBase {
-	private List<ToolbarItem>	m_toolbarIems;	//
-	private ToolbarItem			m_footerTBI;	//
-	private VibeFlowPanel		m_fp;			// The panel holding the FooterPanel's contents.
+	private GwtTeamingImageBundle	m_images;		//
+	private GwtTeamingMessages		m_messages;		//
+	private List<ToolbarItem>		m_toolbarIems;	//
+	private ResizeComposite			m_container;	//
+	private ToolbarItem				m_footerTBI;	//
+	private VibeFlowPanel			m_fp;			// The panel holding the FooterPanel's contents.
+	private VibeFlowPanel			m_dataPanel;	// The panel holding the display of the data, ..., once rendered.
 	
 	/*
 	 * Constructor method.
@@ -76,9 +91,14 @@ public class FooterPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FooterPanel(BinderInfo binderInfo) {
+	private FooterPanel(ResizeComposite container, BinderInfo binderInfo) {
 		// Initialize the super class...
 		super(binderInfo);
+
+		// ...initialize the data members...
+		m_container = container;
+		m_images    = GwtTeaming.getImageBundle();
+		m_messages  = GwtTeaming.getMessages();
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -94,12 +114,12 @@ public class FooterPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+	public static void createAsync(final ResizeComposite container, final BinderInfo binderInfo, final ToolPanelClient tpClient) {
 		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FooterPanel fp = new FooterPanel(binderInfo);
+				FooterPanel fp = new FooterPanel(container, binderInfo);
 				tpClient.onSuccess(fp);
 			}
 			
@@ -183,6 +203,8 @@ public class FooterPanel extends ToolPanelBase {
 		}
 
 		// Create an Anchor for the foot link...
+		VibeFlowPanel ap = new VibeFlowPanel();
+		ap.addStyleName("vibe-footerAnchorPanel");
 		final Anchor a = new Anchor();
 		a.addStyleName("vibe-footerAnchor");
 		ToolbarItem iCalTBI = m_footerTBI.getNestedToolbarItem("iCalendar");
@@ -191,13 +213,27 @@ public class FooterPanel extends ToolPanelBase {
 		InlineLabel il = new InlineLabel(ilString);
 		il.addStyleName("vibe-footerAnchorLabel");
 		a.getElement().appendChild(il.getElement());
-		m_fp.add(a);
+		ap.add(a);
+		m_fp.add(ap);
 
 		// ...and add the handlers to it.
 		a.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				renderPermalinksAsync();
+				// Have we already rendered the data?
+				if (null != m_dataPanel) {
+					// Yes!  Toggle its visibility and force the
+					// container to resize to reflect the new
+					// visibility state of the footer.
+					m_dataPanel.setVisible(!m_dataPanel.isVisible());
+					m_container.onResize();
+				}
+				
+				else {
+					// No, we have yet to render the data!  Render it
+					// now.
+					renderPermalinksAsync();
+				}
 			}
 		});
 		a.addMouseOutHandler(new MouseOutHandler() {
@@ -215,6 +251,15 @@ public class FooterPanel extends ToolPanelBase {
 	}
 
 	/*
+	 * Adds a row with a label and hint to the hint grid.
+	 */
+	private void renderHintGridRow(FlexTable hintGrid, String label, String hint) {
+		int row = hintGrid.getRowCount();
+		hintGrid.setWidget(row, 0, new InlineLabel(label));
+		hintGrid.setWidget(row, 1, new InlineLabel(hint ));
+	}
+	
+	/*
 	 * Asynchronously creates and renders the permalink information.
 	 */
 	private void renderPermalinksAsync() {
@@ -226,13 +271,256 @@ public class FooterPanel extends ToolPanelBase {
 		};
 		Scheduler.get().scheduleDeferred(renderPermalinks);
 	}
-	
+
 	/*
 	 * Synchronously creates and renders the permalink information.
 	 */
 	private void renderPermalinksNow() {
-//!		...this needs to be implemented...
-		Window.alert("FooterPanel.renderPermalinksNow():  ...this needs to be implemented...");
+		// Create a panel to hold the data...
+		m_dataPanel = new VibeFlowPanel();
+		m_dataPanel.addStyleName("vibe-footerDataPanel");
+		m_fp.add(m_dataPanel);
+
+		// ...create a link to close it...
+		VibeFlowPanel closerPanel = new VibeFlowPanel();
+		closerPanel.addStyleName("vibe-footerDataCloser");
+		m_dataPanel.add(closerPanel);
+		Anchor closerA = new Anchor();
+		closerA.addStyleName("vibe-footerDataCloserAnchor");
+		final Image closerImg = new Image(m_images.closeX());
+		closerA.getElement().appendChild(closerImg.getElement());
+		closerPanel.add(closerA);
+		closerA.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// Hide the data panel and force the container to
+				// resize to reflect the new visibility state of the
+				// footer.
+				m_dataPanel.setVisible(false);
+				m_container.onResize();
+			}
+		});
+		closerA.addMouseOutHandler(new MouseOutHandler() {
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				closerImg.setResource(m_images.closeX());
+			}
+		});
+		closerA.addMouseOverHandler(new MouseOverHandler() {
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				closerImg.setResource(m_images.closeXMouseOver());
+			}
+		});
+
+		// ...create a panel and grid to hold the links data...
+		VibeFlowPanel linksPanel = new VibeFlowPanel();
+		linksPanel.addStyleName("vibe-footerDataLinksPanel");
+		m_dataPanel.add(linksPanel);
+		FlexTable linksGrid = new FlexTable();
+		linksGrid.setCellPadding(6);
+		linksGrid.setCellSpacing(2);
+		linksGrid.setBorderWidth(1);
+		linksGrid.addStyleName("vibe-footerDataLinksGrid");
+		linksPanel.add(linksGrid);
+		FlexCellFormatter cf = linksGrid.getFlexCellFormatter();
+
+		// ...add a row for the permalink...
+		ToolbarItem permalinkTBI = m_footerTBI.getNestedToolbarItem("permalink");
+		VibeFlowPanel rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_Permalink());
+		renderRowLink(rowDataPanel, permalinkTBI.getUrl());
+
+		// ...if there are simple names defined on the binder...
+		ToolbarItem simpleNamesTBI = m_footerTBI.getNestedToolbarItem("simpleNames");
+		if (null != simpleNamesTBI) {
+			// ...scan them...
+			int c = Integer.parseInt(simpleNamesTBI.getQualifierValue("simple.count"));
+			String simplePrefix = simpleNamesTBI.getQualifierValue("simple.prefix");
+			for (int i = 0; i < c; i += 1) {
+				// ...adding a link for each to the table...
+				String simpleName = simpleNamesTBI.getQualifierValue("simple." + i + ".name");
+				renderRowLink(rowDataPanel, (simplePrefix + simpleName));
+			}
+
+			// ...scan them again...
+			String hostName = simpleNamesTBI.getQualifierValue("simple.host");
+			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_EmailAddresses());
+			for (int i = 0; i < c; i += 1) {
+				// ...adding an email for each to the table...
+				String emailAddress = simpleNamesTBI.getQualifierValue("simple." + i + ".email");
+				renderRowText(rowDataPanel, (emailAddress + "@" + hostName));
+			}
+		}
+
+		// ...if there's an RSS URL defined...
+		ToolbarItem rssTBI = m_footerTBI.getNestedToolbarItem("subscribeRSS");
+		if (null != rssTBI) {
+			// ...add a link opener for it...
+			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_RSSUrl());
+			renderRowLinkOpener(rowDataPanel, rssTBI.getUrl());
+		}
+
+		// ...if there's an atom URL defined...
+		ToolbarItem atomTBI = m_footerTBI.getNestedToolbarItem("subscribeAtom");
+		if (null != atomTBI) {
+			// ...add a link opener for it...
+			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_AtomUrl());
+			renderRowLinkOpener(rowDataPanel, atomTBI.getUrl());
+		}
+
+		// ...if there's a WebDAV URL defined...
+		ToolbarItem webDavTBI = m_footerTBI.getNestedToolbarItem("webdavUrl");
+		if (null != webDavTBI) {
+			// ...add a link for it...
+			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_WebDAVUrl());
+			renderRowLink(rowDataPanel, webDavTBI.getUrl());
+		}
+
+		// ...and if there's an iCal URL defined...
+		ToolbarItem iCalTBI = m_footerTBI.getNestedToolbarItem("iCalendar");
+		if (null != iCalTBI) {
+			// ...add a link for it.
+			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_iCalUrl());
+			renderRowLink(rowDataPanel, iCalTBI.getUrl());
+		}
+		
+		// Create a grid to hold the keys (i.e., definitions) of what's
+		// in the above table...
+		linksPanel.add(new HTML("<br /><br />"));
+		FlexTable hintGrid = new FlexTable();
+		hintGrid.setCellPadding(6);
+		hintGrid.setCellSpacing(6);
+		hintGrid.setBorderWidth(0);
+		hintGrid.addStyleName("vibe-footerDataHintGrid");
+		linksPanel.add(hintGrid);
+		cf = hintGrid.getFlexCellFormatter();
+
+		// ...add a header string to the key grid...
+		InlineLabel hintHeader = new InlineLabel(m_messages.vibeBinderFooter_KeyHeader());
+		hintHeader.addStyleName("vibe-footerDataHintGridHeader");
+		hintGrid.setWidget(0, 0, hintHeader);
+		cf.setColSpan(    0, 0, 2 );
+
+		// ...add rows for each item type...
+		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_Permalink(),      m_messages.vibeBinderFooter_PermalinkHint()     );
+		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_EmailAddresses(), m_messages.vibeBinderFooter_EmailAddressesHint());
+		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_WebDAVUrl(),      m_messages.vibeBinderFooter_WebDAVUrlHint()     );
+		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_iCalUrl(),        m_messages.vibeBinderFooter_iCalUrlHint()       );
+		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_RSSUrl(),         m_messages.vibeBinderFooter_RSSUrlHint()        );
+
+		// ...and add a footer with further explanations.
+		VibeFlowPanel keyFooterPanel = new VibeFlowPanel();
+		keyFooterPanel.addStyleName("vibe-footerDataHintGridFooter");
+		linksPanel.add(keyFooterPanel);
+		keyFooterPanel.add(new InlineLabel(m_messages.vibeBinderFooter_KeyFooter()));
+
+		// Finally, force the container to resize to reflect the
+		// expanded footer.
+		m_container.onResize();
+	}
+
+	/*
+	 * Renders row in the grid and returns it data panel.
+	 */
+	private VibeFlowPanel renderRow(FlexTable grid, FlexCellFormatter cf, String label) {
+		// Get the row's index...
+		int row = grid.getRowCount();
+
+		// ...add the cell for the row's label...
+		grid.setWidget(         row, 0, new InlineLabel(label)        );
+		cf.setWidth(            row, 0, "10%"                         );
+		cf.setWordWrap(         row, 0, false                         );
+		cf.setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_TOP);
+
+		// ...add the cell for the row's data...
+		VibeFlowPanel rowDataPanel = new VibeFlowPanel();
+		grid.setWidget(         row, 1, rowDataPanel                  );
+		cf.setWidth(            row, 1, "90%"                         );
+		cf.setWordWrap(         row, 1, false                         );
+		cf.setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_TOP);
+
+		// ...and return the panel that's to contain the row's data.
+		return rowDataPanel;
+	}
+	
+	/*
+	 * Renders a link in the row data panel.
+	 */
+	private void renderRowLink(VibeFlowPanel rowDataPanel, final String url) {
+		// Define a panel with an INPUT that contains the link.  We use
+		// and INPUT for this to facilitate the user being able to copy
+		// the link to the clipboard.
+		VibeFlowPanel linkPanel = new VibeFlowPanel();
+		rowDataPanel.add(linkPanel);
+		final TextBox linkInput = new TextBox();
+		linkInput.addStyleName("vibe-footerDataLinksInput");
+		linkPanel.add(linkInput);
+		linkInput.setValue(url);
+		linkInput.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				linkInput.selectAll();
+			}
+		});
+		linkInput.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				// If the user happens to change the link (since it's
+				// an INPUT, they CAN edit it), we simply restore the
+				// INPUT back to its initial value.
+				linkInput.setValue(url);
+				linkInput.selectAll();
+			}
+		});
+	}
+	
+	/*
+	 * Renders a link to open a URL in a new window in the row data panel.
+	 */
+	private void renderRowLinkOpener(VibeFlowPanel rowDataPanel, final String url) {
+		// Define a panel with a link to launch the URL in a new
+		// window.
+		VibeFlowPanel linkPanel = new VibeFlowPanel();
+		rowDataPanel.add(linkPanel);
+		final Anchor linkA = new Anchor();
+		linkA.addStyleName("vibe-footerDataLinksOpenerAnchor");
+		linkPanel.add(linkA);
+		InlineLabel linkLabel = new InlineLabel(url);
+		linkLabel.addStyleName("vibe-footerDataLinksOpenerLabel");
+		linkA.getElement().appendChild(linkLabel.getElement());
+		linkA.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.open(
+					url,
+					"teamingSubscribe",
+					("directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=" + 800 + ",height=" + 600));
+			}
+		});
+		linkA.addMouseOutHandler(new MouseOutHandler() {
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				linkA.removeStyleName("vibe-footerDataLinksOpenerAnchor-hover");
+			}
+		});
+		linkA.addMouseOverHandler(new MouseOverHandler() {
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				linkA.addStyleName("vibe-footerDataLinksOpenerAnchor-hover");
+			}
+		});
+	}
+	
+	/*
+	 * Renders some text in the row data panel.
+	 */
+	private void renderRowText(VibeFlowPanel rowDataPanel, String text) {
+		// Define a panel with the text in a SPAN.
+		VibeFlowPanel textPanel = new VibeFlowPanel();
+		rowDataPanel.add(textPanel);
+		InlineLabel textLabel = new InlineLabel(text);
+		textLabel.addStyleName("vibe-footerDataLinksText");
+		textPanel.add(textLabel);
 	}
 	
 	/**

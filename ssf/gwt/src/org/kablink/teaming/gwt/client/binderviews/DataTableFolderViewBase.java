@@ -1057,7 +1057,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the FooterPanel.
 	 */
 	private void loadPart5Now() {
-		FooterPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		FooterPanel.createAsync(this, m_folderInfo, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous

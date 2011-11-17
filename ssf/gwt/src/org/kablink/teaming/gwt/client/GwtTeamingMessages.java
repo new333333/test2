@@ -1100,6 +1100,21 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppOff();
 	String fileSyncAppOn();
 	String fileSyncAppOnOffLabel();
+
+	// Strings used by the footer in the various binder views.
+	String vibeBinderFooter_AtomUrl();
+	String vibeBinderFooter_EmailAddresses();
+	String vibeBinderFooter_EmailAddressesHint();
+	String vibeBinderFooter_iCalUrl();
+	String vibeBinderFooter_iCalUrlHint();
+	String vibeBinderFooter_KeyHeader();
+	String vibeBinderFooter_KeyFooter();
+	String vibeBinderFooter_Permalink();
+	String vibeBinderFooter_PermalinkHint();
+	String vibeBinderFooter_RSSUrl();
+	String vibeBinderFooter_RSSUrlHint();
+	String vibeBinderFooter_WebDAVUrl();
+	String vibeBinderFooter_WebDAVUrlHint();
 	
 	// Strings used by various widgets of the Vibe Data table.
 	String vibeDataTable_Alt_Unread();
