@@ -25,18 +25,33 @@
 		.vibe-entryMenuPopup {}
 		.vibe-entryMenuPopupItem {}
 		.vibe-entryMenuDisabled {color: silver !important;}
-/* ...End:  Entry menu panel styles. */
+	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
 		.vibe-filterPanel {background-color: #EAF5F5;}
-/* ...End:  Filter panel styles. */
+	/* ...End:  Filter panel styles. */
 	
 	/* ...Start:  Footer panel styles. */
-		.vibe-footerPanel        {text-align: center; padding-top: 5px !important;}
-		.vibe-footerAnchor       {cursor: pointer; color: #666;}
-		.vibe-footerAnchorLabel  {}
-		.vibe-footerAnchor-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
-/* ...End:  Footer panel styles. */
+		.vibe-footerPanel                       {padding-top: 5px !important;}
+		.vibe-footerAnchor                      {cursor: pointer; color: #666;}
+		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerAnchorLabel                 {}
+		.vibe-footerAnchorPanel                 {text-align: center;}
+		.vibe-footerDataCloser                  {text-align: right;}
+		.vibe-footerDataCloserAnchor            {cursor: pointer;}
+		.vibe-footerDataCloserImage             {}
+		.vibe-footerDataHintGrid                {width: 100%; background: #eaebe8; border-spacing: 0px;}
+		.vibe-footerDataHintGridFooter          {padding: 10px 10px 6px 6px;}
+		.vibe-footerDataHintGridHeader          {font-weight: bold;}
+		.vibe-footerDataLinksGrid               {width: 100%; background: #cecece; border-spacing: 0px;}
+		.vibe-footerDataLinksInput              {width: 100%; background-color: #cecece; overflow: hidden; padding: 0px !important; border: 0px;}
+		.vibe-footerDataLinksOpenerAnchor       {cursor: pointer; color: #666; text-decoration: none;}
+		.vibe-footerDataLinksOpenerAnchor-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerDataLinksOpenerLabel        {}
+		.vibe-footerDataLinksPanel              {padding: 10px;}
+		.vibe-footerDataLinksText               {}
+		.vibe-footerDataPanel                   {background-color: #eaebe8; padding: 10px; margin: 20px; display: block; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	/* ...End:  Footer panel styles. */
 	
 	/* ...Start:  Generic folder view styles. */
 		.vibe-folderViewBase {padding: 8px;}

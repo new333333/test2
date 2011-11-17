@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1138,7 +1140,7 @@ public class GwtMenuHelper {
 		String rssUrl = org.kablink.teaming.module.rss.util.UrlUtil.getFeedURLHttp(request, topFolderId);
 		if (MiscUtil.hasString(rssUrl)) {
 			ToolbarItem rssTBI = new ToolbarItem(SUBSCRIBE_RSS);
-			markTBITitle(rssTBI, "toolbar.menu.subscribeAtom" );
+			markTBITitle(rssTBI, "toolbar.menu.subscribeRSS"  );
 			markTBIUrl(  rssTBI, rssUrl                       );
 			footerToolbar.addNestedItem(rssTBI                );
 		}
@@ -1173,8 +1175,9 @@ public class GwtMenuHelper {
 
 			// ...store the URL prefix for them and how many are
 			// ...defined...
+			simpleNamesTBI.addQualifier("simple.host",   getHostName(bs)                               );
 			simpleNamesTBI.addQualifier("simple.prefix", WebUrlUtil.getSimpleURLContextRootURL(request));
-			simpleNamesTBI.addQualifier("simple.count", String.valueOf(c));
+			simpleNamesTBI.addQualifier("simple.count",  String.valueOf(c)                             );
 			
 			// ...scan them...
 			for (int i = 0; i < c; i += 1) {
@@ -1182,9 +1185,9 @@ public class GwtMenuHelper {
 				// ...item.
 				SimpleName   simpleName   = simpleNames.get(i);
 				SimpleNamePK simpleNameId = simpleName.getId();
-				simpleNamesTBI.addQualifier(("simple." + i + "email"),                simpleName.getEmailAddress());
-				simpleNamesTBI.addQualifier(("simple." + i + "zone"),  String.valueOf(simpleNameId.getZoneId())   );
-				simpleNamesTBI.addQualifier(("simple." + i + "name"),                 simpleNameId.getName()      );
+				simpleNamesTBI.addQualifier(("simple." + i + ".email"),                simpleName.getEmailAddress());
+				simpleNamesTBI.addQualifier(("simple." + i + ".zone"),  String.valueOf(simpleNameId.getZoneId())   );
+				simpleNamesTBI.addQualifier(("simple." + i + ".name"),                 simpleNameId.getName()      );
 			}
 		}
 	}
@@ -1520,6 +1523,23 @@ public class GwtMenuHelper {
 		finally {
 			SimpleProfiler.stop("GwtMenuHelper.getFooterToolbarItems()");
 		}
+	}
+
+	/*
+	 * Returns the hostname of the current running instance of Vibe.
+	 */
+	private static String getHostName(AllModulesInjected bs) {
+		String hostname = bs.getZoneModule().getVirtualHost(RequestContextHolder.getRequestContext().getZoneName());
+		if (!(MiscUtil.hasString(hostname))) {
+			try {
+		        InetAddress addr = InetAddress.getLocalHost();
+		        hostname = addr.getHostName();
+		    } catch (UnknownHostException e) {
+				m_logger.debug("GwtMenuHelper.getHostName( UnknownHostException ):  Using localhost");
+				hostname = "localhost";
+		    }
+		}
+		return hostname;
 	}
 	
 	/**
