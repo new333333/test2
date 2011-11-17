@@ -34,16 +34,38 @@ package org.kablink.util;
 
 import java.lang.management.ManagementFactory;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
-public class MBeanUtil {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-	public static void register(Object object, String name) throws Exception {
+public class MBeanUtil {
+	private static final Log LOG = LogFactory.getLog(MBeanUtil.class);
+
+	public static void register(Object object, String name)
+			throws MalformedObjectNameException, NotCompliantMBeanException {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		
 		ObjectName objectName = new ObjectName(name);
-		
-		mbs.registerMBean(object, objectName);
+		try {
+			if (mbs.isRegistered(objectName)) {
+				mbs.unregisterMBean(objectName);
+			}
+			mbs.registerMBean(object, objectName);
+		} catch (InstanceAlreadyExistsException iaee) {
+			LOG.error("An MBean with the name '" + objectName
+					+ "' is already registered", iaee);
+		} catch (MBeanRegistrationException mre) {
+			LOG.error("Failed to register MBean '" + objectName + "'", mre);
+		} catch (InstanceNotFoundException infe) {
+			LOG.error("Failed to unregister an MBean prior to replacing it",
+					infe);
+		}
 	}
 }
