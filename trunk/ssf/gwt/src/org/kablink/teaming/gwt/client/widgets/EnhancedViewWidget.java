@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
 import org.kablink.teaming.gwt.client.lpe.FileFolderProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderProperties;
+import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
 
 import com.google.gwt.user.client.ui.Label;
 
@@ -148,10 +149,21 @@ public class EnhancedViewWidget extends VibeWidget
 			break;
 		}
 		
+		case DISPLAY_TASK_FOLDER:
+		{
+			TaskFolderProperties taskFolderProperties;
+			
+			taskFolderProperties = new TaskFolderProperties();
+			taskFolderProperties.setFolderId( properties.getFolderId() );
+			taskFolderProperties.setNumTasksToBeShownValue( properties.getNumEntriesToBeShownValue() );
+			
+			widget = new TaskFolderWidget( taskFolderProperties, landingPageStyle );
+			break;
+		}
+		
 		case DISPLAY_CALENDAR:
 		case DISPLAY_FULL_ENTRY:
 		case DISPLAY_SURVEY:
-		case DISPLAY_TASK_FOLDER:
 		case UNKNOWN:
 		default:
 			widget = new EnhancedViewWidget( config );

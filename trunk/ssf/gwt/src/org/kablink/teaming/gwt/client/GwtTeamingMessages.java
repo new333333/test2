@@ -1125,4 +1125,12 @@ public interface GwtTeamingMessages extends Messages
 	String utilityElementLogIn();
 	String utilityElementMyWorkspace();
 	String utilityElementShareWorkspace();
+
+	// Strings used in the TaskFolderWidget
+	String taskFolderWidget_assignedTo();
+	String taskFolderWidget_dueDate();
+	String taskFolderWidget_percentDone();
+	String taskFolderWidget_priority();
+	String taskFolderWidget_status();
+	
 }// end GwtTeamingMessages
