@@ -1551,6 +1551,11 @@ public class GwtTaskHelper {
 			HttpSession session = WebHelper.getRequiredSession(request);
 			GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
 			Map options = ((Map) optionsObj.getData());
+			if ( options == null )
+			{
+				//!!!drf TaskHelper.findTaskEntries() will save the options in the GwtUISessionData object in the session cache.
+				options = new HashMap();
+			}
 			options.put(ObjectKeys.SEARCH_MAX_HITS, (Integer.MAX_VALUE - 1));
 			options.put(ObjectKeys.SEARCH_OFFSET,   0);
 	
