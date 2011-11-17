@@ -52,6 +52,8 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.SimpleName;
+import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -75,6 +77,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -83,6 +86,7 @@ import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.GwtUIHelper.TrackInfo;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.search.Constants;
@@ -116,19 +120,26 @@ public class GwtMenuHelper {
 	private final static String DISPLAY_STYLES			= "display_styles";
 	private final static String EMAIL					= "email";
 	private final static String FOLDER_VIEWS			= "folderViews";
+	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
 	private final static String MANAGE_DEFINITIONS		= "manageDefinitions";
 	private final static String MANUAL_SYNC				= "manualSync";
 	private final static String MOBILE_UI				= "mobileUI";
 	private final static String MODIFY					= "modify";
 	private final static String MOVE					= "move";
+	private final static String PERMALINK				= "permalink";
 	private final static String REPORTS					= "reports";
 	private final static String SCHEDULE_SYNC			= "scheduleSync";
 	private final static String SEND_EMAIL				= "sendEmail";
 	private final static String SHARE					= "share";
+	private final static String SIMPLE_NAMES			= "simpleNames";
 	private final static String SS_FORUM				= "ss_forum";
+	private final static String SUBSCRIBE_ATOM			= "subscribeAtom";
+	private final static String SUBSCRIBE_RSS			= "subscribeRSS";
 	private final static String TRASH					= "trash";
 	private final static String UNSEEN					= "unseen";
+	private final static String VIEW_AS_WEBDAV			= "viewaswebdav";
+	private final static String WEBDAVURL				= "webdavUrl";
 	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 
@@ -1077,6 +1088,124 @@ public class GwtMenuHelper {
 	}
 
 	/*
+	 * Constructs the ToolbarItem's for the footer on a folder.
+	 */
+	private static void constructFooterFolderItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
+		// Construct the permalink item...
+		String permaLink = PermaLinkUtil.getPermalink(request, folder);
+		ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK     );
+		markTBITitle(permalinkTBI, "toolbar.menu.folderPermalink");
+		markTBIUrl(  permalinkTBI, permaLink                     );
+		footerToolbar.addNestedItem(permalinkTBI                 );
+
+		// ...for file folders...
+		if (folder.isLibrary()) {
+			// ...construct any WebDAV items...
+			String webdavUrl = SsfsUtil.getLibraryBinderUrl(request, folder);
+			if (MiscUtil.hasString(webdavUrl)) {
+				ToolbarItem webDavTBI = new ToolbarItem(VIEW_AS_WEBDAV);
+				markTBITitle(webDavTBI, "toolbar.menu.viewASWebDav"   );
+				markTBIUrl(  webDavTBI, webdavUrl                     );
+				footerToolbar.addNestedItem(webDavTBI                 );
+			
+				String webdavSuffix = SPropsUtil.getString("webdav.folder.url.suffix", "");
+				if (MiscUtil.hasString(webdavSuffix)) {
+					webdavUrl = (webdavUrl + "/" + webdavSuffix);
+				}
+				webDavTBI = new ToolbarItem(WEBDAVURL            );
+				markTBITitle(webDavTBI, "toolbar.menu.webdavUrl" );
+				markTBIUrl(  webDavTBI, webdavUrl                );
+				footerToolbar.addNestedItem(webDavTBI            );
+			}
+		}
+
+		// ...for calendars and tasks...
+		String viewType	= DefinitionUtils.getViewType(folder);
+		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) || viewType.equals(Definition.VIEW_STYLE_TASK)) {
+			// ...construct an iCal item...
+			String icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURLHttp(request, String.valueOf(folder.getId()), null);
+			ToolbarItem icalTBI = new ToolbarItem(ICALENDAR);
+			markTBITitle(icalTBI, "toolbar.menu.iCalendar" );
+			markTBIUrl(  icalTBI, icalUrl                  );
+			footerToolbar.addNestedItem(icalTBI);
+		}
+		
+		// ...construct the RSS item...
+        String topFolderId;
+		if (folder.isTop())
+			 topFolderId = folder.getId().toString();
+		else topFolderId = folder.getTopFolder().getId().toString();		
+		String rssUrl = org.kablink.teaming.module.rss.util.UrlUtil.getFeedURLHttp(request, topFolderId);
+		if (MiscUtil.hasString(rssUrl)) {
+			ToolbarItem rssTBI = new ToolbarItem(SUBSCRIBE_RSS);
+			markTBITitle(rssTBI, "toolbar.menu.subscribeAtom" );
+			markTBIUrl(  rssTBI, rssUrl                       );
+			footerToolbar.addNestedItem(rssTBI                );
+		}
+
+		// ...construct the ATOM item...
+		String atomUrl = org.kablink.teaming.module.rss.util.UrlUtil.getAtomURLHttp(request, topFolderId);
+		if (MiscUtil.hasString(atomUrl)) {
+			ToolbarItem atomTBI = new ToolbarItem(SUBSCRIBE_ATOM);
+			markTBITitle(atomTBI, "toolbar.menu.subscribeAtom"  );
+			markTBIUrl(  atomTBI, atomUrl                       );
+			footerToolbar.addNestedItem(atomTBI                 );
+		}
+		
+		// ...and finally, construct the items for the simple names on
+		// ...this folder.
+		constructFooterSimpleNameItems(footerToolbar, bs, request, folder.getId());
+	}
+
+	/*
+	 * Constructs the ToolbarItem's for the simple names defined on a
+	 * binder.
+	 */
+	private static void constructFooterSimpleNameItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, Long binderId) {
+		// Are there any simple names defined on this binder?
+		List<SimpleName> simpleNames = bs.getBinderModule().getSimpleNames(binderId);
+		int c = ((null == simpleNames) ? 0 : simpleNames.size());
+		if (0 < c ){
+			// Yes!  Create a ToolbarItem to hold information about
+			// them...
+			ToolbarItem simpleNamesTBI = new ToolbarItem(SIMPLE_NAMES);
+			footerToolbar.addNestedItem(simpleNamesTBI);
+
+			// ...store the URL prefix for them and how many are
+			// ...defined...
+			simpleNamesTBI.addQualifier("simple.prefix", WebUrlUtil.getSimpleURLContextRootURL(request));
+			simpleNamesTBI.addQualifier("simple.count", String.valueOf(c));
+			
+			// ...scan them...
+			for (int i = 0; i < c; i += 1) {
+				// ...adding information about each to the toolbar
+				// ...item.
+				SimpleName   simpleName   = simpleNames.get(i);
+				SimpleNamePK simpleNameId = simpleName.getId();
+				simpleNamesTBI.addQualifier(("simple." + i + "email"),                simpleName.getEmailAddress());
+				simpleNamesTBI.addQualifier(("simple." + i + "zone"),  String.valueOf(simpleNameId.getZoneId())   );
+				simpleNamesTBI.addQualifier(("simple." + i + "name"),                 simpleNameId.getName()      );
+			}
+		}
+	}
+	
+	/*
+	 * Constructs the ToolbarItem's for the footer on a workspace.
+	 */
+	private static void constructFooterWorkspaceItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+		// Construct the permalink item...
+		String permaLink = PermaLinkUtil.getPermalink(request, ws);
+		ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
+		markTBITitle(permalinkTBI, "toolbar.menu.workspacePermalink");
+		markTBIUrl(  permalinkTBI, permaLink                        );
+		footerToolbar.addNestedItem(permalinkTBI);
+		
+		// ...and , construct the items for the simple names on this
+		// ...workspace.
+		constructFooterSimpleNameItems(footerToolbar, bs, request, ws.getId());
+	}
+	
+	/*
 	 * Constructs a ToolbarItem to run the send email to team members
 	 * dialog. 
 	 */
@@ -1343,6 +1472,53 @@ public class GwtMenuHelper {
 		
 		finally {
 			SimpleProfiler.stop("GwtMenuHelper.getFolderToolbarItems()");
+		}
+	}
+	
+	/**
+	 * Returns a List<ToolbarItem> of the ToolbarItem's for a binder's
+	 * footer given the binder type, the current user's rights to that
+	 * binder, ...
+	 *
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static List<ToolbarItem> getFooterToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long binderId) {
+		SimpleProfiler.start("GwtMenuHelper.getFooterToolbarItems()");
+		try {
+			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
+			// that we'll return...
+			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
+			ToolbarItem footerToolbar = new ToolbarItem(WebKeys.FOOTER_TOOLBAR);
+			reply.add(footerToolbar);
+
+			// Generate the toolbar items based on the type of binder
+			// this is.
+			BinderModule bm		= bs.getBinderModule();
+			Binder       binder	= bm.getBinder(binderId);
+			if (binder instanceof Folder) {
+				Folder folder = ((Folder) binder);
+				constructFooterFolderItems(footerToolbar, bs, request, folder);
+			}
+			
+			else if (binder instanceof Workspace) {
+				Workspace ws = ((Workspace) binder);
+				constructFooterWorkspaceItems(footerToolbar, bs, request, ws);
+			}
+			
+
+			// If we get here, reply refers to the List<ToolbarItem>
+			// for the footer toolbar.  Return it.
+			m_logger.debug("GwtMenuHelper.getFooterToolbarItems():");
+			dumpToolbarItems(reply, "...");
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtMenuHelper.getFooterToolbarItems()");
 		}
 	}
 	
