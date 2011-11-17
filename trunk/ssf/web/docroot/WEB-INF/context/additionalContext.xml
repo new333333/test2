@@ -68,6 +68,9 @@
 	
 	<bean id="licenseManager" class="org.kablink.teaming.license.impl.NullLicenseManager"/>
 	
+	<bean id="objectCache" class="org.kablink.teaming.objcache.impl.NullObjCache">
+ 	</bean>
+	
 	<!-- ============================== Document Converter ============================ -->
 
 	<!-- View file as HTML manager implementation -->
