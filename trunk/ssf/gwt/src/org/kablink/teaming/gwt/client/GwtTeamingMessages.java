@@ -292,6 +292,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
+	String rpcFailure_GetBinderFilters();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetFileFolderEntries();
 	String rpcFailure_GetFileUrl();
@@ -1101,6 +1102,12 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppOn();
 	String fileSyncAppOnOffLabel();
 
+	// Strings used by the filter bar in the various binder views.
+	String vibeBinderFilter_Alt_Filters();
+	String vibeBinderFilter_Filter();
+	String vibeBinderFilter_Filters();
+	String vibeBinderFilter_None();
+	
 	// Strings used by the footer in the various binder views.
 	String vibeBinderFooter_AtomUrl();
 	String vibeBinderFooter_EmailAddresses();

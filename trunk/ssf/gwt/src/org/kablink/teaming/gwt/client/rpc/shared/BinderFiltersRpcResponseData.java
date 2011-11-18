@@ -30,23 +30,63 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.util.BinderFilter;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * Enumeration used to communicate the type of a view between the
- * client and the server as part of a GWT RPC request.
+ * This class holds the response data for the 'Get Binder Filters' RPC
+ * command.
  * 
  * @author drfoster@novell.com
- *
  */
-public enum ViewType implements IsSerializable {
-	ADD_FOLDER_ENTRY,
-	ADVANCED_SEARCH,
-	BINDER,
-	BUILD_FILTER,
+public class BinderFiltersRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private List<BinderFilter>	m_binderFiltersList;	//
+	private String				m_currentFilter;		//
+	private String				m_filterEditUrl;		//
+	private String				m_filtersOffUrl;		//
 	
-	OTHER,
+	/**
+	 * Constructor method.
+	 * 
+	 * No parameters as per GWT serialization requirements.
+	 */
+	public BinderFiltersRpcResponseData() {
+		super();
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param BinderFiltersList
+	 */
+	public BinderFiltersRpcResponseData(List<BinderFilter> BinderFiltersList) {
+		this();
+		m_binderFiltersList = BinderFiltersList;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public List<BinderFilter> getBinderFilters() {return m_binderFiltersList;}
+	public String             getCurrentFilter() {return m_currentFilter;    }
+	public String             getFilterEditUrl() {return m_filterEditUrl;    }
+	public String             getFiltersOffUrl() {return m_filtersOffUrl;    }
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param BinderFiltersList
+	 * @param currentFilter
+	 */
+	public void setBinderFilters(List<BinderFilter> binderFiltersList) {m_binderFiltersList = binderFiltersList;}
+	public void setCurrentFilter(String             currentFilter)     {m_currentFilter     = currentFilter;    }
+	public void setFilterEditUrl(String             filterEditUrl)     {m_filterEditUrl     = filterEditUrl;    }
+	public void setFiltersOffUrl(String             filtersOffUrl)     {m_filtersOffUrl     = filtersOffUrl;    }
 }

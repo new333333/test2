@@ -28,7 +28,17 @@
 	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
-		.vibe-filterPanel {background-color: #EAF5F5;}
+		.vibe-filterAnchor                 {cursor: pointer;}
+		.vibe-filterAnchor-hover           {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-filterAnchorLabel            {font-size: 12px; white-space: nowrap;}
+		.vibe-filterAnchorLabel-current    {color: white !important; font-weight: bold !important; background-color: #81b2bd; padding: 2px 5px; -moz-border-radius: 3px; -webkit-border-radius: 3px;}
+		.vibe-filterAnchorLabel-notcurrent {font-weight: normal !important; padding: 2px 5px;}
+		.vibe-filterEditPanel              {font-size: 11px !important;}
+		.vibe-filterEditLabel              {font-size: 11px; white-space: nowrap;}
+		.vibe-filterPanel                  {background-color: #EAF5F5;}
+		.vibe-filtersGrid                  {}
+		.vibe-filtersLabel                 {}
+		.vibe-filtersPanel                 {padding-left: 10px; font-size: 11px !important;}
 	/* ...End:  Filter panel styles. */
 	
 	/* ...Start:  Footer panel styles. */

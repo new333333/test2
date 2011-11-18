@@ -32,21 +32,59 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Enumeration used to communicate the type of a view between the
- * client and the server as part of a GWT RPC request.
+ * Class used to communicate information about filters between the
+ * client and server.
  * 
  * @author drfoster@novell.com
- *
  */
-public enum ViewType implements IsSerializable {
-	ADD_FOLDER_ENTRY,
-	ADVANCED_SEARCH,
-	BINDER,
-	BUILD_FILTER,
+public class BinderFilter implements IsSerializable, VibeRpcResponseData {
+	private String	m_filterName;	//
+	private String	m_filterUrl;	//
 	
-	OTHER,
+	/**
+	 * Constructor method.
+	 * 
+	 * No parameters as per GWT serialization requirements.
+	 */
+	public BinderFilter() {
+		// Simply initialize the super class.
+		super();
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param filterName
+	 * @param filterUrl
+	 */
+	public BinderFilter(String filterName, String filterUrl) {
+		// Initialize the object...
+		this();
+		
+		// ...and store the parameters.
+		setFilterName(filterName);
+		setFilterUrl( filterUrl );
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String getFilterName() {return m_filterName;}
+	public String getFilterUrl()  {return m_filterUrl; }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFilterName(String filterName) {m_filterName = filterName;}
+	public void setFilterUrl( String filterUrl ) {m_filterUrl  = filterUrl; }
 }
