@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,8 +58,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -73,7 +76,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
+import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
@@ -88,7 +93,9 @@ import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -503,6 +510,130 @@ public class GwtViewHelper {
 	}
 
 	/**
+	 * Reads the current user's filters for a binder and returns them
+	 * as a BinderFiltersRpcResponseData.
+	 * 
+	 * The algorithm used in this method was reverse engineered from
+	 * that used by BinderHelper.getSearchFilter() and
+	 * view_forum_user_filters.jsp.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static BinderFiltersRpcResponseData getBinderFilters(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			Binder				binder = bs.getBinderModule().getBinder(binderId);
+			List<BinderFilter>	ffList = new ArrayList<BinderFilter>();
+			User				user   = GwtServerHelper.getCurrentUser();
+
+			// Are there any global filters defined?
+			TreeMap<String, String>	filterMap = new TreeMap<String, String>(new StringComparator(user.getLocale()));
+			Map searchFilters = ((Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS));
+			if ((null != searchFilters) && (!(searchFilters.isEmpty()))) {
+				// Yes!  Add them to the sort map.
+				Set<String> keySet = searchFilters.keySet();
+				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
+					filterMap.put(ksIT.next(), "global");
+				}
+			}
+			
+			// Does the user have any personal filters defined?
+			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+			searchFilters = ((Map) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
+			if ((null != searchFilters) && (!(searchFilters.isEmpty()))) {
+				// Yes!  Add them to the sort map.
+				Set<String> keySet = searchFilters.keySet();
+				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
+					filterMap.put(ksIT.next(), "personal");
+				}
+			}
+
+			// Based on the binder type, define the appropriate action
+			// to use to view this type of binder.
+			String viewAction;
+			String binderType = binder.getEntityType().name();
+			if      (binderType.equals(EntityIdentifier.EntityType.folder.name()))    viewAction = WebKeys.ACTION_VIEW_FOLDER_LISTING;
+			else if (binderType.equals(EntityIdentifier.EntityType.workspace.name())) viewAction = WebKeys.ACTION_VIEW_WS_LISTING;
+			else if (binderType.equals(EntityIdentifier.EntityType.profiles.name()))  viewAction = WebKeys.ACTION_VIEW_PROFILE_LISTING;
+			else {
+				throw new IllegalArgumentException("Unknown binderType" + binderType);
+			}
+			
+			// Did we find any filters?
+			AdaptedPortletURL url;
+			if (!(filterMap.isEmpty())) {
+				// ...scan the sorted set...
+				Set<String> keySet = filterMap.keySet();
+				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
+					// ...and add a BinderFilter for each to the list.
+					String key = ksIT.next();
+					url = new AdaptedPortletURL(request, "ss_forum", true);
+					url.setParameter(WebKeys.ACTION,            viewAction               );
+					url.setParameter(WebKeys.URL_BINDER_ID,     binder.getId().toString());
+					url.setParameter(WebKeys.URL_OPERATION,     WebKeys.URL_SELECT_FILTER);
+					url.setParameter(WebKeys.URL_OPERATION2,    filterMap.get(key)       );
+					url.setParameter(WebKeys.URL_SELECT_FILTER, key                      );
+					ffList.add(new BinderFilter(key, url.toString()));
+				}
+			}
+			
+			// Use the data we obtained to create a
+			// BinderFiltersRpcResponseData.
+			BinderFiltersRpcResponseData reply = new BinderFiltersRpcResponseData(ffList);
+			
+			// Store the current filter, if any, that the user
+			// currently has selected on this binder.
+			String currentFilter = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER));
+			reply.setCurrentFilter((null == currentFilter) ? "" : currentFilter);
+
+			// Store a URL to turn off filtering on the binder.
+			url = new AdaptedPortletURL(request, "ss_forum", true);
+			url.setParameter(WebKeys.ACTION,            viewAction               );
+			url.setParameter(WebKeys.URL_BINDER_ID,     binder.getId().toString());
+			url.setParameter(WebKeys.URL_OPERATION,     WebKeys.URL_SELECT_FILTER);
+			url.setParameter(WebKeys.URL_SELECT_FILTER, ""                       );
+			reply.setFiltersOffUrl(url.toString());
+			
+			// Store a URL to edit the filters on the binder.
+			url = new AdaptedPortletURL(request, "ss_forum", true);
+			url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_BUILD_FILTER);
+			url.setParameter(WebKeys.URL_BINDER_ID,   binder.getId().toString()  );
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binderType                 );
+			reply.setFilterEditUrl(url.toString());
+			
+			// Finally, return the BinderFiltersRpcResponseData we just
+			// constructed.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getBinderFilters( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
+	/*
+	 * Returns a LinkedHashMap of the column names from a String[]
+	 * of them.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getColumnsLHMFromAS(String[] columnNames) {
+		Map reply = new LinkedHashMap();
+		for (String columnName:  columnNames) {
+			reply.put(columnName, columnName);
+		}
+		return reply;
+	}
+
+	/**
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
 	 * 
@@ -706,19 +837,6 @@ public class GwtViewHelper {
 		}
 	}
 	
-	/*
-	 * Returns a LinkedHashMap of the column names from a String[]
-	 * of them.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Map getColumnsLHMFromAS(String[] columnNames) {
-		Map reply = new LinkedHashMap();
-		for (String columnName:  columnNames) {
-			reply.put(columnName, columnName);
-		}
-		return reply;
-	}
-
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.
@@ -1253,7 +1371,8 @@ public class GwtViewHelper {
 				return null;
 			}
 
-			// Is this a view folder list?
+			// Is this a view folder listing?
+			Long binderId = vi.getBinderInfo().getBinderIdAsLong();
 			if (action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
 				// Yes!  Does it also contain changes to the folder
 				// sorting?
@@ -1264,10 +1383,24 @@ public class GwtViewHelper {
 					Boolean sortDescend = Boolean.parseBoolean(sortDescendS);
 					GwtServerHelper.saveFolderSort(
 						bs,
-						vi.getBinderInfo().getBinderIdAsLong(),
+						binderId,
 						sortBy,
 						(!sortDescend));
 				}
+			}
+			
+			// Does it contain a filter selection?
+			String op = getQueryParameterString(nvMap, WebKeys.URL_OPERATION);
+			if (MiscUtil.hasString(op) && op.equals(WebKeys.URL_SELECT_FILTER)) {
+				// Yes!  Apply the selection.
+				String filterName = getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER);
+				ProfileModule pm = bs.getProfileModule();
+				Long userId = GwtServerHelper.getCurrentUser().getId();
+				bs.getProfileModule().setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, filterName);
+				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
+				if (MiscUtil.hasString(op2) && op2.equals("global"))
+				     pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL  );
+				else pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL);
 			}
 		}
 
@@ -1281,8 +1414,11 @@ public class GwtViewHelper {
 			vi.setViewType(ViewType.ADVANCED_SEARCH);
 		}
 		
-//!		...this needs to be implemented...
-
+		else if (action.equals(WebKeys.ACTION_BUILD_FILTER)) {
+			// A build filter!  Simply mark the ViewInfo as such.
+			vi.setViewType(ViewType.BUILD_FILTER);
+		}
+		
 		// If we get here reply refers to the BinderInfo requested or
 		// is null.  Return it.
 		if (m_logger.isDebugEnabled()) {

@@ -30,23 +30,53 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * Enumeration used to communicate the type of a view between the
- * client and the server as part of a GWT RPC request.
+ * This class holds all of the information necessary to execute the
+ * 'Get Binder Filters' command.
  * 
  * @author drfoster@novell.com
- *
  */
-public enum ViewType implements IsSerializable {
-	ADD_FOLDER_ENTRY,
-	ADVANCED_SEARCH,
-	BINDER,
-	BUILD_FILTER,
+public class GetBinderFiltersCmd extends VibeRpcCmd {
+	private Long	m_binderId;	//
 	
-	OTHER,
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public GetBinderFiltersCmd() {
+		super();
+	}
+	
+	/**
+	 * Constructor method
+	 * 
+	 * @param binderId
+	 */
+	public GetBinderFiltersCmd(Long binderId) {
+		this();
+		m_binderId = binderId;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Long getBinderId() {return m_binderId;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_BINDER_FILTERS.ordinal();
+	}
 }

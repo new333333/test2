@@ -211,6 +211,7 @@ public class WebKeys {
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_SEARCH_SCOPE="scope";
+    public static final String URL_SELECT_FILTER="select_filter";
     public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";
     public static final String URL_PORTAL_SIGNAL="portalSignalUrl";
@@ -317,6 +318,7 @@ public class WebKeys {
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_BINDER_REPORTS = "binder_reports";
+    public static final String ACTION_BUILD_FILTER = "build_filter";
     public static final String ACTION_USER_ACCESS_REPORT = "user_access_report";
     public static final String ACTION_XSS_REPORT = "xss_report";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";

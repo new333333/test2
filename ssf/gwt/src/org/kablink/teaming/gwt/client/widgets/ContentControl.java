@@ -469,7 +469,7 @@ public class ContentControl extends Composite
 					// Regardless of what's implemented or not, should
 					// we force this binder through its old, JSP flow?
 					//
-					// While write the GWT based views, I've
+					// While writing the GWT based views, I've
 					// continually wanted to go back and look at the
 					// JSP version of what I'm implementing.  This lets
 					// us force a binder, regardless of type, to ALWAYS
@@ -596,6 +596,7 @@ public class ContentControl extends Composite
 				
 			case ADD_FOLDER_ENTRY:
 			case ADVANCED_SEARCH:
+			case BUILD_FILTER:
 				// These aren't handled!  Let things take the default
 				// flow.
 				break;
