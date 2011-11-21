@@ -1548,9 +1548,14 @@ public class GwtTaskHelper {
 		Map taskEntriesMap;		
 		try {
 			// Setup to read the task entries...
+			Map options;
 			HttpSession session = WebHelper.getRequiredSession(request);
+			
+			options = null;
 			GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
-			Map options = ((Map) optionsObj.getData());
+			if ( optionsObj != null )
+				options = ((Map) optionsObj.getData());
+			
 			if ( options == null )
 			{
 				//!!!drf TaskHelper.findTaskEntries() will save the options in the GwtUISessionData object in the session cache.
@@ -1602,6 +1607,9 @@ public class GwtTaskHelper {
 				title = ("--" + NLT.get("entry.noTitle") + "--");
 			}
 			ti.setTitle(title);
+			
+			String desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
+			ti.setDesc( desc );
 			
 			TaskId taskId = new TaskId();
 			taskId.setBinderId(getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD));

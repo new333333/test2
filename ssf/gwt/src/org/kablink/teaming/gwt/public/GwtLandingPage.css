@@ -442,7 +442,6 @@
 	padding-right: 4px;	
 }
 
-
 .taskFolderWidgetLinkToTaskPanel, .taskFolderWidgetLinkToTaskPanel_dark
 {
 	margin: 6px;
@@ -462,6 +461,16 @@
 }
 
 .taskFolderWidgetMainPanel, .taskFolderWidgetMainPanel_dark
+{
+}
+
+.taskFolderWidgetTaskDescPanel, .taskFolderWidgetTaskDescPanel_dark
+{
+	font-size: 11px;
+	padding-left: 8px;
+}
+
+.taskFolderWidgetTaskTitlePanel, .taskFolderWidgetTaskTitlePanel_dark
 {
 }
 
