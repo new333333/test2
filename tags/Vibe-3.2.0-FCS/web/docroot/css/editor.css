@@ -1,0 +1,30 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+ 
+p { margin:8px 0px 8px 0px; }
+table tr td { border: 1px solid #BBBBBB; }
+
+.ss_largestprint {
+font-size:15px !important;
+}
+.ss_largerprint {
+font-size:14px !important;
+}
+.ss_largeprint {
+font-size:13px !important;
+}
+.ss_normalprint {
+font-size:12px !important;
+}
+.ss_smallprint {
+font-size:11px !important;
+}
+.ss_fineprint {
+font-size:10px !important;
+}
+.ss_finestprint {
+font-size:9px !important;
+}
+
