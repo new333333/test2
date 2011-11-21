@@ -38,9 +38,13 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
+import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskListCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskListItemListRpcResponseData;
@@ -48,6 +52,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
@@ -62,6 +67,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -76,6 +82,311 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class TaskFolderWidget extends VibeWidget
 {
+	/**
+	 * This class is used as the click handler when the user clicks a person assigned to a task
+	 *
+	 */
+	private class PersonClickHandler implements ClickHandler
+	{
+		private Element m_element;
+		private String m_workspaceId;
+		private String m_name;
+		
+		/**
+		 * 
+		 */
+		public PersonClickHandler( Element element, Long workspaceId, String name )
+		{
+			super();
+			
+			m_element = element;
+			m_workspaceId = null;
+			if ( workspaceId != null )
+				m_workspaceId = String.valueOf( workspaceId );
+			m_name = name;
+		}
+
+		/**
+		 * 
+		 */
+		private void handleClickOnLink()
+		{
+			if ( GwtClientHelper.hasString( m_workspaceId ) )
+			{
+				SimpleProfileParams params;
+				
+				// Invoke the Simple Profile dialog.
+				params = new SimpleProfileParams( m_element, m_workspaceId, m_name );
+				GwtTeaming.fireEvent(new InvokeSimpleProfileEvent( params ));
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		public void onClick( ClickEvent event )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					handleClickOnLink();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * This class is used as the click handler when the user clicks a group assigned to a task
+	 *
+	 */
+	private class GroupClickHandler implements ClickHandler
+	{
+		private VibeFlowPanel m_groupMembersPanel;
+		private Long m_groupId;
+		private List<AssignmentInfo> m_groupMembers;
+		
+		/**
+		 * 
+		 */
+		public GroupClickHandler( VibeFlowPanel groupMembersPanel, Long groupId )
+		{
+			super();
+
+			m_groupMembersPanel = groupMembersPanel;
+			m_groupId = groupId;
+			m_groupMembers = null;
+		}
+		
+		/**
+		 * Add the members found in m_groupMembers to m_groupMembersPanel
+		 */
+		private void addGroupMembers()
+		{
+			if ( m_groupMembers != null && m_groupMembersPanel != null )
+			{
+				for (AssignmentInfo assignmentInfo: m_groupMembers)
+				{
+					// Are we dealing with a group or a person?
+					if ( assignmentInfo.getPresence() == null )
+					{
+						// This is a group.
+						addAssignedGroup( m_groupMembersPanel, assignmentInfo );
+					}
+					else
+					{
+						// This is a person
+						addAssignedPerson( m_groupMembersPanel, assignmentInfo );
+					}
+				}
+			}
+		}
+
+		/**
+		 * 
+		 */
+		private void handleClickOnGroup()
+		{
+			if ( m_groupMembersPanel != null )
+			{
+				// Hide/show the group membership panel.
+				m_groupMembersPanel.setVisible( !m_groupMembersPanel.isVisible( ) );
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		public void onClick( ClickEvent event )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					// Have we already retrieved the group membership?
+					if ( m_groupMembers != null )
+					{
+						// Yes
+						handleClickOnGroup();
+					}
+					else
+					{
+						GetGroupAssigneeMembershipCmd groupCmd;
+
+						// No, issue a rpc request to get the group membership
+						groupCmd = new GetGroupAssigneeMembershipCmd( m_groupId );
+						GwtClientHelper.executeCommand( groupCmd, new AsyncCallback<VibeRpcResponse>()
+						{
+							@Override
+							public void onFailure( Throwable caught )
+							{
+								GwtClientHelper.handleGwtRPCFailure(
+									caught,
+									GwtTeaming.getMessages().rpcFailure_GetGroupMembership(),
+									String.valueOf( m_groupId ) );
+							}
+
+							@Override
+							public void onSuccess( VibeRpcResponse result )
+							{
+								AssignmentInfoListRpcResponseData responseData;
+								Scheduler.ScheduledCommand cmd2;
+
+								// Store the group membership (so we don't re-read
+								// it if it gets displayed again) and display it.
+								responseData = ((AssignmentInfoListRpcResponseData) result.getResponseData());
+								m_groupMembers = responseData.getAssignmentInfoList();
+								
+								cmd2 = new Scheduler.ScheduledCommand()
+								{
+									@Override
+									public void execute()
+									{
+										// Add the group members to the ui.
+										addGroupMembers();
+										
+										handleClickOnGroup();
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd2 );
+							}				
+						});
+					}
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * This class is used as the click handler when the user clicks a team assigned to a task
+	 *
+	 */
+	private class TeamClickHandler implements ClickHandler
+	{
+		private VibeFlowPanel m_teamMembersPanel;
+		private Long m_teamId;
+		private List<AssignmentInfo> m_teamMembers;
+		
+		/**
+		 * 
+		 */
+		public TeamClickHandler( VibeFlowPanel teamMembersPanel, Long teamId )
+		{
+			super();
+
+			m_teamMembersPanel = teamMembersPanel;
+			m_teamId = teamId;
+			m_teamMembers = null;
+		}
+		
+		/**
+		 * Add the members found in m_teamMembers to m_teamMembersPanel
+		 */
+		private void addTeamMembers()
+		{
+			if ( m_teamMembers != null && m_teamMembersPanel != null )
+			{
+				for (AssignmentInfo assignmentInfo: m_teamMembers)
+				{
+					// Are we dealing with a group or a person?
+					if ( assignmentInfo.getPresence() == null )
+					{
+						// This is a group.
+						addAssignedGroup( m_teamMembersPanel, assignmentInfo );
+					}
+					else
+					{
+						// This is a person
+						addAssignedPerson( m_teamMembersPanel, assignmentInfo );
+					}
+				}
+			}
+		}
+
+		/**
+		 * 
+		 */
+		private void handleClickOnTeam()
+		{
+			if ( m_teamMembersPanel != null )
+			{
+				// Hide/show the team membership panel.
+				m_teamMembersPanel.setVisible( !m_teamMembersPanel.isVisible( ) );
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		public void onClick( ClickEvent event )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					// Have we already retrieved the team membership?
+					if ( m_teamMembers != null )
+					{
+						// Yes
+						handleClickOnTeam();
+					}
+					else
+					{
+						GetTeamAssigneeMembershipCmd teamCmd;
+
+						// No, issue a rpc request to get the team membership
+						teamCmd = new GetTeamAssigneeMembershipCmd( m_teamId );
+						GwtClientHelper.executeCommand( teamCmd, new AsyncCallback<VibeRpcResponse>()
+						{
+							@Override
+							public void onFailure( Throwable caught )
+							{
+								GwtClientHelper.handleGwtRPCFailure(
+									caught,
+									GwtTeaming.getMessages().rpcFailure_GetTeamMembership(),
+									String.valueOf( m_teamId ) );
+							}
+
+							@Override
+							public void onSuccess( VibeRpcResponse result )
+							{
+								AssignmentInfoListRpcResponseData responseData;
+								Scheduler.ScheduledCommand cmd2;
+
+								// Store the team membership (so we don't re-read
+								// it if it gets displayed again) and display it.
+								responseData = ((AssignmentInfoListRpcResponseData) result.getResponseData());
+								m_teamMembers = responseData.getAssignmentInfoList();
+
+								cmd2 = new Scheduler.ScheduledCommand()
+								{
+									@Override
+									public void execute()
+									{
+										// Add the team members to the ui.
+										addTeamMembers();
+										
+										handleClickOnTeam();
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd2 );
+							}
+						});
+					}
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
 	/**
 	 * This class is used as the click handler when the user clicks on the title of a task.
 	 *
@@ -189,6 +500,173 @@ public class TaskFolderWidget extends VibeWidget
 		initWidget( mainPanel );
 	}
 
+	/**
+	 * Add the given assigned group to the given panel.
+	 */
+	private void addAssignedGroup( VibeFlowPanel assignedToPanel, AssignmentInfo assignedGroup )
+	{
+		VibeFlowPanel tmpPanel;
+		InlineLabel groupName;
+		Image assigneeImg;
+		int numMembers;
+		String membersString;
+		
+		// Create a panel for the groups's info to live in.
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.addStyleName( "taskFolderWidgetAssignedGroupPanel" + m_style );
+		
+		assigneeImg = new Image();
+		assigneeImg.setUrl( GwtClientHelper.getRequestInfo().getImagesPath() + assignedGroup.getPresenceDude() );
+		assigneeImg.getElement().setAttribute( "align", "absmiddle" );
+		
+		// Create the label with the name of the group (number of members in the group)
+		numMembers = assignedGroup.getMembers();
+		membersString = GwtTeaming.getMessages().taskMemberCount( String.valueOf( numMembers ) );
+		groupName = new InlineLabel( assignedGroup.getTitle() + " " + membersString );
+		groupName.addStyleName( "taskFolderWidgetAssignedGroup" + m_style );
+		tmpPanel.add( groupName );
+		
+		tmpPanel.add( assigneeImg );
+		tmpPanel.add( groupName );
+		
+		// Are there any members of the group?
+		if ( numMembers > 0 )
+		{
+			VibeFlowPanel membersPanel;
+			GroupClickHandler groupClickHandler;
+			
+			// Yes
+			membersPanel = new VibeFlowPanel();
+			membersPanel.addStyleName( "taskFolderWidgetGroupMembersPanel" + m_style );
+			membersPanel.setVisible( false );
+			
+			// Add a handler that will handle when the user clicks on the group
+			groupClickHandler = new GroupClickHandler( membersPanel, assignedGroup.getId() );
+			groupName.addClickHandler( groupClickHandler );
+			
+			tmpPanel.add( membersPanel );
+		}
+
+		assignedToPanel.add( tmpPanel );
+	}
+	
+	
+	/**
+	 * Add the given assigned person to the given panel.
+	 */
+	private void addAssignedPerson( VibeFlowPanel assignedToPanel, AssignmentInfo assignedPerson )
+	{
+		Label userName;
+		PersonClickHandler personClickHandler;
+		
+		userName = new Label( assignedPerson.getTitle() );
+		userName.addStyleName( "taskFolderWidgetAssignedPerson" + m_style );
+		
+		// Create a click handler
+		personClickHandler = new PersonClickHandler( userName.getElement(), assignedPerson.getPresenceUserWSId(), assignedPerson.getTitle() );
+		userName.addClickHandler( personClickHandler );
+		
+		assignedToPanel.add( userName );
+	}
+	
+	/**
+	 * Add the given assigned team to the given panel
+	 */
+	private void addAssignedTeam( VibeFlowPanel assignedToPanel, AssignmentInfo assignedTeam )
+	{
+		VibeFlowPanel tmpPanel;
+		InlineLabel teamName;
+		Image assigneeImg;
+		int numMembers;
+		String membersString;
+		
+		// Create a panel for the team's info to live in.
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.addStyleName( "taskFolderWidgetAssignedTeamPanel" + m_style );
+		
+		assigneeImg = new Image();
+		assigneeImg.setUrl( GwtClientHelper.getRequestInfo().getImagesPath() + assignedTeam.getPresenceDude() );
+		assigneeImg.getElement().setAttribute( "align", "absmiddle" );
+		
+		// Create the label with the name of the team (number of members in the team)
+		numMembers = assignedTeam.getMembers();
+		membersString = GwtTeaming.getMessages().taskMemberCount( String.valueOf( numMembers ) );
+		teamName = new InlineLabel( assignedTeam.getTitle() + " " + membersString );
+		teamName.addStyleName( "taskFolderWidgetAssignedTeam" + m_style );
+		tmpPanel.add( teamName );
+		
+		tmpPanel.add( assigneeImg );
+		tmpPanel.add( teamName );
+		
+		// Are there any members of the team?
+		if ( numMembers > 0 )
+		{
+			VibeFlowPanel membersPanel;
+			TeamClickHandler teamClickHandler;
+			
+			// Yes
+			membersPanel = new VibeFlowPanel();
+			membersPanel.addStyleName( "taskFolderWidgetTeamMembersPanel" + m_style );
+			membersPanel.setVisible( false );
+			
+			// Add a handler that will handle when the user clicks on the team
+			teamClickHandler = new TeamClickHandler( membersPanel, assignedTeam.getId() );
+			teamName.addClickHandler( teamClickHandler );
+			
+			tmpPanel.add( membersPanel );
+		}
+
+		assignedToPanel.add( tmpPanel );
+	}
+	
+	/**
+	 * Add the given assignee information to the given panel.
+	 */
+	private void addAssignees( VibeFlowPanel assignedToPanel, TaskInfo taskInfo )
+	{
+		// Add the assigned people
+		{
+			List<AssignmentInfo> assignedPeople;
+			
+			assignedPeople = taskInfo.getAssignments();
+			if ( assignedPeople != null )
+			{
+				for (AssignmentInfo assignmentInfo: assignedPeople)
+				{
+					addAssignedPerson( assignedToPanel, assignmentInfo );
+				}
+			}
+		}
+		
+		// Add the assigned groups
+		{
+			List<AssignmentInfo> assignedGroups;
+			
+			assignedGroups = taskInfo.getAssignmentGroups();
+			if ( assignedGroups != null )
+			{
+				for (AssignmentInfo assignmentInfo: assignedGroups)
+				{
+					addAssignedGroup( assignedToPanel, assignmentInfo );
+				}
+			}
+		}
+		
+		// Add the assigned teams
+		{
+			List<AssignmentInfo> assignedTeams;
+			
+			assignedTeams = taskInfo.getAssignmentTeams();
+			if ( assignedTeams != null )
+			{
+				for (AssignmentInfo assignmentInfo: assignedTeams)
+				{
+					addAssignedTeam( assignedToPanel, assignmentInfo );
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Add the given task to this widget
 	 */
@@ -364,81 +842,9 @@ public class TaskFolderWidget extends VibeWidget
 			// Create a panel where all the assigned people/groups/teams will go.
 			assignedToPanel = new VibeFlowPanel();
 			assignedToPanel.addStyleName( "taskFolderWidgetAssignedToPanel" + m_style );
-			
-			// Add the assigned people
-			{
-				List<AssignmentInfo> assignedPeople;
-				
-				assignedPeople = taskInfo.getAssignments();
-				if ( assignedPeople != null )
-				{
-					for (AssignmentInfo assignmentInfo: assignedPeople)
-					{
-						VibeFlowPanel tmpPanel;
-						Label userName;
-						
-						// Create a panel for the person's info to live in.
-						tmpPanel = new VibeFlowPanel();
-						tmpPanel.addStyleName( "taskFolderWidgetAssignedPersonPanel" + m_style );
-						
-						userName = new Label( assignmentInfo.getTitle() );
-						userName.addStyleName( "taskFolderWidgetAssignedPerson" + m_style );
-						tmpPanel.add( userName );
-						
-						assignedToPanel.add( tmpPanel );
-					}
-				}
-			}
-			
-			// Add the assigned groups
-			{
-				List<AssignmentInfo> assignedGroups;
-				
-				assignedGroups = taskInfo.getAssignmentGroups();
-				if ( assignedGroups != null )
-				{
-					for (AssignmentInfo assignmentInfo: assignedGroups)
-					{
-						VibeFlowPanel tmpPanel;
-						Label groupName;
-						
-						// Create a panel for the groups's info to live in.
-						tmpPanel = new VibeFlowPanel();
-						tmpPanel.addStyleName( "taskFolderWidgetAssignedGroupPanel" + m_style );
-						
-						groupName = new Label( assignmentInfo.getTitle() );
-						groupName.addStyleName( "taskFolderWidgetAssignedGroup" + m_style );
-						tmpPanel.add( groupName );
-						
-						assignedToPanel.add( tmpPanel );
-					}
-				}
-			}
-			
-			// Add the assigned teams
-			{
-				List<AssignmentInfo> assignedTeams;
-				
-				assignedTeams = taskInfo.getAssignmentTeams();
-				if ( assignedTeams != null )
-				{
-					for (AssignmentInfo assignmentInfo: assignedTeams)
-					{
-						VibeFlowPanel tmpPanel;
-						Label teamName;
-						
-						// Create a panel for the team's info to live in.
-						tmpPanel = new VibeFlowPanel();
-						tmpPanel.addStyleName( "taskFolderWidgetAssignedTeamPanel" + m_style );
-						
-						teamName = new Label( assignmentInfo.getTitle() );
-						teamName.addStyleName( "taskFolderWidgetAssignedTeam" + m_style );
-						tmpPanel.add( teamName );
-						
-						assignedToPanel.add( tmpPanel );
-					}
-				}
-			}
+
+			// Add the people/groups/teams assigned to this task.
+			addAssignees( assignedToPanel, taskInfo );
 			
 			m_tasksTable.setWidget( row, col, assignedToPanel );
 			++col;
