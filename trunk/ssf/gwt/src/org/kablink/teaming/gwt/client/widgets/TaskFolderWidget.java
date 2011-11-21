@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskListCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskListItemListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -48,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 
 import com.google.gwt.core.client.Scheduler;
@@ -79,16 +82,18 @@ public class TaskFolderWidget extends VibeWidget
 	 */
 	private class TaskClickHandler implements ClickHandler
 	{
+		private TaskInfo m_taskInfo;
 		private String m_viewTaskUrl;
 		
 		/**
 		 * 
 		 */
-		public TaskClickHandler( String taskUrl )
+		public TaskClickHandler( TaskInfo taskInfo )
 		{
 			super();
 			
-			m_viewTaskUrl = taskUrl;
+			m_taskInfo = taskInfo;
+			m_viewTaskUrl = null;
 		}
 
 		/**
@@ -96,9 +101,10 @@ public class TaskFolderWidget extends VibeWidget
 		 */
 		private void handleClickOnLink()
 		{
+			// Do we have the url needed to view this task?
 			if ( GwtClientHelper.hasString( m_viewTaskUrl ) )
 			{
-				// Fire the "view entry" event.
+				// Yes, Fire the "view entry" event.
 				GwtTeaming.fireEvent( new ViewForumEntryEvent( m_viewTaskUrl ) );
 			}
 		}
@@ -114,7 +120,48 @@ public class TaskFolderWidget extends VibeWidget
 			{
 				public void execute()
 				{
-					handleClickOnLink();
+					// Do we have the url needed to view this task?
+					if ( GwtClientHelper.hasString( m_viewTaskUrl ) )
+					{
+						// Yes
+						handleClickOnLink();
+					}
+					else if ( m_taskInfo != null )
+					{
+						GetViewFolderEntryUrlCmd cmd;
+
+						// No, issue an rpc request to get the needed url
+						cmd = new GetViewFolderEntryUrlCmd( m_taskInfo.getTaskId().getBinderId(), m_taskInfo.getTaskId().getEntryId() );
+						GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+						{
+							@Override
+							public void onFailure(Throwable t)
+							{
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+									String.valueOf( m_taskInfo.getTaskId().getEntryId() ) );
+							}
+							
+							@Override
+							public void onSuccess( VibeRpcResponse response )
+							{
+								Scheduler.ScheduledCommand cmd2;
+								
+								m_viewTaskUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+								
+								cmd2 = new Scheduler.ScheduledCommand()
+								{
+									@Override
+									public void execute()
+									{
+										handleClickOnLink();
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd2 );
+							}
+						});
+					}
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -170,21 +217,67 @@ public class TaskFolderWidget extends VibeWidget
 		// Add the task title in the first column.  Allow the user to click on the task title to view the task.
 		{
 			InlineLabel label;
+			VibeFlowPanel titlePanel;
+			String desc;
 			
 			m_cellFormatter.setColSpan( row, col, 1 );
 			
+			titlePanel = new VibeFlowPanel();
+			titlePanel.addStyleName( "taskFolderWidgetTaskTitlePanel" + m_style );
+			
 			label = new InlineLabel( taskInfo.getTitle() );
 			label.addStyleName( "taskFolderWidgetLinkToTask" + m_style );
-			clickHandler = new TaskClickHandler( "!!!" );
+			clickHandler = new TaskClickHandler( taskInfo );
 			label.addClickHandler( clickHandler );
 			
-			m_tasksTable.setWidget( row, col, label );
+			titlePanel.add( label );
+			
+			// Does the task have a description?
+			desc = taskInfo.getDesc();
+			if ( GwtClientHelper.hasString( desc ) )
+			{
+				VibeFlowPanel descPanel;
+				
+				// Yes
+				descPanel = new VibeFlowPanel();
+				descPanel.addStyleName( "taskFolderWidgetTaskDescPanel" + m_style );
+				descPanel.getElement().setInnerHTML( desc );
+				
+				titlePanel.add( descPanel );
+			}
+			
+			m_tasksTable.setWidget( row, col, titlePanel );
 			++col;
 		}
 
 		// Add the due date in the next column.
 		{
-			m_tasksTable.setText( row, col, "due date" );
+			InlineLabel dueDateLabel;
+			TaskEvent taskEvent;
+			String dueDate;
+			boolean hasDueDate;
+			
+			taskEvent = taskInfo.getEvent();
+			
+			dueDate = taskEvent.getLogicalEnd().getDateDisplay();
+			hasDueDate = GwtClientHelper.hasString( dueDate );
+			
+			dueDateLabel = new InlineLabel();
+			dueDateLabel.getElement().setInnerHTML( hasDueDate ? dueDate : GwtTeaming.getMessages().taskNoDueDate() );
+			dueDateLabel.setWordWrap( false );
+			
+			if ( taskInfo.isTaskOverdue() )
+			{
+				dueDateLabel.addStyleName( "gwtTaskList_task-overdue-color" );
+			}
+			
+			if ( taskEvent.getEndIsCalculated() && hasDueDate )
+			{
+				dueDateLabel.addStyleName( "gwtTaskList_calculatedDate" );
+				dueDateLabel.setTitle( GwtTeaming.getMessages().taskAltDateCalculated() );
+			}
+
+			m_tasksTable.setWidget( row, col, dueDateLabel );
 			++col;
 		}
 		

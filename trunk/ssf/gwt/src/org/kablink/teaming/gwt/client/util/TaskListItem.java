@@ -398,7 +398,8 @@ public class TaskListItem implements IsSerializable {
 		private String					m_status           = "";
 		private TaskDate				m_completedDate    = new TaskDate();	
 		private TaskEvent				m_event            = new TaskEvent();
-		private TaskId					m_taskId           = new TaskId();	
+		private TaskId					m_taskId           = new TaskId();
+		private String					m_desc			   = "";
 
 		// The following are the values used for task completion
 		// percentages.
@@ -459,6 +460,7 @@ public class TaskListItem implements IsSerializable {
 		public TaskDate             getCompletedDate()    {return m_completedDate;   }
 		public TaskEvent            getEvent()            {return m_event;           }
 		public TaskId               getTaskId()           {return m_taskId;          }
+		public String				getDesc()			  {return m_desc;			 }
 		
 		/**
 		 * Set'er methods.
@@ -482,6 +484,7 @@ public class TaskListItem implements IsSerializable {
 		public void setCompletedDate(   TaskDate             completedDate)    {m_completedDate    = completedDate;   }
 		public void setEvent(           TaskEvent            event)            {m_event            = event;           }
 		public void setTaskId(          TaskId               taskId)           {m_taskId           = taskId;          }
+		public void setDesc(			String				 desc )			   {m_desc			   = desc;			  }
 
 		/**
 		 * Various task state evaluators.
