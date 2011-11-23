@@ -84,7 +84,7 @@ public class Hits implements Serializable {
             ss_hits.setDoc(searcher.doc(hits[offset + i].doc), i);
             ss_hits.setScore(hits[offset + i].score, i);
         }
-        ss_hits.setTotalHits(length);
+        ss_hits.setTotalHits(topDocs.totalHits);
         return ss_hits;
     }
 

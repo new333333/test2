@@ -485,7 +485,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if (size < 0)
 				size = Integer.MAX_VALUE;
 			
-			TopDocs topDocs = indexSearcherHandle.getIndexSearcher().search(query, size);
+			TopDocs topDocs = indexSearcherHandle.getIndexSearcher().search(query, Integer.MAX_VALUE);
 			
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
@@ -519,12 +519,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if (size < 0)
 				size = Integer.MAX_VALUE;
 			if (sort == null)
-				topDocs = indexSearcherHandle.getIndexSearcher().search(query, size);
+				topDocs = indexSearcherHandle.getIndexSearcher().search(query, Integer.MAX_VALUE);
 			else
 				try {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, null, size, sort);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, null, Integer.MAX_VALUE, sort);
 				} catch (Exception ex) {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, size);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, Integer.MAX_VALUE);
 				}
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
