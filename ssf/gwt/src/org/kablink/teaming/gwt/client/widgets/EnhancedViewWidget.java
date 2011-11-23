@@ -69,6 +69,7 @@ public class EnhancedViewWidget extends VibeWidget
 			EntryProperties entryProperties;
 			
 			entryProperties = new EntryProperties();
+			entryProperties.setZoneUUID( properties.getZoneUUID() );
 			entryProperties.setEntryId( properties.getEntryId() );
 			entryProperties.setShowAuthor( true );
 			entryProperties.setShowDate( true );
@@ -84,6 +85,7 @@ public class EnhancedViewWidget extends VibeWidget
 			FolderProperties folderProperties;
 			
 			folderProperties = new FolderProperties();
+			folderProperties.setZoneUUID( properties.getZoneUUID() );
 			folderProperties.setFolderId( properties.getFolderId() );
 			folderProperties.setShowTitle( true );
 			folderProperties.setShowDescValue( false );
@@ -103,6 +105,7 @@ public class EnhancedViewWidget extends VibeWidget
 			FolderProperties folderProperties;
 			
 			folderProperties = new FolderProperties();
+			folderProperties.setZoneUUID( properties.getZoneUUID() );
 			folderProperties.setFolderId( properties.getFolderId() );
 			folderProperties.setShowTitle( true );
 			folderProperties.setShowDescValue( true );
@@ -122,6 +125,7 @@ public class EnhancedViewWidget extends VibeWidget
 			FolderProperties folderProperties;
 			
 			folderProperties = new FolderProperties();
+			folderProperties.setZoneUUID( properties.getZoneUUID() );
 			folderProperties.setFolderId( properties.getFolderId() );
 			folderProperties.setShowTitle( properties.getShowTitleValue() );
 			folderProperties.setShowDescValue( true );
@@ -141,6 +145,7 @@ public class EnhancedViewWidget extends VibeWidget
 			FileFolderProperties fileFolderProperties;
 			
 			fileFolderProperties = new FileFolderProperties();
+			fileFolderProperties.setZoneUUID( properties.getZoneUUID() );
 			fileFolderProperties.setFolderId( properties.getFolderId() );
 			fileFolderProperties.setShowTitle( properties.getShowTitleValue() );
 			fileFolderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
@@ -154,6 +159,7 @@ public class EnhancedViewWidget extends VibeWidget
 			TaskFolderProperties taskFolderProperties;
 			
 			taskFolderProperties = new TaskFolderProperties();
+			taskFolderProperties.setZoneUUID( properties.getZoneUUID() );
 			taskFolderProperties.setFolderId( properties.getFolderId() );
 			taskFolderProperties.setNumTasksToBeShownValue( properties.getNumEntriesToBeShownValue() );
 			

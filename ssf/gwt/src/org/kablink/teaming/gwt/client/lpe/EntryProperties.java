@@ -151,6 +151,7 @@ public class EntryProperties
 				m_zoneUUID = null;
 			}
 			
+			m_zoneUUID = entryProps.getZoneUUID();
 			m_entryId = newEntryId;
 			m_entryName = entryProps.getEntryName();
 			m_entryDesc = entryProps.getEntryDecs();

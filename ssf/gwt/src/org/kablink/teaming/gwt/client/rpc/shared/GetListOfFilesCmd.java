@@ -42,6 +42,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  */
 public class GetListOfFilesCmd extends VibeRpcCmd
 {
+	private String m_zoneUUID;
 	private String m_folderId;
 	private int m_numFiles;	// The number of files to read
 	
@@ -56,9 +57,10 @@ public class GetListOfFilesCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GetListOfFilesCmd( String folderId, int numFiles )
+	public GetListOfFilesCmd( String zoneUUID, String folderId, int numFiles )
 	{
 		this();
+		m_zoneUUID = zoneUUID;
 		m_folderId = folderId;
 		m_numFiles = numFiles;
 	}
@@ -86,5 +88,13 @@ public class GetListOfFilesCmd extends VibeRpcCmd
 	public int getCmdType()
 	{
 		return VibeRpcCmdType.GET_LIST_OF_FILES.ordinal();
+	}
+	
+	/**
+	 * 
+	 */
+	public String getZoneUUID()
+	{
+		return m_zoneUUID;
 	}
 }

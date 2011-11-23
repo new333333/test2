@@ -222,6 +222,7 @@ public class EnhancedViewProperties
 				m_zoneUUID = null;
 			}
 			
+			m_zoneUUID = evProps.getZoneUUID();
 			m_entryId = newEntryId;
 			m_entryName = evProps.getEntryName();
 			m_folderId = newFolderId;

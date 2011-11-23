@@ -42,6 +42,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  */
 public class GetFolderEntriesCmd extends VibeRpcCmd
 {
+	private String m_zoneUUID;
 	private String m_folderId;
 	private int m_numEntries;	// The number of entries to read
 	private int m_numReplies;	// The number of replies in an entry to get
@@ -58,9 +59,10 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GetFolderEntriesCmd( String folderId, int numEntries, int numReplies )
+	public GetFolderEntriesCmd( String zoneUUID, String folderId, int numEntries, int numReplies )
 	{
 		this();
+		m_zoneUUID = zoneUUID;
 		m_folderId = folderId;
 		m_numEntries = numEntries;
 		m_numReplies = numReplies;
@@ -106,5 +108,13 @@ public class GetFolderEntriesCmd extends VibeRpcCmd
 	public int getCmdType()
 	{
 		return VibeRpcCmdType.GET_FOLDER_ENTRIES.ordinal();
+	}
+	
+	/**
+	 * 
+	 */
+	public String getZoneUUID()
+	{
+		return m_zoneUUID;
 	}
 }

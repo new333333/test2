@@ -1071,7 +1071,7 @@ public class TaskFolderWidget extends VibeWidget
 			}
 
 			// Issue an rpc request to get the last n tasks from the folder.
-			cmd = new GetTaskListCmd( m_properties.getFolderIdL(), "ALL", "PHYSICAL" );
+			cmd = new GetTaskListCmd( m_properties.getZoneUUID(), m_properties.getFolderIdL(), "ALL", "PHYSICAL" );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				/**

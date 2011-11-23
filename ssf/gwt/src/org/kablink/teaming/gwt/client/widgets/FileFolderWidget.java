@@ -304,7 +304,7 @@ public class FileFolderWidget extends VibeWidget
 			mainPanel.add( m_listOfFilesPanel );
 
 			// Issue an rpc request to get the last n entries from the file folder.
-			cmd = new GetListOfFilesCmd( m_properties.getFolderId(), numEntries );
+			cmd = new GetListOfFilesCmd( m_properties.getZoneUUID(), m_properties.getFolderId(), numEntries );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
