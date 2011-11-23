@@ -58,6 +58,7 @@ import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -68,6 +69,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
@@ -742,7 +744,7 @@ public class GwtTaskHelper {
 				updateCalculatedDates(
 					request,
 					bs,
-					getTaskBinder(bs, binderId),
+					getTaskBinder(bs, null, binderId),
 					null);	// null -> Update the calculated dates for all the tasks in the binder.
 			}
 
@@ -1146,9 +1148,25 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Binder getTaskBinder(AllModulesInjected bs, Long binderId) throws GwtTeamingException {
+	public static Binder getTaskBinder(AllModulesInjected bs, String zoneUUID, Long binderId) throws GwtTeamingException {
 		Binder reply = null;
 		try {
+			ZoneInfo zoneInfo;
+			String zoneInfoId;
+
+			// Get the id of the zone we are running in.
+			zoneInfo = MiscUtil.getCurrentZone();
+			zoneInfoId = zoneInfo.getId();
+			if ( zoneInfoId == null )
+				zoneInfoId = "";
+
+			// Are we looking for a folder that was imported from another zone?
+			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+			{
+				// Yes, get the binder id for the binder in this zone.
+				binderId = bs.getBinderModule().getZoneBinderId( binderId, zoneUUID, EntityType.folder.name() );
+			}
+
 			reply = bs.getBinderModule().getBinder(binderId);
 		}
 		
@@ -1458,7 +1476,7 @@ public class GwtTaskHelper {
 				updateCalculatedDates(
 					request,
 					bs,
-					getTaskBinder(bs, binderId),
+					getTaskBinder(bs, null, binderId),
 					null);	// null -> Update the calculated dates for all the tasks in the binder.
 			}
 

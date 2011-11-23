@@ -155,6 +155,7 @@ public class FolderProperties
 			}
 			
 			m_folderId = newFolderId;
+			m_zoneUUID = folderProps.getZoneUUID();
 			m_folderName = folderProps.getFolderName();
 			m_folderDesc = folderProps.getFolderDesc();
 			m_parentBinderName = folderProps.getParentBinderName();

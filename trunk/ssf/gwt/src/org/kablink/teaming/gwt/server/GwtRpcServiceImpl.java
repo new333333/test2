@@ -594,7 +594,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ArrayList<GwtFolderEntry> result;
 			
 			gfeCmd = (GetFolderEntriesCmd) cmd;
-			result = getFolderEntries( ri, gfeCmd.getFolderId(), gfeCmd.getNumEntries(), gfeCmd.getNumReplies(), gfeCmd.getFileAttachmentsValue() );
+			result = getFolderEntries( ri, gfeCmd.getZoneUUID(), gfeCmd.getFolderId(), gfeCmd.getNumEntries(), gfeCmd.getNumReplies(), gfeCmd.getFileAttachmentsValue() );
 			responseData = new GetFolderEntriesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -721,13 +721,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_LIST_OF_FILES:
 		{
-			GetListOfFilesCmd gffeCmd;
+			GetListOfFilesCmd glofCmd;
 			GetListOfFilesRpcResponseData responseData;
 			ArrayList<GwtAttachment> listOfFiles;
 			
 			// Get a list of files from the given folder.
-			gffeCmd = (GetListOfFilesCmd) cmd;
-			listOfFiles = getListOfFiles( ri, gffeCmd.getFolderId(), gffeCmd.getNumFiles() );
+			glofCmd = (GetListOfFilesCmd) cmd;
+			listOfFiles = getListOfFiles( ri, glofCmd.getZoneUUID(), glofCmd.getFolderId(), glofCmd.getNumFiles() );
 			responseData = new GetListOfFilesRpcResponseData( listOfFiles );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -979,7 +979,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TASK_LIST:
 		{
 			GetTaskListCmd gtlCmd = ((GetTaskListCmd) cmd);
-			List<TaskListItem> results = getTaskList( ri, gtlCmd.getBinderId(), gtlCmd.getFilterType(), gtlCmd.getModeType() );
+			List<TaskListItem> results = getTaskList( ri, gtlCmd.getZoneUUID(), gtlCmd.getBinderId(), gtlCmd.getFilterType(), gtlCmd.getModeType() );
 			TaskListItemListRpcResponseData responseData = new TaskListItemListRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2514,7 +2514,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					Map replies;
 					
 					// Get the replies to this entry.
-					replies = folderModule.getEntryTree( parentBinderId, Long.valueOf( entryId ), false );
+					replies = folderModule.getEntryTree( parentBinderId, entryIdL, false );
 					if ( replies != null )
 					{
 						List<FolderEntry> replyList;
@@ -2786,7 +2786,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException 
 	 */
 	@SuppressWarnings("unchecked")
-	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String folderId, int numEntriesToRead, int numReplies, boolean getFileAttachments ) throws GwtTeamingException
+	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String zoneUUID, String folderId, int numEntriesToRead, int numReplies, boolean getFileAttachments ) throws GwtTeamingException
 	{
 		ArrayList<GwtFolderEntry> entries;
 		
@@ -2794,6 +2794,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		try
 		{
+			ZoneInfo zoneInfo;
+			String zoneInfoId;
 			Long folderIdL;
 			FolderModule folderModule;
 			Map options;
@@ -2801,10 +2803,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			List<Map> folderEntries;
 			int totalEntries;
 			
+			// Get the id of the zone we are running in.
+			zoneInfo = MiscUtil.getCurrentZone();
+			zoneInfoId = zoneInfo.getId();
+			if ( zoneInfoId == null )
+				zoneInfoId = "";
+
 			folderModule = getFolderModule();
 
 			folderIdL = new Long( folderId );
 			
+			// Are we looking for a folder that was imported from another zone?
+			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+			{
+				// Yes, get the folder id for the folder in this zone.
+				folderIdL = getBinderModule().getZoneBinderId( folderIdL, zoneUUID, EntityType.folder.name() );
+			}
+
 			// Get the ids of the first n entries in the given folder.
 			options = new HashMap();
 			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE );
@@ -3186,11 +3201,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Reads the task information from the specified binder.
 	 */
-	private List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	private List<TaskListItem> getTaskList( HttpRequestInfo ri, String zoneUUID, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskList()");
 		try {
-			return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), filterType, modeType );
+			return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, zoneUUID, binderId ), filterType, modeType );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskList()");
@@ -3208,7 +3223,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				GwtTaskHelper.getTaskBundle(
 					getRequest( ri ),
 					this,
-					GwtTaskHelper.getTaskBinder( this, binderId ),
+					GwtTaskHelper.getTaskBinder( this, null, binderId ),
 					filterType,
 					modeType );
 		}
@@ -3224,7 +3239,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskLinkage()");
 		try {
-			return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+			return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, null, binderId ) );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskLinkage()");
@@ -3237,7 +3252,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.removeTaskLinkage()");
 		try {
-			return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+			return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, null, binderId ) );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.removeTaskLinkage()");
@@ -3286,7 +3301,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskLinkage()");
 		try {
-			return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
+			return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, null, binderId ), taskLinkage );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskLinkage()");
@@ -3343,7 +3358,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private Map<Long, TaskDate> updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.updateCalculatedDates()");
 		try {
-			return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );
+			return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, null, binderId ), entryId );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.updateCalculatedDates()");
@@ -4456,7 +4471,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return a list of files from the given folder.
 	 */
-	private ArrayList<GwtAttachment> getListOfFiles( HttpRequestInfo ri, String folderId, int numFiles ) throws GwtTeamingException
+	private ArrayList<GwtAttachment> getListOfFiles( HttpRequestInfo ri, String zoneUUID, String folderId, int numFiles ) throws GwtTeamingException
 	{
 		ArrayList<GwtAttachment> listOfFiles;
 		ArrayList<GwtFolderEntry> entries;
@@ -4464,7 +4479,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		listOfFiles = new ArrayList<GwtAttachment>();
 		
 		// Get a list of the first n entries in the folder.
-		entries = getFolderEntries( ri, folderId, numFiles, 0, true );
+		entries = getFolderEntries( ri, zoneUUID, folderId, numFiles, 0, true );
 		if ( entries != null )
 		{
 			for (GwtFolderEntry entry: entries)

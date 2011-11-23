@@ -41,6 +41,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class GetTaskListCmd extends VibeRpcCmd {
+	private String m_zoneUUID;
 	private Long m_binderId;
 	private String m_filterType;
 	private String m_modeType;
@@ -62,9 +63,10 @@ public class GetTaskListCmd extends VibeRpcCmd {
 	 * @param filterType
 	 * @param modeType
 	 */
-	public GetTaskListCmd(Long binderId, String filterType, String modeType) {
+	public GetTaskListCmd(String zoneUUID, Long binderId, String filterType, String modeType) {
 		this();
 		
+		m_zoneUUID	 = zoneUUID;
 		m_binderId   = binderId;
 		m_filterType = filterType;
 		m_modeType   = modeType;
@@ -77,7 +79,8 @@ public class GetTaskListCmd extends VibeRpcCmd {
 	 */
 	public Long   getBinderId()   {return m_binderId;  }	
 	public String getFilterType() {return m_filterType;}	
-	public String getModeType()   {return m_modeType;  }	
+	public String getModeType()   {return m_modeType;  }
+	public String getZoneUUID()	  {return m_zoneUUID; }
 	
 	/**
 	 * Returns the command's enumeration value.

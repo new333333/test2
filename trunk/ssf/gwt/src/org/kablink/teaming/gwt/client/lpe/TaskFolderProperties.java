@@ -134,6 +134,7 @@ public class TaskFolderProperties
 				m_zoneUUID = null;
 			}
 			
+			m_zoneUUID = folderProps.getZoneUUID();
 			m_folderId = newFolderId;
 			m_folderTitle = folderProps.getFolderTitle();
 			m_numTasksToBeShown = folderProps.getNumTasksToBeShownValue();

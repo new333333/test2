@@ -139,6 +139,7 @@ public class FileFolderProperties
 				m_zoneUUID = null;
 			}
 			
+			m_zoneUUID = folderProps.getZoneUUID();
 			m_folderId = newFolderId;
 			m_folderTitle = folderProps.getFolderTitle();
 			m_showTitle = folderProps.getShowTitleValue();
