@@ -33,13 +33,14 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.lpe.ListConfig;
 import org.kablink.teaming.gwt.client.lpe.ListProperties;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.LIElement;
-import com.google.gwt.dom.client.UListElement;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -53,9 +54,43 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  */
 public class ListWidget extends VibeWidget
 {
+	/**
+	 * 
+	 */
+	private class ListItem extends VibeWidget
+	{
+		/**
+		 * 
+		 */
+		public ListItem( ResizeComposite child )
+		{
+			VibeFlowPanel flowPanel;
+			Image img;
+			ImageResource imageResource;
+			FlexTable table;
+			
+			table = new FlexTable();
+			table.setCellSpacing( 0 );
+
+			imageResource = GwtTeaming.getImageBundle().breadSpace();
+			img = new Image( imageResource );
+			
+			table.setWidget( 0, 0, img );
+			table.setWidget( 0, 1, child );
+			child.getElement().setAttribute( "style", "font-size: medium;" );
+			table.getFlexCellFormatter().setWidth( 0, 1, "100%" );
+			
+			flowPanel = new VibeFlowPanel();
+			flowPanel.add( table );
+			
+			initWidget( flowPanel );
+		}
+	}
+	
+	
 	private VibeFlowPanel m_layoutPanel;
+	private VibeFlowPanel m_contentPanel;
 	private ListProperties m_properties;
-	private UListElement m_uList;
 	private String m_style;
 
 	/**
@@ -83,11 +118,6 @@ public class ListWidget extends VibeWidget
 		{
 			ConfigItem configItem;
 			ResizeComposite widget;
-			LIElement liElement;
-			
-			// Create a <li> element for the next widget to live in.
-			liElement = Document.get().createLIElement();
-			m_uList.appendChild( liElement );
 			
 			// Get the next piece of configuration information.
 			configItem = config.get( i );
@@ -95,13 +125,18 @@ public class ListWidget extends VibeWidget
 			// Create the appropriate widget based on the given ConfigItem.
 			widget = configItem.createWidget();
 			if ( widget != null )
-				liElement.appendChild( widget.getElement() );
+			{
+				ListItem listItem;
+				
+				listItem = new ListItem( widget );
+				m_contentPanel.add( listItem );
+			}
 			else
 			{
 				Label label;
 				
 				label = new Label( "widget: " + configItem.getClass().getName() );
-				liElement.appendChild( label.getElement() );
+				m_contentPanel.add( label );
 			}
 		}
 	}
@@ -157,15 +192,9 @@ public class ListWidget extends VibeWidget
 		
 		// Create a panel for the content of the list to live in.
 		{
-			VibeFlowPanel contentPanel;
-			
-			contentPanel = new VibeFlowPanel();
-			contentPanel.addStyleName( "listWidgetContentPanel" + m_style );
-			m_layoutPanel.add( contentPanel );
-			
-			// Create a <ul> element for the content of the list to live in
-			m_uList = Document.get().createULElement();
-			contentPanel.getElement().appendChild( m_uList );
+			m_contentPanel = new VibeFlowPanel();
+			m_contentPanel.addStyleName( "listWidgetContentPanel" + m_style );
+			m_layoutPanel.add( m_contentPanel );
 		}
 	}
 }
