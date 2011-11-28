@@ -633,7 +633,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 
-		// save library flag
+		// save library flag here since it will be changed to the new value during modifyBinder() call
 		boolean oldLibrary = binder.isLibrary();
 		boolean oldUnique = binder.isUniqueTitles();
 
@@ -693,7 +693,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								query.close();
 							}
 						}
-						binder.setLibrary(newLibrary);
+						// Unnecessary since the new value was stored into the binder during modifyBinder() call
+						//binder.setLibrary(newLibrary);
 						return null;
 					}
 				});
