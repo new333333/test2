@@ -255,7 +255,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "folder" ) )
 				{
-					configItem = new FolderConfig( itemData[i] );
+					configItem = new FolderConfig( itemData[i], getLandingPageStyle() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "binderUrl" ) )
@@ -270,7 +270,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "enhancedView" ) )
 				{
-					configItem = new EnhancedViewConfig( itemData[i] );
+					configItem = new EnhancedViewConfig( itemData[i], getLandingPageStyle() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "iframe" ) )
