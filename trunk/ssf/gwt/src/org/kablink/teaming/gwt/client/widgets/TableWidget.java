@@ -87,8 +87,12 @@ public class TableWidget extends VibeWidget
 		{
 			int i;
 			ResizeComposite widget;
+			VibeFlowPanel flowPanel;
 			
 			// Yes
+			// Get the panel that holds all the widgets for this cell.
+			flowPanel = (VibeFlowPanel) m_table.getWidget( 0, col );
+			
 			if ( configData instanceof TableColConfig )
 			{
 				TableColConfig tableColConfig;
@@ -104,13 +108,13 @@ public class TableWidget extends VibeWidget
 					// Create the appropriate widget based on the given ConfigItem.
 					widget = configItem.createWidget();
 					if ( widget != null )
-						m_table.setWidget( 0, col, widget );
+						flowPanel.add( widget );
 					else
 					{
 						Label label;
 						
 						label = new Label( "widget: " + configItem.getClass().getName() );
-						m_table.setWidget( 0, col, label );
+						flowPanel.add( label );
 					}
 				}
 			}
@@ -120,7 +124,7 @@ public class TableWidget extends VibeWidget
 				widget = configData.createWidget();
 				
 				// Add the widget to the appropriate col.
-				m_table.setWidget( 0, col, widget );
+				flowPanel.add( widget );
 			}
 		}
 	}
@@ -204,6 +208,7 @@ public class TableWidget extends VibeWidget
 		{
 			ColWidthUnit unit;
 			Element tdElement;
+			VibeFlowPanel flowPanel;
 			
 			// Get the width unit for this column.
 			unit = props.getColWidthUnit( i );
@@ -242,6 +247,10 @@ public class TableWidget extends VibeWidget
 			
 			// Set the vertical alignment of this cell to "top".
 			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
+			
+			// Create a VibeFlowPanel that will hold all of the widgets that live in this cell
+			flowPanel = new VibeFlowPanel();
+			m_table.setWidget( 0, i, flowPanel );
 		}
 	}
 	

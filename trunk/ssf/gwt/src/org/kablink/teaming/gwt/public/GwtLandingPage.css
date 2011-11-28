@@ -5,14 +5,9 @@
 
 
 /* Style used for all widgets on a landing page. */
-.landingPageWidgetMainPanel 
+.landingPageWidgetMainPanel, .landingPageWidgetMainPanel_dark 
 {
-	margin: 6px;
-}
-
-.landingPageWidgetMainPanel_dark 
-{
-	background-color: #ededed;
+	background: transparent;
 	margin: 6px;
 }
 
@@ -258,6 +253,7 @@
 
 .graphicWidgetMainPanel, .graphicWidgetMainPanel_dark
 {
+	background: transparent;
 }
 
 .graphicWidgetImgPanel, .graphicWidgetImgPanel_dark

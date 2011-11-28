@@ -51,11 +51,12 @@ public class EnhancedViewConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public EnhancedViewConfig( String configStr )
+	public EnhancedViewConfig( String configStr, String style )
 	{
 		String[] results;
 		
 		m_properties = new EnhancedViewProperties();
+		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie jspName=xxx
 		results = configStr.split( "[,;]" );

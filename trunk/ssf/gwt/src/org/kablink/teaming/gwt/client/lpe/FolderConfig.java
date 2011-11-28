@@ -51,11 +51,12 @@ public class FolderConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public FolderConfig( String configStr )
+	public FolderConfig( String configStr, String style )
 	{
 		String[] results;
 		
 		m_properties = new FolderProperties();
+		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie folderId=xxx showTitle=x showFolderDescription=1 showEntriesOpened=1 entriesToShow
 		results = configStr.split( "[,;]" );
