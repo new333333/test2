@@ -18,6 +18,12 @@
 		.vibe-breadCrumbPanel {}
 	/* ...End:  Bread crumb panel styles. */
 	
+	/* ...Start:  Description panel styles. */
+		.vibe-descriptionHTML  {}
+		.vibe-descriptionPanel {padding-left: 10px;}
+		.vibe-descriptionText  {}
+	/* ...End:  Description panel styles. */
+	
 	/* ...Start:  Entry menu panel styles. */
 		.vibe-entryMenuPanel {padding: 0px !important; padding-top: 10px !important;}
 		.vibe-entryMenuBar {}
