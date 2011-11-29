@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -87,20 +88,54 @@ public class TableDropWidget extends DropWidget
 	
 
 	/**
+	 * Create a widget for every child defined in TableRowConfig and add the children
+	 * to the given row.
+	 */
+	private void addChildWidgetsFromConfigToRow( TableRowConfig tableRowConfigData, int row )
+	{
+		// Is the given row valid?
+		if ( row < m_flexTable.getRowCount() )
+		{
+			int col;
+			
+			// Yes
+			// Get the items that belong in this row.
+			for (col = 0; col < m_flexTable.getCellCount( row ) && col < tableRowConfigData.numItems(); ++col)
+			{
+				ConfigItem configItem;
+				
+				// Get the next item that should go in this row.
+				configItem = tableRowConfigData.get( col );
+				
+				// A TableRowConfig should only hold TableColConfig items.
+				if ( configItem instanceof TableColConfig )
+				{
+					addChildWidgetsFromConfigToCell( configItem, row, col );
+				}
+				else
+				{
+					Window.alert( "Invalid landing page configuration: TableRowConfig contains something other than a TableColConfig." );
+				}
+			}
+		}
+	}
+	
+	
+	/**
 	 * Create a widget for every child defined in TableColConfig and add the children to
 	 * the given col in the table.
 	 */
-	private void addChildWidgetsFromConfigToCell( ConfigItem configData, int col )
+	private void addChildWidgetsFromConfigToCell( ConfigItem configData, int row, int col )
 	{
 		// Is the given col valid?
-		if ( col < m_flexTable.getCellCount( 0 ) )
+		if ( col < m_flexTable.getCellCount( row ) )
 		{
 			int i;
 			DropZone dropZone;
 			
 			// Yes
 			// Get the DropZone used in the given col.
-			dropZone = (DropZone) m_flexTable.getWidget( 0, col );
+			dropZone = (DropZone) m_flexTable.getWidget( row, col );
 
 			if ( dropZone != null )
 			{
@@ -122,7 +157,8 @@ public class TableDropWidget extends DropWidget
 						dropWidget = configItem.createDropWidget( m_lpe );
 						
 						// Add the widget to the col's drop zone.
-						dropZone.addWidgetToDropZone( dropWidget );
+						if ( dropWidget != null )
+							dropZone.addWidgetToDropZone( dropWidget );
 					}
 				}
 				else
@@ -144,9 +180,9 @@ public class TableDropWidget extends DropWidget
 	public void addChildWidgetsFromConfigToTable( TableConfig configData )
 	{
 		int i;
-		int col;
+		int row;
 		
-		col = 0;
+		row = 0;
 		for (i = 0; i < configData.numItems(); ++i)
 		{
 			ConfigItem configItem;
@@ -154,18 +190,20 @@ public class TableDropWidget extends DropWidget
 			// Get the next ConfigItem.
 			configItem = configData.get( i );
 			
-			// A TableConfig can only hold TableColConfig items.
-			if ( configItem instanceof TableColConfig )
+			// A TableConfig can only hold TableRowConfig items.
+			if ( configItem instanceof TableRowConfig )
 			{
-				addChildWidgetsFromConfigToCell( configItem, col );
-				++col;
+				addChildWidgetsFromConfigToRow( (TableRowConfig)configItem, row );
+				++row;
 			}
 			else
 			{
-				// In theory a TableColConfig should be the only item contained by a TableConfig object.
+				Window.alert( "Invalid landing page configuration: Table contains something other than a TableRowConfig." );
+				
+				// In theory a TableRowConfig should be the only item contained by a TableConfig object.
 				// However, the old landing page editor created invalid configuration data
 				// where a tableStart did not contain a tableCol element.
-				addChildWidgetsFromConfigToCell( configItem, col );
+				addChildWidgetsFromConfigToCell( configItem, row, 0 );
 			}
 		}
 	}// end addChildWidgetsFromConfigToTable()
@@ -477,17 +515,22 @@ public class TableDropWidget extends DropWidget
 	{
 		int i;
 		int numColumns;
+		int numRows;
 		CellFormatter cellFormatter;
 		
 		// Save the properties that were passed to us.
 		if ( props instanceof PropertiesObj )
 			m_properties.copy( (PropertiesObj) props );
 		
+		numRows = m_properties.getNumRowsInt();
 		numColumns = m_properties.getNumColumnsInt();
 		
 		// Have we already created a FlexTable?
 		if ( m_flexTable == null )
 		{
+			int row;
+			int col;
+			
 			// No
 			m_flexTable = new FlexTable();
 			m_flexTable.addStyleName( "lpeTable" );
@@ -495,43 +538,75 @@ public class TableDropWidget extends DropWidget
 			
 			m_mainPanel.add( m_flexTable );
 			
-			// Add 1 row to the table.
-			m_flexTable.insertRow( 0 );
-			
-			// Add the appropriate number of columns to the table.
-			for (i = 0; i < numColumns; ++i)
+			// Add the appropriate number of rows and cols to the table.
+			for (row = 0; row < numRows; ++row)
 			{
-				DropZone	dropZone;
+				m_flexTable.insertRow( 0 );
 				
-				m_flexTable.addCell( 0 );
-				dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-				dropZone.setParentDropZone( getParentDropZone() );
-				m_flexTable.setWidget( 0, i, dropZone );
+				// Add the appropriate number of columns to the row.
+				for (col = 0; col < numColumns; ++col)
+				{
+					DropZone	dropZone;
+					
+					m_flexTable.addCell( 0 );
+					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+					dropZone.setParentDropZone( getParentDropZone() );
+					m_flexTable.setWidget( 0, col, dropZone );
+				}
 			}
 		}
 		else
 		{
+			// Do we need to remove rows from the existing table?
+			if ( numRows < m_flexTable.getRowCount() )
+			{
+				// Yes
+				while ( numRows < m_flexTable.getRowCount() )
+				{
+					m_flexTable.removeRow( 0 );
+				}
+			}
+			// Do we need to add rows to the existing table?
+			else if ( numRows > m_flexTable.getRowCount() )
+			{
+				// Yes
+				while ( numRows > m_flexTable.getRowCount() )
+				{
+					m_flexTable.insertRow( 0 );
+				}
+			}
+			
 			// Do we need to remove columns from the existing table?
 			if ( numColumns < m_flexTable.getCellCount( 0 ) )
 			{
+				int row;
+				
 				// Yes.
-				while ( numColumns < m_flexTable.getCellCount( 0 ) )
+				for (row = 0; row < m_flexTable.getRowCount(); ++row)
 				{
-					m_flexTable.removeCell( 0, m_flexTable.getCellCount( 0 )-1 );
+					while ( numColumns < m_flexTable.getCellCount( 0 ) )
+					{
+						m_flexTable.removeCell( row, m_flexTable.getCellCount( 0 )-1 );
+					}
 				}
 			}
 			// Do we need to add columns to the existing table?
 			else if ( numColumns > m_flexTable.getCellCount( 0 ) )
 			{
+				int row;
+				
 				// Yes
-				while( numColumns > m_flexTable.getCellCount( 0 ) )
+				for (row = 0; row < m_flexTable.getRowCount(); ++row)
 				{
-					DropZone dropZone;
-					
-					m_flexTable.addCell( 0 );
-					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-					dropZone.setParentDropZone( getParentDropZone() );
-					m_flexTable.setWidget( 0, m_flexTable.getCellCount( 0 )-1, dropZone );
+					while( numColumns > m_flexTable.getCellCount( row ) )
+					{
+						DropZone dropZone;
+						
+						m_flexTable.addCell( row );
+						dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+						dropZone.setParentDropZone( getParentDropZone() );
+						m_flexTable.setWidget( row, m_flexTable.getCellCount( 0 )-1, dropZone );
+					}
 				}
 			}
 		}
