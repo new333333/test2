@@ -50,6 +50,9 @@ public interface GwtTeamingMessages extends Messages
 	String searchEntireSiteLabel();
 	String searchCurrentFolderWorkspaceLabel();
 
+	// Strings used in the "Preview landing page" dialog.
+	String previewLandingPageDlgHeader();
+	
 	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspAssocEntry();
 	String customJspAssocFolder();
@@ -127,6 +130,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltLinkURL();
 	String lpeAltList();
 	String lpeAltMoveElement();
+	String lpeAltPreviewLandingPage();
 	String lpeAltEnhancedView();
 	String lpeAltTable();
 	String lpeAltUtilityElement();

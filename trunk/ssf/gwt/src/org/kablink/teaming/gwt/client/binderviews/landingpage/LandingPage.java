@@ -132,12 +132,14 @@ public class LandingPage extends ViewBase
 		{
 			// Tell the base class that we're done constructing the landing
 			// page view.
-			super.viewReady();
+			if ( configData.isPreviewMode() == false )
+				super.viewReady();
+
 			return;
 		}
 
 		String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
-		if ( binderId != null )
+		if ( configData.isPreviewMode() == false && binderId != null )
 		{
 			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
 			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
@@ -199,7 +201,8 @@ public class LandingPage extends ViewBase
 
 		// Tell the base class that we're done constructing the landing
 		// page view.
-		super.viewReady();
+		if ( configData.isPreviewMode() == false )
+			super.viewReady();
 	}
 	
 	/**

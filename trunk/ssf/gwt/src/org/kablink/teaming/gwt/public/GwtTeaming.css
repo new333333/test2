@@ -838,6 +838,12 @@ body, table td, select
 	width: 41px;
 }
 
+.lpePreviewImg
+{
+	cursor: pointer;
+	margin-right: 5px;
+}
+
 .lpeEditImg
 {
 	cursor: pointer;
