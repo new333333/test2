@@ -46,6 +46,7 @@ public class TableProperties
 	implements PropertiesObj
 {
 	private boolean	m_showBorder;
+	private int m_numRows;
 	private String[] m_colWidths;
 	private ColWidthUnit[] m_colWidthUnits;
 	
@@ -55,6 +56,9 @@ public class TableProperties
 	public TableProperties()
 	{
 		m_showBorder = false;
+		
+		// Default to 1 row.
+		setNumRows( 1 );
 		
 		// Default to 2 columns.
 		setNumColumns( 2 );
@@ -97,10 +101,13 @@ public class TableProperties
 		String unitsStr;
 		int i;
 		
-		// The string should look like: "tableStart,showBorder=1,cols=3,colWidths=33%7C33%7C33;widthUnits=1%7C%2%7C%1"
+		// The string should look like: "tableStart,showBorder=1,rows=2, cols=3,colWidths=33%7C33%7C33;widthUnits=1%7C%2%7C%1"
 		str = "tableStart,";
 		if ( m_showBorder )
 			str += "showBorder=1,";
+		
+		// Add the number of rows.
+		str += "rows=" + getNumRowsStr() + ",";
 		
 		str += "cols=" + getNumColumnsStr() + ",";
 		
@@ -199,6 +206,23 @@ public class TableProperties
 	
 	
 	/**
+	 * Return the value of the "number of rows" property as a string.
+	 */
+	public String getNumRowsStr()
+	{
+		return String.valueOf( getNumRowsInt() );
+	}
+	
+	/**
+	 * Return the value of the "number of rows" property as an int
+	 */
+	public int getNumRowsInt()
+	{
+		return m_numRows;
+	}
+	
+	
+	/**
 	 * Return the value of the "show border" property
 	 */
 	public boolean getShowBorderValue()
@@ -257,6 +281,15 @@ public class TableProperties
 		}
 	}// end setNumColumns()
 	
+	
+	/**
+	 * 
+	 */
+	public void setNumRows( int numRows )
+	{
+		if ( numRows > 0 )
+			m_numRows = numRows;
+	}
 	
 	/**
 	 * 
