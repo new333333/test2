@@ -99,6 +99,7 @@ public class EventHelper {
 		case INVOKE_SEND_EMAIL_TO_TEAM:             reply = new InvokeSendEmailToTeamEvent();         break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
+		case PREVIEW_LANDING_PAGE:					reply = new PreviewLandingPageEvent();			  break;
 		case MASTHEAD_HIDE:                     	reply = new MastheadHideEvent();                  break;
 		case MASTHEAD_SHOW:                     	reply = new MastheadShowEvent();                  break;
 		case MENU_HIDE:								reply = new MenuHideEvent();					  break;
@@ -541,6 +542,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case PREVIEW_LANDING_PAGE:
+				// A PreviewLandingPageEvent.  Can the event handler we were given handle that?
+				if ( eventHandler instanceof PreviewLandingPageEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = PreviewLandingPageEvent.registerEvent( eventBus, ((PreviewLandingPageEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case PURGE_SELECTED_ENTRIES:
 				// A PurgeSelectedEntriesEvent!  Can the event handler
 				// we were given handle that?
@@ -1117,7 +1127,9 @@ public class EventHelper {
 			case LOGIN:                             	hasHandler = (eventHandler instanceof LoginEvent.Handler);                         break;
 			case LOGOUT:                            	hasHandler = (eventHandler instanceof LogoutEvent.Handler);                        break;
 			case PRE_LOGOUT:                        	hasHandler = (eventHandler instanceof PreLogoutEvent.Handler);                     break;
-			
+
+			case PREVIEW_LANDING_PAGE:      			hasHandler = (eventHandler instanceof PreviewLandingPageEvent.Handler);     	   break;
+
 			case MARK_ENTRY_READ:                   	hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                 break;
 			case MARK_ENTRY_UNREAD:                 	hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);               break;
 			

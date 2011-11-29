@@ -331,6 +331,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource presenceUnknown16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/preview10.jpg")
+	public ImageResource preview10();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/arrow_left.png")
 	public ImageResource previous16();
 

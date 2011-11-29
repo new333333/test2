@@ -55,6 +55,7 @@ public class ConfigData
 	private boolean m_hideNavPanel;
 	private boolean m_hideFooter;
 	private boolean m_hideMenu;
+	private boolean m_isPreviewMode;
 	private String m_bgColor;
 	private String m_bgImgUrl;
 	private String m_bgImgRepeat;
@@ -457,6 +458,14 @@ public class ConfigData
 	}
 	
 	/**
+	 * Is this configuration data being used in "preview mode"?
+	 */
+	public boolean isPreviewMode()
+	{
+		return m_isPreviewMode;
+	}
+	
+	/**
 	 * 
 	 */
 	public String getLandingPageStyle()
@@ -480,6 +489,7 @@ public class ConfigData
 		m_hideNavPanel = false;
 		m_bgColor = null;
 		m_bgImgUrl = null;
+		m_isPreviewMode = false;
 	}
 	
 	
@@ -587,6 +597,14 @@ public class ConfigData
 	public void setLandingPageStyle( String style )
 	{
 		m_lpStyle = style;
+	}
+	
+	/**
+	 * Set the flag that tells us whether this configuration data is being used in preview mode.
+	 */
+	public void setPreviewMode( boolean isPreviewMode )
+	{
+		m_isPreviewMode = isPreviewMode;
 	}
 	
 	

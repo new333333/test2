@@ -93,6 +93,8 @@ public enum TeamingEvents implements IsSerializable {
 	LOGIN,								// Logs into   Vibe.
 	LOGOUT,								// Logs out of Vibe.
 	PRE_LOGOUT,							// Notifies everybody that we're about to log out of Vibe.
+	
+	PREVIEW_LANDING_PAGE,				// Invoke the ui to preview the landing page.
 
 	MARK_ENTRY_READ,					// Mark the entry as read.
 	MARK_ENTRY_UNREAD,					// Mark the entry as unread.
