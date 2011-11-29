@@ -75,7 +75,7 @@ public class FilterPanel extends ToolPanelBase {
 	private String				m_currentFilter;	//
 	private String				m_filterEditUrl;	//
 	private String				m_filtersOffUrl;	//
-	private VibeFlowPanel		m_fp;				// The panel holding the AccessoryPanel's contents.
+	private VibeFlowPanel		m_fp;				// The panel holding the FilterPanel's contents.
 	
 	/*
 	 * Constructor method.
@@ -123,7 +123,7 @@ public class FilterPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Asynchronously construct's the contents of the footer panel.
+	 * Asynchronously construct's the contents of the filter panel.
 	 */
 	private void loadPart1Async() {
 		ScheduledCommand doLoad = new ScheduledCommand() {
@@ -178,7 +178,7 @@ public class FilterPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the footer panel.
+	 * Synchronously construct's the contents of the filter panel.
 	 */
 	private void loadPart2Now() {
 		// Create a grid to hold the filtering information...

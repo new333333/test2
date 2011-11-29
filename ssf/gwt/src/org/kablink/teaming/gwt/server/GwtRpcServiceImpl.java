@@ -355,13 +355,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_BINDER_DESCRIPTION:
+		{
+			GetBinderDescriptionCmd gbdCmd = ((GetBinderDescriptionCmd) cmd);
+			BinderDescriptionRpcResponseData responseData = GwtViewHelper.getBinderDescription(
+				this,
+				getRequest( ri ),
+				gbdCmd.getBinderId() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_BINDER_FILTERS:
 		{
-			GetBinderFiltersCmd gffCmd = ((GetBinderFiltersCmd) cmd);
+			GetBinderFiltersCmd gbfCmd = ((GetBinderFiltersCmd) cmd);
 			BinderFiltersRpcResponseData responseData = GwtViewHelper.getBinderFilters(
 				this,
 				getRequest( ri ),
-				gffCmd.getBinderId() );
+				gbfCmd.getBinderId() );
 			return new VibeRpcResponse( responseData );
 		}
 		

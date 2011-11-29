@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
+import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.FilterPanel;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -159,13 +160,14 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that makeup a data table based folder view.
-	private final static int BREADCRUMB_PANEL_INDEX	= 0;
-	private final static int ACCESSORY_PANEL_INDEX	= 1;
-	private final static int FILTER_PANEL_INDEX		= 2;
-	private final static int ENTRY_MENU_PANEL_INDEX	= 3;
+	private final static int BREADCRUMB_PANEL_INDEX		= 0;
+	private final static int ACCESSORY_PANEL_INDEX		= 1;
+	private final static int DESCRIPTION_PANEL_INDEX	= 2;
+	private final static int FILTER_PANEL_INDEX			= 3;
+	private final static int ENTRY_MENU_PANEL_INDEX		= 4;
 	@SuppressWarnings("unused")
-	private final static int DATA_TABLE_PANEL_INDEX	= 4;
-	private final static int FOOTER_PANEL_INDEX		= 5;
+	private final static int DATA_TABLE_PANEL_INDEX		= 5;
+	private final static int FOOTER_PANEL_INDEX			= 6;
 
 	// The following are the various predefined names used for columns
 	// in the data table.
@@ -982,7 +984,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart3Now() {
-		FilterPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		DescriptionPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -992,7 +994,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, FILTER_PANEL_INDEX);
+				m_verticalPanel.insert(tpb, DESCRIPTION_PANEL_INDEX);
 				loadPart4Async();
 			}
 		});
@@ -1001,7 +1003,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the EntryMenuPanel.
+	 * Loads the FilterPanel.
 	 */
 	private void loadPart4Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -1016,10 +1018,10 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the EntryMenuPanel.
+	 * Loads the FilterPanel.
 	 */
 	private void loadPart4Now() {
-		EntryMenuPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		FilterPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1028,9 +1030,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
-				m_entryMenuPanel = ((EntryMenuPanel) tpb);
 				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, ENTRY_MENU_PANEL_INDEX);
+				m_verticalPanel.insert(tpb, FILTER_PANEL_INDEX);
 				loadPart5Async();
 			}
 		});
@@ -1039,7 +1040,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the FooterPanel.
+	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -1054,10 +1055,10 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the FooterPanel.
+	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Now() {
-		FooterPanel.createAsync(this, m_folderInfo, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1066,18 +1067,18 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
-				m_footerPanel = ((FooterPanel) tpb);
+				m_entryMenuPanel = ((EntryMenuPanel) tpb);
 				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, FOOTER_PANEL_INDEX);
+				m_verticalPanel.insert(tpb, ENTRY_MENU_PANEL_INDEX);
 				loadPart6Async();
 			}
 		});
 	}
-	
+
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the column information for the folder.
+	 * Loads the FooterPanel.
 	 */
 	private void loadPart6Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -1090,11 +1091,49 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 
 	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the FooterPanel.
+	 */
+	private void loadPart6Now() {
+		FooterPanel.createAsync(this, m_folderInfo, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				m_footerPanel = ((FooterPanel) tpb);
+				m_toolPanels.add(tpb);
+				m_verticalPanel.insert(tpb, FOOTER_PANEL_INDEX);
+				loadPart7Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the column information for the folder.
+	 */
+	private void loadPart7Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart7Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+
+	/*
 	 * Synchronously loads the next part of the view.
 	 * 
 	 * Loads the column information for the folder.
 	 */
-	private void loadPart6Now() {
+	private void loadPart7Now() {
 		final Long folderId = m_folderInfo.getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
 				new GetFolderColumnsCmd(folderId, m_folderInfo.getFolderType()),
@@ -1112,7 +1151,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				// Store the folder columns and continue loading.
 				FolderColumnsRpcResponseData responseData = ((FolderColumnsRpcResponseData) response.getResponseData());
 				m_folderColumnsList = responseData.getFolderColumns();
-				loadPart7Async();
+				loadPart8Async();
 			}
 		});
 	}
@@ -1122,11 +1161,11 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * 
 	 * Loads the display data information for the folder.
 	 */
-	private void loadPart7Async() {
+	private void loadPart8Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart7Now();
+				loadPart8Now();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
@@ -1137,7 +1176,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * 
 	 * Loads the display data information for the folder.
 	 */
-	private void loadPart7Now() {
+	private void loadPart8Now() {
 		final Long folderId = m_folderInfo.getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
 				new GetFolderDisplayDataCmd(folderId),

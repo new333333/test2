@@ -296,6 +296,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
+	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetFileFolderEntries();
@@ -407,6 +408,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_ContentControl();
+	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_EntryMenuPanel();

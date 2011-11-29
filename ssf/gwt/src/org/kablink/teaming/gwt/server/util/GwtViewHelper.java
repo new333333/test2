@@ -61,6 +61,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -74,6 +75,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
@@ -507,6 +509,42 @@ public class GwtViewHelper {
 			
 		}
 		catch (Exception ex) {/* Ignored. */}
+	}
+
+	/**
+	 * Reads information for rendering a binder's description in a
+	 * BinderDescriptionRpcResponseData object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static BinderDescriptionRpcResponseData getBinderDescription(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			// Access the description information from the binder...
+			Binder	    binder        = bs.getBinderModule().getBinder(binderId);
+			Description binderDesc    = binder.getDescription();
+			int         binderDescFmt = binderDesc.getFormat();
+
+			// ...and use that to construct and return a
+			// ...BinderDescriptionRpcResponseData object with the
+			// ...binder's description.
+			return
+				new BinderDescriptionRpcResponseData(
+					binderDesc.getText(),
+					(Description.FORMAT_HTML == binderDescFmt));
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getBinderDescription( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 
 	/**
