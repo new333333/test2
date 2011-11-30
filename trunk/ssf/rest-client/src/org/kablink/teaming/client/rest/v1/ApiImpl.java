@@ -71,26 +71,58 @@ public class ApiImpl implements Api {
 	}
 	
 	@Override
-	public FileProperties writeFile(String entityType, long entityId, String filename, String dataName, Date modDate, File file) {
-		return writeFileContent(entityType, entityId, filename, dataName, modDate, file);
+	public FileProperties writeFile(String entityType, long entityId, String filename, File file) {
+		return writeFileContent(entityType, entityId, filename, file, null, null, null, null, null);
 	}
 	
 	@Override
-	public FileProperties writeFile(String entityType, long entityId, String filename, String dataName, Date modDate, InputStream file) {
-		return writeFileContent(entityType, entityId, filename, dataName, modDate, file);
+	public FileProperties writeFile(String entityType, long entityId, String filename, InputStream file) {
+		return writeFileContent(entityType, entityId, filename, file, null, null, null, null, null);
 	}
 	
 	@Override
-	public FileProperties writeFile(String fileId, String dataName, Date modDate, File file) {
+	public FileProperties writeFile(String fileId, File file) {
 		String mt = new MimetypesFileTypeMap().getContentType(file.getName());
-		return writeFileContent(fileId, dataName, modDate, file, mt);
+		return writeFileContent(fileId, file, mt, null, null, null, null, null);
 	}
 	
 	@Override
-	public FileProperties writeFile(String fileId, String dataName, Date modDate, InputStream file, String mimeType) {
-		return writeFileContent(fileId, dataName, modDate, file, mimeType);
+	public FileProperties writeFile(String fileId, InputStream file, String mimeType) {
+		return writeFileContent(fileId, file, mimeType, null, null, null, null, null);
 	}
 	
+	@Override
+	public FileProperties writeFile(String entityType, long entityId,
+			String filename, File file, String dataName, Date modDate,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber,
+			Integer lastMinorVersionNumber) {
+		return writeFileContent(entityType, entityId, filename, file, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	}
+
+	@Override
+	public FileProperties writeFile(String entityType, long entityId,
+			String filename, InputStream file, String dataName, Date modDate,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber,
+			Integer lastMinorVersionNumber) {
+		return writeFileContent(entityType, entityId, filename, file, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	}
+
+	@Override
+	public FileProperties writeFile(String fileId, File file, String dataName,
+			Date modDate, Integer lastVersionNumber,
+			Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+		String mt = new MimetypesFileTypeMap().getContentType(file.getName());
+		return writeFileContent(fileId, file, mt, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	}
+
+	@Override
+	public FileProperties writeFile(String fileId, InputStream file,
+			String mimeType, String dataName, Date modDate,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber,
+			Integer lastMinorVersionNumber) {
+		return writeFileContent(fileId, file, mimeType, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	}
+
 	public File readFileAsFile(String entityType, long entityId, String filename) {
 		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
 		URI resourceUri = ub.build(entityType, entityId, filename);
@@ -198,13 +230,8 @@ public class ApiImpl implements Api {
 		return dateStr;
 	}
 	
-	private FileProperties writeFileContent(String entityType, long entityId, String filename, String dataName, Date modDate, Object file) {
-		String modDateStr = ISO8601FromDate(modDate);
-		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
-		if(dataName != null)
-			ub.queryParam("dataName", dataName);
-		if(modDateStr != null)
-			ub.queryParam("modDate", modDateStr);
+	private FileProperties writeFileContent(String entityType, long entityId, String filename, Object file, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+		UriBuilder ub = getFileUriBuilder(FILE_TEMPLATE_BY_NAME, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 		URI resourceUri = ub.build(entityType, entityId, filename);
 		Client c = conn.getClient();		
 		WebResource r = c.resource(resourceUri);
@@ -212,17 +239,27 @@ public class ApiImpl implements Api {
 		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mt).post(FileProperties.class);
 	}
 
-	private FileProperties writeFileContent(String fileId, String dataName, Date modDate, Object file, String mimeType) {
-		String modDateStr = ISO8601FromDate(modDate);
-		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
-		if(dataName != null)
-			ub.queryParam("dataName", dataName);
-		if(modDateStr != null)
-			ub.queryParam("modDate", modDateStr);
+	private FileProperties writeFileContent(String fileId, Object file, String mimeType, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+		UriBuilder ub = getFileUriBuilder(FILE_TEMPLATE_BY_ID, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 		URI resourceUri = ub.build(fileId);
 		Client c = conn.getClient();		
 		WebResource r = c.resource(resourceUri);
 		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mimeType).post(FileProperties.class);
 	}
 	
+	private UriBuilder getFileUriBuilder(String fileResourceTemplate, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+		String modDateStr = ISO8601FromDate(modDate);
+		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
+		if(dataName != null)
+			ub.queryParam("dataName", dataName);
+		if(modDateStr != null)
+			ub.queryParam("modDate", modDateStr);
+		if(lastVersionNumber != null)
+			ub.queryParam("lastVersionNumber", lastVersionNumber);
+		if(lastMajorVersionNumber != null)
+			ub.queryParam("lastMajorVersionNumber", lastMajorVersionNumber);
+		if(lastMinorVersionNumber != null)
+			ub.queryParam("lastMinorVersionNumber", lastMinorVersionNumber);
+		return ub;
+	}
 }
