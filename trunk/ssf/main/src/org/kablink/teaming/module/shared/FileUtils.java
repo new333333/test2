@@ -138,7 +138,7 @@ public class FileUtils {
 			FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
 		}
 		else {
-			if (Validator.isNull(dataName)) 
+			if (Validator.isNull(dataName) || "ss_attachFile".equals(dataName)) 
 				dataName="ss_attachFile1";
 			Map options = null;
 			MultipartFile mf;
