@@ -372,6 +372,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SaveFileSyncAppConfiguration();
+	String rpcFailure_SaveFolderColumns();
 	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
@@ -417,6 +418,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_FileFolderView();
 	String codeSplitFailure_FindCtrl();
 	String codeSplitFailure_FolderOptionsDlg();
+	String codeSplitFailure_FolderColumnsDlg();
 	String codeSplitFailure_FooterPanel();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
@@ -548,6 +550,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuManageEditTeam();
 	String mainMenuManageEmailTeam();
 	String mainMenuManageFolderOptions();
+	String mainMenuManageFolderColumns();
 	String mainMenuManageSavedSearchesDlgDeleteSearch();
 	String mainMenuManageSavedSearchesDlgErrorSearchDuplicate();
 	String mainMenuManageSavedSearchesDlgErrorSearchHasInvalidData();
@@ -1128,6 +1131,14 @@ public interface GwtTeamingMessages extends Messages
 	String vibeBinderFooter_RSSUrlHint();
 	String vibeBinderFooter_WebDAVUrl();
 	String vibeBinderFooter_WebDAVUrlHint();
+	
+	// Strings used in the Folder Columns dialog
+	String folderColumnsDlgHeader();
+	String folderColumnsDlgFolderColumn();
+	String folderColumnsDlgFolderCustomLabel();
+	String folderColumnsDlgFolderOrder();
+	String folderColumnsNoOptions();
+	String folderColumnsUnexpectedEvent(String eventName);
 	
 	// Strings used by various widgets of the Vibe Data table.
 	String vibeDataTable_Alt_Unread();

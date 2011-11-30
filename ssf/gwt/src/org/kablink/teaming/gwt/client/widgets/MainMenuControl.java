@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
@@ -57,12 +58,15 @@ import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ViewWhatsNewInBinderEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhatsUnseenInBinderEvent;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg.FolderColumnsConfigDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
+import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarPopupBase;
@@ -77,10 +81,14 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup.ViewsMenuPopupClient;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamManagementInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -154,7 +162,9 @@ public class MainMenuControl extends Composite
 	private SearchMenuPanel					m_searchPanel;
 	@SuppressWarnings("unused")
 	private String							m_menuUsage;	// Which context this menu is being used in.
-	private TeamingPopupPanel m_soPopup;
+	private TeamingPopupPanel               m_soPopup;
+	private FolderColumnsConfigDlg          m_folderColumnsDlg = null;
+	private EditSuccessfulHandler           m_editFolderColumnsSuccessHandler = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -761,8 +771,144 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeConfigureColumns(InvokeConfigureColumnsEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onInvokeConfigureColumns():  ...this needs to be implemented...");
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		
+		// Create a callback that will be called when we get the folder columns.
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFolderColumns() );
+			}// end onFailure()
+	
+			/**
+			 * We successfully retrieved the folder's columns.  Now invoke the "edit folder columns" dialog.
+			 */
+			public void onSuccess( VibeRpcResponse response )
+			{
+				int x = -1;
+				int y = -1;
+				if ( x == -1 ) {
+					x = m_contextPanel.getAbsoluteLeft();
+					if ( x < 75 )
+						x = 75;
+				}
+				
+				if ( y == -1 ) {
+					y = m_contextPanel.getAbsoluteTop();
+					if ( y < 75 )
+						y = 75;
+				}
+
+				List folderColumns;
+				List folderColumnsAll;
+				folderColumns = ((FolderColumnsRpcResponseData)response.getResponseData()).getFolderColumns();
+				folderColumnsAll = ((FolderColumnsRpcResponseData)response.getResponseData()).getFolderColumnsAll();
+				
+				// Create a handler that will be called when the user presses the ok button in the dialog.
+				if ( m_editFolderColumnsSuccessHandler == null )
+				{
+					m_editFolderColumnsSuccessHandler = new EditSuccessfulHandler()
+					{
+						private AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
+						private List<FolderColumn> newFolderColumns = null;
+						
+						/**
+						 * This method gets called when user user presses ok in the "Folder Columns Configuration" dialog.
+						 */
+						public boolean editSuccessful( Object obj )
+						{
+							newFolderColumns = (List<FolderColumn>) obj;
+							
+							// Create the callback that will be used when we issue an ajax request to save the folder column settings.
+							if ( rpcSaveCallback == null )
+							{
+								rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
+								{
+									/**
+									 * 
+									 */
+									public void onFailure( Throwable t )
+									{
+										GwtClientHelper.handleGwtRPCFailure(
+											t,
+											GwtTeaming.getMessages().rpcFailure_SaveFolderColumns() );
+									}// end onFailure()
+							
+									/**
+									 * 
+									 * @param result
+									 */
+									public void onSuccess( VibeRpcResponse response )
+									{
+										@SuppressWarnings("unused")
+										Boolean result;
+										
+										result = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+										
+										// The folder columns affect how things are displayed in the content frame.
+										// So we need to reload the page in the content frame.
+										//reloadContentPanel();
+										
+									}// end onSuccess()
+								};
+							}
+					
+							// Issue an ajax request to save the folder columns.
+							{
+								SaveFolderColumnsCmd cmd;
+								
+								// Issue an ajax request to save the folder columns to the db.  rpcSaveCallback will
+								// be called when we get the response back.
+								cmd = new SaveFolderColumnsCmd( newFolderColumns );
+								GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+							}
+							
+							return true;
+						}// end editSuccessful()
+					};
+				}
+				
+				// Get a new "Folder Columns Config" dialog?
+				FolderColumnsConfigDlg.createAsync(
+						 true, 
+						 true, 
+						 x, 
+						 y, 
+						 m_contextBinder.getBinderId(), 
+						 folderColumns,
+						 folderColumnsAll,
+						 new FolderColumnsConfigDlgClient() {				
+					public void onUnavailable()
+					{
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}// end onUnavailable()
+					
+					public void onSuccess( FolderColumnsConfigDlg fcDlg )
+					{
+						m_folderColumnsDlg = fcDlg;
+					}// end onSuccess()
+				} );
+			
+				m_folderColumnsDlg.setPopupPosition( x, y );
+				m_folderColumnsDlg.show();
+				
+			} // end onSuccess()
+		};
+		// Issue an ajax request to get the folder columns.  This invokes the "folder columns config" dialog.
+		{
+			GetFolderColumnsCmd cmd;
+			
+			// Issue an ajax request to get the personal preferences from the db.
+			cmd = new GetFolderColumnsCmd(Long.valueOf(m_contextBinder.getBinderId()), m_contextBinder.getFolderType(), Boolean.TRUE);
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
 	}
 	
 	/**

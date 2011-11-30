@@ -687,6 +687,11 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType) throws GwtTeamingException {
+		Boolean includeConfigurationInfo = Boolean.FALSE;
+		return getFolderColumns(bs, request, folderId, folderType, includeConfigurationInfo);
+	}
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, 
+			Long folderId, FolderType folderType, Boolean includeConfigurationInfo) throws GwtTeamingException {
 		try {
 			Folder			folder               = ((Folder) bs.getBinderModule().getBinder(folderId));
 			User			user                 = GwtServerHelper.getCurrentUser();
@@ -811,10 +816,37 @@ public class GwtViewHelper {
 			// Walk the List<FolderColumn>'s performing fixups on each
 			// as necessary.
 			fixupFCs(fcList);
+			
+			List<FolderColumn> fcListAll = new ArrayList<FolderColumn>();
+			if (includeConfigurationInfo) {
+				//Build a list of all possible columns
+				for (String colName:  columnSortOrder) {
+					// Is there a custom title for this column?
+					String colTitle = ((String) columnTitles.get(colName));
+					if (!(MiscUtil.hasString(colTitle))) {
+						// No!  Use the default.
+						if (colName.contains(","))
+						     colTitle = "";
+						else colTitle = NLT.get(
+							("folder.column." + colName),	// Key to find the resource.
+							colName,						// Default if not defined.
+							true);							// true -> Silent.  Don't generate an error if undefined.
+					}
+
+					// Add a FolderColumn for this to the list we're
+					// going to return.
+					fcListAll.add(new FolderColumn(colName, colTitle));
+				}
+
+				// Walk the List<FolderColumn>'s performing fixups on each
+				// as necessary.
+				fixupFCs(fcListAll);
+				
+			}
 
 			// Finally, use the data we obtained to create a
 			// FolderColumnsRpcResponseData and return that. 
-			return new FolderColumnsRpcResponseData(fcList);
+			return new FolderColumnsRpcResponseData(fcList, fcListAll);
 		}
 		
 		catch (Exception e) {
