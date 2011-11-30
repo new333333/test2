@@ -40,20 +40,20 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import org.apache.commons.logging.Log;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.impl.jdbcjobstore.StdJDBCDelegate;
+import org.slf4j.Logger;
 /**
  * Override methods using setBytes for blobs
  * @author Janet McCann
  *
  */
 public class FrontbaseDelegate extends StdJDBCDelegate {
-   public FrontbaseDelegate(Log logger, String tablePrefix, String instanceId) {
+   public FrontbaseDelegate(Logger logger, String tablePrefix, String instanceId) {
         super(logger, tablePrefix, instanceId);
    }
-   public FrontbaseDelegate(Log logger, String tablePrefix, String instanceId,
+   public FrontbaseDelegate(Logger logger, String tablePrefix, String instanceId,
            Boolean useProperties) {
 	   super(logger, tablePrefix, instanceId, useProperties);
    }
