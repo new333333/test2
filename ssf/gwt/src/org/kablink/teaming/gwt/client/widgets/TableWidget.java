@@ -237,18 +237,18 @@ public class TableWidget extends VibeWidget
 				Element tdElement;
 				VibeFlowPanel flowPanel;
 				
-				m_table.addCell( row );
+				m_table.addCell( 0 );
 
 				// Turn borders on/off
 				if ( props.getShowBorderValue() )
 				{
-					cellFormatter.removeStyleName( row, col, "landingPageWidgetNoBorder" );
-					cellFormatter.addStyleName( row, col, "landingPageWidgetShowBorder" );
+					cellFormatter.removeStyleName( 0, col, "landingPageWidgetNoBorder" );
+					cellFormatter.addStyleName( 0, col, "landingPageWidgetShowBorder" );
 				}
 				else
 				{
-					cellFormatter.removeStyleName( row, col, "landingPageWidgetShowBorder" );
-					cellFormatter.addStyleName( row, col, "landingPageWidgetNoBorder" );
+					cellFormatter.removeStyleName( 0, col, "landingPageWidgetShowBorder" );
+					cellFormatter.addStyleName( 0, col, "landingPageWidgetNoBorder" );
 				}
 
 				// Get the width unit for this column.
@@ -283,15 +283,15 @@ public class TableWidget extends VibeWidget
 				// IE chokes if we call cellFormatter.setWidth(...) and pass in "*" for the width.
 				// That is why we call tdElement.setAttribute(...)
 				//cellFormatter.setWidth( 0, i, widthStr );
-				tdElement = cellFormatter.getElement( row, col );
+				tdElement = cellFormatter.getElement( 0, col );
 				tdElement.setAttribute( "width", widthStr );
 				
 				// Set the vertical alignment of this cell to "top".
-				cellFormatter.setVerticalAlignment( row, col, HasVerticalAlignment.ALIGN_TOP );
+				cellFormatter.setVerticalAlignment( 0, col, HasVerticalAlignment.ALIGN_TOP );
 				
 				// Create a VibeFlowPanel that will hold all of the widgets that live in this cell
 				flowPanel = new VibeFlowPanel();
-				m_table.setWidget( row, col, flowPanel );
+				m_table.setWidget( 0, col, flowPanel );
 			}
 		}
 		
