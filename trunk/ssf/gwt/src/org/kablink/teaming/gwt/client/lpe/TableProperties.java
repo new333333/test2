@@ -79,6 +79,8 @@ public class TableProperties
 			tableProps = (TableProperties) props;
 			setShowBorder( tableProps.getShowBorderValue() );
 			
+			setNumRows( tableProps.getNumRowsInt() );
+			
 			numCols = tableProps.getNumColumnsInt();
 			setNumColumns( numCols );
 			

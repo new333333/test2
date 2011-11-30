@@ -1470,6 +1470,7 @@ body, table td, select
 .lpeTable
 {
 	border: 0px;
+	border-collapse: collapse !important;
 }
 
 /* Styles used for a drop zone found in a table. */
