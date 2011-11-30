@@ -1971,6 +1971,44 @@ body, table td, select
 {
 }
 
+/* Styles for the folder column configuration dialog. */
+.folderColumnsDlg
+{
+	z-index: 351;
+}
+.folderColumnsDlg_Radio
+{
+	margin-left: 5px;
+}
+.folderColumnsDlg_Grid
+{
+	margin: 8px 4px 4px 4px;
+}
+.folderColumnsDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.folderColumnsDlg_MenuItem
+{
+}
+.folderColumnsDlg_SectionHeader
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
+}
+.folderColumnsDlg_SectionHeaderCell
+{
+}
+.folderColumnsDlg_SectionHeaderRow
+{
+}
+
 /* Styles for the manage saved searches dialog. */
 .manageSavedSearchesDlg
 {
@@ -2457,9 +2495,10 @@ body, table td, select
 .gwt-Button[disabled] {
   cursor: default;
   color: #888;
+  border: 1px outset #ccc !important;
 }
 .gwt-Button[disabled]:hover {
-  border: 1px outset #ccc;
+  border: 1px outset #ccc !important;
 }
 
 .gwt-RadioButton label {

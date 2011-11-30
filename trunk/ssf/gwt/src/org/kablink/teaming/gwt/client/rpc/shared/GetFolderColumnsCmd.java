@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.util.FolderType;
 public class GetFolderColumnsCmd extends VibeRpcCmd {
 	private FolderType	m_folderType;
 	private Long		m_folderId;
+	private Boolean		m_includeConfigurationInfo;
 	
 	/**
 	 * Constructor method.
@@ -65,6 +66,22 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 		
 		m_folderId   = folderId;
 		m_folderType = folderType;
+		m_includeConfigurationInfo = Boolean.FALSE;
+	}
+	
+	/**
+	 * Constructor method
+	 * 
+	 * @param folderId
+	 * @param folderType
+	 * @param includeConfigurationInfo
+	 */
+	public GetFolderColumnsCmd(Long folderId, FolderType folderType, Boolean includeConfigurationInfo) {
+		this();
+		
+		m_folderId   = folderId;
+		m_folderType = folderType;
+		m_includeConfigurationInfo = includeConfigurationInfo;
 	}
 	
 	/**
@@ -72,8 +89,9 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public FolderType getFolderType() {return m_folderType;}
-	public Long       getFolderId()   {return m_folderId;  }
+	public FolderType getFolderType() 				{return m_folderType;}
+	public Long       getFolderId()   				{return m_folderId;  }
+	public Boolean    isIncludeConfigurationInfo()	{return m_includeConfigurationInfo;  }
 	
 	/**
 	 * Returns the command's enumeration value.

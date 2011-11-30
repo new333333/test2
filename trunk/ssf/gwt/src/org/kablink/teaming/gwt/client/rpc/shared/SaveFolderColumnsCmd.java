@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,52 +36,52 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for the 'get folder columns' RPC
- * command.
+ * This class holds all of the information necessary to execute the "Save Personal Preferences" command.
  * 
- * @author drfoster@novell.com
+ * @author jwootton
+ *
  */
-public class FolderColumnsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private List<FolderColumn>		m_folderColumnsList;
-	private List<FolderColumn>		m_folderColumnsListAll;
+public class SaveFolderColumnsCmd extends VibeRpcCmd
+{
+	private List<FolderColumn> m_folderColumns;
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public FolderColumnsRpcResponseData() {
+	public SaveFolderColumnsCmd()
+	{
 		super();
 	}
 	
 	/**
-	 * Constructor method.
-	 *
-	 * @param folderColumnsList
+	 * 
 	 */
-	public FolderColumnsRpcResponseData(List<FolderColumn> folderColumnsList, 
-			List<FolderColumn> folderColumnsListAll) {
+	public SaveFolderColumnsCmd( List<FolderColumn> folderColumns )
+	{
 		this();
-		m_folderColumnsList = folderColumnsList;
-		m_folderColumnsListAll = folderColumnsListAll;
+		m_folderColumns = folderColumns;
 	}
 	
 	/**
-	 * Get'er methods.
+	 * 
+	 */
+	public List<FolderColumn> getFolderColumns()
+	{
+		return m_folderColumns;
+	}
+	
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
 	 * @return
 	 */
-	public List<FolderColumn> getFolderColumns() {return m_folderColumnsList;}
-	public List<FolderColumn> getFolderColumnsAll() {return m_folderColumnsListAll;}
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param folderColumnsList
-	 */
-	public void setFolderColumns(List<FolderColumn> folderColumnsList) {m_folderColumnsList = folderColumnsList;}
-	public void setFolderColumnsAll(List<FolderColumn> folderColumnsListAll) {m_folderColumnsListAll = folderColumnsListAll;}
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_FOLDER_COLUMNS.ordinal();
+	}
 }

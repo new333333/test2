@@ -47,6 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String	m_columnName;		//
 	private String	m_columnTitle;		//
+	private Boolean m_columnIsShown;	//
 	private String	m_columnSearchKey;	//
 	private String	m_columnSortKey;	//
 	
@@ -131,6 +132,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	}
 	public String getColumnDefId() {return m_columnDefId;}
 	public String getColumnType()  {return m_columnType; }
+	public Boolean getColumnIsShown()  {return m_columnIsShown; }
 	
 	/**
 	 * Set'er methods.
@@ -143,6 +145,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public void setColumnSortKey(  String columnSortKey)   {m_columnSortKey   = columnSortKey;  }
 	public void setColumnDefId(    String columnDefId)     {m_columnDefId     = columnDefId;    }
 	public void setColumnType(     String columnType)      {m_columnType      = columnType;     }
+	public void setColumnIsShown(  Boolean showThis)       {m_columnIsShown   = showThis;       }
 
 	/**
 	 * Returns true if the columns is a custom column (i.e., has a

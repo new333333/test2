@@ -583,7 +583,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				this,
 				getRequest( ri ),
 				gfcCmd.getFolderId(),
-				gfcCmd.getFolderType() );
+				gfcCmd.getFolderType(),
+				gfcCmd.isIncludeConfigurationInfo() );
 			return new VibeRpcResponse( responseData );
 		}
 		
