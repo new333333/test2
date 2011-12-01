@@ -81,6 +81,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private final static String IDBASE				= "folderColumn_";	// Base ID for rows in the folder columns Grid.
 	private final static String IDTAIL_CHECKBOX		= "_cb";			// Used for constructing the ID of a row's checkbox.
 	private final static String IDTAIL_RADIO		= "_rb";			// Used for constructing the ID of a row's radio button.
+	private final static String IDTAIL_TEXTBOX		= "_tb";			// Used for constructing the ID of a row's text box.
 	private final static String OPTION_HEADER_ID	= "optionHeader";
 
 	private Grid m_folderColumnsGrid;				// Once displayed, the table of folder columns.
@@ -244,35 +245,8 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-		// If we have a folder option selected, put it into effect.
-		ToolbarItem tbi = ((ToolbarItem) callbackData);
-		TeamingEvents event = tbi.getTeamingEvent();
-		if (TeamingEvents.UNDEFINED == event) {
-			String url = tbi.getUrl();
-			if (GwtClientHelper.hasString(url)) {
-				String jsString = tbi.getQualifierValue("onClick");
-				if (GwtClientHelper.hasString(jsString)) {
-					GwtClientHelper.jsEvalString(url, jsString);
-				}
-				else {
-					GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
-				}
-			}
-		}
-		
-		else {
-			VibeEventBase<?> vibeEvent;
-			String importType = tbi.getName();
-			switch (event) {			
-			case INVOKE_CONFIGURE_COLUMNS:  vibeEvent = new InvokeConfigureColumnsEvent();         break;
-			case INVOKE_IMPORT_ICAL_FILE:   vibeEvent = new InvokeImportIcalFileEvent(importType); break;
-			case INVOKE_IMPORT_ICAL_URL:    vibeEvent = new InvokeImportIcalUrlEvent( importType); break;			
-			default:
-				Window.alert(m_messages.folderColumnsUnexpectedEvent(event.name()));
-				return true;
-			}
-			GwtTeaming.fireEvent(vibeEvent);
-		}
+		// Save the new folder column info
+		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
 		
 		// Return true to close the dialog.
 		return true;
@@ -291,48 +265,46 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		// Are there any rows in the grid?
 		int rows = m_folderColumnsGrid.getRowCount();
 		if (0 < rows) {
-			// Yes!  Scan them.
-			for (int i = 0; i < rows; i += 1) {
-				// Is this row checked?
-				if (isRowChecked(i)) {
-					// Yes!  Return its ToolbarItem.
-					String foId = getFolderOptionIdFromRow(i);
-					FolderColumn tbi = getFolderOptionById(foId);
-					return tbi;
-				}
+			// Yes!  Scan and update them.
+			for (int i = 1; i < rows; i += 1) {
+				String rowId = getRowId(i);
+				String fcName = getFolderColumnNameFromRow(i);
+				FolderColumn fc = getFolderColumnByName(fcName);
+				InputElement cb = Document.get().getElementById(rowId + IDTAIL_CHECKBOX).getFirstChild().cast();
+				fc.setColumnIsShown(cb.isChecked());
+				InputElement tb = Document.get().getElementById(rowId + IDTAIL_TEXTBOX).cast();
+				fc.setColumnCustomTitle(tb.getValue());
 			}
 		}
 		
-		// If we get here, there wasn't anything selected.  Return an
-		// empty toolbar item which will flag the dialog to simply
-		// close.
-		return new ToolbarItem();
+		//Return the updated list of columns
+		return m_folderColumnsListAll;
 	}
 
 	/*
-	 * Returns a row's ToolbarItem ID.
+	 * Returns a row's FolderColumn column name.
 	 */
-	private String getFolderOptionIdFromRow(int row) {
+	private String getFolderColumnNameFromRow(int row) {
 		String rowId = getRowId(row);
 		return rowId.substring(rowId.indexOf('_') + 1);
 	}
 	
 	/*
-	 * Returns a ToolbarItem base on its ID.
+	 * Returns a FolderColumn base on its name.
 	 */
-	private FolderColumn getFolderOptionById(String foId) {
-		// Scan the available folder views.
+	private FolderColumn getFolderColumnByName(String name) {
+		// Scan the available folder columns.
 		for (int i = 0; i < m_folderColumnsListCount; i += 1) {
 			// Is this the ToolbarItem in question?
-			FolderColumn tbi = m_folderColumnsList.get(i);
-			if (tbi.getColumnName().equals(foId)) {
+			FolderColumn fci = m_folderColumnsListAll.get(i);
+			if (fci.getColumnName().equals(name)) {
 				// Yes!  Return it.
-				return tbi;
+				return fci;
 			}
 		}
 		
-		// If we get here, we couldn't find a ToolbarItem with the
-		// requested ID.  Return null.
+		// If we get here, we couldn't find a FolderColumn with the
+		// requested Name.  Return null.
 		return null;
 	}
 	
@@ -410,6 +382,10 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		//Custom label textbox
 		TextBox tb = new TextBox();
 		tb.setName("CustomName");
+		tb.getElement().setId(rowId + IDTAIL_TEXTBOX);
+		if ((GwtClientHelper.hasString(fci.getColumnCustomTitle()))) {
+			tb.setValue(fci.getColumnCustomTitle());
+		}
 		grid.setWidget(row, 2, tb);
 		
 		//Radio button for moving rows
@@ -445,6 +421,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			int rows = m_folderColumnsGrid.getRowCount()-1;
 			if ((0 < rows) && (!(isRowChecked(rows)))) {
 				// Yes!  Scan the rows.
+				getDataFromDlg();	//Make sure all of the changed settings are captured first
 				for (int i = (rows - 1); i > 0; i -= 1) {
 					// If this row checked...
 					if (isRowChecked(i)) {
@@ -480,6 +457,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			int rows = m_folderColumnsGrid.getRowCount()-1;
 			if ((0 < rows) && (!(isRowChecked(1)))) {
 				// Yes!  Scan the rows.
+				getDataFromDlg();	//Make sure all of the changed settings are captured first
 				for (int i = 2; i <= rows; i += 1) {
 					// If this row checked...
 					if (isRowChecked(i)) {
