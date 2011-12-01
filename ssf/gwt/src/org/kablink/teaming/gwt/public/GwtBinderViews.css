@@ -51,7 +51,7 @@
 		.vibe-footerPanel                       {padding-top: 5px !important;}
 		.vibe-footerAnchor                      {cursor: pointer; color: #666;}
 		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
-		.vibe-footerAnchorLabel                 {}
+		.vibe-footerAnchorLabel                 {font-size: small;}
 		.vibe-footerAnchorPanel                 {text-align: center;}
 		.vibe-footerDataCloser                  {text-align: right;}
 		.vibe-footerDataCloserAnchor            {cursor: pointer;}

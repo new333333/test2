@@ -34,8 +34,12 @@
 package org.kablink.teaming.gwt.client.binderviews.landingpage;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
+import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
@@ -143,6 +147,23 @@ public class LandingPage extends ViewBase
 		{
 			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
 			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
+			
+			// Add the description to the page.
+			DescriptionPanel.createAsync( m_binderInfo, new ToolPanelClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ToolPanelBase tpb )
+				{
+					// Insert the description as the first element on the landing page.
+					m_mainPanel.insert( tpb, 0 );
+				}
+			} );
 		}
 		
 		// Is a background color specified?
@@ -199,6 +220,25 @@ public class LandingPage extends ViewBase
 			}
 		}
 
+		// Add the footer to the page
+		if ( m_binderInfo != null )
+		{
+			FooterPanel.createAsync( this, m_binderInfo, new ToolPanelClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ToolPanelBase tpb )
+				{
+					m_mainPanel.add( tpb );
+				}
+			} );
+		}
+		
 		// Tell the base class that we're done constructing the landing
 		// page view.
 		if ( configData.isPreviewMode() == false )
