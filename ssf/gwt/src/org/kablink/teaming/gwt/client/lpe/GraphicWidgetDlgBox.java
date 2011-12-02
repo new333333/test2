@@ -37,18 +37,15 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -57,14 +54,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class GraphicWidgetDlgBox extends DlgBox
-	implements KeyPressHandler
 {
 	private CheckBox m_showBorderCkBox = null;
 	private ListBox m_graphicListBox = null;
-	private TextBox m_widthCtrl = null;
-	private TextBox m_heightCtrl = null;
-	private ListBox m_widthUnitListBox = null;
-	private ListBox m_heightUnitListBox = null;
+	private SizeCtrl m_sizeCtrl = null;
 	
 	/**
 	 * 
@@ -145,54 +138,9 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		mainPanel.add( table );
 		
-		// Add the width and height controls
-		{
-			FlexTable sizeTable;
-			
-			sizeTable = new FlexTable();
-			
-			// Add the label and controls for the width
-			{
-				sizeTable.setText( 0, 0, GwtTeaming.getMessages().widthLabel() );
-				m_widthCtrl = new TextBox();
-				m_widthCtrl.addKeyPressHandler( this );
-				m_widthCtrl.setVisibleLength( 3 );
-				sizeTable.setWidget( 0, 1, m_widthCtrl );
-
-				// Create a listbox that holds the possible units for the width
-				{
-					m_widthUnitListBox = new ListBox( false );
-					m_widthUnitListBox.setVisibleItemCount( 1 );
-					
-					m_widthUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
-					m_widthUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
-					
-					sizeTable.setWidget( 0, 2, m_widthUnitListBox );
-				}
-			}
-			
-			// Add the label and controls for the height
-			{
-				sizeTable.setText( 1, 0, GwtTeaming.getMessages().heightLabel() );
-				m_heightCtrl = new TextBox();
-				m_heightCtrl.addKeyPressHandler( this );
-				m_heightCtrl.setVisibleLength( 3 );
-				sizeTable.setWidget( 1, 1, m_heightCtrl );
-
-				// Create a listbox that holds the possible units for the height
-				{
-					m_heightUnitListBox = new ListBox( false );
-					m_heightUnitListBox.setVisibleItemCount( 1 );
-					
-					m_heightUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
-					m_heightUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
-					
-					sizeTable.setWidget( 1, 2, m_heightUnitListBox );
-				}
-			}
-			
-			mainPanel.add( sizeTable );
-		}
+		// Add the size control
+		m_sizeCtrl = new SizeCtrl();
+		mainPanel.add( m_sizeCtrl );
 
 		// Add a checkbox for "Show border"
 		table = new FlexTable();
@@ -323,24 +271,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	private int getHeight()
 	{
-		int height = 0;
-		String txt;
-		
-		// Yes
-		txt = m_heightCtrl.getText();
-		if ( txt != null && txt.length() > 0 )
-		{
-			try
-			{
-				height = Integer.parseInt( txt );
-			}
-			catch ( NumberFormatException nfEx )
-			{
-				// This should never happen.  The data should be validated before we get to this point.
-			}
-		}
-		
-		return height;
+		return m_sizeCtrl.getHeight();
 	}
 	
 	/**
@@ -348,23 +279,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	private Style.Unit getHeightUnits()
 	{
-		Style.Unit unit = Style.Unit.PCT;
-		int selectedIndex;
-		String value;
-		
-		// Yes
-		// Get the selected index from the listbox that holds the list of units.
-		selectedIndex = m_heightUnitListBox.getSelectedIndex();
-		if ( selectedIndex < 0 )
-			selectedIndex = 0;
-		
-		value = m_heightUnitListBox.getValue( selectedIndex );
-		if ( value != null && value.equalsIgnoreCase( "%" ) )
-			unit = Style.Unit.PCT;
-		else
-			unit = Style.Unit.PX;
-		
-		return unit;
+		return m_sizeCtrl.getHeightUnits();
 	}
 	
 
@@ -382,24 +297,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	private int getWidth()
 	{
-		int width = 0;
-		String txt;
-		
-		// Yes
-		txt = m_widthCtrl.getText();
-		if ( txt != null && txt.length() > 0 )
-		{
-			try
-			{
-				width = Integer.parseInt( txt );
-			}
-			catch ( NumberFormatException nfEx )
-			{
-				// This should never happen.  The data should be validated before we get to this point.
-			}
-		}
-		
-		return width;
+		return m_sizeCtrl.getWidth();
 	}
 	
 	/**
@@ -407,23 +305,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	private Style.Unit getWidthUnits()
 	{
-		Style.Unit unit = Style.Unit.PCT;
-		int selectedIndex;
-		String value;
-		
-		// Yes
-		// Get the selected index from the listbox that holds the list of units.
-		selectedIndex = m_widthUnitListBox.getSelectedIndex();
-		if ( selectedIndex < 0 )
-			selectedIndex = 0;
-		
-		value = m_widthUnitListBox.getValue( selectedIndex );
-		if ( value != null && value.equalsIgnoreCase( "%" ) )
-			unit = Style.Unit.PCT;
-		else
-			unit = Style.Unit.PX;
-		
-		return unit;
+		return m_sizeCtrl.getWidthUnits();
 	}
 	
 
@@ -461,100 +343,9 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
 
-		// Initialize the width controls.
-		initWidthControls( properties );
-		
-		// Initialize the height controls.
-		initHeightControls( properties );
+		// Initialize the size control.
+		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits() );
 
 	}// end init()
-
-	/**
-	 * Initialize the controls dealing with the height.
-	 */
-	private void initHeightControls( GraphicProperties properties )
-	{
-		int i;
-		String unitValue;
-		
-		m_heightCtrl.setText( String.valueOf( properties.getHeight() ) );
-		
-		if ( properties.getHeightUnits() == Style.Unit.PCT )
-			unitValue = "%";
-		else
-			unitValue = "px";
-
-		// Select the appropriate unit in the listbox.
-		for (i = 0; i < m_heightUnitListBox.getItemCount(); ++i)
-		{
-			String nextUnit;
-			
-			nextUnit = m_heightUnitListBox.getValue( i );
-			if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
-			{
-				m_heightUnitListBox.setSelectedIndex( i );
-				break;
-			}
-		}
-	}
-
-	/**
-	 * Initialize the controls dealing with the width.
-	 */
-	private void initWidthControls( GraphicProperties properties )
-	{
-		int i;
-		String unitValue;
-		
-		m_widthCtrl.setText( String.valueOf( properties.getWidth() ) );
-
-		if ( properties.getWidthUnits() == Style.Unit.PCT )
-			unitValue = "%";
-		else
-			unitValue = "px";
-
-		// Select the appropriate unit in the listbox.
-		for (i = 0; i < m_widthUnitListBox.getItemCount(); ++i)
-		{
-			String nextUnit;
-			
-			nextUnit = m_widthUnitListBox.getValue( i );
-			if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
-			{
-				m_widthUnitListBox.setSelectedIndex( i );
-				break;
-			}
-		}
-	}
-
-	/**
-	 * This method gets called when the user types in the "width" or "height" text box.
-	 * We only allow the user to enter numbers.
-	 */
-	public void onKeyPress( KeyPressEvent event )
-	{
-        int keyCode;
-
-        // Get the key the user pressed
-        keyCode = event.getNativeEvent().getKeyCode();
-        
-        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
-        {
-        	TextBox txtBox;
-        	Object source;
-        	
-        	// Make sure we are dealing with a text box.
-        	source = event.getSource();
-        	if ( source instanceof TextBox )
-        	{
-        		// Suppress the current keyboard event.
-        		txtBox = (TextBox) source;
-        		txtBox.cancelKey();
-        	}
-        }
-	}
 
 }// end GraphicWidgetDlgBox

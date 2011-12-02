@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
@@ -68,7 +69,6 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -84,10 +84,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private TextBox m_widthCtrl = null;
-	private TextBox m_heightCtrl = null;
-	private ListBox m_widthUnitListBox = null;
-	private ListBox m_heightUnitListBox = null;
+	private SizeCtrl m_sizeCtrl = null;
 	private CheckBox m_showTitleCkBox = null;
 	private CheckBox m_showDescCkBox = null;
 	private CheckBox m_showEntriesOpenedCkBox = null;
@@ -289,53 +286,8 @@ public class FolderWidgetDlgBox extends DlgBox
 		mainPanel.add( table );
 		
 		// Add the width and height controls
-		{
-			FlexTable sizeTable;
-			
-			sizeTable = new FlexTable();
-			
-			// Add the label and controls for the width
-			{
-				sizeTable.setText( 0, 0, GwtTeaming.getMessages().widthLabel() );
-				m_widthCtrl = new TextBox();
-				m_widthCtrl.addKeyPressHandler( this );
-				m_widthCtrl.setVisibleLength( 3 );
-				sizeTable.setWidget( 0, 1, m_widthCtrl );
-
-				// Create a listbox that holds the possible units for the width
-				{
-					m_widthUnitListBox = new ListBox( false );
-					m_widthUnitListBox.setVisibleItemCount( 1 );
-					
-					m_widthUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
-					m_widthUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
-					
-					sizeTable.setWidget( 0, 2, m_widthUnitListBox );
-				}
-			}
-			
-			// Add the label and controls for the height
-			{
-				sizeTable.setText( 1, 0, GwtTeaming.getMessages().heightLabel() );
-				m_heightCtrl = new TextBox();
-				m_heightCtrl.addKeyPressHandler( this );
-				m_heightCtrl.setVisibleLength( 3 );
-				sizeTable.setWidget( 1, 1, m_heightCtrl );
-
-				// Create a listbox that holds the possible units for the height
-				{
-					m_heightUnitListBox = new ListBox( false );
-					m_heightUnitListBox.setVisibleItemCount( 1 );
-					
-					m_heightUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
-					m_heightUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
-					
-					sizeTable.setWidget( 1, 2, m_heightUnitListBox );
-				}
-			}
-			
-			mainPanel.add( sizeTable );
-		}
+		m_sizeCtrl = new SizeCtrl();
+		mainPanel.add( m_sizeCtrl );
 
 		// Add a checkbox for "Show title"
 		table = new FlexTable();
@@ -507,24 +459,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	private int getHeight()
 	{
-		int height = 0;
-		String txt;
-		
-		// Yes
-		txt = m_heightCtrl.getText();
-		if ( txt != null && txt.length() > 0 )
-		{
-			try
-			{
-				height = Integer.parseInt( txt );
-			}
-			catch ( NumberFormatException nfEx )
-			{
-				// This should never happen.  The data should be validated before we get to this point.
-			}
-		}
-		
-		return height;
+		return m_sizeCtrl.getHeight();
 	}
 	
 	/**
@@ -532,23 +467,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	private Style.Unit getHeightUnits()
 	{
-		Style.Unit unit = Style.Unit.PCT;
-		int selectedIndex;
-		String value;
-		
-		// Yes
-		// Get the selected index from the listbox that holds the list of units.
-		selectedIndex = m_heightUnitListBox.getSelectedIndex();
-		if ( selectedIndex < 0 )
-			selectedIndex = 0;
-		
-		value = m_heightUnitListBox.getValue( selectedIndex );
-		if ( value != null && value.equalsIgnoreCase( "%" ) )
-			unit = Style.Unit.PCT;
-		else
-			unit = Style.Unit.PX;
-		
-		return unit;
+		return m_sizeCtrl.getHeightUnits();
 	}
 	
 
@@ -610,24 +529,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	private int getWidth()
 	{
-		int width = 0;
-		String txt;
-		
-		// Yes
-		txt = m_widthCtrl.getText();
-		if ( txt != null && txt.length() > 0 )
-		{
-			try
-			{
-				width = Integer.parseInt( txt );
-			}
-			catch ( NumberFormatException nfEx )
-			{
-				// This should never happen.  The data should be validated before we get to this point.
-			}
-		}
-		
-		return width;
+		return m_sizeCtrl.getWidth();
 	}
 	
 	/**
@@ -635,23 +537,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	private Style.Unit getWidthUnits()
 	{
-		Style.Unit unit = Style.Unit.PCT;
-		int selectedIndex;
-		String value;
-		
-		// Yes
-		// Get the selected index from the listbox that holds the list of units.
-		selectedIndex = m_widthUnitListBox.getSelectedIndex();
-		if ( selectedIndex < 0 )
-			selectedIndex = 0;
-		
-		value = m_widthUnitListBox.getValue( selectedIndex );
-		if ( value != null && value.equalsIgnoreCase( "%" ) )
-			unit = Style.Unit.PCT;
-		else
-			unit = Style.Unit.PX;
-		
-		return unit;
+		return m_sizeCtrl.getWidthUnits();
 	}
 	
 
@@ -702,11 +588,8 @@ public class FolderWidgetDlgBox extends DlgBox
 		// Show the edit button.
 		m_editBtn.setVisible( true );
 		
-		// Initialize the width controls.
-		initWidthControls( properties );
-		
-		// Initialize the height controls.
-		initHeightControls( properties );
+		// Initialize the size control.
+		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits() );
 
 		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
 		m_showDescCkBox.setValue( properties.getShowDescValue() );
@@ -722,64 +605,6 @@ public class FolderWidgetDlgBox extends DlgBox
 		m_numEntriesToShowTxtBox.setText( String.valueOf( num ) );
 	}// end init()
 	
-
-	/**
-	 * Initialize the controls dealing with the height.
-	 */
-	private void initHeightControls( FolderProperties properties )
-	{
-		int i;
-		String unitValue;
-		
-		m_heightCtrl.setText( String.valueOf( properties.getHeight() ) );
-		
-		if ( properties.getHeightUnits() == Style.Unit.PCT )
-			unitValue = "%";
-		else
-			unitValue = "px";
-
-		// Select the appropriate unit in the listbox.
-		for (i = 0; i < m_heightUnitListBox.getItemCount(); ++i)
-		{
-			String nextUnit;
-			
-			nextUnit = m_heightUnitListBox.getValue( i );
-			if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
-			{
-				m_heightUnitListBox.setSelectedIndex( i );
-				break;
-			}
-		}
-	}
-
-	/**
-	 * Initialize the controls dealing with the width.
-	 */
-	private void initWidthControls( FolderProperties properties )
-	{
-		int i;
-		String unitValue;
-		
-		m_widthCtrl.setText( String.valueOf( properties.getWidth() ) );
-
-		if ( properties.getWidthUnits() == Style.Unit.PCT )
-			unitValue = "%";
-		else
-			unitValue = "px";
-
-		// Select the appropriate unit in the listbox.
-		for (i = 0; i < m_widthUnitListBox.getItemCount(); ++i)
-		{
-			String nextUnit;
-			
-			nextUnit = m_widthUnitListBox.getValue( i );
-			if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
-			{
-				m_widthUnitListBox.setSelectedIndex( i );
-				break;
-			}
-		}
-	}
 
 	/**
 	 * This method gets called when the user types in the "number of entries to show" text box.
