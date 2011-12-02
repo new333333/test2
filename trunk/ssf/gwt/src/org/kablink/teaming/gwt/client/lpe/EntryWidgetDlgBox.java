@@ -334,6 +334,7 @@ public class EntryWidgetDlgBox extends DlgBox
 			}
 			properties.setHeight( height );
 			properties.setHeightUnits( units );
+			properties.setOverflow( getOverflow() );
 		}
 
 		// Save away the "show border" value.
@@ -438,6 +439,14 @@ public class EntryWidgetDlgBox extends DlgBox
 	
 
 	/**
+	 * 
+	 */
+	private Style.Overflow getOverflow()
+	{
+		return m_sizeCtrl.getOverflow();
+	}
+
+	/**
 	 * Return true if the "show title" checkbox is checked.
 	 */
 	public boolean getShowTitleValue()
@@ -503,7 +512,7 @@ public class EntryWidgetDlgBox extends DlgBox
 		}
 		
 		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits() );
+		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
 
 		// Hide the find control.
 		hideFindControl();

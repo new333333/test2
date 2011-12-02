@@ -54,6 +54,7 @@ public class ListProperties
 	private Style.Unit m_widthUnits;
 	private int m_height;
 	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
 
 	/**
 	 * 
@@ -68,6 +69,8 @@ public class ListProperties
 		m_widthUnits = Style.Unit.PCT;
 		m_height = 100;
 		m_heightUnits = Style.Unit.PCT;
+		
+		m_overflow = Style.Overflow.HIDDEN;
 
 	}// end ListProperties()
 	
@@ -88,6 +91,7 @@ public class ListProperties
 			m_widthUnits = listProps.getWidthUnits();
 			m_height = listProps.getHeight();
 			m_heightUnits = listProps.getHeightUnits();
+			m_overflow = listProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -121,6 +125,13 @@ public class ListProperties
 			str += "%";
 		else
 			str += "px";
+		
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
 
 		str += ";";
 
@@ -142,6 +153,14 @@ public class ListProperties
 	public Style.Unit getHeightUnits()
 	{
 		return m_heightUnits;
+	}
+	
+	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
 	}
 	
 	/**
@@ -178,6 +197,14 @@ public class ListProperties
 		return m_widthUnits;
 	}
 	
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
+	}
 	
 	/**
 	 * 

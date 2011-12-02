@@ -35,9 +35,11 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -55,6 +57,7 @@ public class SizeCtrl extends VibeWidget
 	private TextBox m_heightCtrl = null;
 	private ListBox m_widthUnitListBox = null;
 	private ListBox m_heightUnitListBox = null;
+	private CheckBox m_overflowCheckbox = null;
 
 	/**
 	 * 
@@ -108,6 +111,13 @@ public class SizeCtrl extends VibeWidget
 				
 				sizeTable.setWidget( 1, 2, m_heightUnitListBox );
 			}
+		}
+		
+		// Add the "Show scroll bars when necessary"
+		{
+			m_overflowCheckbox = new CheckBox( GwtTeaming.getMessages().overflowLabel() );
+			sizeTable.getFlexCellFormatter().setColSpan( 2, 0, 3 );
+			sizeTable.setWidget( 2, 0, m_overflowCheckbox );
 		}
 		
 		mainPanel.add( sizeTable );
@@ -167,6 +177,17 @@ public class SizeCtrl extends VibeWidget
 	/**
 	 * 
 	 */
+	public Style.Overflow getOverflow()
+	{
+		if ( m_overflowCheckbox.getValue() == Boolean.TRUE )
+			return Style.Overflow.AUTO;
+		
+		return Style.Overflow.HIDDEN;
+	}
+	
+	/**
+	 * 
+	 */
 	public int getWidth()
 	{
 		int width = 0;
@@ -216,10 +237,15 @@ public class SizeCtrl extends VibeWidget
 	/**
 	 * Initialize the width and height controls.
 	 */
-	public void init( int width, Style.Unit widthUnits, int height, Style.Unit heightUnits )
+	public void init( int width, Style.Unit widthUnits, int height, Style.Unit heightUnits, Style.Overflow overflow )
 	{
 		initWidthControls( width, widthUnits );
 		initHeightControls( height, heightUnits );
+		
+		if ( overflow == Overflow.AUTO )
+			m_overflowCheckbox.setValue( true );
+		else
+			m_overflowCheckbox.setValue( false );
 	}
 	
 	/**

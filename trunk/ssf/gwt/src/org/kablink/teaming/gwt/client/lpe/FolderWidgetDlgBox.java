@@ -381,8 +381,10 @@ public class FolderWidgetDlgBox extends DlgBox
 				height = 100;
 				units = Style.Unit.PCT;
 			}
+
 			properties.setHeight( height );
 			properties.setHeightUnits( units );
+			properties.setOverflow( getOverflow() );
 		}
 
 		return properties;
@@ -498,6 +500,14 @@ public class FolderWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * 
+	 */
+	private Style.Overflow getOverflow()
+	{
+		return m_sizeCtrl.getOverflow();
+	}
+
+	/**
 	 * Return true if the "show the folder description" checkbox is checked.
 	 */
 	public boolean getShowDescValue()
@@ -589,7 +599,7 @@ public class FolderWidgetDlgBox extends DlgBox
 		m_editBtn.setVisible( true );
 		
 		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits() );
+		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
 
 		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
 		m_showDescCkBox.setValue( properties.getShowDescValue() );

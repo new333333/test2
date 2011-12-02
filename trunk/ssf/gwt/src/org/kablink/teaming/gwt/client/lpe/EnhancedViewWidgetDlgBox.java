@@ -693,8 +693,10 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				height = 100;
 				units = Style.Unit.PCT;
 			}
+
 			properties.setHeight( height );
 			properties.setHeightUnits( units );
+			properties.setOverflow( getOverflow() );
 		}
 
 		// Does the selected view require a folder to be selected?
@@ -920,6 +922,14 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * 
+	 */
+	private Style.Overflow getOverflow()
+	{
+		return m_sizeCtrl.getOverflow();
+	}
+
+	/**
 	 * Return the selected view.
 	 */
 	private EnhancedViewInfo getSelectedView()
@@ -1027,7 +1037,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_entryId = properties.getEntryId();
 		
 		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits() );
+		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
 
 		// Initialize the controls when a folder is required.
 		{

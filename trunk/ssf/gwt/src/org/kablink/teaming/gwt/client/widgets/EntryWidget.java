@@ -169,7 +169,7 @@ public class EntryWidget extends VibeWidget
 			if ( height != 100 || unit != Unit.PCT )
 				style.setHeight( height, unit );
 			
-			style.setOverflow( Overflow.AUTO );
+			style.setOverflow( m_properties.getOverflow() );
 		}
 
 		// Create a place for the title to live.
