@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -62,6 +63,12 @@ public class FileFolderProperties
 	private AsyncCallback<VibeRpcResponse> m_folderCallback;
 	private GetterCallback<Boolean> m_getterCallback;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+
 	/**
 	 * 
 	 */
@@ -75,7 +82,13 @@ public class FileFolderProperties
 		m_zoneUUID = null;
 		m_viewFolderUrl = null;
 		m_getterCallback = null;
-		
+
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
+
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -146,6 +159,10 @@ public class FileFolderProperties
 			m_numEntriesToBeShown = folderProps.getNumEntriesToBeShownValue();
 			m_viewFolderUrl = folderProps.getViewFolderUrl();
 			m_folderDesc = folderProps.getFolderDesc();
+			m_width = folderProps.getWidth();
+			m_widthUnits = folderProps.getWidthUnits();
+			m_height = folderProps.getHeight();
+			m_heightUnits = folderProps.getHeightUnits();
 		}
 	}
 	
@@ -205,6 +222,22 @@ public class FileFolderProperties
 	
 	
 	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
+	
+	/**
 	 * Return the "number of entries to be shown" property.
 	 */
 	public int getNumEntriesToBeShownValue()
@@ -229,6 +262,22 @@ public class FileFolderProperties
 		return m_viewFolderUrl;
 	}
 	
+	
+	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
+	}
 	
 	/**
 	 * Return the zone uuid
@@ -274,6 +323,22 @@ public class FileFolderProperties
 	
 	
 	/**
+	 * 
+	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
+	
+	/**
 	 * Set the "number of entries to be shown" property.
 	 */
 	public void setNumEntriesToBeShownValue( int numEntries )
@@ -297,6 +362,22 @@ public class FileFolderProperties
 		m_viewFolderUrl = url;
 	}
 	
+	
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
 	
 	/**
 	 * 

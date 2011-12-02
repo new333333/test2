@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.lpe;
 import org.kablink.teaming.gwt.client.widgets.FolderWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
 
 
@@ -96,6 +97,104 @@ public class FolderConfig extends ConfigItem
 							// not properly url encoded or an invalid number string was entered.
 						}
 						m_properties.setNumEntriesToBeShownValue( numToShow );
+					}
+					else if ( results2[0].equalsIgnoreCase( "width" ) )
+					{
+						String value;
+						
+						// The string looks like, width=nn% or width=nnpx
+						value = results2[1];
+						if ( value != null )
+						{
+							int index;
+							
+							// Is the width using %?
+							index = value.indexOf( "%" );
+							if ( index != -1 )
+							{
+								// Yes
+								m_properties.setWidthUnits( Style.Unit.PCT );
+							}
+							else
+							{
+								// Is the width using px?
+								index = value.indexOf( "px" );
+								if ( index != -1 )
+								{
+									// Yes
+									m_properties.setWidthUnits( Style.Unit.PX );
+								}
+							}
+							
+							// Did we find the units?
+							if ( index != -1 )
+							{
+								String numValue;
+								int width;
+								
+								// Yes
+								numValue = value.substring( 0, index );
+								try
+								{
+									width = Integer.parseInt( numValue );
+									m_properties.setWidth( width );
+								}
+								catch (Exception ex)
+								{
+									// Nothing to do.  This is here to handle the case when the data is
+									// not properly url encoded or an invalid number string was entered.
+								}
+							}
+						}
+					}
+					else if ( results2[0].equalsIgnoreCase( "height" ) )
+					{
+						String value;
+						
+						// The string looks like, height=nn% or height=nnpx
+						value = results2[1];
+						if ( value != null )
+						{
+							int index;
+							
+							// Is the height using %?
+							index = value.indexOf( "%" );
+							if ( index != -1 )
+							{
+								// Yes
+								m_properties.setHeightUnits( Style.Unit.PCT );
+							}
+							else
+							{
+								// Is the height using px?
+								index = value.indexOf( "px" );
+								if ( index != -1 )
+								{
+									// Yes
+									m_properties.setHeightUnits( Style.Unit.PX );
+								}
+							}
+							
+							// Did we find the units?
+							if ( index != -1 )
+							{
+								String numValue;
+								int height;
+								
+								// Yes
+								numValue = value.substring( 0, index );
+								try
+								{
+									height = Integer.parseInt( numValue );
+									m_properties.setHeight( height );
+								}
+								catch (Exception ex)
+								{
+									// Nothing to do.  This is here to handle the case when the data is
+									// not properly url encoded or an invalid number string was entered.
+								}
+							}
+						}
 					}
 				}
 			}

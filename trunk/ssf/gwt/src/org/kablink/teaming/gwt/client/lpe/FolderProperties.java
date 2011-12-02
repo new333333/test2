@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -69,6 +70,12 @@ public class FolderProperties
 	private AsyncCallback<VibeRpcResponse> m_folderCallback;
 	private GetterCallback<Boolean> m_getterCallback;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+
 	/**
 	 * 
 	 */
@@ -90,6 +97,12 @@ public class FolderProperties
 		m_viewFolderUrl = null;
 		m_getterCallback = null;
 		
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
+
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -168,6 +181,10 @@ public class FolderProperties
 			m_numEntriesToBeShown = folderProps.getNumEntriesToBeShownValue();
 			m_numRepliesToShow = folderProps.getNumRepliesToShow();
 			m_viewFolderUrl = folderProps.getViewFolderUrl();
+			m_width = folderProps.getWidth();
+			m_widthUnits = folderProps.getWidthUnits();
+			m_height = folderProps.getHeight();
+			m_heightUnits = folderProps.getHeightUnits();
 		}
 	}// end copy()
 	
@@ -198,7 +215,23 @@ public class FolderProperties
 		if ( m_showEntriesOpened )
 			str += "showEntriesOpened=1,";
 
-		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown ) + ";";
+		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown );
+
+		// Add the width
+		str += ",width=" + String.valueOf( m_width );
+		if ( m_widthUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add the height
+		str += ",height=" + String.valueOf( m_height );
+		if ( m_heightUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		str += ";";
 
 		return str;
 	}// end createConfigString()
@@ -248,6 +281,22 @@ public class FolderProperties
 		return m_folderName;
 	}// end getFolderName()
 	
+	
+	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
 	
 	/**
 	 * Return the "number of entries to be shown" property.
@@ -335,6 +384,22 @@ public class FolderProperties
 	
 	
 	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
+	}
+	
+	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
@@ -379,6 +444,22 @@ public class FolderProperties
 		m_folderName = folderName;
 	}// end setFolderName()
 	
+	
+	/**
+	 * 
+	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
 	
 	/**
 	 * Set the "number of entries to be shown" property.
@@ -463,6 +544,22 @@ public class FolderProperties
 		m_viewFolderUrl = url;
 	}// end setViewFolderUrl()
 	
+	
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
 	
 	/**
 	 * 

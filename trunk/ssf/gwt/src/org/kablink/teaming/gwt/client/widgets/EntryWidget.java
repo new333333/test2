@@ -45,6 +45,9 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
@@ -144,6 +147,30 @@ public class EntryWidget extends VibeWidget
 		
 		mainPanel.removeStyleName( "landingPageWidgetNoBorder" );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+		
+		// Set the width and height
+		{
+			Style style;
+			int width;
+			int height;
+			Unit unit;
+			
+			style = mainPanel.getElement().getStyle();
+			
+			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+			width = m_properties.getWidth();
+			unit = m_properties.getWidthUnits();
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
+			
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			height = m_properties.getHeight();
+			unit = m_properties.getHeightUnits();
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+			
+			style.setOverflow( Overflow.AUTO );
+		}
 
 		// Create a place for the title to live.
 		{

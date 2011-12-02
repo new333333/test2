@@ -37,6 +37,9 @@ import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.lpe.GraphicConfig;
 import org.kablink.teaming.gwt.client.lpe.GraphicProperties;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Image;
 
 
@@ -84,7 +87,6 @@ public class GraphicWidget extends VibeWidget
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "graphicWidgetMainPanel" + m_style );
-		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
 		
 		imgPanel = new VibeFlowPanel();
 		imgPanel.addStyleName( "graphicWidgetImgPanel" + m_style );
@@ -95,6 +97,30 @@ public class GraphicWidget extends VibeWidget
 		if ( m_properties.getShowBorderValue() == true )
 			m_img.addStyleName( "landingPageWidgetShowBorder" );
 		
+		// Set the width and height
+		{
+			Style style;
+			int width;
+			int height;
+			Unit unit;
+			
+			style = m_img.getElement().getStyle();
+			
+			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+			width = m_properties.getWidth();
+			unit = m_properties.getWidthUnits();
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
+			
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			height = m_properties.getHeight();
+			unit = m_properties.getHeightUnits();
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+			
+			style.setOverflow( Overflow.AUTO );
+		}
+
 
 		// Issue an ajax request to get the url needed to display the graphic.
 		m_properties.getGraphicUrl( new GetterCallback<String>()

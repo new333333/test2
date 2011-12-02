@@ -38,6 +38,9 @@ import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.lpe.ListConfig;
 import org.kablink.teaming.gwt.client.lpe.ListProperties;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
@@ -170,6 +173,30 @@ public class ListWidget extends VibeWidget
 		{
 			m_layoutPanel.removeStyleName( "landingPageWidgetShowBorder" );
 			m_layoutPanel.addStyleName( "landingPageWidgetNoBorder" );
+		}
+
+		// Set the width and height
+		{
+			Style style;
+			int width;
+			int height;
+			Unit unit;
+			
+			style = m_layoutPanel.getElement().getStyle();
+			
+			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+			width = m_properties.getWidth();
+			unit = m_properties.getWidthUnits();
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
+			
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			height = m_properties.getHeight();
+			unit = m_properties.getHeightUnits();
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+			
+			style.setOverflow( Overflow.AUTO );
 		}
 
 		// Is there a title?

@@ -51,6 +51,9 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
@@ -208,6 +211,30 @@ public class FileFolderWidget extends VibeWidget
 		mainPanel.addStyleName( "fileFolderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
 		
+		// Set the width and height
+		{
+			Style style;
+			int width;
+			int height;
+			Unit unit;
+			
+			style = mainPanel.getElement().getStyle();
+			
+			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+			width = m_properties.getWidth();
+			unit = m_properties.getWidthUnits();
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
+			
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			height = m_properties.getHeight();
+			unit = m_properties.getHeightUnits();
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+			
+			style.setOverflow( Overflow.AUTO );
+		}
+
 		// Should we show the name of the folder?
 		if ( m_properties.getShowTitleValue() )
 		{
