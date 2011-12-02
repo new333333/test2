@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderDescriptionCmd;
@@ -45,10 +46,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Image;
 
 
 /**
@@ -57,10 +63,19 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class DescriptionPanel extends ToolPanelBase {
-	private boolean				m_descriptionIsHTML;	// true -> The content of m_description is HTML.  false -> It's plain text.
-	private GwtTeamingMessages	m_messages;				// Access to Vibe's localized message resources.
-	private String				m_description;			// The binder's description.
-	private VibeFlowPanel		m_fp;					// The panel holding the DescriptionPanel's contents.
+	private Anchor							m_expanderAnchor;		// The Anchor containing the widget that allows the description to be expanded or collapsed.
+	private boolean							m_descriptionIsHTML;	// true -> The content of m_description is HTML.  false -> It's plain text.
+	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's data table image bundle.
+	private GwtTeamingMessages				m_messages;				// Access to Vibe's localized message resources.
+	private Image							m_expanderImg;			// The Image contain the expand/collapse image in m_expanderAnchor.
+	private String							m_description;			// The binder's description.
+	private VibeFlowPanel					m_contentPanel;			// The panel holding the description HTML widgets.
+	private VibeFlowPanel					m_expanderPanel;		// The panel holding the description panel's expander widgets.
+	private VibeFlowPanel					m_fp;					// The panel holding the DescriptionPanel's contents.
+
+	// The following defines the height a description can be before we
+	// allow the user to expand/collapse it.
+	private final static int EXPANDABLE_THRESHOLD = 250;
 	
 	/*
 	 * Constructor method.
@@ -74,6 +89,7 @@ public class DescriptionPanel extends ToolPanelBase {
 		super(binderInfo);
 		
 		// ...initialize the data members...
+		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
 		
 		// ...and construct the panel.
@@ -104,6 +120,26 @@ public class DescriptionPanel extends ToolPanelBase {
 				tpClient.onUnavailable();
 			}
 		});
+	}
+
+	/*
+	 * Collapses the description panel to only display a portion of the description.
+	 */
+	private void doCollapse() {
+		m_expanderAnchor.setTitle(m_messages.vibeDataTable_Alt_ExpandDescription());
+		m_expanderImg.setResource(m_images.expandDescription());
+		m_expanderAnchor.getElement().setAttribute("n-state", "expand");
+		m_contentPanel.addStyleName("vibe-descriptionContentClipped");
+	}
+	
+	/*
+	 * Expands the description panel to it's full height.
+	 */
+	private void doExpand() {
+		m_expanderAnchor.setTitle(m_messages.vibeDataTable_Alt_CollapseDescription());
+		m_expanderImg.setResource(m_images.collapseDescription());
+		m_expanderAnchor.getElement().setAttribute("n-state", "collapse");
+		m_contentPanel.removeStyleName("vibe-descriptionContentClipped");
 	}
 	
 	/*
@@ -166,22 +202,62 @@ public class DescriptionPanel extends ToolPanelBase {
 	private void loadPart2Now() {
 		// If we have a description...
 		if (GwtClientHelper.hasString(m_description)) {
-			// ...render it.
+			// ...we need to render it.  Add the initial panel styles.
 			m_fp.addStyleName("vibe-binderViewTools vibe-descriptionPanel");
-			
-//!			...this needs to be implemented...
-		
-			Label dl = new Label();
-			Element dlE = dl.getElement();
+
+			// Create the widgets that allow the user to
+			// expand/collapse the description.  These are initially
+			// hidden, but will be shown if the display of the
+			// description is large enough to warrant it.
+			m_expanderPanel = new VibeFlowPanel();
+			m_expanderPanel.addStyleName("vibe-descriptionExpanderBar");
+			m_expanderAnchor = new Anchor();
+			final Element expandAE = m_expanderAnchor.getElement();
+			m_expanderAnchor.addStyleName("vibe-descriptionExpanderAnchor");
+			m_expanderAnchor.setTitle(m_messages.vibeDataTable_Alt_CollapseDescription());
+			expandAE.setAttribute("n-state", "collapse");
+			m_expanderImg = new Image(m_images.collapseDescription()); 
+			m_expanderImg.addStyleName("vibe-descriptionExpanderImg");
+			expandAE.appendChild(m_expanderImg.getElement());
+			m_expanderAnchor.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					if (expandAE.getAttribute("n-state").equals("expand"))
+					     doExpand();
+					else doCollapse();
+				}
+			});
+			m_expanderPanel.add(m_expanderAnchor);
+			m_expanderPanel.setVisible(false);	// The expander is hidden until we decide whether we need to show it or not.  See sizeDescriptionNow() below.
+			m_fp.add(m_expanderPanel);
+
+			// Create the widgets that display the description (in HTML
+			// or plain text) itself.
+			m_contentPanel = new VibeFlowPanel();
+			m_contentPanel.addStyleName("vibe-descriptionContent");
+			Element cpE = m_contentPanel.getElement();
 			if (m_descriptionIsHTML) {
-				dl.addStyleName("vibe-descriptionHTML");
-				dlE.setInnerHTML(m_description);
+				m_contentPanel.addStyleName("vibe-descriptionHTML");
+				cpE.setInnerHTML(m_description);
 			}
 			else {
-				dl.addStyleName("vibe-descriptionText");
-				dlE.setInnerText(m_description);
+				m_contentPanel.addStyleName("vibe-descriptionText");
+				cpE.setInnerText(m_description);
 			}
-			m_fp.add(dl);
+			m_contentPanel.addAttachHandler(new Handler() {
+				@Override
+				public void onAttachOrDetach(AttachEvent event) {
+					// Is this an attach event? 
+					if (event.isAttached()) {
+						// Yes!  Analyze the size of the rendered
+						// description.  We have to do this post
+						// rendering because we only show the expander
+						// it displays larger than our threshold.
+						sizeDescriptionAsync();
+					}
+				}
+			});
+			m_fp.add(m_contentPanel);
 		}
 	}
 
@@ -197,5 +273,30 @@ public class DescriptionPanel extends ToolPanelBase {
 		m_fp.clear();
 		m_fp.removeStyleName("vibe-binderViewTools vibe-DescriptionPanel");
 		loadPart1Async();
+	}
+
+	/*
+	 * Asynchronously manages the size of the description.
+	 */
+	private void sizeDescriptionAsync() {
+		ScheduledCommand doSizing = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				sizeDescriptionNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSizing);
+	}
+	
+	/*
+	 * Synchronously manages the size of the description.
+	 */
+	private void sizeDescriptionNow() {
+		// If the description rendered larger than our threshold...
+		int descHeight = m_contentPanel.getOffsetHeight();
+		if (EXPANDABLE_THRESHOLD < descHeight) {
+			// ...enable its expansion and collapsing.
+			m_expanderPanel.setVisible(true);
+		}
 	}
 }

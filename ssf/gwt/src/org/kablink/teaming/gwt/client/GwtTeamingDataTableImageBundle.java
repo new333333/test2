@@ -46,6 +46,14 @@ import com.google.gwt.resources.client.ImageResource.RepeatStyle;
  */
 public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
+	public ImageResource collapseDescription();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/expand_16.png")
+	public ImageResource expandDescription();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gold.png")
 	public ImageResource goldStar();
 	
