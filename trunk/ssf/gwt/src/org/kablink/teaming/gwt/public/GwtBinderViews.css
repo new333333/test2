@@ -19,18 +19,23 @@
 	/* ...End:  Bread crumb panel styles. */
 	
 	/* ...Start:  Description panel styles. */
-		.vibe-descriptionHTML  {}
-		.vibe-descriptionPanel {padding-left: 10px;}
-		.vibe-descriptionText  {}
+		.vibe-descriptionContent        {}
+		.vibe-descriptionContentClipped {height: 250px; overflow: auto !important;}
+		.vibe-descriptionExpanderAnchor {text-decoration: none; cursor: pointer;}
+		.vibe-descriptionExpanderImg    {position: absolute; right: 0px; top: -8px; border: 0px none;}
+		.vibe-descriptionExpanderBar    {margin-top: 0.5em; margin-bottom: 8px; border-bottom: 1px solid #CCC; position: relative;}
+		.vibe-descriptionHTML           {overflow: hidden;}
+		.vibe-descriptionPanel          {padding-left: 10px;}
+		.vibe-descriptionText           {overflow: hidden;}
 	/* ...End:  Description panel styles. */
 	
 	/* ...Start:  Entry menu panel styles. */
-		.vibe-entryMenuPanel {padding: 0px !important; padding-top: 10px !important;}
-		.vibe-entryMenuBar {}
-		.vibe-entryMenuBarItem {}
-		.vibe-entryMenuPopup {}
+		.vibe-entryMenuPanel     {padding: 0px !important; padding-top: 10px !important;}
+		.vibe-entryMenuBar       {}
+		.vibe-entryMenuBarItem   {}
+		.vibe-entryMenuPopup     {}
 		.vibe-entryMenuPopupItem {}
-		.vibe-entryMenuDisabled {color: silver !important;}
+		.vibe-entryMenuDisabled  {color: silver !important;}
 	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */

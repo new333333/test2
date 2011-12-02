@@ -1143,6 +1143,8 @@ public interface GwtTeamingMessages extends Messages
 	String folderColumnsUnexpectedEvent(String eventName);
 	
 	// Strings used by various widgets of the Vibe Data table.
+	String vibeDataTable_Alt_CollapseDescription();
+	String vibeDataTable_Alt_ExpandDescription();
 	String vibeDataTable_Alt_Unread();
 	String vibeDataTable_Alt_PinEntry();
 	String vibeDataTable_Alt_PinHeader();
