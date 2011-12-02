@@ -232,7 +232,7 @@ public class FileFolderWidget extends VibeWidget
 			if ( height != 100 || unit != Unit.PCT )
 				style.setHeight( height, unit );
 			
-			style.setOverflow( Overflow.AUTO );
+			style.setOverflow( m_properties.getOverflow() );
 		}
 
 		// Should we show the name of the folder?

@@ -79,6 +79,7 @@ public class EnhancedViewWidget extends VibeWidget
 			entryProperties.setWidthUnits( properties.getWidthUnits() );
 			entryProperties.setHeight( properties.getHeight() );
 			entryProperties.setHeightUnits( properties.getHeightUnits() );
+			entryProperties.setOverflow( properties.getOverflow() );
 			
 			widget = new EntryWidget( entryProperties, landingPageStyle );
 			break;
@@ -103,6 +104,7 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setWidthUnits( properties.getWidthUnits() );
 			folderProperties.setHeight( properties.getHeight() );
 			folderProperties.setHeightUnits( properties.getHeightUnits() );
+			folderProperties.setOverflow( properties.getOverflow() );
 			
 			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
@@ -127,6 +129,7 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setWidthUnits( properties.getWidthUnits() );
 			folderProperties.setHeight( properties.getHeight() );
 			folderProperties.setHeightUnits( properties.getHeightUnits() );
+			folderProperties.setOverflow( properties.getOverflow() );
 			
 			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
@@ -151,6 +154,7 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setWidthUnits( properties.getWidthUnits() );
 			folderProperties.setHeight( properties.getHeight() );
 			folderProperties.setHeightUnits( properties.getHeightUnits() );
+			folderProperties.setOverflow( properties.getOverflow() );
 			
 			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
@@ -169,6 +173,7 @@ public class EnhancedViewWidget extends VibeWidget
 			fileFolderProperties.setWidthUnits( properties.getWidthUnits() );
 			fileFolderProperties.setHeight( properties.getHeight() );
 			fileFolderProperties.setHeightUnits( properties.getHeightUnits() );
+			fileFolderProperties.setOverflow( properties.getOverflow() );
 			
 			widget = new FileFolderWidget( fileFolderProperties, landingPageStyle );
 			break;
@@ -186,6 +191,7 @@ public class EnhancedViewWidget extends VibeWidget
 			taskFolderProperties.setWidthUnits( properties.getWidthUnits() );
 			taskFolderProperties.setHeight( properties.getHeight() );
 			taskFolderProperties.setHeightUnits( properties.getHeightUnits() );
+			taskFolderProperties.setOverflow( properties.getOverflow() );
 			
 			widget = new TaskFolderWidget( taskFolderProperties, landingPageStyle );
 			break;

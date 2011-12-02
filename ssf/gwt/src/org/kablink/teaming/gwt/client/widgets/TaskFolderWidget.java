@@ -957,7 +957,7 @@ public class TaskFolderWidget extends VibeWidget
 			if ( height != 100 || unit != Unit.PCT )
 				style.setHeight( height, unit );
 			
-			style.setOverflow( Overflow.AUTO );
+			style.setOverflow( m_properties.getOverflow() );
 		}
 
 		// Add a place for the folder's title

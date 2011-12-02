@@ -225,6 +225,7 @@ public interface GwtTeamingMessages extends Messages
 	String missingRequestInfo();
 	String ok();
 	String oneMomentPlease();
+	String overflowLabel();
 	String percent();
 	String send();
 	String showBorder();

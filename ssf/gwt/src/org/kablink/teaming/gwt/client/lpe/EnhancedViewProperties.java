@@ -94,6 +94,7 @@ public class EnhancedViewProperties
 	private Style.Unit m_widthUnits;
 	private int m_height;
 	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
 	
 	/**
 	 * 
@@ -117,6 +118,7 @@ public class EnhancedViewProperties
 		m_widthUnits = Style.Unit.PCT;
 		m_height = 100;
 		m_heightUnits = Style.Unit.PCT;
+		m_overflow = Style.Overflow.HIDDEN;
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
@@ -234,6 +236,7 @@ public class EnhancedViewProperties
 			m_widthUnits = evProps.getWidthUnits();
 			m_height = evProps.getHeight();
 			m_heightUnits = evProps.getHeightUnits();
+			m_overflow = evProps.getOverflow();
 		}
 	}
 	
@@ -288,6 +291,13 @@ public class EnhancedViewProperties
 		else
 			str += "px";
 		
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
+
 		str += ";";
 		
 		return str;
@@ -391,6 +401,14 @@ public class EnhancedViewProperties
 		return m_numEntriesToBeShown;
 	}
 	
+	
+	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
+	}
 	
 	/**
 	 * Return the name of the binder the folder lives in.
@@ -557,6 +575,14 @@ public class EnhancedViewProperties
 		m_numEntriesToBeShown = numEntries;
 	}
 	
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
+	}
 	
 	/**
 	 * 

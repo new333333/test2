@@ -75,6 +75,7 @@ public class FolderProperties
 	private Style.Unit m_widthUnits;
 	private int m_height;
 	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
 
 	/**
 	 * 
@@ -102,6 +103,7 @@ public class FolderProperties
 		m_widthUnits = Style.Unit.PCT;
 		m_height = 100;
 		m_heightUnits = Style.Unit.PCT;
+		m_overflow = Style.Overflow.HIDDEN;
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
@@ -185,6 +187,7 @@ public class FolderProperties
 			m_widthUnits = folderProps.getWidthUnits();
 			m_height = folderProps.getHeight();
 			m_heightUnits = folderProps.getHeightUnits();
+			m_overflow = folderProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -230,6 +233,13 @@ public class FolderProperties
 			str += "%";
 		else
 			str += "px";
+
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
 
 		str += ";";
 
@@ -313,6 +323,14 @@ public class FolderProperties
 	public int getNumRepliesToShow()
 	{
 		return m_numRepliesToShow;
+	}
+	
+	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
 	}
 	
 	/**
@@ -475,6 +493,14 @@ public class FolderProperties
 	public void setNumRepliesToShow( int numReplies )
 	{
 		m_numRepliesToShow = numReplies;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
 	}
 	
 	/**

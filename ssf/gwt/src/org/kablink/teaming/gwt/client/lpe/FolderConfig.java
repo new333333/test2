@@ -196,6 +196,20 @@ public class FolderConfig extends ConfigItem
 							}
 						}
 					}
+					else if ( results2[0].equalsIgnoreCase( "overflow" ) )
+					{
+						String value;
+						
+						// The string looks like, overflow=auto or overflow=hidden
+						value = results2[1];
+						if ( value != null )
+						{
+							if ( value.equalsIgnoreCase( "auto" ) )
+								m_properties.setOverflow( Style.Overflow.AUTO );
+							else if ( value.equalsIgnoreCase( "hidden" ) )
+								m_properties.setOverflow( Style.Overflow.HIDDEN );
+						}
+					}
 				}
 			}
 		}

@@ -199,8 +199,10 @@ public class GraphicWidgetDlgBox extends DlgBox
 				height = 100;
 				units = Style.Unit.PCT;
 			}
+
 			properties.setHeight( height );
 			properties.setHeightUnits( units );
+			properties.setOverflow( getOverflow() );
 		}
 
 		return properties;
@@ -284,6 +286,14 @@ public class GraphicWidgetDlgBox extends DlgBox
 	
 
 	/**
+	 * 
+	 */
+	private Style.Overflow getOverflow()
+	{
+		return m_sizeCtrl.getOverflow();
+	}
+
+	/**
 	 * Return true if the "show border" checkbox is checked.
 	 */
 	public boolean getShowBorderValue()
@@ -344,7 +354,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
 
 		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits() );
+		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
 
 	}// end init()
 

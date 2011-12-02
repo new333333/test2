@@ -63,6 +63,7 @@ public class GraphicProperties
 	private Style.Unit m_widthUnits;
 	private int m_height;
 	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
 
 	/**
 	 * 
@@ -78,6 +79,7 @@ public class GraphicProperties
 		m_widthUnits = Style.Unit.PCT;
 		m_height = 100;
 		m_heightUnits = Style.Unit.PCT;
+		m_overflow = Style.Overflow.HIDDEN;
 
 	}// end GraphicProperties()
 	
@@ -100,6 +102,7 @@ public class GraphicProperties
 			m_widthUnits = graphicProps.getWidthUnits();
 			m_height = graphicProps.getHeight();
 			m_heightUnits = graphicProps.getHeightUnits();
+			m_overflow = graphicProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -141,6 +144,13 @@ public class GraphicProperties
 			str += "%";
 		else
 			str += "px";
+
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
 
 		str += ";";
 
@@ -189,6 +199,14 @@ public class GraphicProperties
 	public Style.Unit getHeightUnits()
 	{
 		return m_heightUnits;
+	}
+	
+	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
 	}
 	
 	/**
@@ -297,6 +315,14 @@ public class GraphicProperties
 	public void setHeightUnits( Style.Unit units )
 	{
 		m_heightUnits = units;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
 	}
 	
 	/**

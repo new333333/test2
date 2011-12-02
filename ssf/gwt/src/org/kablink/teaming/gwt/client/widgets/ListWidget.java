@@ -196,7 +196,7 @@ public class ListWidget extends VibeWidget
 			if ( height != 100 || unit != Unit.PCT )
 				style.setHeight( height, unit );
 			
-			style.setOverflow( Overflow.AUTO );
+			style.setOverflow( m_properties.getOverflow() );
 		}
 
 		// Is there a title?
