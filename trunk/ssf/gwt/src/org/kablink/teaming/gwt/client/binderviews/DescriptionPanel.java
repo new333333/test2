@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderDescriptionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveBinderRegionStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -50,6 +51,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -64,6 +66,7 @@ import com.google.gwt.user.client.ui.Image;
  */
 public class DescriptionPanel extends ToolPanelBase {
 	private Anchor							m_expanderAnchor;		// The Anchor containing the widget that allows the description to be expanded or collapsed.
+	private boolean							m_descriptionExpanded;	// true -> The description should be expanded.  false -> The description should be collapsed.
 	private boolean							m_descriptionIsHTML;	// true -> The content of m_description is HTML.  false -> It's plain text.
 	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's data table image bundle.
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's localized message resources.
@@ -130,6 +133,7 @@ public class DescriptionPanel extends ToolPanelBase {
 		m_expanderImg.setResource(m_images.expandDescription());
 		m_expanderAnchor.getElement().setAttribute("n-state", "expand");
 		m_contentPanel.addStyleName("vibe-descriptionContentClipped");
+		persistStateAsync("collapsed");
 	}
 	
 	/*
@@ -140,6 +144,7 @@ public class DescriptionPanel extends ToolPanelBase {
 		m_expanderImg.setResource(m_images.collapseDescription());
 		m_expanderAnchor.getElement().setAttribute("n-state", "collapse");
 		m_contentPanel.removeStyleName("vibe-descriptionContentClipped");
+		persistStateAsync("expanded");
 	}
 	
 	/*
@@ -176,8 +181,9 @@ public class DescriptionPanel extends ToolPanelBase {
 			public void onSuccess(VibeRpcResponse response) {
 				// Store the description and continue loading.
 				BinderDescriptionRpcResponseData responseData = ((BinderDescriptionRpcResponseData) response.getResponseData());
-				m_description       = responseData.getDescription();
-				m_descriptionIsHTML = responseData.isDescriptionHTML();
+				m_description         = responseData.getDescription();
+				m_descriptionIsHTML   = responseData.isDescriptionHTML();
+				m_descriptionExpanded = responseData.isExpanded();
 				loadPart2Async();
 			}
 		});
@@ -213,10 +219,23 @@ public class DescriptionPanel extends ToolPanelBase {
 			m_expanderPanel.addStyleName("vibe-descriptionExpanderBar");
 			m_expanderAnchor = new Anchor();
 			final Element expandAE = m_expanderAnchor.getElement();
+			ImageResource image;
+			String title;
+			String state;
+			if (m_descriptionExpanded) {
+				image = m_images.collapseDescription();
+				title = m_messages.vibeDataTable_Alt_CollapseDescription();
+				state = "collapse";
+			}
+			else {
+				image = m_images.expandDescription();
+				title = m_messages.vibeDataTable_Alt_ExpandDescription();
+				state = "expand";
+			}
 			m_expanderAnchor.addStyleName("vibe-descriptionExpanderAnchor");
-			m_expanderAnchor.setTitle(m_messages.vibeDataTable_Alt_CollapseDescription());
-			expandAE.setAttribute("n-state", "collapse");
-			m_expanderImg = new Image(m_images.collapseDescription()); 
+			m_expanderAnchor.setTitle(title);
+			expandAE.setAttribute("n-state", state);
+			m_expanderImg = new Image(image); 
 			m_expanderImg.addStyleName("vibe-descriptionExpanderImg");
 			expandAE.appendChild(m_expanderImg.getElement());
 			m_expanderAnchor.addClickHandler(new ClickHandler() {
@@ -261,6 +280,42 @@ public class DescriptionPanel extends ToolPanelBase {
 		}
 	}
 
+	/*
+	 * Asynchronously stores the expansion state of a description.
+	 */
+	private void persistStateAsync(final String state) {
+		ScheduledCommand doSizing = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				persistStateNow(state);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSizing);
+	}
+	
+	/*
+	 * Synchronously stores the expansion state of a description.
+	 */
+	private void persistStateNow(final String state) {
+		final Long binderId = m_binderInfo.getBinderIdAsLong();
+		GwtClientHelper.executeCommand(
+				new SaveBinderRegionStateCmd(binderId, "descriptionRegion", state),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SaveBinderRegionState(),
+					binderId);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Nothing to do.
+			}
+		});
+	}
+	
 	/**
 	 * Called from the binder view to allow the panel to do any
 	 * work required to reset itself.
@@ -297,6 +352,9 @@ public class DescriptionPanel extends ToolPanelBase {
 		if (EXPANDABLE_THRESHOLD < descHeight) {
 			// ...enable its expansion and collapsing.
 			m_expanderPanel.setVisible(true);
+			if (!m_descriptionExpanded) {
+				m_contentPanel.addStyleName("vibe-descriptionContentClipped");
+			}
 		}
 	}
 }

@@ -32,40 +32,40 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for the 'Get Binder Description'
- * RPC command.
+ * This class holds all of the information necessary to execute the
+ * 'Save Binder Region State' command.
  * 
  * @author drfoster@novell.com
  */
-public class BinderDescriptionRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private boolean	m_descriptionIsHTML;	//
-	private boolean m_expanded;				//
-	private String	m_description;			//
+public class SaveBinderRegionStateCmd extends VibeRpcCmd {
+	private Long	m_binderId;		//
+	private String	m_regionId;		//
+	private String	m_regionState;	//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public BinderDescriptionRpcResponseData() {
+	public SaveBinderRegionStateCmd() {
 		super();
 	}
 	
 	/**
-	 * Constructor method.
-	 *
-	 * @param description
-	 * @param descriptionIsHTML
+	 * Constructor method
+	 * 
+	 * @param binderId
+	 * @param regionId
+	 * @param regionState
 	 */
-	public BinderDescriptionRpcResponseData(String description, boolean descriptionIsHTML, boolean expanded) {
+	public SaveBinderRegionStateCmd(Long binderId, String regionId, String regionState) {
 		this();
 		
-		setDescription(      description      );
-		setDescriptionIsHTML(descriptionIsHTML);
-		setExpanded(         expanded         );
+		m_binderId    = binderId;
+		m_regionId    = regionId;
+		m_regionState = regionState;
 	}
 	
 	/**
@@ -73,17 +73,19 @@ public class BinderDescriptionRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public boolean isDescriptionHTML() {return m_descriptionIsHTML;}
-	public boolean isExpanded()        {return m_expanded;         }
-	public String getDescription()     {return m_description;      }
-
+	public Long   getBinderId()    {return m_binderId;   }
+	public String getRegionId()    {return m_regionId;   }
+	public String getRegionState() {return m_regionState;}
+	
 	/**
-	 * Set'er methods.
+	 * Returns the command's enumeration value.
 	 * 
-	 * @param BinderDescriptionList
-	 * @param description
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	public void setDescriptionIsHTML(boolean descriptionIsHTML) {m_descriptionIsHTML = descriptionIsHTML;}
-	public void setExpanded(         boolean expanded)          {m_expanded          = expanded;         }
-	public void setDescription(      String  description)       {m_description       = description;      }
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_BINDER_REGION_STATE.ordinal();
+	}
 }
