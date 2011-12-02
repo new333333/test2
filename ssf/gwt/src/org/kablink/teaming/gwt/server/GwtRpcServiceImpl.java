@@ -386,6 +386,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_BINDER_REGION_STATE:
+		{
+			GetBinderRegionStateCmd gbrsCmd = ((GetBinderRegionStateCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.getBinderRegionState(
+				this,
+				getRequest( ri ),
+				gbrsCmd.getBinderId(),
+				gbrsCmd.getRegionId() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_VIEW_INFO:
 		{
 			ViewInfo vi = getViewInfo( ri, ((GetViewInfoCmd) cmd) );
@@ -1327,6 +1338,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ActivityStreamEntryRpcResponseData responseData = new ActivityStreamEntryRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
+		}
+		
+		case SAVE_BINDER_REGION_STATE:
+		{
+			SaveBinderRegionStateCmd sbrsCmd = ((SaveBinderRegionStateCmd) cmd);
+			BooleanRpcResponseData responseData = GwtViewHelper.saveBinderRegionState(
+				this,
+				getRequest( ri ),
+				sbrsCmd.getBinderId(),
+				sbrsCmd.getRegionId(),
+				sbrsCmd.getRegionState() );
+			return new VibeRpcResponse( responseData );
 		}
 		
 		case SAVE_BRANDING:

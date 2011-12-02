@@ -76,10 +76,12 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
@@ -528,13 +530,20 @@ public class GwtViewHelper {
 			Description binderDesc    = binder.getDescription();
 			int         binderDescFmt = binderDesc.getFormat();
 
-			// ...and use that to construct and return a
+			// ...access the user's expansion state for the
+			// ...description...
+			StringRpcResponseData regionStateRpcData = getBinderRegionState(bs, request, binderId, "descriptionRegion");
+			String regionState = regionStateRpcData.getStringValue();
+			boolean expanded = (MiscUtil.hasString(regionState) ? regionState.equals("expanded") : true);
+			
+			// ...and use the information to construct and return a
 			// ...BinderDescriptionRpcResponseData object with the
 			// ...binder's description.
 			return
 				new BinderDescriptionRpcResponseData(
 					binderDesc.getText(),
-					(Description.FORMAT_HTML == binderDescFmt));
+					(Description.FORMAT_HTML == binderDescFmt),
+					expanded);
 		}
 		
 		catch (Exception e) {
@@ -658,6 +667,38 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Reads the current user's region state for a binder and returns
+	 * it as a StringRpcResponseData.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param regionId
+	 * 
+	 * @return
+	 */
+	public static StringRpcResponseData getBinderRegionState(AllModulesInjected bs, HttpServletRequest request, Long binderId, String regionId) throws GwtTeamingException {
+		try {
+			// Does the user have this region state defined?
+			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+			String regionState = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId));
+
+			// Use the data we obtained to create a
+			// StringRpcResponseData and return it.
+			return new StringRpcResponseData(MiscUtil.hasString(regionState) ? regionState : "expanded");
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getBinderRegionState( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
 	/*
 	 * Returns a LinkedHashMap of the column names from a String[]
 	 * of them.
@@ -685,11 +726,12 @@ public class GwtViewHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType) throws GwtTeamingException {
 		Boolean includeConfigurationInfo = Boolean.FALSE;
 		return getFolderColumns(bs, request, folderId, folderType, includeConfigurationInfo);
 	}
+	
+	@SuppressWarnings("unchecked")
 	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, 
 			Long folderId, FolderType folderType, Boolean includeConfigurationInfo) throws GwtTeamingException {
 		try {
@@ -1582,6 +1624,34 @@ public class GwtViewHelper {
 		return false;
 	}
 	
+	/**
+	 * Stores a region state for the current user on a binder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param regionId
+	 * @param regionState
+	 * 
+	 * @return
+	 */
+	public static BooleanRpcResponseData saveBinderRegionState(AllModulesInjected bs, HttpServletRequest request, Long binderId, String regionId, String regionState) throws GwtTeamingException {
+		try {
+			// Store the new region state and return true.
+			bs.getProfileModule().setUserProperty(GwtServerHelper.getCurrentUser().getId(), binderId, ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId, regionState);
+			return new BooleanRpcResponseData(Boolean.TRUE);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.saveBinderRegionState( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
 	/*
 	 * Generates a value for a custom column in a row.
 	 * 
