@@ -91,6 +91,10 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 {
 	private ListBox m_evListBox = null;
 	private Label m_descLabel;
+	private TextBox m_widthCtrl = null;
+	private TextBox m_heightCtrl = null;
+	private ListBox m_widthUnitListBox = null;
+	private ListBox m_heightUnitListBox = null;
 	private ArrayList<EnhancedViewInfo> m_views;
 	private LandingPageEditor m_lpe;
 	
@@ -103,11 +107,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private TextBox m_numEntriesToShowTxtBox = null;
 	private InlineLabel m_currentFolderNameLabel = null;
 	private Button m_folderEditBtn;
-	private TextBox m_widthTxtBox = null;
-	private TextBox m_heightTxtBox = null;
-	private ListBox m_widthUnitListBox = null;
-	private ListBox m_heightUnitListBox = null;
-	private FlowPanel m_dimensionsPanel = null;
 	
 	// The following data members are used if an entry is associated with this view"
 	private String m_entryId = null;
@@ -255,6 +254,55 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_selectEntryPanel = createSelectEntryPanel();
 		m_selectEntryPanel.setVisible( false );
 		mainPanel.add( m_selectEntryPanel );
+		
+		// Add the width and height controls
+		{
+			FlexTable sizeTable;
+			
+			sizeTable = new FlexTable();
+			
+			// Add the label and controls for the width
+			{
+				sizeTable.setText( 0, 0, GwtTeaming.getMessages().widthLabel() );
+				m_widthCtrl = new TextBox();
+				m_widthCtrl.addKeyPressHandler( this );
+				m_widthCtrl.setVisibleLength( 3 );
+				sizeTable.setWidget( 0, 1, m_widthCtrl );
+
+				// Create a listbox that holds the possible units for the width
+				{
+					m_widthUnitListBox = new ListBox( false );
+					m_widthUnitListBox.setVisibleItemCount( 1 );
+					
+					m_widthUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
+					m_widthUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
+					
+					sizeTable.setWidget( 0, 2, m_widthUnitListBox );
+				}
+			}
+			
+			// Add the label and controls for the height
+			{
+				sizeTable.setText( 1, 0, GwtTeaming.getMessages().heightLabel() );
+				m_heightCtrl = new TextBox();
+				m_heightCtrl.addKeyPressHandler( this );
+				m_heightCtrl.setVisibleLength( 3 );
+				sizeTable.setWidget( 1, 1, m_heightCtrl );
+
+				// Create a listbox that holds the possible units for the height
+				{
+					m_heightUnitListBox = new ListBox( false );
+					m_heightUnitListBox.setVisibleItemCount( 1 );
+					
+					m_heightUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
+					m_heightUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
+					
+					sizeTable.setWidget( 1, 2, m_heightUnitListBox );
+				}
+			}
+			
+			mainPanel.add( sizeTable );
+		}
 
 		init( properties );
 		
@@ -564,59 +612,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		table.setWidget( 0, 1, m_numEntriesToShowTxtBox );
 		mainPanel.add( table );
 		
-		// Add controls for the width and height
-		{
-			m_dimensionsPanel = new FlowPanel();
-			
-			table = new FlexTable();
-			table.setCellSpacing( 8 );
-			
-			// Add a row for the width controls
-			{
-				label = new Label( GwtTeaming.getMessages().widthLabel() );
-				table.setWidget( 0, 0, label );
-				m_widthTxtBox = new TextBox();
-				m_widthTxtBox.addKeyPressHandler( this );
-				m_widthTxtBox.setVisibleLength( 2 );
-				table.setWidget( 0, 1, m_widthTxtBox );
-
-				// Create a listbox that holds the possible units for the width
-				{
-					m_widthUnitListBox = new ListBox( false );
-					m_widthUnitListBox.setVisibleItemCount( 1 );
-					
-					m_widthUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
-					m_widthUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
-					
-					table.setWidget( 0, 2, m_widthUnitListBox );
-				}
-			}
-			
-			// Add a row for the height controls
-			{
-				label = new Label( GwtTeaming.getMessages().heightLabel() );
-				table.setWidget( 1, 0, label );
-				m_heightTxtBox = new TextBox();
-				m_heightTxtBox.addKeyPressHandler( this );
-				m_heightTxtBox.setVisibleLength( 2 );
-				table.setWidget( 1, 1, m_heightTxtBox );
-				
-				// Create a listbox that holds the possible units for the height
-				{
-					m_heightUnitListBox = new ListBox( false );
-					m_heightUnitListBox.setVisibleItemCount( 1 );
-					
-					m_heightUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
-					m_heightUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
-					
-					table.setWidget( 1, 2, m_heightUnitListBox );
-				}
-			}
-			
-			m_dimensionsPanel.add( table );
-			mainPanel.add( m_dimensionsPanel );
-		}
-		
 		// Add a checkbox for "Show title"
 		table = new FlexTable();
 		table.setCellSpacing( 0 );
@@ -656,26 +651,11 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			// Does the selected view require the user to select a folder?
 			if ( evInfo.isFolderRequired() )
 			{
-				String jspName;
-				
 				// Yes, show the ui for selecting a folder.
 				m_selectFolderPanel.setVisible( true );
 				
 				// Show/hide the "Show title" checkbox.
 				m_showFolderTitleCkBox.setVisible( evInfo.getTitleOptional() );
-				
-				// Is "Display Calendar" selected?
-				jspName = evInfo.getJspName();
-				if ( jspName != null && jspName.equalsIgnoreCase( "landing_page_calendar.jsp" ) )
-				{
-					// Yes, show the controls for width and height
-					m_dimensionsPanel.setVisible( true );
-				}
-				else
-				{
-					// Hide the controls for width and height
-					m_dimensionsPanel.setVisible( false );
-				}
 			}
 			
 			// Does the selected view require the user to select an entry?
@@ -733,6 +713,37 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		// Save away the name of the jsp that the selected view uses.
 		properties.setJspName( getJspName() );
 
+		// Get the width and height values
+		{
+			int width;
+			int height;
+			Style.Unit units;
+			
+			// Get the width
+			width = getWidth();
+			units = getWidthUnits();
+			if ( width == 0 )
+			{
+				// Default to 100%
+				width = 100;
+				units = Style.Unit.PCT;
+			}
+			properties.setWidth( width );
+			properties.setWidthUnits( units );
+			
+			// Get the height
+			height = getHeight();
+			units = getHeightUnits();
+			if ( height == 0 )
+			{
+				// Default to 100%
+				height = 100;
+				units = Style.Unit.PCT;
+			}
+			properties.setHeight( height );
+			properties.setHeightUnits( units );
+		}
+
 		// Does the selected view require a folder to be selected?
 		if ( doesSelectedViewRequireFolder() )
 		{
@@ -751,39 +762,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			
 			// Save away the "show title bar" value.
 			properties.setShowTitle( getShowFolderTitleValue() );
-			
-			// Are the width and height controls visible?
-			if ( m_dimensionsPanel.isVisible() )
-			{
-				int width;
-				int height;
-				Style.Unit units;
-				
-				// Yes
-				// Get the width
-				width = getWidth();
-				units = getWidthUnits();
-				if ( width == 0 )
-				{
-					// Default to 100%
-					width = 100;
-					units = Style.Unit.PCT;
-				}
-				properties.setWidth( width );
-				properties.setWidthUnits( units );
-				
-				// Get the height
-				height = getHeight();
-				units = getHeightUnits();
-				if ( height == 0 )
-				{
-					// Default to 100%
-					height = 100;
-					units = Style.Unit.PCT;
-				}
-				properties.setHeight( height );
-				properties.setHeightUnits( units );
-			}
 		}
 		
 		// Does the selected view require an entry to be selected.
@@ -935,26 +913,20 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private int getHeight()
 	{
 		int height = 0;
+		String txt;
 		
-		// Is the panel that holds the width and height controls visible?
-		if ( m_dimensionsPanel != null && m_dimensionsPanel.isVisible() )
+		// Yes
+		txt = m_heightCtrl.getText();
+		if ( txt != null && txt.length() > 0 )
 		{
-			String txt;
-			
-			// Yes
-			txt = m_heightTxtBox.getText();
-			if ( txt != null && txt.length() > 0 )
+			try
 			{
-				try
-				{
-					height = Integer.parseInt( txt );
-				}
-				catch ( NumberFormatException nfEx )
-				{
-					// This should never happen.  The data should be validated before we get to this point.
-				}
+				height = Integer.parseInt( txt );
 			}
-			
+			catch ( NumberFormatException nfEx )
+			{
+				// This should never happen.  The data should be validated before we get to this point.
+			}
 		}
 		
 		return height;
@@ -966,25 +938,20 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private Style.Unit getHeightUnits()
 	{
 		Style.Unit unit = Style.Unit.PCT;
+		int selectedIndex;
+		String value;
 		
-		// Is the panel that holds the width and height controls visible?
-		if ( m_dimensionsPanel != null && m_dimensionsPanel.isVisible() )
-		{
-			int selectedIndex;
-			String value;
-			
-			// Yes
-			// Get the selected index from the listbox that holds the list of units.
-			selectedIndex = m_heightUnitListBox.getSelectedIndex();
-			if ( selectedIndex < 0 )
-				selectedIndex = 0;
-			
-			value = m_heightUnitListBox.getValue( selectedIndex );
-			if ( value != null && value.equalsIgnoreCase( "%" ) )
-				unit = Style.Unit.PCT;
-			else
-				unit = Style.Unit.PX;
-		}
+		// Yes
+		// Get the selected index from the listbox that holds the list of units.
+		selectedIndex = m_heightUnitListBox.getSelectedIndex();
+		if ( selectedIndex < 0 )
+			selectedIndex = 0;
+		
+		value = m_heightUnitListBox.getValue( selectedIndex );
+		if ( value != null && value.equalsIgnoreCase( "%" ) )
+			unit = Style.Unit.PCT;
+		else
+			unit = Style.Unit.PX;
 		
 		return unit;
 	}
@@ -1076,26 +1043,20 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private int getWidth()
 	{
 		int width = 0;
+		String txt;
 		
-		// Is the panel that holds the width and height controls visible?
-		if ( m_dimensionsPanel != null && m_dimensionsPanel.isVisible() )
+		// Yes
+		txt = m_widthCtrl.getText();
+		if ( txt != null && txt.length() > 0 )
 		{
-			String txt;
-			
-			// Yes
-			txt = m_widthTxtBox.getText();
-			if ( txt != null && txt.length() > 0 )
+			try
 			{
-				try
-				{
-					width = Integer.parseInt( txt );
-				}
-				catch ( NumberFormatException nfEx )
-				{
-					// This should never happen.  The data should be validated before we get to this point.
-				}
+				width = Integer.parseInt( txt );
 			}
-			
+			catch ( NumberFormatException nfEx )
+			{
+				// This should never happen.  The data should be validated before we get to this point.
+			}
 		}
 		
 		return width;
@@ -1107,25 +1068,20 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private Style.Unit getWidthUnits()
 	{
 		Style.Unit unit = Style.Unit.PCT;
+		int selectedIndex;
+		String value;
 		
-		// Is the panel that holds the width and height controls visible?
-		if ( m_dimensionsPanel != null && m_dimensionsPanel.isVisible() )
-		{
-			int selectedIndex;
-			String value;
-			
-			// Yes
-			// Get the selected index from the listbox that holds the list of units.
-			selectedIndex = m_widthUnitListBox.getSelectedIndex();
-			if ( selectedIndex < 0 )
-				selectedIndex = 0;
-			
-			value = m_widthUnitListBox.getValue( selectedIndex );
-			if ( value != null && value.equalsIgnoreCase( "%" ) )
-				unit = Style.Unit.PCT;
-			else
-				unit = Style.Unit.PX;
-		}
+		// Yes
+		// Get the selected index from the listbox that holds the list of units.
+		selectedIndex = m_widthUnitListBox.getSelectedIndex();
+		if ( selectedIndex < 0 )
+			selectedIndex = 0;
+		
+		value = m_widthUnitListBox.getValue( selectedIndex );
+		if ( value != null && value.equalsIgnoreCase( "%" ) )
+			unit = Style.Unit.PCT;
+		else
+			unit = Style.Unit.PX;
 		
 		return unit;
 	}
@@ -1175,12 +1131,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_showEntryTitleCkBox.setValue( false );
 		m_descLabel.setText( "" );
 		
-		if ( m_widthTxtBox != null )
-			m_widthTxtBox.setText( "" );
-		
-		if ( m_heightTxtBox != null )
-			m_heightTxtBox.setText( "" );
-		
 		properties = (EnhancedViewProperties) props;
 
 		// Select the appropriate view in the listbox.
@@ -1189,6 +1139,12 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_folderId = properties.getFolderId();
 		m_entryId = properties.getEntryId();
 		
+		// Initialize the width controls.
+		initWidthControls( properties );
+		
+		// Initialize the height controls.
+		initHeightControls( properties );
+
 		// Initialize the controls when a folder is required.
 		{
 			// Do we have a folder?
@@ -1223,12 +1179,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			
 			// Show the edit button.
 			m_folderEditBtn.setVisible( true );
-			
-			// Initialize the width controls.
-			initWidthControls( properties );
-			
-			// Initialize the height controls.
-			initHeightControls( properties );
 		}
 
 		// Initialize the controls when an entry is required.
@@ -1271,29 +1221,26 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	 */
 	private void initHeightControls( EnhancedViewProperties properties )
 	{
-		if ( m_heightTxtBox != null )
-		{
-			int i;
-			String unitValue;
-			
-			m_heightTxtBox.setText( String.valueOf( properties.getHeight() ) );
-			
-			if ( properties.getHeightUnits() == Style.Unit.PCT )
-				unitValue = "%";
-			else
-				unitValue = "px";
+		int i;
+		String unitValue;
+		
+		m_heightCtrl.setText( String.valueOf( properties.getHeight() ) );
+		
+		if ( properties.getHeightUnits() == Style.Unit.PCT )
+			unitValue = "%";
+		else
+			unitValue = "px";
 
-			// Select the appropriate unit in the listbox.
-			for (i = 0; i < m_heightUnitListBox.getItemCount(); ++i)
+		// Select the appropriate unit in the listbox.
+		for (i = 0; i < m_heightUnitListBox.getItemCount(); ++i)
+		{
+			String nextUnit;
+			
+			nextUnit = m_heightUnitListBox.getValue( i );
+			if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
 			{
-				String nextUnit;
-				
-				nextUnit = m_heightUnitListBox.getValue( i );
-				if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
-				{
-					m_heightUnitListBox.setSelectedIndex( i );
-					break;
-				}
+				m_heightUnitListBox.setSelectedIndex( i );
+				break;
 			}
 		}
 	}
@@ -1303,29 +1250,26 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	 */
 	private void initWidthControls( EnhancedViewProperties properties )
 	{
-		if ( m_widthTxtBox != null )
+		int i;
+		String unitValue;
+		
+		m_widthCtrl.setText( String.valueOf( properties.getWidth() ) );
+
+		if ( properties.getWidthUnits() == Style.Unit.PCT )
+			unitValue = "%";
+		else
+			unitValue = "px";
+
+		// Select the appropriate unit in the listbox.
+		for (i = 0; i < m_widthUnitListBox.getItemCount(); ++i)
 		{
-			int i;
-			String unitValue;
+			String nextUnit;
 			
-			m_widthTxtBox.setText( String.valueOf( properties.getWidth() ) );
-
-			if ( properties.getWidthUnits() == Style.Unit.PCT )
-				unitValue = "%";
-			else
-				unitValue = "px";
-
-			// Select the appropriate unit in the listbox.
-			for (i = 0; i < m_widthUnitListBox.getItemCount(); ++i)
+			nextUnit = m_widthUnitListBox.getValue( i );
+			if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
 			{
-				String nextUnit;
-				
-				nextUnit = m_widthUnitListBox.getValue( i );
-				if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
-				{
-					m_widthUnitListBox.setSelectedIndex( i );
-					break;
-				}
+				m_widthUnitListBox.setSelectedIndex( i );
+				break;
 			}
 		}
 	}

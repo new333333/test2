@@ -180,14 +180,14 @@ public class EnhancedViewConfig extends ConfigItem
 								if ( index != -1 )
 								{
 									String numValue;
-									int width;
+									int height;
 									
 									// Yes
 									numValue = value.substring( 0, index );
 									try
 									{
-										width = Integer.parseInt( numValue );
-										m_properties.setHeight( width );
+										height = Integer.parseInt( numValue );
+										m_properties.setHeight( height );
 									}
 									catch (Exception ex)
 									{

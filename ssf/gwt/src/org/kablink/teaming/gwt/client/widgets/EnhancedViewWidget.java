@@ -75,6 +75,10 @@ public class EnhancedViewWidget extends VibeWidget
 			entryProperties.setShowDate( true );
 			entryProperties.setShowTitle( true );
 			entryProperties.setNumRepliesToShow( 10 );
+			entryProperties.setWidth( properties.getWidth() );
+			entryProperties.setWidthUnits( properties.getWidthUnits() );
+			entryProperties.setHeight( properties.getHeight() );
+			entryProperties.setHeightUnits( properties.getHeightUnits() );
 			
 			widget = new EntryWidget( entryProperties, landingPageStyle );
 			break;
@@ -95,6 +99,10 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setSortEntriesByTitle( false );
 			folderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
 			folderProperties.setNumRepliesToShow( 10 );
+			folderProperties.setWidth( properties.getWidth() );
+			folderProperties.setWidthUnits( properties.getWidthUnits() );
+			folderProperties.setHeight( properties.getHeight() );
+			folderProperties.setHeightUnits( properties.getHeightUnits() );
 			
 			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
@@ -115,6 +123,10 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setSortEntriesByTitle( false );
 			folderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
 			folderProperties.setNumRepliesToShow( 0 );
+			folderProperties.setWidth( properties.getWidth() );
+			folderProperties.setWidthUnits( properties.getWidthUnits() );
+			folderProperties.setHeight( properties.getHeight() );
+			folderProperties.setHeightUnits( properties.getHeightUnits() );
 			
 			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
@@ -135,6 +147,10 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setSortEntriesByTitle( true );
 			folderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
 			folderProperties.setNumRepliesToShow( 0 );
+			folderProperties.setWidth( properties.getWidth() );
+			folderProperties.setWidthUnits( properties.getWidthUnits() );
+			folderProperties.setHeight( properties.getHeight() );
+			folderProperties.setHeightUnits( properties.getHeightUnits() );
 			
 			widget = new FolderWidget( folderProperties, landingPageStyle );
 			break;
@@ -149,6 +165,10 @@ public class EnhancedViewWidget extends VibeWidget
 			fileFolderProperties.setFolderId( properties.getFolderId() );
 			fileFolderProperties.setShowTitle( properties.getShowTitleValue() );
 			fileFolderProperties.setNumEntriesToBeShownValue( properties.getNumEntriesToBeShownValue() );
+			fileFolderProperties.setWidth( properties.getWidth() );
+			fileFolderProperties.setWidthUnits( properties.getWidthUnits() );
+			fileFolderProperties.setHeight( properties.getHeight() );
+			fileFolderProperties.setHeightUnits( properties.getHeightUnits() );
 			
 			widget = new FileFolderWidget( fileFolderProperties, landingPageStyle );
 			break;
@@ -162,6 +182,10 @@ public class EnhancedViewWidget extends VibeWidget
 			taskFolderProperties.setZoneUUID( properties.getZoneUUID() );
 			taskFolderProperties.setFolderId( properties.getFolderId() );
 			taskFolderProperties.setNumTasksToBeShownValue( properties.getNumEntriesToBeShownValue() );
+			taskFolderProperties.setWidth( properties.getWidth() );
+			taskFolderProperties.setWidthUnits( properties.getWidthUnits() );
+			taskFolderProperties.setHeight( properties.getHeight() );
+			taskFolderProperties.setHeightUnits( properties.getHeightUnits() );
 			
 			widget = new TaskFolderWidget( taskFolderProperties, landingPageStyle );
 			break;

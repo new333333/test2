@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -71,6 +72,12 @@ public class EntryProperties
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
 	private GetterCallback<Boolean> m_getterCallback;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+
 	/**
 	 * 
 	 */
@@ -89,6 +96,13 @@ public class EntryProperties
 		m_authorWsId = null;
 		m_modificationDate = null;
 		m_getterCallback = null;
+
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
+
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
@@ -165,6 +179,10 @@ public class EntryProperties
 			m_authorWsId = entryProps.getAuthorWorkspaceId();
 			m_modificationDate = entryProps.getModificationDate();
 			m_replyIds = entryProps.getReplyIds();
+			m_width = entryProps.getWidth();
+			m_widthUnits = entryProps.getWidthUnits();
+			m_height = entryProps.getHeight();
+			m_heightUnits = entryProps.getHeightUnits();
 		}
 	}// end copy()
 	
@@ -188,6 +206,20 @@ public class EntryProperties
 		
 		if ( m_showTitle )
 			str += "showTitle=1";
+
+		// Add the width
+		str += ",width=" + String.valueOf( m_width );
+		if ( m_widthUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add the height
+		str += ",height=" + String.valueOf( m_height );
+		if ( m_heightUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
 
 		str += ";";
 		
@@ -285,6 +317,23 @@ public class EntryProperties
 	}
 
 	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
+	
+	
+	/**
 	 * 
 	 */
 	public String getModificationDate()
@@ -340,6 +389,23 @@ public class EntryProperties
 	{
 		return m_viewEntryUrl;
 	}// end getViewEntryUrl()
+	
+	
+	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
+	}
 	
 	
 	/**
@@ -402,6 +468,23 @@ public class EntryProperties
 	/**
 	 * 
 	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
+	
+	
+	/**
+	 * 
+	 */
 	public void setNumRepliesToShow( int numReplies )
 	{
 		m_numRepliesToShow = numReplies;
@@ -432,6 +515,23 @@ public class EntryProperties
 	}// end setShowBorder()
 
 
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
+	
+	
 	/**
 	 * 
 	 */
