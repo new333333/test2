@@ -20,7 +20,7 @@
 	
 	/* ...Start:  Description panel styles. */
 		.vibe-descriptionContent        {}
-		.vibe-descriptionContentClipped {height: 250px; overflow: auto !important;}
+		.vibe-descriptionContentClipped {height: 225px; overflow: auto !important;}
 		.vibe-descriptionExpanderAnchor {text-decoration: none; cursor: pointer;}
 		.vibe-descriptionExpanderImg    {position: absolute; right: 0px; top: -8px; border: 0px none;}
 		.vibe-descriptionExpanderBar    {margin-top: 0.5em; margin-bottom: 8px; border-bottom: 1px solid #CCC; position: relative;}

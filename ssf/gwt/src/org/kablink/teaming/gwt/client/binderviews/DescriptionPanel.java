@@ -78,7 +78,7 @@ public class DescriptionPanel extends ToolPanelBase {
 
 	// The following defines the height a description can be before we
 	// allow the user to expand/collapse it.
-	private final static int EXPANDABLE_THRESHOLD = 250;
+	private final static int EXPANDABLE_THRESHOLD = 225;
 	
 	/*
 	 * Constructor method.
@@ -87,9 +87,9 @@ public class DescriptionPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private DescriptionPanel(BinderInfo binderInfo) {
+	private DescriptionPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo);
+		super(binderInfo, toolPanelReady);
 		
 		// ...initialize the data members...
 		m_images   = GwtTeaming.getDataTableImageBundle();
@@ -108,12 +108,12 @@ public class DescriptionPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(DescriptionPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				DescriptionPanel fp = new DescriptionPanel(binderInfo);
+				DescriptionPanel fp = new DescriptionPanel(binderInfo, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
 			
@@ -273,6 +273,10 @@ public class DescriptionPanel extends ToolPanelBase {
 						// rendering because we only show the expander
 						// it displays larger than our threshold.
 						sizeDescriptionAsync();
+						
+						// Finally, tell who's using this tool panel
+						// that it's ready to go.
+						toolPanelReady();
 					}
 				}
 			});

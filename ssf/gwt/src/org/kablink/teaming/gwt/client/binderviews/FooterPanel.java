@@ -91,9 +91,9 @@ public class FooterPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FooterPanel(ResizeComposite container, BinderInfo binderInfo) {
+	private FooterPanel(ResizeComposite container, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo);
+		super(binderInfo, toolPanelReady);
 
 		// ...initialize the data members...
 		m_container = container;
@@ -114,12 +114,12 @@ public class FooterPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param tpClient
 	 */
-	public static void createAsync(final ResizeComposite container, final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+	public static void createAsync(final ResizeComposite container, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FooterPanel fp = new FooterPanel(container, binderInfo);
+				FooterPanel fp = new FooterPanel(container, binderInfo, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
 			
@@ -145,7 +145,7 @@ public class FooterPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the entry menu panel.
+	 * Synchronously construct's the contents of the footer panel.
 	 */
 	private void loadPart1Now() {
 		final Long folderId = m_binderInfo.getBinderIdAsLong();
@@ -171,7 +171,7 @@ public class FooterPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Asynchronously construct's the contents of the entry menu panel.
+	 * Asynchronously construct's the contents of the footer panel.
 	 */
 	private void loadPart2Async() {
 		ScheduledCommand doLoad = new ScheduledCommand() {
@@ -187,67 +187,74 @@ public class FooterPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the footer panel.
 	 */
 	private void loadPart2Now() {
-		// If we don't have a footer toolbar item...
-		m_footerTBI = ToolbarItem.getNestedToolbarItem(m_toolbarIems, "ssFooterToolbar");
-		if (null == m_footerTBI) {
-			// ...we don't display anything in the footer.
-			return;
+		try {
+			// If we don't have a footer toolbar item...
+			m_footerTBI = ToolbarItem.getNestedToolbarItem(m_toolbarIems, "ssFooterToolbar");
+			if (null == m_footerTBI) {
+				// ...we don't display anything in the footer.
+				return;
+			}
+			
+			// If we the footer toolbar item doesn't contain a
+			// permalink item...
+			ToolbarItem permalinkTBI = m_footerTBI.getNestedToolbarItem("permalink");
+			if (null == permalinkTBI) {
+				// ...we don't display anything in the footer.
+				return;
+			}
+	
+			// Create an Anchor for the foot link...
+			VibeFlowPanel ap = new VibeFlowPanel();
+			ap.addStyleName("vibe-footerAnchorPanel");
+			final Anchor a = new Anchor();
+			a.addStyleName("vibe-footerAnchor");
+			ToolbarItem iCalTBI = m_footerTBI.getNestedToolbarItem("iCalendar");
+			String ilString = ((null == iCalTBI) ? "" : (iCalTBI.getTitle() + ", "));
+			ilString += permalinkTBI.getTitle();
+			InlineLabel il = new InlineLabel(ilString);
+			il.addStyleName("vibe-footerAnchorLabel");
+			a.getElement().appendChild(il.getElement());
+			ap.add(a);
+			m_fp.add(ap);
+	
+			// ...and add the handlers to it.
+			a.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					// Have we already rendered the data?
+					if (null != m_dataPanel) {
+						// Yes!  Toggle its visibility and force the
+						// container to resize to reflect the new
+						// visibility state of the footer.
+						m_dataPanel.setVisible(!m_dataPanel.isVisible());
+						m_container.onResize();
+					}
+					
+					else {
+						// No, we have yet to render the data!  Render
+						// it now.
+						renderPermalinksAsync();
+					}
+				}
+			});
+			a.addMouseOutHandler(new MouseOutHandler() {
+				@Override
+				public void onMouseOut(MouseOutEvent event) {
+					a.removeStyleName("vibe-footerAnchor-hover");
+				}
+			});
+			a.addMouseOverHandler(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					a.addStyleName("vibe-footerAnchor-hover");
+				}
+			});
 		}
 		
-		// If we the footer toolbar item doesn't contain a permalink
-		// item...
-		ToolbarItem permalinkTBI = m_footerTBI.getNestedToolbarItem("permalink");
-		if (null == permalinkTBI) {
-			// ...we don't display anything in the footer.
-			return;
+		finally {
+			// Tell who's using this tool panel that it's ready to go.
+			toolPanelReady();
 		}
-
-		// Create an Anchor for the foot link...
-		VibeFlowPanel ap = new VibeFlowPanel();
-		ap.addStyleName("vibe-footerAnchorPanel");
-		final Anchor a = new Anchor();
-		a.addStyleName("vibe-footerAnchor");
-		ToolbarItem iCalTBI = m_footerTBI.getNestedToolbarItem("iCalendar");
-		String ilString = ((null == iCalTBI) ? "" : (iCalTBI.getTitle() + ", "));
-		ilString += permalinkTBI.getTitle();
-		InlineLabel il = new InlineLabel(ilString);
-		il.addStyleName("vibe-footerAnchorLabel");
-		a.getElement().appendChild(il.getElement());
-		ap.add(a);
-		m_fp.add(ap);
-
-		// ...and add the handlers to it.
-		a.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				// Have we already rendered the data?
-				if (null != m_dataPanel) {
-					// Yes!  Toggle its visibility and force the
-					// container to resize to reflect the new
-					// visibility state of the footer.
-					m_dataPanel.setVisible(!m_dataPanel.isVisible());
-					m_container.onResize();
-				}
-				
-				else {
-					// No, we have yet to render the data!  Render it
-					// now.
-					renderPermalinksAsync();
-				}
-			}
-		});
-		a.addMouseOutHandler(new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				a.removeStyleName("vibe-footerAnchor-hover");
-			}
-		});
-		a.addMouseOverHandler(new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				a.addStyleName("vibe-footerAnchor-hover");
-			}
-		});
 	}
 
 	/*

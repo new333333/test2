@@ -83,9 +83,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EntryMenuPanel(BinderInfo binderInfo) {
+	private EntryMenuPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo);
+		super(binderInfo, toolPanelReady);
 		
 		// ...store the parameters...
 		m_binderInfo = binderInfo;
@@ -109,12 +109,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				EntryMenuPanel emp = new EntryMenuPanel(binderInfo);
+				EntryMenuPanel emp = new EntryMenuPanel(binderInfo, toolPanelReady);
 				tpClient.onSuccess(emp);
 			}
 			
@@ -194,6 +194,10 @@ public class EntryMenuPanel extends ToolPanelBase {
 			}
 		}
 		setDeleteAndPurgeState(false);
+		
+		// Finally, tell who's using this tool panel that it's ready to
+		// go.
+		toolPanelReady();
 	}
 
 	/*

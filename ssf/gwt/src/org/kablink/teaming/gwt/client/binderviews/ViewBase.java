@@ -128,9 +128,9 @@ public abstract class ViewBase extends ResizeComposite {
 	
 	/**
 	 * Called by classes that extend this base class so that it can
-	 * inform the world that it's view is ready to go.
+	 * inform the world that its view is ready to go.
 	 */
-	final public void viewReady() {
+	public void viewReady() {
 		if (null != m_viewReady) {
 			m_viewReady.viewReady();
 		}

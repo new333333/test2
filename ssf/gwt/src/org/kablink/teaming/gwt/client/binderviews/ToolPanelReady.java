@@ -32,59 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-
-import com.google.gwt.user.client.ui.ResizeComposite;
-
 
 /**
- * Base class for for all the tool panels used in the binder views.  
+ * Interface passed to tool panels that they'll used to say when the
+ * panel is ready to be used.
  * 
  * @author drfoster@novell.com
+ *
  */
-public abstract class ToolPanelBase extends ResizeComposite {
-	public    final        BinderInfo			m_binderInfo;							// Caches the BinderInfo for use by this tool panel.
-	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
-	private                ToolPanelReady		m_toolPanelReady;						//
-	
-	/**
-	 * Callback interface to provide access to the tool panel after it
-	 * has asynchronously loaded. 
-	 */
-	public interface ToolPanelClient {
-		void onSuccess(ToolPanelBase tpb);
-		void onUnavailable();
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param binderInfo
-	 */
-	public ToolPanelBase(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
-		// Initialize the superclass...
-		super();
-		
-		// ...and store the parameters.
-		m_binderInfo     = binderInfo;
-		m_toolPanelReady = toolPanelReady;
-	}
-
-	/**
-	 * Called from the binder views to allow the tool panel to do any
-	 * work required to reset themselves.
-	 */
-	public abstract void resetPanel();
-	
-	/**
-	 * Called by classes that extend this base class so that it can
-	 * inform the world that its panel is ready to go.
-	 */
-	final public void toolPanelReady() {
-		if (null != m_toolPanelReady) {
-			m_toolPanelReady.toolPanelReady(this);
-		}
-	}
+public interface ToolPanelReady {
+	void toolPanelReady(ToolPanelBase toolPanel);
 }

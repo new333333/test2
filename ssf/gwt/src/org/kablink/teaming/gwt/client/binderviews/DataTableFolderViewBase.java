@@ -130,7 +130,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public abstract class DataTableFolderViewBase extends ViewBase
-	implements
+	implements ToolPanelReady,
 	// Event handlers implemented by this class.
 		DeleteSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler,
@@ -138,7 +138,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 {
 	private final BinderInfo				m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
 	private boolean							m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
+	private boolean							m_viewReady;				// Set true once the view and all its components are ready.
 	private int								m_folderPageSize;			// Page size as per the user's personal preferences.
+	private int								m_readyComponents;			// Tracks items as they become ready.
 	private EntryMenuPanel					m_entryMenuPanel;			// Panel that holds the entry menu.
 	private FolderRowPager 					m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	private FooterPanel						m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
@@ -624,6 +626,20 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// If we get here, no rows were selected.  Return false.
 		return false;
 	}
+
+	/*
+	 * Checks how many items are ready and once everything is, calls
+	 * super class' viewReady() method.
+	 */
+	private void checkReadyness() {
+		// If everything's ready...
+		int toolPanels = m_toolPanels.size();
+		if ((toolPanels + 1) == m_readyComponents) {	// Count of tool panels plus 1 for the view itself.
+			// ...tell the super class.
+			m_viewReady = true;
+			super.viewReady();
+		}
+	}
 	
 	/*
 	 * Creates the content panels, ... common to all data table folder
@@ -910,7 +926,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the BreadCrumbPanel.
 	 */
 	private void loadPart1Now() {
-		BreadCrumbPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		BreadCrumbPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -947,7 +963,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the AccessoriesPanel.
 	 */
 	private void loadPart2Now() {
-		AccessoriesPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		AccessoriesPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -984,7 +1000,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart3Now() {
-		DescriptionPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		DescriptionPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1021,7 +1037,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart4Now() {
-		FilterPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		FilterPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1058,7 +1074,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Now() {
-		EntryMenuPanel.createAsync(m_folderInfo, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1096,7 +1112,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the FooterPanel.
 	 */
 	private void loadPart6Now() {
-		FooterPanel.createAsync(this, m_folderInfo, new ToolPanelClient() {			
+		FooterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1478,6 +1494,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		ScheduledCommand doResetView = new ScheduledCommand() {
 			@Override
 			public void execute() {
+				m_readyComponents = 0;
+				m_viewReady       = false;
 				resetView();
 			}
 		};
@@ -1518,6 +1536,37 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				column,
 				width.getWidth(),
 				width.getUnits());
+		}
+	}
+	
+	/**
+	 * Implements the ToolPanelReady.toolPanelReady() method.
+	 */
+	@Override
+	public void toolPanelReady(ToolPanelBase toolPanel) {
+		if (!m_viewReady) {
+			m_readyComponents += 1;
+			checkReadyness();
+		}
+		
+		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
+			Window.alert("DataTableFolderViewBase.tolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
+		}
+	}
+	
+	/**
+	 * Called by classes that extend this base class so that it can
+	 * inform the world that its view is ready to go.
+	 */
+	@Override
+	public void viewReady() {
+		if (!m_viewReady) {
+			m_readyComponents += 1;
+			checkReadyness();
+		}
+		
+		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
+			Window.alert("DataTableFolderViewBase.viewReady( *Internal Error* ):  Unexpected call to viewReady() method.");
 		}
 	}
 }
