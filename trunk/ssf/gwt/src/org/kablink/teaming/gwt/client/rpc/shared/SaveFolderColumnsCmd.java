@@ -38,14 +38,14 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 
 
 /**
- * This class holds all of the information necessary to execute the "Save Personal Preferences" command.
+ * This class holds all of the information necessary to execute the "Save Folder Columns" command.
  * 
- * @author jwootton
- *
  */
 public class SaveFolderColumnsCmd extends VibeRpcCmd
 {
+	private String m_binderId;
 	private List<FolderColumn> m_folderColumns;
+	private Boolean m_folderDefaultColumns;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -58,10 +58,39 @@ public class SaveFolderColumnsCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public SaveFolderColumnsCmd( List<FolderColumn> folderColumns )
+	public SaveFolderColumnsCmd( String binderId, List<FolderColumn> folderColumns )
 	{
 		this();
 		m_folderColumns = folderColumns;
+		m_binderId = binderId;
+		m_folderDefaultColumns = Boolean.FALSE;
+	}
+	
+	/**
+	 * 
+	 */
+	public SaveFolderColumnsCmd( String binderId, List<FolderColumn> folderColumns, Boolean isDefault )
+	{
+		this();
+		m_folderColumns = folderColumns;
+		m_binderId = binderId;
+		m_folderDefaultColumns = isDefault;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getFolderId()
+	{
+		return m_binderId;
+	}
+	
+	/**
+	 * 
+	 */
+	public Boolean isFolderColumnsDefault()
+	{
+		return m_folderDefaultColumns;
 	}
 	
 	/**

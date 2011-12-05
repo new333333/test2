@@ -157,6 +157,7 @@ import org.kablink.teaming.web.tree.DomTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -4359,7 +4360,6 @@ public class BinderHelper {
 	public static void saveFolderColumnSettings(AllModulesInjected bs, ActionRequest request, 
 			ActionResponse response, Long binderId) {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
-        User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		Map formData = request.getParameterMap();
 		Map columns = new LinkedHashMap();
@@ -4387,7 +4387,31 @@ public class BinderHelper {
 		}
 		
 		//See if this request was to set the folder default
-		if (formData.containsKey("setFolderDefaultColumns") || binder instanceof TemplateBinder) {
+		boolean folderDefault = formData.containsKey("setFolderDefaultColumns");
+		
+		//Save the column settings
+		saveFolderColumnSettings(bs, binderId, columns, columnsText, columnOrder, folderDefault);
+	}
+	
+	/**
+	 * Saves the folder columns configuration on the specified binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param columns		// column name, "on" or "". If "on", then the columns is shown
+	 * @param columnsText	// column name, column title or null. If null, the default title is shown
+	 * @param columnsOrder	//String of column names separated by "|"
+	 * @param isDefault		//true if this is the default for the binder
+	 * 
+	 * @return
+	 */
+	public static void saveFolderColumnSettings(AllModulesInjected bs, Long binderId, 
+			Map columns, Map columnsText, String columnOrder, boolean folderDefault) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		
+		//See if this request was to set the folder default
+		if (folderDefault || binder instanceof TemplateBinder) {
 			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);

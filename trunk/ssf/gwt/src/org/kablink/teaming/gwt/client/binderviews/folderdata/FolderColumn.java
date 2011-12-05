@@ -47,6 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String	m_columnName;			//
 	private String	m_columnTitle;			//
+	private String	m_columnDefaultTitle;	//
 	private String	m_columnCustomTitle;	//
 	private Boolean m_columnIsShown;		//
 	private String	m_columnSearchKey;		//
@@ -65,6 +66,20 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 		super();
 	}
 
+	/**
+	 * Constructor method.
+	 * 
+	 * @param columnName
+	 */
+	public FolderColumn(String columnName) {
+		// Initialize the object...
+		this();
+		
+		// ...and store the parameters.
+		setColumnName( columnName );
+		setColumnTitle(columnName);
+	}
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -123,6 +138,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 */
 	public String getColumnName()      		{return m_columnName;     }
 	public String getColumnTitle()     		{return m_columnTitle;    }
+	public String getColumnDefaultTitle()   {return m_columnDefaultTitle;    }
 	public String getColumnCustomTitle()    {return m_columnCustomTitle;    }
 	public String getColumnSearchKey() 		{return m_columnSearchKey;}
 	public String getColumnSortKey() {
@@ -141,14 +157,15 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @param
 	 */
-	public void setColumnName(     		String columnName)      	{m_columnName      	= columnName;     	 }
-	public void setColumnTitle(    		String columnTitle)     	{m_columnTitle     	= columnTitle;    	 }
-	public void setColumnCustomTitle(   String columnCustomTitle)   {m_columnCustomTitle= columnCustomTitle; }
-	public void setColumnSearchKey(		String columnSearchKey) 	{m_columnSearchKey 	= columnSearchKey;	 }
-	public void setColumnSortKey(  		String columnSortKey)   	{m_columnSortKey   	= columnSortKey;  	 }
-	public void setColumnDefId(    		String columnDefId)     	{m_columnDefId     	= columnDefId;     	 }
-	public void setColumnType(     		String columnType)      	{m_columnType      	= columnType;     	 }
-	public void setColumnIsShown(  		Boolean showThis)       	{m_columnIsShown   	= showThis;       	 }
+	public void setColumnName(     		String columnName)      	{m_columnName        = columnName;     	 }
+	public void setColumnTitle(    		String columnTitle)     	{m_columnTitle     	 = columnTitle;    	 }
+	public void setColumnDefaultTitle(  String columnDefaultTitle)  {m_columnDefaultTitle= columnDefaultTitle; }
+	public void setColumnCustomTitle(   String columnCustomTitle)   {m_columnCustomTitle = columnCustomTitle; }
+	public void setColumnSearchKey(		String columnSearchKey) 	{m_columnSearchKey 	 = columnSearchKey;	 }
+	public void setColumnSortKey(  		String columnSortKey)   	{m_columnSortKey   	 = columnSortKey;  	 }
+	public void setColumnDefId(    		String columnDefId)     	{m_columnDefId     	 = columnDefId;     	 }
+	public void setColumnType(     		String columnType)      	{m_columnType      	 = columnType;     	 }
+	public void setColumnIsShown(  		Boolean showThis)       	{m_columnIsShown   	 = showThis;       	 }
 
 	/**
 	 * Returns true if the columns is a custom column (i.e., has a
