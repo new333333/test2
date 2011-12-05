@@ -1386,6 +1386,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		int totalBelow		= (dtPagerHeight + fpHeight);										// Total space on the page below the data table.
 		
 		int dataTableHeight = ((viewHeight - dtTop) - totalBelow);								// How tall we can make the data table.
+		if (0 > dataTableHeight) {
+			dataTableHeight = 0;
+		}
 		m_dataTable.setHeight(dataTableHeight + "px");
 	}
 	
