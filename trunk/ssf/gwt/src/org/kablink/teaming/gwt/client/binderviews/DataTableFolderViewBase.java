@@ -303,8 +303,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 					}
 					
 					// Apply the rows we read.
-					m_vdt.setRowData(responseData.getStartOffset(), folderRows);
-					m_vdt.setRowCount(responseData.getTotalRows());
+					m_vdt.setRowData( responseData.getStartOffset(), folderRows);
+					m_vdt.setRowCount(responseData.getTotalRows()              );
 				}
 			});
 		}
@@ -341,6 +341,33 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				false,	// false -> No fast forward button...
 				0,		//          ...hence no fast forward rows needed.
 				true);	// true -> Show last page button.
+		}
+
+		/**
+		 * Set the page start index.  We override this method to
+		 * fix the problem that the last page display will be
+		 * weird without this.
+		 * 
+		 * Overrides the SimplePager.setPageStart() method.
+		 * 
+		 * @param index
+		 */
+		@Override
+		public void setPageStart(int index) {
+		  if (getDisplay() != null) {
+		    Range range = getDisplay().getVisibleRange();
+		    int pageSize = range.getLength();
+
+		    // Removed the min to show fixed ranges.
+		    // if (isRangeLimited && display.isRowCountExact()) {
+		    //	   index = Math.min(index, display.getRowCount() - pageSize);
+		    // }
+
+		    index = Math.max(0, index);
+		    if (index != range.getStart()) {
+		      getDisplay().setVisibleRange(index, pageSize);
+		    }
+		  }
 		}
 	}
 	
