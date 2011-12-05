@@ -157,7 +157,6 @@ import org.kablink.teaming.web.tree.DomTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
