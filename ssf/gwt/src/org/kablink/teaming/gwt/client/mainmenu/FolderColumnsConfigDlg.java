@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
@@ -39,14 +40,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
-import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
-import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
-import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -54,7 +48,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
@@ -66,6 +59,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -92,6 +86,8 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private final static String OPTION_HEADER_ID	= "optionHeader";
 
 	private Grid m_folderColumnsGrid;				// Once displayed, the table of folder columns.
+	private CheckBox m_folderDefaultCheckBox;		// Set the folder default columns.
+	private Button m_folderDefaultBtn;				// Restore default settings
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
 	private String m_binderId;						// The ID of the binder the folder columns dialog is running against.
 	private int m_folderColumnsListCount;			// Count of items in m_folderColumnsList.
@@ -212,6 +208,45 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 
 			// ...and connect everything together.
 			vp.add(m_folderColumnsGrid);
+			
+			//Add the option to set the folder default
+			FlexTable ft = new FlexTable();
+			m_folderDefaultCheckBox = new CheckBox();
+			ft.setWidget(0, 0, m_folderDefaultCheckBox);
+			ft.setText(0, 1, m_messages.folderColumnsSetAsDefault());
+			
+			//Add a button to restore factory defaults
+			m_folderDefaultBtn = new Button(m_messages.folderColumnsRestoreDefaults());
+			m_folderDefaultBtn.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					//Go restore the defaults
+					AsyncCallback<VibeRpcResponse> rpcSaveCallback;
+					rpcSaveCallback = new AsyncCallback<VibeRpcResponse>() {
+						/**
+						 * 
+						 */
+						public void onFailure( Throwable t )
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_SaveFolderColumns() );
+						}
+						
+						/**
+						 * 
+						 */
+						public void onSuccess( VibeRpcResponse response ) {
+						}
+					};
+
+					SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd( m_binderId, 
+							new ArrayList<FolderColumn>(), new Boolean(Boolean.TRUE));
+					GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+				}
+			});
+			ft.getFlexCellFormatter().setColSpan(1, 0, 2);
+			ft.setWidget(1, 0, m_folderDefaultBtn);
+			vp.add(ft);			
 		}
 		
 		else {
@@ -254,7 +289,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public boolean editSuccessful(Object callbackData) {
 		// Save the new folder column info
 		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
-		Boolean isDefault = Boolean.FALSE;
+		Boolean isDefault = m_folderDefaultCheckBox.getValue();
 		AsyncCallback<VibeRpcResponse> rpcSaveCallback;
 		rpcSaveCallback = new AsyncCallback<VibeRpcResponse>() {
 			/**

@@ -127,6 +127,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
@@ -4241,6 +4242,15 @@ public class GwtServerHelper {
 			break;
 		}
 			
+		case SAVE_FOLDER_COLUMNS:
+		{
+			SaveFolderColumnsCmd saveFCCmd = ((SaveFolderColumnsCmd) cmd);
+			for (FolderColumn fc : saveFCCmd.getFolderColumns()) {
+				fc.setColumnCustomTitle(StringCheckUtil.check(fc.getColumnCustomTitle()));
+			}
+			break;
+		}
+			
 		// The following commands do not require XSS checks.
 		case ADD_FAVORITE:
 		case CAN_MODIFY_BINDER:
@@ -4579,28 +4589,34 @@ public class GwtServerHelper {
 	public static Boolean saveFolderColumns(AllModulesInjected bs, String binderId, 
 			List<FolderColumn> fcList, Boolean isDefault) throws GwtTeamingException {
 		try {
-			//Build a map of columns and column texts
-			Map columns = new HashMap();
-			Map columnsText = new HashMap();
-			String columnSortOrder = "";
-			for (FolderColumn fc : fcList) {
-				if (!columnSortOrder.equals("")) columnSortOrder += "|";
-				columnSortOrder += fc.getColumnName();
-				if (fc.getColumnIsShown()) {
-					columns.put(fc.getColumnName(), "on");
-				} else {
-					columns.put(fc.getColumnName(), "");
+			if (fcList.isEmpty()) {
+				//This is a request to restore the defaults
+				BinderHelper.saveFolderColumnSettings(bs, Long.valueOf(binderId), null, null, 
+						null, Boolean.TRUE);
+			} else {
+				//Build a map of columns and column texts
+				Map columns = new HashMap();
+				Map columnsText = new HashMap();
+				String columnSortOrder = "";
+				for (FolderColumn fc : fcList) {
+					if (!columnSortOrder.equals("")) columnSortOrder += "|";
+					columnSortOrder += fc.getColumnName();
+					if (fc.getColumnIsShown()) {
+						columns.put(fc.getColumnName(), "on");
+					} else {
+						columns.put(fc.getColumnName(), "");
+					}
+					String columnTitle = fc.getColumnCustomTitle();
+					if (columnTitle != null && !columnTitle.equals("")) {
+						columnsText.put(fc.getColumnName(), columnTitle);
+					} else {
+						columnsText.put(fc.getColumnName(), null);
+					}
 				}
-				String columnTitle = fc.getColumnCustomTitle();
-				if (columnTitle != null && !columnTitle.equals("")) {
-					columnsText.put(fc.getColumnName(), columnTitle);
-				} else {
-					columnsText.put(fc.getColumnName(), null);
-				}
+				//Save the column settings
+				BinderHelper.saveFolderColumnSettings(bs, Long.valueOf(binderId), columns, columnsText, 
+						columnSortOrder, isDefault);
 			}
-			//Save the column settings
-			BinderHelper.saveFolderColumnSettings(bs, Long.valueOf(binderId), columns, columnsText, 
-					columnSortOrder, isDefault);
 			
 			return Boolean.FALSE;
 		}

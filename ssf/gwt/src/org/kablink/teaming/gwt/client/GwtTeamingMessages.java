@@ -1141,7 +1141,9 @@ public interface GwtTeamingMessages extends Messages
 	String folderColumnsDlgFolderColumn();
 	String folderColumnsDlgFolderCustomLabel();
 	String folderColumnsDlgFolderOrder();
+	String folderColumnsRestoreDefaults();
 	String folderColumnsNoOptions();
+	String folderColumnsSetAsDefault();
 	String folderColumnsUnexpectedEvent(String eventName);
 	
 	// Strings used by various widgets of the Vibe Data table.
