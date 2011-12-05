@@ -45,11 +45,17 @@ import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,6 +63,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -247,7 +254,35 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public boolean editSuccessful(Object callbackData) {
 		// Save the new folder column info
 		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
-		
+		Boolean isDefault = Boolean.FALSE;
+		AsyncCallback<VibeRpcResponse> rpcSaveCallback;
+		rpcSaveCallback = new AsyncCallback<VibeRpcResponse>() {
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SaveFolderColumns() );
+			}
+			
+			/**
+			 * 
+			 */
+			public void onSuccess( VibeRpcResponse response ) {
+				final String url;
+				StringRpcResponseData responseData;
+				ScheduledCommand cmd;
+
+				responseData = (StringRpcResponseData) response.getResponseData();
+				url = responseData.getStringValue();
+			}
+		};
+
+		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd( m_binderId, fcList, isDefault );
+		GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+
 		// Return true to close the dialog.
 		return true;
 	}
@@ -373,7 +408,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		grid.setWidget(row, 0, cb);
 		
 		//Column title
-		String txt = fci.getColumnTitle();
+		String txt = fci.getColumnDefaultTitle();
 		if (!(GwtClientHelper.hasString(txt))) {
 			txt = fci.getColumnName();
 		}

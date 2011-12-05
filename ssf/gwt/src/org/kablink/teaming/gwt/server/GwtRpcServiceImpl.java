@@ -89,6 +89,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -1373,6 +1374,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			sfsacCmd = ((SaveFileSyncAppConfigurationCmd) cmd);
 			result = GwtServerHelper.saveFileSyncAppConfiguration( this, sfsacCmd.getFileSyncAppConfiguration() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SAVE_FOLDER_COLUMNS:
+		{
+			SaveFolderColumnsCmd sfcCmd = ((SaveFolderColumnsCmd) cmd);
+			Boolean result = saveFolderColumns( ri, sfcCmd.getFolderId(), sfcCmd.getFolderColumns(), sfcCmd.isFolderColumnsDefault() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
 		
@@ -3352,6 +3361,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskPriority()");
+		}
+	}
+	
+	/*
+	 * Save a folders sort options on the specified binder.
+	 */
+	private Boolean saveFolderColumns( HttpRequestInfo ri, String binderId, List<FolderColumn> fcList, 
+			Boolean isDefault ) throws GwtTeamingException {
+		SimpleProfiler.start("GwtRpcServiceImpl.saveFolderColumns()");
+		try {
+			return GwtServerHelper.saveFolderColumns( this, binderId, fcList, isDefault );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveFolderSort()");
 		}
 	}
 	

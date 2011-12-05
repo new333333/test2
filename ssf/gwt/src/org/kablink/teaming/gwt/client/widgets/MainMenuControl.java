@@ -865,7 +865,7 @@ public class MainMenuControl extends Composite
 								
 								// Issue an ajax request to save the folder columns to the db.  rpcSaveCallback will
 								// be called when we get the response back.
-								cmd = new SaveFolderColumnsCmd( newFolderColumns );
+								cmd = new SaveFolderColumnsCmd( m_contextBinder.getBinderId(), newFolderColumns );
 								GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 							}
 							

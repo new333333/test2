@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -4563,6 +4564,52 @@ public class GwtServerHelper {
 	}
 	
 	
+	/**
+	 * Saves the folder columns configuration on the specified binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param fcList
+	 * @param isDefault
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveFolderColumns(AllModulesInjected bs, String binderId, 
+			List<FolderColumn> fcList, Boolean isDefault) throws GwtTeamingException {
+		try {
+			//Build a map of columns and column texts
+			Map columns = new HashMap();
+			Map columnsText = new HashMap();
+			String columnSortOrder = "";
+			for (FolderColumn fc : fcList) {
+				if (!columnSortOrder.equals("")) columnSortOrder += "|";
+				columnSortOrder += fc.getColumnName();
+				if (fc.getColumnIsShown()) {
+					columns.put(fc.getColumnName(), "on");
+				} else {
+					columns.put(fc.getColumnName(), "");
+				}
+				String columnTitle = fc.getColumnCustomTitle();
+				if (columnTitle != null && !columnTitle.equals("")) {
+					columnsText.put(fc.getColumnName(), columnTitle);
+				} else {
+					columnsText.put(fc.getColumnName(), null);
+				}
+			}
+			//Save the column settings
+			BinderHelper.saveFolderColumnSettings(bs, Long.valueOf(binderId), columns, columnsText, 
+					columnSortOrder, isDefault);
+			
+			return Boolean.FALSE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+
 	/**
 	 * Saves the folder sort options on the specified binder.
 	 * 
