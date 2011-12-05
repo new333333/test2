@@ -206,9 +206,10 @@ public class DescriptionPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the description panel.
 	 */
 	private void loadPart2Now() {
-		// If we have a description...
+		// Do we have a description?
 		if (GwtClientHelper.hasString(m_description)) {
-			// ...we need to render it.  Add the initial panel styles.
+			// Yes!  We need to render it.  Add the initial panel
+			// styles.
 			m_fp.addStyleName("vibe-binderViewTools vibe-descriptionPanel");
 
 			// Create the widgets that allow the user to
@@ -273,14 +274,16 @@ public class DescriptionPanel extends ToolPanelBase {
 						// rendering because we only show the expander
 						// it displays larger than our threshold.
 						sizeDescriptionAsync();
-						
-						// Finally, tell who's using this tool panel
-						// that it's ready to go.
-						toolPanelReady();
 					}
 				}
 			});
 			m_fp.add(m_contentPanel);
+		}
+		
+		else {
+			// No, we don't have a description!  Simply tell who's
+			// using this tool panel that it's ready to go.
+			toolPanelReady();
 		}
 	}
 
@@ -360,5 +363,9 @@ public class DescriptionPanel extends ToolPanelBase {
 				m_contentPanel.addStyleName("vibe-descriptionContentClipped");
 			}
 		}
+		
+		// Finally, tell who's using this tool panel that it's ready to
+		// go.
+		toolPanelReady();
 	}
 }
