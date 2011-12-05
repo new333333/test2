@@ -40,10 +40,14 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -236,6 +240,35 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 						 * 
 						 */
 						public void onSuccess( VibeRpcResponse response ) {
+							GetBinderPermalinkCmd cmd;
+							
+							cmd = new GetBinderPermalinkCmd( m_binderId );
+							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+							{
+								public void onFailure( Throwable t ) {
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+										m_binderId );
+								}//end onFailure()
+								
+								public void onSuccess( VibeRpcResponse response )
+								{
+									String binderUrl;
+									OnSelectBinderInfo osbInfo;
+									StringRpcResponseData responseData;
+
+									responseData = (StringRpcResponseData) response.getResponseData();
+									binderUrl = responseData.getStringValue();
+									
+									osbInfo = new OnSelectBinderInfo( m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED );
+									if (GwtClientHelper.validateOSBI( osbInfo ))
+									{
+										GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+									}
+									hide();
+								}// end onSuccess()
+							});// end AsyncCallback()
 						}
 					};
 
@@ -306,12 +339,34 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			 * 
 			 */
 			public void onSuccess( VibeRpcResponse response ) {
-				final String url;
-				StringRpcResponseData responseData;
-				ScheduledCommand cmd;
+				GetBinderPermalinkCmd cmd;
+				
+				cmd = new GetBinderPermalinkCmd( m_binderId );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+				{
+					public void onFailure( Throwable t ) {
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+							m_binderId );
+					}//end onFailure()
+					
+					public void onSuccess( VibeRpcResponse response )
+					{
+						String binderUrl;
+						OnSelectBinderInfo osbInfo;
+						StringRpcResponseData responseData;
 
-				responseData = (StringRpcResponseData) response.getResponseData();
-				url = responseData.getStringValue();
+						responseData = (StringRpcResponseData) response.getResponseData();
+						binderUrl = responseData.getStringValue();
+						
+						osbInfo = new OnSelectBinderInfo( m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED );
+						if (GwtClientHelper.validateOSBI( osbInfo ))
+						{
+							GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+						}
+					}// end onSuccess()
+				});// end AsyncCallback()
 			}
 		};
 
