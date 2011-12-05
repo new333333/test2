@@ -322,6 +322,7 @@ public class GwtMenuHelper {
 			String menuKey = "toolbar.menu.brand.";
 			if      (EntityType.workspace == binderType) menuKey += "workspace";
 			else if (EntityType.folder    == binderType) menuKey += "folder";
+			else if (EntityType.profiles  == binderType) menuKey += "workspace";
 			else                                         return null;
 			ToolbarItem ebTBI = new ToolbarItem(BRANDING);
 			markTBITitle(ebTBI, menuKey                                   );
