@@ -165,6 +165,8 @@ public class MainMenuControl extends Composite
 	private TeamingPopupPanel               m_soPopup;
 	private FolderColumnsConfigDlg          m_folderColumnsDlg = null;
 	private EditSuccessfulHandler           m_editFolderColumnsSuccessHandler = null;
+	private Integer 						m_folderColumnsDlgX;
+	private Integer 						m_folderColumnsDlgY;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -791,20 +793,6 @@ public class MainMenuControl extends Composite
 			 */
 			public void onSuccess( VibeRpcResponse response )
 			{
-				int x = -1;
-				int y = -1;
-				if ( x == -1 ) {
-					x = m_contextPanel.getAbsoluteLeft();
-					if ( x < 75 )
-						x = 75;
-				}
-				
-				if ( y == -1 ) {
-					y = m_contextPanel.getAbsoluteTop();
-					if ( y < 75 )
-						y = 75;
-				}
-
 				List folderColumns;
 				List folderColumnsAll;
 				folderColumns = ((FolderColumnsRpcResponseData)response.getResponseData()).getFolderColumns();
@@ -875,11 +863,24 @@ public class MainMenuControl extends Composite
 				}
 				
 				// Get a new "Folder Columns Config" dialog?
+				m_folderColumnsDlgX = -1;
+				m_folderColumnsDlgY = -1;
+				if ( m_folderColumnsDlgX == -1 ) {
+					m_folderColumnsDlgX = m_contextPanel.getAbsoluteLeft();
+					if ( m_folderColumnsDlgX < 75 )
+						m_folderColumnsDlgX = 75;
+				}
+				
+				if ( m_folderColumnsDlgY == -1 ) {
+					m_folderColumnsDlgY = m_contextPanel.getAbsoluteTop();
+					if ( m_folderColumnsDlgY < 75 )
+						m_folderColumnsDlgY = 75;
+				}
 				FolderColumnsConfigDlg.createAsync(
 						 true, 
 						 true, 
-						 x, 
-						 y, 
+						 m_folderColumnsDlgX, 
+						 m_folderColumnsDlgY, 
 						 m_contextBinder.getBinderId(), 
 						 folderColumns,
 						 folderColumnsAll,
@@ -893,12 +894,10 @@ public class MainMenuControl extends Composite
 					public void onSuccess( FolderColumnsConfigDlg fcDlg )
 					{
 						m_folderColumnsDlg = fcDlg;
+						m_folderColumnsDlg.setPopupPosition( m_folderColumnsDlgX, m_folderColumnsDlgY );
+						m_folderColumnsDlg.show();
 					}// end onSuccess()
 				} );
-			
-				m_folderColumnsDlg.setPopupPosition( x, y );
-				m_folderColumnsDlg.show();
-				
 			} // end onSuccess()
 		};
 		// Issue an ajax request to get the folder columns.  This invokes the "folder columns config" dialog.
