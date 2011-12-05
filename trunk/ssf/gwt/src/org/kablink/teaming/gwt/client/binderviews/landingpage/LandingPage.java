@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
@@ -61,7 +62,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author jwootton
  *
  */
-public class LandingPage extends ViewBase
+public class LandingPage extends ViewBase implements ToolPanelReady
 {
 	private BinderInfo m_binderInfo;
 	private ConfigData m_configData;
@@ -149,7 +150,7 @@ public class LandingPage extends ViewBase
 			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
 			
 			// Add the description to the page.
-			DescriptionPanel.createAsync( m_binderInfo, new ToolPanelClient()
+			DescriptionPanel.createAsync( m_binderInfo, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -223,7 +224,7 @@ public class LandingPage extends ViewBase
 		// Add the footer to the page
 		if ( m_binderInfo != null )
 		{
-			FooterPanel.createAsync( this, m_binderInfo, new ToolPanelClient()
+			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -382,4 +383,13 @@ public class LandingPage extends ViewBase
 			}
 		} );
 	}
+	
+	/**
+	 * Implements the ToolPanelReady.toolPanelReady() method.
+	 */
+	@Override
+	public void toolPanelReady( ToolPanelBase toolPanel )
+	{
+//!		...this needs to be implemented...		
+	}// end toolPanelReady()
 }

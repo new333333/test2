@@ -60,39 +60,17 @@ public class BreadCrumbPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private BreadCrumbPanel(BinderInfo binderInfo) {
+	private BreadCrumbPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo);
+		super(binderInfo, toolPanelReady);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-breadCrumbPanel");
 		initWidget(m_fp);
-		constructBreadCrumbPanelAsync();
+		loadPart1Async();
 	}
 
-	/*
-	 * Asynchronously construct's the contents of the bread crumb
-	 * panel.
-	 */
-	private void constructBreadCrumbPanelAsync() {
-		ScheduledCommand constructBreadCrumbPanel = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				constructBreadCrumbPanelNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(constructBreadCrumbPanel);
-	}
-	
-	/*
-	 * Synchronously construct's the contents of the bread crumb panel.
-	 */
-	private void constructBreadCrumbPanelNow() {
-//!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("BreadCrumbPanel.constructBreadCrumbPanel( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
-	}
-	
 	/**
 	 * Loads the BreadCrumbPanel split point and returns an instance
 	 * of it via the callback.
@@ -100,12 +78,12 @@ public class BreadCrumbPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				BreadCrumbPanel bcp = new BreadCrumbPanel(binderInfo);
+				BreadCrumbPanel bcp = new BreadCrumbPanel(binderInfo, toolPanelReady);
 				tpClient.onSuccess(bcp);
 			}
 			
@@ -115,6 +93,32 @@ public class BreadCrumbPanel extends ToolPanelBase {
 				tpClient.onUnavailable();
 			}
 		});
+	}
+	
+	/*
+	 * Asynchronously construct's the contents of the bread crumb
+	 * panel.
+	 */
+	private void loadPart1Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously construct's the contents of the bread crumb panel.
+	 */
+	private void loadPart1Now() {
+//!		...this needs to be implemented...
+		m_fp.add(new InlineLabel("BreadCrumbPanel.loadPart1Now( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
+		
+		// Finally, tell who's using this tool panel that it's ready to
+		// go.
+		toolPanelReady();
 	}
 	
 	/**

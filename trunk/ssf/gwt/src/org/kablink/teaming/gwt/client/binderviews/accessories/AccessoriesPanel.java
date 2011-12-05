@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.binderviews.accessories;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -60,25 +61,25 @@ public class AccessoriesPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private AccessoriesPanel(BinderInfo binderInfo) {
+	private AccessoriesPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo);
+		super(binderInfo, toolPanelReady);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-accessoriesPanel");
 		initWidget(m_fp);
-		constructAccessoriesAsync();
+		loadPart1Async();
 	}
 
 	/*
 	 * Asynchronously construct's the contents of the accessories panel
 	 */
-	private void constructAccessoriesAsync() {
+	private void loadPart1Async() {
 		ScheduledCommand constructAccessories = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				constructAccessoriesNow();
+				loadPart1Now();
 			}
 		};
 		Scheduler.get().scheduleDeferred(constructAccessories);
@@ -87,9 +88,13 @@ public class AccessoriesPanel extends ToolPanelBase {
 	/*
 	 * Synchronously construct's the contents of the accessories panel
 	 */
-	private void constructAccessoriesNow() {
+	private void loadPart1Now() {
 //!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("AccessoriesPanel.constructAccessories( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
+		m_fp.add(new InlineLabel("AccessoriesPanel.loadPart1Now( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
+		
+		// Finally, tell who's using this tool panel that it's ready to
+		// go.
+		toolPanelReady();
 	}
 	
 	/**
@@ -99,12 +104,12 @@ public class AccessoriesPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(AccessoriesPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				AccessoriesPanel ap = new AccessoriesPanel(binderInfo);
+				AccessoriesPanel ap = new AccessoriesPanel(binderInfo, toolPanelReady);
 				tpClient.onSuccess(ap);
 			}
 			

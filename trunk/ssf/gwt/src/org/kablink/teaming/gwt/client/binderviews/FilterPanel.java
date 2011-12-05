@@ -84,9 +84,9 @@ public class FilterPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FilterPanel(BinderInfo binderInfo) {
+	private FilterPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo);
+		super(binderInfo, toolPanelReady);
 		
 		// ...initialize the data members...
 		m_messages = GwtTeaming.getMessages();
@@ -105,12 +105,12 @@ public class FilterPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelClient tpClient) {
+	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(FilterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FilterPanel fp = new FilterPanel(binderInfo);
+				FilterPanel fp = new FilterPanel(binderInfo, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
 			
@@ -245,6 +245,10 @@ public class FilterPanel extends ToolPanelBase {
 				"vibe-filterEditLabel",
 				false);
 		}
+		
+		// Finally, tell who's using this tool panel that it's ready to
+		// go.
+		toolPanelReady();
 	}
 
 	/*
