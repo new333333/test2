@@ -89,7 +89,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private final static String IDTAIL_RADIO		= "_rb";			// Used for constructing the ID of a row's radio button.
 	private final static String IDTAIL_TEXTBOX		= "_tb";			// Used for constructing the ID of a row's text box.
 	private final static String OPTION_HEADER_ID	= "optionHeader";
-
+	
 	private Grid m_folderColumnsGrid;				// Once displayed, the table of folder columns.
 	private CheckBox m_folderDefaultCheckBox;		// Set the folder default columns.
 	private Button m_folderDefaultBtn;				// Restore default settings
@@ -174,9 +174,14 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		e.addClassName("folderColumnsDlg_SectionHeaderRow");
 		e = grid.getCellFormatter().getElement(row, 0);
 		e.addClassName("folderColumnsDlg_SectionHeaderCell");
+		e.addClassName("folderColumnsDlg_GridCell_0and1");
 		grid.setWidget(row, 0, columnHeader);
+		e = grid.getCellFormatter().getElement(row, 2);
+		e.addClassName("folderColumnsDlg_GridCell_2");
 		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
 		grid.setWidget(row, 2, customLabelHeader);
+		e = grid.getCellFormatter().getElement(row, 3);
+		e.addClassName("folderColumnsDlg_GridCell_3");
 		grid.setWidget(row, 3, mb);
 	}
 
@@ -193,7 +198,12 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public Panel createContent(Object ignored) {
 		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VerticalPanel();
+		vp.setStyleName( "teamingDlgBoxContent" );
+		Grid header =  new Grid(0, 4);
+		header.addStyleName("folderColumnsDlg_Grid");
+		vp.add(header);
 		ScrollPanel sp = new ScrollPanel();
+		sp.addStyleName("folderColumnsDlg_ScrollPanel");
 		vp.add(sp);
 
 		// Are there any folder columns to display in the dialog?
@@ -206,7 +216,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			
 			// ...render the folder columns into the panel...
 			if (0 < m_folderColumnsListCount) {
-				addHeaderRow(m_folderColumnsGrid, 0);
+				addHeaderRow(header, 0);
 				for (int i = 0; i < m_folderColumnsListCount; i += 1) {
 					renderRow(m_folderColumnsGrid, m_folderColumnsGrid.getRowCount(), 
 							m_folderColumnsListCount, m_folderColumnsListAll.get(i));
@@ -282,6 +292,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			});
 			ft.getFlexCellFormatter().setColSpan(1, 0, 2);
 			ft.setWidget(1, 0, m_folderDefaultBtn);
+			ft.addStyleName("folderColumnsDlg_OptionsGrid");
 			vp.add(ft);			
 		}
 		
@@ -495,17 +506,19 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		//Checkbox to select the column for view
 		CheckBox cb = new CheckBox();
 		cb.setName("ColumnSelected_" + fci.getColumnName());
-		cb.addStyleName("FolderColumnsDlg_CheckBox");
+		cb.addStyleName("folderColumnsDlg_CheckBox");
 		cb.getElement().setId(rowId + IDTAIL_CHECKBOX);
 		cb.setValue(fci.getColumnIsShown());
 		grid.setWidget(row, 0, cb);
+		grid.getCellFormatter().addStyleName(row, 0, "folderColumnsDlg_GridCell_0");
 		
 		//Column title
 		String txt = fci.getColumnDefaultTitle();
 		if (!(GwtClientHelper.hasString(txt))) {
 			txt = fci.getColumnName();
 		}
-		grid.setWidget(row, 1, new DlgLabel(txt));
+		grid.setWidget(row, 1, new Label(txt));
+		grid.getCellFormatter().addStyleName(row, 1, "folderColumnsDlg_GridCell_1");
 		
 		//Custom label textbox
 		TextBox tb = new TextBox();
@@ -515,12 +528,14 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			tb.setValue(fci.getColumnCustomTitle());
 		}
 		grid.setWidget(row, 2, tb);
+		grid.getCellFormatter().addStyleName(row, 2, "folderColumnsDlg_GridCell_2");
 		
 		//Radio button for moving rows
 		RadioButton rb = new RadioButton("MoveButton");
 		rb.getElement().setId(rowId + IDTAIL_RADIO);
 		grid.setWidget(row, 3, rb);
 		grid.getCellFormatter().setAlignment(row, 3, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+		grid.getCellFormatter().addStyleName(row, 3, "folderColumnsDlg_GridCell_3");
 	}
 
 	/*

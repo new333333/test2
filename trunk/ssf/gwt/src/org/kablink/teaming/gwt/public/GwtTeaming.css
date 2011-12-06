@@ -1977,6 +1977,11 @@ body, table td, select
 {
 	z-index: 351;
 }
+.folderColumnsDlg_ScrollPanel
+{
+	width: 700px;
+	height: 450px;
+}
 .folderColumnsDlg_Radio
 {
 	margin-left: 5px;
@@ -1984,6 +1989,27 @@ body, table td, select
 .folderColumnsDlg_Grid
 {
 	margin: 8px 8px 4px 8px;
+	width: 660px;
+}
+.folderColumnsDlg_GridCell_0
+{
+	width: 25px;
+}
+.folderColumnsDlg_GridCell_1
+{
+	width: 280px;
+}
+.folderColumnsDlg_GridCell_0and1
+{
+	width: 305px;
+}
+.folderColumnsDlg_GridCell_2
+{
+	width: 200px;
+}
+.folderColumnsDlg_GridCell_3
+{
+	width: 155px;
 }
 .folderColumnsDlg_Label
 {
@@ -2008,6 +2034,10 @@ body, table td, select
 }
 .folderColumnsDlg_SectionHeaderRow
 {
+}
+.folderColumnsDlg_OptionsGrid
+{
+	margin: 10px 0px;
 }
 
 /* Styles for the manage saved searches dialog. */

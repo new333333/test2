@@ -831,7 +831,6 @@ public class GwtViewHelper {
 			// list that we can fill from that data.
 			List<FolderColumn> fcList = new ArrayList<FolderColumn>();
 			List<FolderColumn> fcListAll = new ArrayList<FolderColumn>();
-			List<String> allColNames = new ArrayList<String>();
 			for (String colName:  columnSortOrder) {
 				FolderColumn fc = new FolderColumn(colName);
 				// Is this column to be shown?
@@ -868,7 +867,6 @@ public class GwtViewHelper {
 					fcList.add(fc);
 				}
 				fcListAll.add(fc);
-				allColNames.add(colName);
 			}
 
 			// Walk the List<FolderColumn>'s performing fixups on each
@@ -884,7 +882,6 @@ public class GwtViewHelper {
 					Map<String,Map> elementData = bs.getDefinitionModule().getEntryDefinitionElements(def.getId());
 					for (Map.Entry me : elementData.entrySet()) {
 						String colName = (String)me.getKey();
-						if (allColNames.contains(colName)) continue;
 						
 						String type = (String)((Map)me.getValue()).get("type");
 						if (type.equals("selectbox") ||
@@ -929,10 +926,7 @@ public class GwtViewHelper {
 							fc.setColumnTitle(colTitle);
 		
 							// Add a FolderColumn for this to the list of all columns if it isn't already there.
-							if (!allColNames.contains(colName)) {
-								fcListAll.add(fc);
-								allColNames.add(colName);
-							}
+							fcListAll.add(fc);
 						}
 					}
 				}
