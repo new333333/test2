@@ -50,8 +50,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
 
@@ -411,8 +410,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 		// Add an anchor to run the folder options dialog.
 		final String foId = (IDBASE + "FolderOptions");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
-			public void onClick(ClickEvent event) {
+		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new Command() {
+			@Override
+			public void execute() {
 				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
@@ -422,17 +422,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
-		addContentWidget(mtA);
+		addContentMenuItem(mtA);
 	}
 	
 	private void showFolderOptionsAsync(String foId, ToolbarItem folderViewsTBI, ToolbarItem calendarImportTBI) {
-		// Remove the selection from the menu item...
-		Element menuItemElement = Document.get().getElementById(foId);
-		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
-		
-		// ...hide the menu...
-		hide();
+		// Hide the menu...
+		hideMenu();
 
+		// ...and run the folder options dialog.
 		FolderOptionsDlg.createAsync(
 				false,	// false -> Don't auto hide.
 				true,	// true  -> Modal.
@@ -560,8 +557,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 		// Add an anchor to run the tag this dialog.
 		final String menuId = (IDBASE + "TagThis");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new ClickHandler() {
-			public void onClick(ClickEvent event) {
+		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new Command() {
+			@Override
+			public void execute() {
 				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
@@ -571,17 +569,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
-		addContentWidget(mtA);
+		addContentMenuItem(mtA);
 	}
 
 	private void showTagThisAsync(String menuId, String dlgCaption) {
-		// Remove the selection from the menu item...
-		Element menuItemElement = Document.get().getElementById(menuId);
-		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
-		
-		// ...hide the menu...
-		hide();
-		
+		// Hide the menu...
+		hideMenu();
+
+		// ...and show the tag this dialog.
 		if (null == m_tagThisDlg) {
 			TagThisDlg.createAsync(
 					false,	// false -> Don't auto hide.

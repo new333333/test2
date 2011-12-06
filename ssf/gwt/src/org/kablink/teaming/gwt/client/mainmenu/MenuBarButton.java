@@ -34,13 +34,12 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
-import org.kablink.teaming.gwt.client.util.VibeKBHook;
-import org.kablink.teaming.gwt.client.widgets.VibeAnchorTabstop;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
@@ -48,78 +47,81 @@ import com.google.gwt.user.client.ui.Image;
  * states.  
  * 
  * @author drfoster@novell.com
- *
  */
-public class MenuBarButton extends VibeAnchorTabstop {
-	private VibeEventBase<?>	m_event;	// The event to fire when the button is clicked.
-	
+public class MenuBarButton extends MenuItem {
 	/*
-	 * Inner class that implements clicking on buttons on the menu.
+	 * Inner class that implements selecting buttons on the menu.
 	 */
-	private class MenuButtonSelector implements ClickHandler {
+	private static class MenuButtonSelector implements Command {
+		private VibeEventBase<?>	m_event;	// The event to fire when the button is selected.
+
 		/**
-		 * Called when the button is clicked.
+		 * Constructor method.
 		 * 
 		 * @param event
 		 */
-		public void onClick(ClickEvent event) {
+		public MenuButtonSelector(VibeEventBase<?> event) {
+			super();
+			m_event = event;
+		}
+		
+		/**
+		 * Called when the button is selected.
+		 * 
+		 * Implements the Command.execute() method.
+		 */
+		@Override
+		public void execute() {
 			GwtTeaming.fireEvent(m_event);
 		}
 	}
 
+	/*
+	 * Constructor method.
+	 */
+	private MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, Command command) {
+		// Initialize the super class...
+		super(
+			"",	// Place holder.  Actual HTML supplied later.
+			((null == command)                ?
+				new MenuButtonSelector(event) :
+				command));
+		
+		// ...set item's styles...
+		addStyleName("vibe-mainMenuButton_WidgetAnchor");
+		
+		// ...create the Image...
+		Image img = new Image(imgRes);
+		img.setTitle(imgTitle);
+		img.addStyleName("vibe-mainMenuButton_WidgetImage");
+		
+		// ...and tie things together.
+		FlowPanel imgPanel = new FlowPanel();
+		imgPanel.getElement().appendChild(img.getElement());
+		setHTML(imgPanel.getElement().getInnerHTML());
+	}
+	
 	/**
-	 * Class constructor.
+	 * Constructor method.
 	 * 
 	 * @param imgRes
 	 * @param imgTitle
 	 * @param event
-	 * @param clickHandler
 	 */
-	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, ClickHandler clickHandler, VibeKBHook kbHook) {
-		// Initialize the super class...
-		super(kbHook);
-		
-		// ...store the parameters...
-		m_event = event;
-		
-		// Create the Image...
-		Image img = new Image(imgRes);
-		img.setTitle(imgTitle);
-		img.addStyleName("mainMenuButton_WidgetImage");
-		
-		// ...create the Anchor...
-		addStyleName("mainMenuButton_WidgetAnchor");
-		
-		// ...tie things together...
-		getElement().appendChild(img.getElement());
-		if (null == clickHandler) {
-			clickHandler = new MenuButtonSelector();
-		}
-		addClickHandler(clickHandler);
-		
-		// ...add mouse over handling...
-		MenuHoverByWidget hover = new MenuHoverByWidget(this, "subhead-control-bg2");
-		addMouseOverHandler(hover);
-		addMouseOutHandler( hover);
-	}
-	
-	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event, VibeKBHook kbHook) {
-		// Always use the initial form of the constructor.
-		this(imgRes, imgTitle, event, null, kbHook);
-	}
-	
 	public MenuBarButton(ImageResource imgRes, String imgTitle, VibeEventBase<?> event) {
-		// Always use the initial form of the constructor.
+		// Always use the private form of the constructor.
 		this(imgRes, imgTitle, event, null);
 	}
 	
-	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler, VibeKBHook kbHook) {
-		// Always use the initial form of the constructor.
-		this(imgRes, imgTitle, null, clickHandler, kbHook);
-	}
-	
-	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler) {
-		// Always use the initial form of the constructor.
-		this(imgRes, imgTitle, null, clickHandler, null);
+	/**
+	 * Constructor method.
+	 * 
+	 * @param imgRes
+	 * @param imgTitle
+	 * @param command
+	 */
+	public MenuBarButton(ImageResource imgRes, String imgTitle, Command command) {
+		// Always use the private form of the constructor.
+		this(imgRes, imgTitle, null, command);
 	}
 }

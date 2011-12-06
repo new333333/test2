@@ -34,14 +34,13 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.widgets.VibeAnchorTabstop;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
@@ -51,56 +50,88 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public class MenuBarToggle extends VibeAnchorTabstop {
-	private Image			m_altImg;		// The alternate Image.
-	private Image			m_baseImg;		// The base      Image.
-	private Image 			m_currentImg;	// Current image being displayed.
-	private TeamingEvents	m_altEvent;		// The alternate TeamingEvents.
-	private TeamingEvents	m_baseEvent;	// The base      TeamingEvents.
-	private Widget			m_hoverWidget;	// The Widget any hover interaction is tied to. 
+public class MenuBarToggle extends MenuItem {
+	private MenuToggleSelector	m_mts;			// The MenuToggleSelector used by this MenuBarToggle.
+	private TeamingEvents		m_altEvent;		// The alternate TeamingEvents.
+	private TeamingEvents		m_baseEvent;	// The base      TeamingEvents.
 	
 	/*
-	 * Inner class that implements clicking on a MenuBarToggle.
+	 * Inner class that implements selecting on a MenuBarToggle.
 	 */
-	private class MenuToggleSelector implements ClickHandler {
-
-		/**
-		 * Class constructor.
-		 */
-		MenuToggleSelector() {
-			m_currentImg = m_baseImg;
-			getElement().appendChild(m_baseImg.getElement());
-		}
+	private static class MenuToggleSelector implements Command {
+		private MenuItem		m_mi;			// The MenuItem this MenuToggleSelector is tied to.
+		private String			m_altHTML;		// The alternate state's HTML.
+		private String			m_baseHTML;		// The base      state's HTML.
+		private String			m_currentHTML;	// The current   state's HTML.
+		private TeamingEvents	m_altEvent;		// The alternate TeamingEvents.
+		private TeamingEvents	m_baseEvent;	// The base      TeamingEvents.
 		
 		/**
-		 * Called when the toggle is clicked.
-		 * 
-		 * @param clickEvent
+		 * Constructor method.
 		 */
-		public void onClick(ClickEvent clickEvent) {
+		MenuToggleSelector(String baseHTML, TeamingEvents baseEvent, String altHTML, TeamingEvents altEvent) {
+			// Initialize the super class...
+			super();
+			
+			// ...store the parameters...
+			m_baseHTML  = baseHTML;
+			m_baseEvent = baseEvent;
+			m_altHTML   = altHTML;
+			m_altEvent  = altEvent;
+			
+			// ...and initialize everything else.
+			m_currentHTML = baseHTML;
+		}
+
+		/**
+		 * Called when the toggle is selected.
+		 * 
+		 * Implements the Command.execute() method.
+		 */
+		@Override
+		public void execute() {
+			// Fire the event...
 			TeamingEvents event;
-			
-			// Remove any hover style from the button...
-			m_hoverWidget.removeStyleName("subhead-control-bg2");
-			
-			// ...fire the event...
-			if (m_currentImg == m_baseImg)
+			if (m_currentHTML.equals(m_baseHTML))
 			     event = m_baseEvent;
 			else event = m_altEvent;
-			
 			EventHelper.fireSimpleEvent(event);
 			
-			// ...and toggle the state of the MenuBarToggle.
+			// ...and toggle the state of the button.
 			if (event == m_baseEvent)
 			     event = m_altEvent;
 			else event = m_baseEvent;
-			setImage(event);
+			setEventHTML(event);
+		}
+		
+		/**
+		 * Sets the MenuItem's HTML appropriate for an event.
+		 * 
+		 * @param event
+		 */
+		public void setEventHTML(TeamingEvents event) {
+			String html;
+			if (event == m_baseEvent)
+			     html = m_baseHTML;
+			else html = m_altHTML;
+			m_currentHTML = html;
+			m_mi.setHTML(html);
+		}
+		
+		/**
+		 * Stores the MenuItem associated with this MenuToggleSelector.
+		 * 
+		 * @param mi
+		 */
+		public void setMenuItem(MenuItem mi) {
+			m_mi = mi;
+			m_mi.setHTML(m_currentHTML);
 		}
 	}
 
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
 	 * 
 	 * @param baseImgRes
 	 * @param baseTitle
@@ -110,34 +141,43 @@ public class MenuBarToggle extends VibeAnchorTabstop {
 	 * @param altEvent
 	 */
 	public MenuBarToggle(ImageResource baseImgRes, String baseTitle, TeamingEvents baseEvent, ImageResource altImgRes, String altTitle, TeamingEvents altEvent) {
-		// Initialize the super class...
-		super();
+		// Initialize the superclass...
+		super(
+			"",	// HTML is set below in the call to MenuToggleSelector.setMenuItem().
+			new MenuToggleSelector(
+				constructHTML(baseTitle, baseImgRes),
+				baseEvent,
+				constructHTML(altTitle, altImgRes),
+				altEvent));
+
+		// ...connect the parts together...
+		m_mts = ((MenuToggleSelector) getCommand());
+		m_mts.setMenuItem(this);
 		
 		// ...store the parameters...
-		m_hoverWidget = this;
-		m_baseEvent	  = baseEvent;
-		m_altEvent    = altEvent;
+		m_baseEvent = baseEvent;
+		m_altEvent  = altEvent;
 		
-		// ...create the alternate Image...
-		m_altImg = new Image(altImgRes);
-		m_altImg.setTitle(altTitle);
-		m_altImg.addStyleName("mainMenuButton_WidgetImage");
-		
-		// ...create the base Image...
-		m_baseImg = new Image(baseImgRes);
-		m_baseImg.setTitle(baseTitle);
-		m_baseImg.addStyleName("mainMenuButton_WidgetImage");
-		
-		// ...create the Anchor...
-		addStyleName("mainMenuButton_WidgetAnchor");
-		
-		// ...tie things together...
-		addClickHandler(new MenuToggleSelector());
-		
-		// ...and add mouse hover handling.
-		MenuHoverByWidget hover = new MenuHoverByWidget(m_hoverWidget, "subhead-control-bg2");
-		addMouseOverHandler(hover);
-		addMouseOutHandler( hover);
+		// ...and setup the MenuBarToggle's styles.
+		addStyleName("vibe-mainMenuButton_WidgetAnchor");
+	}
+
+	/*
+	 * Given the tile and resource for an image, constructs and returns
+	 * the HTML to render that image.
+	 */
+	private static String constructHTML(String imgTitle, ImageResource imgRes) {
+		// Create the Image...
+		Image img = new Image(imgRes);
+		img.setTitle(imgTitle);
+		img.addStyleName("vibe-mainMenuButton_WidgetImage");
+
+		// ...add to something to extract it's HTML from...
+		FlowPanel fp = new FlowPanel();
+		fp.add(img);
+
+		// ...and return it's HTML.
+		return fp.getElement().getInnerHTML();
 	}
 	
 	/**
@@ -146,25 +186,7 @@ public class MenuBarToggle extends VibeAnchorTabstop {
 	 * @param event
 	 */
 	public void setImage(TeamingEvents event) {
-		Image addImg;
-		Image removeImg;
-		
-		if (event == m_altEvent) {
-			addImg    = m_altImg;
-			removeImg = m_baseImg;
-		}
-		
-		else {
-			addImg    = m_baseImg;
-			removeImg = m_altImg;
-		}
-		
-		// Does the image need to change?
-		if (addImg != m_currentImg) {
-			// Yes
-			m_currentImg = addImg;
-			getElement().replaceChild(addImg.getElement(), removeImg.getElement());
-		}
+		m_mts.setEventHTML(event);
 	}
 		
 	/**
@@ -173,12 +195,13 @@ public class MenuBarToggle extends VibeAnchorTabstop {
 	 * @param event
 	 */
 	public void setState(TeamingEvents event) {
-		// Make sure we were based a valid state.
+		// Make sure we're based on a valid state...
 		if ((event != m_baseEvent) && (event != m_altEvent)) {
-			Window.alert("invalid state passed to MenuBarToggle.setState(): " + event.name());
+			Window.alert("MenuBarToggle.setState( Invalid State ):  " + event.name());
 			return;
 		}
-		
+
+		// ...and put it into effect.
 		setImage(event);
 	}
 }

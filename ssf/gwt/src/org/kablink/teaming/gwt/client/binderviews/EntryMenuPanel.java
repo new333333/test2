@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -56,11 +58,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
@@ -71,10 +73,10 @@ import com.google.gwt.user.client.ui.MenuItem;
 public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo			m_binderInfo;	//
 	private List<ToolbarItem>	m_toolbarIems;	//
-	private MenuBar				m_entryMenu;	//
-	private MenuItem			m_deleteMenu;	//
-	private MenuItem			m_purgeMenu;	//
 	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
+	private VibeMenuBar			m_entryMenu;	//
+	private VibeMenuItem		m_deleteMenu;	//
+	private VibeMenuItem		m_purgeMenu;	//
 	
 	/*
 	 * Constructor method.
@@ -93,8 +95,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// ...construct and initialize the panel...
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
-		m_entryMenu = new MenuBar();
-		m_entryMenu.addStyleName("vibe-entryMenuBar");
+		m_entryMenu = new VibeMenuBar("vibe-entryMenuBar");
 		m_fp.add(m_entryMenu);
 		initWidget(m_fp);
 		
@@ -203,8 +204,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderSimpleTBI(MenuBar menuBar, final ToolbarItem simpleTBI) {
-		MenuItem menuItem = new MenuItem(simpleTBI.getTitle(), new Command() {
+	private void renderSimpleTBI(VibeMenuBar menuBar, final ToolbarItem simpleTBI) {
+		VibeMenuItem menuItem = new VibeMenuItem(simpleTBI.getTitle(), new Command() {
 			@Override
 			public void execute() {
 				// Does the simple toolbar item contain a URL to
@@ -256,11 +257,22 @@ public class EntryMenuPanel extends ToolPanelBase {
 	/*
 	 * Renders any toolbar item that contains nested toolbar items.
 	 */
-	private void renderStructuredTBI(MenuBar menuBar, ToolbarItem structuredTBI) {
+	private void renderStructuredTBI(VibeMenuBar menuBar, ToolbarItem structuredTBI) {
 		// Create a drop down menu for the structured toolbar item...
-		MenuBar	structuredMenuBar = new MenuBar(true);	// true -> Vertical drop down menu.
+		final VibeMenuBar	structuredMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
 		structuredMenuBar.addStyleName("vibe-entryMenuPopup");
 		menuBar.addItem(structuredTBI.getTitle(), structuredMenuBar);
+		structuredMenuBar.addAttachHandler(new Handler() {
+			@Override
+			public void onAttachOrDetach(AttachEvent event) {
+				// Is this an attach event? 
+				if (event.isAttached()) {
+					// Yes!  That means the menu is opening.  Give it
+					// the focus.
+					structuredMenuBar.focus();
+				}
+			}
+		});
 		
 		// ...scan the nested items...
 		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
@@ -281,8 +293,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	public void resetPanel() {
 		// Reset the widgets...
 		m_fp.clear();
-		m_entryMenu = new MenuBar();
-		m_entryMenu.addStyleName("vibe-entryMenuBar");
+		m_entryMenu = new VibeMenuBar("vibe-entryMenuBar");
 		m_fp.add(m_entryMenu);
 
 		// ...and reload the menu.
@@ -296,7 +307,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * @param enable
 	 */
 	public void setDeleteAndPurgeState(boolean enable) {
-		if (null != m_deleteMenu) {m_deleteMenu.setEnabled(enable); if (enable) m_deleteMenu.removeStyleName("vibe-entryMenuDisabled"); else m_deleteMenu.addStyleName("vibe-entryMenuDisabled");}
-		if (null != m_purgeMenu)  {m_purgeMenu.setEnabled( enable); if (enable) m_purgeMenu.removeStyleName( "vibe-entryMenuDisabled"); else m_purgeMenu.addStyleName( "vibe-entryMenuDisabled");}
+		if (null != m_deleteMenu) {m_deleteMenu.setEnabled(enable); if (enable) m_deleteMenu.removeStyleName("vibe-menuDisabled"); else m_deleteMenu.addStyleName("vibe-menuDisabled");}
+		if (null != m_purgeMenu)  {m_purgeMenu.setEnabled( enable); if (enable) m_purgeMenu.removeStyleName( "vibe-menuDisabled"); else m_purgeMenu.addStyleName( "vibe-menuDisabled");}
 	}
 }

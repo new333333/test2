@@ -51,10 +51,8 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
@@ -79,31 +77,32 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Inner class that handles clicks on an individual favorite.
+	 * Inner class that handles selecting on an individual favorite.
 	 */
-	private class FavoriteClickHandler implements ClickHandler {
-		private FavoriteInfo m_favorite;	// The favorite clicked on.
+	private class FavoriteCommand implements Command {
+		private FavoriteInfo m_favorite;	// The favorite selected.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param favorite
 		 */
-		FavoriteClickHandler(FavoriteInfo favorite) {
+		FavoriteCommand(FavoriteInfo favorite) {
 			// Simply store the parameter.
 			m_favorite = favorite;
 		}
 
 		/**
-		 * Called when the user clicks on a favorite.
+		 * Called when the user selects a favorite.
 		 * 
-		 * @param event
+		 * Implements the Command.execute() method.
 		 */
-		public void onClick(ClickEvent event) {
+		@Override
+		public void execute() {
 			GetBinderPermalinkCmd cmd;
 			
 			// Hide the menu...
-			hide();
+			hideMenu();
 
 			// ...and fire a selection changed event.
 			cmd = new GetBinderPermalinkCmd( m_favorite.getValue() );
@@ -158,9 +157,9 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Inner class that handles clicks on favorites commands.
+	 * Inner class that handles selects a favorites management command.
 	 */
-	private class ManageClickHandler implements ClickHandler {
+	private class ManageCommand implements Command {
 		private FavoriteOperation m_operation;		// The which favorite management operation to perform.
 		private List<FavoriteInfo> m_favoritesList;	// ADD/REMOVE:  Not used.  EDIT:  The user's current favorites list.
 		private String m_id;						// ADD:  ID of binder to add.  REMOVE:  ID of favorite to remove.  EDIT:  Not used.
@@ -171,25 +170,26 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		 * @param operation
 		 * @param id
 		 */
-		ManageClickHandler(FavoriteOperation operation, String id) {
+		ManageCommand(FavoriteOperation operation, String id) {
 			m_operation = operation;
 			m_id = id;
 		}
 		
-		ManageClickHandler(FavoriteOperation operation, List<FavoriteInfo> fList) {
+		ManageCommand(FavoriteOperation operation, List<FavoriteInfo> fList) {
 			m_operation = operation;
 			m_favoritesList = fList;
 		}
 		
 		/**
-		 * Called when the user clicks on a favorites management
+		 * Called when the user selects a favorites management
 		 * command.
 		 * 
-		 * @param event
+		 * Implements the Command.execute() method.
 		 */
-		public void onClick(ClickEvent event) {
+		@Override
+		public void execute() {
 			// Hide the menu.
-			hide();
+			hideMenu();
 			
 			// What operation are we performing?
 			switch (m_operation) {
@@ -315,8 +315,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			FavoriteInfo favorite = fIT.next();
 			String mtId = (IDBASE + favorite.getId());
 			
-			fA = new MenuPopupAnchor(mtId, favorite.getName(), favorite.getHover(), new FavoriteClickHandler(favorite));
-			addContentWidget(fA);
+			fA = new MenuPopupAnchor(mtId, favorite.getName(), favorite.getHover(), new FavoriteCommand(favorite));
+			addContentMenuItem(fA);
 			fCount += 1;
 			
 			if (m_currentBinder.getBinderId().equals(favorite.getValue())) {
@@ -330,28 +330,26 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			// ...put something in the menu that tells the user
 			// ...that.
 			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuFavoritesNoFavorites());
-			addContentWidget(content);
+			addContentMenuItem(content);
 		}
 
 		// Do we need to add any favorite commands?
 		if ((null != m_currentBinder) || (0 < fCount)) {
 			// Yes!  Add a spacer between the favorites and
 			// the commands... 
-			FlowPanel spacerPanel = new FlowPanel();
-			spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
-			addContentWidget(spacerPanel);
+			addSpacerMenuItem();
 		
 			// ...and add the favorite command items.
 			MenuPopupAnchor mtA;
 			if (null != m_currentBinder) {
 				if (currentIsFavorite)
-					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
-				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
-				addContentWidget(mtA);
+					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageCommand(FavoriteOperation.REMOVE, currentFavoriteId));
+				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageCommand(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
+				addContentMenuItem(mtA);
 			}
 			if (0 < fCount) {
-				mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
-				addContentWidget(mtA);
+				mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageCommand(FavoriteOperation.EDIT, fList));
+				addContentMenuItem(mtA);
 			}
 		}
 				

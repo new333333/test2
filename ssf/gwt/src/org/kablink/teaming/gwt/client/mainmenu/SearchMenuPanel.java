@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -68,7 +68,7 @@ public class SearchMenuPanel extends FlowPanel {
 		// ...and initialize everything else.
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
-		addStyleName("mainMenuBar_BoxPanel mainMenuSearch_Panel");
+		addStyleName("vibe-mainMenuBar_BoxPanel vibe-mainMenuSearch_Panel");
 
 		// Finally, add the search and button widgets.
 		addSearchWidget();
@@ -84,13 +84,14 @@ public class SearchMenuPanel extends FlowPanel {
 		// Create the Image for the button...
 		Image img = new Image(m_images.searchGlass());
 		img.setTitle(m_messages.mainMenuSearchButtonAlt());
-		img.addStyleName("mainMenuSearch_ButtonImage");
+		img.addStyleName("vibe-mainMenuSearch_ButtonImage");
 		
 		// ...create the Anchor for it...
 		Anchor searchAnchor = new Anchor();
 		searchAnchor.getElement().appendChild(img.getElement());
-		searchAnchor.addStyleName("mainMenuSearch_ButtonAnchor");
+		searchAnchor.addStyleName("vibe-mainMenuSearch_ButtonAnchor");
 		searchAnchor.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
 				// Turn off any over indicator on the menu bar item and
 				// perform the search.
@@ -114,14 +115,15 @@ public class SearchMenuPanel extends FlowPanel {
 	private void addSearchWidget() {
 		// Create the TextBox for the search...
 		m_searchInput = new TextBox();
-		m_searchInput.addStyleName("mainMenuSearch_Input");
+		m_searchInput.addStyleName("vibe-mainMenuSearch_Input");
 		
 		// ...add a handler to intercept key presses...
 		m_searchInput.addKeyPressHandler(new KeyPressHandler() {
+			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				// Is this the enter key being pressed?
 				int key = event.getNativeEvent().getKeyCode();
-				if ( KeyCodes.KEY_ENTER == key ) {
+				if (KeyCodes.KEY_ENTER == key) {
 					// Yes!  Perform the search.
 					doSearch();
 				}

@@ -1,3 +1,8 @@
+/* */
+
+/* ########################################################################################################### */
+
+
 /* Start:  Generic binder view tools styles. */
 	.vibe-binderViewTools
 	{
@@ -30,12 +35,7 @@
 	/* ...End:  Description panel styles. */
 	
 	/* ...Start:  Entry menu panel styles. */
-		.vibe-entryMenuPanel     {padding: 0px !important; padding-top: 10px !important;}
-		.vibe-entryMenuBar       {}
-		.vibe-entryMenuBarItem   {}
-		.vibe-entryMenuPopup     {}
-		.vibe-entryMenuPopupItem {}
-		.vibe-entryMenuDisabled  {color: silver !important;}
+		.vibe-entryMenuPanel {padding: 0px !important; padding-top: 10px !important;}
 	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */

@@ -750,6 +750,17 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Sets a TeamingPopupPanel to use one-way-corner animation to
+	 * open.
+	 * 
+	 * @param popup
+	 */
+	public static void oneWayCornerPopup(TeamingPopupPanel popup) {
+		popup.setAnimationEnabled(true);
+		popup.setAnimationTypeToOneWayCorner();
+	}
+	
+	/**
 	 * Removes all the child Node's from a DOM Element.
 	 *  
 	 * @param e

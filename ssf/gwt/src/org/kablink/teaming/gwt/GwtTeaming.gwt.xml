@@ -28,6 +28,7 @@
     <stylesheet src='GwtProfile.css'     />		
     <stylesheet src='GwtLandingPage.css' />		
     <stylesheet src='GwtBinderViews.css' />		
+    <stylesheet src='GwtMenus.css'       />		
     <stylesheet src='VibeDataTable.css'  />		
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->

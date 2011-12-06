@@ -48,8 +48,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -64,29 +63,30 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	private BinderInfo m_currentBinder;	// The currently selected binder.
 	
 	/*
-	 * Inner class that handles clicks on individual places.
+	 * Inner class that handles selecting an individual place.
 	 */
-	private class PlaceClickHandler implements ClickHandler {
-		private RecentPlaceInfo m_place;	// The place clicked on.
+	private class PlaceCommand implements Command {
+		private RecentPlaceInfo m_place;	// The place selected on.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param place
 		 */
-		PlaceClickHandler(RecentPlaceInfo place) {
+		PlaceCommand(RecentPlaceInfo place) {
 			// Simply store the parameter.
 			m_place = place;
 		}
 
 		/**
-		 * Called when the user clicks on a place.
+		 * Called when the user selects a place.
 		 * 
-		 * @param event
+		 * Implements the Command.execute() method.
 		 */
-		public void onClick(ClickEvent event) {
+		@Override
+		public void execute() {
 			// Hide the menu...
-			hide();
+			hideMenu();
 			
 			// ...and trigger the appropriate action for the place.
 			switch (m_place.getTypeEnum()) {
@@ -229,8 +229,8 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			RecentPlaceInfo place = rpIT.next();
 			String rpId = (IDBASE + place.getId());
 			
-			rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceClickHandler(place));
-			addContentWidget(rpA);
+			rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceCommand(place));
+			addContentMenuItem(rpA);
 			mtCount += 1;
 		}
 		
@@ -239,7 +239,7 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			// ...put something in the menu that tells the user
 			// ...that.
 			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuRecentPlacesNoPlaces());
-			addContentWidget(content);
+			addContentMenuItem(content);
 		}
 		
 		// Finally, show the menu popup.

@@ -41,3 +41,4 @@
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtProfile.css"     rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtLandingPage.css" rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtBinderViews.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtMenus.css"       rel="stylesheet" type="text/css" />

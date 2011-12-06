@@ -30,48 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.mainmenu;
 
-import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.Widget;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+
+import com.google.gwt.user.client.ui.MenuBar;
 
 
 /**
- * Class used to communicate information about a browse hierarchy
- * request between the MainMenuControl and its event handlers.
+ * Class that wraps the GWT MenuBar implementation for use within Vibe.
  * 
  * @author drfoster@novell.com
  */
-public class OnBrowseHierarchyInfo {
-	private MenuItem	m_browseItem;
-	private Widget		m_browseWidget;
-	
+public class VibeMenuBar extends MenuBar {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param browseWidget
+	 * @param vertical
+	 * @param style
 	 */
-	public OnBrowseHierarchyInfo(Widget browseWidget) {
-		// Simply store the parameter.
-		m_browseWidget = browseWidget;
+	public VibeMenuBar(boolean vertical, String style) {
+		// Initialize the superclass...
+		super(vertical);
+		
+		// ...set the Vibe specific settings for a MenuBar...
+		setAnimationEnabled(   true );
+		setFocusOnHoverEnabled(false);
+
+		// ...and if we were given a style for the MenuBar...
+		if (GwtClientHelper.hasString(style)) {
+			// ...add it to it.
+			addStyleName(style);
+		}
 	}
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param browseWidget
+	 * @param vertical
 	 */
-	public OnBrowseHierarchyInfo(MenuItem browseItem) {
-		// Simply store the parameter.
-		m_browseItem = browseItem;
+	public VibeMenuBar(boolean vertical) {
+		// Always use the initial form of the constructor.
+		this(vertical, null);
 	}
 	
 	/**
-	 * Returns the absolute position the hierarchy browser is to be
-	 * displayed at.
-	 * 
-	 * @return
+	 * Constructor method.
 	 */
-	public int getLeft() {return ((null != m_browseWidget) ? m_browseWidget.getAbsoluteLeft() : m_browseItem.getAbsoluteLeft());}
-	public int getTop()  {return ((null != m_browseWidget) ? m_browseWidget.getParent().getElement().getAbsoluteBottom() : m_browseItem.getParentMenu().getElement().getAbsoluteBottom());}
+	public VibeMenuBar() {
+		// Always use the initial form of the constructor.
+		this(false, null);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param style
+	 */
+	public VibeMenuBar(String style) {
+		// Always use the initial form of the constructor.
+		this(false, style);
+	}
 }

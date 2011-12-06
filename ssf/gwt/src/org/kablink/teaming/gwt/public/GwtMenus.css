@@ -1,0 +1,170 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  Generic menu styles. */
+	.vibe-menuDisabled  {color: silver !important;}
+/* End:  Generic binder view tools styles. */
+
+/* Start:  Entry menu styles. */
+	.vibe-entryMenuBar       {}
+	.vibe-entryMenuBarItem   {}
+	.vibe-entryMenuPopup     {}
+	.vibe-entryMenuPopupItem {}
+/* End:  Entry menu styles. */
+
+/* Start:  Main menu styles. */
+	.vibe-mainMenuBar_BoxDropDownImg
+	{
+		vertical-align: middle;
+	}
+	.vibe-mainMenuBar_BoxDropDownImgNonIE
+	{
+		margin-left: 5px;
+	}
+	.vibe-mainMenuBar_BoxImg
+	{
+		vertical-align: middle;
+	}
+	.vibe-mainMenuBar_BoxImgNonIE
+	{
+		margin-right: 2px;
+	}
+	.vibe-mainMenuBar_BoxPanel
+	{
+		border-left: 1px solid white;
+		color: #414648; /* dark grey */
+		font-size: 0.73em;
+		font-weight: normal;
+		padding: 3px 6px;
+		vertical-align: top;
+		white-space: nowrap;
+	}
+	.vibe-mainMenuBar_BoxText
+	{
+		vertical-align: middle;
+	}
+	.vibe-mainMenuButton
+	{
+		display: inline-block;
+		height: 20px;
+		margin-left: 3px;
+		overflow: hidden;
+		padding: 0px 3px !important;
+		text-align: center;
+		top: 2px;
+		width: 28px;
+		z-index: 310;
+	}
+	.vibe-mainMenuButton_Group
+	{
+		border: 0px !important;
+		display: inline-block;
+		font-size: 0.85em;
+		font-weight: bold;
+		height: 20px;
+		letter-spacing: 0.05em;
+		padding: 0px;
+	}
+	.vibe-mainMenuButton_WidgetAnchor
+	{
+		cursor: pointer;
+	}
+	.vibe-mainMenuButton_WidgetImage
+	{
+		margin-top: 2px;
+	}
+	.vibe-mainMenuContent
+	{
+		border: 0px !important;
+		display: inline-block;
+		height: 20px;
+		margin: 0px;
+		padding: 0px;
+	}
+	.vibe-mainMenuControl
+	{
+		height: 20px;
+		left: 0;
+		padding: 2px 0 4px;
+		position: relative;
+		top: 0;
+		white-space: nowrap;
+		width: 100%;
+		z-index: 300;
+	}
+	.vibe-mainMenuPopup
+	{
+	}
+	.vibe-mainMenuPopup_Core
+	{
+		z-index: 351;
+	}
+	.vibe-mainMenuPopup_Glass
+	{
+		background-color: #000;
+		filter: alpha(opacity=0);
+		opacity: 0.0;
+		z-index: 350;
+	}
+	.vibe-mainMenuPopup_Item
+	{ 
+		white-space: nowrap;
+	}
+	.vibe-mainMenuPopup_ItemPanel
+	{
+	}
+	.vibe-mainMenuPopup_ItemText
+	{
+	}
+	.vibe-mainMenuSearch_ButtonAnchor
+	{
+		margin: 2px;
+		vertical-align: top;
+	}
+	.vibe-mainMenuSearch_ButtonImage
+	{
+		margin: 2px;
+		vertical-align: top;
+	}
+	.vibe-mainMenuSearch_Input
+	{
+		font-size: 10px;
+		padding: 3px 0 0 3px;
+		vertical-align: middle;
+		width: 140px;
+		background-color: transparent;
+		border: 0px;
+	}
+	.vibe-mainMenuSearchOptions_Button
+	{
+		border: 0px !important;
+		display: block;
+		font-size: 0.85em;
+		font-weight: bold;
+		height: 20px;
+		letter-spacing: 0.05em;
+		padding: 0px;
+		position: absolute;
+		right: 10px;
+		top: 1px;
+		white-space: nowrap;
+	}
+	.vibe-mainMenuSearch_Panel
+	{
+		padding: 0 0 0 5px;
+		border-left: none;
+		display: block;
+		position: absolute;
+		right: 50px;
+		top: 3px;
+		height: 18px;
+		white-space: nowrap;
+		
+		background-color: #fafafa;
+		border: 1px solid #c4c4c4;
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+	}
+/* End:  Main menu styles. */
