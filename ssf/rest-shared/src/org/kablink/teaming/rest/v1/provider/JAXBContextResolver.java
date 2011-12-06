@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.v1.provider;
+package org.kablink.teaming.rest.v1.provider;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,7 +40,9 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 
-import org.kablink.teaming.rest.v1.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
@@ -52,7 +54,11 @@ public class JAXBContextResolver implements ContextResolver<JAXBContext> {
     
     private final Set<Class> types;
     
-    private final Class[] cTypes = {FolderEntry.class};
+    private final Class[] cTypes = {
+    		FileProperties.class,
+    		FileVersionProperties.class,
+    		FileVersionPropertiesCollection.class
+    		};
     
     public JAXBContextResolver() throws Exception {
         this.types = new HashSet(Arrays.asList(cTypes));
