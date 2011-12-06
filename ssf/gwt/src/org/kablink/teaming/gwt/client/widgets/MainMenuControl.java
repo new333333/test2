@@ -895,7 +895,7 @@ public class MainMenuControl extends Composite
 					{
 						m_folderColumnsDlg = fcDlg;
 						m_folderColumnsDlg.setPopupPosition( m_folderColumnsDlgX, m_folderColumnsDlgY );
-						m_folderColumnsDlg.show();
+						m_folderColumnsDlg.show(true);  //Show this centered
 					}// end onSuccess()
 				} );
 			} // end onSuccess()

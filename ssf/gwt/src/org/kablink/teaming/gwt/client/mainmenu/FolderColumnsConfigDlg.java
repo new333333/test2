@@ -73,6 +73,7 @@ import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -192,6 +193,8 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public Panel createContent(Object ignored) {
 		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VerticalPanel();
+		ScrollPanel sp = new ScrollPanel();
+		vp.add(sp);
 
 		// Are there any folder columns to display in the dialog?
 		if (0 < (m_folderColumnsListCount)) {
@@ -211,7 +214,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			}
 
 			// ...and connect everything together.
-			vp.add(m_folderColumnsGrid);
+			sp.add(m_folderColumnsGrid);
 			
 			//Add the option to set the folder default
 			FlexTable ft = new FlexTable();

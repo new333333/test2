@@ -830,15 +830,18 @@ public class GwtViewHelper {
 			// the List<FolderColumn> for this folder.  Allocate the
 			// list that we can fill from that data.
 			List<FolderColumn> fcList = new ArrayList<FolderColumn>();
+			List<FolderColumn> fcListAll = new ArrayList<FolderColumn>();
+			List<String> allColNames = new ArrayList<String>();
 			for (String colName:  columnSortOrder) {
+				FolderColumn fc = new FolderColumn(colName);
 				// Is this column to be shown?
 				String columnValue = ((String) columnNames.get(colName));
 				if (!(MiscUtil.hasString(columnValue))) {
 					// No!  Skip it.
-					continue;
+					fc.setColumnIsShown(Boolean.FALSE);;
+				} else {
+					fc.setColumnIsShown(Boolean.TRUE);
 				}
-				FolderColumn fc = new FolderColumn(colName);
-				fc.setColumnIsShown(Boolean.TRUE);
 
 				// Is there a custom title for this column?
 				String colTitle = ((String) columnTitles.get(colName));
@@ -860,47 +863,78 @@ public class GwtViewHelper {
 
 				// Add a FolderColumn for this to the list we're
 				// going to return.
-				fcList.add(fc);
+				if (fc.getColumnIsShown()) {
+					//This column is being shown
+					fcList.add(fc);
+				}
+				fcListAll.add(fc);
+				allColNames.add(colName);
 			}
 
 			// Walk the List<FolderColumn>'s performing fixups on each
 			// as necessary.
 			fixupFCs(fcList);
 			
-			List<FolderColumn> fcListAll = new ArrayList<FolderColumn>();
+
 			if (includeConfigurationInfo) {
 				//Build a list of all possible columns
-				for (String colName:  columnSortOrder) {
-					FolderColumn fc = new FolderColumn(colName);
-					// Is this column to be shown?
-					String columnValue = ((String) columnNames.get(colName));
-					if (!(MiscUtil.hasString(columnValue))) {
-						// No!  
-						fc.setColumnIsShown(Boolean.FALSE);
-					} else {
-						fc.setColumnIsShown(Boolean.TRUE);
+				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
+				for (Definition def :  entryDefs.values()) {
+					org.dom4j.Document defDoc = def.getDefinition();
+					Map<String,Map> elementData = bs.getDefinitionModule().getEntryDefinitionElements(def.getId());
+					for (Map.Entry me : elementData.entrySet()) {
+						String colName = (String)me.getKey();
+						if (allColNames.contains(colName)) continue;
+						
+						String type = (String)((Map)me.getValue()).get("type");
+						if (type.equals("selectbox") ||
+								type.equals("selectbox") ||
+								type.equals("radio") ||
+								type.equals("checkbox") ||
+								type.equals("date") ||
+								type.equals("date_time") ||
+								type.equals("event") ||
+								type.equals("text") ||
+								type.equals("number") ||
+								type.equals("url") ||
+								type.equals("hidden") ||
+								type.equals("user_list") ||
+								type.equals("userListSelectbox")) {
+							FolderColumn fc = new FolderColumn(colName);
+							// Is this column to be shown?
+							String columnValue = ((String) columnNames.get(colName));
+							if (!(MiscUtil.hasString(columnValue))) {
+								// No!  
+								fc.setColumnIsShown(Boolean.FALSE);
+							} else {
+								fc.setColumnIsShown(Boolean.TRUE);
+							}
+		
+							// Is there a custom title for this column?
+							String colTitleDefault = (String)((Map)me.getValue()).get("caption");
+							if (!colName.contains(",")) {
+								colTitleDefault = NLT.get(
+									("folder.column." + colName),	// Key to find the resource.
+									colTitleDefault,						// Default if not defined.
+									true);							// true -> Silent.  Don't generate an error if undefined.
+							}
+							fc.setColumnDefaultTitle(colTitleDefault);
+							String colTitle = (String) columnTitles.get(colName);
+							if (!(MiscUtil.hasString(colTitle))) {
+								// There is no custom title,  use the default.
+								colTitle = colTitleDefault;
+							} else {
+								fc.setColumnCustomTitle(colTitle);
+							}
+							fc.setColumnTitle(colTitle);
+		
+							// Add a FolderColumn for this to the list of all columns if it isn't already there.
+							if (!allColNames.contains(colName)) {
+								fcListAll.add(fc);
+								allColNames.add(colName);
+							}
+						}
 					}
-
-					// Is there a custom title for this column?
-					String colTitle = ((String) columnTitles.get(colName));
-					String colTitleDefault = "";
-					if (!colName.contains(",")) {
-						colTitleDefault = NLT.get(
-							("folder.column." + colName),	// Key to find the resource.
-							colName,						// Default if not defined.
-							true);							// true -> Silent.  Don't generate an error if undefined.
-					}
-					fc.setColumnDefaultTitle(colTitleDefault);
-					if (!(MiscUtil.hasString(colTitle))) {
-						// There is no custom title,  use the default.
-						colTitle = colTitleDefault;
-					} else {
-						fc.setColumnCustomTitle(colTitle);
-					}
-					fc.setColumnTitle(colTitle);
-
-					// Add a FolderColumn for this to the list of all columns.
-					fcListAll.add(fc);
 				}
 
 				// Walk the List<FolderColumn>'s performing fixups on each
