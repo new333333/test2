@@ -8,7 +8,7 @@
 	
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
-		<!-- No dependency on 3rd party libraries -->
+		<fileset dir="${project.dir}/lib" includes="${libraries.restshared}" />
 	</path>
 
 	<target name="deploy" depends="jar">

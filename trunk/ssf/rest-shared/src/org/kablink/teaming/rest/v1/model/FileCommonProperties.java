@@ -37,7 +37,7 @@ package org.kablink.teaming.rest.v1.model;
  * @author jong
  *
  */
-public class FileCommonProperties {
+public abstract class FileCommonProperties {
 
 	private String id;
 	private HistoryStamp creation;
