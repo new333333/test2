@@ -1079,7 +1079,7 @@ public class GwtMenuHelper {
 				if (def.equals(currentDef)) {
 					viewTBI.addQualifier(WebKeys.TOOLBAR_MENU_SELECTED, "true");
 				}				
-				markTBITitle(viewTBI, def.getTitle());
+				markTBITitleGetDef(viewTBI, def.getTitle());
 				markTBIUrl(  viewTBI, url           );
 				viewsTBI.addNestedItem(viewTBI);
 			}
@@ -1757,6 +1757,13 @@ public class GwtMenuHelper {
 	 */
 	private static void markTBITitle(ToolbarItem tbi, String key) {
 		markTBITitleRes(tbi, NLT.get(key));
+	}
+	
+	/*
+	 * Marks a ToolbarItem's title based on a resource key.
+	 */
+	private static void markTBITitleGetDef(ToolbarItem tbi, String key) {
+		markTBITitleRes(tbi, NLT.getDef(key));
 	}
 	
 	/*
