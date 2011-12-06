@@ -44,15 +44,13 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetTopRankedRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -102,16 +100,13 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 */
 	private void addManageSavedSearchesToView() {
 		final MenuPopupAnchor mpa = new MenuPopupAnchor("ss_mainMenuManageSavedSearches", m_messages.mainMenuBarManageSavedSearches(), null,
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
+			new Command() {
+				@Override
+				public void execute() {
 					GetSavedSearchesCmd cmd;
 					
-					// Remove the selection from the menu item...
-					Element menuItemElement = Document.get().getElementById("ss_mainMenuManageSavedSearches");
-					menuItemElement.removeClassName("mainMenuPopup_ItemHover");
-					
-					// ...hide the menu...
-					hide();
+					// Hide the menu...
+					hideMenu();
 					
 					// ...and run the manage saved searches dialog.
 					cmd = new GetSavedSearchesCmd();
@@ -153,7 +148,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 					});
 				}
 			});
-		addContentWidget(mpa);
+		addContentMenuItem(mpa);
 	}
 	
 	/*
@@ -162,16 +157,13 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 */
 	private void addTopRankedToView() {
 		final MenuPopupAnchor mpa = new MenuPopupAnchor("ss_mainMenuTopRanged", m_messages.mainMenuBarTopRanked(), null,
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
+			new Command() {
+				@Override
+				public void execute() {
 					GetTopRankedCmd cmd;
 					
-					// Remove the selection from the menu item...
-					Element menuItemElement = Document.get().getElementById("ss_mainMenuTopRanged");
-					menuItemElement.removeClassName("mainMenuPopup_ItemHover");
-					
-					// ...hide the menu...
-					hide();
+					// Hide the menu...
+					hideMenu();
 					
 					// ...and run the top ranked dialog.
 					cmd = new GetTopRankedCmd();
@@ -201,7 +193,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 					});
 				}
 			});
-		addContentWidget(mpa);
+		addContentMenuItem(mpa);
 	}
 
 	/*

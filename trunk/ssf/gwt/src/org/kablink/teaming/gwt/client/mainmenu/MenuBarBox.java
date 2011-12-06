@@ -34,15 +34,13 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.VibeKBHook;
-import org.kablink.teaming.gwt.client.widgets.VibeAnchorTabstop;
 
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
@@ -51,95 +49,117 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  *
  */
-public class MenuBarBox extends FlowPanel {
-	private Anchor m_boxA;
-	private FlowPanel m_boxPanel;
-	
+public class MenuBarBox extends MenuItem {
 	/**
 	 * Constructor method.
 	 *
 	 * @param boxId
 	 * @param itemImgRes
 	 * @param itemText
+	 * @param cmd
 	 * @param dropdown
-	 * @param kbHook
 	 */
-	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown, VibeKBHook kbHook) {
-		// Initialize the FlowPanel super class...
-		super();
-		addStyleName("mainMenuContent");
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, Command cmd, boolean dropdown) {
+		// Initialize the superclass...
+		super(
+			"",
+			cmd);
+		
+		// ...and initialize everything else.
+		initBox(itemImgRes, itemText, dropdown);
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param boxId
+	 * @param itemText
+	 * @param dropdown
+	 */
+	public MenuBarBox(String boxId, String itemText, boolean dropdown) {
+		// Always use the initial form of the constructor.
+		this(
+			boxId,
+			null,
+			itemText,
+			new Command() {	// Place holder.  Actual command will be supplied later.
+				@Override
+				public void execute() {}
+			},
+			dropdown);
+	}
+	
+	public MenuBarBox(String boxId, String itemText) {
+		// Always use the initial form of the constructor.
+		this(
+			boxId,
+			null,
+			itemText,
+			new Command() {	// Place holder.  Actual command will be supplied later.
+				@Override
+				public void execute() {}
+			},
+			false);
+	}
+	
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText) {
+		// Always use the initial form of the constructor.
+		this(
+			boxId,
+			itemImgRes,
+			itemText,
+			new Command() {	// Place holder.  Actual command will be supplied later.
+				@Override
+				public void execute() {}
+			},
+			false);
+	}
 
-		// ...create an Anchor to contain the box...
-		m_boxA = new VibeAnchorTabstop(kbHook);
-		m_boxA.addStyleName("mainMenuBar_BoxA");
+	/*
+	 * Completes the initialization of a MenuBarBox.
+	 */
+	private void initBox(ImageResource itemImgRes, String itemText, boolean dropdown) {
+		addStyleName("vibe-mainMenuContent");
 
-		// ...create a FlowPanel to contain the items in the box...
-		m_boxPanel = new FlowPanel();
-		m_boxPanel.getElement().setId(boxId);
-		String addedStyles = "mainMenuBar_BoxPanel ";
-		addedStyles += (GwtClientHelper.jsIsIE() ? "mainMenuBar_BoxPanelIE" : "mainMenuBar_BoxPanelNonIE");
-		m_boxPanel.addStyleName(addedStyles);
-
-		// ...add mouse over handling on the panel...
-		MenuHoverByID hover = new MenuHoverByID(boxId, "mainMenuBar_BoxHover");
-		m_boxA.addMouseOverHandler(hover);
-		m_boxA.addMouseOutHandler( hover);
-
-		// ...if we need an image for the box...
+		// If we need an image for the box...
+		FlowPanel boxPanel = new FlowPanel();
 		if (null != itemImgRes) {
 			// ...add it...
 			Image itemImg = new Image(itemImgRes);
-			itemImg.addStyleName("mainMenuBar_BoxImg");
+			itemImg.addStyleName("vibe-mainMenuBar_BoxImg");
 			if (!(GwtClientHelper.jsIsIE())) {
-				itemImg.addStyleName("mainMenuBar_BoxImgNonIE");
+				itemImg.addStyleName("vibe-mainMenuBar_BoxImgNonIE");
 			}
-			m_boxPanel.add(itemImg);
+			boxPanel.add(itemImg);
 		}
 
 		// ...add the label for the box...
 		InlineLabel itemLabel = new InlineLabel(itemText);
-		itemLabel.addStyleName("mainMenuBar_BoxText");
-		m_boxPanel.add(itemLabel);
+		itemLabel.addStyleName("vibe-mainMenuBar_BoxText");
+		boxPanel.add(itemLabel);
 
 		// ...if we need a drop down image for the box...
 		if (dropdown) {
 			// ...add it...
 			Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menuArrow());
-			dropDownImg.addStyleName("mainMenuBar_BoxDropDownImg");
+			dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImg");
 			if (!(GwtClientHelper.jsIsIE())) {
-				dropDownImg.addStyleName("mainMenuBar_BoxDropDownImgNonIE");
+				dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImgNonIE");
 			}
-			m_boxPanel.add(dropDownImg);
+			boxPanel.add(dropDownImg);
 		}
 
-		// ...and finally, add the panel to the Anchor and the Anchor
-		// ...to the box.
-		m_boxA.getElement().appendChild(m_boxPanel.getElement());
-		add(m_boxA);
+		// ...and finally, set the HTML for the MenuItem.
+		setHTML(boxPanel.getElement().getInnerHTML());
 	}
 	
-	public MenuBarBox(String boxId, String itemText, boolean dropdown, VibeKBHook kbHook) {
-		// Always use the initial form of the constructor.
-		this(boxId, null, itemText, dropdown, kbHook);
-	}
-	
-	public MenuBarBox(String boxId, String itemText, VibeKBHook kbHook) {
-		// Always use the initial form of the constructor.
-		this(boxId, null, itemText, false, kbHook);
-	}
-	
-	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, VibeKBHook kbHook) {
-		// Always use the initial form of the constructor.
-		this(boxId, itemImgRes, itemText, false, kbHook);
-	}
-
 	/**
-	 * Adds a ClickHandler to the MenuBarBox's Anchor.
+	 * Sets the Command for a MenuBarBox.
 	 * 
-	 * @param ch
+	 * @param c
 	 */
-	public void addClickHandler(ClickHandler ch) {
-		m_boxA.addClickHandler(ch);
+	public void setCommand(Command c) {
+		super.setCommand(c);
 	}
 
 	/**
@@ -165,8 +185,7 @@ public class MenuBarBox extends FlowPanel {
 	 * menu associated with it.
 	 */
 	public void popupMenuClosed() {
-		m_boxPanel.removeStyleName("mainMenuBar_BoxPanelOpen");
-		m_boxPanel.addStyleName(   "mainMenuBar_BoxPanel"    );
+//!		...this needs to be implemented...
 	}
 	
 	/**
@@ -174,7 +193,6 @@ public class MenuBarBox extends FlowPanel {
 	 * menu associated with it.
 	 */
 	public void popupMenuOpened() {
-		m_boxPanel.removeStyleName("mainMenuBar_BoxPanel"    );
-		m_boxPanel.addStyleName(   "mainMenuBar_BoxPanelOpen");
+//!		...this needs to be implemented...
 	}
 }

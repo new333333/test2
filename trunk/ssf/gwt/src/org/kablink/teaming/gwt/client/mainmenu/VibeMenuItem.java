@@ -30,48 +30,45 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Class used to communicate information about a browse hierarchy
- * request between the MainMenuControl and its event handlers.
+ * Class that wraps the GWT MenuItem implementation for use within Vibe.
  * 
  * @author drfoster@novell.com
  */
-public class OnBrowseHierarchyInfo {
-	private MenuItem	m_browseItem;
-	private Widget		m_browseWidget;
-	
+public class VibeMenuItem extends MenuItem {
 	/**
 	 * Constructor method.
-	 * 
-	 * @param browseWidget
+	 *
+	 * @param html
+	 * @param cmd
+	 * @param style
 	 */
-	public OnBrowseHierarchyInfo(Widget browseWidget) {
-		// Simply store the parameter.
-		m_browseWidget = browseWidget;
+	public VibeMenuItem(String html, Command cmd, String style) {
+		// Initialize the superclass...
+		super(html, true, cmd);
+		
+		// ...and if we were given a style for the MenuItem...
+		if (GwtClientHelper.hasString(style)) {
+			// ...add it to it.
+			addStyleName(style);
+		}
 	}
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param browseWidget
+	 * @param vertical
 	 */
-	public OnBrowseHierarchyInfo(MenuItem browseItem) {
-		// Simply store the parameter.
-		m_browseItem = browseItem;
+	public VibeMenuItem(String html, Command cmd) {
+		// Always use the initial form of the constructor.
+		this(html, cmd, null);
 	}
-	
-	/**
-	 * Returns the absolute position the hierarchy browser is to be
-	 * displayed at.
-	 * 
-	 * @return
-	 */
-	public int getLeft() {return ((null != m_browseWidget) ? m_browseWidget.getAbsoluteLeft() : m_browseItem.getAbsoluteLeft());}
-	public int getTop()  {return ((null != m_browseWidget) ? m_browseWidget.getParent().getElement().getAbsoluteBottom() : m_browseItem.getParentMenu().getElement().getAbsoluteBottom());}
 }

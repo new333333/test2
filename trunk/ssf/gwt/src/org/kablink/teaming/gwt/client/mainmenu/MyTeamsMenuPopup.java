@@ -47,8 +47,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -64,29 +63,30 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	private BinderInfo m_currentBinder;	// The currently selected binder.
 	
 	/*
-	 * Inner class that handles clicks on individual teams.
+	 * Inner class that handles selecting an individual team.
 	 */
-	private class TeamClickHandler implements ClickHandler {
-		private TeamInfo m_myTeam;	// The team clicked on.
+	private class TeamCommand implements Command {
+		private TeamInfo m_myTeam;	// The team selected on.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param myTeam
 		 */
-		TeamClickHandler(TeamInfo myTeam) {
+		TeamCommand(TeamInfo myTeam) {
 			// Simply store the parameter.
 			m_myTeam = myTeam;
 		}
 
 		/**
-		 * Called when the user clicks on a team.
+		 * Called when the user selects a team.
 		 * 
-		 * @param event
+		 * Implements the Command.execute() method.
 		 */
-		public void onClick(ClickEvent event) {
+		@Override
+		public void execute() {
 			// Hide the menu...
-			hide();
+			hideMenu();
 			
 			// ...and fire a change context event.
 			GwtTeaming.fireEvent(
@@ -159,8 +159,8 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 			TeamInfo mt = mtIT.next();
 			String mtId = (IDBASE + mt.getBinderId());
 			
-			mtA = new MenuPopupAnchor(mtId, mt.getTitle(), mt.getEntityPath(), new TeamClickHandler(mt));
-			addContentWidget(mtA);
+			mtA = new MenuPopupAnchor(mtId, mt.getTitle(), mt.getEntityPath(), new TeamCommand(mt));
+			addContentMenuItem(mtA);
 			mtCount += 1;
 		}
 		
@@ -169,7 +169,7 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 			// ...put something in the menu that tells the user
 			// ...that.
 			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuMyTeamsNoTeams());
-			addContentWidget(content);
+			addContentMenuItem(content);
 		}
 		
 		// Finally, show the menu popup.

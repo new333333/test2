@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,10 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -46,42 +43,29 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  *
  */
-public class MenuPopupAnchor extends FlowPanel {
+public class MenuPopupAnchor extends VibeMenuItem {
 	/**
 	 * Class constructor.
 	 * 
 	 * @param id
 	 * @param displayText
 	 * @param altText
-	 * @param ch
+	 * @param cmd
 	 */
-	public MenuPopupAnchor(String id, String displayText, String altText, ClickHandler ch) {
+	public MenuPopupAnchor(String id, String displayText, String altText, Command cmd) {
 		// Initialize the super class...
-		super();
-		addStyleName("mainMenuPopup_ItemPanel");
+		super("", cmd, "vibe-mainMenuPopup_ItemPanel");
 
 		// ...create a FlowPanel to hold the Label...
 		FlowPanel mpaLabelPanel = new FlowPanel();
-		mpaLabelPanel.addStyleName("mainMenuPopup_Item");
+		mpaLabelPanel.addStyleName("vibe-mainMenuPopup_Item");
 		Label mpaLabel = new Label(displayText);
 		mpaLabel.getElement().setId(id);
-		mpaLabel.addStyleName("mainMenuPopup_ItemText");
+		mpaLabel.addStyleName("vibe-mainMenuPopup_ItemText");
 		mpaLabelPanel.add(mpaLabel);
 
-		// ...create the Anchor...
-		Anchor mpA = new Anchor();
-		mpA.addStyleName("mainMenuPopup_ItemA");
-		if (GwtClientHelper.hasString(altText)) {
-			mpA.setTitle(altText);
-		}
-		mpA.addClickHandler(ch);
-		MenuHoverByID mpaHover = new MenuHoverByID(id, "mainMenuPopup_ItemHover");
-		mpA.addMouseOverHandler(mpaHover);
-		mpA.addMouseOutHandler( mpaHover);
-
-		// ...and connect everything together.
-		mpA.getElement().appendChild(mpaLabel.getElement());
-		mpaLabelPanel.add(mpA);
-		add(mpaLabelPanel);
+		FlowPanel htmlPanel = new FlowPanel();
+		htmlPanel.add(mpaLabelPanel);
+		setHTML(htmlPanel.getElement().getInnerHTML());
 	}
 }

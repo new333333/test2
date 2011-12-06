@@ -44,13 +44,12 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
+import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -59,12 +58,13 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public abstract class MenuBarPopupBase extends TeamingPopupPanel {
-	private   boolean						m_spacerNeeded;		// false -> The last widget added was a spacer.  true -> It was something else.
-	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
-	protected GwtTeamingMessages			m_messages;			// The menu's messages.
-	protected GwtRpcServiceAsync			m_rpcService;		//
-	private   MenuBarBox					m_menuBarBox;		// The menu bar box associated with a popup when opened.
-	private   VerticalPanel					m_contentPanel;		// A VerticalPanel that will hold the popup's contents.
+	private		boolean							m_spacerNeeded;		// false -> The last item added was a spacer.  true -> It was something else.
+	private		int								m_itemCount;		//
+	protected	GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
+	protected	GwtTeamingMessages				m_messages;			// The menu's messages.
+	protected	GwtRpcServiceAsync				m_rpcService;		//
+	private		MenuBarBox						m_menuBarBox;		// The menu bar box associated with a popup when opened.
+	private		VibeMenuBar						m_menuBar;			//
 	
 	/**
 	 * Class constructor.
@@ -75,8 +75,13 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 		// Construct the super class...
 		super(true);
 		setGlassEnabled(true);
-		setGlassStyleName("mainMenuPopup_Glass");
+		setGlassStyleName("vibe-mainMenuPopup_Glass");
 
+		// Change the styles to match a MenuBar popup instead of a
+		// PopupPanel.
+		removeStyleName("gwt-PopupPanel");
+		addStyleName(   "gwt-MenuBarPopup");
+		
 		// Add a close handler to the popup so that it can restore the
 		// menu bar box's styles when the popup menu is closed.
 		addCloseHandler(new CloseHandler<PopupPanel>(){
@@ -85,34 +90,91 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 				m_menuBarBox.popupMenuClosed();
 				m_menuBarBox = null;
 			}});
-
-		// ...store the parameters...
+		
+		// ...and initialize everything else.
 		m_images     = GwtTeaming.getMainMenuImageBundle();
 		m_messages   = GwtTeaming.getMessages();
 		m_rpcService = GwtTeaming.getRpcService();
 		
-		// ...and initialize everything else.
-		addStyleName("mainMenuPopup_Core roundcornerSM-bottom");
-		GwtClientHelper.rollDownPopup(this);
+		addStyleName("vibe-mainMenuPopup_Core");
+		GwtClientHelper.oneWayCornerPopup(this);
 
-		// ...create the popup's innards...
-		DockPanel dp = new DockPanel();
-		dp.addStyleName("mainMenuPopup roundcornerSM-bottom smalltext");
-		dp.add(createPopupContentPanel(),   DockPanel.CENTER);
-		dp.add(createPopupBottom(m_images), DockPanel.SOUTH);
+		// Create a menu bar to hold the popup menu items...
+		m_menuBar = new VibeMenuBar(true, "vibe-mainMenuPopup");
 
-		// ...and add it to the popup.
-		setWidget(dp);
+		// ...and lay it out in the popup like a standard GWT menu
+		// ...lays out its popup...
+		Grid grid = new Grid(3, 3);
+		grid.setCellPadding(0);
+		grid.setCellSpacing(0);
+		CellFormatter cf = grid.getCellFormatter();
+		RowFormatter  rf = grid.getRowFormatter();
+
+		// ...first, the top row of the popup...
+		rf.addStyleName(0, "menuPopupTop");
+		FlowPanel cell = new FlowPanel();
+		cell.addStyleName("menuPopupTopLeftInner");
+		cf.addStyleName(0, 0, "menuPopupTopLeft");
+		grid.setWidget(0, 0, cell);
+		
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupTopCenterInner");
+		cf.addStyleName(0, 1, "menuPopupTopCenter");
+		grid.setWidget(0, 1, cell);
+		
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupTopRightInner");
+		cf.addStyleName(0, 2, "menuPopupTopRight");
+		grid.setWidget(0, 2, cell);
+
+		// ...then the middle (i.e., the content) row of the popup...
+		rf.addStyleName(1, "menuPopupMiddle");
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupMiddleLeftInner");
+		cf.addStyleName(1, 0, "menuPopupMiddleLeft");
+		grid.setWidget(1, 0, cell);
+		
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupMiddleCenterInner");
+		cell.add(m_menuBar);
+		cf.addStyleName(1, 1, "menuPopupMiddleCenter");
+		grid.setWidget(1, 1, cell);
+		
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupMiddleRightInner");
+		cf.addStyleName(1, 2, "menuPopupMiddleRight");
+		grid.setWidget(1, 2, cell);
+		
+		// ...and then the bottom row of the popup.
+		rf.addStyleName(2, "menuPopupBottom");
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupBottomLeftInner");
+		cf.addStyleName(2, 0, "menuPopupBottomLeft");
+		grid.setWidget(2, 0, cell);
+		
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupBottomCenterInner");
+		cf.addStyleName(2, 1, "menuPopupBottomCenter");
+		grid.setWidget(2, 1, cell);
+		
+		cell = new FlowPanel();
+		cell.addStyleName("menuPopupBottomRightInner");
+		cf.addStyleName(2, 2, "menuPopupBottomRight");
+		grid.setWidget(2, 2, cell);
+
+		// Finally, store the popup's Grid as the popup panel's widget.
+		setWidget(grid);
 	}
 
 	/**
-	 * Adds a Widget to the content VerticalPanel.
+	 * Adds a VibeMenuItem to the menu.
 	 * 
-	 * @param contentWidget
+	 * @param mi
 	 */
-	final public void addContentWidget(Widget contentWidget) {
-		// Simply add the widget to the content panel.
-		m_contentPanel.add(contentWidget);
+	final public void addContentMenuItem(VibeMenuItem mi) {
+		// Simply add the item to the menu.
+		m_itemCount += 1;
+		m_menuBar.addItem(mi);
 		m_spacerNeeded = true;
 	}
 
@@ -124,12 +186,14 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	 * @param addEntryView
 	 */
 	final public void addContextMenuItem(String idBase, ToolbarItem tbi, boolean hideEntryView) {
-		// If we have a widget for the menu item... 
-		ContextMenuItem cmi = new ContextMenuItem(this, idBase, tbi, hideEntryView);
-		Widget cmiWidget = cmi.getWidget();
-		if (null != cmiWidget) {
-			// ...add it to the popup.
-			addContentWidget(cmiWidget);
+		// If we have a ToolbarItem...
+		if (null != tbi) {
+			// ...and if we can generate a menu item from it... 
+			ContextMenuItem cmi = new ContextMenuItem(this, idBase, tbi, hideEntryView);
+			if (null != cmi) {
+				// ...add it to the popup.
+				addContentMenuItem(cmi);
+			}
 		}
 	}
 	
@@ -176,35 +240,22 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	 * Adds a spacer line to the menu.
 	 */
 	final public void addSpacerMenuItem() {
-		FlowPanel spacerPanel = new FlowPanel();
-		spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
-		if (GwtClientHelper.jsIsIE()) {
-			Image spacerContent = new Image(m_images.spacer1px());
-			spacerPanel.add(spacerContent);
-		}
-		addContentWidget(spacerPanel);
+		m_menuBar.addSeparator();
 		m_spacerNeeded = false;
 	}
 	
-	/*
-	 * Creates the bottom of the popup.
-	 */
-	private FlowPanel createPopupBottom(GwtTeamingMainMenuImageBundle images) {
-		FlowPanel bottomPanel = new FlowPanel();
-		bottomPanel.addStyleName("mainMenuPopup_Bottom");
-		Image bottomImg = new Image(images.spacer1px());
-		bottomImg.setHeight("4px");
-		bottomImg.setWidth("4px");
-		bottomPanel.add(bottomImg);
-		return bottomPanel;
+	public void clearItems() {
+		m_itemCount = 0;
+		m_menuBar.clearItems();
 	}
-	
-	/*
-	 * Creates the main content panel for the popup.
+
+	/**
+	 * Returns a count of the MenuItem's in this popup.
+	 * 
+	 * @return
 	 */
-	private VerticalPanel createPopupContentPanel() {
-		m_contentPanel = new VerticalPanel();
-		return m_contentPanel;
+	final public int getItemCount() {
+		return m_itemCount;
 	}
 	
 	/**
@@ -213,19 +264,20 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	 * @return
 	 */
 	final public boolean hasContent() {
-		return (0 < m_contentPanel.getWidgetCount());
+		return (0 < getItemCount());
 	}
 
 	/**
 	 * Called to close the menu.
 	 */
 	final public void hideMenu() {
-		// Simply hide the popup.
+		// Simply close the menu and hide the popup.
+		m_menuBar.closeAllChildren(false);
 		hide();
 	}
 	
 	/**
-	 * Returns false if the last widget added was a spacer and true
+	 * Returns false if the last item added was a spacer and true
 	 * otherwise.
 	 * 
 	 * @return
@@ -266,9 +318,8 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	 * 
 	 * Overrides PopupPanel.show().
 	 */
-	@Override
 	public void show() {
-		// Tell the super class to show the menu...
+		// Tell the super class to show the popup...
 		super.show();
 		
 		// ...tell the menu's box that its got an open popup menu
@@ -276,9 +327,12 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 		addAutoHidePartner(m_menuBarBox.getElement());
 		m_menuBarBox.popupMenuOpened();
 		
-		// ...and add vertical scrolling to the main frame for the
-		// ...duration of the popup.
+		// ...add vertical scrolling to the main frame for the duration
+		// ...of the popup....
 		GwtClientHelper.scrollUIForPopup(this);
+		
+		// ...and give the menu bar the focus.
+		m_menuBar.focus();
 	}
 	
 	/**
@@ -289,7 +343,7 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	final public void showMenu(MenuBarBox menuBarBox) {
 		// Tell the menu to show its popup.
 		m_menuBarBox = menuBarBox;
-		showPopup(menuBarBox.getBoxLeft(), menuBarBox.getBoxBottom());
+		showPopup((menuBarBox.getBoxLeft() + 10), menuBarBox.getBoxBottom());
 	}
 	
 	/**

@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
-import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -79,6 +78,7 @@ import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
 import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite.SearchOptionsCompositeClient;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup.ViewsMenuPopupClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -97,32 +97,30 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.VibeKBHook;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * This widget will display Teaming's main menu control.
+ * This widget will display Vibe's main menu control.
  * 
  * @author drfoster@novell.com
  */
 public class MainMenuControl extends Composite
-	implements VibeKBHook,
+	implements
 	// Event handlers implemented by this class.
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
@@ -142,11 +140,13 @@ public class MainMenuControl extends Composite
 {
 	private BinderInfo						m_contextBinder;
 	private ContextLoadInfo					m_lastContextLoaded;
-	private FlowPanel						m_buttonsPanel;
-	private FlowPanel						m_contextPanel;
+	private EditSuccessfulHandler           m_editFolderColumnsSuccessHandler;
+	private FolderColumnsConfigDlg          m_folderColumnsDlg;
 	private GwtMainPage						m_mainPage;
-	private GwtTeamingMainMenuImageBundle	m_images         = GwtTeaming.getMainMenuImageBundle();
-	private GwtTeamingMessages 				m_messages       = GwtTeaming.getMessages();
+	private GwtTeamingMainMenuImageBundle	m_images   = GwtTeaming.getMainMenuImageBundle();
+	private GwtTeamingMessages 				m_messages = GwtTeaming.getMessages();
+	private Integer 						m_folderColumnsDlgX;
+	private Integer 						m_folderColumnsDlgY;
 	private MenuBarBox						m_closeAdminBox;
 	private MenuBarBox						m_myFavoritesBox;
 	private MenuBarBox						m_myTeamsBox;
@@ -163,10 +163,9 @@ public class MainMenuControl extends Composite
 	@SuppressWarnings("unused")
 	private String							m_menuUsage;	// Which context this menu is being used in.
 	private TeamingPopupPanel               m_soPopup;
-	private FolderColumnsConfigDlg          m_folderColumnsDlg = null;
-	private EditSuccessfulHandler           m_editFolderColumnsSuccessHandler = null;
-	private Integer 						m_folderColumnsDlgX;
-	private Integer 						m_folderColumnsDlgY;
+	private VibeMenuBar						m_buttonsMenu;
+	private VibeMenuBar						m_commonMenu;
+	private VibeMenuBar						m_contextMenu;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -244,7 +243,7 @@ public class MainMenuControl extends Composite
 		
 		// Create the menu's main panel...
 		FlowPanel menuPanel = new FlowPanel();
-		menuPanel.addStyleName("mainMenuControl");
+		menuPanel.addStyleName("gwt-MenuBar-horizontal vibe-mainMenuControl");
 
 		// ...add the common items at the left end of the menu...
 		addCommonItems(menuPanel);
@@ -252,20 +251,20 @@ public class MainMenuControl extends Composite
 		// ...add a FlowPanel for the context dependent items.  (Note
 		// ...that these items will be added when the content panel
 		// ...loads via calls to MainMenuControl.contextLoaded().)...
-		m_contextPanel = new FlowPanel();
-		m_contextPanel.addStyleName("mainMenuContent");
-		menuPanel.add(m_contextPanel);
+		m_contextMenu = new VibeMenuBar("vibe-mainMenuContent");
+		menuPanel.add(m_contextMenu);
 		
 		// ...add the search widgets to the right end of the menu...
 		m_searchPanel = new SearchMenuPanel();
 		menuPanel.add(m_searchPanel);
 		final MainMenuControl mainMenu = this;
-		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new ClickHandler() {
-			public void onClick(ClickEvent event) {
+		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new Command() {
+			@Override
+			public void execute() {
 				m_soButton.removeStyleName("subhead-control-bg2");
 				m_soPopup = new TeamingPopupPanel(true, false);
 				GwtClientHelper.rollDownPopup(m_soPopup);
-				m_soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
+				m_soPopup.addStyleName("searchOptions_Browser roundcornerSM-bottom");
 				SearchOptionsComposite.createAsync(
 						m_soPopup,
 						new SearchOptionsCompositeClient() {					
@@ -278,10 +277,10 @@ public class MainMenuControl extends Composite
 					@Override
 					public void onSuccess(SearchOptionsComposite soc) {
 						// Connect things together...
-						soc.addStyleName("mainMenuSearchOptions");
+						soc.addStyleName("searchOptions");
 						m_soPopup.setWidget(soc);
 						m_soPopup.setGlassEnabled(true);
-						m_soPopup.setGlassStyleName("mainMenuPopup_Glass");
+						m_soPopup.setGlassStyleName("vibe-mainMenuPopup_Glass");
 						
 						// ...and show the search options popup.  We do
 						// ...this as a scheduled command so that the
@@ -295,6 +294,7 @@ public class MainMenuControl extends Composite
 								// the position of the search panel on
 								// the menu.
 								m_soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+									@Override
 									public void setPosition(int offsetWidth, int offsetHeight) {
 										int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
 										int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
@@ -306,10 +306,12 @@ public class MainMenuControl extends Composite
 						Scheduler.get().scheduleDeferred(showSOPopup);
 					}
 				});
-			}},
-			this);
-		m_soButton.addStyleName("mainMenuButton mainMenuSearchOptions_Button subhead-control-bg1 roundcornerSM");
-		menuPanel.add(m_soButton);
+			}});
+		m_soButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
+		MenuBar soBar = new MenuBar();
+		soBar.addStyleName("vibe-mainMenuSearchOptions_Button");
+		soBar.addItem(m_soButton);
+		menuPanel.add(soBar);
 		
 		// ...and finally, all composites must call initWidget() in
 		// ...their constructors.
@@ -320,15 +322,16 @@ public class MainMenuControl extends Composite
 	 * Adds the "Close Administration" button to the common portion of
 	 * the menu bar.
 	 */
-	private void addCloseAdministrationToCommon(FlowPanel menuPanel) {
-		m_closeAdminBox = new MenuBarBox("ss_mainMenuCloseAdmin", m_messages.close(), false, this);
-		m_closeAdminBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
+	private void addCloseAdministrationToCommon(MenuBar menuPanel) {
+		m_closeAdminBox = new MenuBarBox("ss_mainMenuCloseAdmin", m_messages.close(), false);
+		m_closeAdminBox.setCommand(
+			new Command() {
+				@Override
+				public void execute() {
 					AdministrationExitEvent.fireOne();
 				}
 			});
-		menuPanel.add(m_closeAdminBox);
+		menuPanel.addItem(m_closeAdminBox);
 		m_closeAdminBox.setVisible(false);
 	}
 	
@@ -339,35 +342,36 @@ public class MainMenuControl extends Composite
 	private void addCommonItems(FlowPanel menuPanel) {
 		// Create a panel to hold the buttons at the left edge of the
 		// menu bar...
-		m_buttonsPanel = new FlowPanel();
-		m_buttonsPanel.addStyleName("mainMenuButton_Group");
+		m_buttonsMenu = new VibeMenuBar("vibe-mainMenuButton_Group");
 		
 		// ...add the slide-left/right toggle...
 		m_wsTreeSlider = new MenuBarToggle(m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_HIDE, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_SHOW);
-		m_wsTreeSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		m_buttonsPanel.add(m_wsTreeSlider);
+		m_wsTreeSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
+		m_buttonsMenu.addItem(m_wsTreeSlider);
 
 		// ...add the slide-up/down toggle...
 		m_mastHeadSlider = new MenuBarToggle(m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_HIDE, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_SHOW);
-		m_mastHeadSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		m_buttonsPanel.add(m_mastHeadSlider);
+		m_mastHeadSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
+		m_buttonsMenu.addItem(m_mastHeadSlider);
 
 		// ...add the browse hierarchy button...
 		BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
-		m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe, this);
+		m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
 		bhe.setOnBrowseHierarchyInfo(new OnBrowseHierarchyInfo(m_bhButton));
-		m_bhButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		m_buttonsPanel.add(m_bhButton);
+		m_bhButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
+		m_buttonsMenu.addItem(m_bhButton);
 
 		// ...add the buttons to the menu...
-		menuPanel.add(m_buttonsPanel);
+		menuPanel.add(m_buttonsMenu);
 
 		// ...and finally, add the common drop down items to the menu bar.
-		addMyWorkspaceToCommon(        menuPanel);
-		addWhatsNewToCommon(           menuPanel);
-		addMyFavoritesToCommon(        menuPanel);
-		addMyTeamsToCommon(            menuPanel);
-		addCloseAdministrationToCommon(menuPanel);
+		m_commonMenu = new VibeMenuBar("vibe-mainMenuButton_Group");
+		menuPanel.add(m_commonMenu);
+		addMyWorkspaceToCommon(        m_commonMenu);
+		addWhatsNewToCommon(           m_commonMenu);
+		addMyFavoritesToCommon(        m_commonMenu);
+		addMyTeamsToCommon(            m_commonMenu);
+		addCloseAdministrationToCommon(m_commonMenu);
 	}
 	
 	/*
@@ -384,8 +388,6 @@ public class MainMenuControl extends Composite
 		}
 		
 		final String manageName = manageNameCalc;
-		final VibeKBHook kbHook = this;
-
 		ManageMenuPopup.createAsync(manageName, new ManageMenuPopupClient() {			
 			@Override
 			public void onUnavailable() {
@@ -399,16 +401,17 @@ public class MainMenuControl extends Composite
 				mmp.setToolbarItemList(toolbarItemList);
 				mmp.setTeamManagementInfo(tmi);
 				if (mmp.shouldShowMenu()) {
-					final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true, kbHook);
-					manageBox.addClickHandler(
-						new ClickHandler() {
-							public void onClick(ClickEvent event) {
+					final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true);
+					manageBox.setCommand(
+						new Command() {
+							@Override
+							public void execute() {
 								if (mmp.isShowing())
 								     hidePopupMenu(mmp);
 								else showPopupMenu(mmp, manageBox);
 							}
 						});
-					m_contextPanel.add(manageBox);
+					m_contextMenu.addItem(manageBox);
 				}
 			}
 		});
@@ -418,18 +421,20 @@ public class MainMenuControl extends Composite
 	 * Adds the My Favorites item to the common portion of the menu
 	 * bar.
 	 */
-	private void addMyFavoritesToCommon(FlowPanel menuPanel) {
-		m_myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), true, this);
-		m_myFavoritesBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
+	private void addMyFavoritesToCommon(MenuBar menuPanel) {
+		m_myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), true);
+		m_myFavoritesBox.setCommand(
+			new Command() {
+				@Override
+				public void execute() {
 					if (null == m_myFavoritesMenuPopup) {
 						m_myFavoritesMenuPopup = new MyFavoritesMenuPopup();
 						m_myFavoritesMenuPopup.setCurrentBinder(m_contextBinder);
 						showPopupMenu(m_myFavoritesMenuPopup, m_myFavoritesBox);
 						m_myFavoritesMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
+							@Override
 							public void onClose(CloseEvent<PopupPanel> event) {
-							     m_myFavoritesMenuPopup = null;
+								m_myFavoritesMenuPopup = null;
 							}});
 					}
 					else {
@@ -437,22 +442,24 @@ public class MainMenuControl extends Composite
 					}
 				}
 			});
-		menuPanel.add(m_myFavoritesBox);
+		menuPanel.addItem(m_myFavoritesBox);
 	}
 	
 	/*
 	 * Adds the My Teams item to the common portion of the menu bar.
 	 */
-	private void addMyTeamsToCommon(FlowPanel menuPanel) {
-		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true, this);
-		m_myTeamsBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
+	private void addMyTeamsToCommon(MenuBar menuPanel) {
+		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true);
+		m_myTeamsBox.setCommand(
+			new Command() {
+				@Override
+				public void execute() {
 					if (null == m_myTeamsMenuPopup) {
 						m_myTeamsMenuPopup = new MyTeamsMenuPopup();
 						m_myTeamsMenuPopup.setCurrentBinder(m_contextBinder);
 						showPopupMenu(m_myTeamsMenuPopup, m_myTeamsBox);
 						m_myTeamsMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
+							@Override
 							public void onClose(CloseEvent<PopupPanel> event) {
 								m_myTeamsMenuPopup = null;
 							}});
@@ -462,22 +469,23 @@ public class MainMenuControl extends Composite
 					}
 				}
 			});
-		menuPanel.add(m_myTeamsBox);
+		menuPanel.addItem(m_myTeamsBox);
 	}
 	
 	/*
 	 * Adds the My Workspace item to the common portion of the menu
 	 * bar.
 	 */
-	private void addMyWorkspaceToCommon(FlowPanel menuPanel) {
-		m_myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace(), this);
-		m_myWorkspaceBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
+	private void addMyWorkspaceToCommon(MenuBar menuPanel) {
+		m_myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace());
+		m_myWorkspaceBox.setCommand(
+			new Command() {
+				@Override
+				public void execute() {
 					GotoMyWorkspaceEvent.fireOne();
 				}
 			});
-		menuPanel.add(m_myWorkspaceBox);
+		menuPanel.addItem(m_myWorkspaceBox);
 	}
 
 	/*
@@ -489,16 +497,17 @@ public class MainMenuControl extends Composite
 		rpmp.setCurrentBinder(m_contextBinder);
 		rpmp.setToolbarItemList(toolbarItemList);
 		if (rpmp.shouldShowMenu()) {
-			final MenuBarBox rpBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), true, this);
-			rpBox.addClickHandler(
-				new ClickHandler() {
-					public void onClick(ClickEvent event) {
+			final MenuBarBox rpBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), true);
+			rpBox.setCommand(
+				new Command() {
+					@Override
+					public void execute() {
 						if (rpmp.isShowing())
 						     hidePopupMenu(rpmp);
 						else showPopupMenu(rpmp, rpBox);
 					}
 				});
-			m_contextPanel.add(rpBox);
+			m_contextMenu.addItem(rpBox);
 		}
 	}
 
@@ -507,8 +516,6 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
-		final VibeKBHook kbHook = this;
-		
 		ViewsMenuPopup.createAsync(inSearch, searchTabId, new ViewsMenuPopupClient() {			
 			@Override
 			public void onUnavailable() {
@@ -521,16 +528,17 @@ public class MainMenuControl extends Composite
 				vmp.setCurrentBinder(m_contextBinder);
 				vmp.setToolbarItemList(toolbarItemList);
 				if (vmp.shouldShowMenu()) {
-					final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), true, kbHook);
-					actionsBox.addClickHandler(
-						new ClickHandler() {
-							public void onClick(ClickEvent event) {
+					final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), true);
+					actionsBox.setCommand(
+						new Command() {
+							@Override
+							public void execute() {
 								if (vmp.isShowing())
 								     hidePopupMenu(vmp);
 								else showPopupMenu(vmp, actionsBox);
 							}
 						});
-					m_contextPanel.add(actionsBox);
+					m_contextMenu.addItem(actionsBox);
 				}
 			}
 		});
@@ -539,11 +547,12 @@ public class MainMenuControl extends Composite
 	/*
 	 * Adds the What's New item to the common portion of the menu bar.
 	 */
-	private void addWhatsNewToCommon(FlowPanel menuPanel) {
-		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew(), this);
-		m_whatsNewBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
+	private void addWhatsNewToCommon(MenuBar menuPanel) {
+		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew());
+		m_whatsNewBox.setCommand(
+			new Command() {
+				@Override
+				public void execute() {
 					// Are we connected to a binder?
 					if (null != m_contextBinder) {
 						// Yes!  Use it as the current binder for the
@@ -562,7 +571,7 @@ public class MainMenuControl extends Composite
 					}
 				}
 			});
-		menuPanel.add(m_whatsNewBox);
+		menuPanel.addItem(m_whatsNewBox);
 	}
 
 	/*
@@ -574,8 +583,8 @@ public class MainMenuControl extends Composite
 	 * context) are not available until the new context fully loads.
 	 */
 	private void clearContextMenus() {
-		if (null != m_contextPanel) {
-			m_contextPanel.clear();
+		if (null != m_contextMenu) {
+			m_contextMenu.clearItems();
 		}
 	}
 	
@@ -638,7 +647,7 @@ public class MainMenuControl extends Composite
 			if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   true);
 			
 			// Show the panel that holds the menu items.
-			m_contextPanel.setVisible(true);
+			m_contextMenu.setVisible(true);
 			
 			// Show the search panel.
 			m_searchPanel.setVisible(true);
@@ -698,47 +707,6 @@ public class MainMenuControl extends Composite
 	}
 	
 	/**
-	 * Called when one of the MenuBarBox widgets processes an enter
-	 * key.
-	 * 
-	 * Implements the VibeKBHook.onEnter() method.
-	 * 
-	 * @param w
-	 */
-	public void onEnter(Widget w) {
-		if (w instanceof VibeAnchorTabstop) {
-			((VibeAnchorTabstop) w).fireClick();
-		}
-	}
-	
-	/**
-	 * Called when one of the MenuBarBox widgets processes a tab key.
-	 * 
-	 * Implements the VibeKBHook.onTab() method.
-	 * 
-	 * @param w
-	 */
-	public void onTab(Widget w) {
-		if (w instanceof MenuBarButton) {
-			MenuBarButton mbb = ((MenuBarButton) w);
-			if (mbb == m_bhButton) {
-				BrowseHierarchyExitEvent.fireOne();
-			}
-			
-			else if (mbb == m_soButton) {
-				if (null != m_soPopup) {
-					m_soPopup.hide();
-					m_soPopup = null;
-				}
-			}
-		}
-		
-		else if (w instanceof VibeAnchorTabstop) {
-			hidePopupMenu(m_openPopupMenu);
-		}
-	}
-	
-	/**
 	 * Handles InvokeAboutEvent's received by this class.
 	 * 
 	 * Implements the InvokeAboutEvent.Handler.onInvokeAbout() method.
@@ -793,8 +761,8 @@ public class MainMenuControl extends Composite
 			 */
 			public void onSuccess( VibeRpcResponse response )
 			{
-				List folderColumns;
-				List folderColumnsAll;
+				List<FolderColumn> folderColumns;
+				List<FolderColumn> folderColumnsAll;
 				folderColumns = ((FolderColumnsRpcResponseData)response.getResponseData()).getFolderColumns();
 				folderColumnsAll = ((FolderColumnsRpcResponseData)response.getResponseData()).getFolderColumnsAll();
 				
@@ -809,6 +777,7 @@ public class MainMenuControl extends Composite
 						/**
 						 * This method gets called when user user presses ok in the "Folder Columns Configuration" dialog.
 						 */
+						@SuppressWarnings("unchecked")
 						public boolean editSuccessful( Object obj )
 						{
 							newFolderColumns = (List<FolderColumn>) obj;
@@ -866,13 +835,13 @@ public class MainMenuControl extends Composite
 				m_folderColumnsDlgX = -1;
 				m_folderColumnsDlgY = -1;
 				if ( m_folderColumnsDlgX == -1 ) {
-					m_folderColumnsDlgX = m_contextPanel.getAbsoluteLeft();
+					m_folderColumnsDlgX = m_contextMenu.getAbsoluteLeft();
 					if ( m_folderColumnsDlgX < 75 )
 						m_folderColumnsDlgX = 75;
 				}
 				
 				if ( m_folderColumnsDlgY == -1 ) {
-					m_folderColumnsDlgY = m_contextPanel.getAbsoluteTop();
+					m_folderColumnsDlgY = m_contextMenu.getAbsoluteTop();
 					if ( m_folderColumnsDlgY < 75 )
 						m_folderColumnsDlgY = 75;
 				}
@@ -1099,7 +1068,7 @@ public class MainMenuControl extends Composite
 			if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   false);
 			
 			// Hide the panel that holds the menu items.
-			m_contextPanel.setVisible(false);
+			m_contextMenu.setVisible(false);
 			
 			// Hide the search panel.
 			m_searchPanel.setVisible(false);

@@ -69,6 +69,13 @@ public class TeamingPopupPanel extends PopupPanel {
 		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 	}
 
+	/**
+	 * Sets the popup panel's animation type to one way corner.
+	 */
+	public void setAnimationTypeToOneWayCorner() {
+		setAnimationType(PopupPanel.AnimationType.ONE_WAY_CORNER);
+	}
+
 	/*
 	 * Overrides PopupPanel.onPreviewNativeEvent() to address an issue
 	 * with PopupPanel's in FF closing with auto hide if the user
