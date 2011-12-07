@@ -146,29 +146,48 @@ public class GwtViewHelper {
 		for (FolderRow fr:  folderRows) {
 			// Scan this FolderRow's individual assignees tracking each
 			// unique ID.
-			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			Map<String, List<AssignmentInfo>> aiMap = fr.getRowAssigneeInfoListsMap();
+			List<AssignmentInfo> aiList = aiMap.get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				for (AssignmentInfo ai:  aiList) {
+					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
 			}
-			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			aiList = aiMap.get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				for (AssignmentInfo ai:  aiList) {
+					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
 			}
 			
 			// Scan this FolderRow's group assignees tracking each
 			// unique ID.
-			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			aiList = aiMap.get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				for (AssignmentInfo ai:  aiList) {
+					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
 			}
-			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			aiList = aiMap.get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				for (AssignmentInfo ai:  aiList) {
+					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
 			}
 			
 			// Scan this FolderRow's team assignees tracking each
 			// unique ID.
-			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+			aiList = aiMap.get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				for (AssignmentInfo ai:  aiList) {
+					MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				}
 			}
-			for (AssignmentInfo ai:  fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+			aiList = aiMap.get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				for (AssignmentInfo ai:  aiList) {
+					MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				}
 			}
 		}
 
@@ -247,12 +266,33 @@ public class GwtViewHelper {
 		Comparator<AssignmentInfo> comparator = new GwtServerHelper.AssignmentInfoComparator(true);
 		for (FolderRow fr:  folderRows) {
 			// ...this time, to sort the assignee lists.
-			Collections.sort(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             comparator);
-			Collections.sort(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        comparator);
-			Collections.sort(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      comparator);
-			Collections.sort(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), comparator);
-			Collections.sort(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
-			Collections.sort(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
+			Map<String, List<AssignmentInfo>> aiMap = fr.getRowAssigneeInfoListsMap();
+			List<AssignmentInfo> aiList = aiMap.get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				Collections.sort(aiList, comparator);
+			}
+			aiList = aiMap.get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				Collections.sort(aiList, comparator);
+			}
+			
+			aiList = aiMap.get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				Collections.sort(aiList, comparator);
+			}
+			aiList = aiMap.get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				Collections.sort(aiList, comparator);
+			}
+			
+			aiList = aiMap.get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				Collections.sort(aiList, comparator);
+			}
+			aiList = aiMap.get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				Collections.sort(aiList,  comparator);
+			}
 		}
 	}
 	
@@ -335,6 +375,12 @@ public class GwtViewHelper {
 	 * Fixes up the group assignees in an List<AssignmentInfo>'s.
 	 */
 	private static void fixupAIGroups(List<AssignmentInfo> aiGroupsList, Map<Long, String> principalTitles, Map<Long, Integer> groupCounts) {
+		// If don't have a list to fixup...
+		if ((null == aiGroupsList) || aiGroupsList.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
 		// The removeList is used to handle cases where an ID could
 		// not be resolved (e.g., an 'Assigned To' group has been
 		// deleted.)
@@ -358,6 +404,12 @@ public class GwtViewHelper {
 	 * Fixes up the team assignees in an List<AssignmentInfo>'s.
 	 */
 	private static void fixupAITeams(List<AssignmentInfo> aiTeamsList, Map<Long, String> teamTitles, Map<Long, Integer> teamCounts) {
+		// If don't have a list to fixup...
+		if ((null == aiTeamsList) || aiTeamsList.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
 		// The removeList is used to handle cases where an ID could
 		// not be resolved (e.g., an 'Assigned To' team has been
 		// deleted.)
@@ -381,6 +433,12 @@ public class GwtViewHelper {
 	 * Fixes up the individual assignees in an List<AssignmentInfo>'s.
 	 */
 	private static void fixupAIs(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds) {
+		// If don't have a list to fixup...
+		if ((null == aiList) || aiList.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
 		// The removeList is used to handle cases where an ID could
 		// not be resolved (e.g., an 'Assigned To' user has been
 		// deleted.)
@@ -878,6 +936,7 @@ public class GwtViewHelper {
 				//Build a list of all possible columns
 				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
 				for (Definition def :  entryDefs.values()) {
+					@SuppressWarnings("unused")
 					org.dom4j.Document defDoc = def.getDefinition();
 					Map<String,Map> elementData = bs.getDefinitionModule().getEntryDefinitionElements(def.getId());
 					for (Map.Entry me : elementData.entrySet()) {
