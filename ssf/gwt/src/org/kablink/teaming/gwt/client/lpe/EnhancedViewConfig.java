@@ -46,15 +46,17 @@ import com.google.gwt.http.client.URL;
  */
 public class EnhancedViewConfig extends ConfigItem
 {
+	private String m_lpBinderId;	// landing page binder id
 	private EnhancedViewProperties		m_properties;
 	
 	/**
 	 * 
 	 */
-	public EnhancedViewConfig( String configStr, String style )
+	public EnhancedViewConfig( String configStr, String style, String binderId )
 	{
 		String[] results;
 		
+		m_lpBinderId = binderId;	// landing page binder id
 		m_properties = new EnhancedViewProperties();
 		setLandingPageStyle( style );
 		
@@ -237,7 +239,7 @@ public class EnhancedViewConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget()
 	{
-		return EnhancedViewWidget.createWidget( this );
+		return EnhancedViewWidget.createWidget( this, m_lpBinderId );
 	}
 	
 	/**

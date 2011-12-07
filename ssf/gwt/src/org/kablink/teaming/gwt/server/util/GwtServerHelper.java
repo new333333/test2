@@ -48,7 +48,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
@@ -191,6 +193,8 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
+import org.kablink.teaming.web.util.WorkspaceTreeHelper;
+import org.kablink.util.servlet.StringServletResponse;
 
 
 /**
@@ -1101,6 +1105,54 @@ public class GwtServerHelper {
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
 	}
+
+	/**
+	 * Execute the given enhanced view jsp and return the resulting html.
+	 */
+	public static String executeEnhancedViewJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, String binderId, String jspName )
+	{
+		String results;
+		String path;
+		RequestDispatcher reqDispatcher;
+		StringServletResponse ssResponse;
+		
+		// Construct the full path to the jsp
+		path = "/WEB-INF/jsp/landing_page_enhanced_views/" + jspName;
+		
+		reqDispatcher = request.getRequestDispatcher( path );
+		ssResponse = new StringServletResponse( response );
+
+		try
+		{
+			// Gather up all the data required by the jsp
+			{
+				Map<String,Object> model;
+				Long binderIdL;
+				
+				model = new HashMap<String,Object>();
+				binderIdL = Long.valueOf( binderId );
+//				WorkspaceTreeHelper.setupWorkspaceBeans( ami, binderIdL, request, response, model, false );
+				
+				// Put the data that setupWorkspaceBeans() put in model into the request.
+			}
+			
+			// Execute the jsp
+			reqDispatcher.include( request, ssResponse );
+			
+			results = ssResponse.getString().trim();
+		}
+		catch ( Exception e )
+		{
+			String[] errorArgs;
+			String errorTag = "errorcode.unexpectedError";
+			
+			errorArgs = new String[] { e.getLocalizedMessage() };
+			results = NLT.get( errorTag, errorArgs );
+		}
+		
+		return results;
+	}
+	
 	
 	/**
 	 * Returns a TreeInfo containing the display information for the
@@ -4257,6 +4309,7 @@ public class GwtServerHelper {
 		case COLLAPSE_SUBTASKS:
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_TASKS:
+		case EXECUTE_ENHANCED_VIEW_JSP:
 		case EXECUTE_SEARCH:
 		case EXPAND_HORIZONTAL_BUCKET:
 		case EXPAND_SUBTASKS:
