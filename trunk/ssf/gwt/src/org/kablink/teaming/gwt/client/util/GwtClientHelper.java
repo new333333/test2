@@ -166,6 +166,17 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * If we're in debug UI mode, displays an alert.
+	 * 
+	 * @param msg
+	 */
+	public static void debugAlert(String msg) {
+		if (isDebugUI()) {
+			deferredAlert(msg);
+		}
+	}
+	
+	/**
 	 * Displays a messages in an 'deferred' alert box.
 	 * 
 	 * @param msg

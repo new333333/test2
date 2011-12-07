@@ -53,13 +53,12 @@ import com.google.gwt.user.client.ui.MenuItem;
  * @author drfoster@novell.com
  */
 public abstract class MenuBarPopupBase {
-	private	  boolean						m_spacerNeeded;		// false -> The last item added was a spacer.  true -> It was something else.
-	private   ContextBinderProvider			m_binderProvider;	//
-	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
-	protected GwtTeamingMessages			m_messages;			// The menu's messages.
-	protected GwtRpcServiceAsync			m_rpcService;		//
-	private   MenuBarBox					m_menuBox;			//
-	private   VibeMenuBar					m_menuBar;			//
+	private   ContextBinderProvider			m_binderProvider;	// Provides the current binder context, as required.
+	protected GwtTeamingMainMenuImageBundle	m_images;			// Vibe's image  resource.
+	protected GwtTeamingMessages			m_messages;			// Vibe's string resources.
+	protected GwtRpcServiceAsync			m_rpcService;		// Vibe's RPC service.
+	private   MenuBarBox					m_menuBox;			// The box wrapping the menu item that invokes this popup.
+	private   VibeMenuBar					m_menuBar;			// The menu bar containing this popup's menu items.
 	
 	/**
 	 * Class constructor.
@@ -98,7 +97,6 @@ public abstract class MenuBarPopupBase {
 	final public void addContentMenuItem(VibeMenuItem mi) {
 		// Simply add the item to the menu.
 		m_menuBar.addItem(mi);
-		m_spacerNeeded = true;
 	}
 
 	/**
@@ -121,9 +119,8 @@ public abstract class MenuBarPopupBase {
 	}
 	
 	final public void addContextMenuItem(String idBase, ToolbarItem tbi) {
-		// Always use the initial form of the method, defaulting to not
-		// hiding an entry view.
-		addContextMenuItem(idBase, tbi, false);
+		// Always use the initial form of the method.
+		addContextMenuItem(idBase, tbi, false);	// false -> Don't hide an entry view.
 	}
 
 	/**
@@ -160,14 +157,16 @@ public abstract class MenuBarPopupBase {
 	}
 	
 	/**
-	 * Adds a spacer line to the menu.
+	 * Adds a spacer to the menu.
 	 */
 	final public void addSpacerMenuItem() {
 		m_menuBar.addSeparator();
-		m_spacerNeeded = false;
 	}
-	
-	public void clearItems() {
+
+	/**
+	 * Clears the contents of the menu.
+	 */
+	final public void clearItems() {
 		m_menuBar.clearItems();
 	}
 
@@ -192,7 +191,7 @@ public abstract class MenuBarPopupBase {
 	}
 	
 	/**
-	 * Returns the VibeMenuBar associated with this MenuBarPopupBase.
+	 * Returns the menu associated with this MenuBarPopupBase.
 	 * 
 	 * @return
 	 */
@@ -202,7 +201,7 @@ public abstract class MenuBarPopupBase {
 
 	/**
 	 * Returns the X position to use to position something relative to
-	 * this menu.
+	 * the bottom of this menu.
 	 * 
 	 * @return
 	 */
@@ -212,7 +211,7 @@ public abstract class MenuBarPopupBase {
 	
 	/**
 	 * Returns the Y position to use to position something relative to
-	 * this menu.
+	 * the bottom of this menu.
 	 * 
 	 * @return
 	 */
@@ -221,12 +220,12 @@ public abstract class MenuBarPopupBase {
 	}
 	
 	/**
-	 * Returns true if the menu bar has content and false otherwise.
+	 * Returns true if the menu has content and false otherwise.
 	 * 
 	 * @return
 	 */
 	final public boolean hasContent() {
-		return m_menuBar.hasItems();
+		return m_menuBar.hasContent();
 	}
 
 	/**
@@ -236,7 +235,7 @@ public abstract class MenuBarPopupBase {
 	 * @return
 	 */
 	final public boolean isSpacerNeeded() {
-		return m_spacerNeeded;
+		return m_menuBar.isSpacerNeeded();
 	}
 
 	/**
@@ -262,13 +261,13 @@ public abstract class MenuBarPopupBase {
 	
 	/**
 	 * Classes that extend do what needs to be done to populate their
-	 * MenuBarPopupBase.
+	 * menu.
 	 */
 	public abstract void populateMenu();
 	
 	/**
 	 * Passes a BinderInfo describing the currently selected binder to
-	 * classes that extend MenuBarPopupBase.
+	 * classes that extend this.
 	 * 
 	 * @param binderInfo
 	 */
@@ -285,7 +284,7 @@ public abstract class MenuBarPopupBase {
 	
 	/**
 	 * Passes information about the context based toolbar requirements
-	 * via a List<ToolbarItem> to classes that extend MenuBarPopupBase.
+	 * via a List<ToolbarItem> to classes that extend this.
 	 * 
 	 * Not used for non-context based menus (My Teams, Favorites, ...)
 	 * 

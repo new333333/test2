@@ -33,28 +33,36 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
- * Class used for popup menu Label item.  
+ * Class used for a simple label on a popup menu.  
  * 
  * @author drfoster@novell.com
- *
  */
 public class MenuPopupLabel extends VibeMenuItem {
 	/**
-	 * Class constructor.
+	 * Constructor method..
 	 * 
-	 * @param displayHTML
+	 * @param text
 	 */
-	public MenuPopupLabel(String displayHTML) {
+	public MenuPopupLabel(String text, boolean asHtml) {
 		super(
-			displayHTML,
+			text,
+			asHtml,
 			new Command() {
 				@Override
 				public void execute() {}
 			},
 			"vibe-mainMenuPopup_Item vibe-mainMenuPopup_ItemText");
+	}
+	
+	/**
+	 * Constructor method..
+	 * 
+	 * @param text
+	 */
+	public MenuPopupLabel(String text) {
+		this(text, false);
 	}
 }
