@@ -40,6 +40,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 
 
@@ -57,16 +58,33 @@ public class MenuBarBox extends MenuItem {
 	 * @param itemImgRes
 	 * @param itemText
 	 * @param cmd
-	 * @param dropdown
 	 */
-	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, Command cmd, boolean dropdown) {
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, Command cmd) {
 		// Initialize the superclass...
 		super(
 			"",
 			cmd);
 		
 		// ...and initialize everything else.
-		initBox(itemImgRes, itemText, dropdown);
+		initBox(itemImgRes, itemText, false);
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param boxId
+	 * @param itemImgRes
+	 * @param itemText
+	 * @param subMenu
+	 */
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, MenuBar subMenu) {
+		// Initialize the superclass...
+		super(
+			"",
+			subMenu);
+		
+		// ...and initialize everything else.
+		initBox(itemImgRes, itemText, true);
 	}
 	
 	/**
@@ -74,21 +92,23 @@ public class MenuBarBox extends MenuItem {
 	 *
 	 * @param boxId
 	 * @param itemText
-	 * @param dropdown
+	 * @param subMenu
 	 */
-	public MenuBarBox(String boxId, String itemText, boolean dropdown) {
+	public MenuBarBox(String boxId, String itemText, MenuBar subMenu) {
 		// Always use the initial form of the constructor.
 		this(
 			boxId,
 			null,
 			itemText,
-			new Command() {	// Place holder.  Actual command will be supplied later.
-				@Override
-				public void execute() {}
-			},
-			dropdown);
+			subMenu);
 	}
 	
+	/**
+	 * Constructor method.
+	 *
+	 * @param boxId
+	 * @param itemText
+	 */
 	public MenuBarBox(String boxId, String itemText) {
 		// Always use the initial form of the constructor.
 		this(
@@ -98,10 +118,16 @@ public class MenuBarBox extends MenuItem {
 			new Command() {	// Place holder.  Actual command will be supplied later.
 				@Override
 				public void execute() {}
-			},
-			false);
+			});
 	}
 	
+	/**
+	 * Constructor method.
+	 *
+	 * @param boxId
+	 * @param itemImgRes
+	 * @param itemText
+	 */
 	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText) {
 		// Always use the initial form of the constructor.
 		this(
@@ -111,8 +137,7 @@ public class MenuBarBox extends MenuItem {
 			new Command() {	// Place holder.  Actual command will be supplied later.
 				@Override
 				public void execute() {}
-			},
-			false);
+			});
 	}
 
 	/*
@@ -154,15 +179,6 @@ public class MenuBarBox extends MenuItem {
 	}
 	
 	/**
-	 * Sets the Command for a MenuBarBox.
-	 * 
-	 * @param c
-	 */
-	public void setCommand(Command c) {
-		super.setCommand(c);
-	}
-
-	/**
 	 * Returns the menu bar box's absolute bottom position.
 	 * 
 	 * @return
@@ -179,20 +195,16 @@ public class MenuBarBox extends MenuItem {
 	public int getBoxLeft () {
 		return getAbsoluteLeft();
 	}
-	
+
 	/**
-	 * Sets the widget's styles to reflect that it has a closed popup
-	 * menu associated with it.
+	 * Sets a MenuBarBox's visibility state.
+	 * 
+	 * When being hidden, they are disabled so that they're removed
+	 * from the tab order.
 	 */
-	public void popupMenuClosed() {
-//!		...this needs to be implemented...
-	}
-	
-	/**
-	 * Sets the widget's styles to reflect that it has an open popup
-	 * menu associated with it.
-	 */
-	public void popupMenuOpened() {
-//!		...this needs to be implemented...
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		setEnabled(visible);
 	}
 }

@@ -79,6 +79,7 @@ public class ContextMenuItem extends VibeMenuItem {
 		private String					m_id;
 		private String					m_onClickJS;
 		private String					m_url;
+		@SuppressWarnings("unused")
 		private MenuBarPopupBase		m_contextMenu;
 		private TeamingEvents			m_teamingEvent;
 		@SuppressWarnings("unused")
@@ -215,10 +216,7 @@ public class ContextMenuItem extends VibeMenuItem {
 		 */
 		@Override
 		public void execute() {
-			// Hide the menu...
-			m_contextMenu.hideMenu();
-			
-			// ...if requested to do so...
+			// If requested to do so...
 			if (m_hideEntryView) {
 				// ...hide any entry view...
 				GwtClientHelper.jsHideNewPageEntryViewDIV();

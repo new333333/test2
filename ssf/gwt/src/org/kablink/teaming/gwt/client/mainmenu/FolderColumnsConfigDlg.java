@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -116,11 +115,11 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FolderColumnsConfigDlg(boolean autoHide, boolean modal, int left, int top, 
+	private FolderColumnsConfigDlg(boolean autoHide, boolean modal, 
 			String binderId, List<FolderColumn> folderColumnsList, 
 			List<FolderColumn> folderColumnsListAll) {
 		// Initialize the superclass...
-		super(autoHide, modal, left, top);
+		super(autoHide, modal);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
@@ -335,6 +334,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 */
 	public boolean editSuccessful(Object callbackData) {
 		// Save the new folder column info
+		@SuppressWarnings("unchecked")
 		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
 		Boolean isDefault = m_folderDefaultCheckBox.getValue();
 		AsyncCallback<VibeRpcResponse> rpcSaveCallback;
@@ -627,8 +627,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * 
 	 * @param autoHide
 	 * @param modal
-	 * @param left
-	 * @param top
 	 * @param binderId
 	 * @param folderColumnsList
 	 * @param folderColumnsListAll
@@ -637,8 +635,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public static void createAsync(
 			final boolean autoHide,
 			final boolean modal,
-			final int left,
-			final int top,
 			final String binderId,
 			final List<FolderColumn> folderColumnsList,
 			final List<FolderColumn> folderColumnsListAll,
@@ -649,8 +645,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 				FolderColumnsConfigDlg dlg = new FolderColumnsConfigDlg(
 					autoHide,
 					modal,
-					left,
-					top,
 					binderId,
 					folderColumnsList,
 					folderColumnsListAll);

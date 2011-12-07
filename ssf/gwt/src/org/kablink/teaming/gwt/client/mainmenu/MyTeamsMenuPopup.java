@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -58,9 +59,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "myTeams_";
-	
-	@SuppressWarnings("unused")
-	private BinderInfo m_currentBinder;	// The currently selected binder.
 	
 	/*
 	 * Inner class that handles selecting an individual team.
@@ -85,10 +83,7 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 		 */
 		@Override
 		public void execute() {
-			// Hide the menu...
-			hideMenu();
-			
-			// ...and fire a change context event.
+			// Fire a change context event.
 			GwtTeaming.fireEvent(
 				new ChangeContextEvent(
 					new OnSelectBinderInfo(
@@ -102,9 +97,22 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	/**
 	 * Class constructor.
 	 */
-	public MyTeamsMenuPopup() {
-		// Initialize the super class.
-		super(GwtTeaming.getMessages().mainMenuBarMyTeams());
+	public MyTeamsMenuPopup(ContextBinderProvider binderProvider) {
+		// Initialize the superclass.
+		super(binderProvider, GwtTeaming.getMessages().mainMenuBarMyTeams());
+	}
+	
+	/**
+	 * Called when the menu popup closes.
+	 * 
+	 * Overrides the MenuBarPopupBase.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Remove the menu's content so that it rereads its data each
+		// each time it's shown.
+		super.onDetach();
+		clearItems();
 	}
 	
 	/**
@@ -117,8 +125,7 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void setCurrentBinder(BinderInfo binderInfo) {
-		// Simply store the parameter.
-		m_currentBinder = binderInfo;
+		// Nothing to do.
 	}
 	
 	/**
@@ -134,23 +141,70 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 		// Unused.
 	}
 	
-	/*
-	 * Asynchronously shows the 'My Teams' popup menu.
+	/**
+	 * Not used for the My Teams menu.  Always returns true.
+	 * 
+	 * Implements the MenuBarPopupBase.shouldShowMenu() abstract
+	 * method.
+	 * 
+	 * @return
 	 */
-	private void showMyTeamsMenuAsync(final List<TeamInfo> mtList) {
-		ScheduledCommand showMenu = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showMyTeamsMenuNow(mtList);
-			}
-		};
-		Scheduler.get().scheduleDeferred(showMenu);
+	@Override
+	public boolean shouldShowMenu() {
+		return true;
+	}
+	
+	/**
+	 * Completes construction of the menu.
+	 * 
+	 * Implements the MenuBarPopupBase.populateMenu() abstract method.
+	 */
+	@Override
+	public void populateMenu() {
+		// Have we populated the menu yet?
+		if (!(hasContent())) {
+			// No!  Populate it now.
+			GetMyTeamsCmd cmd = new GetMyTeamsCmd();
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetMyTeams());
+				}
+				
+				public void onSuccess(VibeRpcResponse response)  {
+					List<TeamInfo> mtList;
+					GetMyTeamsRpcResponseData responseData;
+					
+					responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
+					mtList = responseData.getTeams();
+					
+					// Populate the 'My Teams' popup menu
+					// asynchronously so that we can release the AJAX
+					// request ASAP.
+					populateMyTeamsMenuAsync(mtList);
+				}
+			});
+		}
 	}
 	
 	/*
-	 * Synchronously shows the 'My Teams' popup menu.
+	 * Asynchronously populates the 'My Teams' popup menu.
 	 */
-	private void showMyTeamsMenuNow(List<TeamInfo> mtList) {
+	private void populateMyTeamsMenuAsync(final List<TeamInfo> mtList) {
+		ScheduledCommand populateMenu = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateMyTeamsMenuNow(mtList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(populateMenu);
+	}
+	
+	/*
+	 * Synchronously populates the 'My Teams' popup menu.
+	 */
+	private void populateMyTeamsMenuNow(List<TeamInfo> mtList) {
 		// Scan the teams...
 		int mtCount = 0;
 		MenuPopupAnchor mtA;
@@ -171,65 +225,5 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuMyTeamsNoTeams());
 			addContentMenuItem(content);
 		}
-		
-		// Finally, show the menu popup.
-		show();
 	}
-	
-	/**
-	 * Not used for the My Teams menu.  Always returns true.
-	 * 
-	 * Implements the MenuBarPopupBase.shouldShowMenu() abstract
-	 * method.
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean shouldShowMenu() {
-		return true;
-	}
-	
-	/**
-	 * Completes construction of the menu and shows it.
-	 * 
-	 * Implements the MenuBarPopupBase.showPopup() abstract method.
-	 * 
-	 * @param left
-	 * @param top
-	 */
-	@Override
-	public void showPopup(int left, int top) {
-		GetMyTeamsCmd cmd;
-		
-		// Position the popup and if we've already constructed its
-		// content...
-		setPopupPosition(left, top);
-		if (hasContent()) {
-			// ...simply show it and bail.
-			show();
-			return;
-		}
-		
-		// Otherwise, read the users teams.
-		cmd = new GetMyTeamsCmd();
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetMyTeams());
-			}
-			
-			public void onSuccess(VibeRpcResponse response)  {
-				List<TeamInfo> mtList;
-				GetMyTeamsRpcResponseData responseData;
-				
-				responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
-				mtList = responseData.getTeams();
-				
-				// Show the 'My Teams' popup menu asynchronously so
-				// that we can release the AJAX request ASAP.
-				showMyTeamsMenuAsync(mtList);
-			}
-		});
-	}	
 }

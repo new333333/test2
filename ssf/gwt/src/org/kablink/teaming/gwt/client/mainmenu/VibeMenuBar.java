@@ -34,7 +34,11 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.MenuItemSeparator;
 
 
 /**
@@ -43,6 +47,8 @@ import com.google.gwt.user.client.ui.MenuBar;
  * @author drfoster@novell.com
  */
 public class VibeMenuBar extends MenuBar {
+	private int m_itemCount;	// Tracks the number of items in a menu.
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -90,5 +96,108 @@ public class VibeMenuBar extends MenuBar {
 	public VibeMenuBar(String style) {
 		// Always use the initial form of the constructor.
 		this(false, style);
+	}
+	
+	/**
+	 * Returns a count of the items in the menu.
+	 * 
+	 * @return
+	 */
+	final public int getItemCount() {
+		return m_itemCount;
+	}
+	
+	/**
+	 * Returns true if there are items in the menu and false otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean hasItems() {
+		return (0 < getItemCount());
+	}
+	
+	/*
+	 * Override the various MenuBar add'ers/remove'ers so that we can
+	 * track the number of items in the menu.
+	 */
+	@Override
+	public MenuItem addItem(MenuItem mi) {
+		MenuItem reply = super.addItem(mi);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItem addItem(SafeHtml html, Command cmd) {
+		MenuItem reply = super.addItem(html, cmd);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItem addItem(SafeHtml html, MenuBar popup) {
+		MenuItem reply = super.addItem(html, popup);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItem addItem(String text, boolean asHtml, Command cmd) {
+		MenuItem reply = super.addItem(text, asHtml, cmd);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItem addItem(String text, boolean asHtml, MenuBar popup) {
+		MenuItem reply = super.addItem(text, asHtml, popup);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItem addItem(String text, Command cmd) {
+		MenuItem reply = super.addItem(text, cmd);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItem addItem(String text, MenuBar popup) {
+		MenuItem reply = super.addItem(text, popup);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItemSeparator addSeparator() {
+		MenuItemSeparator reply = super.addSeparator();
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public MenuItemSeparator addSeparator(MenuItemSeparator separator) {
+		MenuItemSeparator reply = super.addSeparator(separator);
+		m_itemCount += 1;
+		return reply;
+	}
+	
+	@Override
+	public void clearItems() {
+		super.clearItems();
+		m_itemCount = 0;
+	}
+	
+	@Override
+	public void removeItem(MenuItem item) {
+		super.removeItem(item);
+		m_itemCount -= 1;
+	}
+	
+	@Override
+	public void removeSeparator(MenuItemSeparator separator) {
+		super.removeSeparator(separator);
+		m_itemCount -= 1;
 	}
 }
