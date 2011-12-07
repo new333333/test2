@@ -47,7 +47,8 @@ import com.google.gwt.user.client.ui.MenuItemSeparator;
  * @author drfoster@novell.com
  */
 public class VibeMenuBar extends MenuBar {
-	private int m_itemCount;	// Tracks the number of items in a menu.
+	private boolean m_spacerNeeded;	//
+	private int		m_itemCount;	// Tracks the number of items in a menu.
 	
 	/**
 	 * Constructor method.
@@ -112,8 +113,18 @@ public class VibeMenuBar extends MenuBar {
 	 * 
 	 * @return
 	 */
-	final public boolean hasItems() {
+	final public boolean hasContent() {
 		return (0 < getItemCount());
+	}
+	
+	/**
+	 * Returns false if the last item added was a spacer and true
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean isSpacerNeeded() {
+		return m_spacerNeeded;
 	}
 	
 	/*
@@ -123,70 +134,80 @@ public class VibeMenuBar extends MenuBar {
 	@Override
 	public MenuItem addItem(MenuItem mi) {
 		MenuItem reply = super.addItem(mi);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItem addItem(SafeHtml html, Command cmd) {
 		MenuItem reply = super.addItem(html, cmd);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItem addItem(SafeHtml html, MenuBar popup) {
 		MenuItem reply = super.addItem(html, popup);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItem addItem(String text, boolean asHtml, Command cmd) {
 		MenuItem reply = super.addItem(text, asHtml, cmd);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItem addItem(String text, boolean asHtml, MenuBar popup) {
 		MenuItem reply = super.addItem(text, asHtml, popup);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItem addItem(String text, Command cmd) {
 		MenuItem reply = super.addItem(text, cmd);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItem addItem(String text, MenuBar popup) {
 		MenuItem reply = super.addItem(text, popup);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItemSeparator addSeparator() {
 		MenuItemSeparator reply = super.addSeparator();
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public MenuItemSeparator addSeparator(MenuItemSeparator separator) {
 		MenuItemSeparator reply = super.addSeparator(separator);
-		m_itemCount += 1;
+		m_itemCount   += 1;
+		m_spacerNeeded = true;
 		return reply;
 	}
 	
 	@Override
 	public void clearItems() {
 		super.clearItems();
-		m_itemCount = 0;
+		m_itemCount    = 0;
+		m_spacerNeeded = false;
 	}
 	
 	@Override

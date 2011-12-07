@@ -56,6 +56,10 @@ import com.google.gwt.user.client.ui.Panel;
  * @author drfoster@novell.com
  */
 public class ContextMenuItem extends VibeMenuItem {
+	/*
+	 * Enumeration used to specify the type of content a context menu
+	 * item's command contains.
+	 */
 	private enum CommandType {
 		TEAMING_EVENT,
 		JAVASCRIPT_STRING,
@@ -70,37 +74,27 @@ public class ContextMenuItem extends VibeMenuItem {
 	 * Inner class that handles selecting the menu items.
 	 */
 	private static class ContextItemCommand implements Command {
-		private boolean					m_hideEntryView;	
-		private CommandType 			m_type = CommandType.UNDEFINED;
-		private FormPanel 				m_fp;
-		private int						m_popupHeight;
-		private int						m_popupWidth;
-		@SuppressWarnings("unused")
-		private String					m_id;
-		private String					m_onClickJS;
-		private String					m_url;
-		@SuppressWarnings("unused")
-		private MenuBarPopupBase		m_contextMenu;
-		private TeamingEvents			m_teamingEvent;
-		@SuppressWarnings("unused")
-		private ClientEventParameter	m_clientEventParameter;
+		private boolean			m_hideEntryView;	
+		private CommandType 	m_type = CommandType.UNDEFINED;
+		private FormPanel 		m_fp;
+		private int				m_popupHeight;
+		private int				m_popupWidth;
+		private String			m_onClickJS;
+		private String			m_url;
+		private TeamingEvents	m_teamingEvent;
 		
 		/**
 		 * Constructor method.
 		 *
 		 * @param hideEntryView
-		 * @param contextMenu
-		 * @param id
 		 * @param url
 		 */
-		ContextItemCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, String url) {
+		ContextItemCommand(boolean hideEntryView, String url) {
 			// Store the type of command...
 			m_type = CommandType.URL_IN_CONTENT_FRAME;
 			
 			// ...and the parameters.
 			m_hideEntryView = hideEntryView;
-			m_contextMenu   = contextMenu;
-			m_id            = id;
 			m_url           = url;
 		}
 		
@@ -108,20 +102,16 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * Constructor method.
 		 *
 		 * @param hideEntryView
-		 * @param contextMenu
-		 * @param id
 		 * @param url
 		 * @param popupHeight
 		 * @param popupWidth
 		 */
-		ContextItemCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, String url, int popupHeight, int popupWidth) {
+		ContextItemCommand(boolean hideEntryView, String url, int popupHeight, int popupWidth) {
 			// Store the type of command...
 			m_type = CommandType.URL_IN_POPUP_NO_FORM;
 			
 			// ...and the parameters.
 			m_hideEntryView = hideEntryView;
-			m_contextMenu   = contextMenu;
-			m_id            = id;
 			m_url           = url;
 			m_popupHeight   = popupHeight;
 			m_popupWidth    = popupWidth;
@@ -131,20 +121,16 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * Constructor method.
 		 *
 		 * @param hideEntryView
-		 * @param contextMenu
-		 * @param id
 		 * @param fp
 		 * @param popupHeight
 		 * @param popupWidth
 		 */
-		ContextItemCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, FormPanel fp, int popupHeight, int popupWidth) {
+		ContextItemCommand(boolean hideEntryView, FormPanel fp, int popupHeight, int popupWidth) {
 			// Store the type of command...
 			m_type = CommandType.URL_IN_POPUP_WITH_FORM;
 			
 			// ...and the parameters.
 			m_hideEntryView = hideEntryView;
-			m_contextMenu   = contextMenu;
-			m_id            = id;
 			m_fp            = fp;
 			m_popupHeight   = popupHeight;
 			m_popupWidth    = popupWidth;
@@ -154,19 +140,15 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * Constructor method.
 		 *
 		 * @param hideEntryView
-		 * @param contextMenu
-		 * @param id
 		 * @param url
 		 * @param onClickJS
 		 */
-		ContextItemCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, String url, String onClickJS) {
+		ContextItemCommand(boolean hideEntryView, String url, String onClickJS) {
 			// Store the type of command...
 			m_type = CommandType.JAVASCRIPT_STRING;
 			
 			// ...and the parameters.
 			m_hideEntryView = hideEntryView;
-			m_contextMenu   = contextMenu;
-			m_id            = id;
 			m_url           = url;
 			m_onClickJS     = onClickJS;
 		}
@@ -175,38 +157,31 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * Constructor method.
 		 *
 		 * @param hideEntryView
-		 * @param contextMenu
-		 * @param id
 		 * @param url
 		 * @param teamingEvent
 		 * @param clientEventParameter
 		 */
-		ContextItemCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, String url, TeamingEvents teamingEvent, ClientEventParameter clientEventParameter) {
+		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, ClientEventParameter clientEventParameter) {
 			// Store the type of command...
 			m_type = CommandType.TEAMING_EVENT;
 			
 			// ...and the parameters.
-			m_hideEntryView        = hideEntryView;
-			m_contextMenu          = contextMenu;
-			m_id                   = id;
-			m_url                  = url;
-			m_teamingEvent         = teamingEvent;
-			m_clientEventParameter = clientEventParameter;
+			m_hideEntryView = hideEntryView;
+			m_url           = url;
+			m_teamingEvent  = teamingEvent;
 		}
 		
 		/**
 		 * Constructor method.
 		 *
 		 * @param hideEntryView
-		 * @param contextMenu
-		 * @param id
 		 * @param url
 		 * @param teamingEvent
 		 */
 		@SuppressWarnings("unused")
-		ContextItemCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, String url, TeamingEvents teamingEvent) {
-			// Always use the initial form of the constructor.
-			this(hideEntryView, contextMenu, id, url, teamingEvent, null);
+		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent) {
+			// Always use one of the initial forms of the constructor.
+			this(hideEntryView, url, teamingEvent, null);
 		}
 		
 		/**
@@ -285,9 +260,9 @@ public class ContextMenuItem extends VibeMenuItem {
 	public ContextMenuItem(MenuBarPopupBase contextMenu, String idBase, ToolbarItem tbi, boolean hideEntryView) {
 		super(
 			getTBILabelAsHTML(tbi),
+			true,	// true -> Text is HTML.
 			createCommand(
 				hideEntryView,
-				contextMenu,
 				getTBIId(idBase, tbi),
 				tbi));
 	}
@@ -301,7 +276,7 @@ public class ContextMenuItem extends VibeMenuItem {
 	/*
 	 * Creates a command based on a toolbar item.
 	 */
-	private static ContextItemCommand createCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, ToolbarItem tbi) {
+	private static ContextItemCommand createCommand(boolean hideEntryView, String id, ToolbarItem tbi) {
 		ContextItemCommand reply;
 		String url = tbi.getUrl();
 		TeamingEvents te = tbi.getTeamingEvent();
@@ -312,28 +287,28 @@ public class ContextMenuItem extends VibeMenuItem {
 			String jsString = tbi.getQualifierValue("onclick");
 			if (GwtClientHelper.hasString(jsString)) {
 				// Yes!  Generate the appropriate command for it.
-				reply = new ContextItemCommand(hideEntryView, contextMenu, id, url, jsString);
+				reply = new ContextItemCommand(hideEntryView, url, jsString);
 			}
 			
 			// No, it isn't based on a JavaScript string!  Is is to
 			// open a URL in a popup window?
 			else if (GwtClientHelper.bFromS(tbi.getQualifierValue("popup"))) {
 				// Yes!  Generate the appropriate command for it.
-				reply = createPopupCommand(hideEntryView, contextMenu, id, url, tbi);
+				reply = createPopupCommand(hideEntryView, id, url, tbi);
 			}
 			
 			else {
 				// No, it isn't to open a URL in a popup window either!
 				// The only option left is to launch the URL in the content
 				// pane.  Generate the appropriate command for it.
-				reply = new ContextItemCommand(hideEntryView, contextMenu, id, url);
+				reply = new ContextItemCommand(hideEntryView, url);
 			}
 		}
 		
 		else {
 			// It's based on an event!  Generate the appropriate
 			// command for it.
-			reply = new ContextItemCommand(hideEntryView, contextMenu, id, url, te, cep);
+			reply = new ContextItemCommand(hideEntryView, url, te, cep);
 		}
 
 		// If we get here, reply refers to the appropriate command
@@ -345,7 +320,7 @@ public class ContextMenuItem extends VibeMenuItem {
 	 * Creates a command that requires opening a popup window
 	 * based on a toolbar item.
 	 */
-	private static ContextItemCommand createPopupCommand(boolean hideEntryView, MenuBarPopupBase contextMenu, String id, String url, ToolbarItem tbi) {
+	private static ContextItemCommand createPopupCommand(boolean hideEntryView, String id, String url, ToolbarItem tbi) {
 		// What's the dimensions for the popup window?
 		int popupHeight = GwtClientHelper.iFromS(tbi.getQualifierValue("popupHeight"), Window.getClientHeight());
 		int popupWidth  = GwtClientHelper.iFromS(tbi.getQualifierValue("popupWidth"),  Window.getClientWidth());
@@ -392,13 +367,13 @@ public class ContextMenuItem extends VibeMenuItem {
 			}
 			
 			// ...and create the command.
-			reply = new ContextItemCommand(hideEntryView, contextMenu, id, fp, popupHeight, popupWidth);
+			reply = new ContextItemCommand(hideEntryView, fp, popupHeight, popupWidth);
 		}
 		
 		else {
 			// No, we don't need to use submitted form!  Generate the
 			// appropriate command.
-			reply = new ContextItemCommand(hideEntryView, contextMenu, id, url, popupHeight, popupWidth);
+			reply = new ContextItemCommand(hideEntryView, url, popupHeight, popupWidth);
 		}
 		
 		// If we get here, reply refers to the appropriate command for
@@ -419,18 +394,20 @@ public class ContextMenuItem extends VibeMenuItem {
 	 * ToolbarItem.
 	 */
 	private static String getTBILabelAsHTML(ToolbarItem tbi) {
+		// Determine the string for the label...
 		String label = tbi.getTitle();
 		if (!(GwtClientHelper.hasString(label))) {
 			label = tbi.getName();
 		}
 		
-		// ...create a FlowPanel to hold the Label...
+		// ...create a FlowPanel to hold it...
 		FlowPanel mpaLabelPanel = new FlowPanel();
 		mpaLabelPanel.addStyleName("vibe-mainMenuPopup_Item");
 		Label mpaLabel = new Label(label);
 		mpaLabel.addStyleName("vibe-mainMenuPopup_ItemText");
 		mpaLabelPanel.add(mpaLabel);
 
+		// ...and return its HTML content.
 		FlowPanel htmlPanel = new FlowPanel();
 		htmlPanel.add(mpaLabelPanel);
 		return htmlPanel.getElement().getInnerHTML();

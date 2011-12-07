@@ -41,16 +41,14 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
  * Class used to contain items on the main menu bar.  
  * 
  * @author drfoster@novell.com
- *
  */
-public class MenuBarBox extends MenuItem {
+public class MenuBarBox extends VibeMenuItem {
 	/**
 	 * Constructor method.
 	 *
@@ -61,9 +59,7 @@ public class MenuBarBox extends MenuItem {
 	 */
 	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, Command cmd) {
 		// Initialize the superclass...
-		super(
-			"",
-			cmd);
+		super("", cmd);
 		
 		// ...and initialize everything else.
 		initBox(itemImgRes, itemText, false);
@@ -79,9 +75,7 @@ public class MenuBarBox extends MenuItem {
 	 */
 	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, MenuBar subMenu) {
 		// Initialize the superclass...
-		super(
-			"",
-			subMenu);
+		super("", subMenu);
 		
 		// ...and initialize everything else.
 		initBox(itemImgRes, itemText, true);
@@ -95,12 +89,8 @@ public class MenuBarBox extends MenuItem {
 	 * @param subMenu
 	 */
 	public MenuBarBox(String boxId, String itemText, MenuBar subMenu) {
-		// Always use the initial form of the constructor.
-		this(
-			boxId,
-			null,
-			itemText,
-			subMenu);
+		// Always use one of the initial forms of the constructor.
+		this(boxId, null, itemText, subMenu);
 	}
 	
 	/**
@@ -110,15 +100,12 @@ public class MenuBarBox extends MenuItem {
 	 * @param itemText
 	 */
 	public MenuBarBox(String boxId, String itemText) {
-		// Always use the initial form of the constructor.
+		// Always use one of the initial forms of the constructor.
 		this(
 			boxId,
 			null,
 			itemText,
-			new Command() {	// Place holder.  Actual command will be supplied later.
-				@Override
-				public void execute() {}
-			});
+			buildNoopCommand());	// Place holder.  Actual command will be supplied later.
 	}
 	
 	/**
@@ -129,21 +116,32 @@ public class MenuBarBox extends MenuItem {
 	 * @param itemText
 	 */
 	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText) {
-		// Always use the initial form of the constructor.
+		// Always use one of the initial forms of the constructor.
 		this(
 			boxId,
 			itemImgRes,
 			itemText,
-			new Command() {	// Place holder.  Actual command will be supplied later.
-				@Override
-				public void execute() {}
-			});
+			buildNoopCommand());	// Place holder.  Actual command will be supplied later.
 	}
 
+	/*
+	 * Returns a Command that does nothing.
+	 */
+	private static Command buildNoopCommand() {
+		return
+			new Command() {
+				@Override
+				public void execute() {
+					// Do nothing.
+				}
+		};
+	}
+	
 	/*
 	 * Completes the initialization of a MenuBarBox.
 	 */
 	private void initBox(ImageResource itemImgRes, String itemText, boolean dropdown) {
+		// Add the base style to the box.
 		addStyleName("vibe-mainMenuContent");
 
 		// If we need an image for the box...
@@ -199,8 +197,10 @@ public class MenuBarBox extends MenuItem {
 	/**
 	 * Sets a MenuBarBox's visibility state.
 	 * 
-	 * When being hidden, they are disabled so that they're removed
-	 * from the tab order.
+	 * When being hidden, they are disabled so that menu item is
+	 * removed from the tab order.
+	 * 
+	 * Overrides the MenuItem.setVisible() method.
 	 */
 	@Override
 	public void setVisible(boolean visible) {

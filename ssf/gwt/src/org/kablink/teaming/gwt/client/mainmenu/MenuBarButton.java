@@ -39,18 +39,16 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
- * Class used to implement a menu button that toggles between two
- * states.  
+ * Class used to implement a button on the main menu bar.  
  * 
  * @author drfoster@novell.com
  */
-public class MenuBarButton extends MenuItem {
+public class MenuBarButton extends VibeMenuItem {
 	/*
-	 * Inner class that implements selecting buttons on the menu.
+	 * Inner class that implements selecting a button on the menu.
 	 */
 	private static class MenuButtonSelector implements Command {
 		private VibeEventBase<?>	m_event;	// The event to fire when the button is selected.

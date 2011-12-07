@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 
 
@@ -47,13 +48,14 @@ public class VibeMenuItem extends MenuItem {
 	/**
 	 * Constructor method.
 	 *
-	 * @param html
+	 * @param text
+	 * @param asHtml
 	 * @param cmd
 	 * @param style
 	 */
-	public VibeMenuItem(String html, Command cmd, String style) {
+	public VibeMenuItem(String text, boolean asHtml, Command cmd, String style) {
 		// Initialize the superclass...
-		super(html, true, cmd);
+		super(text, asHtml, cmd);
 		
 		// ...and if we were given a style for the MenuItem...
 		if (GwtClientHelper.hasString(style)) {
@@ -64,11 +66,66 @@ public class VibeMenuItem extends MenuItem {
 	
 	/**
 	 * Constructor method.
-	 * 
-	 * @param vertical
+	 *
+	 * @param text
+	 * @param asHtml
+	 * @param subMenu
+	 * @param style
 	 */
-	public VibeMenuItem(String html, Command cmd) {
-		// Always use the initial form of the constructor.
-		this(html, cmd, null);
+	public VibeMenuItem(String text, boolean asHtml, MenuBar subMenu, String style) {
+		// Initialize the superclass...
+		super(text, asHtml, subMenu);
+		
+		// ...and if we were given a style for the MenuItem...
+		if (GwtClientHelper.hasString(style)) {
+			// ...add it to it.
+			addStyleName(style);
+		}
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param text
+	 * @param cmd
+	 * @param style
+	 */
+	public VibeMenuItem(String text, Command cmd, String style) {
+		// Always use one of the initial forms of the constructor.
+		this(text, false, cmd, style);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param text
+	 * @param asHtml
+	 * @param cmd
+	 */
+	public VibeMenuItem(String text, boolean asHtml, Command cmd) {
+		// Always use one of the initial forms of the constructor.
+		this(text, asHtml, cmd, null);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param text
+	 * @param cmd
+	 */
+	public VibeMenuItem(String text, Command cmd) {
+		// Always use one of the initial forms of the constructor.
+		this(text, false, cmd, null);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param text
+	 * @param subMenu
+	 */
+	public VibeMenuItem(String text, MenuBar subMenu) {
+		// Always use one of the initial forms of the constructor.
+		this(text, false, subMenu, null);
 	}
 }

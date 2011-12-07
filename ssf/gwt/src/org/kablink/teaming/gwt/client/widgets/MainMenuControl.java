@@ -157,8 +157,6 @@ public class MainMenuControl extends Composite
 	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
 	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
 	private SearchMenuPanel					m_searchPanel;
-	@SuppressWarnings("unused")
-	private String							m_menuUsage;	// Which context this menu is being used in.
 	private TeamingPopupPanel               m_soPopup;
 	private VibeMenuBar						m_mainMenu;
 
@@ -222,9 +220,11 @@ public class MainMenuControl extends Composite
 	 * through its createAsync().
 	 */
 	private MainMenuControl(GwtMainPage mainPage, String menuUsage) {
-		// Store the parameter.
-		m_mainPage  = mainPage;
-		m_menuUsage = menuUsage;
+		// Initialize the superclass.
+		super();
+		
+		// Store the parameters.
+		m_mainPage = mainPage;
 		
 		// Register the events to be handled by this class.
 		if (menuUsage.equalsIgnoreCase("top")) {
@@ -280,7 +280,7 @@ public class MainMenuControl extends Composite
 						// ...asynchronous processing related to the
 						// ...creation of the SearchOptionsComposite
 						// ...has a chance to complete.
-						ScheduledCommand showSOPopup = new ScheduledCommand() {
+						ScheduledCommand doShow = new ScheduledCommand() {
 							@Override
 							public void execute() {
 								// Position and show the popup as per
@@ -296,7 +296,7 @@ public class MainMenuControl extends Composite
 								});
 							}
 						};
-						Scheduler.get().scheduleDeferred(showSOPopup);
+						Scheduler.get().scheduleDeferred(doShow);
 					}
 				});
 			}});
@@ -364,34 +364,40 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
-		String manageNameCalc;
-		switch (m_contextBinder.getBinderType()) {
-		default:
-		case OTHER:                                                          return;
-		case FOLDER:     manageNameCalc = m_messages.mainMenuBarFolder();    break;
-		case WORKSPACE:  manageNameCalc = m_messages.mainMenuBarWorkspace(); break;
-		}
-		
-		final String manageName = manageNameCalc;
-		ManageMenuPopup.createAsync(this, manageName, new ManageMenuPopupClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
+		if (null == m_manageBox) {
+			String manageNameCalc;
+			switch (m_contextBinder.getBinderType()) {
+			default:
+			case OTHER:                                                          return;
+			case FOLDER:     manageNameCalc = m_messages.mainMenuBarFolder();    break;
+			case WORKSPACE:  manageNameCalc = m_messages.mainMenuBarWorkspace(); break;
 			}
 			
-			@Override
-			public void onSuccess(final ManageMenuPopup mmp) {
-				mmp.setCurrentBinder(m_contextBinder);
-				mmp.setToolbarItemList(toolbarItemList);
-				mmp.setTeamManagementInfo(tmi);
-				if (mmp.shouldShowMenu()) {
-					m_manageBox = new MenuBarBox("ss_mainMenuManage", manageName, mmp.getMenuBar());
-					mmp.setMenuBox(m_manageBox);
-					m_mainMenu.addItem(m_manageBox);
+			final String manageName = manageNameCalc;
+			ManageMenuPopup.createAsync(this, manageName, new ManageMenuPopupClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}
-			}
-		});
+				
+				@Override
+				public void onSuccess(final ManageMenuPopup mmp) {
+					mmp.setCurrentBinder(m_contextBinder);
+					mmp.setToolbarItemList(toolbarItemList);
+					mmp.setTeamManagementInfo(tmi);
+					if (mmp.shouldShowMenu()) {
+						m_manageBox = new MenuBarBox("ss_mainMenuManage", manageName, mmp.getMenuBar());
+						mmp.setMenuBox(m_manageBox);
+						m_mainMenu.addItem(m_manageBox);
+					}
+				}
+			});
+		}
+		
+		else {
+			GwtClientHelper.debugAlert("MainMenuControl.addManageToContext( Duplicate Request ):  Ignored");
+		}
 	}
 	
 	/*
@@ -436,13 +442,19 @@ public class MainMenuControl extends Composite
 	 * menu bar.
 	 */
 	private void addRecentPlacesToContext(List<ToolbarItem> toolbarItemList) {
-		final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup(this);
-		rpmp.setCurrentBinder(m_contextBinder);
-		rpmp.setToolbarItemList(toolbarItemList);
-		if (rpmp.shouldShowMenu()) {
-			m_recentPlacesBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), rpmp.getMenuBar());
-			rpmp.setMenuBox(m_recentPlacesBox);
-			m_mainMenu.addItem(m_recentPlacesBox);
+		if (null == m_recentPlacesBox) {
+			final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup(this);
+			rpmp.setCurrentBinder(m_contextBinder);
+			rpmp.setToolbarItemList(toolbarItemList);
+			if (rpmp.shouldShowMenu()) {
+				m_recentPlacesBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), rpmp.getMenuBar());
+				rpmp.setMenuBox(m_recentPlacesBox);
+				m_mainMenu.addItem(m_recentPlacesBox);
+			}
+		}
+		
+		else {
+			GwtClientHelper.debugAlert("MainMenuControl.addRecentPlacesToContext( Duplicate Request ):  Ignored");
 		}
 	}
 
@@ -451,24 +463,30 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
-		ViewsMenuPopup.createAsync(this, inSearch, searchTabId, new ViewsMenuPopupClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess(final ViewsMenuPopup vmp) {
-				vmp.setCurrentBinder(m_contextBinder);
-				vmp.setToolbarItemList(toolbarItemList);
-				if (vmp.shouldShowMenu()) {
-					m_viewsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), vmp.getMenuBar());
-					vmp.setMenuBox(m_viewsBox);
-					m_mainMenu.addItem(m_viewsBox);
+		if (null == m_viewsBox) {
+			ViewsMenuPopup.createAsync(this, inSearch, searchTabId, new ViewsMenuPopupClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}
-			}
-		});
+				
+				@Override
+				public void onSuccess(final ViewsMenuPopup vmp) {
+					vmp.setCurrentBinder(m_contextBinder);
+					vmp.setToolbarItemList(toolbarItemList);
+					if (vmp.shouldShowMenu()) {
+						m_viewsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), vmp.getMenuBar());
+						vmp.setMenuBox(m_viewsBox);
+						m_mainMenu.addItem(m_viewsBox);
+					}
+				}
+			});
+		}
+		
+		else {
+			GwtClientHelper.debugAlert("MainMenuControl.addViewsToContext( Duplicate Request ):  Ignored");
+		}
 	}
 	
 	/*
@@ -555,6 +573,7 @@ public class MainMenuControl extends Composite
 		// Rebuild the context based panel based on the new context.
 		GetBinderInfoCmd cmd = new GetBinderInfoCmd( binderId );
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;
 				GwtClientHelper.handleGwtRPCFailure(
@@ -562,6 +581,8 @@ public class MainMenuControl extends Composite
 					m_messages.rpcFailure_GetBinderInfo(),
 					binderId);
 			}
+			
+			@Override
 			public void onSuccess(VibeRpcResponse response) {				
 				// Show the context asynchronously so that we can
 				// release the AJAX request ASAP.
@@ -691,6 +712,7 @@ public class MainMenuControl extends Composite
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -701,6 +723,7 @@ public class MainMenuControl extends Composite
 			/**
 			 * We successfully retrieved the folder's columns.  Now invoke the "edit folder columns" dialog.
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				List<FolderColumn> folderColumns;
@@ -732,6 +755,7 @@ public class MainMenuControl extends Composite
 									/**
 									 * 
 									 */
+									@Override
 									public void onFailure( Throwable t )
 									{
 										GwtClientHelper.handleGwtRPCFailure(
@@ -743,6 +767,7 @@ public class MainMenuControl extends Composite
 									 * 
 									 * @param result
 									 */
+									@Override
 									public void onSuccess( VibeRpcResponse response )
 									{
 										@SuppressWarnings("unused")
@@ -780,13 +805,15 @@ public class MainMenuControl extends Composite
 						 m_contextBinder.getBinderId(), 
 						 folderColumns,
 						 folderColumnsAll,
-						 new FolderColumnsConfigDlgClient() {				
+						 new FolderColumnsConfigDlgClient() {
+					@Override
 					public void onUnavailable()
 					{
 						// Nothing to do.  Error handled in
 						// asynchronous provider.
 					}// end onUnavailable()
 					
+					@Override
 					public void onSuccess( FolderColumnsConfigDlg fcDlg )
 					{
 						m_folderColumnsDlg = fcDlg;
@@ -1032,13 +1059,13 @@ public class MainMenuControl extends Composite
 	 * Asynchronously shows the context that was loaded.
 	 */
 	private void showContextAsync(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
-		ScheduledCommand showContext = new ScheduledCommand() {
+		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showContextNow(binderInfo, binderId, inSearch, searchTabId);
 			}
 		};
-		Scheduler.get().scheduleDeferred(showContext);
+		Scheduler.get().scheduleDeferred(doShow);
 	}
 	
 	/*
@@ -1048,12 +1075,15 @@ public class MainMenuControl extends Composite
 		m_contextBinder = binderInfo;
 		GetToolbarItemsCmd cmd = new GetToolbarItemsCmd( binderId );
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetToolbarItems(),
 					binderId);
 			}
+			
+			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
 				final List<ToolbarItem> toolbarItemList = ((null == responseData) ? null : responseData.getToolbarItems());
@@ -1061,17 +1091,20 @@ public class MainMenuControl extends Composite
 				// Run the 'Get Team Management' RPC request as a
 				// scheduled command so the RPC request that got us
 				// here can be terminated.
-				ScheduledCommand getTMInfo = new ScheduledCommand() {
+				ScheduledCommand doGet = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						GetTeamManagementInfoCmd cmd = new GetTeamManagementInfoCmd(binderId);
 						GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+							@Override
 							public void onFailure(Throwable t) {
 								GwtClientHelper.handleGwtRPCFailure(
 									t,
 									m_messages.rpcFailure_GetTeamManagement(),
 									binderId);
 							}
+							
+							@Override
 							public void onSuccess(VibeRpcResponse response) {
 								// Show the toolbar items asynchronously so
 								// that we can release the AJAX request ASAP.
@@ -1085,7 +1118,7 @@ public class MainMenuControl extends Composite
 						});
 					}
 				};
-				Scheduler.get().scheduleDeferred(getTMInfo);
+				Scheduler.get().scheduleDeferred(doGet);
 			}
 		});
 	}
@@ -1094,13 +1127,13 @@ public class MainMenuControl extends Composite
 	 * Asynchronously shows the toolbar items.
 	 */
 	private void showToolbarItemsAsync(final boolean inSearch, final String searchTabId, final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
-		ScheduledCommand showTBIs = new ScheduledCommand() {
+		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showToolbarItemsNow(inSearch, searchTabId, toolbarItemList, tmi);
 			}
 		};
-		Scheduler.get().scheduleDeferred(showTBIs);
+		Scheduler.get().scheduleDeferred(doShow);
 	}
 	
 	/*

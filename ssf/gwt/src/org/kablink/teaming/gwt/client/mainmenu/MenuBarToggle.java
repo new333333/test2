@@ -40,17 +40,15 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.MenuItem;
 
 
 /**
- * Class used to implement a menu button that toggles between two
- * states.  
+ * Class used to implement a button on the main menu bar that toggles
+ * between two states.  
  * 
  * @author drfoster@novell.com
- *
  */
-public class MenuBarToggle extends MenuItem {
+public class MenuBarToggle extends VibeMenuItem {
 	private MenuToggleSelector	m_mts;			// The MenuToggleSelector used by this MenuBarToggle.
 	private TeamingEvents		m_altEvent;		// The alternate TeamingEvents.
 	private TeamingEvents		m_baseEvent;	// The base      TeamingEvents.
@@ -59,12 +57,12 @@ public class MenuBarToggle extends MenuItem {
 	 * Inner class that implements selecting on a MenuBarToggle.
 	 */
 	private static class MenuToggleSelector implements Command {
-		private MenuItem		m_mi;			// The MenuItem this MenuToggleSelector is tied to.
 		private String			m_altHTML;		// The alternate state's HTML.
 		private String			m_baseHTML;		// The base      state's HTML.
 		private String			m_currentHTML;	// The current   state's HTML.
 		private TeamingEvents	m_altEvent;		// The alternate TeamingEvents.
 		private TeamingEvents	m_baseEvent;	// The base      TeamingEvents.
+		private VibeMenuItem	m_mi;			// The menu item this MenuToggleSelector is tied to.
 		
 		/**
 		 * Constructor method.
@@ -105,7 +103,7 @@ public class MenuBarToggle extends MenuItem {
 		}
 		
 		/**
-		 * Sets the MenuItem's HTML appropriate for an event.
+		 * Sets the menu item's HTML appropriate for an event.
 		 * 
 		 * @param event
 		 */
@@ -119,11 +117,11 @@ public class MenuBarToggle extends MenuItem {
 		}
 		
 		/**
-		 * Stores the MenuItem associated with this MenuToggleSelector.
+		 * Stores the menu item associated with this MenuToggleSelector.
 		 * 
 		 * @param mi
 		 */
-		public void setMenuItem(MenuItem mi) {
+		public void setMenuItem(VibeMenuItem mi) {
 			m_mi = mi;
 			m_mi.setHTML(m_currentHTML);
 		}
