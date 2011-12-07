@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.portlet.PortletRequest;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -160,6 +161,11 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
+import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
+import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
+import org.kablink.teaming.portletadapter.support.KeyNames;
+import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchFieldResult;
@@ -1124,16 +1130,55 @@ public class GwtServerHelper {
 
 		try
 		{
+			RenderRequestImpl renderReq;
+			RenderResponseImpl renderRes;
+
 			// Gather up all the data required by the jsp
 			{
-				Map<String,Object> model;
 				Long binderIdL;
+				Map<String, Object> params;
+				Map<String, Object> model;
+
+				// Create the objects needed to call WorkspaceTreeHelper.setupWorkspaceBeans()
+				{
+					PortletInfo portletInfo;
+					String portletName;
+					String charEncoding;
+
+					portletName = "ss_forum";
+					portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo( portletName );
+					
+					renderReq = new RenderRequestImpl( request, portletInfo, AdaptedPortlets.getPortletContext() );
+					
+					params = new HashMap<String, Object>();
+					params.put( KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName} );
+					params.put( WebKeys.URL_BINDER_ID, binderId );
+					renderReq.setRenderParameters( params );
+					
+					renderRes = new RenderResponseImpl( renderReq, response, portletName );
+					charEncoding = SPropsUtil.getString( "web.char.encoding", "UTF-8" );
+					renderRes.setContentType( "text/html; charset=" + charEncoding );
+					renderReq.defineObjects( portletInfo.getPortletConfig(), renderRes );
+					
+					renderReq.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
+					
+					model = new HashMap<String, Object>();
+					binderIdL = Long.valueOf( binderId );
+					
+					request.setAttribute( "javax.portlet.request", renderReq );
+					request.setAttribute( "javax.portlet.response", renderRes );
+				}
 				
-				model = new HashMap<String,Object>();
-				binderIdL = Long.valueOf( binderId );
-//				WorkspaceTreeHelper.setupWorkspaceBeans( ami, binderIdL, request, response, model, false );
+				WorkspaceTreeHelper.setupWorkspaceBeans( ami, binderIdL, renderReq, renderRes, model, false );
 				
 				// Put the data that setupWorkspaceBeans() put in model into the request.
+				for (String key: model.keySet())
+				{
+					Object value;
+					
+					value = model.get( key );
+					request.setAttribute( key, value );
+				}
 			}
 			
 			// Execute the jsp
