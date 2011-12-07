@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -61,8 +62,7 @@ public class EnhancedViewWidget extends VibeWidget
 	private String m_lpBinderId;	// landing page binder id
 	private VibeFlowPanel m_mainPanel;
 	private EnhancedViewProperties m_properties;
-	
-	private static AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
 	
 	/**
 	 * Create the appropriate widget based on what type of enhanced view we are dealing with
@@ -242,7 +242,6 @@ public class EnhancedViewWidget extends VibeWidget
 	 */
 	private VibeFlowPanel init( EnhancedViewProperties properties, String landingPageStyle )
 	{
-		ExecuteEnhancedViewJspCmd cmd;
 		VibeFlowPanel mainPanel;
 		
 		m_properties = new EnhancedViewProperties();
@@ -278,48 +277,66 @@ public class EnhancedViewWidget extends VibeWidget
 			style.setOverflow( m_properties.getOverflow() );
 		}
 
-		// Issue an ajax request to execute the jsp associated with this enhanced view.
+		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
+		if ( m_executeJspCallback == null )
 		{
-			// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
-			if ( m_executeJspCallback == null )
+			m_executeJspCallback = new AsyncCallback<VibeRpcResponse>()
 			{
-				m_executeJspCallback = new AsyncCallback<VibeRpcResponse>()
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
 				{
-					/**
-					 * 
-					 */
-					public void onFailure( Throwable t )
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_executeEnhancedViewJsp(),
+						m_properties.getJspName() );
+					
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( VibeRpcResponse response )
+				{
+					String html;
+					
+					html = null;
+					
+					if ( response.getResponseData() != null )
 					{
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_executeEnhancedViewJsp(),
-							m_properties.getJspName() );
-						
-					}
-			
-					/**
-					 * 
-					 * @param result
-					 */
-					public void onSuccess( VibeRpcResponse response )
-					{
-						String html;
 						StringRpcResponseData responseData;
 						
 						responseData = (StringRpcResponseData) response.getResponseData();
 						html = responseData.getStringValue();
-						
-						if ( html == null )
-							html = "";
-						
-						m_mainPanel.getElement().setInnerHTML( html );
-						
 					}
-				};
-			}
 
-			cmd = new ExecuteEnhancedViewJspCmd( m_lpBinderId, properties.getJspName() );
-			GwtClientHelper.executeCommand( cmd, m_executeJspCallback );
+					if ( html == null )
+						html = "";
+					
+					m_mainPanel.getElement().setInnerHTML( html );
+					
+				}
+			};
+		}
+
+		// Issue an ajax request to execute the jsp associated with this enhanced view.
+		{
+			Scheduler.ScheduledCommand schCmd;
+			
+			schCmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					ExecuteEnhancedViewJspCmd cmd;
+					
+					cmd = new ExecuteEnhancedViewJspCmd( m_lpBinderId, m_properties.getJspName() );
+					GwtClientHelper.executeCommand( cmd, m_executeJspCallback );
+				}
+			};
+			Scheduler.get().scheduleDeferred( schCmd );
 		}
 		
 		return mainPanel;
