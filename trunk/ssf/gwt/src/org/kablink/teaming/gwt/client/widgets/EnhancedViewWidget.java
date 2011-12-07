@@ -33,14 +33,21 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewConfig;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
 import org.kablink.teaming.gwt.client.lpe.FileFolderProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderProperties;
 import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
+import org.kablink.teaming.gwt.client.rpc.shared.ExecuteEnhancedViewJspCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 
@@ -51,10 +58,16 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class EnhancedViewWidget extends VibeWidget
 {
+	private String m_lpBinderId;	// landing page binder id
+	private VibeFlowPanel m_mainPanel;
+	private EnhancedViewProperties m_properties;
+	
+	private static AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
+	
 	/**
 	 * Create the appropriate widget based on what type of enhanced view we are dealing with
 	 */
-	public static VibeWidget createWidget( EnhancedViewConfig config )
+	public static VibeWidget createWidget( EnhancedViewConfig config, String lpBinderId )
 	{
 		EnhancedViewProperties properties;
 		String landingPageStyle;
@@ -202,7 +215,7 @@ public class EnhancedViewWidget extends VibeWidget
 		case DISPLAY_SURVEY:
 		case UNKNOWN:
 		default:
-			widget = new EnhancedViewWidget( config );
+			widget = new EnhancedViewWidget( config, lpBinderId );
 			break;
 		}
 		
@@ -213,14 +226,15 @@ public class EnhancedViewWidget extends VibeWidget
 	/**
 	 * This widget simply displays the name of the jsp file that is associated with the view type. 
 	 */
-	private EnhancedViewWidget( EnhancedViewConfig config )
+	private EnhancedViewWidget( EnhancedViewConfig config, String lpBinderId )
 	{
-		VibeFlowPanel mainPanel;
+		// Remember the landing page binderId.
+		m_lpBinderId = lpBinderId;
 		
-		mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
+		m_mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget( m_mainPanel );
 	}
 	
 	/**
@@ -228,18 +242,86 @@ public class EnhancedViewWidget extends VibeWidget
 	 */
 	private VibeFlowPanel init( EnhancedViewProperties properties, String landingPageStyle )
 	{
+		ExecuteEnhancedViewJspCmd cmd;
 		VibeFlowPanel mainPanel;
+		
+		m_properties = new EnhancedViewProperties();
+		m_properties.copy( properties );
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + landingPageStyle );
 		mainPanel.addStyleName( "entryWidgetMainPanel" + landingPageStyle );
 
-		Label jspName;
-		jspName = new Label( properties.getJspName() );
-		mainPanel.add( jspName );
-		
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
 
+		// Set the width and height
+		{
+			Style style;
+			int width;
+			int height;
+			Unit unit;
+			
+			style = mainPanel.getElement().getStyle();
+			
+			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+			width = m_properties.getWidth();
+			unit = m_properties.getWidthUnits();
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
+			
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			height = m_properties.getHeight();
+			unit = m_properties.getHeightUnits();
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+			
+			style.setOverflow( m_properties.getOverflow() );
+		}
+
+		// Issue an ajax request to execute the jsp associated with this enhanced view.
+		{
+			// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
+			if ( m_executeJspCallback == null )
+			{
+				m_executeJspCallback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					public void onFailure( Throwable t )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_executeEnhancedViewJsp(),
+							m_properties.getJspName() );
+						
+					}
+			
+					/**
+					 * 
+					 * @param result
+					 */
+					public void onSuccess( VibeRpcResponse response )
+					{
+						String html;
+						StringRpcResponseData responseData;
+						
+						responseData = (StringRpcResponseData) response.getResponseData();
+						html = responseData.getStringValue();
+						
+						if ( html == null )
+							html = "";
+						
+						m_mainPanel.getElement().setInnerHTML( html );
+						
+					}
+				};
+			}
+
+			cmd = new ExecuteEnhancedViewJspCmd( m_lpBinderId, properties.getJspName() );
+			GwtClientHelper.executeCommand( cmd, m_executeJspCallback );
+		}
+		
 		return mainPanel;
 	}
 }

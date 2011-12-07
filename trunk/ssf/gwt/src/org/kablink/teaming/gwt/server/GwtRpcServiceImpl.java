@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -241,6 +242,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
 			Boolean result = deleteTasks( ri, dtCmd.getTaskIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case EXECUTE_ENHANCED_VIEW_JSP:
+		{
+			HttpServletResponse resp;
+			ExecuteEnhancedViewJspCmd eevjCmd;
+			String result;
+			
+			resp = getResponse( ri );
+			eevjCmd = (ExecuteEnhancedViewJspCmd) cmd;
+			result = GwtServerHelper.executeEnhancedViewJsp( this, req, resp, eevjCmd.getBinderId(), eevjCmd.getJspName() );
+			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
 			return response;
 		}
 		
@@ -3064,6 +3078,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private static HttpServletRequest getRequest(HttpRequestInfo ri) {
 		return ((HttpServletRequest) ri.getRequestObj());
 	}// end getRequest()
+	
+	/**
+	 * Return the HttpServletResponse from an HttpRequestInfo object.
+	 */
+	private static HttpServletResponse getResponse( HttpRequestInfo ri )
+	{
+		return (HttpServletResponse) ri.getResponseObj();
+	}
 	
 	/**
 	 * Return a GwtPersonalPreferences object that holds the personal preferences for the logged in user.

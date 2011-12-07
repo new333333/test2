@@ -305,7 +305,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "enhancedView" ) )
 				{
-					configItem = new EnhancedViewConfig( itemData[i], getLandingPageStyle() );
+					configItem = new EnhancedViewConfig( itemData[i], getLandingPageStyle(), getBinderId() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "iframe" ) )

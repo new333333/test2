@@ -305,7 +305,7 @@
 	</form> 
 	
 	<!--  This form is used for logging in. -->
-	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;">
+	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;" accept-charset="UTF-8">
 		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
 			<colgroup>
 				<col>
