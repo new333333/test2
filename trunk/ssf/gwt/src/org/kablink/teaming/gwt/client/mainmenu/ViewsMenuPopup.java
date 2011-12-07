@@ -43,13 +43,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetTopRankedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTopRankedRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -65,8 +64,6 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 
 	private BinderInfo			m_currentBinder;		// The currently selected binder.
 	private boolean				m_inSearch;				// true -> We're viewing search results.
-	private int					m_menuLeft;				// Absolute left position of the menu.
-	private int					m_menuTop;				// Absolute top  position of the menu.
 	private List<ToolbarItem>	m_toolbarItemList;		// The context based toolbar requirements.
 	private String				m_searchTabId;			// When m_inSearch is true, the search tab ID.
 	private ToolbarItem			m_aboutTBI;				// The about           toolbar item, if found.
@@ -85,9 +82,9 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ViewsMenuPopup(boolean inSearch, String searchTabId) {
+	private ViewsMenuPopup(ContextBinderProvider binderProvider, boolean inSearch, String searchTabId) {
 		// Initialize the super class...
-		super(GwtTeaming.getMessages().mainMenuBarViews());
+		super(binderProvider, GwtTeaming.getMessages().mainMenuBarViews());
 		
 		// ...and save the other parameters.
 		m_inSearch    = inSearch;
@@ -103,20 +100,17 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 			new Command() {
 				@Override
 				public void execute() {
-					GetSavedSearchesCmd cmd;
-					
-					// Hide the menu...
-					hideMenu();
-					
-					// ...and run the manage saved searches dialog.
-					cmd = new GetSavedSearchesCmd();
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					// Run the manage saved searches dialog.
+					GetSavedSearchesCmd cmd = new GetSavedSearchesCmd();
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								m_messages.rpcFailure_GetSavedSearches());
 						}
 						
+						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							List<SavedSearchInfo> ssList;
 							GetSavedSearchesRpcResponseData responseData;
@@ -127,8 +121,8 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 							ManageSavedSearchesDlg.createAsync(
 								false,	// false -> Don't auto hide.
 								true,	// true  -> Modal.
-								m_menuLeft,
-								m_menuTop,
+								getRelativeX(),
+								getRelativeY(),
 								ssList,
 								m_searchTabId,
 								new ManageSavedSearchesDlgClient() {										
@@ -160,20 +154,17 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 			new Command() {
 				@Override
 				public void execute() {
-					GetTopRankedCmd cmd;
-					
-					// Hide the menu...
-					hideMenu();
-					
-					// ...and run the top ranked dialog.
-					cmd = new GetTopRankedCmd();
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					// Run the top ranked dialog.
+					GetTopRankedCmd cmd = new GetTopRankedCmd();
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								m_messages.rpcFailure_GetTopRanked());
 						}
 						
+						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							List<TopRankedInfo> triList;
 							GetTopRankedRpcResponseData responseData;
@@ -184,8 +175,8 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 							TopRankedDlg topRankedDlg = new TopRankedDlg(
 								false,	// false -> Don't auto hide.
 								true,	// true  -> Modal.
-								m_menuLeft,
-								m_menuTop,
+								getRelativeX(),
+								getRelativeY(),
 								triList);
 							topRankedDlg.addStyleName("topRankedDlg");
 							topRankedDlg.show();
@@ -345,23 +336,15 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Completes construction of the menu and shows it.
+	 * Completes construction of the menu.
 	 * 
-	 * Implements the MenuBarPopupBase.showPopup() abstract method.
-	 * 
-	 * @param left
-	 * @param top
+	 * Implements the MenuBarPopupBase.populateMenu() abstract method.
 	 */
 	@Override
-	public void showPopup(int left, int top) {
-		// Position the menu...
-		m_menuLeft = left;
-		m_menuTop  = top;
-		setPopupPosition(left, top);
-		
-		// ...and if we haven't already constructed its contents...
+	public void populateMenu() {
+		/// If we haven't populated the menu yet....
 		if (!(hasContent())) {
-			// ...construct it now...
+			// ...populate it now...
 			if (m_inSearch) {
 				addTopRankedToView();
 				addManageSavedSearchesToView();
@@ -387,9 +370,6 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 				addContextMenuItem(IDBASE, m_aboutTBI);
 			}
 		}
-					
-		// ...and show it.
-		show();
 	}
 	
 	/**
@@ -405,16 +385,16 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 * Loads the ViewsMenuPopup split point and returns an
 	 * instance of it via the callback.
 	 *
+	 * @param binderProvider
 	 * @param inSearch
 	 * @param searchTabId
 	 * @param vmpClient
 	 */
-	public static void createAsync(final boolean inSearch, final String searchTabId, final ViewsMenuPopupClient vmpClient) {
-		GWT.runAsync(ViewsMenuPopup.class, new RunAsyncCallback()
-		{			
+	public static void createAsync(final ContextBinderProvider binderProvider, final boolean inSearch, final String searchTabId, final ViewsMenuPopupClient vmpClient) {
+		GWT.runAsync(ViewsMenuPopup.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				ViewsMenuPopup vmp = new ViewsMenuPopup(inSearch, searchTabId);
+				ViewsMenuPopup vmp = new ViewsMenuPopup(binderProvider, inSearch, searchTabId);
 				vmpClient.onSuccess(vmp);
 			}
 			

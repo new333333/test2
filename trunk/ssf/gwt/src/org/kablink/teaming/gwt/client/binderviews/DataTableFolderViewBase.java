@@ -1580,7 +1580,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		}
 		
 		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
-			Window.alert("DataTableFolderViewBase.tolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
+			Window.alert("DataTableFolderViewBase.toolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
 		}
 	}
 	

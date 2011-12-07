@@ -58,8 +58,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.logical.shared.AttachEvent;
-import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -259,20 +257,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 */
 	private void renderStructuredTBI(VibeMenuBar menuBar, ToolbarItem structuredTBI) {
 		// Create a drop down menu for the structured toolbar item...
-		final VibeMenuBar	structuredMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
+		VibeMenuBar	structuredMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
 		structuredMenuBar.addStyleName("vibe-entryMenuPopup");
 		menuBar.addItem(structuredTBI.getTitle(), structuredMenuBar);
-		structuredMenuBar.addAttachHandler(new Handler() {
-			@Override
-			public void onAttachOrDetach(AttachEvent event) {
-				// Is this an attach event? 
-				if (event.isAttached()) {
-					// Yes!  That means the menu is opening.  Give it
-					// the focus.
-					structuredMenuBar.focus();
-				}
-			}
-		});
 		
 		// ...scan the nested items...
 		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
