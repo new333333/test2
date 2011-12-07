@@ -772,7 +772,7 @@ public class GwtMenuHelper {
 				}
 
 				// Yes!  Do they have rights to copy it?
-				if (bm.testAccess(binder, BinderOperation.copyBinder)) {
+				if (!binder.isMirrored() && bm.testAccess(binder, BinderOperation.copyBinder)) {
 					// Yes!  Add a ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;
