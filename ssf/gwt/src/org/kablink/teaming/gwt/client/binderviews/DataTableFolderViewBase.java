@@ -85,6 +85,7 @@ import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -727,12 +728,21 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/*
 	 * Various column type detectors.
 	 */
-	private static boolean isColumnCustom(  FolderColumn column)     {return column.isCustomColumn();           }
-	private static boolean isColumnDownload(String       columnName) {return columnName.equals(COLUMN_DOWNLOAD);}
-	private static boolean isColumnRating(  String       columnName) {return columnName.equals(COLUMN_RATING);  }
-	private static boolean isColumnPresence(String       columnName) {return columnName.equals(COLUMN_AUTHOR);  }
-	private static boolean isColumnTitle(   String       columnName) {return columnName.equals(COLUMN_TITLE);   }
-	private static boolean isColumnView(    String       columnName) {return columnName.equals(COLUMN_HTML);    }
+	private static boolean isColumnAssigneeInfo(String columnName) {
+		return
+			(columnName.equals("attendee")         ||
+			 columnName.equals("attendee_groups")  ||
+			 columnName.equals("attendee_teams")   ||
+			 columnName.equals("assignedTo")       ||
+			 columnName.equals("assignedToGroups") ||
+			 columnName.equals("assignedToTeams"));
+	}
+	private static boolean isColumnCustom(      FolderColumn column)     {return column.isCustomColumn();           }
+	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(COLUMN_DOWNLOAD);}
+	private static boolean isColumnRating(      String       columnName) {return columnName.equals(COLUMN_RATING);  }
+	private static boolean isColumnPresence(    String       columnName) {return columnName.equals(COLUMN_AUTHOR);  }
+	private static boolean isColumnTitle(       String       columnName) {return columnName.equals(COLUMN_TITLE);   }
+	private static boolean isColumnView(        String       columnName) {return columnName.equals(COLUMN_HTML);    }
 
 	/**
 	 * Returns a List<Long> of the IDs of the selected rows from the
@@ -903,6 +913,28 @@ public abstract class DataTableFolderViewBase extends ViewBase
 						if (null == reply) reply = fr.getColumnValueAsEntryLink(fc);
 						if (null == reply) reply = fr.getColumnValueAsString(fc);
 						return reply;
+					}
+				};
+			}
+			
+			// No, this column doesn't show a custom column either!  Is
+			// it an assignment of some sort?
+			else if (isColumnAssigneeInfo(cName)){
+				// Yes!  Create a StringColumn for it.
+				column = new StringColumn<FolderRow>(fc) {
+					@Override
+					public String getValue(FolderRow fr) {
+						List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
+						StringBuffer reply = new StringBuffer("");
+						if ((null != aiList) && (!(aiList.isEmpty()))) {
+							for (AssignmentInfo ai:  aiList) {
+								if (0 < reply.length()) {
+									reply.append(", ");
+								}
+								reply.append(ai.getTitle());
+							}
+						}
+						return reply.toString();
 					}
 				};
 			}
