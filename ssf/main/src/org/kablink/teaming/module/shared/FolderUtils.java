@@ -231,8 +231,16 @@ public class FolderUtils {
 	}
 	
 	public static String findRepositoryName(Definition def, String elementName) {
+		if(elementName == null)
+			return RepositoryUtil.getDefaultRepositoryName();
 		Document doc = def.getDefinition();
-		Element root = doc.getRootElement();
+		return findRepositoryName(doc, elementName);
+	}
+	
+	public static String findRepositoryName(Document defDoc, String elementName) {
+		if(elementName == null)
+			return RepositoryUtil.getDefaultRepositoryName();
+		Element root = defDoc.getRootElement();
 		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
 		if(formItem == null)
 			return null;

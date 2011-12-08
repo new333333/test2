@@ -1293,6 +1293,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //no transaction    
     public Binder copyBinder(final Binder source, final Binder destination, final Map options) {
+    	// We don't allow (more precisely, don't support yet) copying of a binder into a mirrored folder.
+    	if(destination.isMirrored())
+    		throw new NotSupportedException("errorcode.notsupported.copyBinder.mirroredDestination", new String[] {destination.getPathName()});
     	//Check if moving a binder into itself or into a sub binder of itself
     	Binder parent = destination;
     	while (parent != null) {
@@ -1315,6 +1318,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (options != null) ctx.putAll(options);
     	copyBinder_setCtx(source, destination, ctx);
      	final Binder binder = copyBinder_create(source, ctx);
+     	copyBinder_adjustForMirroredFolder(binder, destination);
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
@@ -1353,6 +1357,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		   return null;
 	   }
 
+   }
+   // no transaction
+   protected Binder copyBinder_adjustForMirroredFolder(Binder newBinder, Binder destination) {
+	   if(newBinder.isMirrored()) {
+		   newBinder.setMirrored(false);
+		   newBinder.setResourceDriverName(null);
+		   newBinder.setResourcePath(null);
+		   Definition libraryFolderDef = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
+		   if(libraryFolderDef != null)
+			   newBinder.setEntryDef(libraryFolderDef);
+	   }
+	   return newBinder;
    }
    //inside write transaction    
    protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map ctx) {  

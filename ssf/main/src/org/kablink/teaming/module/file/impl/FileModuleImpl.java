@@ -107,6 +107,7 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
@@ -1033,7 +1034,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			// Preserve modification time of the source for the target
   	  			file = new DatedMultipartFile(fa.getFileItem().getName(),
     				readFile(binder, entity, fa), fa.getModification().getDate());
-    			fui = new FileUploadItem(type, name, file, fa.getRepositoryName());
+  	  			String targetRepositoryName = fa.getRepositoryName();
+  	  			if(ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fa.getRepositoryName())) {
+  	  				// This means that the source entity is a mirrored file entry.
+  	  				if(!destBinder.isMirrored()) {
+  	  					// The destination binder is not a mirrored folder. We need to identify correct repository to use for the destination.
+  	  					targetRepositoryName = FolderUtils.findRepositoryName(destEntity.getEntryDefDoc(), name);
+  	  				}
+  	  			}
+    			fui = new FileUploadItem(type, name, file, targetRepositoryName);
     			//register here so entire copy fails if any one file is an issue
   		   		if (destBinder.isLibrary() && !(destEntity instanceof Binder)) {
 		   			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
