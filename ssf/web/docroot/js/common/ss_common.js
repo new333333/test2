@@ -394,7 +394,7 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 			} else if (typeof ss_workarea_showId != "undefined" && entityType == "folder") {
 				ss_workarea_showId(binderId, "view_folder_listing");
 			} else {
-				self.location.href = url;
+				ss_setSelfLocation(url);
 			}
 		}
 	} else {
@@ -406,7 +406,7 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 		} else if (typeof ss_workarea_showId != "undefined" && entityType == "folder") {
 			ss_workarea_showId(binderId, "view_folder_listing");
 		} else {
-			self.location.href = url;
+			ss_setSelfLocation(url);
 		}
 	}
 	return false;
@@ -417,7 +417,7 @@ function ss_openUrlInWorkarea(url, id, action) {
 	if (typeof ss_workarea_showId != "undefined" && id != '') {
 		ss_workarea_showId(id, action);
 	} else {
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	}
 }
 
@@ -507,7 +507,7 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 			// If we are in a popup window.
 			try {
 				// Replace the contents of the current window with the new page.
-				self.location.href = url;
+				ss_setSelfLocation(url);
 				
 				// The following two lines of code were commented out as part of
 				// the fix for bug 492902
@@ -531,7 +531,7 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 // Routine to open a page by following a "title" markup link
 function ss_openTitleUrl(obj, showInParent) {
 	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
-		self.location.href = obj.href;
+		ss_setSelfLocation(obj.href);
 		return false;  //This is a wiki, just let the URL be executed in place
 	}
 	//ss_debug("**** ss_openTitleUrl - ss_showAsWiki: "+ss_showAsWiki)
@@ -546,11 +546,11 @@ function ss_openTitleUrl(obj, showInParent) {
 				// We are opening the entry from within the "show entry" frame.  Just change
 				// the url of the "show entry" frame to the new url.
 				// Fix for bug 658648
-				self.location.href = obj.href;
+				ss_setSelfLocation(obj.href);
 				return false;
 			}
 			else if (windowName.indexOf("gwtContentIframe") == 0) {
-				self.location.href = obj.href;
+				ss_setSelfLocation(obj.href);
 				return false;
 			} else if (typeof top.window.frames["gwtContentIframe"] != "undefined") {
 				top.window.frames["gwtContentIframe"].location.href = obj.href;
@@ -559,11 +559,11 @@ function ss_openTitleUrl(obj, showInParent) {
 			if (self != self.parent) {
 				self.parent.location.href = obj.href;
 			} else {
-				self.location.href = obj.href;
+				ss_setSelfLocation(obj.href);
 			}
 			return false;
 		} catch(e) {
-			self.location.href = obj.href;
+			ss_setSelfLocation(obj.href);
 			return false;
 		}
 	}
@@ -624,7 +624,7 @@ function ss_treeShowId(id, obj, action, addParam) {
 	}
 
 	// console.log(url);
-	self.location.href = url;
+	ss_setSelfLocation(url);
 	return false;
 }
 
@@ -648,7 +648,7 @@ function ss_treeShowIdNoWS(id, obj, action, namespace) {
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	// console.log(url);
-	self.location.href = url;
+	ss_setSelfLocation(url);
 	return false;
 }
 
@@ -796,10 +796,10 @@ function ss_reloadOpener(fallBackUrl) {
 				setTimeout('self.window.close();', 200)
 			}
 		} catch (e) {
-			self.location.href = fallBackUrl;
+			ss_setSelfLocation(fallBackUrl);
 		}
 	} else {
-		self.location.href = fallBackUrl;
+		ss_setSelfLocation(fallBackUrl);
 	}
 	return false;
 }
@@ -1062,7 +1062,7 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
 	if (ss_getUserDisplayStyle() == "accessible") {
 		// If in accessible mode, just jump to the url directly
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	} else {
 		if (type == 'profile' || type == 'overview' || type == 'tasks_and_calendars') {
 			// Special case for the profile, overview and tasks_and_calendars
@@ -1079,7 +1079,7 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 			url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 			url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 			url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
-			self.location.href = url;
+			ss_setSelfLocation(url);
 		} else {
 			ss_fetch_url(url, ss_showRelevanceTab, namespace)
 		}
@@ -1146,7 +1146,7 @@ function ss_showFolderPageIndex(hrefUrl, binderId, currentPageIndex, divId, cTag
 	var divObj = self.document.getElementById(divId);
 	if (divObj == null || ss_getUserDisplayStyle() == "accessible") {
 		// In accessible mode, redraw the whole page
-		self.location.href = hrefUrl;
+		ss_setSelfLocation(hrefUrl);
 	} else {
 		ss_setupStatusMessageDiv();
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"show_folder_page", ssPageStartIndex:page, cTag:cTag, pTag:pTag, yearMonth:yearMonth, endDate:endDate, random:ss_random++});
@@ -1168,7 +1168,7 @@ function ss_showWikiFolderPage(hrefUrl, binderId, currentPageIndex, divId, cTag,
 	var divObj = self.document.getElementById(divId);
 	if (divObj == null || ss_getUserDisplayStyle() == "accessible") {
 		// In accessible mode, redraw the whole page
-		self.location.href = hrefUrl;
+		ss_setSelfLocation(hrefUrl);
 	} else {
 		ss_setupStatusMessageDiv();
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"show_wiki_folder_page", ssPageStartIndex:page, cTag:cTag, pTag:pTag, yearMonth:yearMonth, endDate:endDate, random:ss_random++});
@@ -1191,7 +1191,7 @@ function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId,
 		url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ss_pagePlaceHolder", page);
 		url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	} else {
 		ss_setupStatusMessageDiv();
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction, namespace:namespace}, "__ajax_relevance");
@@ -1214,7 +1214,7 @@ function ss_showWhatsNewPage(obj, binderId, type, currentPage, direction, divId,
 	if (ss_getUserDisplayStyle() == "accessible") {
 		// In accessible mode, redraw the whole page
 		var url = obj.href;
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	} else {
 		ss_setupStatusMessageDiv();
 		ss_random++;
@@ -1239,7 +1239,7 @@ function ss_clearWhatsUnseen(obj, binderId, ids, type, currentPage, direction, d
 	if (ss_getUserDisplayStyle() == "accessible") {
 		// In accessible mode, redraw the whole page
 		var url = obj.href;
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	} else {
 		ss_setupStatusMessageDiv();
 		ss_random++;
@@ -3082,11 +3082,11 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	} else if (url != "" && self.window.name == "ss_showentryframe") {
 		// Instead of popping up into another window, we now use the current
 		// showEntry frame
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	} else if (url != "" && self.window.name == "gwtContentIframe") {
 		// Instead of popping up into another window, we now use the current
 		// content frame
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	} else {
 		self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
 	}
@@ -4412,9 +4412,9 @@ function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, str
 
 function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
 	if (self.location.href.indexOf("/action/") > 0) {
-		self.location.href = self.location.href + "/ss_showCommentsAttachmentsTab/viewAttachments";
+		ss_setSelfLocation(self.location.href + "/ss_showCommentsAttachmentsTab/viewAttachments");
 	} else {
-		self.location.href = self.location.href + "&ss_showCommentsAttachmentsTab=viewAttachments";
+		ss_setSelfLocation(self.location.href + "&ss_showCommentsAttachmentsTab=viewAttachments");
 	}
 	return;
 }
@@ -4641,14 +4641,14 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 function ss_loadEntryUrl(url, id, binderId, entityType, namespace, isDashboard) {
 	ss_hideSunburst(id, binderId);
 	if (ss_getUserDisplayStyle() == "accessible") {
-		self.location.href = url;
+		ss_setSelfLocation(url);
 		return false;
 	}
 	
 	ss_highlightLine(id, namespace);
 
 	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
-		self.location.href = url;  //This is a wiki, just let the URL be executed in place
+		ss_setSelfLocation(url);  //This is a wiki, just let the URL be executed in place
 	} else {
 		ss_showForumEntry(url, isDashboard);
 	}
@@ -4697,7 +4697,7 @@ var ss_loadEntryInPlaceNextId = 0;
 // Note: this routine can be called (below) with obj = null
 function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType, isDashboard, hoverOverId) {
 	if (ss_getUserDisplayStyle() == "accessible") {
-		if (obj != null) self.location.href = obj.href;
+		if (obj != null) ss_setSelfLocation(obj.href);
 		return false;
 	}
 	var random = ++ss_loadEntryInPlaceNextId;
@@ -4859,11 +4859,11 @@ function ss_showForumEntry(url, isDashboard) {
 		return false;
 	}
 	if (window.name == "ss_showentryframe") {
-		self.location.href = url;
+		ss_setSelfLocation(url);
 		return false;    //This is already showing in the entry frame, just let the URL be executed in place
 	}
 	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
-		self.location.href = url;
+		ss_setSelfLocation(url);
 		return false;    //This is a wiki, just let the URL be executed in place
 	}
 	if (typeof isDashboard == 'undefined') isDashboard = "no";
@@ -4878,7 +4878,7 @@ function ss_showForumEntry(url, isDashboard) {
 		}
 	}
 	if (ss_getUserDisplayStyle() == "accessible") {
-		self.location.href = url;
+		ss_setSelfLocation(url);
 		return false;
 	}
 	if (isDashboard == "yes") {
@@ -4896,7 +4896,7 @@ function ss_showForumEntry(url, isDashboard) {
 		if (typeof self.ss_showForumEntryInIframe != "undefined") {
 			return ss_showForumEntryInIframe(url);
 		} else {
-			self.location.href = url;
+			ss_setSelfLocation(url);
 			return false;
 		}
 	}
@@ -4996,7 +4996,7 @@ function ss_showForumEntryInIframe_Popup(url) {
 }
 
 function ss_showForumEntryInIframe_Newpage(url) {
-	self.location.href = url;
+	ss_setSelfLocation(url);
     return false;
 }
 
@@ -8232,7 +8232,7 @@ function ss_tagSearchObj(obj) {
 	if (searchUrl == "") { try { searchUrl = self.opener.ss_tagSearchResultUrl } catch(e) {searchUrl=""} }
 	var url = ss_replaceSubStrAll(searchUrl, 'ss_tagPlaceHolder', tag);
 	if (ss_openUrlInPortlet(url)) {
-		self.location.href = url;
+		ss_setSelfLocation(url);
 	}
 	return false;
 }
@@ -8439,7 +8439,7 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 	}
 	
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
-		self.location.href = url;
+    	ss_setSelfLocation(url);
 	} else {
 		iframeObj.src = url;
 	}
@@ -9674,6 +9674,18 @@ function TinyMCEWebKitPasteFixup(t, v) {
 		break;
 	}
 	return v;
+}
+
+/*
+ * Sets the content to a specific URL.
+ */
+function ss_setSelfLocation(url) {
+	if (window.top.ss_gotoContentUrl) {
+		window.top.ss_gotoContentUrl(url);
+	}
+	else {
+		self.location.href = url;
+	}
 }
 
 
