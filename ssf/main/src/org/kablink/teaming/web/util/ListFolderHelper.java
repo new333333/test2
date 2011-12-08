@@ -1665,7 +1665,7 @@ public class ListFolderHelper {
 		}
 
 		//Copy binder
-		if (!folder.isMirrored() && bs.getBinderModule().testAccess(folder, BinderOperation.copyBinder)) {
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.copyBinder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
