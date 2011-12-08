@@ -256,7 +256,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			resp = getResponse( ri );
 			servletContext = getServletContext( ri );
 			eevjCmd = (ExecuteEnhancedViewJspCmd) cmd;
-			result = GwtServerHelper.executeEnhancedViewJsp( this, req, resp, servletContext, eevjCmd.getBinderId(), eevjCmd.getJspName() );
+			result = GwtServerHelper.executeEnhancedViewJsp( this, req, resp, servletContext, eevjCmd.getBinderId(), eevjCmd.getJspName(), eevjCmd.getConfigStr() );
 			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
 			return response;
 		}

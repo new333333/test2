@@ -44,6 +44,7 @@ public class ExecuteEnhancedViewJspCmd extends VibeRpcCmd
 {
 	private String m_binderId;
 	private String m_jspName;
+	private String m_configStr;	// This is the configuration string for this enhanced view.
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -56,11 +57,12 @@ public class ExecuteEnhancedViewJspCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public ExecuteEnhancedViewJspCmd( String binderId, String jspName )
+	public ExecuteEnhancedViewJspCmd( String binderId, String jspName, String configStr )
 	{
 		this();
 		m_binderId = binderId;
 		m_jspName = jspName;
+		m_configStr = configStr;
 	}
 	
 	/**
@@ -82,6 +84,14 @@ public class ExecuteEnhancedViewJspCmd extends VibeRpcCmd
 	public int getCmdType()
 	{
 		return VibeRpcCmdType.EXECUTE_ENHANCED_VIEW_JSP.ordinal();
+	}
+	
+	/**
+	 * Return the configuration string
+	 */
+	public String getConfigStr()
+	{
+		return m_configStr;
 	}
 	
 	/**

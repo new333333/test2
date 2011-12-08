@@ -332,7 +332,7 @@ public class EnhancedViewWidget extends VibeWidget
 				{
 					ExecuteEnhancedViewJspCmd cmd;
 					
-					cmd = new ExecuteEnhancedViewJspCmd( m_lpBinderId, m_properties.getJspName() );
+					cmd = new ExecuteEnhancedViewJspCmd( m_lpBinderId, m_properties.getJspName(), m_properties.createConfigString() );
 					GwtClientHelper.executeCommand( cmd, m_executeJspCallback );
 				}
 			};
