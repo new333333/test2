@@ -68,6 +68,7 @@ public class DescriptionPanel extends ToolPanelBase {
 	private Anchor							m_expanderAnchor;		// The Anchor containing the widget that allows the description to be expanded or collapsed.
 	private boolean							m_descriptionExpanded;	// true -> The description should be expanded.  false -> The description should be collapsed.
 	private boolean							m_descriptionIsHTML;	// true -> The content of m_description is HTML.  false -> It's plain text.
+	private boolean							m_panelReady;			// true -> The panel is fully constructed and running.  false -> The panel is in the process of being constructed.
 	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's data table image bundle.
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's localized message resources.
 	private Image							m_expanderImg;			// The Image contain the expand/collapse image in m_expanderAnchor.
@@ -334,6 +335,7 @@ public class DescriptionPanel extends ToolPanelBase {
 		// Reset the widgets and reload the description.
 		m_fp.clear();
 		m_fp.removeStyleName("vibe-binderViewTools vibe-DescriptionPanel");
+		m_panelReady = true;
 		loadPart1Async();
 	}
 
@@ -363,9 +365,12 @@ public class DescriptionPanel extends ToolPanelBase {
 				m_contentPanel.addStyleName("vibe-descriptionContentClipped");
 			}
 		}
-		
-		// Finally, tell who's using this tool panel that it's ready to
-		// go.
-		toolPanelReady();
+
+		// If this tool panel is just now becoming ready...
+		if (!m_panelReady) {
+			// ...tell who's using it that it's ready to go.
+			toolPanelReady();
+			m_panelReady = true;
+		}
 	}
 }
