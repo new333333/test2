@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.server.util;
 
+import java.net.URLDecoder;
 import java.text.Collator;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -1116,7 +1117,7 @@ public class GwtServerHelper {
 	/**
 	 * Execute the given enhanced view jsp and return the resulting html.
 	 */
-	public static String executeEnhancedViewJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName )
+	public static String executeEnhancedViewJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr )
 	{
 		String results;
 		String path;
@@ -1178,13 +1179,19 @@ public class GwtServerHelper {
 					request.setAttribute( key, value );
 				}
 				
-				// Add misc data to the request.
-				request.setAttribute( "javax.portlet.config", portletInfo.getPortletConfig() );
-				request.setAttribute( "javax.portlet.request", renderReq );
-				request.setAttribute( "javax.portlet.response", renderRes );
-				request.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
-		    	
-				// Data needed by some jsps
+				// Add the data that normally would have been added by PortletAdapterServlet.java
+		    	// This attribute is used to distinguish adapter request from regular request
+		    	request.setAttribute( KeyNames.CTX, servletContext );
+
+		    	// Add the data that normally would have been added by PortletAdapterController.java
+				{
+					request.setAttribute( "javax.portlet.config", portletInfo.getPortletConfig() );
+					request.setAttribute( "javax.portlet.request", renderReq );
+					request.setAttribute( "javax.portlet.response", renderRes );
+					request.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
+				}
+				
+				// Add the data that normally would have been added by mashup_canvas_view.jsp
 				{
 					Map map1;
 					Map map2;
@@ -1200,9 +1207,47 @@ public class GwtServerHelper {
 					request.setAttribute( "ss_mashupTableItemCount2", map2 );
 					request.setAttribute( "ss_mashupListDepth", Long.valueOf( 0 ) );
 				}
+				
+				// Add the data that normally would have been added by MashupTag.java
+				if ( configStr != null )
+				{
+					String[] mashupItemValues;
+					
+					mashupItemValues = configStr.split(",");
+					if ( mashupItemValues.length > 0 )
+					{
+						Map mashupItemAttributes;
 
-		    	// This attribute is used to distinguish adapter request from regular request
-		    	request.setAttribute( KeyNames.CTX, servletContext );
+						//Build a map of attributes
+						mashupItemAttributes = new HashMap();
+						for (int i = 1; i < mashupItemValues.length; i++)
+						{
+							int k = mashupItemValues[i].indexOf("=");
+							if ( k > 0 )
+							{
+								String a = mashupItemValues[i].substring(0, k);
+								String v = mashupItemValues[i].substring(k+1, mashupItemValues[i].length());
+								String value1 = v;
+								try
+								{
+									value1 = URLDecoder.decode(v.replaceAll("\\+", "%2B"), "UTF-8");
+								}
+								catch(Exception e)
+								{
+								}
+								
+								if ( a != null && !a.equalsIgnoreCase( "width" ) && !a.equalsIgnoreCase( "height" ) && !a.equalsIgnoreCase( "overflow" ) )
+									mashupItemAttributes.put(a, value1);
+							}
+						}
+
+						request.setAttribute( "mashup_id", 0 );
+						request.setAttribute( "mashup_type", "enhancedView" );
+						request.setAttribute( "mashup_values", mashupItemValues );
+						request.setAttribute( "mashup_attributes", mashupItemAttributes );
+						request.setAttribute( "mashup_view", "view" );
+					}
+				}
 			}
 			
 			// Execute the jsp
