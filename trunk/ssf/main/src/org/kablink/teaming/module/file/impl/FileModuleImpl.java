@@ -1022,38 +1022,47 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
     	FileUploadItem fui;
-     	String name;
+     	String targetName;
+     	String targetRepositoryName;
     	SimpleMultipartFile file;
     	for(FileAttachment fa :atts) {
-    		name = fa.getName(); 
+    		targetName = fa.getName(); 
+  			targetRepositoryName = fa.getRepositoryName();
+  			if(ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fa.getRepositoryName())) {
+  				// This means that the source entity is a mirrored file entry.
+  				if(!destBinder.isMirrored()) {
+  					// The destination binder is not a mirrored folder. 
+  					// We need to identify correct default data name and repository to use for the destination based on its definition.
+  					Element item = FolderUtils.getDefinitionItemForNonMirroredFile(destEntity.getEntryDefDoc());
+  					if(item != null) {
+  						String itemName = item.attributeValue("name");
+  						if("atttachFiles".equals(itemName)) {
+  							targetName = null;
+  						}
+  						else {
+  							targetName = DefinitionUtils.getPropertyValue(item, "name");
+  						}
+						targetRepositoryName = DefinitionUtils.getPropertyValue(item, "storage");
+  					}
+  					else {
+  						targetName = null;
+  						targetRepositoryName = RepositoryUtil.getDefaultRepositoryName();
+  					}
+  				}
+  			}
+			// Preserve modification time of the source for the target
+  			file = new DatedMultipartFile(fa.getFileItem().getName(),
+				readFile(binder, entity, fa), fa.getModification().getDate());
     		int type = FileUploadItem.TYPE_FILE;
-    		if(Validator.isNull(name))
-    			type = FileUploadItem.TYPE_ATTACHMENT;
- //   		try {
-    			
-    			// Preserve modification time of the source for the target
-  	  			file = new DatedMultipartFile(fa.getFileItem().getName(),
-    				readFile(binder, entity, fa), fa.getModification().getDate());
-  	  			String targetRepositoryName = fa.getRepositoryName();
-  	  			if(ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fa.getRepositoryName())) {
-  	  				// This means that the source entity is a mirrored file entry.
-  	  				if(!destBinder.isMirrored()) {
-  	  					// The destination binder is not a mirrored folder. We need to identify correct repository to use for the destination.
-  	  					targetRepositoryName = FolderUtils.findRepositoryName(destEntity.getEntryDefDoc(), name);
-  	  				}
-  	  			}
-    			fui = new FileUploadItem(type, name, file, targetRepositoryName);
-    			//register here so entire copy fails if any one file is an issue
-  		   		if (destBinder.isLibrary() && !(destEntity instanceof Binder)) {
-		   			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
-		   			fui.setRegistered(true);
-		   		}
-    	   		fuis.add(fui);
-  //     		} catch (TitleException tx) {
-  //     			throw tx;
-  //  		} catch (Exception ex) {
-  //  			logger.error("Error copying file:" +  ex.getLocalizedMessage());
-  //  		}
+    		if(Validator.isNull(targetName))
+			type = FileUploadItem.TYPE_ATTACHMENT;
+			fui = new FileUploadItem(type, targetName, file, targetRepositoryName);
+			//register here so entire copy fails if any one file is an issue
+	   		if (destBinder.isLibrary() && !(destEntity instanceof Binder)) {
+	   			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
+	   			fui.setRegistered(true);
+	   		}
+	   		fuis.add(fui);
     	}
     	try {	
     		writeFiles(destBinder, destEntity, fuis, null);
