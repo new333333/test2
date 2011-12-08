@@ -146,48 +146,29 @@ public class GwtViewHelper {
 		for (FolderRow fr:  folderRows) {
 			// Scan this FolderRow's individual assignees tracking each
 			// unique ID.
-			Map<String, List<AssignmentInfo>> aiMap = fr.getRowAssigneeInfoListsMap();
-			List<AssignmentInfo> aiList = aiMap.get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				for (AssignmentInfo ai:  aiList) {
-					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-				}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
-			aiList = aiMap.get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				for (AssignmentInfo ai:  aiList) {
-					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-				}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this FolderRow's group assignees tracking each
 			// unique ID.
-			aiList = aiMap.get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				for (AssignmentInfo ai:  aiList) {
-					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-				}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
-			aiList = aiMap.get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				for (AssignmentInfo ai:  aiList) {
-					MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-				}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this FolderRow's team assignees tracking each
 			// unique ID.
-			aiList = aiMap.get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				for (AssignmentInfo ai:  aiList) {
-					MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
-				}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
-			aiList = aiMap.get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				for (AssignmentInfo ai:  aiList) {
-					MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
-				}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 		}
 
@@ -249,50 +230,25 @@ public class GwtViewHelper {
 		
 		// Scan the List<FolderRow>'s again...
 		for (FolderRow fr:  folderRows) {
-			// ...this time, fixing the individual assignees...
-			fixupAIs(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, userPresence, presenceUserWSIds);
-			fixupAIs(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, userPresence, presenceUserWSIds);
-			
-			// ...group assignees...
-			fixupAIGroups(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts);
-			fixupAIGroups(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts);
-			
-			// ...and team assignees.
-			fixupAITeams(fr.getRowAssigneeInfoListsMap().get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),      teamTitles, teamCounts);
-			fixupAITeams(fr.getRowAssigneeInfoListsMap().get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME), teamTitles, teamCounts);
+			// ...this time, fixing the assignee lists.
+			fixupAIs(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, userPresence, presenceUserWSIds);
+			fixupAIs(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, userPresence, presenceUserWSIds);
+			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                    );
+			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                    );
+			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                     );
+			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                     );
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
 		Comparator<AssignmentInfo> comparator = new GwtServerHelper.AssignmentInfoComparator(true);
 		for (FolderRow fr:  folderRows) {
 			// ...this time, to sort the assignee lists.
-			Map<String, List<AssignmentInfo>> aiMap = fr.getRowAssigneeInfoListsMap();
-			List<AssignmentInfo> aiList = aiMap.get(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				Collections.sort(aiList, comparator);
-			}
-			aiList = aiMap.get(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				Collections.sort(aiList, comparator);
-			}
-			
-			aiList = aiMap.get(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				Collections.sort(aiList, comparator);
-			}
-			aiList = aiMap.get(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				Collections.sort(aiList, comparator);
-			}
-			
-			aiList = aiMap.get(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				Collections.sort(aiList, comparator);
-			}
-			aiList = aiMap.get(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME);
-			if ((null != aiList) && (!(aiList.isEmpty()))) {
-				Collections.sort(aiList,  comparator);
-			}
+			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             comparator);
+			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        comparator);
+			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      comparator);
+			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), comparator);
+			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
+			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 		}
 	}
 	
@@ -571,6 +527,16 @@ public class GwtViewHelper {
 		catch (Exception ex) {/* Ignored. */}
 	}
 
+	/*
+	 * Returns a non-null List<AssignmentInfo> from a folder row for a
+	 * given attribute.
+	 */
+	private static List<AssignmentInfo> getAIListFromFR(FolderRow fr, String attrName) {
+		Map<String, List<AssignmentInfo>> aiMap = fr.getRowAssigneeInfoListsMap();
+		List<AssignmentInfo> reply = aiMap.get(attrName);
+		return ((null == reply) ? new ArrayList<AssignmentInfo>() : reply);
+	}
+	
 	/**
 	 * Reads information for rendering a binder's description in a
 	 * BinderDescriptionRpcResponseData object.
