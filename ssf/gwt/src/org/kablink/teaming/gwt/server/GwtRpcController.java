@@ -143,6 +143,7 @@ public class GwtRpcController extends RemoteServiceServlet
             	ri = ((HttpRequestInfo) parameters[0]);                
             	ri.setRequestObj( req );
             	ri.setResponseObj( resp );
+            	ri.setServletContext( getServletContext() );
             	
             	// Is the user logged in?
             	if ( WebHelper.isGuestLoggedIn( req ) )
