@@ -730,12 +730,12 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 */
 	private static boolean isColumnAssigneeInfo(String columnName) {
 		return
-			(columnName.equals("attendee")         ||
-			 columnName.equals("attendee_groups")  ||
-			 columnName.equals("attendee_teams")   ||
-			 columnName.equals("assignedTo")       ||
-			 columnName.equals("assignedToGroups") ||
-			 columnName.equals("assignedToTeams"));
+			(columnName.equals("attendee")          ||
+			 columnName.equals("attendee_groups")   ||
+			 columnName.equals("attendee_teams")    ||
+			 columnName.equals("assignment")        ||
+			 columnName.equals("assignment_groups") ||
+			 columnName.equals("assignment_teams"));
 	}
 	private static boolean isColumnCustom(      FolderColumn column)     {return column.isCustomColumn();           }
 	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(COLUMN_DOWNLOAD);}
