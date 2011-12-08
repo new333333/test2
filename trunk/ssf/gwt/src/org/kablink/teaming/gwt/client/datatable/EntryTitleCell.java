@@ -55,6 +55,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 /**
  * Data table cell that represents an entry's title.
@@ -62,6 +63,8 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
+	private TeamingPopupPanel	m_titleHintPanel;	//
+	
 	/**
 	 * Constructor method.
 	 */
@@ -198,13 +201,40 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     	}
     	
     	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOVER.equals(eventType)) {
-    		// A mouse over!  Add the hover style.
+    		// A mouse over!  Add the hover style...
 			eventTarget.addClassName("vibe-dataTableLink-hover");
+			
+			// ...if have a description...
+			String description = eti.getDescription();
+			if (GwtClientHelper.hasString(description)) {
+				// ...add a popup panel for the hover HTML...
+				if (null == m_titleHintPanel) {
+					m_titleHintPanel = new TeamingPopupPanel(false, false);
+					m_titleHintPanel.removeStyleName("gwt-PopupPanel");
+					m_titleHintPanel.addStyleName(   "ss_hover_over" );
+				}
+				else {
+					m_titleHintPanel.clear();
+				}
+				InlineLabel descLabel = new InlineLabel();
+				descLabel.removeStyleName("gwt-InlineLabel");
+				descLabel.addStyleName(   "ss_style"       );
+				descLabel.getElement().setInnerHTML(eti.getDescription());
+				m_titleHintPanel.setWidget(descLabel);
+				m_titleHintPanel.setPopupPosition((eventTarget.getAbsoluteLeft() + 20), (eventTarget.getAbsoluteBottom() + 12));
+				m_titleHintPanel.show();
+			}
     	}
     	
     	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOUT.equals(eventType)) {
-    		// A mouse out!  Remove the hover style.
+    		// A mouse out!  Remove the hover style...
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
+			
+			// ...and if there's a title hint...
+			if (null != m_titleHintPanel) {
+				// ...make sure it's hidden.
+				m_titleHintPanel.hide();
+			}
     	}
     }
     
@@ -254,16 +284,16 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			fp.add(i);
 		}
 
-		// ...and the title link...
-		InlineLabel entryLabel = new InlineLabel(eti.getTitle());
-		entryLabel.addStyleName("vibe-dataTableEntry-title");
+		// ...add the title link...
+		InlineLabel titleLabel = new InlineLabel(eti.getTitle());
+		titleLabel.addStyleName("vibe-dataTableEntry-title");
 		if (entryUnseen) {
-			entryLabel.addStyleName("bold");
+			titleLabel.addStyleName("bold");
 		}
-		Element elE = entryLabel.getElement(); 
+		Element elE = titleLabel.getElement(); 
 		elE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL);
 		elE.setId(VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
-		fp.add(entryLabel);
+		fp.add(titleLabel);
 		
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
