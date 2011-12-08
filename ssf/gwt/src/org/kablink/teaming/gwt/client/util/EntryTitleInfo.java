@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class EntryTitleInfo implements IsSerializable {
 	private boolean	m_seen;			//
 	private Long	m_entryId;		//
+	private String	m_description;	//
 	private String  m_title;		//
 
 	/**
@@ -59,33 +60,37 @@ public class EntryTitleInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean getSeen()    {return m_seen;   }
-	public Long    getEntryId() {return m_entryId;}
-	public String  getTitle()   {return m_title;  }
+	public boolean getSeen()        {return m_seen;       }
+	public Long    getEntryId()     {return m_entryId;    }
+	public String  getDescription() {return m_description;}
+	public String  getTitle()       {return m_title;      }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSeen(   boolean seen)    {m_seen    = seen;   }
-	public void setEntryId(Long    entryId) {m_entryId = entryId;}
-	public void setTitle(  String  title)   {m_title   = title;  }
+	public void setSeen(       boolean seen)        {m_seen        = seen;       }
+	public void setEntryId(    Long    entryId)     {m_entryId     = entryId;    }
+	public void setDescription(String  description) {m_description = description;}
+	public void setTitle(      String  title)       {m_title       = title;      }
 	
 	/**
 	 * Constructs an EntryTitleInfo from the parameters.
 	 *
 	 * @param seen
 	 * @param title
+	 * @param description
 	 * 
 	 * @return
 	 */
-	public static EntryTitleInfo construct(Long entryId, boolean seen, String title) {
+	public static EntryTitleInfo construct(Long entryId, boolean seen, String title, String description) {
 		EntryTitleInfo reply = new EntryTitleInfo();
 		
-		reply.setEntryId(entryId);
-		reply.setSeen(   seen   );
-		reply.setTitle(  title  );
+		reply.setEntryId(    entryId    );
+		reply.setSeen(       seen       );
+		reply.setTitle(      title      );
+		reply.setDescription(description);
 		
 		return reply;
 	}

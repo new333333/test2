@@ -111,6 +111,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
@@ -736,6 +737,19 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns the entry description from a search results Map.
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getEntryDescriptionFromMap(HttpServletRequest httpReq, Map entryMap) {
+		String reply = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FIELD);
+		if (MiscUtil.hasString(reply)) {
+			reply = MarkupUtil.markupStringReplacement(null, null, httpReq, null, entryMap, reply, WebKeys.MARKUP_VIEW, false);
+			reply = MarkupUtil.markupSectionsReplacement(reply);
+		}
+		return reply;
+	}
+
 	/**
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
@@ -1139,6 +1153,7 @@ public class GwtViewHelper {
 									eti.setSeen(seenMap.checkIfSeen(entryMap));
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntryId(entryId);
+									eti.setDescription(getEntryDescriptionFromMap(request, entryMap));
 									fr.setColumnValue(fc, eti);
 								}
 								
