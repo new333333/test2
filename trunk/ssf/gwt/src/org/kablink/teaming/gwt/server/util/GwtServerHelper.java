@@ -50,6 +50,7 @@ import java.util.SortedSet;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -1115,7 +1116,7 @@ public class GwtServerHelper {
 	/**
 	 * Execute the given enhanced view jsp and return the resulting html.
 	 */
-	public static String executeEnhancedViewJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, String binderId, String jspName )
+	public static String executeEnhancedViewJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName )
 	{
 		String results;
 		String path;
@@ -1132,6 +1133,7 @@ public class GwtServerHelper {
 		{
 			RenderRequestImpl renderReq;
 			RenderResponseImpl renderRes;
+			PortletInfo portletInfo;
 
 			// Gather up all the data required by the jsp
 			{
@@ -1141,7 +1143,6 @@ public class GwtServerHelper {
 
 				// Create the objects needed to call WorkspaceTreeHelper.setupWorkspaceBeans()
 				{
-					PortletInfo portletInfo;
 					String portletName;
 					String charEncoding;
 
@@ -1164,9 +1165,6 @@ public class GwtServerHelper {
 					
 					model = new HashMap<String, Object>();
 					binderIdL = Long.valueOf( binderId );
-					
-					request.setAttribute( "javax.portlet.request", renderReq );
-					request.setAttribute( "javax.portlet.response", renderRes );
 				}
 				
 				WorkspaceTreeHelper.setupWorkspaceBeans( ami, binderIdL, renderReq, renderRes, model, false );
@@ -1179,6 +1177,32 @@ public class GwtServerHelper {
 					value = model.get( key );
 					request.setAttribute( key, value );
 				}
+				
+				// Add misc data to the request.
+				request.setAttribute( "javax.portlet.config", portletInfo.getPortletConfig() );
+				request.setAttribute( "javax.portlet.request", renderReq );
+				request.setAttribute( "javax.portlet.response", renderRes );
+				request.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
+		    	
+				// Data needed by some jsps
+				{
+					Map map1;
+					Map map2;
+					
+					map1 = new HashMap();
+					map2 = new HashMap();
+					map1.put( 0, "" );
+					map2.put( 0, Long.valueOf( 0 ) );
+
+					request.setAttribute( "ss_mashupTableDepth", Long.valueOf( 0 ) );
+					request.setAttribute( "ss_mashupTableNumber", Long.valueOf( 0 ) );
+					request.setAttribute( "ss_mashupTableItemCount", map1 );
+					request.setAttribute( "ss_mashupTableItemCount2", map2 );
+					request.setAttribute( "ss_mashupListDepth", Long.valueOf( 0 ) );
+				}
+
+		    	// This attribute is used to distinguish adapter request from regular request
+		    	request.setAttribute( KeyNames.CTX, servletContext );
 			}
 			
 			// Execute the jsp

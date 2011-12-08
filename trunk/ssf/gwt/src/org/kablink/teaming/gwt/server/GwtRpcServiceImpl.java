@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -248,12 +249,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case EXECUTE_ENHANCED_VIEW_JSP:
 		{
 			HttpServletResponse resp;
+			ServletContext servletContext;
 			ExecuteEnhancedViewJspCmd eevjCmd;
 			String result;
 			
 			resp = getResponse( ri );
+			servletContext = getServletContext( ri );
 			eevjCmd = (ExecuteEnhancedViewJspCmd) cmd;
-			result = GwtServerHelper.executeEnhancedViewJsp( this, req, resp, eevjCmd.getBinderId(), eevjCmd.getJspName() );
+			result = GwtServerHelper.executeEnhancedViewJsp( this, req, resp, servletContext, eevjCmd.getBinderId(), eevjCmd.getJspName() );
 			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
 			return response;
 		}
@@ -3085,6 +3088,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private static HttpServletResponse getResponse( HttpRequestInfo ri )
 	{
 		return (HttpServletResponse) ri.getResponseObj();
+	}
+	
+	/**
+	 * Return the ServletContext from an HttpRequestInfo object.
+	 */
+	private static ServletContext getServletContext( HttpRequestInfo ri )
+	{
+		return (ServletContext) ri.getServletContext();
 	}
 	
 	/**
