@@ -63,6 +63,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
+	private InlineLabel			m_titleHintLabel;	//
 	private TeamingPopupPanel	m_titleHintPanel;	//
 	
 	/**
@@ -207,21 +208,22 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			// ...if have a description...
 			String description = eti.getDescription();
 			if (GwtClientHelper.hasString(description)) {
-				// ...add a popup panel for the hover HTML...
+				// ...and we haven't create a popup panel for the hover
+				// ...HTML yet...
 				if (null == m_titleHintPanel) {
+					// ...create it now...
 					m_titleHintPanel = new TeamingPopupPanel(false, false);
 					m_titleHintPanel.removeStyleName("gwt-PopupPanel");
-					m_titleHintPanel.addStyleName(   "ss_hover_over" );
+					m_titleHintPanel.addStyleName("vibe-dataTableLink-hoverHint");
+					m_titleHintLabel = new InlineLabel();
+					m_titleHintLabel.removeStyleName("gwt-InlineLabel");
+					m_titleHintLabel.addStyleName("vibe-dataTableLink-hoverHintLabel");
+					m_titleHintPanel.setWidget(m_titleHintLabel);
 				}
-				else {
-					m_titleHintPanel.clear();
-				}
-				InlineLabel descLabel = new InlineLabel();
-				descLabel.removeStyleName("gwt-InlineLabel");
-				descLabel.addStyleName(   "ss_style"       );
-				descLabel.getElement().setInnerHTML(eti.getDescription());
-				m_titleHintPanel.setWidget(descLabel);
-				m_titleHintPanel.setPopupPosition((eventTarget.getAbsoluteLeft() + 20), (eventTarget.getAbsoluteBottom() + 12));
+				
+				// ...and show it with the description HTML.
+				m_titleHintLabel.getElement().setInnerHTML(description);
+				m_titleHintPanel.setPopupPosition((eventTarget.getAbsoluteLeft() + 20), (eventTarget.getAbsoluteBottom() + 12));	// 20,12:  Same as JSP way of showing these hints.
 				m_titleHintPanel.show();
 			}
     	}
@@ -230,7 +232,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     		// A mouse out!  Remove the hover style...
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
 			
-			// ...and if there's a title hint...
+			// ...and if there's a title hint panel...
 			if (null != m_titleHintPanel) {
 				// ...make sure it's hidden.
 				m_titleHintPanel.hide();

@@ -104,6 +104,8 @@
 		.vibe-dataTableEntry-viewAnchor      {text-decoration: none;}
 		.vibe-dataTableEntry-viewLabel       {}
 		.vibe-dataTableLink-hover            {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-dataTableLink-hoverHint        {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d6dede; margin:2px; padding: 10px; background-color: #EBECA5; width: 300px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-dataTableLink-hoverHintLabel   {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #333333;}
 		.vibe-dataTablePresence-control      {}
 		.vibe-dataTablePresence-label        {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled     {color: #c4c4c4;}
