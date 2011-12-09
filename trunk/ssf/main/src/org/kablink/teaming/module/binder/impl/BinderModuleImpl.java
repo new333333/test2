@@ -1149,6 +1149,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
 		Binder destinationParent = loadBinder(toId);
+    	// We don't allow (more precisely, don't support yet) copying of a binder into a mirrored folder.
+    	if(destinationParent.isMirrored())
+    		throw new NotSupportedException("errorcode.notsupported.copyBinder.mirroredDestination", new String[] {destinationParent.getPathName()});
 		//See if there is enough quota to do this
 		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destinationParent)) {
 			if (source.getEntityType().equals(EntityType.folder)) {
