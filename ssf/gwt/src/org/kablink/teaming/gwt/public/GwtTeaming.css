@@ -3333,6 +3333,8 @@ td.datePickerMonth {
 	padding: 0 5px;
 	color: #1f1f1f;
 	}
+	
+.vibe-aboutBox {z-index: 1001;}
 
 /* The following styles are used with an object list table. */
 .oltHeader
