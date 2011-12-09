@@ -108,6 +108,17 @@ public abstract class DlgBox extends PopupPanel
 	public DlgBox(
 		boolean autoHide,
 		boolean modal,
+		DlgButtonMode dlgBtnMode )
+	{
+		this( autoHide, modal, 0, 0, dlgBtnMode );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
 		int xPos,
 		int yPos,
 		DlgButtonMode dlgBtnMode )
