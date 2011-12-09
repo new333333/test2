@@ -405,7 +405,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		int rows = m_folderColumnsGrid.getRowCount();
 		if (0 < rows) {
 			// Yes!  Scan and update them.
-			for (int i = 1; i < rows; i += 1) {
+			for (int i = 0; i < rows; i += 1) {
 				String rowId = getRowId(i);
 				String fcName = getFolderColumnNameFromRow(i);
 				FolderColumn fc = getFolderColumnByName(fcName);
@@ -436,9 +436,16 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		for (int i = 0; i < m_folderColumnsListCount; i += 1) {
 			// Is this the ToolbarItem in question?
 			FolderColumn fci = m_folderColumnsListAll.get(i);
-			if (fci.getColumnName().equals(name)) {
-				// Yes!  Return it.
-				return fci;
+			if (fci.getColumnDefId() != null && !fci.getColumnDefId().equals("")) {
+				if (name.equals(fci.getColumnDefId()+"."+fci.getColumnEleName())) {
+					// Yes, this is the row
+					return fci;
+				}
+			} else {
+				if (fci.getColumnName().equals(name)) {
+					// Yes!  Return it.
+					return fci;
+				}
 			}
 		}
 		
@@ -500,12 +507,16 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private void renderRow(Grid grid, int row, int gridSize, FolderColumn fci) {
 		grid.insertRow(row);
 		
-		String rowId = (IDBASE + fci.getColumnName());
+		String rowIdSuffix = fci.getColumnName();
+		if (fci.getColumnDefId() != null && !fci.getColumnDefId().equals("")) {
+			rowIdSuffix = fci.getColumnDefId()+"."+fci.getColumnEleName();
+		}
+		String rowId = (IDBASE + rowIdSuffix);
 		grid.getRowFormatter().getElement(row).setId(rowId);
 		
 		//Checkbox to select the column for view
 		CheckBox cb = new CheckBox();
-		cb.setName("ColumnSelected_" + fci.getColumnName());
+		cb.setName("ColumnSelected_" + rowIdSuffix);
 		cb.addStyleName("folderColumnsDlg_CheckBox");
 		cb.getElement().setId(rowId + IDTAIL_CHECKBOX);
 		cb.setValue(fci.getColumnIsShown());
@@ -515,7 +526,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		//Column title
 		String txt = fci.getColumnDefaultTitle();
 		if (!(GwtClientHelper.hasString(txt))) {
-			txt = fci.getColumnName();
+			txt = fci.getColumnEleName();
 		}
 		grid.setWidget(row, 1, new Label(txt));
 		grid.getCellFormatter().addStyleName(row, 1, "folderColumnsDlg_GridCell_1");
@@ -561,22 +572,22 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			
 			// Do we have some rows in the table without the bottom one
 			// being checked?
-			int rows = m_folderColumnsGrid.getRowCount()-1;
-			if ((0 < rows) && (!(isRowChecked(rows)))) {
+			int rows = m_folderColumnsGrid.getRowCount();
+			if ((0 < rows) && (!(isRowChecked(rows-1)))) {
 				// Yes!  Scan the rows.
 				getDataFromDlg();	//Make sure all of the changed settings are captured first
-				for (int i = (rows - 1); i > 0; i -= 1) {
+				for (int i = (rows - 1); i >= 0; i -= 1) {
 					// If this row checked...
 					if (isRowChecked(i)) {
 						// ...move it down.
 						m_folderColumnsGrid.removeRow(i);
 						renderRow(m_folderColumnsGrid, i+1, 
-								m_folderColumnsListCount, m_folderColumnsListAll.get(i-1));
+								m_folderColumnsListCount, m_folderColumnsListAll.get(i));
 						setRowChecked(i+1);
-						FolderColumn fc1 = m_folderColumnsListAll.get(i-1);
-						FolderColumn fc2 = m_folderColumnsListAll.get(i);
-						m_folderColumnsListAll.set(i-1, fc2);
-						m_folderColumnsListAll.set(i, fc1);
+						FolderColumn fc1 = m_folderColumnsListAll.get(i);
+						FolderColumn fc2 = m_folderColumnsListAll.get(i+1);
+						m_folderColumnsListAll.set(i, fc2);
+						m_folderColumnsListAll.set(i+1, fc1);
 						break;
 					}
 				}
@@ -597,22 +608,22 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			
 			// Do we have some rows in the table without the top one
 			// being checked?
-			int rows = m_folderColumnsGrid.getRowCount()-1;
-			if ((0 < rows) && (!(isRowChecked(1)))) {
+			int rows = m_folderColumnsGrid.getRowCount();
+			if ((0 < rows) && (!(isRowChecked(0)))) {
 				// Yes!  Scan the rows.
 				getDataFromDlg();	//Make sure all of the changed settings are captured first
-				for (int i = 2; i <= rows; i += 1) {
+				for (int i = 1; i < rows; i += 1) {
 					// If this row checked...
 					if (isRowChecked(i)) {
 						// ...move it up.
 						m_folderColumnsGrid.removeRow(i);
 						renderRow(m_folderColumnsGrid, i-1, 
-								m_folderColumnsListCount, m_folderColumnsListAll.get(i-1));
+								m_folderColumnsListCount, m_folderColumnsListAll.get(i));
 						setRowChecked(i-1);
-						FolderColumn fc1 = m_folderColumnsListAll.get(i-1);
-						FolderColumn fc2 = m_folderColumnsListAll.get(i-2);
-						m_folderColumnsListAll.set(i-1, fc2);
-						m_folderColumnsListAll.set(i-2, fc1);
+						FolderColumn fc1 = m_folderColumnsListAll.get(i);
+						FolderColumn fc2 = m_folderColumnsListAll.get(i-1);
+						m_folderColumnsListAll.set(i, fc2);
+						m_folderColumnsListAll.set(i-1, fc1);
 						break;
 					}
 				}

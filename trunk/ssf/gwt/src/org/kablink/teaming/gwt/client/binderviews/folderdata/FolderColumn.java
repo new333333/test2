@@ -45,7 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class FolderColumn implements IsSerializable, VibeRpcResponseData {
-	private String	m_columnName;			//
+	private String	m_columnName;			//For custom attributes, this is: "defId,type,eleName,caption"
 	private String	m_columnTitle;			//
 	private String	m_columnDefaultTitle;	//
 	private String	m_columnCustomTitle;	//
@@ -54,6 +54,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String	m_columnSortKey;		//
 	
 	private String	m_columnDefId;			// The definition ID for this column (only used for custom columns.)
+	private String	m_columnEleName;		// The element name from the definition (if custom attribute),
+											//  otherwise, it is the short column name
 	private String	m_columnType;			// The type for this column (only used for custom columns.)
 	
 	/**
@@ -149,6 +151,19 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 		return reply;
 	}
 	public String getColumnDefId() 			{return m_columnDefId;}
+	public String getColumnEleName() {
+		if (m_columnEleName != null && !m_columnEleName.equals("")) {
+			return m_columnEleName;
+		} else {
+			String eleName = m_columnName;
+			if (eleName.contains(",")) {
+				//This is a custom attribute (defId,type,eleName,caption)
+				String[] colParts = eleName.split(",");
+				eleName = colParts[2];
+			}
+			return eleName;
+		}
+	}
 	public String getColumnType()  			{return m_columnType; }
 	public Boolean getColumnIsShown()  		{return m_columnIsShown; }
 	
@@ -163,7 +178,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public void setColumnCustomTitle(   String columnCustomTitle)   {m_columnCustomTitle = columnCustomTitle; }
 	public void setColumnSearchKey(		String columnSearchKey) 	{m_columnSearchKey 	 = columnSearchKey;	 }
 	public void setColumnSortKey(  		String columnSortKey)   	{m_columnSortKey   	 = columnSortKey;  	 }
-	public void setColumnDefId(    		String columnDefId)     	{m_columnDefId     	 = columnDefId;     	 }
+	public void setColumnDefId(    		String columnDefId)     	{m_columnDefId     	 = columnDefId;      }
+	public void setColumnEleName(    	String columnEleName)     	{m_columnEleName     = columnEleName;    }
 	public void setColumnType(     		String columnType)      	{m_columnType      	 = columnType;     	 }
 	public void setColumnIsShown(  		Boolean showThis)       	{m_columnIsShown   	 = showThis;       	 }
 

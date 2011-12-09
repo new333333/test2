@@ -831,7 +831,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			// sort for each one.  Is this a column that should show
 			// a download link for? 
 			VibeColumn<FolderRow, ?> column;
-			String cName = fc.getColumnName();
+			String cName = fc.getColumnEleName();
 			if (isColumnDownload(cName)) {
 				// Yes!  Create a DownloadColumn for it.
 				column = new DownloadColumn<FolderRow>(fc) {
@@ -1467,7 +1467,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			vp.add(new InlineLabel("Page size:  "       + m_folderPageSize)   );
 			vp.add(new HTML("<br/>"));
 			for (FolderColumn fc:  m_folderColumnsList) {
-				vp.add(new InlineLabel(fc.getColumnName() + "='" + fc.getColumnTitle() + "'"));
+				vp.add(new InlineLabel(fc.getColumnEleName() + "='" + fc.getColumnTitle() + "'"));
 			}
 			vp.add(new HTML("<br/>- - - - - End:  Folder Display Data - - - - -<br/>"));
 			m_flowPanel.add(vp);
