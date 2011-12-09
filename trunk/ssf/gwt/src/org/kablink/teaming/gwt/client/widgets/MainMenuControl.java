@@ -62,6 +62,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.mainmenu.ClipboardDlg;
+import org.kablink.teaming.gwt.client.mainmenu.ClipboardDlg.ClipboardDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg.FolderColumnsConfigDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
@@ -138,6 +140,7 @@ public class MainMenuControl extends Composite
 		ViewWhatsUnseenInBinderEvent.Handler
 {
 	private BinderInfo						m_contextBinder;
+	private ClipboardDlg					m_clipboardDlg;
 	private ContextLoadInfo					m_lastContextLoaded;
 	private EditSuccessfulHandler           m_editFolderColumnsSuccessHandler;
 	private FolderColumnsConfigDlg          m_folderColumnsDlg;
@@ -722,8 +725,50 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeClipboard(InvokeClipboardEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onInvokeClipboard():  ...this needs to be implemented...");
+		// Asynchronously invoke the clipboard dialog.
+		ScheduledCommand doLoadCBDlg = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onInvokeClipboardNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoadCBDlg);
+	}
+
+	/*
+	 * Synchronously invokes the clipboard dialog.
+	 */
+	private void onInvokeClipboardNow() {
+		// Have we instantiated a clipboard dialog yet?
+		if (null == m_clipboardDlg) {
+			// No!  Instantiate one now.
+			ClipboardDlg.createAsync(new ClipboardDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ClipboardDlg cpDlg) {
+					// ...and show it.
+					m_clipboardDlg = cpDlg;
+					ScheduledCommand doShowCBDlg = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							showClipboardDlgNow();
+						}
+					};
+					Scheduler.get().scheduleDeferred(doShowCBDlg);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated a clipboard dialog already!
+			// Simply show it.
+			showClipboardDlgNow();
+		}
 	}
 	
 	/**
@@ -1055,6 +1100,13 @@ public class MainMenuControl extends Composite
 	 */
 	public void setWorkspaceTreeSliderMenuItemState(TeamingEvents event) {
 		m_wsTreeSlider.setState(event);
+	}
+	
+	/*
+	 * Synchronously shows the clipboard dialog.
+	 */
+	private void showClipboardDlgNow() {
+		ClipboardDlg.initAndShow(m_clipboardDlg, m_contextBinder);
 	}
 	
 	/**

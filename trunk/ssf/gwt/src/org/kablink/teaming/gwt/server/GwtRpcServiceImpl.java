@@ -448,6 +448,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_CLIPBOARD_USERS:
+		{
+			@SuppressWarnings("unused")
+			GetClipboardUsersCmd gcuCmd = ((GetClipboardUsersCmd) cmd);
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsers( this, getRequest( ri ));
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
 			ActivityStreamInfo asi;

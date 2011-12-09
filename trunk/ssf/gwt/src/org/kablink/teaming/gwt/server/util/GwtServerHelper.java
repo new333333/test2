@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.server.util;
 
 import java.net.URLDecoder;
@@ -129,6 +128,7 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -189,6 +189,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.Clipboard;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
@@ -203,7 +204,6 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.servlet.StringServletResponse;
-
 
 /**
  * Helper methods for the GWT UI server code.
@@ -2756,6 +2756,39 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns a ClipboardUsersRpcResponseData object containing the
+	 * user's currently on the clipboard.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ClipboardUsersRpcResponseData getClipboardUsers(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			// Read the IDs of the users off the clipboard...
+			Clipboard clipboard = new Clipboard(request);
+			Set cbUserIds = clipboard.get(Clipboard.USERS);
+
+			// ...create a ClipboardUsersRpcResponseData object using them...
+			SortedSet<User> cbUsers = bs.getProfileModule().getUsersFromPrincipals(cbUserIds);
+			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
+			for (User cbUser:  cbUsers) {
+				reply.addUser(cbUser.getId(), cbUser.getTitle());
+			}
+			
+			// ...and return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}
+	}
+	
+	/**
 	 * Returns the User object of the currently logged in user.
 	 * 
 	 * @return
@@ -4439,6 +4472,7 @@ public class GwtServerHelper {
 		case GET_BINDER_PERMALINK:
 		case GET_BINDER_REGION_STATE:
 		case GET_BINDER_TAGS:
+		case GET_CLIPBOARD_USERS:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
 		case GET_DOCUMENT_BASE_URL:

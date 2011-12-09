@@ -302,6 +302,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
+	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetFileFolderEntries();
 	String rpcFailure_GetFileUrl();
@@ -413,6 +414,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BreadCrumbPanel();
+	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DiscussionFolderView();
@@ -537,6 +539,12 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarViews();
 	String mainMenuBarWhatsNew();
 	String mainMenuBarWorkspace();
+	String mainMenuClipboardDlgAddPeople();
+	String mainMenuClipboardDlgAddTeam();
+	String mainMenuClipboardDlgDelete();
+	String mainMenuClipboardDlgEmpty();
+	String mainMenuClipboardDlgHeader();
+	String mainMenuClipboardDlgReading();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
 	String mainMenuFavoritesDlgMoveDown();
