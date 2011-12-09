@@ -41,10 +41,13 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -52,6 +55,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -90,6 +95,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private final static String OPTION_HEADER_ID	= "optionHeader";
 	
 	private Grid m_folderColumnsGrid;				// Once displayed, the table of folder columns.
+	private Grid m_header;
 	private CheckBox m_folderDefaultCheckBox;		// Set the folder default columns.
 	private Button m_folderDefaultBtn;				// Restore default settings
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
@@ -97,6 +103,8 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private int m_folderColumnsListCount;			// Count of items in m_folderColumnsList.
 	private List<FolderColumn> m_folderColumnsList;		// List of selected folder column items.
 	private List<FolderColumn> m_folderColumnsListAll;	// List of all folder column items.
+	private ScrollPanel m_sp;
+	private VerticalPanel m_vp;
 
 	/*
 	 * Inner class that wraps labels displayed in the dialog's content.
@@ -115,29 +123,14 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FolderColumnsConfigDlg(boolean autoHide, boolean modal, 
-			String binderId, List<FolderColumn> folderColumnsList, 
-			List<FolderColumn> folderColumnsListAll) {
+	private FolderColumnsConfigDlg() {
 		// Initialize the superclass...
-		super(autoHide, modal);
+		super(true, true);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
-		m_binderId  = binderId;
-		m_folderColumnsList = folderColumnsList;
-		m_folderColumnsListAll = folderColumnsListAll;
-		m_folderColumnsListCount = ((null == m_folderColumnsListAll) ? 0 : m_folderColumnsListAll.size());
-		for (FolderColumn fc : m_folderColumnsList) {
-			for (FolderColumn fca : m_folderColumnsListAll) {
-				if (fc.getColumnName().equals(fca.getColumnName())) {
-					//Set the columns that are shown
-					fca.setColumnIsShown(Boolean.TRUE);
-					break;
-				}
-			}
-		}
 	
-		// ...create the dialog's content...
+		// ...and create the main dialog panels.
 		createAllDlgContent(
 			m_messages.folderColumnsDlgHeader(),
 			this,	// The dialog's EditSuccessfulHandler.
@@ -185,7 +178,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	}
 
 	/**
-	 * Creates all the controls that make up the dialog.
+	 * Creates the panels that will contain the dialog's content.
 	 * 
 	 * Implements the DlgBox.createContent() abstract method.
 	 * 
@@ -195,16 +188,25 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 */
 	@Override
 	public Panel createContent(Object ignored) {
-		// Create a panel to hold the dialog's content...
-		VerticalPanel vp = new VerticalPanel();
-		vp.setStyleName( "teamingDlgBoxContent" );
-		Grid header =  new Grid(0, 4);
-		header.addStyleName("folderColumnsDlg_Grid");
-		vp.add(header);
-		ScrollPanel sp = new ScrollPanel();
-		sp.addStyleName("folderColumnsDlg_ScrollPanel");
-		vp.add(sp);
+		// Create the panels to hold the dialog's content...
+		m_vp = new VerticalPanel();
+		m_vp.setStyleName( "teamingDlgBoxContent" );
+		m_header =  new Grid(0, 4);
+		m_header.addStyleName("folderColumnsDlg_Grid");
+		m_vp.add(m_header);
+		m_sp = new ScrollPanel();
+		m_sp.addStyleName("folderColumnsDlg_ScrollPanel");
+		m_vp.add(m_sp);
 
+		// ...and return the outermost panel that will hold them.
+		return m_vp;
+	}
+
+	/*
+	 * Called after the folder column information has been read from
+	 * the server to create all the controls that make up the dialog.
+	 */
+	private void createContentImpl() {
 		// Are there any folder columns to display in the dialog?
 		if (0 < (m_folderColumnsListCount)) {
 			// Yes!  Create a grid to contain them... 
@@ -215,7 +217,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			
 			// ...render the folder columns into the panel...
 			if (0 < m_folderColumnsListCount) {
-				addHeaderRow(header, 0);
+				addHeaderRow(m_header, 0);
 				for (int i = 0; i < m_folderColumnsListCount; i += 1) {
 					renderRow(m_folderColumnsGrid, m_folderColumnsGrid.getRowCount(), 
 							m_folderColumnsListCount, m_folderColumnsListAll.get(i));
@@ -223,7 +225,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			}
 
 			// ...and connect everything together.
-			sp.add(m_folderColumnsGrid);
+			m_sp.add(m_folderColumnsGrid);
 			
 			//Add the option to set the folder default
 			FlexTable ft = new FlexTable();
@@ -292,17 +294,14 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			ft.getFlexCellFormatter().setColSpan(1, 0, 2);
 			ft.setWidget(1, 0, m_folderDefaultBtn);
 			ft.addStyleName("folderColumnsDlg_OptionsGrid");
-			vp.add(ft);			
+			m_vp.add(ft);			
 		}
 		
 		else {
 			// No, there weren't any folder options to display in the
 			// dialog!  Put a simple no available options message.
-			vp.add(new DlgLabel(m_messages.folderColumnsNoOptions()));
+			m_vp.add(new DlgLabel(m_messages.folderColumnsNoOptions()));
 		}
-		
-		// Finally, return the panel the with the dialog's contents.
-		return vp;
 	}
 	
 	
@@ -342,6 +341,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -352,12 +352,14 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			/**
 			 * 
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response ) {
 				GetBinderPermalinkCmd cmd;
 				
 				cmd = new GetBinderPermalinkCmd( m_binderId );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
+					@Override
 					public void onFailure( Throwable t ) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
@@ -365,6 +367,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 							m_binderId );
 					}//end onFailure()
 					
+					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						String binderUrl;
@@ -379,6 +382,8 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 						{
 							GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
 						}
+						
+						hide();
 					}// end onSuccess()
 				});// end AsyncCallback()
 			}
@@ -387,8 +392,10 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd( m_binderId, fcList, isDefault );
 		GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 
-		// Return true to close the dialog.
-		return true;
+		// Return false so close the dialog doesn't close yet.  Well
+		// close it only after we've successfully saved the column data
+		// information.  Note the hide() in the above onSuccess().
+		return false;
 	}
 
 	
@@ -632,42 +639,151 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	}
 	
 
-	/**
-	 * Loads the FolderColumnsDlg split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param binderId
-	 * @param folderColumnsList
-	 * @param folderColumnsListAll
-	 * @param dlgClient
+	/*
+	 * Asynchronously runs the given instance of the dialog.
 	 */
-	public static void createAsync(
-			final boolean autoHide,
-			final boolean modal,
-			final String binderId,
-			final List<FolderColumn> folderColumnsList,
-			final List<FolderColumn> folderColumnsListAll,
-			final FolderColumnsConfigDlgClient dlgClient) {
-		GWT.runAsync(FolderColumnsConfigDlg.class, new RunAsyncCallback() {			
+	private static void runDlgAsync(final FolderColumnsConfigDlg fccDlg, final BinderInfo bi) {
+		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
-			public void onSuccess() {
-				FolderColumnsConfigDlg dlg = new FolderColumnsConfigDlg(
-					autoHide,
-					modal,
-					binderId,
-					folderColumnsList,
-					folderColumnsListAll);
-				
-				dlgClient.onSuccess(dlg);
+			public void execute() {
+				fccDlg.runDlgNow(bi);
 			}
+		};
+		Scheduler.get().scheduleDeferred(doRun);
+	}
+	
+	
+	/*
+	 * Synchronously runs the dialog.
+	 */
+	private void runDlgNow(final BinderInfo bi) {
+		// Create a callback that will be called when we get the folder columns.
+		AsyncCallback<VibeRpcResponse> rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFolderColumns(),
+					bi.getBinderIdAsLong() );
+			}// end onFailure()
+	
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				// We successfully retrieved the folder's columns.
+				// Use it to populate the dialog.
+				FolderColumnsRpcResponseData cData = ((FolderColumnsRpcResponseData)response.getResponseData());
+				populateDlgAsync(bi.getBinderId(), cData.getFolderColumns(), cData.getFolderColumnsAll());
+			} // end onSuccess()
+		};
+		
+		// Issue an RPC request to get the personal preferences from the DB.
+		GetFolderColumnsCmd cmd = new GetFolderColumnsCmd(bi.getBinderIdAsLong(), bi.getFolderType(), Boolean.TRUE);
+		GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+	}
+	
+
+	/*
+	 * Asynchronously populates the dialog.
+	 */
+	private void populateDlgAsync(final String binderId, final List<FolderColumn> folderColumnsList, final List<FolderColumn> folderColumnsListAll) {
+		ScheduledCommand doRun = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateDlgNow(binderId, folderColumnsList, folderColumnsListAll);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRun);
+	}
+
+	
+	/*
+	 * Asynchronously populates the dialog.
+	 */
+	private void populateDlgNow(String binderId, List<FolderColumn> folderColumnsList, List<FolderColumn> folderColumnsListAll) {
+		// Setup the column data...
+		m_binderId = binderId;
+		m_folderColumnsList = folderColumnsList;
+		m_folderColumnsListAll = folderColumnsListAll;
+		m_folderColumnsListCount = ((null == m_folderColumnsListAll) ? 0 : m_folderColumnsListAll.size());
+		for (FolderColumn fc : m_folderColumnsList) {
+			for (FolderColumn fca : m_folderColumnsListAll) {
+				if (fc.getColumnName().equals(fca.getColumnName())) {
+					//Set the columns that are shown
+					fca.setColumnIsShown(Boolean.TRUE);
+					break;
+				}
+			}
+		}
+
+		// ...use it to create the dialog's content...
+		createContentImpl();
+		
+		// ...and show the dialog.
+		show(true);	// true -> Display the dialog centered on the screen.
+	}
+
+	
+	/*
+	 * Asynchronously loads the split point and performs some operation
+	 * against the code.
+	 */
+	private static void doAsyncOperation(
+			// Creation parameters.
+			final FolderColumnsConfigDlgClient fccDlgClient,
 			
+			// initAndShow parameters,
+			final FolderColumnsConfigDlg fccDlg,
+			final BinderInfo bi) {
+		GWT.runAsync(FolderColumnsConfigDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FolderColumnsDlg());
-				dlgClient.onUnavailable();
+				if (null != fccDlgClient) {
+					fccDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				// Is this a request to create a dialog?
+				if (null != fccDlgClient) {
+					// Yes!  Create it and return it via the callback.
+					FolderColumnsConfigDlg fccDlg = new FolderColumnsConfigDlg();
+					fccDlgClient.onSuccess(fccDlg);
+				}
+				
+				else {
+					// No, it's not a request to create a dialog!  It
+					// must be a request to run an existing one.  Run
+					// it.
+					runDlgAsync(fccDlg, bi);
+				}
 			}
 		});
-	}	
+	}
+	
+	
+	/**
+	 * Loads the FolderColumnsConfigDlg split point and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param fccDlgClient
+	 */
+	public static void createAsync(FolderColumnsConfigDlgClient fccDlgClient) {
+		doAsyncOperation(fccDlgClient, null, null);
+	}
+	
+	
+	/**
+	 * Initializes and shows the dialog.
+	 * 
+	 * @param fccDlg
+	 * @param bi
+	 */
+	public static void initAndShow(FolderColumnsConfigDlg fccDlg, BinderInfo bi) {
+		doAsyncOperation(null, fccDlg, bi);
+	}
 }
