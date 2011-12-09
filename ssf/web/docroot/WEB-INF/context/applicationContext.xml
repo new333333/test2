@@ -610,6 +610,7 @@
 		<property name="fileModule"><ref bean="fileModule"/></property>
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="rssModule"><ref bean="rssModule"/></property>
+		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
 	</bean>
 	
