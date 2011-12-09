@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg.FolderColumnsConfigDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
@@ -106,6 +107,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
@@ -157,6 +159,7 @@ public class MainMenuControl extends Composite
 	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
 	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
 	private SearchMenuPanel					m_searchPanel;
+	private TeamingPopupPanel               m_aboutPopup;
 	private TeamingPopupPanel               m_soPopup;
 	private VibeMenuBar						m_mainMenu;
 
@@ -678,8 +681,36 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeAbout(InvokeAboutEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onInvokeAbout():  ...this needs to be implemented...");
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onInvokeAboutNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+
+	/*
+	 * Synchronously invokes the about dialog.
+	 */
+	private void onInvokeAboutNow() {
+		// If we haven't created the about popup yet...
+		if (null == m_aboutPopup) {
+			// ...create it now...
+			m_aboutPopup = new TeamingPopupPanel(true, true);
+			m_aboutPopup.removeStyleName("gwt-PopupPanel");
+			m_aboutPopup.addStyleName("vibe-aboutBox");
+			Image aboutImg = new Image();
+			RequestInfo ri = GwtClientHelper.getRequestInfo();
+			String imageFile = (ri.isNovellTeaming() ? "teaming_about_screen.png" : "kablink_about_screen.png");
+			aboutImg.setUrl(ri.getImagesPath() + "pics/masthead/" + imageFile);
+			m_aboutPopup.setWidget(aboutImg);
+			m_aboutPopup.setGlassEnabled(true);
+			m_aboutPopup.setGlassStyleName("teamingDlgBox_Glass");
+		}
+		
+		// ...and show it.
+		m_aboutPopup.center();
 	}
 	
 	/**
