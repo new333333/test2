@@ -446,17 +446,22 @@ public class GwtViewHelper {
 				String eleCaption = null;
 				if (colName.contains(",")) {
 					String[] temp = colName.split(",");
-					if (4 == temp.length) {
+					if (4 <= temp.length) {
 						defId      = temp[0];
 						eleType    = temp[1];
 						eleName    = temp[2];
-						eleCaption = temp[3];
+						//Since the caption may have commas in it, we need to get everything past the third comma
+						eleCaption = colName.substring(colName.indexOf(",")+1);
+						eleCaption = eleCaption.substring(eleCaption.indexOf(",")+1);
+						eleCaption = eleCaption.substring(eleCaption.indexOf(",")+1);
 					}
 				}
 				if (MiscUtil.hasString(defId)) {
 					// Yes!  Update the FolderColumn components based
 					// on the information extracted from the field.
-					fc.setColumnName( eleName);
+					fc.setColumnDefId(defId  );
+					fc.setColumnType( eleType);
+					fc.setColumnEleName( eleName);
 					
 					if (!(MiscUtil.hasString(fc.getColumnTitle()))) {
 						fc.setColumnTitle(eleCaption);
@@ -468,16 +473,14 @@ public class GwtViewHelper {
 					else if (eleType.equals("event"))                                 eleSortName = (eleName + "#LogicalStartDate");
 					else                                                              eleSortName = eleName;
 					fc.setColumnSortKey(eleSortName);
-					
-					fc.setColumnDefId(defId  );
-					fc.setColumnType( eleType);
-				}
+				} 
 				
 				else {
 					// No, the name doesn't have multiple parts wrapped
 					// in a single value!  Just use the name for the
 					// search and sort keys.
 					fc.setColumnSearchKey(colName);
+					fc.setColumnEleName(colName);	//If not a custom attribute, the element name is the colName
 				}
 			}
 		}
@@ -780,6 +783,7 @@ public class GwtViewHelper {
 			Map    columnNames;
 			Map    columnTitles      = null;
 			String columnOrderString = null;
+			List columnsAll = new ArrayList();
 
 			// Are we showing the trash on this folder?
 			if (FolderType.TRASH == folderType) {
@@ -870,41 +874,56 @@ public class GwtViewHelper {
 			List<FolderColumn> fcList = new ArrayList<FolderColumn>();
 			List<FolderColumn> fcListAll = new ArrayList<FolderColumn>();
 			for (String colName:  columnSortOrder) {
-				FolderColumn fc = new FolderColumn(colName);
-				// Is this column to be shown?
-				String columnValue = ((String) columnNames.get(colName));
-				if (!(MiscUtil.hasString(columnValue))) {
-					// No!  Skip it.
-					fc.setColumnIsShown(Boolean.FALSE);;
-				} else {
-					fc.setColumnIsShown(Boolean.TRUE);
+				if (!columnsAll.contains(colName)) {
+					FolderColumn fc = new FolderColumn(colName);
+					if (colName.contains(",")) {
+						String[] cnParts = colName.split(",");
+						fc.setColumnDefId(cnParts[0]);
+						fc.setColumnType(cnParts[1]);
+						fc.setColumnEleName(cnParts[2]);
+						String caption = colName.substring(colName.indexOf(",")+1);
+						caption = caption.substring(caption.indexOf(",")+1);
+						caption = caption.substring(caption.indexOf(",")+1);
+						fc.setColumnDefaultTitle(caption);
+					}
+					// Is this column to be shown?
+					String columnValue = ((String) columnNames.get(colName));
+					if (!(MiscUtil.hasString(columnValue))) {
+						// No!  Skip it.
+						fc.setColumnIsShown(Boolean.FALSE);;
+					} else {
+						fc.setColumnIsShown(Boolean.TRUE);
+					}
+	
+					// Is there a custom title for this column?
+					String colTitle = ((String) columnTitles.get(colName));
+					String colTitleDefault = "";
+					if (!MiscUtil.hasString(fc.getColumnDefId())) {
+						colTitleDefault = NLT.get(
+							("folder.column." + colName),	// Key to find the resource.
+							colName,						// Default if not defined.
+							true);							// true -> Silent.  Don't generate an error if undefined.
+					} else {
+						colTitleDefault = fc.getColumnDefaultTitle();
+					}
+					fc.setColumnDefaultTitle(colTitleDefault);
+					if (!(MiscUtil.hasString(colTitle))) {
+						// There is no custom title,  use the default.
+						colTitle = colTitleDefault;
+					} else {
+						fc.setColumnCustomTitle(colTitle);
+					}
+					fc.setColumnTitle(colTitle);
+	
+					// Add a FolderColumn for this to the list we're
+					// going to return.
+					if (fc.getColumnIsShown()) {
+						//This column is being shown
+						fcList.add(fc);
+					}
+					fcListAll.add(fc);
+					columnsAll.add(colName);
 				}
-
-				// Is there a custom title for this column?
-				String colTitle = ((String) columnTitles.get(colName));
-				String colTitleDefault = "";
-				if (!colName.contains(",")) {
-					colTitleDefault = NLT.get(
-						("folder.column." + colName),	// Key to find the resource.
-						colName,						// Default if not defined.
-						true);							// true -> Silent.  Don't generate an error if undefined.
-				}
-				fc.setColumnDefaultTitle(colTitleDefault);
-				if (!(MiscUtil.hasString(colTitle))) {
-					// There is no custom title,  use the default.
-					colTitle = colTitleDefault;
-				} else {
-					fc.setColumnCustomTitle(colTitle);
-				}
-				fc.setColumnTitle(colTitle);
-
-				// Add a FolderColumn for this to the list we're
-				// going to return.
-				if (fc.getColumnIsShown()) {
-					//This column is being shown
-					fcList.add(fc);
-				}
-				fcListAll.add(fc);
 			}
 
 			// Walk the List<FolderColumn>'s performing fixups on each
@@ -920,60 +939,61 @@ public class GwtViewHelper {
 					org.dom4j.Document defDoc = def.getDefinition();
 					Map<String,Map> elementData = bs.getDefinitionModule().getEntryDefinitionElements(def.getId());
 					for (Map.Entry me : elementData.entrySet()) {
-						String colName = (String)me.getKey();
-						
+						String eleName = (String)me.getKey();
 						String type = (String)((Map)me.getValue()).get("type");
-						if (type.equals("selectbox") ||
-								type.equals("selectbox") ||
-								type.equals("radio") ||
-								type.equals("checkbox") ||
-								type.equals("date") ||
-								type.equals("date_time") ||
-								type.equals("event") ||
-								type.equals("text") ||
-								type.equals("number") ||
-								type.equals("url") ||
-								type.equals("hidden") ||
-								type.equals("user_list") ||
-								type.equals("userListSelectbox")) {
-							FolderColumn fc = new FolderColumn(colName);
-							// Is this column to be shown?
-							String columnValue = ((String) columnNames.get(colName));
-							if (!(MiscUtil.hasString(columnValue))) {
-								// No!  
-								fc.setColumnIsShown(Boolean.FALSE);
-							} else {
-								fc.setColumnIsShown(Boolean.TRUE);
+						String caption = (String)((Map)me.getValue()).get("caption");
+						String colName = def.getId()+","+type+","+eleName+","+caption;
+						if (!columnsAll.contains(colName)) {
+							if (type.equals("selectbox") ||
+									type.equals("selectbox") ||
+									type.equals("radio") ||
+									type.equals("checkbox") ||
+									type.equals("date") ||
+									type.equals("date_time") ||
+									type.equals("event") ||
+									type.equals("text") ||
+									type.equals("number") ||
+									type.equals("url") ||
+									type.equals("hidden") ||
+									type.equals("user_list") ||
+									type.equals("userListSelectbox")) {
+								FolderColumn fc = new FolderColumn(colName);
+								fc.setColumnDefId(def.getId());
+								fc.setColumnType(type);
+								// Is this column to be shown?
+								String columnValue = ((String) columnNames.get(colName));
+								if (!(MiscUtil.hasString(columnValue))) {
+									// No!  
+									fc.setColumnIsShown(Boolean.FALSE);
+								} else {
+									fc.setColumnIsShown(Boolean.TRUE);
+								}
+			
+								// Is there a custom title for this column?
+								String colTitleDefault = (String)((Map)me.getValue()).get("caption");
+								if (!(MiscUtil.hasString(fc.getColumnDefId()))) {
+									colTitleDefault = NLT.get(
+										("folder.column." + colName),	// Key to find the resource.
+										colTitleDefault,				// Default if not defined.
+										true);							// true -> Silent.  Don't generate an error if undefined.
+								}
+								fc.setColumnDefaultTitle(colTitleDefault);
+								String colTitle = (String) columnTitles.get(colName);
+								if (!(MiscUtil.hasString(colTitle))) {
+									// There is no custom title,  use the default.
+									colTitle = colTitleDefault;
+								} else {
+									fc.setColumnCustomTitle(colTitle);
+								}
+								fc.setColumnTitle(colTitle);
+			
+								// Add a FolderColumn for this to the list of all columns if it isn't already there.
+								fcListAll.add(fc);
+								columnsAll.add(colName);
 							}
-		
-							// Is there a custom title for this column?
-							String colTitleDefault = (String)((Map)me.getValue()).get("caption");
-							if (!colName.contains(",")) {
-								colTitleDefault = NLT.get(
-									("folder.column." + colName),	// Key to find the resource.
-									colTitleDefault,						// Default if not defined.
-									true);							// true -> Silent.  Don't generate an error if undefined.
-							}
-							fc.setColumnDefaultTitle(colTitleDefault);
-							String colTitle = (String) columnTitles.get(colName);
-							if (!(MiscUtil.hasString(colTitle))) {
-								// There is no custom title,  use the default.
-								colTitle = colTitleDefault;
-							} else {
-								fc.setColumnCustomTitle(colTitle);
-							}
-							fc.setColumnTitle(colTitle);
-		
-							// Add a FolderColumn for this to the list of all columns if it isn't already there.
-							fcListAll.add(fc);
 						}
 					}
 				}
-
-				// Walk the List<FolderColumn>'s performing fixups on each
-				// as necessary.
-				fixupFCs(fcListAll);
-				
 			}
 
 			// Finally, use the data we obtained to create a
@@ -1752,16 +1772,16 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	private static void setValueForCustomColumn(AllModulesInjected bs, Map entryMap, FolderRow fr, FolderColumn fc) throws ParseException {
 		try {
-			// If we don't have a column name...
-			String colName = fc.getColumnName();
-			if (!MiscUtil.hasString(colName)) {
+			// If we don't have a column element name...
+			String colEleName = fc.getColumnEleName();
+			if (!MiscUtil.hasString(colEleName)) {
 				// ...just render it as an empty string.
 				fr.setColumnValue(fc, "");
 				return;
 			}
 
 			// Do we have a value or event for this column?
-			Object colValue = entryMap.get(colName);
+			Object colValue = entryMap.get(colEleName);
 			String colType = fc.getColumnType();
 			if (null == colType) colType = "";
 			if ((null != colValue) || colType.equals("event")) {
@@ -1774,14 +1794,14 @@ public class GwtViewHelper {
 					    colType.equals("entryAttributes") ||
 					    colType.equals("hidden")          ||
 					    colType.equals("number")) {
-					String strValue = DefinitionHelper.getCaptionsFromValues(entryDef, colName, colValue.toString());
+					String strValue = DefinitionHelper.getCaptionsFromValues(entryDef, colEleName, colValue.toString());
 					fr.setColumnValue(fc, strValue);
 				}
 
 				// Handle those that are a URL.
 				else if (colType.equals("url")) {
 					// Can we find the definition of the column?
-		         	Element colElement = ((Element) DefinitionHelper.findAttribute(colName, entryDef.getDefinition()));
+		         	Element colElement = ((Element) DefinitionHelper.findAttribute(colEleName, entryDef.getDefinition()));
 		         	if (null == colElement) {
 		         		// No!  Just render the column as an empty string.
 						fr.setColumnValue(fc, "");
@@ -1793,7 +1813,7 @@ public class GwtViewHelper {
 			         	String linkText = DefinitionHelper.getItemProperty(colElement, "linkText");
 			         	String target   = DefinitionHelper.getItemProperty(colElement, "target"  );
 			         	
-			         	String  strValue   = DefinitionHelper.getCaptionsFromValues(entryDef, colName, colValue.toString());
+			         	String  strValue   = DefinitionHelper.getCaptionsFromValues(entryDef, colEleName, colValue.toString());
 			         	if (!(MiscUtil.hasString(linkText))) linkText = strValue;
 			         	if ((null == target) || target.equals("false")) target = "";
 			         	if ((null != target) && target.equals("true" )) target = "_blank";
@@ -1852,10 +1872,10 @@ public class GwtViewHelper {
 
 				// Handle events.
 				else if (colType.equals("event")) {
-					String tzId = ((String) entryMap.get(colName + "#TimeZoneID"));
+					String tzId = ((String) entryMap.get(colEleName + "#TimeZoneID"));
 					boolean showTimes = false;
-					Date logicalEnd   = ((Date) entryMap.get(colName + "#LogicalEndDate"));
-					Date logicalStart = ((Date) entryMap.get(colName + "#LogicalStartDate"));
+					Date logicalEnd   = ((Date) entryMap.get(colEleName + "#LogicalEndDate"));
+					Date logicalStart = ((Date) entryMap.get(colEleName + "#LogicalStartDate"));
 					if ((null != logicalStart) && (null != logicalEnd)) {
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 						if (sdf.format(logicalStart).equals(sdf.format(logicalEnd))) {
@@ -1890,8 +1910,8 @@ public class GwtViewHelper {
 					}
 					
 					EntryEventInfo eventValue = new EntryEventInfo(allDayEvent, logicalEtartS, logicalEndS);
-					Date actualEnd   = ((Date) entryMap.get(colName + "#EndDate"));
-					int  durDays     = getDurDaysFromEntryMap(colName, entryMap);
+					Date actualEnd   = ((Date) entryMap.get(colEleName + "#EndDate"));
+					int  durDays     = getDurDaysFromEntryMap(colEleName, entryMap);
 					boolean daysOnly = ((null == actualEnd) && (0 < durDays));
 					if (daysOnly) {
 						// Duration only.
@@ -1926,6 +1946,7 @@ public class GwtViewHelper {
 		catch (Exception ex) {
 			// Log the exception...
 			m_logger.debug("GwtViewHelper.setValueForCustomColumn( EXCEPTION ):  ", ex);
+			m_logger.debug("...Element:  " + fc.getColumnEleName());
 			m_logger.debug("...Column:  " + fc.getColumnName());
 			m_logger.debug("...Row:  "    + fr.getEntryId());
 

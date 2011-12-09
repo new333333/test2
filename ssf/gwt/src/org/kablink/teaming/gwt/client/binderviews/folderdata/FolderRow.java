@@ -234,7 +234,7 @@ public class FolderRow implements IsSerializable {
 	 * determine a column's value.
 	 */
 	private String getValueKey(FolderColumn fc) {
-		return fc.getColumnName().toLowerCase();
+		return fc.getColumnEleName().toLowerCase();
 	}
 
 	/**
