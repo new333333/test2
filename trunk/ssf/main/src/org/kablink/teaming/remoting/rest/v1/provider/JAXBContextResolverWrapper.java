@@ -32,10 +32,6 @@
  */
 package org.kablink.teaming.remoting.rest.v1.provider;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
@@ -43,16 +39,15 @@ import javax.xml.bind.JAXBContext;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
-
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.api.json.JSONJAXBContext;
+import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 
 @Provider
-public class JAXBContextResolver implements ContextResolver<JAXBContext> {
+public class JAXBContextResolverWrapper implements ContextResolver<JAXBContext> {
 
-    private final JAXBContext context;
+    private ContextResolver<JAXBContext> jaxbContextResolver; // real one this is wrapping
     
-    private final Set<Class> types;
+    private static final String JAXB_CONTEXT_RESOLVER_CLASS_NAME_DEFAULT = "org.kablink.teaming.rest.v1.provider.DefaultJAXBContextResolver";
     
     private final Class[] cTypes = {
     		FileProperties.class,
@@ -60,21 +55,13 @@ public class JAXBContextResolver implements ContextResolver<JAXBContext> {
     		FileVersionPropertiesCollection.class
     		};
     
-    public JAXBContextResolver() throws Exception {
-        this.types = new HashSet(Arrays.asList(cTypes));
-        
-        // If not using unwrapping (unwrapping is the default), then we get error from jackson
-        // because there is no name associated with the top-level of the output which is a list
-        // of FolderEntry, and we will need to figure out how to specify a name for it. 
-        // So far, the default configuration seems to work fine for us, so we go with it. 
-		//this.context = new JSONJAXBContext(JSONConfiguration.natural().rootUnwrapping(false).build(), cTypes);
-        
-        // TODO jong
-        this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), cTypes);
+    public JAXBContextResolverWrapper() throws Exception {
+    	String className = SPropsUtil.getString("jaxb.context.resolver.class", JAXB_CONTEXT_RESOLVER_CLASS_NAME_DEFAULT);
+    	this.jaxbContextResolver = (ContextResolver<JAXBContext>) ReflectHelper.getInstance(className);
     }
     
     public JAXBContext getContext(Class<?> objectType) {
-        return (types.contains(objectType)) ? context : null;
+        return jaxbContextResolver.getContext(objectType);
     }
 
 }
