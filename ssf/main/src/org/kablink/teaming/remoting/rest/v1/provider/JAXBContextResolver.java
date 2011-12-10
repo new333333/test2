@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.provider;
+package org.kablink.teaming.remoting.rest.v1.provider;
 
 import java.util.Arrays;
 import java.util.HashSet;
