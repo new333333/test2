@@ -37,7 +37,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
-import org.kablink.teaming.rest.v1.provider.JAXBContextResolver;
+import org.kablink.teaming.client.rest.v1.provider.JAXBContextResolver;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.client.apache.ApacheHttpClient;
