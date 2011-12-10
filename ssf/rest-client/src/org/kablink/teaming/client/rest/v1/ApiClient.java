@@ -37,7 +37,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
-import org.kablink.teaming.client.rest.v1.provider.JAXBContextResolver;
+import org.kablink.teaming.rest.v1.provider.DefaultJAXBContextResolver;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.client.apache.ApacheHttpClient;
@@ -68,6 +68,20 @@ public class ApiClient {
 	 * @return
 	 */
 	public static ApiClient create(String serverUrl, String username, String password) {
+		return create(serverUrl, username, password, DefaultJAXBContextResolver.class);
+	}
+	
+	/**
+	 * Create a <code>ApiClient</code> instance with the URL for Vibe server and the login credential
+	 * which will be used for HTTP Basic Authentication.
+	 *  
+	 * @param serverUrl Vibe server URL including scheme (http/https), hostname, and optional port (e.g. http://mycompany:8080/)
+	 * @param username Vibe username
+	 * @param password Vibe password
+	 * @param jaxbContextResolverClass JAXB context resolver class
+	 * @return
+	 */
+	public static ApiClient create(String serverUrl, String username, String password, Class jaxbContextResolverClass) {
 		if(!serverUrl.endsWith("/"))
 			serverUrl += "/";
 		
@@ -79,7 +93,8 @@ public class ApiClient {
 	     
 	     config.getState().setCredentials(null, null, -1, username, password);
 	     
-	     config.getClasses().add(JAXBContextResolver.class);
+	     if(jaxbContextResolverClass != null)
+	    	 config.getClasses().add(jaxbContextResolverClass);
 	     
 	     ApacheHttpClient c = ApacheHttpClient.create(config);
 

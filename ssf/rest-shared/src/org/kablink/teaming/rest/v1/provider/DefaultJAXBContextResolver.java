@@ -31,7 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.client.rest.v1.provider;
+package org.kablink.teaming.rest.v1.provider;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ import com.sun.jersey.api.json.JSONJAXBContext;
  *
  */
 @Provider
-public class JAXBContextResolver  implements ContextResolver<JAXBContext> {
+public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> {
 
     private final JAXBContext context;
     
@@ -65,9 +65,8 @@ public class JAXBContextResolver  implements ContextResolver<JAXBContext> {
     		FileVersionPropertiesCollection.class
     		};
     
-    public JAXBContextResolver() throws Exception {
-        this.types = new HashSet(Arrays.asList(cTypes));
-        
+    public DefaultJAXBContextResolver() throws Exception {
+        this.types = new HashSet(Arrays.asList(cTypes)); 
         this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), cTypes);
     }
     
