@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URLDecoder;
 import java.text.Collator;
 import java.text.DateFormat;
@@ -183,6 +185,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -1254,6 +1257,20 @@ public class GwtServerHelper {
 			reqDispatcher.include( request, ssResponse );
 			
 			results = ssResponse.getString().trim();
+			
+			// Put the results of executing the jsp into a temporary file
+			{
+				File tempFile;
+				FileOutputStream fo;
+				
+				tempFile = TempFileUtil.createTempFile( "landing_page_", ".html", null, true );
+				fo = new FileOutputStream( tempFile );
+				fo.write( results.getBytes() );
+				fo.close();
+				
+				// Get a url to the file.
+				results = WebUrlUtil.getServletRootURL( request ) + WebKeys.SERVLET_VIEW_FILE + "?viewType=executeJspResults&fileId=" + tempFile.getName() + "&fullPath=" + tempFile.getAbsolutePath();
+			}
 		}
 		catch ( Exception e )
 		{

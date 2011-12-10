@@ -327,6 +327,7 @@ public class EnhancedViewWidget extends VibeWidget
 						
 						responseData = (StringRpcResponseData) response.getResponseData();
 						m_html = responseData.getStringValue();
+						m_frame.setUrl( m_html );
 					}
 
 					cmd = new Scheduler.ScheduledCommand()
@@ -358,7 +359,7 @@ public class EnhancedViewWidget extends VibeWidget
 							}
 						}
 					};
-					Scheduler.get().scheduleDeferred( cmd );
+					//!!! Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 		}

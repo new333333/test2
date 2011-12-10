@@ -32,20 +32,18 @@
  */
 package org.kablink.teaming.servlet.forum;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.activation.FileTypeMap;
-import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -53,7 +51,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
-import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.TempFileUtil;
@@ -62,7 +59,6 @@ import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.util.BrowserSniffer;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
@@ -70,7 +66,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
-import org.apache.commons.lang.StringUtils;
 
 public class ViewFileController extends SAbstractController {
 	
@@ -114,7 +109,15 @@ public class ViewFileController extends SAbstractController {
 			}
 			response.getOutputStream().flush();
 			
-		} else {
+		}
+		else if ( viewType.equalsIgnoreCase( "executeJspResults" ) )
+		{
+			String fullPath;
+			
+			fullPath = ServletRequestUtils.getStringParameter( request, "fullPath", ""); 
+			streamExecuteJspResults( request, response, fileId, fullPath );
+		}
+		else {
 			String strBinderId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 			String strEntryId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			Long entryId = null;
@@ -309,6 +312,47 @@ public class ViewFileController extends SAbstractController {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 
+	 */
+	private void streamExecuteJspResults( HttpServletRequest request, HttpServletResponse response, String fileName, String fullPath )
+		throws Exception
+	{
+		int n;
+		byte[] buf = new byte[1024];
+		
+		try {
+			java.io.InputStream in;
+			OutputStream out;
+			File tmpFile;
+
+			tmpFile = new File( fullPath );
+			in = new FileInputStream( tmpFile );
+			// in = TempFileUtil.openTempFile( fileName );
+			
+			response.setHeader( "Cache-Control", "private" );
+			out = response.getOutputStream();
+			while( (n = in.read(buf, 0, buf.length)) > 0 )
+			{
+				out.write( buf, 0, n );
+			}
+			in.close();
+			
+		}
+		catch( Exception e )
+		{
+			response.getOutputStream().print( NLT.get( "file.error" ) + ": " + e.getLocalizedMessage() );
+		}
+
+		try
+		{
+			response.getOutputStream().flush();
+		}
+		catch(Exception ignore)
+		{
+		}
 	}
 	
 	private void streamZipFile(HttpServletRequest request,
