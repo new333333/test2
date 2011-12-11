@@ -38,7 +38,9 @@ import java.util.Date;
 import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kablink.teaming.client.rest.v1.Api;
 import org.kablink.teaming.client.rest.v1.ApiClient;
@@ -53,6 +55,18 @@ public class ApiTest {
 	private ApiClient client;
 	private Api api;
 	
+	/*
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        // one-time initialization code        
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        // one-time cleanup code
+    }
+    */
+
 	@Before
 	public void setUp() throws Exception {
 		client = ApiClient.create("http://localhost:8080", "user1", "test");
@@ -67,8 +81,8 @@ public class ApiTest {
 	@Test
 	public void testReadingFilePropertiesByName() throws Exception {
 		System.out.println("Invoking testReadingFilePropertiesByName");
-		FileProperties fp = api.readFileProperties("folderEntry", 750, "test.txt");
-		Assert.assertEquals("test.txt", fp.getName());
+		FileProperties fp = api.readFileProperties("folderEntry", 13, "debug5.txt");
+		Assert.assertEquals("debug5.txt", fp.getName());
 	}
 	
 	@Test

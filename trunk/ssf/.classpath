@@ -164,5 +164,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/xmemcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-apache-client.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-analyzers.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxb-impl.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
