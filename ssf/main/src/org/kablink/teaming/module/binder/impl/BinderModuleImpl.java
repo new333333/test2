@@ -1147,7 +1147,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
+		// We don't allow copying of a mirrored folder as the starting point.
+		if(source.isMirrored())
+			throw new NotSupportedException("errorcode.notsupported.copyBinder", new String[] {source.getPathName()});
 		Binder destinationParent = loadBinder(toId);
+		// We don't allow copying of a binder into a mirrored folder.
+		if(destinationParent.isMirrored())
+			throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destinationParent.getPathName()});
 		//See if there is enough quota to do this
 		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destinationParent)) {
 			if (source.getEntityType().equals(EntityType.folder)) {
@@ -1179,6 +1185,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
+			// Skip the child if it is a mirrored folder.
+			if(child.isMirrored()) {
+				logger.info("Skipping source binder '" + child.getPathName() + "' because it is a mirrored folder.");
+				continue;
+			}
 			// If the binder is not in the trash...
 			if (!(TrashHelper.isBinderPredeleted(child))) {
 				// ...recursively copy that too.
