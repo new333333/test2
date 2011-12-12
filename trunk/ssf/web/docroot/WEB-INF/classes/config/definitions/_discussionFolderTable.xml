@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_discussionFolderTable" caption="__definition_default_folder_discussion_table" type="5" nextId="18" definitionType="5" databaseId="4028839f11fb20390111fb43a3840001"> 
+<definition name="_discussionFolderTable" caption="__definition_default_folder_discussion_table" type="5" nextId="17" definitionType="5" databaseId="4028839f11fb20390111fb43a3840001"> 
   <item name="folderForm" caption="__folder_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="2"> 
@@ -32,22 +32,17 @@
         <property name="name" value="iconName"/>  
         <property name="caption" value="__icon"/> 
       </properties> 
-    </item>
-    <item name="binderViewVersion" caption="__binderViewVersion" type="data" dataType="binderViewVersion" category="binderData" display="form" id="17">
-      <properties>
-        <property name="binderViewVersion" value="gwt"/>
-      </properties>
     </item>  
-    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16"> 
-      <properties> 
-        <property name="caption" value="__attach_files"/>  
-        <property name="name" value="ss_attachFile"/>  
-        <property name="width" value="60"/>  
-        <property name="number" value=""/>  
-        <property name="storage" value="simpleFileRepository"/>  
-        <property name="hide" value="true"/> 
-      </properties> 
-    </item> 
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
   </item>  
   <item name="forumView" caption="__folder_view" id="5"> 
     <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="13"> 
@@ -81,7 +76,7 @@
   <properties> 
     <property name="name" value="_discussionFolderTable"/>  
     <property name="caption" value="__definition_default_folder_discussion_table"/>  
-    <property name="family" value="discussion"/>  
+    <property name="family" value="discussion"/> 
     <property name="icon" value="/icons/folder_blue_discussion.gif"/> 
   </properties>  
   <export-mappings/>
