@@ -3317,8 +3317,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxWikiLinkForm(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		String originalBinderIdText = PortletRequestUtils.getStringParameter(request, "originalBinderId", "");
 		String binderIdText = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		model.put("binderId", binderIdText);
+		model.put("originalBinderId", originalBinderIdText);
 		if (!binderIdText.equals("")) {
 			Binder binder = getBinderModule().getBinder(Long.valueOf(binderIdText));
 			model.put(WebKeys.BINDER, binder);
