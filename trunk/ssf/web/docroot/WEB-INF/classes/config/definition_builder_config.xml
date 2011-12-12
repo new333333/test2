@@ -646,6 +646,7 @@
 			<option name="user_list" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='folderData']" />
+			<option_select path="//item[@category='binderData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -679,6 +680,20 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="binderViewVersion" caption="__binderViewVersion" type="data" dataType="binderViewVersion" 
+			multipleAllowed="false" category="binderData" display="form">
+		<properties>
+			<property name="binderViewVersion" caption="__binderViewVersion.select" type="radio" 
+				  default="gwt" value="gwt">
+				<option name="gwt" caption="__binderViewVersion.gwt" />
+				<option name="jsp" caption="__binderViewVersion.jsp" />
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_view_version_form.jsp" />
 		</jsps>
 	</item>
 	
@@ -2312,6 +2327,7 @@
 			<option name="file" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='workspaceData']" />
+			<option_select path="//item[@category='binderData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
