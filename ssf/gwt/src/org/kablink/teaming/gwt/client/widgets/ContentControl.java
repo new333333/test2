@@ -466,16 +466,8 @@ public class ContentControl extends Composite
 				final BinderInfo bi = vi.getBinderInfo();
 				if ( m_isDebugUI )
 				{
-					// Regardless of what's implemented or not, should
-					// we force this binder through its old, JSP flow?
-					//
-					// While writing the GWT based views, I've
-					// continually wanted to go back and look at the
-					// JSP version of what I'm implementing.  This lets
-					// us force a binder, regardless of type, to ALWAYS
-					// go through the JSP display flow.
-					String binderTitle = bi.getBinderTitle().trim().toLowerCase();
-					if (binderTitle.startsWith("jsp-") && binderTitle.endsWith("-jsp")) {
+					//See if this binder is to be displayed using the old jsps
+					if ("jsp".equals(bi.getBinderViewVersion())) {
 						// Yes!  Simply break out of the switch.  That
 						// will let it take the default flow.
 						break;

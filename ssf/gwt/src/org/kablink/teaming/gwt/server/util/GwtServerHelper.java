@@ -2701,6 +2701,18 @@ public class GwtServerHelper {
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
+		CustomAttribute binderViewVersion = binder.getCustomAttribute("binderViewVersion");
+		if (binderViewVersion != null) {
+			//There is a selected view style, use it
+			reply.setBinderViewVersion((String) binderViewVersion.getValue());
+		} else {
+			//Get the default view style from the definition
+			Document def = binder.getEntryDef().getDefinition();
+			Element binderViewVersionEle = (Element) def.getRootElement().selectSingleNode("//item[@name='binderViewVersion']/properties/property[@name='binderViewVersion']");
+			if (binderViewVersionEle != null) {
+				reply.setBinderViewVersion((String) binderViewVersionEle.attributeValue("value"));
+			}
+		}
 		return reply;
 	}
 	
