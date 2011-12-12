@@ -69,6 +69,7 @@ import org.kablink.teaming.client.ws.model.GroupBrief;
 import org.kablink.teaming.client.ws.model.GroupCollection;
 import org.kablink.teaming.client.ws.model.Principal;
 import org.kablink.teaming.client.ws.model.Tag;
+import org.kablink.teaming.client.ws.model.TeamBrief;
 import org.kablink.teaming.client.ws.model.TeamCollection;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
@@ -484,9 +485,14 @@ public abstract class WSClientBase {
 		printGroupCollection(gc);
 	}
 	
-	void fetchAndPrintTC(String serviceName, String operation, Object[] args) throws Exception {
+	void fetchAndPrintTemplateC(String serviceName, String operation, Object[] args) throws Exception {
 		TemplateCollection tc = (TemplateCollection) fetch(serviceName, operation, args);
 		printTemplateCollection(tc);
+	}
+	
+	void fetchAndPrintTeamC(String serviceName, String operation, Object[] args) throws Exception {
+		TeamCollection tc = (TeamCollection) fetch(serviceName, operation, args);
+		printTeamCollection(tc);
 	}
 	
 	void fetchAndPrintTRC(String serviceName, String operation, Object[] args) throws Exception {
@@ -672,6 +678,18 @@ public abstract class WSClientBase {
 			System.out.println("Template " + i + " name: " + fb[i].getName());
 			System.out.println("Template " + i + " internalId: " + fb[i].getInternalId());
 			System.out.println("Template " + i + " definitionType: " + fb[i].getDefinitionType());
+		}
+	}
+	
+	void printTeamCollection(TeamCollection tc) {
+		TeamBrief[] fb = tc.getTeams();
+		System.out.println("Number of teams: " + fb.length);
+		for(int i = 0; i < fb.length; i++) {
+			System.out.println();
+			System.out.println("Team " + i + " id: " + fb[i].getId());
+			System.out.println("Team " + i + " title: " + fb[i].getTitle());
+			System.out.println("Team " + i + " family: " + fb[i].getFamily());
+			System.out.println("Team " + i + " definitionType: " + fb[i].getDefinitionType());
 		}
 	}
 	
