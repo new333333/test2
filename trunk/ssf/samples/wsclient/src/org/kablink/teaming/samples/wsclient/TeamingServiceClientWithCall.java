@@ -82,7 +82,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getTeamMembers")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTeamMembers", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])});
 			} else if(args[0].equals("getTeams")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getTeams", new Object[] {null});
+				wsClient.fetchAndPrintTeamC("TeamingServiceV1", "search_getTeams", new Object[] {null});
 			} else if(args[0].equals("getUserTeams")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getUserTeams", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getMaxUserQuota")) {
@@ -180,7 +180,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getDefinitions")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "definition_getDefinitions", new Object[] {null});
 			} else if(args[0].equals("getTemplates")) {
-				wsClient.fetchAndPrintTC("TeamingServiceV1", "template_getTemplates", new Object[] {null});
+				wsClient.fetchAndPrintTemplateC("TeamingServiceV1", "template_getTemplates", new Object[] {null});
 			} else if(args[0].equals("setTeamMembers")) {
 				String names[] = split(args[2]);
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setTeamMembers", new Object[] {null, Long.parseLong(args[1]), names});
