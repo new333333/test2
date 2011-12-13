@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.lpe.FileFolderProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderProperties;
 import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteEnhancedViewJspCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetExecuteJspUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -50,6 +51,9 @@ import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.NamedFrame;
 
 
@@ -66,7 +70,9 @@ public class EnhancedViewWidget extends VibeWidget
 	private String m_lpBinderId;	// landing page binder id
 	private EnhancedViewProperties m_properties;
 	private AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
+	private AsyncCallback<VibeRpcResponse> m_getUrlCallback = null;
 	private NamedFrame m_frame;
+	private VibeFlowPanel m_mainPanel;
 	private String m_html;		// The html that we got from executing a jsp
 	
 	/**
@@ -245,55 +251,27 @@ public class EnhancedViewWidget extends VibeWidget
 	}
 	
 	/**
-	 * 
+	 * Execute the jsp associated with this enhanced view
 	 */
-	private VibeFlowPanel init( EnhancedViewProperties properties, String landingPageStyle )
+	private void executeJsp()
 	{
-		VibeFlowPanel mainPanel;
-		String name;
+		boolean test;
 		
-		m_properties = new EnhancedViewProperties();
-		m_properties.copy( properties );
+		test = true;
 		
-		mainPanel = new VibeFlowPanel();
-		mainPanel.addStyleName( "landingPageWidgetMainPanel" + landingPageStyle );
-		mainPanel.addStyleName( "enhancedViewWidgetMainPanel" + landingPageStyle );
-
-		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
-
-		name = "enhancedViewFrame" + String.valueOf( m_id );
-		++m_id;
-		m_frame = new NamedFrame( name );
-		m_frame.setUrl( "" );
-		m_frame.getElement().getStyle().setWidth( m_properties.getWidth(), m_properties.getWidthUnits() );
-		m_frame.getElement().getStyle().setHeight( m_properties.getHeight(), m_properties.getHeightUnits() );
-		mainPanel.add( m_frame );
+		if ( test )
+			executeJspViaUrl();
+		else
+			executeJspViaRpc();
+	}
+	
+	/**
+	 * Execute the jsp associated with this enhanced view using GWT rpc
+	 */
+	private void executeJspViaRpc()
+	{
+		ExecuteEnhancedViewJspCmd cmd;
 		
-		// Set the width and height
-		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
-			
-			style = mainPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			// style.setOverflow( m_properties.getOverflow() );
-			style.setOverflow( Style.Overflow.HIDDEN );
-		}
-
 		// Create the callback that will be used when we issue an ajax call to execute the jsp.
 		if ( m_executeJspCallback == null )
 		{
@@ -327,7 +305,6 @@ public class EnhancedViewWidget extends VibeWidget
 						
 						responseData = (StringRpcResponseData) response.getResponseData();
 						m_html = responseData.getStringValue();
-						m_frame.setUrl( m_html );
 					}
 
 					cmd = new Scheduler.ScheduledCommand()
@@ -359,12 +336,142 @@ public class EnhancedViewWidget extends VibeWidget
 							}
 						}
 					};
-					//!!! Scheduler.get().scheduleDeferred( cmd );
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 		}
 
-		// Issue an ajax request to execute the jsp associated with this enhanced view.
+		// Execute the jsp associated with this enhanced view.
+		cmd = new ExecuteEnhancedViewJspCmd( m_lpBinderId, m_properties.getJspName(), m_properties.createConfigString() );
+		GwtClientHelper.executeCommand( cmd, m_executeJspCallback );
+	}
+	
+	/**
+	 * Execute the jsp associated with this enhanced view using a url
+	 */
+	private void executeJspViaUrl()
+	{
+		// Create the callback that will be used when we issue an ajax call to get the url needed to execute a jsp
+		if ( m_getUrlCallback == null )
+		{
+			m_getUrlCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_getExecuteJspUrl() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( VibeRpcResponse response )
+				{
+					if ( response.getResponseData() != null )
+					{
+						StringRpcResponseData responseData;
+						Scheduler.ScheduledCommand cmd;
+						final String url;
+						
+						responseData = (StringRpcResponseData) response.getResponseData();
+						url = responseData.getStringValue();
+
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								FormPanel formPanel;
+								FlowPanel flowPanel;
+								Hidden hiddenInput;
+
+								// We use a form so we don't run into problems putting the config string on the url.
+								formPanel = new FormPanel( m_frame );
+								formPanel.setAction( url );
+								formPanel.setMethod( FormPanel.METHOD_POST );
+								
+								flowPanel = new FlowPanel();
+								
+								hiddenInput = new Hidden( "configStr", m_properties.createConfigString() );
+								flowPanel.add( hiddenInput );
+								
+								formPanel.add( flowPanel );
+								m_mainPanel.add( formPanel );
+								
+								formPanel.submit();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+		}
+
+		// Execute the jsp associated with this enhanced view.
+		{
+			GetExecuteJspUrlCmd cmd;
+			
+			cmd = new GetExecuteJspUrlCmd( m_lpBinderId, m_properties.getJspName() );
+			GwtClientHelper.executeCommand( cmd, m_getUrlCallback );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private VibeFlowPanel init( EnhancedViewProperties properties, String landingPageStyle )
+	{
+		String name;
+		
+		m_properties = new EnhancedViewProperties();
+		m_properties.copy( properties );
+		
+		m_mainPanel = new VibeFlowPanel();
+		m_mainPanel = new VibeFlowPanel();
+		m_mainPanel.addStyleName( "landingPageWidgetMainPanel" + landingPageStyle );
+		m_mainPanel.addStyleName( "enhancedViewWidgetMainPanel" + landingPageStyle );
+
+		m_mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+
+		name = "enhancedViewFrame" + String.valueOf( m_id );
+		++m_id;
+		m_frame = new NamedFrame( name );
+		m_frame.setUrl( "" );
+		m_frame.getElement().getStyle().setWidth( m_properties.getWidth(), m_properties.getWidthUnits() );
+		m_frame.getElement().getStyle().setHeight( m_properties.getHeight(), m_properties.getHeightUnits() );
+		m_mainPanel.add( m_frame );
+		
+		// Set the width and height
+		{
+			Style style;
+			int width;
+			int height;
+			Unit unit;
+			
+			style = m_mainPanel.getElement().getStyle();
+			
+			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+			width = m_properties.getWidth();
+			unit = m_properties.getWidthUnits();
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
+			
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			height = m_properties.getHeight();
+			unit = m_properties.getHeightUnits();
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+			
+			// style.setOverflow( m_properties.getOverflow() );
+			style.setOverflow( Style.Overflow.HIDDEN );
+		}
+
+		// Issue a request to execute the jsp associated with this enhanced view
 		{
 			Scheduler.ScheduledCommand schCmd;
 			
@@ -373,16 +480,13 @@ public class EnhancedViewWidget extends VibeWidget
 				@Override
 				public void execute()
 				{
-					ExecuteEnhancedViewJspCmd cmd;
-					
-					cmd = new ExecuteEnhancedViewJspCmd( m_lpBinderId, m_properties.getJspName(), m_properties.createConfigString() );
-					GwtClientHelper.executeCommand( cmd, m_executeJspCallback );
+					executeJsp();
 				}
 			};
 			Scheduler.get().scheduleDeferred( schCmd );
 		}
 		
-		return mainPanel;
+		return m_mainPanel;
 	}
 
 	/**
@@ -452,7 +556,7 @@ public class EnhancedViewWidget extends VibeWidget
 			
 			if ( html != null && html.length > 0 )
 			{
-				//frame.alert( 'frame: ' + frameName + '  about to call frame.document.write(), len: ' + html.length );
+				//frame.alert( 'frame: ' + frameName + '  html: ' + html );
 				frame.document.write( html );
 			}
 			
