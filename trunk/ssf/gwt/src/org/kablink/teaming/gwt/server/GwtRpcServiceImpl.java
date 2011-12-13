@@ -448,6 +448,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_CLIPBOARD_PAGE_USERS:
+		{
+			GetClipboardPageUsersCmd gcpuCmd = ((GetClipboardPageUsersCmd) cmd);
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardPageUsers( this, getRequest( ri ), gcpuCmd.getBinderId());
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_CLIPBOARD_TEAM_USERS:
+		{
+			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardTeamUsers( this, getRequest( ri ), gctuCmd.getBinderId());
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_CLIPBOARD_USERS:
 		{
 			@SuppressWarnings("unused")
@@ -1389,6 +1405,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = saveBrandingData( ri, cmd2.getBinderId(), cmd2.getBrandingData() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_CLIPBOARD_USERS:
+		{
+			SaveClipboardUsersCmd scuCmd = ((SaveClipboardUsersCmd) cmd);
+			BooleanRpcResponseData result = GwtServerHelper.saveClipboardUsers( this, getRequest( ri ), scuCmd.getClipboardUserList() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
