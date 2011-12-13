@@ -552,6 +552,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_EXECUTE_JSP_URL:
+		{
+			GetExecuteJspUrlCmd gejuCmd;
+			StringRpcResponseData responseData;
+			String result;
+			
+			gejuCmd = (GetExecuteJspUrlCmd) cmd;
+			result = GwtServerHelper.getExecuteJspUrl( getRequest( ri ), gejuCmd.getBinderId(), gejuCmd.getJspName() );
+			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			
+			return response;
+		}
+		
 		case GET_EXTENSION_FILES:
 		{
 			GetExtensionFilesCmd gefCmd;

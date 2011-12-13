@@ -110,6 +110,8 @@
 	<bean id="loginController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.LoginController" />
 	
 	<bean id="manageRuntimeStatisticsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageRuntimeStatisticsController" />
+
+	<bean id="executeJspController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ExecuteJspController" />
 	
  	<!-- Handlers -->
 
@@ -170,6 +172,8 @@
 						<entry key="binder_reports"><ref bean="binderReportsController"/></entry>
 						<entry key="view_entry_acl_report"><ref bean="entryAclReportController"/></entry>
 						<entry key="view_success"><ref bean="viewSuccessController"/></entry>
+
+						<entry key="execute_jsp"><ref bean="executeJspController"/></entry>
 
 						<!-- Keys starting with "__" can handle the user not being logged in -->
 						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>

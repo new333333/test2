@@ -1260,6 +1260,7 @@ public class GwtServerHelper {
 			
 			results = ssResponse.getString().trim();
 			
+			/*
 			// Put the results of executing the jsp into a temporary file
 			{
 				File tempFile;
@@ -1273,6 +1274,7 @@ public class GwtServerHelper {
 				// Get a url to the file.
 				results = WebUrlUtil.getServletRootURL( request ) + WebKeys.SERVLET_VIEW_FILE + "?viewType=executeJspResults&fileId=" + tempFile.getName() + "&fullPath=" + tempFile.getAbsolutePath();
 			}
+			*/
 		}
 		catch ( Exception e )
 		{
@@ -3001,6 +3003,21 @@ public class GwtServerHelper {
 	}
 	
 	
+	/**
+	 * Return the URL needed to execute the given jsp
+	 */
+	public static String getExecuteJspUrl( HttpServletRequest request, String binderId, String jspName ) throws GwtTeamingException
+	{
+		AdaptedPortletURL adapterUrl;
+
+		adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
+		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_EXECUTE_JSP );
+		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+		adapterUrl.setParameter( WebKeys.JSP_NAME, jspName );
+
+		return adapterUrl.toString();
+	}
+	
 	/*
 	 * Returns a cloned copy of the expanded Binder's list from the
 	 * UserProperties.
@@ -4566,6 +4583,7 @@ public class GwtServerHelper {
 		case GET_DISK_USAGE_INFO:
 		case GET_ENTRY:
 		case GET_ENTRY_TAGS:
+		case GET_EXECUTE_JSP_URL:
 		case GET_EXTENSION_FILES:
 		case GET_EXTENSION_INFO:
 		case GET_FAVORITES:

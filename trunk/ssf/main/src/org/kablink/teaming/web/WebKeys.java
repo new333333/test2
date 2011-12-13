@@ -96,6 +96,8 @@ public class WebKeys {
     public static final String VIBE_UI_DEBUG = "vibeUIDebug";
     public static final String VIBE_GRANITE_GWT_ENABLED = "vibeGraniteGWTEnabled";
     public static final String IS_FORM_LOGIN_ALLOWED = "isFormLoginAllowed";
+    public static final String JSP_NAME = "jspName";
+    public static final String CONFIG_STRING = "configStr";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
@@ -410,6 +412,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_FILE="viewFile";
 	public static final String ACTION_VIEW_SUCCESS="view_success";
 	public static final String ACTION_VIEW_WORKFLOW_HISTORY="view_workflow_history";
+	public static final String ACTION_EXECUTE_JSP = "execute_jsp";
 	
 	
 	//operations
