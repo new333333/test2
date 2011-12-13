@@ -480,12 +480,6 @@ public class ContentControl extends Composite
 						// will let it take the default flow.
 						break;
 					}
-					//See if this binder is to be displayed using the old jsps
-					if ("jsp".equals(bi.getBinderViewVersion())) {
-						// Yes!  Simply break out of the switch.  That
-						// will let it take the default flow.
-						break;
-					}
 				}
 				
 				// Regardless of the type, we'll need an ViewReady to

@@ -52,7 +52,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private String        m_binderTitle = "";								//
 	private String        m_entityType  = "";								//
 	private WorkspaceType m_wsType      = WorkspaceType.NOT_A_WORKSPACE;	//
-	private String m_binderViewVersion  = "";	//
 	
 	/**
 	 * Constructor method.
@@ -76,7 +75,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setBinderType(   m_binderType );
 		reply.setFolderType(   m_folderType );
 		reply.setWorkspaceType(m_wsType     );
-		reply.setBinderViewVersion(m_binderViewVersion     );
 		return reply;
 	}
 	
@@ -92,7 +90,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public String        getBinderTitle()    {return                m_binderTitle;}
 	public String        getEntityType()     {return                m_entityType; }
 	public WorkspaceType getWorkspaceType()  {return                m_wsType;     }
-	public String        getBinderViewVersion()     {return         m_binderViewVersion; }
 	
 	/**
 	 * Returns true of this BinderInfo defines a Folder and false
@@ -214,16 +211,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		
 		// ...and store it.
 		m_wsType = wsType;
-	}
-	
-	/**
-	 * Stores the view version of Binder.
-	 * 
-	 * @param binderViewVersion
-	 */
-	public void setBinderViewVersion(String binderViewVersion) {
-		// Store the binderViewVersion...
-		m_binderViewVersion = binderViewVersion;
 	}
 
 }
