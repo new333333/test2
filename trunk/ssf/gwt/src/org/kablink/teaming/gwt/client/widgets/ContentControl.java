@@ -553,12 +553,22 @@ public class ContentControl extends Composite
 					switch ( wt )
 					{
 					case LANDING_PAGE:
-						if ( Window.confirm( "Show new landing page?" ) )
+					{
+						boolean showNew = true;
+						
+						if ( m_isDebugUI )
+						{
+							if ( !Window.confirm( "Show new landing page?" ) )
+								showNew = false;
+						}
+						
+						if ( showNew )
 						{
 							GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
 							viHandled = true;
 						}
 						break;
+					}
 						
 					case DISCUSSIONS:
 					case GLOBAL_ROOT:
