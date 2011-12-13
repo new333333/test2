@@ -302,6 +302,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
+	String rpcFailure_GetClipboardPageUsers();
+	String rpcFailure_GetClipboardTeamUsers();
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetFileFolderEntries();
@@ -377,6 +379,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SaveBinderRegionState();
+	String rpcFailure_SaveClipboardUsers();
 	String rpcFailure_SaveFileSyncAppConfiguration();
 	String rpcFailure_SaveFolderColumns();
 	String rpcFailure_SaveFolderSort();

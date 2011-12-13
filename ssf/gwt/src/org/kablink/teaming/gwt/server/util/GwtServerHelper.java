@@ -130,7 +130,9 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -2774,6 +2776,66 @@ public class GwtServerHelper {
 
 	/**
 	 * Returns a ClipboardUsersRpcResponseData object containing the
+	 * user's referenced by a binder clipboard.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ClipboardUsersRpcResponseData getClipboardPageUsers(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
+			
+//!			...this needs to be implemented...
+			
+			// ...and return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}
+	}
+	
+	/**
+	 * Returns a ClipboardUsersRpcResponseData object containing the
+	 * user's on a team.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ClipboardUsersRpcResponseData getClipboardTeamUsers(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			// Read the IDs of the team members...
+			Set<Long> teamMemberIds = getTeamMemberIds(bs, binderId, true);
+			
+			// ...create a ClipboardUsersRpcResponseData object using them...
+			SortedSet<User> cbUsers = bs.getProfileModule().getUsersFromPrincipals(teamMemberIds);
+			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
+			for (User cbUser:  cbUsers) {
+				reply.addUser(cbUser.getId(), cbUser.getTitle());
+			}
+			
+			// ...and return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}
+	}
+	
+	/**
+	 * Returns a ClipboardUsersRpcResponseData object containing the
 	 * user's currently on the clipboard.
 	 * 
 	 * @param bs
@@ -3905,14 +3967,19 @@ public class GwtServerHelper {
 	 * 
 	 * @param bs
 	 * @param binderId
+	 * @param explodeGroups
 	 * 
 	 * @return
 	 */
-	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
+	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId, boolean explodeGroups) {
 		Set<Long> teamMemberIds = null;
-		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, false);}
+		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, explodeGroups);}
 		catch (Exception ex) {/* Ignored. */}
 		return validatePrincipalIds(teamMemberIds);
+	}
+	
+	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
+		return getTeamMemberIds(bs, binderId, false);
 	}
 	
 	/**
@@ -4489,6 +4556,8 @@ public class GwtServerHelper {
 		case GET_BINDER_PERMALINK:
 		case GET_BINDER_REGION_STATE:
 		case GET_BINDER_TAGS:
+		case GET_CLIPBOARD_PAGE_USERS:
+		case GET_CLIPBOARD_TEAM_USERS:
 		case GET_CLIPBOARD_USERS:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
@@ -4571,6 +4640,7 @@ public class GwtServerHelper {
 		case REMOVE_TASK_LINKAGE:
 		case REMOVE_SAVED_SEARCH:
 		case SAVE_BINDER_REGION_STATE:
+		case SAVE_CLIPBOARD_USERS:
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
 		case SAVE_FOLDER_SORT:
 		case SAVE_PERSONAL_PREFERENCES:
@@ -4772,6 +4842,41 @@ public class GwtServerHelper {
 		
 		// ...and clearing the remove list.
 		removeList.clear();
+	}
+	
+	/**
+	 * Save the users from a List<ClipboardUser> as the user's
+	 * clipboard contents. 
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param cbUserList
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData saveClipboardUsers(AllModulesInjected bs, HttpServletRequest request, List<ClipboardUser> cbUserList) throws GwtTeamingException {
+		try {
+			// Extract the user ID's from the List<CliboardUser>...
+			List<Long> userIds = new ArrayList<Long>();
+			if ((null != cbUserList) && (!(cbUserList.isEmpty()))) {
+				for (ClipboardUser cbUser:  cbUserList) {
+					userIds.add(cbUser.getUserId());
+				}
+			}
+			
+			// ...store them in the clipboard...
+			Clipboard clipboard = new Clipboard(request);
+			clipboard.set(Clipboard.USERS, userIds);				
+
+			// ...and return true.
+			return new BooleanRpcResponseData(Boolean.TRUE);
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}
 	}
 	
 	/**

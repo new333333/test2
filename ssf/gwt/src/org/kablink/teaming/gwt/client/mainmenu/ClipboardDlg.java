@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
@@ -41,7 +44,10 @@ import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
+import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardPageUsersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardTeamUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardUsersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveClipboardUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -51,9 +57,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
@@ -62,6 +71,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 
@@ -70,17 +80,56 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings({"unused"})
 public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private final static String IDBASE		= "clipboard_";	// Base ID for rows in the clipboard Grid.
 	private final static String IDTAIL_CBOX	= "_cb";		// Used for constructing the ID of a row's CheckBox.
 
-	private BinderInfo				m_binderInfo;	//
-	private Grid					m_cbGrid;		// Once displayed, the table of clipboard items.
-	private GwtTeamingImageBundle	m_images;		//
-	private GwtTeamingMessages		m_messages;		// Access to the GWT UI messages.
-	private int						m_cbGridCount;	// Count of rows  in m_cbGrid. 
+	private BinderInfo				m_binderInfo;		//
+	private Grid					m_cbGrid;			// Once displayed, the table of clipboard items.
+	private GwtTeamingImageBundle	m_images;			//
+	private GwtTeamingMessages		m_messages;			// Access to the GWT UI messages.
+	private List<ClipboardUser>		m_cbUserList;		//
+	private int						m_cbUserListCount;	//
+	private int						m_cbGridCount;		// Count of rows  in m_cbGrid. 
 
+	/*
+	 * Inner class used to compare two ClipboardUser's by their title.
+	 */
+	private static class ClipboardUserComparator implements Comparator<ClipboardUser> {
+		private boolean m_ascending;	//
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ascending
+		 */
+		public ClipboardUserComparator(boolean ascending) {
+			m_ascending = ascending;
+		}
+
+		/**
+		 * Compares two ClipboardUser's by their names.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param cbUser1
+		 * @param cbUser2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(ClipboardUser cbUser1, ClipboardUser cbUser2) {
+			String name1 = cbUser1.getTitle();
+			String name2 = cbUser2.getTitle();
+
+			int reply;
+			if (m_ascending)
+			     reply = GwtClientHelper.safeSColatedCompare(name1, name2);
+			else reply = GwtClientHelper.safeSColatedCompare(name2, name1);
+			return reply;
+		}
+	}
+	
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
 	 */
@@ -132,7 +181,32 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	private class DoAddPeople implements Command {
 		@Override
 		public void execute() {
-//!			...this needs to be implemented...			
+			GwtClientHelper.executeCommand(
+					new GetClipboardPageUsersCmd(m_binderInfo.getBinderIdAsLong()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetClipboardPageUsers());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Extract the clipboard users from the response
+					// data and merge it into the global list...
+					ClipboardUsersRpcResponseData responseData = ((ClipboardUsersRpcResponseData) response.getResponseData());
+					mergeCBUserLists(responseData.getClipboardUsers());
+
+					// ...save the global list as the new contents of
+					// ...the clipboard....
+					saveCBUserListAsync();
+					
+					// ...and use the global list to populate the
+					// ...dialog.
+					populateFromCBUserListAsync();
+				}
+			});
 		}
 	}
 	
@@ -142,7 +216,32 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	private class DoAddTeam implements Command {
 		@Override
 		public void execute() {
-//!			...this needs to be implemented...			
+			GwtClientHelper.executeCommand(
+					new GetClipboardTeamUsersCmd(m_binderInfo.getBinderIdAsLong()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetClipboardTeamUsers());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Extract the clipboard users from the response
+					// data and merge it into the global list...
+					ClipboardUsersRpcResponseData responseData = ((ClipboardUsersRpcResponseData) response.getResponseData());
+					mergeCBUserLists(responseData.getClipboardUsers());
+
+					// ...save the global list as the new contents of
+					// ...the clipboard....
+					saveCBUserListAsync();
+					
+					// ...and use the global list to populate the
+					// ...dialog.
+					populateFromCBUserListAsync();
+				}
+			});
 		}
 	}
 	
@@ -159,18 +258,34 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 			}
 			
 			// Scan the rows in the table.
+			boolean rowsRemoved = false;
 			int rows = m_cbGrid.getRowCount();
 			for (int i = (rows - 1); i >= 0; i -= 1) {
 				// If this row checked...
 				if (isRowChecked(i)) {
 					// ...delete it.
+					removeUserFromCBList(Long.parseLong(getRowId(i).substring(IDBASE.length())));
 					m_cbGrid.removeRow(i);
+					rowsRemoved = true;
 				}
 			}
+			
+			// Did we remove any rows?
 			m_cbGridCount = m_cbGrid.getRowCount();
-			if (0 == m_cbGridCount) {
-				m_cbGrid.insertRow(0);
-				m_cbGrid.setWidget(0, 1, new DlgLabel(m_messages.mainMenuClipboardDlgEmpty()));
+			if ((m_cbGridCount != m_cbUserListCount) && GwtClientHelper.isDebugUI()) {
+				Window.alert("ClipboardDlg.DoDelete.execute( *Internal Error* ):  Grid count does not match list count!");
+			}
+			if (rowsRemoved) {
+				// Yes!  If there aren't any left in the grid...
+				if (0 == m_cbGridCount) {
+					// ...add a string saying that.
+					m_cbGrid.insertRow(0);
+					m_cbGrid.setWidget(0, 1, new DlgLabel(m_messages.mainMenuClipboardDlgEmpty()));
+				}
+				
+				// ...and save the global List<ClipboardUser> as the
+				// ...new contents of the clipboard.
+				saveCBUserListAsync();
 			}
 		}
 	}
@@ -199,10 +314,39 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	}
 
 	/*
+	 * Adds a ClipboardUser to a List<ClipboardUser> if its user ID is
+	 * not already in the list.
+	 */
+	private void addCBUserToListIfUnique(ClipboardUser cbUser, List<ClipboardUser> cbUserList) {
+		// Scan the List<ClipboardUser>.
+		Long id = cbUser.getUserId();
+		for (ClipboardUser cbUserScan:  cbUserList) {
+			// Is this the ID in question?
+			if (id.equals(cbUserScan.getUserId())) {
+				// Yes!  Then we won't add it again.
+				return;
+			}
+		}
+		
+		// If we get here, the ID is not already in the list.  Add the
+		// new ClipboardUser to it now.
+		cbUserList.add(cbUser);
+	}
+	
+	/*
 	 * Constructs and returns an Image with a spinner in it.
 	 */
 	private Image buildSpinnerImage() {
 		return new Image(m_images.spinner16());
+	}
+
+	/*
+	 * Clears the contents of the ClipboardUser Grid.
+	 */
+	private void clearGrid() {
+		m_cbGrid.clear();
+		m_cbGrid.resize(0, 2);
+		m_cbGridCount = 0;
 	}
 	
 	/**
@@ -216,8 +360,10 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		// Create the dialog's menu.
+		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VerticalPanel();
+		
+		// ...create the dialog's menu...
 		MenuBar mb = new MenuBar();
 		mb.addStyleName("vibe-cbDlg_MenuBar");
 		mb.addItem(new DlgMenuItem(m_messages.mainMenuClipboardDlgAddPeople(), new DoAddPeople()));
@@ -225,14 +371,19 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		mb.addItem(new DlgMenuItem(m_messages.mainMenuClipboardDlgDelete(),    new DoDelete()));
 		vp.add(mb);
 
-		// Render the rows in the dialog.
+		// ...create a Grid to render the rows in the dialog...
 		m_cbGrid = new Grid(0, 2);
 		m_cbGrid.addStyleName("vibe-cbDlg_Grid");
-		m_cbGrid.setCellPadding(0);
-		m_cbGrid.setCellSpacing(0);
-		vp.add(m_cbGrid);
+		m_cbGrid.setCellPadding(2);
+		m_cbGrid.setCellSpacing(2);
+
+		// ...create a ScrollPanel to hold that Grid...
+		ScrollPanel sp = new ScrollPanel();
+		sp.addStyleName("vibe-cbDlg_ScrollPanel");
+		sp.add(m_cbGrid);
+		vp.add(sp);
 		
-		// And return the Panel that will hold the dialog's contents.
+		// ...and return the Panel that holds the dialog's contents.
 		return vp;
 	}
 
@@ -241,13 +392,13 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	 * we're reading the contents of the clipboard.
 	 */
 	private void displayReading() {
-		m_cbGrid.clear();
+		clearGrid();
 		m_cbGrid.insertRow(0);
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("vibe-cbDlgReadingPanel");
+		fp.addStyleName("vibe-cbDlg_ReadingPanel");
 		fp.add(buildSpinnerImage());
 		DlgLabel l = new DlgLabel(m_messages.mainMenuClipboardDlgReading());
-		l.addStyleName("vibe-cbDlgReadingLabel");
+		l.addStyleName("vibe-cbDlg_ReadingLabel");
 		fp.add(l);
 		m_cbGrid.setWidget(0, 1, fp);
 	}
@@ -308,13 +459,51 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	}
 
 	/*
+	 * Returns the ID of a row.
+	 */
+	private String getRowId(int row) {
+		return m_cbGrid.getRowFormatter().getElement(row).getId();
+	}
+	
+	/*
 	 * Returns true if a row is checked and false otherwise.
 	 */
-	private boolean isRowChecked(int i) {
-//!		...this needs to be implemented...
-		return false;
+	private boolean isRowChecked(int row) {
+		String rowId = getRowId(row);
+		InputElement cb = Document.get().getElementById(rowId + IDTAIL_CBOX).getFirstChildElement().cast();
+		return cb.isChecked();
 	}
 
+	/*
+	 * Merges the given List<ClipboardUser> into the list stored
+	 * globally and updates the global data members accordingly.
+	 */
+	private void mergeCBUserLists(List<ClipboardUser> cbUsers) {
+		// If we don't have a global list...
+		if (null == m_cbUserList) {
+			// ...allocate one now.
+			m_cbUserList = new ArrayList<ClipboardUser>();
+		}
+
+		// Do we have a List<ClipboardUser> to merge into the global
+		// list?
+		if ((null != cbUsers) && (!(cbUsers.isEmpty()))) {
+			// Yes!  Scan the ClipboardUser's in that list...
+			for (ClipboardUser cbUser:  cbUsers) {
+				// ...adding them to the global list if they're not
+				// ...already there...
+				addCBUserToListIfUnique(cbUser, m_cbUserList);
+			}
+			
+			// ...and sort the resultant global list.
+			sortCBUserList(m_cbUserList);
+		}
+
+		// Finally, update the global count of ClipboardUser's in the
+		// global list.
+		m_cbUserListCount = m_cbUserList.size();
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -344,34 +533,85 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Extract the clipboard users and continue populating.
+				// Extract the clipboard users from the response
+				// data...
 				ClipboardUsersRpcResponseData responseData = ((ClipboardUsersRpcResponseData) response.getResponseData());
-				populatePart2Async(responseData.getClipboardUsers());
+				m_cbUserList      = responseData.getClipboardUsers();
+				m_cbUserListCount = ((null == m_cbUserList) ? 0: m_cbUserList.size());
+				
+				// ...and use that to populate the dialog.
+				populateFromCBUserListAsync();
 			}
 		});
 	}
 	
 	/*
-	 * Asynchronously populates the contents of the dialog.
+	 * Asynchronously populates the contents of the dialog from the
+	 * global List<ClipboardUser>.
 	 */
-	private void populatePart2Async(final List<ClipboardUser> cbUsers) {
+	private void populateFromCBUserListAsync() {
 		ScheduledCommand doPopulate = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				populatePart2Now(cbUsers);
+				populateFromCBUserListNow();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*
-	 * Synchronously populates the contents of the dialog.
+	 * Synchronously populates the contents of the dialog from the
+	 * global List<ClipboardUser>.
 	 */
-	private void populatePart2Now(final List<ClipboardUser> cbUsers) {
-//!		...this needs to be implemented...		
-		Window.alert("ClipboardDlg.populatePart2Now():  ...this needs to be implemented...");
+	private void populateFromCBUserListNow() {
+		clearGrid();
+		m_cbGrid.resize(0, 2);
+		m_cbGridCount = m_cbUserListCount;
+		if (0 == m_cbGridCount) {
+			m_cbGrid.insertRow(0);
+			m_cbGrid.setWidget(0, 1, new DlgLabel(m_messages.mainMenuClipboardDlgEmpty()));
+		}
+		else {
+			for (int i = 0; i < m_cbGridCount; i += 1) {
+				renderRow(m_cbGrid, m_cbUserList.get(i), i, false);
+			}
+		}
 	}
 
+	/*
+	 * Removes the ClipboardUser with the given ID from the global
+	 * List<ClipboardUser>.
+	 */
+	private void removeUserFromCBList(Long userId) {
+		// Scan the ClipboardUser's in the global list.
+		for (ClipboardUser cbUser:  m_cbUserList) {
+			// Is this the user in question?
+			if (userId.equals(cbUser.getUserId())) {
+				// Yes!  Remove it from the list and update the count.
+				m_cbUserList.remove(cbUser);
+				m_cbUserListCount -= 1;
+				return;
+			}
+		}
+	}
+	
+	/*
+	 * Renders a ClipboardUser as a row in a Grid.
+	 */
+	private void renderRow(Grid grid, ClipboardUser cbUser, int row, boolean checked) {
+		grid.insertRow(row);
+		
+		String rowId = (IDBASE + cbUser.getUserId());
+		grid.getRowFormatter().getElement(row).setId(rowId);
+		
+		CheckBox cb = new CheckBox();
+		cb.addStyleName("vibe-cbDlg_Checkbox");
+		cb.getElement().setId(rowId + IDTAIL_CBOX);
+		cb.setValue(checked);
+		grid.setWidget(row, 0, cb);
+		grid.setWidget(row, 1, new DlgLabel(cbUser.getTitle()));
+	}
+	
 	/*
 	 * Asynchronously runs the given instance of the clipboard dialog.
 	 */
@@ -399,6 +639,49 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		show(true);
 	}
 
+	/*
+	 * Asynchronously saves the global List<ClipboardUser> as the new
+	 * contents of the clipboard.
+	 */
+	private void saveCBUserListAsync() {
+		ScheduledCommand doSave = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				saveCBUserListNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSave);
+	}
+	
+	/*
+	 * Synchronously saves the global List<ClipboardUser> as the new
+	 * contents of the clipboard.
+	 */
+	private void saveCBUserListNow() {
+		GwtClientHelper.executeCommand(
+				new SaveClipboardUsersCmd(m_cbUserList),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SaveClipboardUsers());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Data saved.  Nothing else to do.
+			}
+		});
+	}
+
+	/*
+	 * Sorts the ClipboardUser's in a List<ClipboardUser>.
+	 */
+	private void sortCBUserList(List<ClipboardUser> cbUserList) {
+		Comparator<ClipboardUser> comparator = new ClipboardUserComparator(true);	// true -> Ascending.
+		Collections.sort(cbUserList, comparator);
+	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
