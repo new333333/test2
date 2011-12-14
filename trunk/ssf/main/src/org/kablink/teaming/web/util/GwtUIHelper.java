@@ -1109,6 +1109,17 @@ public class GwtUIHelper {
 	}
 
 	/**
+	 * Returns true if the Vibe UI is in landing page debug mode and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isVibeDebugLP()
+	{
+		return SPropsUtil.getBoolean( "ssf.lp.debug.enabled", false );
+	}
+	
+	/**
 	 * Returns true if the Vibe UI is in debug mode and false
 	 * otherwise.
 	 * 
@@ -1292,6 +1303,9 @@ public class GwtUIHelper {
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
 		model.put(WebKeys.VIBE_UI_DEBUG, isVibeUiDebug());
+		
+		// Put out the flag indicating whether the landing page is in debug mode.
+		model.put( WebKeys.VIBE_LP_DEBUG, isVibeDebugLP() );
 		
 		// Put out the flag indicating whether the new GWT UI features
 		// for Granite should be enabled.

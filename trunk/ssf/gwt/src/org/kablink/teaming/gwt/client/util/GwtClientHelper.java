@@ -425,6 +425,22 @@ public class GwtClientHelper {
 	}	
 
 	/**
+	 * Returns true if the UI is in debug mode for the landing page
+	 * 
+	 * @return
+	 */
+	public static boolean isDebugLP()
+	{
+		RequestInfo ri = getRequestInfo();
+		if (null == ri)
+		{
+			return false;
+		}
+		
+		return ri.isDebugLP();
+	}
+	
+	/**
 	 * Returns true if the UI is in debug mode and false otherwise.
 	 * 
 	 * @return
