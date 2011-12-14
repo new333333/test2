@@ -103,6 +103,7 @@ public class ContentControl extends Composite
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
+	private boolean m_isDebugLP;
 	private boolean m_isGraniteGwtEnabled;
 	private GwtMainPage m_mainPage;
 	private NamedFrame m_frame;
@@ -143,6 +144,7 @@ public class ContentControl extends Composite
 		// Extract some commonly used flags from the RequestInfo.
 		RequestInfo ri = GwtClientHelper.getRequestInfo();
 		m_isDebugUI           = ri.isDebugUI();
+		m_isDebugLP = ri.isDebugLP();
 		m_isGraniteGwtEnabled = ri.isGraniteGwtEnabled();
 
 		// Is this other than the admin control's content panel?
@@ -563,7 +565,7 @@ public class ContentControl extends Composite
 					{
 						boolean showNew = true;
 						
-						if ( m_isDebugUI )
+						if ( m_isDebugLP )
 						{
 							if ( !Window.confirm( "Show new landing page?" ) )
 								showNew = false;
