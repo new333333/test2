@@ -43,6 +43,17 @@
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
+<% // The following javascript files are needed because the enhanced view widget on %>
+<% // a landing page may display a calendar. %>
+	<script type="text/javascript">
+ 		ss_loadJsFile( ss_rootPath, "js/common/ss_calendar.js" );
+	</script>
+	<script type="text/javascript" src="<html:rootPath/>js/datepicker/CalendarPopup.js"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/common/AnchorPosition.js"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/common/PopupWindow.js"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
+<% //------------------------------------------------------------------------------ %>
+
 	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 
 	<c:set var="gwtPage" value="main" scope="request"/>	

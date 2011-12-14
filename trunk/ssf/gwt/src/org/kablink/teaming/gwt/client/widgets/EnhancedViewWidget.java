@@ -36,25 +36,20 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewConfig;
 import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties;
+import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties.EnhancedViewType;
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
 import org.kablink.teaming.gwt.client.lpe.FileFolderProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderProperties;
 import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteEnhancedViewJspCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetExecuteJspUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.NamedFrame;
 
 
 
@@ -65,13 +60,9 @@ import com.google.gwt.user.client.ui.NamedFrame;
  */
 public class EnhancedViewWidget extends VibeWidget
 {
-	private static int m_id = 0;
-	
 	private String m_lpBinderId;	// landing page binder id
 	private EnhancedViewProperties m_properties;
 	private AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
-	private AsyncCallback<VibeRpcResponse> m_getUrlCallback = null;
-	private NamedFrame m_frame;
 	private VibeFlowPanel m_mainPanel;
 	private String m_html;		// The html that we got from executing a jsp
 	
@@ -251,18 +242,24 @@ public class EnhancedViewWidget extends VibeWidget
 	}
 	
 	/**
+	 * Evaluate scripts in the html found in the given element.
+	 */
+	public static native void executeJavaScript( com.google.gwt.dom.client.Element element ) /*-{
+		//$wnd.alert( 'In executeJavaScript()' );
+		if ( $wnd.top.ss_executeJavascript != null && (typeof $wnd.top.ss_executeJavascript != 'undefined') )
+		{
+			//$wnd.alert( 'found ss_executeJavascript()' );
+			$wnd.top.ss_executeJavascript( element, false );
+		}
+	}-*/;
+
+	/**
 	 * Execute the jsp associated with this enhanced view
 	 */
 	private void executeJsp()
 	{
-		boolean test;
-		
-		test = true;
-		
-		if ( test )
-			executeJspViaUrl();
-		else
-			executeJspViaRpc();
+		// Execute the jsp associated with this enhanced view by issuing an rpc request.
+		executeJspViaRpc();
 	}
 	
 	/**
@@ -312,28 +309,8 @@ public class EnhancedViewWidget extends VibeWidget
 						@Override
 						public void execute()
 						{
-							com.google.gwt.dom.client.Element element;
-							
-							element = m_frame.getElement();
-							if ( element instanceof FrameElement )
-							{
-								FrameElement frameElement;
-								boolean test;
-
-								test = true;
-								if ( test )
-								{
-									setFrameHtml( m_frame.getName(), m_html );
-								}
-								else
-								{
-									frameElement = ((FrameElement) element);
-									frameElement.setInnerHTML( m_html );
-								}
-								
-								// Execute any JavaScript that needs to be executed.
-								//executeJavaScript( m_frame.getName(), (com.google.gwt.dom.client.Element) bodyElement );
-							}
+							m_mainPanel.getElement().setInnerHTML( m_html );
+							executeJavaScript( m_mainPanel.getElement() );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -347,87 +324,10 @@ public class EnhancedViewWidget extends VibeWidget
 	}
 	
 	/**
-	 * Execute the jsp associated with this enhanced view using a url
-	 */
-	private void executeJspViaUrl()
-	{
-		// Create the callback that will be used when we issue an ajax call to get the url needed to execute a jsp
-		if ( m_getUrlCallback == null )
-		{
-			m_getUrlCallback = new AsyncCallback<VibeRpcResponse>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_getExecuteJspUrl() );
-				}
-		
-				/**
-				 * 
-				 * @param result
-				 */
-				public void onSuccess( VibeRpcResponse response )
-				{
-					if ( response.getResponseData() != null )
-					{
-						StringRpcResponseData responseData;
-						Scheduler.ScheduledCommand cmd;
-						final String url;
-						
-						responseData = (StringRpcResponseData) response.getResponseData();
-						url = responseData.getStringValue();
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								FormPanel formPanel;
-								FlowPanel flowPanel;
-								Hidden hiddenInput;
-
-								// We use a form so we don't run into problems putting the config string on the url.
-								formPanel = new FormPanel( m_frame );
-								formPanel.setAction( url );
-								formPanel.setMethod( FormPanel.METHOD_POST );
-								
-								flowPanel = new FlowPanel();
-								
-								hiddenInput = new Hidden( "configStr", m_properties.createConfigString() );
-								flowPanel.add( hiddenInput );
-								
-								formPanel.add( flowPanel );
-								m_mainPanel.add( formPanel );
-								
-								formPanel.submit();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				}
-			};
-		}
-
-		// Execute the jsp associated with this enhanced view.
-		{
-			GetExecuteJspUrlCmd cmd;
-			
-			cmd = new GetExecuteJspUrlCmd( m_lpBinderId, m_properties.getJspName() );
-			GwtClientHelper.executeCommand( cmd, m_getUrlCallback );
-		}
-	}
-	
-	/**
 	 * 
 	 */
 	private VibeFlowPanel init( EnhancedViewProperties properties, String landingPageStyle )
 	{
-		String name;
-		
 		m_properties = new EnhancedViewProperties();
 		m_properties.copy( properties );
 		
@@ -436,16 +336,6 @@ public class EnhancedViewWidget extends VibeWidget
 		m_mainPanel.addStyleName( "landingPageWidgetMainPanel" + landingPageStyle );
 		m_mainPanel.addStyleName( "enhancedViewWidgetMainPanel" + landingPageStyle );
 
-		m_mainPanel.addStyleName( "landingPageWidgetShowBorder" );
-
-		name = "enhancedViewFrame" + String.valueOf( m_id );
-		++m_id;
-		m_frame = new NamedFrame( name );
-		m_frame.setUrl( "" );
-		m_frame.getElement().getStyle().setWidth( m_properties.getWidth(), m_properties.getWidthUnits() );
-		m_frame.getElement().getStyle().setHeight( m_properties.getHeight(), m_properties.getHeightUnits() );
-		m_mainPanel.add( m_frame );
-		
 		// Set the width and height
 		{
 			Style style;
@@ -467,8 +357,23 @@ public class EnhancedViewWidget extends VibeWidget
 			if ( height != 100 || unit != Unit.PCT )
 				style.setHeight( height, unit );
 			
-			// style.setOverflow( m_properties.getOverflow() );
-			style.setOverflow( Style.Overflow.HIDDEN );
+			// Are we dealing with a calendar?
+			if ( m_properties.getViewType() == EnhancedViewType.DISPLAY_CALENDAR )
+			{
+				// yes
+				// Set the overflow to hidden.  The content of the jsp will control scrolling.
+				style.setOverflow( Style.Overflow.HIDDEN );
+				
+				// Leave room for a scrollbar on the right.
+				style.setPaddingRight( 14, Unit.PX );
+				
+				// Leave room for a scrollbar on the bottom.
+				style.setPaddingBottom( 14, Unit.PX );
+			}
+			else
+			{
+				style.setOverflow( m_properties.getOverflow() );
+			}
 		}
 
 		// Issue a request to execute the jsp associated with this enhanced view
@@ -488,118 +393,5 @@ public class EnhancedViewWidget extends VibeWidget
 		
 		return m_mainPanel;
 	}
-
-	/**
-	 * 
-	 */
-	public static native void openFrameDoc( String frameName ) /*-{
-		var frame;
-		
-		// Can we find a frame with the given name?
-		frame = $wnd.top.frames[frameName];
-		if ( frame )
-		{
-			// Yes
-			frame.document.open();
-		}
-	}-*/;
-
-	
-	/**
-	 * 
-	 */
-	public static native void writeHtmlToFrame( String frameName, String html ) /*-{
-		var frame;
-		
-		// Can we find a frame with the given name?
-		frame = $wnd.top.frames[frameName];
-		if ( frame )
-		{
-			// Yes
-			//frame.alert( 'frame: ' + frameName + ' \n\n' + html );
-			
-			// Write the given html to the document.
-			frame.document.write( html );
-		}
-	}-*/;
-	
-	/**
-	 * 
-	 */
-	public static native void closeFrameDoc( String frameName ) /*-{
-		var frame;
-		
-		//$wnd.alert( 'frame: ' + frameName + ' in closeFrameDoc()' );
-		// Can we find a frame with the given name?
-		frame = $wnd.top.frames[frameName];
-		if ( frame )
-		{
-			// Yes
-			//frame.alert( 'frame: ' + frameName + ' about to call frame.document.close()' );
-			frame.document.close();
-		}
-	}-*/;
-	
-	/**
-	 * Set the html for the frame with the given name.
-	 */
-	public static native void setFrameHtml( String frameName, String html ) /*-{
-		var frame;
-		
-		// Can we find a frame with the given name?
-		frame = $wnd.top.frames[frameName];
-		if ( frame )
-		{
-			// Yes
-			// Write the given html to the document.
-			frame.document.open();
-			
-			if ( html != null && html.length > 0 )
-			{
-				//frame.alert( 'frame: ' + frameName + '  html: ' + html );
-				frame.document.write( html );
-			}
-			
-			//frame.alert( 'frame: ' + frameName + '  about to call frame.document.close()' );
-			frame.document.close();
-		}
-	}-*/;
-	
-	/**
-	 * Evaluate scripts in the html found in the given element.
-	 */
-	public static native void executeJavaScript( String frameName, com.google.gwt.dom.client.Element element ) /*-{
- 		var frame;
-
-		$wnd.alert( 'In executeJavaScript()' );
-    	frame = $wnd.top.frames[frameName];
-		if ( frame )
-		{
-	 		var scripts;
-	 		var i;
-	    
-	 		scripts = element.getElementsByTagName( 'script' );
-	        for (i=0; i < scripts.length; i++)
-	        {
-	        	var script;
-	        	
-	        	script = scripts[i];
-	        	
-	            if ( script.getAttribute( 'type' ) == 'text/javascript' )
-	            {
-	            	var js;
-	            	
-	            	js = script.innerHTML;
-	            	if ( js != null && js.length > 0 )
-	            	{
-	            		frame.alert( 'frameName: ' + frameName + ' js: ' + js );
-	                	frame.eval( js );
-	                	frame.alert( 'back from call to frame.eval()' );
-	                }
-	            }
-	        }
-        }
-        $wnd.alert( 'about to leave executeJavaScript()' );
-	}-*/;
 }
 
