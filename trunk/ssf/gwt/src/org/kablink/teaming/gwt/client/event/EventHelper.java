@@ -281,6 +281,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case CONTRIBUTOR_IDS_REPLY:
+				// A ContributorIdsReplyEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ContributorIdsReplyEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ContributorIdsReplyEvent.registerEvent(eventBus, ((ContributorIdsReplyEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CONTRIBUTOR_IDS_REQUEST:
+				// A ContributorIdsRequestEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ContributorIdsRequestEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ContributorIdsRequestEvent.registerEvent(eventBus, ((ContributorIdsRequestEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case DELETE_SELECTED_ENTRIES:
 				// A DeleteSelectedEntriesEvent!  Can the event handler
 				// we were given handle that?
@@ -1087,6 +1105,9 @@ public class EventHelper {
 			case CHANGE_CONTEXT:                    	hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                 break;
 			case CONTEXT_CHANGED:                   	hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);                break;
 			case CONTEXT_CHANGING:                  	hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);               break;
+			
+			case CONTRIBUTOR_IDS_REPLY:                 hasHandler = (eventHandler instanceof ContributorIdsReplyEvent.Handler);           break;
+			case CONTRIBUTOR_IDS_REQUEST:               hasHandler = (eventHandler instanceof ContributorIdsRequestEvent.Handler);         break;
 			
 			case EDIT_CURRENT_BINDER_BRANDING:      	hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);     break;
 			case EDIT_PERSONAL_PREFERENCES:         	hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);       break;

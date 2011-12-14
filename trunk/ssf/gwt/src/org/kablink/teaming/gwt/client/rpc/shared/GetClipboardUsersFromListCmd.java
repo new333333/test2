@@ -34,75 +34,63 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-
 /**
- * This class holds the response data for the 'get folder rows' RPC
- * command.
+ * This class holds all of the information necessary to execute the
+ * 'get clipboard users from list' command.
  * 
  * @author drfoster@novell.com
  */
-public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private int				m_startOffset;		//
-	private int				m_totalRows;		//
-	private List<FolderRow> m_folderRows;		//
-	private List<Long>		m_contributorIds;	//
+public class GetClipboardUsersFromListCmd extends VibeRpcCmd {
+	private List<Long>	m_userIds;	//
+	private Long		m_binderId;	//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public FolderRowsRpcResponseData() {
+	public GetClipboardUsersFromListCmd() {
 		super();
 	}
 	
 	/**
 	 * Constructor method.
-	 *
-	 * @param folderRows
-	 * @param startOffset
-	 * @param totalRows
-	 * @param contributorIds
+	 * 
+	 * @param binderId
+	 * @param userIds
 	 */
-	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows, List<Long> contributorIds) {
+	public GetClipboardUsersFromListCmd(Long binderId, List<Long> userIds) {
 		this();
 		
-		setFolderRows(    folderRows    );
-		setStartOffset(   startOffset   );
-		setTotalRows(     totalRows     );
-		setContributorIds(contributorIds);
+		setBinderId(binderId);
+		setUserIds( userIds );
 	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public int             getStartOffset()    {return m_startOffset;   }
-	public int             getTotalRows()      {return m_totalRows;     }
-	public List<FolderRow> getFolderRows()     {return m_folderRows;    }
-	public List<Long>      getContributorIds() {return m_contributorIds;}
-
+	public List<Long> getUserIds()  {return m_userIds; }
+	public Long       getBinderId() {return m_binderId;}
+	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param
+	 * @param binderId
 	 */
-	public void setStartOffset(   int             startOffset)    {m_startOffset    = startOffset;   }
-	public void setTotalRows(     int             totalRows)      {m_totalRows      = totalRows;     }
-	public void setFolderRows(    List<FolderRow> folderRows)     {m_folderRows     = folderRows;    }
-	public void setContributorIds(List<Long>      contributorIds) {m_contributorIds = contributorIds;}
-
+	public void setUserIds( List<Long> userIds)  {m_userIds  = userIds; }
+	public void setBinderId(Long       binderId) {m_binderId = binderId;}
+	
 	/**
-	 * Returns a count of the folder rows being tracked.
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
 	 * @return
 	 */
-	public int getFolderRowCount() {
-		return ((null == m_folderRows) ? 0 : m_folderRows.size());
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_CLIPBOARD_USERS_FROM_LIST.ordinal();
 	}
 }

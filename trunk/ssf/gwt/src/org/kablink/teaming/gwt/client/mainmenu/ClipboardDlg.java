@@ -39,14 +39,18 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
-import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardPageUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardTeamUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardUsersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardUsersFromListCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveClipboardUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -59,6 +63,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -73,6 +79,7 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -80,18 +87,33 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
+public class ClipboardDlg extends DlgBox
+	implements EditSuccessfulHandler, EditCanceledHandler,
+	// Event handlers implemented by this class.
+		ContributorIdsReplyEvent.Handler
+{
 	private final static String IDBASE		= "clipboard_";	// Base ID for rows in the clipboard Grid.
 	private final static String IDTAIL_CBOX	= "_cb";		// Used for constructing the ID of a row's CheckBox.
+	private final static int    SCROLL_WHEN	= 5;			// Count of items in the ScrollPanel when scroll bars are enabled.
 
-	private BinderInfo				m_binderInfo;		//
-	private Grid					m_cbGrid;			// Once displayed, the table of clipboard items.
-	private GwtTeamingImageBundle	m_images;			//
-	private GwtTeamingMessages		m_messages;			// Access to the GWT UI messages.
-	private List<ClipboardUser>		m_cbUserList;		//
-	private int						m_cbUserListCount;	//
-	private int						m_cbGridCount;		// Count of rows  in m_cbGrid. 
+	private BinderInfo					m_binderInfo;				// The binder the clipboard is running against.
+	private FlowPanel 					m_selectPanel;				// Panel containing the select/clear all widgets.
+	private Grid						m_cbGrid;					// Once displayed, the table of clipboard items.
+	private GwtTeamingImageBundle		m_images;					// Access to Vibe's images.
+	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
+	private List<ClipboardUser>			m_cbUserList;				// Current list of users on the clipboard.
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registers.
+	private int							m_cbUserListCount;			// Number of items in m_cbUserList.
+	private int							m_cbGridCount;				// Count of rows  in m_cbGrid.
+	private ScrollPanel					m_sp;						// The ScrollPanel holding m_cbGrid.  Scroll bars are enabled/disabled based on the count of items.
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CONTRIBUTOR_IDS_REPLY,
+	};
+	
 	/*
 	 * Inner class used to compare two ClipboardUser's by their title.
 	 */
@@ -181,32 +203,15 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	private class DoAddPeople implements Command {
 		@Override
 		public void execute() {
-			GwtClientHelper.executeCommand(
-					new GetClipboardPageUsersCmd(m_binderInfo.getBinderIdAsLong()),
-					new AsyncCallback<VibeRpcResponse>() {
+			ScheduledCommand doRequestContributors = new ScheduledCommand() {
 				@Override
-				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						m_messages.rpcFailure_GetClipboardPageUsers());
+				public void execute() {
+					GwtTeaming.fireEvent(
+						new ContributorIdsRequestEvent(
+							m_binderInfo.getBinderIdAsLong()));
 				}
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					// Extract the clipboard users from the response
-					// data and merge it into the global list...
-					ClipboardUsersRpcResponseData responseData = ((ClipboardUsersRpcResponseData) response.getResponseData());
-					mergeCBUserLists(responseData.getClipboardUsers());
-
-					// ...save the global list as the new contents of
-					// ...the clipboard....
-					saveCBUserListAsync();
-					
-					// ...and use the global list to populate the
-					// ...dialog.
-					populateFromCBUserListAsync();
-				}
-			});
+			};
+			Scheduler.get().scheduleDeferred(doRequestContributors);
 		}
 	}
 	
@@ -281,6 +286,7 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 					// ...add a string saying that.
 					m_cbGrid.insertRow(0);
 					m_cbGrid.setWidget(0, 1, new DlgLabel(m_messages.mainMenuClipboardDlgEmpty()));
+					m_selectPanel.setVisible(false);
 				}
 				
 				// ...and save the global List<ClipboardUser> as the
@@ -302,8 +308,9 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		super(false, true, DlgButtonMode.Close);
 
 		// ...initialize everything else...
-		m_images   = GwtTeaming.getImageBundle();
-		m_messages = GwtTeaming.getMessages();
+		m_images                  = GwtTeaming.getImageBundle();
+		m_messages                = GwtTeaming.getMessages();
+		m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -378,10 +385,36 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		m_cbGrid.setCellSpacing(2);
 
 		// ...create a ScrollPanel to hold that Grid...
-		ScrollPanel sp = new ScrollPanel();
-		sp.addStyleName("vibe-cbDlg_ScrollPanel");
-		sp.add(m_cbGrid);
-		vp.add(sp);
+		m_sp = new ScrollPanel();
+		m_sp.addStyleName("vibe-cbDlg_ScrollPanel");
+		m_sp.add(m_cbGrid);
+		vp.add(m_sp);
+		
+		// ...create a FlowPanel and widgets for mass selections...
+		m_selectPanel = new FlowPanel();
+		m_selectPanel.addStyleName("vibe-cbDlg_SelectPanel");
+		InlineLabel selectAll = new InlineLabel(m_messages.mainMenuClipboardDlgSelectAll());
+		selectAll.setWordWrap(false);
+		selectAll.addStyleName("vibe-cbDlg_Anchor vibe-cbDlg_SelectAll");
+		selectAll.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				doSelectAllAsync(true);
+			}
+		});
+		m_selectPanel.add(selectAll);
+		InlineLabel clearAll = new InlineLabel(m_messages.mainMenuClipboardDlgClearAll());
+		clearAll.setWordWrap(false);
+		clearAll.addStyleName("vibe-cbDlg_Anchor vibe-cbDlg_ClearAll");
+		clearAll.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				doSelectAllAsync(false);
+			}
+		});
+		m_selectPanel.add(clearAll);
+		m_selectPanel.setVisible(false);
+		vp.add(m_selectPanel);
 		
 		// ...and return the Panel that holds the dialog's contents.
 		return vp;
@@ -401,6 +434,39 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		l.addStyleName("vibe-cbDlg_ReadingLabel");
 		fp.add(l);
 		m_cbGrid.setWidget(0, 1, fp);
+	}
+
+	/*
+	 * Asynchronously checks or unChecks the check boxes.
+	 */
+	private void doSelectAllAsync(final boolean select) {
+		ScheduledCommand doSelect = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doSelectAllNow(select);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSelect);
+	}
+	
+	/*
+	 * Asynchronously checks or unChecks the check boxes.
+	 */
+	private void doSelectAllNow(boolean select) {
+		// If the table is empty...
+		if (0 == m_cbGridCount) {
+			// ...there's nothing to do.
+			return;
+		}
+		
+		// Scan the rows in the table...
+		int rows = m_cbGrid.getRowCount();
+		for (int i = 0; i < rows; i += 1) {
+			// ...checking/unChecking each.
+			String rowId = getRowId(i);
+			InputElement cb = Document.get().getElementById(rowId + IDTAIL_CBOX).getFirstChildElement().cast();
+			cb.setChecked(select);
+		}
 	}
 	
 	/**
@@ -504,6 +570,97 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		m_cbUserListCount = m_cbUserList.size();
 	}
 	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContributorIdsReply(final ContributorIdsReplyEvent event) {
+		// Is this event targeted to the binder the dialog's running
+		// against?
+		final Long eventBinderId = event.getBinderId();
+		if (eventBinderId.equals(m_binderInfo.getBinderIdAsLong())) {
+			// Yes!  Process the contributor IDs.
+			processContributorIdsAsync(event.getContributorIds());
+		}
+	}
+
+	/**
+	 * Called when the clipboard dialog is detached.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and unregister our event handlers.
+		super.onDetach();
+		EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+	}
+	
+	/**
+	 * Called when the clipboard dialog is attached.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and register our event handlers.
+		super.onAttach();
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this,
+			m_registeredEventHandlers);
+	}
+	
+	/*
+	 * Asynchronously process the contributor IDs.
+	 */
+	private void processContributorIdsAsync(final List<Long> contributorIds) {
+		ScheduledCommand doHandleContributors = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				processContributorIdsNow(contributorIds);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doHandleContributors);
+	}
+	
+	/*
+	 * Synchronously process the contributor IDs.
+	 */
+	private void processContributorIdsNow(List<Long> contributorIds) {
+		GwtClientHelper.executeCommand(
+				new GetClipboardUsersFromListCmd(m_binderInfo.getBinderIdAsLong(), contributorIds),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetClipboardUsersFromList());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Extract the clipboard users from the response
+				// data and merge it into the global list...
+				ClipboardUsersRpcResponseData responseData = ((ClipboardUsersRpcResponseData) response.getResponseData());
+				mergeCBUserLists(responseData.getClipboardUsers());
+
+				// ...save the global list as the new contents of
+				// ...the clipboard....
+				saveCBUserListAsync();
+				
+				// ...and use the global list to populate the
+				// ...dialog.
+				populateFromCBUserListAsync();
+			}
+		});
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -567,11 +724,18 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		clearGrid();
 		m_cbGrid.resize(0, 2);
 		m_cbGridCount = m_cbUserListCount;
+		
+		if (m_cbGridCount >= SCROLL_WHEN)
+		     m_sp.addStyleName(   "vibe-cbDlg_ScrollPanelLimt");
+		else m_sp.removeStyleName("vibe-cbDlg_ScrollPanelLimt");
+		
 		if (0 == m_cbGridCount) {
 			m_cbGrid.insertRow(0);
 			m_cbGrid.setWidget(0, 1, new DlgLabel(m_messages.mainMenuClipboardDlgEmpty()));
+			m_selectPanel.setVisible(false);
 		}
 		else {
+			m_selectPanel.setVisible(true);
 			for (int i = 0; i < m_cbGridCount; i += 1) {
 				renderRow(m_cbGrid, m_cbUserList.get(i), i, false);
 			}

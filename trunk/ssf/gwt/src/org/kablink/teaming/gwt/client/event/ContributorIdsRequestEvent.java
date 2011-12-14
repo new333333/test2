@@ -30,59 +30,102 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+
+package org.kablink.teaming.gwt.client.event;
+
+import com.google.gwt.event.shared.EventHandler;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'get clipboard page users' command.
+ * The ContributorIdsRequestEvent requests that the contributor IDs
+ * for a binder be sent.
  * 
  * @author drfoster@novell.com
  */
-public class GetClipboardPageUsersCmd extends VibeRpcCmd {
-	private Long m_binderId;	//
-	
+public class ContributorIdsRequestEvent extends VibeEventBase<ContributorIdsRequestEvent.Handler> {
+	public static Type<Handler> TYPE = new Type<Handler>();
+
+	private Long	m_binderId;	//
+
 	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * Handler interface for this event.
 	 */
-	public GetClipboardPageUsersCmd() {
-		super();
+	public interface Handler extends EventHandler {
+		void onContributorIdsRequest(ContributorIdsRequestEvent event);
 	}
 	
 	/**
-	 * Constructor method.
+	 * Constructor methods.
 	 * 
 	 * @param binderId
 	 */
-	public GetClipboardPageUsersCmd(Long binderId) {
-		this();
+	public ContributorIdsRequestEvent(Long binderId) {
+		super();
 		setBinderId(binderId);
 	}
+	
+	/**
+	 * Dispatches this event when one is triggered.
+	 *
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+	@Override
+	protected void dispatch(Handler handler) {
+		handler.onContributorIdsRequest(this);
+	}
+	
+	/**
+	 * Returns the GwtEvent.Type of this event.
+	 * 
+	 * Implements GwtEvent.getAssociatedType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type<Handler> getAssociatedType() {
+		return TYPE;
+	}
 
+	/**
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
+	 * 
+	 * Implements VibeBaseEvent.getEventEnum()
+	 * 
+	 * @return
+	 */
+	@Override
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.CONTRIBUTOR_IDS_REQUEST;
+	}
+		
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
 	public Long getBinderId() {return m_binderId;}
-	
+
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param binderId
+	 * @param
 	 */
 	public void setBinderId(Long binderId) {m_binderId = binderId;}
-	
+
 	/**
-	 * Returns the command's enumeration value.
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * @param eventBus
+	 * @param handler
 	 * 
 	 * @return
 	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_CLIPBOARD_PAGE_USERS.ordinal();
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 }

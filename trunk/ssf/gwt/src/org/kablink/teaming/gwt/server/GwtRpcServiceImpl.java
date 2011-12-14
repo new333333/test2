@@ -448,14 +448,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_CLIPBOARD_PAGE_USERS:
-		{
-			GetClipboardPageUsersCmd gcpuCmd = ((GetClipboardPageUsersCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardPageUsers( this, getRequest( ri ), gcpuCmd.getBinderId());
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
 		case GET_CLIPBOARD_TEAM_USERS:
 		{
 			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);
@@ -469,6 +461,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			@SuppressWarnings("unused")
 			GetClipboardUsersCmd gcuCmd = ((GetClipboardUsersCmd) cmd);
 			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsers( this, getRequest( ri ));
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_CLIPBOARD_USERS_FROM_LIST:
+		{
+			GetClipboardUsersFromListCmd gcuflCmd = ((GetClipboardUsersFromListCmd) cmd);
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsersFromList( this, getRequest( ri ), gcuflCmd.getBinderId(), gcuflCmd.getUserIds());
 			response = new VibeRpcResponse( result );
 			return response;
 		}

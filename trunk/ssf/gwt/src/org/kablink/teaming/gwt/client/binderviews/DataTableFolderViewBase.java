@@ -63,6 +63,8 @@ import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
+import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -133,6 +135,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public abstract class DataTableFolderViewBase extends ViewBase
 	implements ToolPanelReady,
 	// Event handlers implemented by this class.
+		ContributorIdsRequestEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler,
 		InvokeDropBoxEvent.Handler
@@ -147,6 +150,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private FooterPanel						m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
 	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	//
+	private List<Long>						m_contributorIds;			//
 	private List<ToolPanelBase>				m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
 	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> ColumWidth objects.
 	private String							m_folderSortBy;				// Which column the view is sorted on.
@@ -204,6 +208,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.INVOKE_DROPBOX,
@@ -294,6 +299,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				public void onSuccess(VibeRpcResponse response) {
 					// Did we read more rows than we asked for?
 					FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
+					m_contributorIds = responseData.getContributorIds();
 					List<FolderRow> folderRows = responseData.getFolderRows();
 					int rowsRead = folderRows.size();
 					if (rowsRead > rowsRequested) {
@@ -1275,6 +1281,33 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				constructViewAsync();
 			}
 		});
+	}
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
+		// Is the event targeted to this folder?
+		final Long eventBinderId = event.getBinderId();
+		if (eventBinderId.equals(m_folderInfo.getBinderIdAsLong())) {
+			// Yes!  Asynchronously fire the corresponding reply event
+			// with the contributor IDs.
+			ScheduledCommand doReply = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					GwtTeaming.fireEvent(
+						new ContributorIdsReplyEvent(
+							eventBinderId,
+							m_contributorIds));
+				}
+			};
+			Scheduler.get().scheduleDeferred(doReply);
+		}
 	}
 	
 	/**

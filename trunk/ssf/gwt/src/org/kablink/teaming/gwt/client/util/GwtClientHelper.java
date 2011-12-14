@@ -543,6 +543,24 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Returns the binder ID from the content IFRAME.
+	 * 
+	 * @return
+	 */
+	public static native String jsGetContentBinderId() /*-{
+		return $wnd.top.gwtContentIframe.ss_binderId;
+	}-*/;
+	
+	/**
+	 * Returns the contributor IDs from the content IFRAME.
+	 * 
+	 * @return
+	 */
+	public static native String jsGetContentContributorIds() /*-{
+		return $wnd.top.gwtContentIframe.ss_clipboardIdsAsJSString;
+	}-*/;
+	
+	/**
 	 * Returns the left position of the content <IFRAME>'s <DIV>.
 	 * 
 	 * @return

@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URLDecoder;
 import java.text.Collator;
 import java.text.DateFormat;
@@ -187,7 +185,6 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -2778,33 +2775,6 @@ public class GwtServerHelper {
 
 	/**
 	 * Returns a ClipboardUsersRpcResponseData object containing the
-	 * user's referenced by a binder clipboard.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ClipboardUsersRpcResponseData getClipboardPageUsers(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
-		try {
-			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
-			
-//!			...this needs to be implemented...
-			
-			// ...and return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
-		}
-	}
-	
-	/**
-	 * Returns a ClipboardUsersRpcResponseData object containing the
 	 * user's on a team.
 	 * 
 	 * @param bs
@@ -2855,6 +2825,44 @@ public class GwtServerHelper {
 
 			// ...create a ClipboardUsersRpcResponseData object using them...
 			SortedSet<User> cbUsers = bs.getProfileModule().getUsersFromPrincipals(cbUserIds);
+			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
+			for (User cbUser:  cbUsers) {
+				reply.addUser(cbUser.getId(), cbUser.getTitle());
+			}
+			
+			// ...and return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}
+	}
+	
+	/**
+	 * Returns a ClipboardUsersRpcResponseData object containing the
+	 * user's referenced by a binder clipboard.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param userIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ClipboardUsersRpcResponseData getClipboardUsersFromList(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> userIds) throws GwtTeamingException {
+		try {
+			// If we were given a null list of user IDs...
+			if (null == userIds) {
+				// ...substitute an empty list.
+				userIds = new ArrayList<Long>();
+			}
+			
+			// Create a ClipboardUsersRpcResponseData object using the
+			// user ID list provided...
+			SortedSet<User> cbUsers = bs.getProfileModule().getUsersFromPrincipals(userIds);
 			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
 			for (User cbUser:  cbUsers) {
 				reply.addUser(cbUser.getId(), cbUser.getTitle());
@@ -4573,9 +4581,9 @@ public class GwtServerHelper {
 		case GET_BINDER_PERMALINK:
 		case GET_BINDER_REGION_STATE:
 		case GET_BINDER_TAGS:
-		case GET_CLIPBOARD_PAGE_USERS:
 		case GET_CLIPBOARD_TEAM_USERS:
 		case GET_CLIPBOARD_USERS:
+		case GET_CLIPBOARD_USERS_FROM_LIST:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
 		case GET_DOCUMENT_BASE_URL:

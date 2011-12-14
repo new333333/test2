@@ -60,6 +60,9 @@ public enum TeamingEvents implements IsSerializable {
 	CHANGE_CONTEXT,						// Tells the UI that a context switch is currently taking place.	(I.e., Is happening.      )
 	CONTEXT_CHANGED,					// Tells the UI that a context switch has just taken places.		(I.e., Has happened.      )
 	CONTEXT_CHANGING,					// Tells the UI That a context switch is about to take place.		(I.e., Is going to happen.)
+	
+	CONTRIBUTOR_IDS_REPLY,				// Fired with the current set of contributor IDs.
+	CONTRIBUTOR_IDS_REQUEST,			// Requests that the current contributor IDs be posted via a CONTRIBUTOR_IDS_REPLY event.
 
 	EDIT_CURRENT_BINDER_BRANDING,		// Edits the branding on the current binder.
 	EDIT_LANDING_PAGE_PROPERTIES,		// Edit the landing page properties
