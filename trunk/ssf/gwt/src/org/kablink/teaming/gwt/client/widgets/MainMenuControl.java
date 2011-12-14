@@ -62,6 +62,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ClipboardDlg;
 import org.kablink.teaming.gwt.client.mainmenu.ClipboardDlg.ClipboardDlgClient;
+import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
+import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg.FolderColumnsConfigDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
@@ -137,6 +139,7 @@ public class MainMenuControl extends Composite
 	private BinderInfo						m_contextBinder;
 	private ClipboardDlg					m_clipboardDlg;
 	private ContextLoadInfo					m_lastContextLoaded;
+	private EmailNotificationDlg			m_emailNotificationDlg;
 	private GwtMainPage						m_mainPage;
 	private GwtTeamingMainMenuImageBundle	m_images   = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages 				m_messages = GwtTeaming.getMessages();
@@ -825,9 +828,52 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeEmailNotification(InvokeEmailNotificationEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onInvokeEmailNotification():  ...this needs to be implemented...");
+		// Asynchronously invoke the email notification dialog.
+		ScheduledCommand doLoadENDlg = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onInvokeEmailNotificationNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoadENDlg);
 	}
+
+	/*
+	 * Synchronously invokes the email notification dialog.
+	 */
+	private void onInvokeEmailNotificationNow() {
+		// Have we instantiated an email notification dialog yet?
+		if (null == m_emailNotificationDlg) {
+			// No!  Instantiate one now.
+			EmailNotificationDlg.createAsync(new EmailNotificationDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final EmailNotificationDlg enDlg) {
+					// ...and show it.
+					m_emailNotificationDlg = enDlg;
+					ScheduledCommand doShow = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							showEmailNotificationDlgNow();
+						}
+					};
+					Scheduler.get().scheduleDeferred(doShow);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated an email notification dialog
+			// already!  Simply show it.
+			showEmailNotificationDlgNow();
+		}
+	}
+	
 	
 	/**
 	 * Handles InvokeImportIcalFileEvent's received by this class.
@@ -1008,13 +1054,6 @@ public class MainMenuControl extends Composite
 		m_wsTreeSlider.setState(event);
 	}
 	
-	/*
-	 * Synchronously shows the clipboard dialog.
-	 */
-	private void showClipboardDlgNow() {
-		ClipboardDlg.initAndShow(m_clipboardDlg, m_contextBinder);
-	}
-	
 	/**
 	 * Hide all the menus and controls on this menu control and shows
 	 * the Close administration menu item.  This is used when we invoke
@@ -1044,6 +1083,13 @@ public class MainMenuControl extends Composite
 		}
 	}
 
+	/*
+	 * Synchronously shows the clipboard dialog.
+	 */
+	private void showClipboardDlgNow() {
+		ClipboardDlg.initAndShow(m_clipboardDlg, m_contextBinder);
+	}
+	
 	/*
 	 * Asynchronously shows the context that was loaded.
 	 */
@@ -1112,6 +1158,13 @@ public class MainMenuControl extends Composite
 		});
 	}
 
+	/*
+	 * Synchronously shows the email notification dialog.
+	 */
+	private void showEmailNotificationDlgNow() {
+		EmailNotificationDlg.initAndShow(m_emailNotificationDlg, m_contextBinder);
+	}
+	
 	/*
 	 * Asynchronously shows the toolbar items.
 	 */

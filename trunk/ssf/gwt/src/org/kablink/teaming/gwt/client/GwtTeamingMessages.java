@@ -306,6 +306,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();
 	String rpcFailure_GetDownloadFileUrl();
+	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_getExecuteJspUrl();
 	String rpcFailure_GetFileFolderEntries();
 	String rpcFailure_GetFileUrl();
@@ -423,6 +424,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_EditBrandingDlg();
+	String codeSplitFailure_EmailNotificationDlg();
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
 	String codeSplitFailure_FilterPanel();
@@ -551,6 +553,14 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuClipboardDlgHeader();
 	String mainMenuClipboardDlgReading();
 	String mainMenuClipboardDlgSelectAll();
+	String mainMenuEmailNotificationDlgBanner();
+	String mainMenuEmailNotificationDlgDigest();
+	String mainMenuEmailNotificationDlgHeader();
+	String mainMenuEmailNotificationDlgIndividualMessages();
+	String mainMenuEmailNotificationDlgIndividualMessagesNoAttachments();
+	String mainMenuEmailNotificationDlgMakeSelection();
+	String mainMenuEmailNotificationDlgOverride();
+	String mainMenuEmailNotificationDlgTextMessaging();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
 	String mainMenuFavoritesDlgMoveDown();

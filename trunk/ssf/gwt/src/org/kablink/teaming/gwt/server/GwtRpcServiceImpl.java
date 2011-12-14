@@ -135,6 +135,7 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
+import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -451,7 +452,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CLIPBOARD_TEAM_USERS:
 		{
 			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardTeamUsers( this, getRequest( ri ), gctuCmd.getBinderId());
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardTeamUsers( this, getRequest( ri ), gctuCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -460,7 +461,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			@SuppressWarnings("unused")
 			GetClipboardUsersCmd gcuCmd = ((GetClipboardUsersCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsers( this, getRequest( ri ));
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsers( this, getRequest( ri ) );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -468,7 +469,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CLIPBOARD_USERS_FROM_LIST:
 		{
 			GetClipboardUsersFromListCmd gcuflCmd = ((GetClipboardUsersFromListCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsersFromList( this, getRequest( ri ), gcuflCmd.getBinderId(), gcuflCmd.getUserIds());
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsersFromList( this, getRequest( ri ), gcuflCmd.getBinderId(), gcuflCmd.getUserIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -525,6 +526,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String result = getDownloadFileUrl( ri, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
 			StringRpcResponseData responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_EMAIL_NOTIFICATION_INFORMATION:
+		{
+			GetEmailNotificationInfoCmd geniCmd = ((GetEmailNotificationInfoCmd) cmd);
+			EmailNotificationInfoRpcResponseData result = GwtEmailHelper.getEmailNotificationInfo( this, getRequest( ri ), geniCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
