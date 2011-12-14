@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
@@ -91,12 +92,17 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	/**
 	 * Show the activity stream and hide any other controls 
 	 */
-	public void showActivityStream()
+	public void showActivityStream( ShowSetting ss )
 	{
 		if ( m_miscWidget != null )
 			m_miscWidget.setVisible( false );
 		m_contentCtrl.setVisible( false );
-		m_activityStreamCtrl.show();
+		m_activityStreamCtrl.show( ss );
+	}
+	
+	public void showActivityStream()
+	{
+		showActivityStream( ShowSetting.UNKNOWN );
 	}
 	
 	/**

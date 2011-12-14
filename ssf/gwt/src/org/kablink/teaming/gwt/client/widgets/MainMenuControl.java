@@ -92,6 +92,7 @@ import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.GWT;
@@ -496,22 +497,7 @@ public class MainMenuControl extends Composite
 			new Command() {
 				@Override
 				public void execute() {
-					// Are we connected to a binder?
-					if (null != m_contextBinder) {
-						// Yes!  Use it as the current binder for the
-						// activity stream.
-						ActivityStreamInfo asi = new ActivityStreamInfo();
-						asi.setActivityStream(ActivityStream.CURRENT_BINDER);
-						asi.setBinderId(m_contextBinder.getBinderId());
-						asi.setTitle(   m_contextBinder.getBinderTitle());
-						GwtTeaming.fireEvent(new ActivityStreamEnterEvent(asi));
-					}
-					
-					else {
-						// No, we're not connected to a binder!  Just
-						// use the UI supplied default activity stream.
-						GwtTeaming.fireEvent(new ActivityStreamEnterEvent());
-					}
+					doWhatsNewAsync(ShowSetting.UNKNOWN);
 				}
 			});
 		menuPanel.addItem(m_whatsNewBox);
@@ -590,6 +576,42 @@ public class MainMenuControl extends Composite
 		});
 	}
 
+	/*
+	 * Asynchronously enters activity stream mode on the current
+	 * binder.
+	 */
+	private void doWhatsNewAsync(final ShowSetting ss) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doWhatsNewNow(ss);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
+	 * Synchronously enters activity stream mode on the current binder.
+	 */
+	private void doWhatsNewNow(ShowSetting ss) {
+		// Are we connected to a binder?
+		if (null != m_contextBinder) {
+			// Yes!  Use it as the current binder for the
+			// activity stream.
+			ActivityStreamInfo asi = new ActivityStreamInfo();
+			asi.setActivityStream(ActivityStream.CURRENT_BINDER);
+			asi.setBinderId(m_contextBinder.getBinderId());
+			asi.setTitle(   m_contextBinder.getBinderTitle());
+			GwtTeaming.fireEvent(new ActivityStreamEnterEvent(asi, ss));
+		}
+		
+		else {
+			// No, we're not connected to a binder!  Just
+			// use the UI supplied default activity stream.
+			GwtTeaming.fireEvent(new ActivityStreamEnterEvent(ss));
+		}
+	}
+	
 	/**
 	 * Returns the menu's current binder context.
 	 * 
@@ -903,8 +925,7 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onViewWhatsNewInBinder(ViewWhatsNewInBinderEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onViewWhatsNewInBinder():  ...this needs to be implemented...");
+		doWhatsNewAsync(ShowSetting.SHOW_ALL);
 	}
 	
 	/**
@@ -916,8 +937,7 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onViewWhatsUnseenInBinder(ViewWhatsUnseenInBinderEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onViewWhatsUnseenInBinder():  ...this needs to be implemented...");
+		doWhatsNewAsync(ShowSetting.SHOW_UNREAD);
 	}
 	
 	/**
