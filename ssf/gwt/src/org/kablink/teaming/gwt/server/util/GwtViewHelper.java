@@ -126,6 +126,16 @@ public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 
 	/*
+	 * Extracts the ID's of the entry contributors and adds them to the
+	 * contributor ID's list if they're not already there. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static void collectContributorIds(Map entryMap, List<Long> contributorIds) {
+		MiscUtil.addLongToListLongIfUnique(contributorIds, getLongFromMap(entryMap, Constants.CREATORID_FIELD)     );
+		MiscUtil.addLongToListLongIfUnique(contributorIds, getLongFromMap(entryMap, Constants.MODIFICATIONID_FIELD));
+	}
+	
+	/*
 	 * When initially built, the AssignmentInfo's in the
 	 * List<AssignmentInfo>'s only contain the assignee IDs.  We need
 	 * to complete them with each assignee's title, ...
@@ -1114,7 +1124,8 @@ public class GwtViewHelper {
 
 			// Scan the entries we read.
 			boolean addedAssignments = false;
-			List<FolderRow> folderRows = new ArrayList<FolderRow>();
+			List<FolderRow> folderRows     = new ArrayList<FolderRow>();
+			List<Long>      contributorIds = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
 				// Have we already process this entry's ID?
 				String entryIdS  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
@@ -1124,6 +1135,9 @@ public class GwtViewHelper {
 					// duplicates because of pinning.
 					continue;
 				}
+				
+				// Extract the contributors from this entry.
+				collectContributorIds(entryMap, contributorIds);
 				
 				// Creating a FolderRow for each entry.
 				FolderRow fr = new FolderRow(entryId, folderColumns);
@@ -1265,7 +1279,7 @@ public class GwtViewHelper {
 			
 			// Finally, return the List<FolderRow> wrapped in a
 			// FolderRowsRpcResponseData.
-			return new FolderRowsRpcResponseData(folderRows, start, totalRecords);
+			return new FolderRowsRpcResponseData(folderRows, start, totalRecords, contributorIds);
 		}
 		
 		catch (Exception e) {
@@ -1276,6 +1290,19 @@ public class GwtViewHelper {
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
+	}
+
+	/*
+	 * Extracts a Long value from a entry Map.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Long getLongFromMap(Map entryMap, String key) {
+		Object v = entryMap.get(key);
+		Long reply;
+		if      (v instanceof String) reply = Long.parseLong((String) v);
+		else if (v instanceof Long)   reply = ((Long) v);
+		else                          reply = -1L;
+		return reply;
 	}
 
 	/*

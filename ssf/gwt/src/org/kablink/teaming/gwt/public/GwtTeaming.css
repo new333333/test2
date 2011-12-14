@@ -3337,14 +3337,20 @@ td.datePickerMonth {
 .vibe-aboutBox {z-index: 1001;}
 
 /* Start:  Cliboard dialog styles. */
-	.vibe-cbDlg_Checkbox     {margin-left: 5px;}
-	.vibe-cbDlg_Grid         {margin: 20px 10px 10px 20px;}
-	.vibe-cbDlg_Label        {}
-	.vibe-cbDlg_MenuBar      {}
-	.vibe-cbDlg_MenuItem     {}
-	.vibe-cbDlg_ReadingPanel {}
-	.vibe-cbDlg_ReadingLabel {vertical-align: top; margin-left: 5px;}
-	.vibe-cbDlg_ScrollPanel  {}
+	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
+	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
+	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
+	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
+	.vibe-cbDlg_Label           {}
+	.vibe-cbDlg_MenuBar         {}
+	.vibe-cbDlg_MenuItem        {}
+	.vibe-cbDlg_ReadingPanel    {}
+	.vibe-cbDlg_ReadingLabel    {vertical-align: top; margin-left: 5px;}
+	.vibe-cbDlg_SelectAll       {}
+	.vibe-cbDlg_SelectPanel     {margin-left: 30px; margin-top: 10px; white-space: nowrap;}
+	.vibe-cbDlg_ScrollPanel     {}
+	.vibe-cbDlg_ScrollPanelLimt {height: 150px;}
 /* End:  Cliboard dialog styles. */
 
 /* The following styles are used with an object list table. */

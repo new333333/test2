@@ -302,9 +302,9 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
-	String rpcFailure_GetClipboardPageUsers();
 	String rpcFailure_GetClipboardTeamUsers();
 	String rpcFailure_GetClipboardUsers();
+	String rpcFailure_GetClipboardUsersFromList();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_getExecuteJspUrl();
 	String rpcFailure_GetFileFolderEntries();
@@ -545,10 +545,12 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarWorkspace();
 	String mainMenuClipboardDlgAddPeople();
 	String mainMenuClipboardDlgAddTeam();
+	String mainMenuClipboardDlgClearAll();
 	String mainMenuClipboardDlgDelete();
 	String mainMenuClipboardDlgEmpty();
 	String mainMenuClipboardDlgHeader();
 	String mainMenuClipboardDlgReading();
+	String mainMenuClipboardDlgSelectAll();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
 	String mainMenuFavoritesDlgMoveDown();

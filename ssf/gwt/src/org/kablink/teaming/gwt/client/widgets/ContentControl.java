@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
+import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
@@ -91,12 +93,14 @@ import com.google.gwt.user.client.ui.NamedFrame;
 public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
+		ContributorIdsRequestEvent.Handler,
 		ChangeContextEvent.Handler,
 		GotoUrlEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowFileFolderEvent.Handler,
 		ShowLandingPageEvent.Handler
 {
+	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
 	private boolean m_isGraniteGwtEnabled;
@@ -110,6 +114,9 @@ public class ContentControl extends Composite
 		// Context events.
 		TeamingEvents.CHANGE_CONTEXT,
 		TeamingEvents.GOTO_URL,
+		
+		// Contributor events.
+		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
@@ -454,7 +461,7 @@ public class ContentControl extends Composite
 	 */
 	private void setViewNow( final ViewInfo vi, final String url ) {
 		// Do we have a ViewInfo?
-		boolean viHandled = false;
+		m_contentInGWT = false;
 		if ( null != vi )
 		{
 			// What type of view is it?
@@ -512,13 +519,13 @@ public class ContentControl extends Composite
 					{
 					case DISCUSSION:
 						GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( bi, viewReady ) );
-						viHandled = true;
+						m_contentInGWT = true;
 						break;
 						
 						
 					case FILE:
 						GwtTeaming.fireEvent( new ShowFileFolderEvent( bi, viewReady ) );
-						viHandled = true;
+						m_contentInGWT = true;
 						break;
 						
 						
@@ -565,7 +572,7 @@ public class ContentControl extends Composite
 						if ( showNew )
 						{
 							GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
-							viHandled = true;
+							m_contentInGWT = true;
 						}
 						break;
 					}
@@ -622,7 +629,7 @@ public class ContentControl extends Composite
 		}
 
 		// Did we handle the ViewInfo as a view?
-		if ( !viHandled )
+		if ( !m_contentInGWT )
 		{
 			// No!  Load the URL instead and make sure the
 			// ContentControl is showing.
@@ -656,6 +663,80 @@ public class ContentControl extends Composite
 		}
 	}// end onChangeContext()
 
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContributorIdsRequest( ContributorIdsRequestEvent event )
+	{
+		// Is the content being handled by a GWT widget?
+		if ( m_contentInGWT )
+		{
+			// Yes!  Bail as we only respond to requests for the
+			// content IFRAME.
+			return;
+		}
+		
+		// Does the content IFRAME have a binder ID?
+		String contentBinderId = GwtClientHelper.jsGetContentBinderId();
+		if ( ! ( GwtClientHelper.hasString( contentBinderId ) ) )
+		{
+			// No!  Bail.
+			return;
+		}
+		
+		// Is this event targeted to that binder?
+		final Long eventBinderId = event.getBinderId();
+		if ( ! ( eventBinderId.equals( Long.parseLong( contentBinderId ) ) ) )
+		{
+			// No!  Bail.
+			return;
+		}
+
+		// Does the content IFRAME have a list of contributor IDs?
+		String contributorIdsString = GwtClientHelper.jsGetContentContributorIds();
+		if ( ! ( GwtClientHelper.hasString( contributorIdsString ) ) )
+		{
+			// No!  Bail.
+			return;
+		}
+
+		// Can we parse any contributor IDs from that list?
+		String[] contributorIdsS = contributorIdsString.split( "," );
+		final List<Long> contributorIds = new ArrayList<Long>();
+		for ( String cId:  contributorIdsS )
+		{
+			try {contributorIds.add( Long.parseLong( cId.trim() ) );}
+			catch (Exception ex) {}
+		}
+		if ( contributorIds.isEmpty() )
+		{
+			// No!  Bail.
+			return;
+		}
+
+		// If we get here, the IFRAME contained a list of contributor
+		// ID's targeted to the requested binder.  Asynchronously fire
+		// a contributor ID's reply event with the contributor IDs.
+		ScheduledCommand doReply = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				GwtTeaming.fireEvent(
+					new ContributorIdsReplyEvent(
+						eventBinderId,
+						contributorIds ) );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doReply );
+	}// end onContributorIdsRequest()
+	
 	
 	/**
 	 * Handles the GotoUrlEvents received by this class
