@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.event;
 
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -48,6 +49,7 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private ActivityStreamInfo m_asi;
+	private ShowSetting m_showSetting = ShowSetting.UNKNOWN; 
 
 	/**
 	 * Handler interface for this event.
@@ -58,17 +60,45 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	
 	/**
 	 * Constructor methods.
+	 */
+	public ActivityStreamEnterEvent() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor methods.
+	 * 
+	 * @param asi	May be null.
+	 * @param ss
+	 */
+	public ActivityStreamEnterEvent(ActivityStreamInfo asi, ShowSetting ss) {
+		// Initialize the object...
+		this();
+
+		// ...and store the parameters.
+		setActivityStreamInfo(asi);
+		setShowSetting(       ss );
+	}
+	
+	/**
+	 * Constructor methods.
 	 * 
 	 * @param asi	May be null.
 	 */
 	public ActivityStreamEnterEvent(ActivityStreamInfo asi) {
-		super();
-		m_asi = asi;
+		// Always use one of the initial forms of the method.
+		this(asi, ShowSetting.UNKNOWN);
 	}
 	
-	public ActivityStreamEnterEvent() {
-		// Always use the initial form of the constructor.
-		this(null);
+	/**
+	 * Constructor methods.
+	 * 
+	 * @param ss
+	 */
+	public ActivityStreamEnterEvent(ShowSetting ss) {
+		// Always use one of the initial forms of the method.
+		this(null, ss);
 	}
 	
 	/**
@@ -76,7 +106,17 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	 * 
 	 * @return
 	 */
-	public ActivityStreamInfo getActivityStreamInfo() {return m_asi;}
+	public ActivityStreamInfo getActivityStreamInfo() {return m_asi;        }
+	public ShowSetting        getShowSetting()        {return m_showSetting;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setActivityStreamInfo(ActivityStreamInfo asi) {m_asi         = asi;}
+	public void setShowSetting(       ShowSetting        ss)  {m_showSetting = ss; }
+	
 
 	/**
 	 * Dispatches this event when one is triggered.

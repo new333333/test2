@@ -1049,15 +1049,18 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * Take all the actions necessary to handle the changing of the show setting.
 	 * 
 	 */
-	private void handleNewShowSetting( ShowSetting showSetting )
+	private void handleNewShowSetting( ShowSetting showSetting, boolean doRefresh )
 	{
 		m_showSetting = showSetting;
 		
 		// Update the label that displays what the show setting is.
 		updateShowSettingLabel();
 
-		// Do a search based on the new show setting.
-		refreshActivityStream();
+		if ( doRefresh )
+		{
+			// Do a search based on the new show setting.
+			refreshActivityStream();
+		}
 
 		// Check the appropriate menu item to reflect the show setting.
 		m_showSettingPopupMenu.updateMenu( m_showSetting );
@@ -1668,10 +1671,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 	/**
 	 * 
 	 */
-	public void show()
+	public void show( ShowSetting ss )
 	{
 		Scheduler.ScheduledCommand cmd;
 
+		if ( ShowSetting.UNKNOWN != ss )
+		{
+			handleNewShowSetting( ss, false );
+		}
+		
 		setVisible( true );
 		
 		// Restart the "check for changes" timer.
@@ -1685,6 +1693,11 @@ public class ActivityStreamCtrl extends ResizeComposite
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	public void show()
+	{
+		show( ShowSetting.UNKNOWN );
 	}
 	
 	
@@ -1989,7 +2002,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onViewAllEntries( ViewAllEntriesEvent event )
 	{
-		handleNewShowSetting( ShowSetting.SHOW_ALL );
+		handleNewShowSetting( ShowSetting.SHOW_ALL, true );
 	}// end onViewAllEntries()
 	
 	/**
@@ -2002,7 +2015,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onViewUnreadEntries( ViewUnreadEntriesEvent event )
 	{
-		handleNewShowSetting( ShowSetting.SHOW_UNREAD );
+		handleNewShowSetting( ShowSetting.SHOW_UNREAD, true );
 	}// end onViewUnreadEntries()
 	
 	/**
