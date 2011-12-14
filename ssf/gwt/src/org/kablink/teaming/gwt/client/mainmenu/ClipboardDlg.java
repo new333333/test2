@@ -790,7 +790,7 @@ public class ClipboardDlg extends DlgBox
 	}
 	
 	/*
-	 * Asynchronously runs the given instance of the clipboard dialog.
+	 * Synchronously runs the given instance of the clipboard dialog.
 	 */
 	private void runDlgNow(BinderInfo bi) {
 		// Store the parameter...

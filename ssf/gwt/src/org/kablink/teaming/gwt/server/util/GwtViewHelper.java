@@ -126,6 +126,14 @@ public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 
 	/*
+	 * Class constructor that prevents this class from being
+	 * instantiated.
+	 */
+	private GwtViewHelper() {
+		// Nothing to do.
+	}
+	
+	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
 	 */
