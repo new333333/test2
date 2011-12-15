@@ -2845,7 +2845,6 @@ public class GwtMainPage extends ResizeComposite
 		// Hide everything on the menu, the workspace tree control and the content control.
 		m_mainMenuCtrl.showAdministrationMenubar();
 		m_wsTreeCtrl.setVisible( false );
-		m_contentLayoutPanel.hideAllContent();
 		
 		// Put the admin control as the widget in the center panel of the main panel.
 		m_mainPanel.replaceCenterContent( m_adminControl );

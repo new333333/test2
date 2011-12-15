@@ -635,7 +635,8 @@ public class ContentControl extends Composite
 		{
 			// No!  Load the URL instead and make sure the
 			// ContentControl is showing.
-			setUrl( url );			
+			setUrl( url );
+			m_mainPage.getMainContentLayoutPanel().showWidget( null );
 			ShowContentControlEvent.fireOne();
 		}
 
