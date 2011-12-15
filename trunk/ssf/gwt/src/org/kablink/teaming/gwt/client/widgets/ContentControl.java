@@ -182,17 +182,38 @@ public class ContentControl extends Composite
 	 */
 	public void clear()
 	{
+		String html;
 		FrameElement frameElement;
+			
+		html = "<div style=\"text-align: center\">" + GwtTeaming.getMessages().oneMomentPlease() + "</div>";
 		
 		frameElement = getContentFrame();
 		if ( null != frameElement )
-		{
-			String html;
-			
-			html = "<body><div style=\"text-align: center\">" + GwtTeaming.getMessages().oneMomentPlease() + "</div></body>";
 			frameElement.getContentDocument().getBody().setInnerHTML( html );
-		}
+
+		//setFrameHtml( m_frame.getName(), html );		
 	}
+	
+	/**
+	 * Write the given html to the iframe
+	 */
+	public static native void setFrameHtml( String frameName, String html ) /*-{
+		var frame;
+		
+		// Can we find a frame with the given name?
+		frame = $wnd.top.frames[frameName];
+		if ( frame )
+		{
+			// Yes
+			frame.document.open();
+
+			// Write the given html to the document.
+			frame.document.write( html );
+
+			frame.document.close();
+		}
+	}-*/;
+	
 
 	/*
 	 * Returns the FrameElement encompassing this ContentControl.
@@ -636,8 +657,17 @@ public class ContentControl extends Composite
 			// No!  Load the URL instead and make sure the
 			// ContentControl is showing.
 			setUrl( url );
+			
+			// Tell the main content layout panel to not show a gwt widget it may have.
 			m_mainPage.getMainContentLayoutPanel().showWidget( null );
+			
 			ShowContentControlEvent.fireOne();
+		}
+		else
+		{
+			// Clear out the content of the iframe
+			setUrl( "" );
+			clear();
 		}
 
 		// Finally, push the URL we just processed on the content
