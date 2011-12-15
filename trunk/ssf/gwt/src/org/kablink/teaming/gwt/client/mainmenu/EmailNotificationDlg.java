@@ -35,9 +35,10 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEmailNotificationInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -48,11 +49,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -64,13 +70,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 @SuppressWarnings("unused")
 public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private final static String IDBASE		= "emailNotification_";	// Base ID for rows in the dialog.
-	private final static String IDTAIL_CBOX	= "_cb";				// Used for constructing the ID of a row's CheckBox.
-	private final static int    SCROLL_WHEN	= 5;					// Count of items in the ScrollPanel when scroll bars are enabled.
-
-	private BinderInfo				m_binderInfo;	// The binder the dialog is running against.
-	private GwtTeamingImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingMessages		m_messages;		// Access to Vibe's messages.
+	private BinderInfo								m_binderInfo;				// The binder the dialog is running against.
+	private CheckBox								m_footerCB;					//
+	private EmailNotificationInfoRpcResponseData	m_emailNotificationInfo;	//
+	private GwtTeamingMainMenuImageBundle			m_images;					// Access to Vibe's images.
+	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
+	private ListBox									m_digestList;				//
+	private ListBox									m_msgList;					//
+	private ListBox									m_msgNoAttList;				//
+	private ListBox									m_textList;					//
+	private VerticalPanel							m_vp;						//
 
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
@@ -113,7 +122,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		super(false, true, DlgButtonMode.OkCancel);
 
 		// ...initialize everything else...
-		m_images   = GwtTeaming.getImageBundle();
+		m_images   = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
@@ -125,10 +134,52 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	}
 
 	/*
+	 * Builds the widgets for an email address selection group.
+	 */
+	private ListBox buildEMAListWidgets(
+		String panelStyle,		// The style to use for the panel containing the widgets.
+		String panelLabel,		// The label above the widgets.
+		String labelStyle,		// The style to use for the label above the widgets.
+		String ema,				// The email address that applies to this selection group.
+		String emaListStyle)	// The style to use for the email address list.
+	{
+		// Create the label above the list...
+		VerticalPanel vp = new VerticalPanel();
+		vp.addStyleName(panelStyle);
+		m_vp.add(vp);
+		InlineLabel il = new InlineLabel(panelLabel);
+		il.addStyleName("vibe-emailNotifDlg_SectionLabel " + labelStyle);
+		il.setWordWrap(false);
+		vp.add(il);
+
+		// ...create the list...
+		ListBox emaList = new ListBox();
+		emaList.addStyleName("vibe-emailNotifDlg_SectionList " + emaListStyle);
+	    emaList.setVisibleItemCount(4);
+	    emaList.addItem(m_messages.mainMenuEmailNotificationDlgMakeSelection(), "");
+	    int selIndex = 0;
+	    if (null == ema) {
+	    	ema = "";
+	    }
+	    for (EmailAddressInfo emi:  m_emailNotificationInfo.getEmailAddresses()) {
+	    	String emiA = emi.getAddress();
+	    	if (emiA.equalsIgnoreCase(ema)) {
+	    		selIndex = emaList.getItemCount();
+	    	}
+	    	emaList.addItem(emiA, emi.getType());
+	    }
+	    emaList.setSelectedIndex(selIndex);
+	    vp.add(emaList);
+
+	    // ...and return the ListBox containing the list.
+		return emaList;
+	}
+	
+	/*
 	 * Constructs and returns an Image with a spinner in it.
 	 */
 	private Image buildSpinnerImage() {
-		return new Image(m_images.spinner16());
+		return new Image(m_images.spinner());
 	}
 
 	/**
@@ -142,14 +193,26 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		// Create a panel to hold the dialog's content...
-		VerticalPanel vp = new VerticalPanel();
-		
-//!		...this needs to be implemented...
-		vp.add(new InlineLabel("...this needs to be implemented..."));
-		
-		// ...and return the Panel that holds the dialog's contents.
-		return vp;
+		// Create and return a panel to hold the dialog's content.
+		m_vp = new VerticalPanel();
+		m_vp.addStyleName("vibe-emailNotifDlg_Content");
+		return m_vp;
+	}
+
+	/*
+	 * Clears the contents of the dialog and displays a message that
+	 * we're reading the contents of the current email notification
+	 * settings.
+	 */
+	private void displayReading() {
+		m_vp.clear();
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("vibe-emailNotifDlg_ReadingPanel");
+		fp.add(buildSpinnerImage());
+		DlgLabel l = new DlgLabel(m_messages.mainMenuEmailNotificationDlgReading());
+		l.addStyleName("vibe-emailNotifDlg_ReadingLabel");
+		fp.add(l);
+		m_vp.add(fp);
 	}
 
 	/**
@@ -178,8 +241,9 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-// 		...this needs to be implemented...
-		return true;
+//!		...this needs to be implemented...
+		Window.alert("EmailNotificationDlg.editSuccessful( 'Sorry, can't save yet !!!' ):  ...this needs to be implemented...");
+		return false;
 	}
 
 	/**
@@ -237,13 +301,121 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Extract the email notification information from the
-				// response data...
-				EmailNotificationInfoRpcResponseData responseData = ((EmailNotificationInfoRpcResponseData) response.getResponseData());
-				
-				// ...and use that to populate the dialog.
-//!				...this needs to be implemented...
+				// response data and use it to populate the dialog.
+				m_emailNotificationInfo = ((EmailNotificationInfoRpcResponseData) response.getResponseData());
+				populateFromEmailNotificationInfoAsync();
 			}
 		});
+	}
+
+	/*
+	 * Asynchronously populates the dialog from an
+	 * EmailNotificationInfoRpcResponseData object.
+	 */
+	private void populateFromEmailNotificationInfoAsync() {
+		ScheduledCommand doPopulate = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateFromEmailNotificationInfoNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
+	}
+	
+	/*
+	 * Synchronously populates the dialog from an
+	 * EmailNotificationInfoRpcResponseData object.
+	 */
+	private void populateFromEmailNotificationInfoNow() {
+		// Clear the current content of the content panel.
+		m_vp.clear();
+
+		// Create the banner text...
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("vibe-emailNotifDlg_BannerPanel");
+		InlineLabel il = new InlineLabel(m_messages.mainMenuEmailNotificationDlgBanner());
+		il.addStyleName("vibe-emailNotifDlg_BannerLabel");
+		il.setWordWrap(false);
+		fp.add(il);
+		final String bannerHelpUrl = m_emailNotificationInfo.getBannerHelpUrl();
+		if (GwtClientHelper.hasString(bannerHelpUrl)) {
+			Image img = new Image(m_images.help());
+			img.addStyleName("vibe-emailNotifDlg_BannerHelp");
+			img.setTitle(m_messages.mainMenuEmailNotificationDlgAltHelpAll());
+			img.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					Window.open(bannerHelpUrl, "teaming_help_window", "resizeable,scrollbar");
+				}
+			});
+			fp.add(img);
+		}
+		m_vp.add(fp);
+		
+		// ...create the widgets for the digest selection...
+		m_digestList = buildEMAListWidgets(
+			"vibe-emailNotifDlg_DigestPanel",
+			m_messages.mainMenuEmailNotificationDlgDigest(),
+			"vibe-emailNotifDlg_Digest",
+			m_emailNotificationInfo.getDigestAddress(),
+			"vibe-emailNotifDlg_DigestList");
+		
+		// ...create the widgets for the individual messages
+		// ...selection...
+		m_msgList = buildEMAListWidgets(
+			"vibe-emailNotifDlg_MsgPanel",
+			m_messages.mainMenuEmailNotificationDlgIndividualMessages(),
+			"vibe-emailNotifDlg_Msg",
+			m_emailNotificationInfo.getMsgAddress(),
+			"vibe-emailNotifDlg_MsgList");
+		
+		// ...create the widgets for the individual messages without
+		// ...attachments selection...
+		m_msgNoAttList = buildEMAListWidgets(
+			"vibe-emailNotifDlg_MsgNoAttPanel",
+			m_messages.mainMenuEmailNotificationDlgIndividualMessagesNoAttachments(),
+			"vibe-emailNotifDlg_MsgNoAtt",
+			m_emailNotificationInfo.getMsgNoAttAddress(),
+			"vibe-emailNotifDlg_MsgNoAttList");
+		
+		// ...create the widgets for the text messaging selection...
+		m_textList = buildEMAListWidgets(
+			"vibe-emailNotifDlg_TextPanel",
+			m_messages.mainMenuEmailNotificationDlgTextMessaging(),
+			"vibe-emailNotifDlg_Text",
+			m_emailNotificationInfo.getTextAddress(),
+			"vibe-emailNotifDlg_TextList");
+		
+		// ...finally, create the widgets for the override presets
+		// ...checkbox and label.
+		fp = new FlowPanel();
+		fp.addStyleName("vibe-emailNotifDlg_FooterPanel");
+		m_footerCB = new CheckBox();
+		m_footerCB.addStyleName("vibe-emailNotifDlg_FooterCheck");
+		m_footerCB.setValue(m_emailNotificationInfo.getOverridePresets());
+		fp.add(m_footerCB);
+		il = new InlineLabel(m_messages.mainMenuEmailNotificationDlgOverride());
+		il.addStyleName("vibe-emailNotifDlg_FooterLabel");
+		il.setWordWrap(false);
+		fp.add(il);
+		final String overrideHelpUrl = m_emailNotificationInfo.getOverrideHelpUrl();
+		if (GwtClientHelper.hasString(overrideHelpUrl)) {
+			Image img = new Image(m_images.help());
+			img.addStyleName("vibe-emailNotifDlg_FooterHelp");
+			img.setTitle(m_messages.mainMenuEmailNotificationDlgAltHelpOverride());
+			img.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					Window.open(overrideHelpUrl, "teaming_help_window", "resizeable,scrollbar");
+				}
+			});
+			fp.add(img);
+		}
+		m_vp.add(fp);
+		
+		// Show the dialog (perhaps again) so that it can be positioned
+		// correctly based on its new content.
+		show(true);
 	}
 	
 	/*
@@ -268,7 +440,9 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		// Store the parameter...
 		m_binderInfo = bi;
 
-		// ...start populating the dialog and show it.
+		// ...and display a reading message, start populating the
+		// ...dialog and show it.
+		displayReading();
 		populateDlgAsync();
 		show(true);
 	}

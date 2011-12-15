@@ -90,6 +90,8 @@ public class GwtEmailHelper {
 			// Construct an EmailNotificationInfoRpcResponseData
 			// object to return.
 			EmailNotificationInfoRpcResponseData reply = new EmailNotificationInfoRpcResponseData();
+			reply.setBannerHelpUrl(  MiscUtil.getHelpUrl("user", "informed_notifications", null)                             );
+			reply.setOverrideHelpUrl(MiscUtil.getHelpUrl("user", "informed_notifications", "informed_notifications_override"));
 
 			// Does the user have any email addresses defined?
 			User user = GwtServerHelper.getCurrentUser();
