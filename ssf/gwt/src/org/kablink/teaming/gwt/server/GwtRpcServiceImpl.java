@@ -1439,6 +1439,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_EMAIL_NOTIFICATION_INFORMATION:
+		{
+			SaveEmailNotificationInfoCmd seniCmd = ((SaveEmailNotificationInfoCmd) cmd);
+			BooleanRpcResponseData result = GwtEmailHelper.saveEmailNotificationInfo(
+				this,
+				getRequest( ri ),
+				seniCmd.getBinderId(),
+				seniCmd.getOverridePresets(),
+				seniCmd.getDigestAddressTypes(),
+				seniCmd.getMsgAddressTypes(),
+				seniCmd.getMsgNoAttAddressTypes(),
+				seniCmd.getTextAddressTypes() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
 		{
 			SaveFileSyncAppConfigurationCmd sfsacCmd;

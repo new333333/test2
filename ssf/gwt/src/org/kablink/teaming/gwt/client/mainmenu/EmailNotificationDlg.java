@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -40,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEmailNotificationInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveEmailNotificationInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -68,7 +71,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private BinderInfo								m_binderInfo;				// The binder the dialog is running against.
 	private CheckBox								m_footerCB;					//
@@ -137,42 +139,38 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Builds the widgets for an email address selection group.
 	 */
 	private ListBox buildEMAListWidgets(
-		String panelStyle,		// The style to use for the panel containing the widgets.
-		String panelLabel,		// The label above the widgets.
-		String labelStyle,		// The style to use for the label above the widgets.
-		String ema,				// The email address that applies to this selection group.
-		String emaListStyle)	// The style to use for the email address list.
+		String       panelStyle,	// The style to use for the panel containing the widgets.
+		String       panelLabel,	// The label above the widgets.
+		String       labelStyle,	// The style to use for the label above the widgets.
+		List<String> emaList,		// The list of email addresses that apply to this selection group.
+		String       emaBoxStyle)	// The style to use for the email address ListBox.
 	{
-		// Create the label above the list...
+		// Create a panel for the email address list widgets...
 		VerticalPanel vp = new VerticalPanel();
 		vp.addStyleName(panelStyle);
 		m_vp.add(vp);
+		
+		// ...create the label above the ListBox...
 		InlineLabel il = new InlineLabel(panelLabel);
 		il.addStyleName("vibe-emailNotifDlg_SectionLabel " + labelStyle);
 		il.setWordWrap(false);
 		vp.add(il);
 
-		// ...create the list...
-		ListBox emaList = new ListBox();
-		emaList.addStyleName("vibe-emailNotifDlg_SectionList " + emaListStyle);
-	    emaList.setVisibleItemCount(4);
-	    emaList.addItem(m_messages.mainMenuEmailNotificationDlgMakeSelection(), "");
-	    int selIndex = 0;
-	    if (null == ema) {
-	    	ema = "";
-	    }
+		// ...create the ListBox...
+		ListBox emaBox = new ListBox(true);
+		emaBox.addStyleName("vibe-emailNotifDlg_SectionList " + emaBoxStyle);
+	    emaBox.setVisibleItemCount(4);
+	    emaBox.addItem(m_messages.mainMenuEmailNotificationDlgMakeSelection(), "");
+	    emaBox.setItemSelected(0, emaList.isEmpty());
 	    for (EmailAddressInfo emi:  m_emailNotificationInfo.getEmailAddresses()) {
 	    	String emiA = emi.getAddress();
-	    	if (emiA.equalsIgnoreCase(ema)) {
-	    		selIndex = emaList.getItemCount();
-	    	}
-	    	emaList.addItem(emiA, emi.getType());
+	    	emaBox.addItem(emiA, emi.getType());
+	    	emaBox.setItemSelected((emaBox.getItemCount() - 1), emaList.contains(emiA));
 	    }
-	    emaList.setSelectedIndex(selIndex);
-	    vp.add(emaList);
+	    vp.add(emaBox);
 
-	    // ...and return the ListBox containing the list.
-		return emaList;
+	    // ...and return the ListBox that contains the list.
+		return emaBox;
 	}
 	
 	/*
@@ -241,8 +239,10 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-//!		...this needs to be implemented...
-		Window.alert("EmailNotificationDlg.editSuccessful( 'Sorry, can't save yet !!!' ):  ...this needs to be implemented...");
+		// Start saving the contents of the dialog and return false.
+		// We'll keep the dialog open until the save is successful, at
+		// which point, we'll close it. 
+		saveEmailNotificationInfoAsync();
 		return false;
 	}
 
@@ -269,6 +269,24 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	@Override
 	public FocusWidget getFocusWidget() {
 		return null;
+	}
+
+	/*
+	 * Adds the selected email addresses from a ListBox to a
+	 * List<String>.
+	 */
+	private void getSelectedEMAs(List<String> emaTypeList, ListBox emaBox) {
+		// Scan the 2nd and later items in the ListBox (we don't use
+		// the first as that's the '--make a selection--' item.)
+		int c = emaBox.getItemCount();
+		for (int i = 1; i < c; i += 1) {
+			// Is this item selected?
+			if (emaBox.isItemSelected(i)) {
+				// Yes!  Add its type (i.e., its value) to the
+				// List<String>.
+				emaTypeList.add(emaBox.getValue(i));
+			}
+		}
 	}
 
 	/*
@@ -357,7 +375,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			"vibe-emailNotifDlg_DigestPanel",
 			m_messages.mainMenuEmailNotificationDlgDigest(),
 			"vibe-emailNotifDlg_Digest",
-			m_emailNotificationInfo.getDigestAddress(),
+			m_emailNotificationInfo.getDigestAddresses(),
 			"vibe-emailNotifDlg_DigestList");
 		
 		// ...create the widgets for the individual messages
@@ -366,7 +384,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			"vibe-emailNotifDlg_MsgPanel",
 			m_messages.mainMenuEmailNotificationDlgIndividualMessages(),
 			"vibe-emailNotifDlg_Msg",
-			m_emailNotificationInfo.getMsgAddress(),
+			m_emailNotificationInfo.getMsgAddresses(),
 			"vibe-emailNotifDlg_MsgList");
 		
 		// ...create the widgets for the individual messages without
@@ -375,7 +393,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			"vibe-emailNotifDlg_MsgNoAttPanel",
 			m_messages.mainMenuEmailNotificationDlgIndividualMessagesNoAttachments(),
 			"vibe-emailNotifDlg_MsgNoAtt",
-			m_emailNotificationInfo.getMsgNoAttAddress(),
+			m_emailNotificationInfo.getMsgNoAttAddresses(),
 			"vibe-emailNotifDlg_MsgNoAttList");
 		
 		// ...create the widgets for the text messaging selection...
@@ -383,7 +401,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			"vibe-emailNotifDlg_TextPanel",
 			m_messages.mainMenuEmailNotificationDlgTextMessaging(),
 			"vibe-emailNotifDlg_Text",
-			m_emailNotificationInfo.getTextAddress(),
+			m_emailNotificationInfo.getTextAddresses(),
 			"vibe-emailNotifDlg_TextList");
 		
 		// ...finally, create the widgets for the override presets
@@ -445,6 +463,51 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		displayReading();
 		populateDlgAsync();
 		show(true);
+	}
+	
+	/*
+	 * Asynchronously saves the contents of the dialog.
+	 */
+	private void saveEmailNotificationInfoAsync() {
+		ScheduledCommand doSave = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				saveEmailNotificationInfoNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSave);
+	}
+	
+	/*
+	 * Synchronously saves the contents of the dialog.
+	 */
+	private void saveEmailNotificationInfoNow() {
+		// Create a save command with the contents of the dialog.
+		SaveEmailNotificationInfoCmd saveCmd = new SaveEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
+		saveCmd.setOverridePresets(m_footerCB.getValue());
+		getSelectedEMAs(saveCmd.getDigestAddressTypes(),   m_digestList  );
+		getSelectedEMAs(saveCmd.getMsgAddressTypes(),      m_msgList     );
+		getSelectedEMAs(saveCmd.getMsgNoAttAddressTypes(), m_msgNoAttList);
+		getSelectedEMAs(saveCmd.getTextAddressTypes(),     m_textList    );
+
+		// Can we perform the save?
+		GwtClientHelper.executeCommand(
+				saveCmd,
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetEmailNotificationInfo());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Yes, the save was successful.  Simply close the
+				// dialog.
+				hide();
+			}
+		});
 	}
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
