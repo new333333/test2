@@ -81,15 +81,6 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	}
 
 	/**
-	 * 
-	 */
-	public void hideAllContent()
-	{
-		m_contentCtrl.setVisible( false );
-		m_activityStreamCtrl.hide();
-	}
-	
-	/**
 	 * Show the activity stream and hide any other controls 
 	 */
 	public void showActivityStream( ShowSetting ss )
@@ -110,10 +101,20 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	 */
 	public void showContentControl()
 	{
+		// Do we have a widget that we should show instead of the content control?
 		if ( m_miscWidget != null )
-			m_miscWidget.setVisible( false );
+		{
+			// Yes, show it instead of the content control.
+			m_miscWidget.setVisible( true );
+			m_contentCtrl.setVisible( false );
+		}
+		else
+		{
+			// No, show the content control
+			m_contentCtrl.setVisible( true );
+		}
+			
 		m_activityStreamCtrl.hide();
-		m_contentCtrl.setVisible( true );
 	}
 	
 	/**
@@ -121,14 +122,22 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel
 	 */
 	public void showWidget( ResizeComposite composite )
 	{
-		hideAllContent();
+		// Do we have a widget to show?
+		if ( composite != null )
+		{
+			// Yes, hide the content control and the activity stream control.
+			m_contentCtrl.setVisible( false );
+			m_activityStreamCtrl.hide();
+		}
 
 		// Remove the previous widget(but not m_contentCtrl or m_activityStreamCtrl)
 		if ( m_miscWidget != null )
 			m_contentFlowPanel.remove( m_miscWidget );
-		
-		// Add the new widget
+
 		m_miscWidget = composite;
-		m_contentFlowPanel.add( composite );
+
+		// Add the new widget
+		if ( composite != null )
+			m_contentFlowPanel.add( composite );
 	}
 }
