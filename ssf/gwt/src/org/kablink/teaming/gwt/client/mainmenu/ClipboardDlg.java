@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
@@ -96,16 +96,16 @@ public class ClipboardDlg extends DlgBox
 	private final static String IDTAIL_CBOX	= "_cb";		// Used for constructing the ID of a row's CheckBox.
 	private final static int    SCROLL_WHEN	= 5;			// Count of items in the ScrollPanel when scroll bars are enabled.
 
-	private BinderInfo					m_binderInfo;				// The binder the clipboard is running against.
-	private FlowPanel 					m_selectPanel;				// Panel containing the select/clear all widgets.
-	private Grid						m_cbGrid;					// Once displayed, the table of clipboard items.
-	private GwtTeamingImageBundle		m_images;					// Access to Vibe's images.
-	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
-	private List<ClipboardUser>			m_cbUserList;				// Current list of users on the clipboard.
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registers.
-	private int							m_cbUserListCount;			// Number of items in m_cbUserList.
-	private int							m_cbGridCount;				// Count of rows  in m_cbGrid.
-	private ScrollPanel					m_sp;						// The ScrollPanel holding m_cbGrid.  Scroll bars are enabled/disabled based on the count of items.
+	private BinderInfo						m_binderInfo;				// The binder the clipboard is running against.
+	private FlowPanel 						m_selectPanel;				// Panel containing the select/clear all widgets.
+	private Grid							m_cbGrid;					// Once displayed, the table of clipboard items.
+	private GwtTeamingMainMenuImageBundle	m_images;					// Access to Vibe's images.
+	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private List<ClipboardUser>				m_cbUserList;				// Current list of users on the clipboard.
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registers.
+	private int								m_cbUserListCount;			// Number of items in m_cbUserList.
+	private int								m_cbGridCount;				// Count of rows  in m_cbGrid.
+	private ScrollPanel						m_sp;						// The ScrollPanel holding m_cbGrid.  Scroll bars are enabled/disabled based on the count of items.
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -308,7 +308,7 @@ public class ClipboardDlg extends DlgBox
 		super(false, true, DlgButtonMode.Close);
 
 		// ...initialize everything else...
-		m_images                  = GwtTeaming.getImageBundle();
+		m_images                  = GwtTeaming.getMainMenuImageBundle();
 		m_messages                = GwtTeaming.getMessages();
 		m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 	
@@ -344,7 +344,7 @@ public class ClipboardDlg extends DlgBox
 	 * Constructs and returns an Image with a spinner in it.
 	 */
 	private Image buildSpinnerImage() {
-		return new Image(m_images.spinner16());
+		return new Image(m_images.spinner());
 	}
 
 	/*

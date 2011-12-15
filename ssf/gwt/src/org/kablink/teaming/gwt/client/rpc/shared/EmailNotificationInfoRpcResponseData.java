@@ -46,12 +46,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class EmailNotificationInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private boolean					m_overridePresets;	// true -> These settings override the presets.  false -> They don't.
 	private List<EmailAddressInfo>	m_emailAddresses;	// The list of email addresses defined for the current user.
+	private String					m_bannerHelpUrl;	// 
 	private String					m_digestAddress;	// User's digest                                  email address, if any.
 	private String					m_msgAddress;		// User's individual messages                     email address, if any.
 	private String					m_msgNoAttAddress;	// User's individual messages without attachments email address, if any.
+	private String					m_overrideHelpUrl;	//
 	private String					m_textAddress;		// User's text messaging                          email address, if any.
 	
-	public class EmailAddressInfo implements IsSerializable {
+	/**
+	 * Inner class used to represent an email address.
+	 */
+	public static class EmailAddressInfo implements IsSerializable {
 		private String m_type;		//
 		private String m_address;	//
 		
@@ -65,7 +70,6 @@ public class EmailNotificationInfoRpcResponseData implements IsSerializable, Vib
 			// Initialize the super class.
 			super();
 		}
-		
 		
 		/**
 		 * Constructor method.
@@ -129,9 +133,11 @@ public class EmailNotificationInfoRpcResponseData implements IsSerializable, Vib
 	 */
 	public boolean                getOverridePresets() {return m_overridePresets;}
 	public List<EmailAddressInfo> getEmailAddresses()  {return m_emailAddresses; }
+	public String                 getBannerHelpUrl()   {return m_bannerHelpUrl;  }
 	public String                 getDigestAddress()   {return m_digestAddress;  }
 	public String                 getMsgAddress()      {return m_msgAddress;     }
 	public String                 getMsgNoAttAddress() {return m_msgNoAttAddress;}
+	public String                 getOverrideHelpUrl() {return m_overrideHelpUrl;}
 	public String                 getTextAddress()     {return m_textAddress;    }
 	
 	/**
@@ -141,9 +147,11 @@ public class EmailNotificationInfoRpcResponseData implements IsSerializable, Vib
 	 */
 	public void setOverridePresets( boolean                overridePresets) {m_overridePresets = overridePresets;}
 	public void setEmailAddresses(  List<EmailAddressInfo> emailAddresses)  {m_emailAddresses  = emailAddresses; }
+	public void setBannerHelpUrl(   String                 bannerHelpUrl)   {m_bannerHelpUrl   = bannerHelpUrl;  }
 	public void setDigestAddress(   String                 digestAddress)   {m_digestAddress   = digestAddress;  }
 	public void setMsgAddress(      String                 msgAddress)      {m_msgAddress      = msgAddress;     }
 	public void setMsgNoAttAddress( String                 msgNoAttAddress) {m_msgNoAttAddress = msgNoAttAddress;}
+	public void setOverrideHelpUrl( String                 overrideHelpUrl) {m_overrideHelpUrl = overrideHelpUrl;}
 	public void setTextAddress(     String                 textAddress)     {m_textAddress     = textAddress;    }
 
 	/**

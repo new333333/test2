@@ -3353,6 +3353,36 @@ td.datePickerMonth {
 	.vibe-cbDlg_ScrollPanelLimt {height: 150px;}
 /* End:  Cliboard dialog styles. */
 
+/* Start:  Email notification dialog styles. */
+	.vibe-emailNotifDlg_BannerHelp       {margin-left: 10px;}
+	.vibe-emailNotifDlg_BannerHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_BannerLabel      {}
+	.vibe-emailNotifDlg_BannerPanel      {display: block; white-space: nowrap;}
+	.vibe-emailNotifDlg_Content          {margin: 20px 10px 10px 20px;}
+	.vibe-emailNotifDlg_FooterCheck      {}
+	.vibe-emailNotifDlg_FooterHelp       {margin-left: 10px;}
+	.vibe-emailNotifDlg_FooterHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_FooterLabel      {}
+	.vibe-emailNotifDlg_FooterPanel      {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
+	.vibe-emailNotifDlg_Digest           {}
+	.vibe-emailNotifDlg_DigestList       {}
+	.vibe-emailNotifDlg_DigestPanel      {display: block; white-space: nowrap; margin-top: 15px;}
+	.vibe-emailNotifDlg_Label            {}
+	.vibe-emailNotifDlg_Msg              {}
+	.vibe-emailNotifDlg_MsgList          {}
+	.vibe-emailNotifDlg_MsgPanel         {display: block; white-space: nowrap; margin-top: 15px;}
+	.vibe-emailNotifDlg_MsgNoAtt         {}
+	.vibe-emailNotifDlg_MsgNoAttList     {}
+	.vibe-emailNotifDlg_MsgNoAttPanel    {display: block; white-space: nowrap; margin-top: 15px;}
+	.vibe-emailNotifDlg_ReadingPanel     {}
+	.vibe-emailNotifDlg_ReadingLabel     {vertical-align: top; margin-left: 5px;}
+	.vibe-emailNotifDlg_SectionLabel     {font-weight: bold; margin-top: 20px;}
+	.vibe-emailNotifDlg_SectionList      {}
+	.vibe-emailNotifDlg_Text             {}
+	.vibe-emailNotifDlg_TextList         {}
+	.vibe-emailNotifDlg_TextPanel        {display: block; white-space: nowrap; margin-top: 15px;}
+/* End:  Email notification dialog styles. */
+
 /* The following styles are used with an object list table. */
 .oltHeader
 {
