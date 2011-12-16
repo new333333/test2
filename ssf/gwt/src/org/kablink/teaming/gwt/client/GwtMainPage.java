@@ -2848,7 +2848,6 @@ public class GwtMainPage extends ResizeComposite
 		m_splitLayoutPanel.setVisible( false );
 		
 		m_adminControl.showControl( m_mainMenuCtrl );
-		relayoutPage( false );
 	}// end showAdminControlImpl()
 	
 	/*

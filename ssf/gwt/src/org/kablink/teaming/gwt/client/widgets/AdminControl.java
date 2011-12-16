@@ -563,6 +563,10 @@ public class AdminControl extends TeamingPopupPanel
 		m_adminActionsTreeControl = new AdminActionsTreeControl();
 		mainPanel.add( m_adminActionsTreeControl );
 		
+		// We need to replace gwt-PopupPanel style name because it is causing an empty
+		// box to be displayed because initially this control's width and height are 0.
+		setStylePrimaryName( "adminControlPopup" );
+		
 		// Create a control to hold the administration page for the selection administration action.
 		ContentControl.createAsync(
 				mainPage,
