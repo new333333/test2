@@ -318,6 +318,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFooterToolbarItems();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetListOfAttachments();
+	String rpcFailure_GetBinderAccessories();
+	String rpcFailure_GetBinderAccessory();
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();

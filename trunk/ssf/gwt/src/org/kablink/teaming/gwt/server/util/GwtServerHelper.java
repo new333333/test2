@@ -131,6 +131,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
+import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -1272,6 +1273,105 @@ public class GwtServerHelper {
 				results = WebUrlUtil.getServletRootURL( request ) + WebKeys.SERVLET_VIEW_FILE + "?viewType=executeJspResults&fileId=" + tempFile.getName() + "&fullPath=" + tempFile.getAbsolutePath();
 			}
 			*/
+		}
+		catch ( Exception e )
+		{
+			String[] errorArgs;
+			String errorTag = "errorcode.unexpectedError";
+			
+			errorArgs = new String[] { e.getLocalizedMessage() };
+			results = NLT.get( errorTag, errorArgs );
+		}
+		
+		return results;
+	}
+	
+	
+	/**
+	 * Execute the given enhanced view jsp and return the resulting html.
+	 */
+	public static String executeJsp( AllModulesInjected bs, HttpServletRequest request, 
+			HttpServletResponse response, ServletContext servletContext, 
+			String jspName, Map<String,Object> model )
+	{
+		String results;
+		String path;
+		RequestDispatcher reqDispatcher;
+		StringServletResponse ssResponse;
+		
+		// Construct the full path to the jsp
+		path = "/WEB-INF/jsp/" + jspName;
+		
+		reqDispatcher = request.getRequestDispatcher( path );
+		ssResponse = new StringServletResponse( response );
+
+		try
+		{
+			RenderRequestImpl renderReq;
+			RenderResponseImpl renderRes;
+			PortletInfo portletInfo;
+
+			// Gather up all the data required by the jsp
+			{
+				Long binderIdL;
+				Map<String, Object> params;
+
+				// Create the objects needed to call setupStandardBeans
+				{
+					String portletName;
+					String charEncoding;
+
+					portletName = "ss_forum";
+					portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo( portletName );
+					
+					renderReq = new RenderRequestImpl( request, portletInfo, AdaptedPortlets.getPortletContext() );
+					
+					params = new HashMap<String, Object>();
+					params.put( KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName} );
+					renderReq.setRenderParameters( params );
+					
+					renderRes = new RenderResponseImpl( renderReq, response, portletName );
+					charEncoding = SPropsUtil.getString( "web.char.encoding", "UTF-8" );
+					renderRes.setContentType( "text/html; charset=" + charEncoding );
+					renderReq.defineObjects( portletInfo.getPortletConfig(), renderRes );
+					
+					renderReq.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
+				}
+				if (model.containsKey(WebKeys.BINDER_ID)) {
+					binderIdL = (Long)model.get(WebKeys.BINDER_ID);
+					Binder binder = bs.getBinderModule().getBinder(binderIdL);
+					model.put(WebKeys.BINDER, binder);
+					BinderHelper.setupStandardBeans( bs, renderReq, renderRes, model, binderIdL );
+				} else {
+					BinderHelper.setupStandardBeans( bs, renderReq, renderRes, model );
+				}
+				
+				// Put the data that setupWorkspaceBeans() put in model into the request.
+				for (String key: model.keySet())
+				{
+					Object value;
+					
+					value = model.get( key );
+					request.setAttribute( key, value );
+				}
+				
+				// Add the data that normally would have been added by PortletAdapterServlet.java
+		    	// This attribute is used to distinguish adapter request from regular request
+		    	request.setAttribute( KeyNames.CTX, servletContext );
+
+		    	// Add the data that normally would have been added by PortletAdapterController.java
+				{
+					request.setAttribute( "javax.portlet.config", portletInfo.getPortletConfig() );
+					request.setAttribute( "javax.portlet.request", renderReq );
+					request.setAttribute( "javax.portlet.response", renderRes );
+					request.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
+				}
+			}
+				
+			// Execute the jsp
+			reqDispatcher.include( request, ssResponse );
+			
+			results = ssResponse.getString().trim();
 		}
 		catch ( Exception e )
 		{
@@ -4558,6 +4658,13 @@ public class GwtServerHelper {
 			}
 			break;
 		}
+		
+		case GET_JSP_HTML:
+		{
+			GetJspHtmlCmd jspHtmlCmd = ((GetJspHtmlCmd) cmd);
+			Map model = jspHtmlCmd.getModel();
+			StringCheckUtil.check(model, Boolean.TRUE);
+		}
 			
 		// The following commands do not require XSS checks.
 		case ADD_FAVORITE:
@@ -4574,6 +4681,7 @@ public class GwtServerHelper {
 		case GET_ACTIVITY_STREAM_PARAMS:
 		case GET_ADD_MEETING_URL:
 		case GET_ADMIN_ACTIONS:
+		case GET_BINDER_ACCESSORIES:
 		case GET_BINDER_BRANDING:
 		case GET_BINDER_DESCRIPTION:
 		case GET_BINDER_FILTERS:

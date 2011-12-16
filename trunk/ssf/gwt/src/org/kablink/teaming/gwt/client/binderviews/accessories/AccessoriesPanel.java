@@ -32,10 +32,22 @@
  */
 package org.kablink.teaming.gwt.client.binderviews.accessories;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
+import org.kablink.teaming.gwt.client.rpc.shared.BinderAccessoriesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderAccessoriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -43,7 +55,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 
 /**
@@ -53,6 +66,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public class AccessoriesPanel extends ToolPanelBase {
 	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
+	private Map m_dashboardMap;
+	private String m_html;
+	private String m_binderId;
 	
 	/*
 	 * Constructor method.
@@ -69,17 +85,17 @@ public class AccessoriesPanel extends ToolPanelBase {
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-accessoriesPanel");
 		initWidget(m_fp);
-		loadPart1Async();
+		loadAccessoriesMapAsync();
 	}
 
 	/*
 	 * Asynchronously construct's the contents of the accessories panel
 	 */
-	private void loadPart1Async() {
+	private void loadAccessoriesMapAsync() {
 		ScheduledCommand constructAccessories = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart1Now();
+				loadAccessoriesMapNow();
 			}
 		};
 		Scheduler.get().scheduleDeferred(constructAccessories);
@@ -88,15 +104,134 @@ public class AccessoriesPanel extends ToolPanelBase {
 	/*
 	 * Synchronously construct's the contents of the accessories panel
 	 */
-	private void loadPart1Now() {
-//!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("AccessoriesPanel.loadPart1Now( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
-		
-		// Finally, tell who's using this tool panel that it's ready to
-		// go.
-		toolPanelReady();
+	private void loadAccessoriesMapNow() {
+		final Long binderId = m_binderInfo.getBinderIdAsLong();
+		m_binderId = String.valueOf(binderId);
+		GwtClientHelper.executeCommand(
+				new GetBinderAccessoriesCmd(binderId),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetBinderAccessories(),
+					binderId);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Store the description and continue loading.
+				BinderAccessoriesRpcResponseData responseData = ((BinderAccessoriesRpcResponseData) response.getResponseData());
+				m_dashboardMap = responseData.getDashboardMap();
+				loadAccessoryPanelAsync();
+			}
+		});
 	}
 	
+	/*
+	 * Asynchronously construct's the contents of the entry menu panel.
+	 */
+	private void loadAccessoryPanelAsync() {
+		ScheduledCommand constructAccessory = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadAccessoryPanelNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(constructAccessory);
+	}
+
+	/*
+	 * Synchronously construct's the contents of the description panel.
+	 */
+	private void loadAccessoryPanelNow() {
+		Map model = new HashMap();
+		model.put("binderId", m_binderId);
+		//Go through each component list and show the accessories
+		String[] ComponentLists = {"wide_top", "narrow_fixed", "narrow_variable", "wide_bottom"};
+    	List componentList = new ArrayList();
+    	String componentId = "";
+    	Map<String,Object> ssDashboard = (Map<String,Object>) m_dashboardMap.get("ssDashboard");
+    	model.put("ssDashboard", ssDashboard);
+    	for (int i = 0; i < ComponentLists.length; i++) {
+			String scope = (String)ssDashboard.get("scope");
+			if (scope.equals("local")) {
+				componentList = (List) ssDashboard.get(ComponentLists[i]);
+			} else if (scope.equals("global")) {
+				componentList = (List) ((Map)ssDashboard.get("dashboard_global")).get(ComponentLists[i]);
+			} else if (scope.equals("binder")) {
+				componentList = (List) ((Map)ssDashboard.get("dashboard_binder")).get(ComponentLists[i]);
+			}
+			for (int j = 0; j < componentList.size(); j++) {
+				Map component = (Map) componentList.get(j);
+				if ((Boolean)component.get("visible")) {
+					//get the component id
+					componentId = (String)component.get("id");
+		    		ssDashboard.put("ssComponentId", componentId);
+					GwtClientHelper.executeCommand(
+							new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY, model),
+							new AsyncCallback<VibeRpcResponse>() {
+						@Override
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetBinderAccessory(),
+								VibeJspHtmlType.ACCESSORY.toString());
+						}
+						
+						@Override
+						public void onSuccess(VibeRpcResponse response) {
+							// Store the description and continue loading.
+							JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+							m_html = responseData.getHtml();
+							loadAccessoryAsync();
+						}
+					});
+				}
+			}
+		}
+
+    	if (componentId.equals("")) {
+    		//There are no accessories to show
+			// ...tell who's using it that it's ready to go.
+			toolPanelReady();
+    	}
+	}
+		
+	/*
+	 * Asynchronously construct's the contents of the entry menu panel.
+	 */
+	private void loadAccessoryAsync() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadAccessoryNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	private void loadAccessoryNow() {
+		// Do we have any HTML to show?
+		if (GwtClientHelper.hasString(m_html)) {
+			// Yes!  We need to render it.  Add the initial panel
+			// styles.
+			m_fp.addStyleName("vibe-binderViewTools vibe-descriptionPanel");
+			HTMLPanel htmlPanel = new HTMLPanel(m_html);
+			m_fp.add(htmlPanel);
+
+			// ...tell who's using it that it's ready to go.
+			toolPanelReady();
+		}
+		
+		else {
+			// No, we don't have a description!  Simply tell who's
+			// using this tool panel that it's ready to go.
+			toolPanelReady();
+		}
+	}
+
+
 	/**
 	 * Loads the AccessoriesPanel split point and returns an instance
 	 * of it via the callback.
