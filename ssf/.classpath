@@ -166,5 +166,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/lucene-analyzers.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/liquibase-hibernate.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/liquibase.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
