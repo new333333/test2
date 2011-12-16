@@ -1690,10 +1690,6 @@ public class GwtMainPage extends ResizeComposite
 				m_adminControl.hideControl();
 				m_mainMenuCtrl.hideAdministrationMenubar();
 				
-				// Restore the ui state to what it was before we opened
-				// the site administration.
-				restoreUIState();
-
 				m_mainPanel.replaceCenterContent( m_splitLayoutPanel );
 
 				// If the activity stream was showing show it now.
@@ -1705,6 +1701,10 @@ public class GwtMainPage extends ResizeComposite
 				{
 					m_contentLayoutPanel.showContentControl();
 				}
+				
+				// Restore the ui state to what it was before we opened
+				// the site administration.
+				restoreUIState();
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( cmd );

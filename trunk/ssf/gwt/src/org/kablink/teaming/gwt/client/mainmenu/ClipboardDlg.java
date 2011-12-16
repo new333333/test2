@@ -102,7 +102,7 @@ public class ClipboardDlg extends DlgBox
 	private GwtTeamingMainMenuImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<ClipboardUser>				m_cbUserList;				// Current list of users on the clipboard.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registers.
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private int								m_cbUserListCount;			// Number of items in m_cbUserList.
 	private int								m_cbGridCount;				// Count of rows  in m_cbGrid.
 	private ScrollPanel						m_sp;						// The ScrollPanel holding m_cbGrid.  Scroll bars are enabled/disabled based on the count of items.
@@ -308,9 +308,8 @@ public class ClipboardDlg extends DlgBox
 		super(false, true, DlgButtonMode.Close);
 
 		// ...initialize everything else...
-		m_images                  = GwtTeaming.getMainMenuImageBundle();
-		m_messages                = GwtTeaming.getMessages();
-		m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		m_images   = GwtTeaming.getMainMenuImageBundle();
+		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -589,31 +588,28 @@ public class ClipboardDlg extends DlgBox
 	}
 
 	/**
-	 * Called when the clipboard dialog is detached.
-	 * 
-	 * Overrides Widget.onDetach()
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and unregister our event handlers.
-		super.onDetach();
-		EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-	}
-	
-	/**
 	 * Called when the clipboard dialog is attached.
 	 * 
 	 * Overrides Widget.onAttach()
 	 */
 	@Override
 	public void onAttach() {
-		// Let the widget attach and register our event handlers.
+		// Let the widget attach and then register our event handlers.
 		super.onAttach();
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this,
-			m_registeredEventHandlers);
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the clipboard dialog is detached.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
 	}
 	
 	/*
@@ -743,6 +739,28 @@ public class ClipboardDlg extends DlgBox
 	}
 
 	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
+	/*
 	 * Removes the ClipboardUser with the given ID from the global
 	 * List<ClipboardUser>.
 	 */
@@ -845,6 +863,18 @@ public class ClipboardDlg extends DlgBox
 	private void sortCBUserList(List<ClipboardUser> cbUserList) {
 		Comparator<ClipboardUser> comparator = new ClipboardUserComparator(true);	// true -> Ascending.
 		Collections.sort(cbUserList, comparator);
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
