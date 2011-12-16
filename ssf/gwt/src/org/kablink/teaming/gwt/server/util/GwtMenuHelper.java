@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +62,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
@@ -192,7 +194,7 @@ public class GwtMenuHelper {
 				// ToolbarItem's.
 				miscTBI.addNestedItem( constructClipboardItem()                 );
 				miscTBI.addNestedItem( constructConfigureColumsItem(     binder));
-				miscTBI.addNestedItem( constructSendEmailToItem()               );
+				miscTBI.addNestedItem( constructSendEmailToItem(request, binder));
 				miscTBI.addNestedItem( constructShareBinderItem(request, binder));
 				miscTBI.addNestedItem( constructMobileUiItem(   request, binder));
 				miscTBI.addNestedItems(constructTrackBinderItem(bs,      binder));
@@ -1211,14 +1213,20 @@ public class GwtMenuHelper {
 	
 	/*
 	 * Constructs a ToolbarItem to run the send email to team members
-	 * dialog. 
+	 * (actually, contributors but I followed the naming that was used
+	 * in the JSP code) dialog. 
 	 */
-	private static ToolbarItem constructSendEmailToItem() {
+	private static ToolbarItem constructSendEmailToItem(HttpServletRequest request, Binder binder) {
 		User user = GwtServerHelper.getCurrentUser();
 		if (MiscUtil.hasString(user.getEmailAddress()) && (!(user.isShared()))) {
 			ToolbarItem sendEmailToTBI = new ToolbarItem(SEND_EMAIL             );
 			markTBITitle(sendEmailToTBI, "toolbar.menu.sendMail"                );
 			markTBIEvent(sendEmailToTBI, TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM);
+			AdaptedPortletURL url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+			url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			url.setParameter(WebKeys.USER_IDS_TO_ADD, InvokeSendEmailToTeamEvent.CONTRIBUTOR_IDS_PLACEHOLER);
+			markTBIUrl(sendEmailToTBI, url);
 			return sendEmailToTBI;
 		}
 		return null;

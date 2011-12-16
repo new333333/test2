@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -46,6 +44,10 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class InvokeSendEmailToTeamEvent extends VibeEventBase<InvokeSendEmailToTeamEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
+    
+	public static final String	CONTRIBUTOR_IDS_PLACEHOLER	= "*userIdsPlaceHolder*";
+    
+    private String m_baseSendUrl;	//
 
 	/**
 	 * Handler interface for this event.
@@ -55,12 +57,29 @@ public class InvokeSendEmailToTeamEvent extends VibeEventBase<InvokeSendEmailToT
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
+	 * 
+	 * @param baseSendUrl
 	 */
-	public InvokeSendEmailToTeamEvent() {
+	public InvokeSendEmailToTeamEvent(String baseSendUrl) {
 		super();
+		setBaseSendUrl(baseSendUrl);
 	}
 
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String getBaseSendUrl() {return m_baseSendUrl;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param baseSendUrl
+	 */
+	public void setBaseSendUrl(String baseSendUrl) {m_baseSendUrl = baseSendUrl;}
+	
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
@@ -73,13 +92,6 @@ public class InvokeSendEmailToTeamEvent extends VibeEventBase<InvokeSendEmailToT
         handler.onInvokeSendEmailToTeam(this);
     }
 	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new InvokeSendEmailToTeamEvent());
-	}
-    
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 *
