@@ -364,6 +364,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_BINDER_ACCESSORIES:
+		{
+			GetBinderAccessoriesCmd gbaCmd = ((GetBinderAccessoriesCmd) cmd);
+			BinderAccessoriesRpcResponseData responseData = GwtViewHelper.getBinderAccessories(
+				this,
+				getRequest( ri ),
+				gbaCmd.getBinderId() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_BINDER_BRANDING:
 		{
 			GwtBrandingData brandingData;
@@ -794,6 +804,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
+		}
+		
+		case GET_JSP_HTML:
+		{
+			HttpServletResponse resp;
+			ServletContext servletContext;
+			
+			resp = getResponse( ri );
+			servletContext = getServletContext( ri );
+			GetJspHtmlCmd gjhCmd = ((GetJspHtmlCmd) cmd);
+			JspHtmlRpcResponseData responseData = GwtViewHelper.getJspHtml(
+				this,
+				req,
+				resp,
+				servletContext,
+				gjhCmd.getJspType(),
+				gjhCmd.getModel() );
+			return new VibeRpcResponse( responseData );
 		}
 		
 		case GET_LANDING_PAGE_DATA:

@@ -51,7 +51,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +61,7 @@ import org.apache.lucene.document.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
@@ -75,13 +78,16 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.BinderAccessoriesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
@@ -108,6 +114,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -115,6 +122,7 @@ import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
+
 
 
 /**
@@ -559,6 +567,47 @@ public class GwtViewHelper {
 		return ((null == reply) ? new ArrayList<AssignmentInfo>() : reply);
 	}
 	
+	/**
+	 * Reads information for rendering a binder's accessory panel in a
+	 * BinderAccessoryRpcResponseData object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static BinderAccessoriesRpcResponseData getBinderAccessories(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			// Access the accessory panel information from the binder...
+			User user = RequestContextHolder.getRequestContext().getUser();
+			UserProperties userProperties = new UserProperties(user.getId());
+			Map userProps = new HashMap();
+    		if (userProperties.getProperties() != null) {
+    			userProps = userProperties.getProperties();
+    		}
+
+    		if (user != null) {
+    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
+    		}
+			Binder binder = bs.getBinderModule().getBinder(binderId);
+			Map model = new HashMap();
+			Map dashboardMap = DashboardHelper.getDashboardMap(binder, userProps, model, "local", "", false, false);
+			return
+				new BinderAccessoriesRpcResponseData(
+					model);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getBinderAccessories( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
 	/**
 	 * Reads information for rendering a binder's description in a
 	 * BinderDescriptionRpcResponseData object.
@@ -1377,6 +1426,86 @@ public class GwtViewHelper {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
 		}
 		return result;
+	}
+
+	/**
+	 * Gets HTML from the execution of a jsp
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param jsp
+	 * @param model
+	 * 
+	 * @return
+	 */
+	public static JspHtmlRpcResponseData getJspHtml(AllModulesInjected bs, HttpServletRequest request, 
+			HttpServletResponse response, ServletContext servletContext, 
+			VibeJspHtmlType jspType, Map<String,Object> model) throws GwtTeamingException {
+		String html = "";
+		String jspPath = null;
+		try {
+			switch (jspType) {
+				// The following are the supported jsp calls.
+				case ACCESSORY:
+				{
+					try {
+						//Set up bean used by the dashboard component (aka accessory)
+						User user = RequestContextHolder.getRequestContext().getUser();
+						String s_binderId = (String) model.get("binderId");
+						Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
+						Map<String,Object> ssDashboard = (Map<String,Object>) model.get("ssDashboard");
+						String componentId = (String) ssDashboard.get("ssComponentId");
+						String scope = (String) ssDashboard.get("scope");
+						UserProperties userProperties = new UserProperties(user.getId());
+						Map userProps = new HashMap();
+			    		if (userProperties.getProperties() != null) {
+			    			userProps = userProperties.getProperties();
+			    		}
+	
+			    		if (user != null) {
+			    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
+			    		}
+			    		if (componentId != null && !componentId.equals("")) {
+				    		Map<String,Object> componentModel = new HashMap<String,Object>();
+							DashboardHelper.getDashboardMap(binder, userProps, componentModel, scope, componentId, false);
+							Map<String,Object> componentDashboard = (Map<String,Object>) componentModel.get("ssDashboard");
+							componentDashboard.put("ssComponentId", componentId);
+							componentModel.put(WebKeys.BINDER_ID, binder.getId());
+							componentModel.put(WebKeys.BINDER, binder);
+							jspPath = "definition_elements/view_dashboard_component.jsp";
+							html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, componentModel);
+			    		}
+						break;
+					} catch(Exception e) {
+						if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+						     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
+						}
+						//Return an error back to the user
+						String[] args = new String[1];
+						args[0] = e.getMessage();
+						html = NLT.get("errorcode.dashboardComponentViewFailure", args);
+					}
+				}
+				
+				default: 
+				{
+					// Log an error that we encountered an unhandled command.
+					m_logger.error("JspHtmlRpcResponseData( Unknown jsp type ):  " + jspType.name());
+					break;
+				}
+			}
+			
+			return new JspHtmlRpcResponseData(html);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 
 	/*
