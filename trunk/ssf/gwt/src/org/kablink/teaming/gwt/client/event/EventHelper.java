@@ -96,7 +96,6 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
-		case INVOKE_SEND_EMAIL_TO_TEAM:             reply = new InvokeSendEmailToTeamEvent();         break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
 		case PREVIEW_LANDING_PAGE:					reply = new PreviewLandingPageEvent();			  break;

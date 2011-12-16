@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -210,12 +211,15 @@ public class ContextMenuItem extends VibeMenuItem {
 					GwtTeaming.fireEvent(new GotoPermalinkUrlEvent(m_url));
 					break;
 
+				case INVOKE_SEND_EMAIL_TO_TEAM:
+					GwtTeaming.fireEvent(new InvokeSendEmailToTeamEvent(m_url));
+					break;
+					
 				case EDIT_CURRENT_BINDER_BRANDING:
 				case INVOKE_ABOUT:
 				case INVOKE_CLIPBOARD:
 				case INVOKE_CONFIGURE_COLUMNS:
 				case INVOKE_EMAIL_NOTIFICATION:
-				case INVOKE_SEND_EMAIL_TO_TEAM:
 				case TRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_PERSON:

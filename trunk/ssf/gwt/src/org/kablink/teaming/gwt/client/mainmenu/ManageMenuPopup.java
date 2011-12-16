@@ -209,8 +209,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageEditTeam());
 				localTBI.setUrl(m_tmi.getManageUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", "500");
-				localTBI.addQualifier("popupWidth",  "600");
+				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
+				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isTeamMeetingAllowed()) {
@@ -219,8 +219,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageStartTeamConference());
 				localTBI.setUrl(m_tmi.getTeamMeetingUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", "500");
-				localTBI.addQualifier("popupWidth",  "600");
+				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
+				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isSendMailAllowed()) {
@@ -229,8 +229,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageEmailTeam());
 				localTBI.setUrl(m_tmi.getSendMailUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", "500");
-				localTBI.addQualifier("popupWidth",  "600");
+				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
+				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
 				m_teamAndEmailBucket.add(localTBI);
 			}
 		}

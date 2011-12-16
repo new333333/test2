@@ -567,6 +567,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuEmailNotificationDlgOverride();
 	String mainMenuEmailNotificationDlgReading();
 	String mainMenuEmailNotificationDlgTextMessaging();
+	String mainMenuErrorNoContributorsToEmail();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
 	String mainMenuFavoritesDlgMoveDown();

@@ -77,6 +77,7 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
 import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
 import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite.SearchOptionsCompositeClient;
+import org.kablink.teaming.gwt.client.mainmenu.SendEmailToContributors;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
@@ -910,8 +911,10 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeSendEmailToTeam(InvokeSendEmailToTeamEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onInvokeSendEmailToTeam():  ...this needs to be implemented...");
+		// Instantiate a SendEmailToContributors object and use that to
+		// request the contributors and launch the send email window.
+		SendEmailToContributors smtc = new SendEmailToContributors(event.getBaseSendUrl());
+		smtc.doSend(m_contextBinder.getBinderIdAsLong());
 	}
 	
 	/**

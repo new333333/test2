@@ -57,6 +57,7 @@ var ss_rootPath = "<html:rootPath/>";
 var ss_imagesPath = "<html:imagesPath/>";
 var ss_isAdapter="true";
 var ss_namespace = "${renderResponse.namespace}";
+var ss_binderId = "${ssBinder.id}";
 <c:if test="${!empty ss_nextPrevUrl}">
   var ss_nextPrevUrl = "${ss_nextPrevUrl}";
   var ss_nextEntryAlt = "<ssf:nlt tag="nav.nextEntry"/>";
