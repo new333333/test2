@@ -82,6 +82,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.UIObject;
 
 
 /**
@@ -89,7 +91,7 @@ import com.google.gwt.user.client.ui.Label;
  * There is a widget that displays the list of administration actions and a widget
  * that displays the page for the selected administration action.
  */
-public class AdminControl extends Composite
+public class AdminControl extends TeamingPopupPanel
 	implements 
 	// Event handlers implemented by this class.
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
@@ -546,6 +548,8 @@ public class AdminControl extends Composite
 	 */
 	private AdminControl( GwtMainPage mainPage )
 	{
+		super( false, false );
+		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
 			GwtTeaming.getEventBus(),
@@ -558,9 +562,6 @@ public class AdminControl extends Composite
 		// Create the control that holds all of the administration actions
 		m_adminActionsTreeControl = new AdminActionsTreeControl();
 		mainPanel.add( m_adminActionsTreeControl );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
 		
 		// Create a control to hold the administration page for the selection administration action.
 		ContentControl.createAsync(
@@ -585,6 +586,8 @@ public class AdminControl extends Composite
 				relayoutPage();
 			}// end onSuccess()
 		} );
+		
+		setWidget( mainPanel );
 	}// end AdminControl()
 
 	/**
@@ -649,7 +652,7 @@ public class AdminControl extends Composite
 	 */
 	public void doPreLogoutCleanup()
 	{
-		if ( isVisible() == true )
+		if ( isShowing() == true )
 		{
 			// Clear the iframe's content 
 			m_contentControl.clear();
@@ -749,9 +752,9 @@ public class AdminControl extends Composite
 	 */
 	public void hideControl()
 	{
-		if ( isVisible() )
+		if ( isShowing() )
 		{
-			setVisible( false );
+			hide();
 		}
 	}// end hideControl()
 	
@@ -774,7 +777,7 @@ public class AdminControl extends Composite
 	public void relayoutPage()
 	{
 		// If the AdminControl is visible...
-		if ( isVisible() )
+		if ( isShowing() )
 		{		
 			Scheduler.ScheduledCommand cmd;
 	
@@ -886,9 +889,9 @@ public class AdminControl extends Composite
 	/**
 	 * 
 	 */
-	public void showControl()
+	public void showControl( final UIObject target )
 	{
-		if ( !isVisible() )
+		if ( !isShowing() )
 		{
 			Scheduler.ScheduledCommand cmd;
 	
@@ -905,7 +908,7 @@ public class AdminControl extends Composite
 					{
 						public void execute()
 						{
-							setVisible( true );
+							showRelativeTo( target );
 							relayoutPage();
 						}
 					};
@@ -1080,7 +1083,7 @@ public class AdminControl extends Composite
 	@Override
 	public void onSidebarHide( SidebarHideEvent event )
 	{
-		if ( isVisible() )
+		if ( isShowing() )
 		{
 			hideTreeControl();
 		}
@@ -1096,7 +1099,7 @@ public class AdminControl extends Composite
 	@Override
 	public void onSidebarShow( SidebarShowEvent event )
 	{
-		if ( isVisible() )
+		if ( isShowing() )
 		{
 			showTreeControl();
 		}

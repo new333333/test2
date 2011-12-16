@@ -509,7 +509,7 @@ public class GwtMainPage extends ResizeComposite
 		m_headerPanel = new FlowPanel();
 		m_headerPanel.addStyleName( "mainHeaderPanel" );
 		m_mainPanel.addNorth( m_headerPanel, GwtConstants.HEADER_HEIGHT );
-		
+
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
 		m_headerPanel.add( m_mastHead );
@@ -1690,7 +1690,7 @@ public class GwtMainPage extends ResizeComposite
 				m_adminControl.hideControl();
 				m_mainMenuCtrl.hideAdministrationMenubar();
 				
-				m_mainPanel.replaceCenterContent( m_splitLayoutPanel );
+				m_splitLayoutPanel.setVisible( true );
 
 				// If the activity stream was showing show it now.
 				if ( isActivityStreamActive() )
@@ -2777,7 +2777,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public boolean isAdminActive()
 	{
-		return ( ( null != m_adminControl ) && m_adminControl.isVisible() );
+		return ( ( null != m_adminControl ) && m_adminControl.isShowing() );
 	}// end isAdminActive()
 
 	/**
@@ -2844,11 +2844,10 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Hide everything on the menu, the workspace tree control and the content control.
 		m_mainMenuCtrl.showAdministrationMenubar();
-		m_wsTreeCtrl.setVisible( false );
 		
-		// Put the admin control as the widget in the center panel of the main panel.
-		m_mainPanel.replaceCenterContent( m_adminControl );
-		m_adminControl.showControl();
+		m_splitLayoutPanel.setVisible( false );
+		
+		m_adminControl.showControl( m_mainMenuCtrl );
 		relayoutPage( false );
 	}// end showAdminControlImpl()
 	
