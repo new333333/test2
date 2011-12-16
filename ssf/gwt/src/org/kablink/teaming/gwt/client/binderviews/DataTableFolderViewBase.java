@@ -149,7 +149,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private FolderRowPager 					m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	private FooterPanel						m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
 	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	//
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<Long>						m_contributorIds;			//
 	private List<ToolPanelBase>				m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
 	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> ColumWidth objects.
@@ -507,14 +507,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady) {
 		// Initialize the super class...
 		super(viewReady);
-
-		// ...register the events to be handled by this class...
-		m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this,
-			m_registeredEventHandlers);
 
 		// ...store the parameters...
 		m_folderInfo = folderInfo;
@@ -1364,15 +1356,28 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 	
 	/**
+	 * Called when the data table is attached.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
 	 * Called when the data table is detached.
 	 * 
 	 * Overrides Widget.onDetach()
 	 */
 	@Override
 	public void onDetach() {
-		// Let the widget detach and unregister our event handlers.
+		// Let the widget detach and then unregister our event
+		// handlers.
 		super.onDetach();
-		EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		unregisterEvents();
 	}
 	
 	/**
@@ -1565,7 +1570,29 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// Always use the initial form of the method.
 		populateContent(null);
 	}
-	
+
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
 	/**
 	 * Resets the content for the implementing class.
 	 */
@@ -1646,6 +1673,18 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		
 		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
 			Window.alert("DataTableFolderViewBase.toolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
 		}
 	}
 	
