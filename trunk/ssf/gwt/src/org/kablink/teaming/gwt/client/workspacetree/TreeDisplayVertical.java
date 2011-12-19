@@ -1469,7 +1469,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				}
 			}
 			Image binderImg;
-			if (null == ti) {
+			if ((null == ti) || (ti == rootTI)) {
 				// No!  Set the busy animation image on the tree's
 				// root.
 				binderImg = ((Image) rootTI.getBinderUIImage());
