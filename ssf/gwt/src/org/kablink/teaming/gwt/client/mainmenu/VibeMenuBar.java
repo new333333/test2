@@ -191,7 +191,7 @@ public class VibeMenuBar extends MenuBar {
 	public MenuItemSeparator addSeparator() {
 		MenuItemSeparator reply = super.addSeparator();
 		m_itemCount   += 1;
-		m_spacerNeeded = true;
+		m_spacerNeeded = false;
 		return reply;
 	}
 	
@@ -199,7 +199,7 @@ public class VibeMenuBar extends MenuBar {
 	public MenuItemSeparator addSeparator(MenuItemSeparator separator) {
 		MenuItemSeparator reply = super.addSeparator(separator);
 		m_itemCount   += 1;
-		m_spacerNeeded = true;
+		m_spacerNeeded = false;
 		return reply;
 	}
 	
