@@ -145,7 +145,7 @@ public class AccessoriesPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the description panel.
 	 */
 	private void loadAccessoryPanelNow() {
-		Map<String,String> model = new HashMap<String,String>();
+		Map<String,Object> model = new HashMap<String,Object>();
 		model.put("binderId", m_binderId);
 		String componentId = "";
     	List<String> dashboardLayout = m_dashboardLayout.getLayout();

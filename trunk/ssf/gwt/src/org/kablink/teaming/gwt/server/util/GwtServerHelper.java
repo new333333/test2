@@ -4662,7 +4662,7 @@ public class GwtServerHelper {
 		case GET_JSP_HTML:
 		{
 			GetJspHtmlCmd jspHtmlCmd = ((GetJspHtmlCmd) cmd);
-			Map<String,String> model = jspHtmlCmd.getModel();
+			Map<String,Object> model = jspHtmlCmd.getModel();
 			StringCheckUtil.check(model, Boolean.TRUE);
 		}
 			

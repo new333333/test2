@@ -43,7 +43,7 @@ import java.util.Map;
  */
 public class GetJspHtmlCmd extends VibeRpcCmd {
 	private VibeJspHtmlType m_jspType;	//
-	private Map<String,String>	m_model;	//
+	private Map<String,Object>	m_model;	//
 	
 	/**
 	 * Constructor method.
@@ -60,7 +60,7 @@ public class GetJspHtmlCmd extends VibeRpcCmd {
 	 * @param jspType
 	 * @param model
 	 */
-	public GetJspHtmlCmd(VibeJspHtmlType jspType, Map<String,String> model) {
+	public GetJspHtmlCmd(VibeJspHtmlType jspType, Map<String,Object> model) {
 		this();
 		m_jspType = jspType;
 		m_model = model;
@@ -72,7 +72,7 @@ public class GetJspHtmlCmd extends VibeRpcCmd {
 	 * @return
 	 */
 	public VibeJspHtmlType getJspType() {return m_jspType;}
-	public Map<String,String> getModel() {return m_model;}
+	public Map<String,Object> getModel() {return m_model;}
 	
 	/**
 	 * Returns the command's enumeration value.
