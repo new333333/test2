@@ -69,6 +69,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -116,6 +117,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	// WorkspaceTreeControl.
 	private final static int SELECTOR_GRID_DEPTH_OFFSET	=  18;	// Based on empirical evidence.
 	private final static int SELECTOR_GRID_WIDTH        = 208;	// Based on the width of 230 in the workspaceTreeControl style
+
+	// The following defines the maximum amount of time we wait to
+	// process the completion event for a context switch.  If we exceed
+	// this, we simply clear it.
+	private final static int MAX_BUSY_DURATION	= 5000;	//	5 seconds. 
 	
 	/*
 	 * Inner class that implements clicking on the various tree
@@ -370,32 +376,78 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Inner class used to track information about the sidebar tree
 	 * being in a busy state.
 	 */
-	private static class BusyInfo {
-		private TreeInfo m_busyTI;	// TreeInfo running a busy animation, if there is one.  May be null.
+	private class BusyInfo {
+		private Timer		m_maxBusyDurationTimer;	// A timer used to control the maximum amount of time we'll keep a busy spinner spinning.
+		private TreeInfo	m_busyTI;				// TreeInfo running a busy animation, if there is one.  May be null.
 
 		/**
 		 * Class constructor.
 		 */
 		public BusyInfo() {
-			// Nothing to do.
-		}
-		
-		/**
-		 * Returns any TreeInfo associated with this BusyInfo object.
-		 * 
-		 * @return
-		 */
-		public TreeInfo getBusyTI() {
-			return m_busyTI;
+			// Setup a timer to wait for the the busy state to clear.
+			// If we exceed the timeout, we simply clear the busy
+			// state.
+			m_maxBusyDurationTimer = new Timer() {
+				@Override
+				public void run() {
+					// Clear the busy state and...
+					clearBusy();
+
+					// ...if we're in UI debug mode, display an alert
+					// ...about the problem.
+					GwtClientHelper.debugAlert(
+						"Rats!  I hate it when this happens.  We've entered an endless busy state with a sidebar tree spinner.\n\n" +
+						"That means that somewhere along the way, we failed to process the completion event for a context switch.");
+				}
+			};
+			m_maxBusyDurationTimer.schedule(MAX_BUSY_DURATION);
 		}
 
 		/**
+		 * Called to clear the busy state.
+		 */
+		public void clearBusy() {
+			// Clear the time.
+			clearTimer();
+			
+			// Do we have a TreeInfo for the tree node that's busy?
+			if (hasBusyTI()) {
+				// Yes!  Restore its default image.
+				setBinderImageResource(getBusyTI());
+			}
+			
+			else {
+				// No, we don't have a TreeInfo for the tree node
+				// that's busy!  In that case, we'll have stuck the
+				// spinner on the tree's root node.  Restore that.
+				Image binderImg = ((Image) getRootTreeInfo().getBinderUIImage());
+				binderImg.setResource(getImages().spacer_1px());
+			}
+		}
+		/*
+		 * Cancels and forgets about the timer waiting for contributors.
+		 */
+		private void clearTimer() {
+			// If we have a busy timer...
+			if (null != m_maxBusyDurationTimer) {
+				// ...cancel and forget about it.
+				m_maxBusyDurationTimer.cancel();
+				m_maxBusyDurationTimer = null;
+			}
+		}
+		
+		/*
+		 * Returns the TreeInfo associated with this BusyInfo object.
+		 */
+		private TreeInfo getBusyTI() {
+			return m_busyTI;
+		}
+
+		/*
 		 * Returns true if this BusyInfo is tracking a TreeInfo and
 		 * false otherwise.
-		 * 
-		 * @return
 		 */
-		public boolean hasBusyTI() {
+		private boolean hasBusyTI() {
 			return (null != m_busyTI);
 		}
 
@@ -615,13 +667,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Are we tracking a BusyInfo indicating that we're in the
 		// middle of a context switch?
 		if (null != m_busyInfo) {
-			// Yes!  Does it contain a TreeInfo?
-			if (m_busyInfo.hasBusyTI()) {
-				// Yes!  Restore its default image.
-				setBinderImageResource(m_busyInfo.getBusyTI());
-			}
-			
-			// ...and forget about it.
+			// Yes!  Clear the busy state and forget about it.
+			m_busyInfo.clearBusy();
 			m_busyInfo = null;
 		}
 	}
@@ -830,7 +877,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Create the WorkspaceTree control's header...
 		TreeInfo rootTI = getRootTreeInfo();
 		boolean isAS = rootTI.isActivityStream();
-		Grid selectorGrid = new Grid(1, (isAS ? 3 : 2));
+		Grid selectorGrid = new Grid(1, (isAS ? 4 : 3));
 		String styles = "workspaceTreeControlHeader workspaceTreeControlHeader_base ";
 		if (isAS)
 		     styles += "workspaceTreeControlHeader_as";
@@ -840,16 +887,20 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setCellPadding(0);
 		String rootTitle = rootTI.getBinderTitle();
 		if (GwtClientHelper.hasString(rootTitle)) {
+			Image binderImg = new Image(getImages().spacer_1px());
+			rootTI.setBinderUIImage(binderImg);
+			binderImg.addStyleName("workspaceTreeBinderImg");
+			selectorGrid.setWidget(0, 0, binderImg);
 			Label selectorLabel = new Label(rootTitle);
 			selectorLabel.setWordWrap(false);
 			selectorLabel.getElement().setId(getSelectorId(rootTI));
 			selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, rootTI.getBinderTrashPermalink());
-			selectorGrid.setWidget(0, 0, selectorLabel);
-			selectorGrid.setWidget(0, 1, new Label("\u00A0"));
-			selectorGrid.getCellFormatter().setWidth(0, 1, "100%");
+			selectorGrid.setWidget(0, 1, selectorLabel);
+			selectorGrid.setWidget(0, 2, new Label("\u00A0"));
+			selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
 			Widget rootWidget;
 			if (isAS) {
-				selectorGrid.setWidget(0, 2, buildCloseActivityStreamsPB());
+				selectorGrid.setWidget(0, 3, buildCloseActivityStreamsPB());
 				rootWidget = selectorGrid;
 			}
 			else {
@@ -1417,10 +1468,17 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					ti = TreeInfo.findBinderTI(rootTI, binderId.toString());
 				}
 			}
-			if (null != ti) {
+			Image binderImg;
+			if (null == ti) {
+				// No!  Set the busy animation image on the tree's
+				// root.
+				binderImg = ((Image) rootTI.getBinderUIImage());
+				binderImg.setResource(getImages().busyAnimation());
+			}
+			else {
 				// Yes!  Set the busy animation image for this
 				// TreeInfo's binder...
-				Image binderImg = ((Image) ti.getBinderUIImage());
+				binderImg = ((Image) ti.getBinderUIImage());
 				if (null != binderImg) {
 					binderImg.setResource(getImages().busyAnimation());
 				}

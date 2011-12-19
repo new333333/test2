@@ -52,6 +52,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class ContributorsHelper {
+	// The following defines the maximum amount of time we'll wait for
+	// a response to a request for contributors.  If we exceed this, we
+	// simply give up.
+	private final static int MAX_WAIT_FOR_CONTRIBUTORS = 1000;	// 1 second.
+
 	/**
 	 * Callback interface to return a List<Long> of contributor IDs. 
 	 */
@@ -59,7 +64,7 @@ public class ContributorsHelper {
 		public void onFailure();
 		public void onSuccess(List<Long> contributorIds);
 	}
-
+	
 	/*
 	 * Inner class used that wraps the event handling required to
 	 * request a binder's contributors. 
@@ -125,7 +130,7 @@ public class ContributorsHelper {
 					m_callback.onFailure();
 				}
 			};
-			m_waitForContributorsTimer.schedule(1000);	// 1 second.
+			m_waitForContributorsTimer.schedule(MAX_WAIT_FOR_CONTRIBUTORS);
 			
 			// ...and send the request for the contributors.
 			GwtTeaming.fireEvent(new ContributorIdsRequestEvent(m_binderId));
