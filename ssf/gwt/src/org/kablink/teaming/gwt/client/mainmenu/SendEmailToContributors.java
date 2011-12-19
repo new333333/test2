@@ -32,20 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
-import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.ContributorsHelper;
+import org.kablink.teaming.gwt.client.util.ContributorsHelper.ContributorsCallback;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -54,22 +49,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-public class SendEmailToContributors
-	implements
-	// Event handlers implemented by this class.
-		ContributorIdsReplyEvent.Handler
-{
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private Long						m_binderId;					// The ID of the binder whose contributors are to be mailed to.
-	private String						m_baseSendUrl;				// The base URL for sending email to contributors.  This gets patched with the contributor IDs to send to.
-	private Timer						m_waitForContributorsTimer;	//
-	
-	// The following defines the TeamingEvents that are handled by
-	// this class.  See EventHelper.registerEventHandlers() for how
-	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.CONTRIBUTOR_IDS_REPLY,
-	};
+public class SendEmailToContributors {
+	private String	m_baseSendUrl;	// The base URL for sending email to contributors.  This gets patched with the contributor IDs to send to.
 	
 	/**
 	 * Constructor method.
@@ -84,16 +65,6 @@ public class SendEmailToContributors
 		m_baseSendUrl = baseSendUrl;
 	}
 
-	/*
-	 * Cancels and forgets about the timer waiting for contributors.
-	 */
-	private void clearTimer() {
-		if (null != m_waitForContributorsTimer) {
-			m_waitForContributorsTimer.cancel();
-			m_waitForContributorsTimer = null;
-		}
-	}
-	
 	/**
 	 * Runs the send email to contributors popup using the contributors
 	 * to the binder.
@@ -101,104 +72,38 @@ public class SendEmailToContributors
 	 * @param binderId
 	 */
 	public void doSend(Long binderId) {
-		// Register the global events so we can request the
-		// contributors to the binder.
-		registerEvents();
-
-		// ...store the binder ID...
-		m_binderId = binderId;
-
-		// ...setup a timer to wait for the contributors (just in case
-		// ...nobody responds)...
-		m_waitForContributorsTimer = new Timer() {
+		ContributorsHelper.getContributors(binderId, new ContributorsCallback() {
 			@Override
-			public void run() {
-				// Clear the timer and unregister the event handlers...
-				clearTimer();
-				unregisterEvents();
-
-				// ...and tell the user we couldn't get the contributors.
+			public void onFailure() {
+				// Simply tell the user we couldn't get the
+				// contributors.
 				Window.alert(GwtTeaming.getMessages().mainMenuErrorNoContributorsToEmail());
 			}
-		};
-		m_waitForContributorsTimer.schedule(1000);	// 1 second.
-		
-		// ...and send the request for the contributors.
-		GwtTeaming.fireEvent(new ContributorIdsRequestEvent(m_binderId));
-	}
 
-	/**
-	 * Handles ContributorIdsRequestEvent's received by this class.
-	 * 
-	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onContributorIdsReply(final ContributorIdsReplyEvent event) {
-		// Is this event targeted to the our binder?
-		final Long eventBinderId = event.getBinderId();
-		if (eventBinderId.equals(m_binderId)) {
-			// Yes!  Clear the timer and unregister the event handlers.
-			// We've got what we need.
-			clearTimer();
-			unregisterEvents();
-
-			// Concatenate the contributor IDs into a string...
-			StringBuffer contributors = new StringBuffer("");
-			int c = 0;
-			for (Long contributorId:  event.getContributorIds()) {
-				if (0 < c) {
-					contributors.append(",");
+			@Override
+			public void onSuccess(List<Long> contributorIds) {
+				// Concatenate the contributor IDs into a string...
+				StringBuffer contributors = new StringBuffer("");
+				int c = 0;
+				for (Long contributorId:  contributorIds) {
+					if (0 < c) {
+						contributors.append(",");
+					}
+					contributors.append(String.valueOf(contributorId));
+					c += 1;
 				}
-				contributors.append(String.valueOf(contributorId));
-				c += 1;
+				
+				// ...and patch them into the URL and launch that in a
+				// ...popup window.
+				GwtClientHelper.jsLaunchUrlInWindow(
+					GwtClientHelper.replace(
+						m_baseSendUrl,
+						InvokeSendEmailToTeamEvent.CONTRIBUTOR_IDS_PLACEHOLER,
+						contributors.toString()),
+					TeamManagementInfo.POPUP_WINDOW_NAME,
+					TeamManagementInfo.POPUP_HEIGHT,
+					TeamManagementInfo.POPUP_WIDTH);
 			}
-			
-			// ...and patch them into the URL and launch that in a
-			// ...popup window.
-			GwtClientHelper.jsLaunchUrlInWindow(
-				GwtClientHelper.replace(
-					m_baseSendUrl,
-					InvokeSendEmailToTeamEvent.CONTRIBUTOR_IDS_PLACEHOLER,
-					contributors.toString()),
-				TeamManagementInfo.POPUP_WINDOW_NAME,
-				TeamManagementInfo.POPUP_HEIGHT,
-				TeamManagementInfo.POPUP_WIDTH);
-		}
-	}
-
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				m_registeredEvents,
-				this,
-				m_registeredEventHandlers);
-		}
-	}
-
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
+		});
 	}
 }

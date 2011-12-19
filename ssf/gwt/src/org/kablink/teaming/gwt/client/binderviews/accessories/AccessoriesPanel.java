@@ -149,29 +149,31 @@ public class AccessoriesPanel extends ToolPanelBase {
 		model.put("binderId", m_binderId);
 		String componentId = "";
     	List<String> dashboardLayout = m_dashboardLayout.getLayout();
-    	for (String cId : dashboardLayout) {
-    		componentId = cId;
-    		model.put("ssComponentId", componentId);
-			GwtClientHelper.executeCommand(
-					new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY, model),
-					new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						m_messages.rpcFailure_GetBinderAccessory(),
-						VibeJspHtmlType.ACCESSORY.toString());
-				}
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					// Store the description and continue loading.
-					JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
-					m_html = responseData.getHtml();
-					loadAccessoryAsync();
-				}
-			});
-		}
+    	if (null != dashboardLayout) {
+	    	for (String cId : dashboardLayout) {
+	    		componentId = cId;
+	    		model.put("ssComponentId", componentId);
+				GwtClientHelper.executeCommand(
+						new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY, model),
+						new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							m_messages.rpcFailure_GetBinderAccessory(),
+							VibeJspHtmlType.ACCESSORY.toString());
+					}
+					
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// Store the description and continue loading.
+						JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+						m_html = responseData.getHtml();
+						loadAccessoryAsync();
+					}
+				});
+			}
+    	}
 
     	if (componentId.equals("")) {
     		//There are no accessories to show
