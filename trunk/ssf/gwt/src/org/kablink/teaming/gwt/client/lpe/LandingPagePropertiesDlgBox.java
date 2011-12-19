@@ -94,6 +94,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
 	private ColorPickerDlg m_colorPickerDlg;
 	private TextBox m_destColorTextbox;
+	private String m_selectedBgImgName;
 	
 	/**
 	 * 
@@ -508,6 +509,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		
 		// Issue an ajax request to get the list of file attachments for this binder.
 		// When we get the response, updateListOfFileAttachments() will be called.
+		m_selectedBgImgName = m_origLPProperties.getBackgroundImageName();
 		getListOfFileAttachmentsFromServer();
 
 		// Select the appropriate option in the background repeat listbox
@@ -551,6 +553,19 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 				public boolean editSuccessful( Object obj )
 				{
 					m_addFileAttachmentDlg.hide();
+					
+					if ( obj != null )
+					{
+						ArrayList<String> listOfFileNames;
+						
+						// Get the list of files that were added.
+						listOfFileNames = (ArrayList<String>) obj;
+						if ( listOfFileNames.size() > 0 )
+						{
+							// Select the first image that was added.
+							m_selectedBgImgName = listOfFileNames.get( 0 );
+						}
+					}
 					
 					// Issue an ajax request to get the list of file attachments for this binder.
 					// When we get the response, updateListOfFileAttachments() will be called.
@@ -813,7 +828,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		}
 		
 		// Select the background image file in the listbox that is defined in the original landing page properties. 
-		selectImageInListbox( m_bgImgListbox, m_origLPProperties.getBackgroundImageName() );
+		selectImageInListbox( m_bgImgListbox, m_selectedBgImgName );
 	}
 
 	/**
