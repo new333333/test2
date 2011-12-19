@@ -139,6 +139,7 @@ public class MainMenuControl extends Composite
 {
 	private BinderInfo						m_contextBinder;
 	private ClipboardDlg					m_clipboardDlg;
+	private ContextMenuSynchronizer			m_contextMenuSync;
 	private ContextLoadInfo					m_lastContextLoaded;
 	private EmailNotificationDlg			m_emailNotificationDlg;
 	private GwtMainPage						m_mainPage;
@@ -192,6 +193,88 @@ public class MainMenuControl extends Composite
 		TeamingEvents.VIEW_WHATS_NEW_IN_BINDER,
 		TeamingEvents.VIEW_WHATS_UNSEEN_IN_BINDER,
 	};
+
+	/*
+	 * Interface used as context items are constructed to indicate
+	 * their completion.
+	 */
+	private interface ContextItemCallback {
+		public void complete();
+	}
+	
+	/*
+	 * Inner class used to control the construction of multiple context
+	 * menu items.
+	 */
+	private static class ContextMenuSynchronizer {
+		private boolean	m_constructionInProgress;	// Set true while we're populating the context menus.
+		private int		m_constructedItemCount;		// Count of items constructed (as they're being constructed.)
+		private int		m_expectedItemCount;		// Count of items expected to be constructed.  Once reached, construction mode is disabled.
+		
+		/*
+		 * Constructor method.
+		 */
+		private ContextMenuSynchronizer() {
+			// Nothing to do.  Default data member values are
+			// sufficient.
+		}
+		
+		/*
+		 * Initiates context menu construction tracking.
+		 */
+		private void activateContextConstruction(boolean isASActive) {
+			// Are we already in construction mode?
+			if (m_constructionInProgress) {
+				// Yes!  Then it shouldn't be getting activated again.
+				// Tell the user about the problem.
+				GwtClientHelper.debugAlert("MainMenuControl.activateContextConstruction( *Internal Error* ):  Activation call when already active.");
+			}
+			
+			else {
+				// No, we aren't in construction mode!  Enter it now.
+				m_constructionInProgress = true;
+				m_constructedItemCount      = 0;
+				
+				// In activity stream mode, there's 1 context menu
+				// item.  Otherwise, there are 3.
+				m_expectedItemCount = (isASActive ? 1 : 3);
+			}
+		}
+
+		/*
+		 * Called when a context menu item has been constructed.  If
+		 * the number of context items expected has been reached,
+		 * construction mode is turned off.
+		 */
+		private void contextItemConstructed() {
+			// Are we in construction mode?
+			if (!m_constructionInProgress) {
+				// No!  Then nothing should be getting completed!
+				// Tell the user about the problem.
+				GwtClientHelper.debugAlert("MainMenuControl.contextItemConstructed( *Internal Error* ):  Item complete call when not active.");
+			}
+
+			else {
+				// Yes, we're in construction mode!  Bump the
+				// constructed item count...
+				m_constructedItemCount += 1;
+				
+				// ...and if we've reached what we're expecting...
+				if (m_constructedItemCount == m_expectedItemCount) {
+					// ...disable construction mode.
+					m_constructionInProgress = false;
+				}
+			}
+		}
+
+		/*
+		 * Returns true if we're currently in construction mode and
+		 * false otherwise.
+		 */
+		private boolean isConstructionInProgress() {
+			return m_constructionInProgress;
+		}
+	}
 	
 	/*
 	 * Inner class used to track the information used to load a
@@ -228,6 +311,10 @@ public class MainMenuControl extends Composite
 		
 		// Store the parameters.
 		m_mainPage = mainPage;
+		
+		// Construct the object we'll use to control the creation of
+		// multiple context menu items.
+		m_contextMenuSync = new ContextMenuSynchronizer();
 		
 		// Register the events to be handled by this class.
 		if (menuUsage.equalsIgnoreCase("top")) {
@@ -366,7 +453,7 @@ public class MainMenuControl extends Composite
 	 * Adds the Manage item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
+	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final ContextItemCallback callback) {
 		if (null == m_manageBox) {
 			String manageNameCalc;
 			switch (m_contextBinder.getBinderType()) {
@@ -382,6 +469,7 @@ public class MainMenuControl extends Composite
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
 					// asynchronous provider.
+					callback.complete();
 				}
 				
 				@Override
@@ -394,12 +482,14 @@ public class MainMenuControl extends Composite
 						mmp.setMenuBox(m_manageBox);
 						m_mainMenu.addItem(m_manageBox);
 					}
+					callback.complete();
 				}
 			});
 		}
 		
 		else {
-			GwtClientHelper.debugAlert("MainMenuControl.addManageToContext( Duplicate Request ):  Ignored");
+			GwtClientHelper.debugAlert("MainMenuControl.addManageToContext( *Internal Error* ):  Duplicate Request:  Ignored");
+			callback.complete();
 		}
 	}
 	
@@ -444,7 +534,7 @@ public class MainMenuControl extends Composite
 	 * Adds the Recent Places item to the context based portion of the
 	 * menu bar.
 	 */
-	private void addRecentPlacesToContext(List<ToolbarItem> toolbarItemList) {
+	private void addRecentPlacesToContext(List<ToolbarItem> toolbarItemList, ContextItemCallback callback) {
 		if (null == m_recentPlacesBox) {
 			final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup(this);
 			rpmp.setCurrentBinder(m_contextBinder);
@@ -454,10 +544,12 @@ public class MainMenuControl extends Composite
 				rpmp.setMenuBox(m_recentPlacesBox);
 				m_mainMenu.addItem(m_recentPlacesBox);
 			}
+			callback.complete();
 		}
 		
 		else {
-			GwtClientHelper.debugAlert("MainMenuControl.addRecentPlacesToContext( Duplicate Request ):  Ignored");
+			GwtClientHelper.debugAlert("MainMenuControl.addRecentPlacesToContext( *Internal Error* ):  Duplicate Request:  Ignored");
+			callback.complete();
 		}
 	}
 
@@ -465,13 +557,14 @@ public class MainMenuControl extends Composite
 	 * Adds the Views item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
+	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId, final ContextItemCallback callback) {
 		if (null == m_viewsBox) {
 			ViewsMenuPopup.createAsync(this, inSearch, searchTabId, new ViewsMenuPopupClient() {			
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
 					// asynchronous provider.
+					callback.complete();
 				}
 				
 				@Override
@@ -483,12 +576,14 @@ public class MainMenuControl extends Composite
 						vmp.setMenuBox(m_viewsBox);
 						m_mainMenu.addItem(m_viewsBox);
 					}
+					callback.complete();
 				}
 			});
 		}
 		
 		else {
-			GwtClientHelper.debugAlert("MainMenuControl.addViewsToContext( Duplicate Request ):  Ignored");
+			GwtClientHelper.debugAlert("MainMenuControl.addViewsToContext( *Internal Error* ):  Duplicate Request:  Ignored");
+			callback.complete();
 		}
 	}
 	
@@ -1185,14 +1280,42 @@ public class MainMenuControl extends Composite
 	 * Synchronously shows the toolbar items.
 	 */
 	private void showToolbarItemsNow(boolean inSearch, String searchTabId, List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
-		// Clear any context menus currently displayed...
-		clearContextMenus();
+		// Do we currently have context items being constructed?
+		if (m_contextMenuSync.isConstructionInProgress()) {
+			// Yes!  That's an error.  Tell the user.
+			GwtClientHelper.debugAlert("MainMenuControl.showToolbarItemsNow( *Internal Error* ):  Request to show items while they're already in the process of being shown.");
+		}
 		
-		// ...and handle variations based on activity stream mode.
-		addRecentPlacesToContext(toolbarItemList);
-		if (!(m_mainPage.isActivityStreamActive())) {
-			addManageToContext(toolbarItemList, tmi                  );
-			addViewsToContext( toolbarItemList, inSearch, searchTabId);
+		else {
+			// No, we don't currently have context items being
+			// constructed!  Initiate the construction processing now.
+			boolean isASActive = m_mainPage.isActivityStreamActive();
+			m_contextMenuSync.activateContextConstruction(isASActive);
+			
+			// Clear any context menus currently displayed...
+			clearContextMenus();
+			
+			// ...and handle the variations based on activity stream mode.
+			addRecentPlacesToContext(toolbarItemList, new ContextItemCallback() {
+				@Override
+				public void complete() {
+					m_contextMenuSync.contextItemConstructed();
+				}
+			});
+			if (!isASActive) {
+				addManageToContext(toolbarItemList, tmi,new ContextItemCallback() {
+					@Override
+					public void complete() {
+						m_contextMenuSync.contextItemConstructed();
+					}
+				});
+				addViewsToContext( toolbarItemList, inSearch, searchTabId, new ContextItemCallback() {
+					@Override
+					public void complete() {
+						m_contextMenuSync.contextItemConstructed();
+					}
+				});
+			}
 		}
 	}
 
