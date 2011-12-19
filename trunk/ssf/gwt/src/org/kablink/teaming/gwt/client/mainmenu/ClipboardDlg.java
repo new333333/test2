@@ -39,10 +39,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
-import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -54,6 +50,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetClipboardUsersFromListCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveClipboardUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.ContributorsHelper;
+import org.kablink.teaming.gwt.client.util.ContributorsHelper.ContributorsCallback;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -79,7 +77,6 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -87,33 +84,21 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-public class ClipboardDlg extends DlgBox
-	implements EditSuccessfulHandler, EditCanceledHandler,
-	// Event handlers implemented by this class.
-		ContributorIdsReplyEvent.Handler
-{
+public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private final static String IDBASE		= "clipboard_";	// Base ID for rows in the clipboard Grid.
 	private final static String IDTAIL_CBOX	= "_cb";		// Used for constructing the ID of a row's CheckBox.
 	private final static int    SCROLL_WHEN	= 5;			// Count of items in the ScrollPanel when scroll bars are enabled.
 
-	private BinderInfo						m_binderInfo;				// The binder the clipboard is running against.
-	private FlowPanel 						m_selectPanel;				// Panel containing the select/clear all widgets.
-	private Grid							m_cbGrid;					// Once displayed, the table of clipboard items.
-	private GwtTeamingMainMenuImageBundle	m_images;					// Access to Vibe's images.
-	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
-	private List<ClipboardUser>				m_cbUserList;				// Current list of users on the clipboard.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private int								m_cbUserListCount;			// Number of items in m_cbUserList.
-	private int								m_cbGridCount;				// Count of rows  in m_cbGrid.
-	private ScrollPanel						m_sp;						// The ScrollPanel holding m_cbGrid.  Scroll bars are enabled/disabled based on the count of items.
+	private BinderInfo						m_binderInfo;		// The binder the clipboard is running against.
+	private FlowPanel 						m_selectPanel;		// Panel containing the select/clear all widgets.
+	private Grid							m_cbGrid;			// Once displayed, the table of clipboard items.
+	private GwtTeamingMainMenuImageBundle	m_images;			// Access to Vibe's images.
+	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
+	private List<ClipboardUser>				m_cbUserList;		// Current list of users on the clipboard.
+	private int								m_cbUserListCount;	// Number of items in m_cbUserList.
+	private int								m_cbGridCount;		// Count of rows  in m_cbGrid.
+	private ScrollPanel						m_sp;				// The ScrollPanel holding m_cbGrid.  Scroll bars are enabled/disabled based on the count of items.
 
-	// The following defines the TeamingEvents that are handled by
-	// this class.  See EventHelper.registerEventHandlers() for how
-	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.CONTRIBUTOR_IDS_REPLY,
-	};
-	
 	/*
 	 * Inner class used to compare two ClipboardUser's by their title.
 	 */
@@ -206,9 +191,19 @@ public class ClipboardDlg extends DlgBox
 			ScheduledCommand doRequestContributors = new ScheduledCommand() {
 				@Override
 				public void execute() {
-					GwtTeaming.fireEvent(
-						new ContributorIdsRequestEvent(
-							m_binderInfo.getBinderIdAsLong()));
+					ContributorsHelper.getContributors(m_binderInfo.getBinderIdAsLong(), new ContributorsCallback() {
+						@Override
+						public void onFailure() {
+							// Nothing to do.  Simply ignore.
+						}
+
+						@Override
+						public void onSuccess(List<Long> contributorIds) {
+							// Asynchronously process the list of
+							// contributor IDs.
+							processContributorIdsAsync(contributorIds);
+						}
+					});
 				}
 			};
 			Scheduler.get().scheduleDeferred(doRequestContributors);
@@ -569,49 +564,6 @@ public class ClipboardDlg extends DlgBox
 		m_cbUserListCount = m_cbUserList.size();
 	}
 	
-	/**
-	 * Handles ContributorIdsRequestEvent's received by this class.
-	 * 
-	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onContributorIdsReply(final ContributorIdsReplyEvent event) {
-		// Is this event targeted to the binder the dialog's running
-		// against?
-		final Long eventBinderId = event.getBinderId();
-		if (eventBinderId.equals(m_binderInfo.getBinderIdAsLong())) {
-			// Yes!  Process the contributor IDs.
-			processContributorIdsAsync(event.getContributorIds());
-		}
-	}
-
-	/**
-	 * Called when the clipboard dialog is attached.
-	 * 
-	 * Overrides Widget.onAttach()
-	 */
-	@Override
-	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
-		super.onAttach();
-		registerEvents();
-	}
-	
-	/**
-	 * Called when the clipboard dialog is detached.
-	 * 
-	 * Overrides Widget.onDetach()
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-	}
-	
 	/*
 	 * Asynchronously process the contributor IDs.
 	 */
@@ -739,28 +691,6 @@ public class ClipboardDlg extends DlgBox
 	}
 
 	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				m_registeredEvents,
-				this,
-				m_registeredEventHandlers);
-		}
-	}
-
-	/*
 	 * Removes the ClipboardUser with the given ID from the global
 	 * List<ClipboardUser>.
 	 */
@@ -863,18 +793,6 @@ public class ClipboardDlg extends DlgBox
 	private void sortCBUserList(List<ClipboardUser> cbUserList) {
 		Comparator<ClipboardUser> comparator = new ClipboardUserComparator(true);	// true -> Ascending.
 		Collections.sort(cbUserList, comparator);
-	}
-	
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
 	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
