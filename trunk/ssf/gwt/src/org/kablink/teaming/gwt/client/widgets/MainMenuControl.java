@@ -66,6 +66,10 @@ import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg.FolderColumnsConfigDlgClient;
+import org.kablink.teaming.gwt.client.mainmenu.ImportIcalByFileDlg;
+import org.kablink.teaming.gwt.client.mainmenu.ImportIcalByFileDlg.ImportIcalByFileDlgClient;
+import org.kablink.teaming.gwt.client.mainmenu.ImportIcalByUrlDlg;
+import org.kablink.teaming.gwt.client.mainmenu.ImportIcalByUrlDlg.ImportIcalByUrlDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup.ManageMenuPopupClient;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
@@ -145,6 +149,8 @@ public class MainMenuControl extends Composite
 	private GwtMainPage						m_mainPage;
 	private GwtTeamingMainMenuImageBundle	m_images   = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages 				m_messages = GwtTeaming.getMessages();
+	private ImportIcalByFileDlg				m_iiFileDlg;
+	private ImportIcalByUrlDlg				m_iiUrlDlg;
 	private MenuBarBox						m_closeAdminBox;
 	private MenuBarBox						m_manageBox;
 	private MenuBarBox						m_myFavoritesBox;
@@ -980,8 +986,36 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeImportIcalFile(InvokeImportIcalFileEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onInvokeImportIcalFile( " + event.getImportType() + " ):  ...this needs to be implemented...");
+		// Have we instantiated an import iCal by file dialog yet?
+		if (null == m_iiFileDlg) {
+			// No!  Instantiate one now.
+			ImportIcalByFileDlg.createAsync(new ImportIcalByFileDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ImportIcalByFileDlg iiFileDlg) {
+					// ...and show it.
+					m_iiFileDlg = iiFileDlg;
+					ScheduledCommand doShow = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							showImportIcalByFileDlgNow();
+						}
+					};
+					Scheduler.get().scheduleDeferred(doShow);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated an import iCal by file dialog
+			// already!  Simply show it.
+			showImportIcalByFileDlgNow();
+		}
 	}
 	
 	/**
@@ -993,8 +1027,36 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeImportIcalUrl(InvokeImportIcalUrlEvent event) {
-//!		...this needs to be implemented...
-		Window.alert("MainMenuControl.onInvokeImportIcalUrl( " + event.getImportType() + " ):  ...this needs to be implemented...");
+		// Have we instantiated an import iCal by URL dialog yet?
+		if (null == m_iiUrlDlg) {
+			// No!  Instantiate one now.
+			ImportIcalByUrlDlg.createAsync(new ImportIcalByUrlDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ImportIcalByUrlDlg iiUrlDlg) {
+					// ...and show it.
+					m_iiUrlDlg = iiUrlDlg;
+					ScheduledCommand doShow = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							showImportIcalByUrlDlgNow();
+						}
+					};
+					Scheduler.get().scheduleDeferred(doShow);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated an import iCal by URL dialog
+			// already!  Simply show it.
+			showImportIcalByUrlDlgNow();
+		}
 	}
 	
 	/**
@@ -1261,6 +1323,20 @@ public class MainMenuControl extends Composite
 	 */
 	private void showEmailNotificationDlgNow() {
 		EmailNotificationDlg.initAndShow(m_emailNotificationDlg, m_contextBinder);
+	}
+	
+	/*
+	 * Synchronously shows the import iCal by file dialog.
+	 */
+	private void showImportIcalByFileDlgNow() {
+		ImportIcalByFileDlg.initAndShow(m_iiFileDlg, m_contextBinder);
+	}
+	
+	/*
+	 * Synchronously shows the import iCal by URL dialog.
+	 */
+	private void showImportIcalByUrlDlgNow() {
+		ImportIcalByUrlDlg.initAndShow(m_iiUrlDlg, m_contextBinder);
 	}
 	
 	/*

@@ -68,6 +68,7 @@ public abstract class DlgBox extends PopupPanel
 	protected FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
 	protected boolean m_modal;
 	protected boolean m_visible = false;
+	private Label m_caption;
 	private FlowPanel m_errorPanel;
 	private Panel m_contentPanel;
 	private FlowPanel m_footerPanel;
@@ -278,13 +279,12 @@ public abstract class DlgBox extends PopupPanel
 	public Panel createHeader( String caption )
 	{
 		FlowPanel	flowPanel;
-		Label		label;
 		
 		flowPanel = new FlowPanel();
 		flowPanel.setStyleName( "teamingDlgBoxHeader" );
 
-		label = new Label( caption );
-		flowPanel.add( label );
+		m_caption = new Label( caption );
+		flowPanel.add( m_caption );
 		
 		// Add a help link to the header if needed.
 		m_helpData = getHelpData();
@@ -472,6 +472,16 @@ public abstract class DlgBox extends PopupPanel
 				hide();
 		}
 	}// end onClick()
+
+	/**
+	 * Updates the dialog's caption.
+	 * 
+	 * @param caption
+	 */
+	public void setCaption( String caption )
+	{
+		m_caption.setText( caption );
+	}// end setCaption()
 	
 	/**
 	 * Show this dialog.
