@@ -558,6 +558,7 @@ public class TableDropWidget extends DropWidget
 		int i;
 		int numColumns;
 		int numRows;
+		int row;
 		CellFormatter cellFormatter;
 		
 		// Save the properties that were passed to us.
@@ -570,7 +571,6 @@ public class TableDropWidget extends DropWidget
 		// Have we already created a FlexTable?
 		if ( m_flexTable == null )
 		{
-			int row;
 			int col;
 			
 			// No
@@ -632,28 +632,22 @@ public class TableDropWidget extends DropWidget
 				}
 			}
 			
-			// Do we need to remove columns from the existing table?
-			if ( numColumns < m_flexTable.getCellCount( 0 ) )
+			// Adjust the number of columns in each row as needed.
+			for (row = 0; row < m_flexTable.getRowCount(); ++row)
 			{
-				int row;
-				
-				// Yes.
-				for (row = 0; row < m_flexTable.getRowCount(); ++row)
+				// Do we need to delete columns from this row?
+				if ( numColumns < m_flexTable.getCellCount( row ) )
 				{
-					while ( numColumns < m_flexTable.getCellCount( 0 ) )
+					// Yes.
+					while ( numColumns < m_flexTable.getCellCount( row ) )
 					{
-						m_flexTable.removeCell( row, m_flexTable.getCellCount( 0 )-1 );
+						m_flexTable.removeCell( row, m_flexTable.getCellCount( row )-1 );
 					}
 				}
-			}
-			// Do we need to add columns to the existing table?
-			else if ( numColumns > m_flexTable.getCellCount( 0 ) )
-			{
-				int row;
-				
-				// Yes
-				for (row = 0; row < m_flexTable.getRowCount(); ++row)
+				// Do we need to add columns to this row?
+				else if ( numColumns > m_flexTable.getCellCount( row ) )
 				{
+					// Yes
 					while( numColumns > m_flexTable.getCellCount( row ) )
 					{
 						DropZone dropZone;
@@ -661,58 +655,61 @@ public class TableDropWidget extends DropWidget
 						m_flexTable.addCell( row );
 						dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
 						dropZone.setParentDropZone( getParentDropZone() );
-						m_flexTable.setWidget( row, m_flexTable.getCellCount( 0 )-1, dropZone );
+						m_flexTable.setWidget( row, m_flexTable.getCellCount( row )-1, dropZone );
 					}
 				}
 			}
 		}
 		
-		int width;
-		String widthStr;
-		
-		cellFormatter = m_flexTable.getFlexCellFormatter();
-		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
+		// Set the width of each column.
+		for (row = 0; row < m_flexTable.getRowCount(); ++row)
 		{
-			ColWidthUnit unit;
-			Element tdElement;
-			
-			// Get the width unit for this column.
-			unit = m_properties.getColWidthUnit( i );
-			
-			// Get the width of this column.
-			widthStr = m_properties.getColWidth( i );
-			
-			// Are we dealing with percentage?
-			if ( unit == ColWidthUnit.PERCENTAGE )
+			cellFormatter = m_flexTable.getFlexCellFormatter();
+			for (i = 0; i < m_flexTable.getCellCount( row ); ++i )
 			{
-				// Yes
-				try
+				ColWidthUnit unit;
+				Element tdElement;
+				int width;
+				String widthStr;
+				
+				// Get the width unit for this column.
+				unit = m_properties.getColWidthUnit( i );
+				
+				// Get the width of this column.
+				widthStr = m_properties.getColWidth( i );
+				
+				// Are we dealing with percentage?
+				if ( unit == ColWidthUnit.PERCENTAGE )
 				{
-					width = Integer.parseInt( widthStr );
-				}
-				catch (Exception ex)
-				{
-					// Error parsing the width, default to 25%
-					width = 25;
+					// Yes
+					try
+					{
+						width = Integer.parseInt( widthStr );
+					}
+					catch (Exception ex)
+					{
+						// Error parsing the width, default to 25%
+						width = 25;
+					}
+					
+					// IE does not allow a width of 0%.  If the width is 0 set it to 1.
+					if ( width == 0 )
+						width = 1;
+					
+					widthStr = String.valueOf( width );
 				}
 				
-				// IE does not allow a width of 0%.  If the width is 0 set it to 1.
-				if ( width == 0 )
-					width = 1;
-				
-				widthStr = String.valueOf( width );
-			}
-			
-			widthStr = widthStr + unit.getHtmlUnit();
+				widthStr = widthStr + unit.getHtmlUnit();
 
-			// IE chokes if we call cellFormatter.setWidth(...) and pass in "*" for the width.
-			// That is why we call tdElement.setAttribute(...)
-			//cellFormatter.setWidth( 0, i, widthStr );
-			tdElement = cellFormatter.getElement( 0, i );
-			tdElement.setAttribute( "width", widthStr );
-			
-			// Set the vertical alignment of this cell to "top".
-			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
+				// IE chokes if we call cellFormatter.setWidth(...) and pass in "*" for the width.
+				// That is why we call tdElement.setAttribute(...)
+				//cellFormatter.setWidth( 0, i, widthStr );
+				tdElement = cellFormatter.getElement( row, i );
+				tdElement.setAttribute( "width", widthStr );
+				
+				// Set the vertical alignment of this cell to "top".
+				cellFormatter.setVerticalAlignment( row, i, HasVerticalAlignment.ALIGN_TOP );
+			}
 		}
 	}// end updateWidget()
 	
