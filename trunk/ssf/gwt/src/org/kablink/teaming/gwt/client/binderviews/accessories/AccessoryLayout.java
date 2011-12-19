@@ -30,59 +30,51 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client.binderviews.accessories;
 
+import java.util.List;
 import java.util.Map;
+
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds all of the information necessary to execute the
- * 'Get Jsp HTML' command.
+ * Class used to communicate information about a folder columns between
+ * the client and server.
  * 
  * @author phurley@novell.com
+ *
  */
-public class GetJspHtmlCmd extends VibeRpcCmd {
-	private VibeJspHtmlType m_jspType;	//
-	private Map<String,String>	m_model;	//
+public class AccessoryLayout implements IsSerializable, VibeRpcResponseData {
+	private List<String> m_layout;			//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * No parameters as per GWT serialization requirements.
 	 */
-	public GetJspHtmlCmd() {
+	public AccessoryLayout() {
+		// Simply initialize the super class.
 		super();
 	}
-	
-	/**
-	 * Constructor method
-	 * 
-	 * @param jspType
-	 * @param model
-	 */
-	public GetJspHtmlCmd(VibeJspHtmlType jspType, Map<String,String> model) {
-		this();
-		m_jspType = jspType;
-		m_model = model;
-	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public VibeJspHtmlType getJspType() {return m_jspType;}
-	public Map<String,String> getModel() {return m_model;}
+	public List getLayout() {
+		return m_layout;
+	}
 	
 	/**
-	 * Returns the command's enumeration value.
+	 * Set'er methods.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
+	 * @param
 	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_JSP_HTML.ordinal();
+	public void setLayout(List layout) {
+		m_layout = layout;
 	}
 }

@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.Map;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoryLayout;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -43,7 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author phurley@novell.com
  */
 public class BinderAccessoriesRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private Map	m_dashboardMap;			//
+	private AccessoryLayout	m_dashboardLayout;			//
 	
 	/**
 	 * Constructor method.
@@ -57,11 +59,11 @@ public class BinderAccessoriesRpcResponseData implements IsSerializable, VibeRpc
 	/**
 	 * Constructor method.
 	 *
-	 * @param dashboardMap
+	 * @param dashboardLayout
 	 */
-	public BinderAccessoriesRpcResponseData(Map dashboardMap) {
+	public BinderAccessoriesRpcResponseData(AccessoryLayout dashboardLayout) {
 		this();
-		setDashboardMap(dashboardMap);
+		setDashboardLayout(dashboardLayout);
 	}
 	
 	/**
@@ -69,12 +71,16 @@ public class BinderAccessoriesRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public Map getDashboardMap()     {return m_dashboardMap;}
+	public AccessoryLayout getDashboardLayout() {
+		return m_dashboardLayout;
+	}
 
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param dashboardMap
+	 * @param dashboardLayout
 	 */
-	public void setDashboardMap(Map dashboardMap)       {m_dashboardMap = dashboardMap;}
+	public void setDashboardLayout(AccessoryLayout dashboardLayout) {
+		m_dashboardLayout = dashboardLayout;
+	}
 }

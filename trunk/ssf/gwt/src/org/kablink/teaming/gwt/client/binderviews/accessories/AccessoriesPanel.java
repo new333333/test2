@@ -66,7 +66,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
  */
 public class AccessoriesPanel extends ToolPanelBase {
 	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
-	private Map m_dashboardMap;
+	private AccessoryLayout m_dashboardLayout;
 	private String m_html;
 	private String m_binderId;
 	
@@ -122,7 +122,7 @@ public class AccessoriesPanel extends ToolPanelBase {
 			public void onSuccess(VibeRpcResponse response) {
 				// Store the description and continue loading.
 				BinderAccessoriesRpcResponseData responseData = ((BinderAccessoriesRpcResponseData) response.getResponseData());
-				m_dashboardMap = responseData.getDashboardMap();
+				m_dashboardLayout = responseData.getDashboardLayout();
 				loadAccessoryPanelAsync();
 			}
 		});
@@ -145,50 +145,32 @@ public class AccessoriesPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the description panel.
 	 */
 	private void loadAccessoryPanelNow() {
-		Map model = new HashMap();
+		Map<String,String> model = new HashMap<String,String>();
 		model.put("binderId", m_binderId);
-		//Go through each component list and show the accessories
-		String[] ComponentLists = {"wide_top", "narrow_fixed", "narrow_variable", "wide_bottom"};
-    	List componentList = new ArrayList();
-    	String componentId = "";
-    	Map<String,Object> ssDashboard = (Map<String,Object>) m_dashboardMap.get("ssDashboard");
-    	model.put("ssDashboard", ssDashboard);
-    	for (int i = 0; i < ComponentLists.length; i++) {
-			String scope = (String)ssDashboard.get("scope");
-			if (scope.equals("local")) {
-				componentList = (List) ssDashboard.get(ComponentLists[i]);
-			} else if (scope.equals("global")) {
-				componentList = (List) ((Map)ssDashboard.get("dashboard_global")).get(ComponentLists[i]);
-			} else if (scope.equals("binder")) {
-				componentList = (List) ((Map)ssDashboard.get("dashboard_binder")).get(ComponentLists[i]);
-			}
-			for (int j = 0; j < componentList.size(); j++) {
-				Map component = (Map) componentList.get(j);
-				if ((Boolean)component.get("visible")) {
-					//get the component id
-					componentId = (String)component.get("id");
-		    		ssDashboard.put("ssComponentId", componentId);
-					GwtClientHelper.executeCommand(
-							new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY, model),
-							new AsyncCallback<VibeRpcResponse>() {
-						@Override
-						public void onFailure(Throwable t) {
-							GwtClientHelper.handleGwtRPCFailure(
-								t,
-								m_messages.rpcFailure_GetBinderAccessory(),
-								VibeJspHtmlType.ACCESSORY.toString());
-						}
-						
-						@Override
-						public void onSuccess(VibeRpcResponse response) {
-							// Store the description and continue loading.
-							JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
-							m_html = responseData.getHtml();
-							loadAccessoryAsync();
-						}
-					});
+		String componentId = "";
+    	List<String> dashboardLayout = m_dashboardLayout.getLayout();
+    	for (String cId : dashboardLayout) {
+    		componentId = cId;
+    		model.put("ssComponentId", componentId);
+			GwtClientHelper.executeCommand(
+					new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY, model),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetBinderAccessory(),
+						VibeJspHtmlType.ACCESSORY.toString());
 				}
-			}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the description and continue loading.
+					JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+					m_html = responseData.getHtml();
+					loadAccessoryAsync();
+				}
+			});
 		}
 
     	if (componentId.equals("")) {

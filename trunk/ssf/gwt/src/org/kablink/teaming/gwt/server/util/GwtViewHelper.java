@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoryLayout;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -593,9 +594,10 @@ public class GwtViewHelper {
 			Binder binder = bs.getBinderModule().getBinder(binderId);
 			Map model = new HashMap();
 			Map dashboardMap = DashboardHelper.getDashboardMap(binder, userProps, model, "local", "", false, false);
+			AccessoryLayout dashboardLayout = new AccessoryLayout();
 			return
 				new BinderAccessoriesRpcResponseData(
-					model);
+						dashboardLayout);
 		}
 		
 		catch (Exception e) {
