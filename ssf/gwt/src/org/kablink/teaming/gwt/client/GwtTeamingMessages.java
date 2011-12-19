@@ -436,6 +436,8 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_FolderOptionsDlg();
 	String codeSplitFailure_FolderColumnsDlg();
 	String codeSplitFailure_FooterPanel();
+	String codeSplitFailure_ImportIcalByFileDlg();
+	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LoginDlg();
@@ -583,6 +585,14 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgImportTask();
 	String mainMenuFolderOptionsNoOptions();
 	String mainMenuFolderOptionsUnexpectedEvent(String eventName);
+	String mainMenuImportIcalByFileDlgHeader(String type);
+	String mainMenuImportIcalByFileDlgHeaderError();
+	String mainMenuImportIcalByFileDlgHeaderCalendar();
+	String mainMenuImportIcalByFileDlgHeaderTask();
+	String mainMenuImportIcalByUrlDlgHeader(String type);
+	String mainMenuImportIcalByUrlDlgHeaderError();
+	String mainMenuImportIcalByUrlDlgHeaderCalendar();
+	String mainMenuImportIcalByUrlDlgHeaderTask();
 	String mainMenuManageEditTeam();
 	String mainMenuManageEmailTeam();
 	String mainMenuManageFolderOptions();

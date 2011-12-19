@@ -3383,6 +3383,16 @@ td.datePickerMonth {
 	.vibe-emailNotifDlg_TextPanel        {display: block; white-space: nowrap; margin-top: 15px;}
 /* End:  Email notification dialog styles. */
 
+/* Start:  Import iCal by file dialog styles. */
+	.vibe-iiFileDlg_Label {}
+	.vibe-iiFileDlg_Panel {}
+/* End:  Import iCal by file dialog styles. */
+
+/* Start:  Import iCal by URL dialog styles. */
+	.vibe-iiUrlDlg_Label {}
+	.vibe-iiUrlDlg_Panel {}
+/* End:  Import iCal by URL dialog styles. */
+
 /* The following styles are used with an object list table. */
 .oltHeader
 {
