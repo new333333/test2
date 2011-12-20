@@ -296,6 +296,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component, false);
+					//Also set up the wrokspace tree bean because it is used by all of these
+					getInstance().getWorkspaceTreeBean(binder, 
+						ssDashboard, model, id, component, false);
 				} 
 			}
 		}
