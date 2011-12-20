@@ -32,16 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.binderviews.accessories;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
-import org.kablink.teaming.gwt.client.rpc.shared.BinderAccessoriesRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderAccessoriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
@@ -66,10 +62,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
  */
 public class AccessoriesPanel extends ToolPanelBase {
 	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
-	private AccessoryLayout m_dashboardLayout;
-	private Map<String,VibeFlowPanel> m_flowPanelMap;
 	private String m_binderId;
-	private int m_accessoryCount = 0;
+	private String m_html;
 	
 	/*
 	 * Constructor method.
@@ -109,23 +103,25 @@ public class AccessoriesPanel extends ToolPanelBase {
 	private void loadAccessoriesMapNow() {
 		final Long binderId = m_binderInfo.getBinderIdAsLong();
 		m_binderId = String.valueOf(binderId);
+		Map<String,Object> model = new HashMap<String,Object>();
+		model.put("binderId", m_binderId);
 		GwtClientHelper.executeCommand(
-				new GetBinderAccessoriesCmd(binderId),
+				new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY_PANEL, model),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_GetBinderAccessories(),
-					binderId);
+					m_messages.rpcFailure_GetBinderAccessory(),
+					VibeJspHtmlType.ACCESSORY_PANEL.toString());
 			}
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Store the description and continue loading.
-				BinderAccessoriesRpcResponseData responseData = ((BinderAccessoriesRpcResponseData) response.getResponseData());
-				m_dashboardLayout = responseData.getDashboardLayout();
-				loadAccessoryPanelAsync();
+				// Store the accessory panel HTML and continue loading.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				m_html = responseData.getHtml();
+				loadAccessoryAsync();
 			}
 		});
 	}
@@ -133,88 +129,18 @@ public class AccessoriesPanel extends ToolPanelBase {
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
-	private void loadAccessoryPanelAsync() {
-		ScheduledCommand constructAccessory = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadAccessoryPanelNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(constructAccessory);
-	}
-
-	/*
-	 * Synchronously construct's the contents of the description panel.
-	 */
-	private void loadAccessoryPanelNow() {
-		Map<String,Object> model = new HashMap<String,Object>();
-		model.put("binderId", m_binderId);
-		m_flowPanelMap = new HashMap<String,VibeFlowPanel>();
-		String componentId = "";
-    	List<String> dashboardLayout = m_dashboardLayout.getLayout();
-    	if (null != dashboardLayout) {
-    		m_accessoryCount = dashboardLayout.size();
-	    	for (String cId : dashboardLayout) {
-	    		componentId = cId;
-	    		model.put("ssComponentId", componentId);
-	    		VibeFlowPanel vfp =  new VibeFlowPanel();
-	    		m_flowPanelMap.put(componentId, vfp);
-	    		m_fp.add(vfp);
-				GwtClientHelper.executeCommand(
-						new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY, model),
-						new AsyncCallback<VibeRpcResponse>() {
-					@Override
-					public void onFailure(Throwable t) {
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							m_messages.rpcFailure_GetBinderAccessory(),
-							VibeJspHtmlType.ACCESSORY.toString());
-					}
-					
-					@Override
-					public void onSuccess(VibeRpcResponse response) {
-						// Store the description and continue loading.
-						JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
-						Map<String,Object> context = responseData.getContext();
-						String componentId = (String)context.get("ssComponentId");
-						String html = responseData.getHtml();
-						VibeFlowPanel vfp = m_flowPanelMap.get(componentId);
-						vfp.add(new HTMLPanel(html));
-						loadAccessoryAsync();
-					}
-				});
-			}
-    	}
-
-    	if (componentId.equals("")) {
-    		//There are no accessories to show
-			// ...tell who's using it that it's ready to go.
-			toolPanelReady();
-    	}
-	}
-		
-	/*
-	 * Asynchronously construct's the contents of the entry menu panel.
-	 */
 	private void loadAccessoryAsync() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadAccessoryNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		if (m_html != null && !m_html.equals("")) {
+			HTMLPanel hp = new HTMLPanel(m_html);
+			m_fp.add(hp);
+			
+			//Make sure any javascript inside the accessory panel gets executes as needed
+			GwtClientHelper.jsExecuteJavaScript( hp.getElement() );
+		}
+		//signal that we are done
+		toolPanelReady();
 	}
 	
-	private void loadAccessoryNow() {
-		//If this is the last one to be fetched, signal that we are done
-		m_accessoryCount--;
-		if (m_accessoryCount <= 0) {
-			toolPanelReady();
-		}
-	}
-
-
 	/**
 	 * Loads the AccessoriesPanel split point and returns an instance
 	 * of it via the callback.

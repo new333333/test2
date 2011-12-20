@@ -389,16 +389,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_BINDER_ACCESSORIES:
-		{
-			GetBinderAccessoriesCmd gbaCmd = ((GetBinderAccessoriesCmd) cmd);
-			BinderAccessoriesRpcResponseData responseData = GwtViewHelper.getBinderAccessories(
-				this,
-				getRequest( ri ),
-				gbaCmd.getBinderId() );
-			return new VibeRpcResponse( responseData );
-		}
-		
 		case GET_BINDER_BRANDING:
 		{
 			GwtBrandingData brandingData;

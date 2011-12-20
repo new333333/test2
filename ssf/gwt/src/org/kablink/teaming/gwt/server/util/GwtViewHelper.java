@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
+import javax.portlet.PortletRequest;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -74,12 +75,10 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoryLayout;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.BinderAccessoriesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
@@ -107,12 +106,18 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
+import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
+import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
+import org.kablink.teaming.portletadapter.support.KeyNames;
+import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
@@ -121,6 +126,7 @@ import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
 
@@ -568,74 +574,6 @@ public class GwtViewHelper {
 		return ((null == reply) ? new ArrayList<AssignmentInfo>() : reply);
 	}
 	
-	/**
-	 * Reads information for rendering a binder's accessory panel in a
-	 * BinderAccessoryRpcResponseData object.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * 
-	 * @return
-	 */
-	public static BinderAccessoriesRpcResponseData getBinderAccessories(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
-		try {
-			// Access the accessory panel information from the binder...
-			User user = RequestContextHolder.getRequestContext().getUser();
-			UserProperties userProperties = new UserProperties(user.getId());
-			Map userProps = new HashMap();
-    		if (userProperties.getProperties() != null) {
-    			userProps = userProperties.getProperties();
-    		}
-
-    		if (user != null) {
-    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
-    		}
-			Binder binder = bs.getBinderModule().getBinder(binderId);
-			Map model = new HashMap();
-			Map dashboardMap = DashboardHelper.getDashboardMap(binder, userProps, model, "local", "", false, false);
-			AccessoryLayout dashboardLayout = new AccessoryLayout();
-			List<String> componentsToBeShown = new ArrayList<String>();
-			
-			//Build the list of accessories to be shown
-			String[] ComponentLists = {"wide_top", "narrow_fixed", "narrow_variable", "wide_bottom"};
-	    	List componentList = new ArrayList();
-	    	String componentId = "";
-	    	for (int i = 0; i < ComponentLists.length; i++) {
-				String scope = (String)dashboardMap.get("scope");
-				if (scope.equals("local")) {
-					componentList = (List) dashboardMap.get(ComponentLists[i]);
-				} else if (scope.equals("global")) {
-					componentList = (List) ((Map)dashboardMap.get("dashboard_global")).get(ComponentLists[i]);
-				} else if (scope.equals("binder")) {
-					componentList = (List) ((Map)dashboardMap.get("dashboard_binder")).get(ComponentLists[i]);
-				}
-				for (int j = 0; j < componentList.size(); j++) {
-					Map component = (Map) componentList.get(j);
-					if ((Boolean)component.get("visible")) {
-						//get the component id
-						componentId = (String)component.get("id");
-						componentsToBeShown.add(componentId);
-					}
-				}
-	    	}
-	    	dashboardLayout.setLayout(componentsToBeShown);
-
-			return
-				new BinderAccessoriesRpcResponseData(
-						dashboardLayout);
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getBinderAccessories( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
-		}
-	}
-
 	/**
 	 * Reads information for rendering a binder's description in a
 	 * BinderDescriptionRpcResponseData object.
@@ -1477,6 +1415,34 @@ public class GwtViewHelper {
 			case ACCESSORY_PANEL:
 			{
 				try {
+					RenderRequestImpl renderReq;
+					RenderResponseImpl renderRes;
+					PortletInfo portletInfo;
+					
+					//Build request and render objects needed to build the toolbar
+					{
+						Map<String, Object> params;
+	
+						String portletName;
+						String charEncoding;
+	
+						portletName = "ss_forum";
+						portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo( portletName );
+						
+						renderReq = new RenderRequestImpl( request, portletInfo, AdaptedPortlets.getPortletContext() );
+						
+						params = new HashMap<String, Object>();
+						params.put( KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName} );
+						renderReq.setRenderParameters( params );
+						
+						renderRes = new RenderResponseImpl( renderReq, response, portletName );
+						charEncoding = SPropsUtil.getString( "web.char.encoding", "UTF-8" );
+						renderRes.setContentType( "text/html; charset=" + charEncoding );
+						renderReq.defineObjects( portletInfo.getPortletConfig(), renderRes );
+						
+						renderReq.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
+					}
+
 					//Display the whole accessory panel
 					User user = RequestContextHolder.getRequestContext().getUser();
 					String s_binderId = (String) model.get("binderId");
@@ -1493,11 +1459,16 @@ public class GwtViewHelper {
 		    		}
 		    		Map<String,Object> panelModel = new HashMap<String,Object>();
 					DashboardHelper.getDashboardMap(binder, userProps, panelModel);
-					
+					//Build the "Add Accessory" toolbar
+					Toolbar dashboardToolbar = new Toolbar();
+					BinderHelper.buildDashboardToolbar(renderReq, renderRes, bs, binder, dashboardToolbar, panelModel);
+
 					//Set up the beans used by the jsp
 					panelModel.put(WebKeys.BINDER_ID, binder.getId());
 					panelModel.put(WebKeys.BINDER, binder);
 					panelModel.put(WebKeys.USER_PROPERTIES, userProps);
+					panelModel.put(WebKeys.SNIPPET, true);				//Signal that <html> and <head> should not be output
+					panelModel.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 					
 					jspPath = "definition_elements/view_dashboard_canvas.jsp";
 					html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, panelModel);
