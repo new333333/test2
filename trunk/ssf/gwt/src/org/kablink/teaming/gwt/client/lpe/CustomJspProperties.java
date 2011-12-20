@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -72,6 +73,13 @@ public class CustomJspProperties
 	private String m_zoneUUID;
 	private boolean m_rpcInProgress;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
+
 	/**
 	 * 
 	 */
@@ -87,6 +95,13 @@ public class CustomJspProperties
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_rpcInProgress = false;
+
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
+		m_overflow = Style.Overflow.HIDDEN;
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
@@ -199,6 +214,11 @@ public class CustomJspProperties
 			m_parentBinderName = customJspProps.getParentBinderName();
 			m_showTitle = customJspProps.getShowTitleValue();
 			m_numEntriesToBeShown = customJspProps.getNumEntriesToBeShownValue();
+			m_width = customJspProps.getWidth();
+			m_widthUnits = customJspProps.getWidthUnits();
+			m_height = customJspProps.getHeight();
+			m_heightUnits = customJspProps.getHeightUnits();
+			m_overflow = customJspProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -238,6 +258,27 @@ public class CustomJspProperties
 			if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
 				str += ",zoneUUID=" + m_zoneUUID;
 		}
+
+		// Add the width
+		str += ",width=" + String.valueOf( m_width );
+		if ( m_widthUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add the height
+		str += ",height=" + String.valueOf( m_height );
+		if ( m_heightUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
 
 		str += ";";
 		
@@ -310,6 +351,22 @@ public class CustomJspProperties
 	
 	
 	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
+	
+	/**
 	 * Return the value of the jsp name property
 	 */
 	public String getJspName()
@@ -328,6 +385,14 @@ public class CustomJspProperties
 	
 	
 	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
+	}
+	
+	/**
 	 * Return the name of the binder the folder lives in.
 	 */
 	public String getParentBinderName()
@@ -344,6 +409,22 @@ public class CustomJspProperties
 		return m_showTitle;
 	}// end getShowTitleValue()
 	
+	
+	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
+	}
 	
 	/**
 	 * Return the zone uuid
@@ -411,6 +492,22 @@ public class CustomJspProperties
 	/**
 	 * 
 	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setJspName( String name )
 	{
 		m_jspName = name;
@@ -425,6 +522,14 @@ public class CustomJspProperties
 		m_numEntriesToBeShown = numEntries;
 	}// end setNumEntriesToBeShownValue()
 	
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
+	}
 	
 	/**
 	 * 
@@ -444,6 +549,22 @@ public class CustomJspProperties
 	}// end setShowBorder()
 
 
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
+	
 	/**
 	 * 
 	 */
