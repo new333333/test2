@@ -54,11 +54,8 @@ public class ConfigData
 	private boolean m_hideMasthead;
 	private boolean m_hideNavPanel;
 	private boolean m_hideFooter;
-	private boolean m_hideMenu;
 	private boolean m_isPreviewMode;
-	private String m_bgColor;
-	private String m_bgImgUrl;
-	private String m_bgImgRepeat;
+	private LandingPageProperties m_lpProperties;
 	private String m_lpStyle;		// The current values for this are mashup_dark.css or mashup.css
 	
 
@@ -408,7 +405,7 @@ public class ConfigData
 	 */
 	public String getBackgroundColor()
 	{
-		return m_bgColor;
+		return m_lpProperties.getBackgroundColor();
 	}
 	
 	/**
@@ -416,7 +413,7 @@ public class ConfigData
 	 */
 	public String getBackgroundImgUrl()
 	{
-		return m_bgImgUrl;
+		return m_lpProperties.getBackgroundImageUrl();
 	}
 	
 	
@@ -425,7 +422,7 @@ public class ConfigData
 	 */
 	public String getBackgroundImgRepeat()
 	{
-		return m_bgImgRepeat;
+		return m_lpProperties.getBackgroundRepeat();
 	}
 	
 	/**
@@ -480,7 +477,7 @@ public class ConfigData
 	 */
 	public boolean getHideMenu()
 	{
-		return m_hideMenu;
+		return m_lpProperties.getHideMenu();
 	}
 	
 	/**
@@ -489,6 +486,16 @@ public class ConfigData
 	public boolean getHideNavPanel()
 	{
 		return m_hideNavPanel;
+	}
+	
+	/**
+	 * Initialize the landing page properties from the given xml
+	 */
+	public LandingPageProperties initLandingPageProperties( String xml )
+	{
+		m_lpProperties = new LandingPageProperties( xml );
+		
+		return m_lpProperties;
 	}
 	
 	/**
@@ -519,10 +526,8 @@ public class ConfigData
 		m_configStr = null;
 		m_hideFooter = false;
 		m_hideMasthead = false;
-		m_hideMenu = false;
+		m_lpProperties = new LandingPageProperties();
 		m_hideNavPanel = false;
-		m_bgColor = null;
-		m_bgImgUrl = null;
 		m_isPreviewMode = false;
 	}
 	
@@ -555,7 +560,7 @@ public class ConfigData
 	 */
 	public void setBackgroundColor( String color )
 	{
-		m_bgColor = color;
+		m_lpProperties.setBackgroundColor( color );
 	}
 	
 	/**
@@ -563,7 +568,7 @@ public class ConfigData
 	 */
 	public void setBackgroundImgRepeat( String repeat )
 	{
-		m_bgImgRepeat = repeat;
+		m_lpProperties.setBackgroundRepeat( repeat );
 	}
 	
 	
@@ -572,7 +577,7 @@ public class ConfigData
 	 */
 	public void setBackgroundImgUrl( String imgUrl )
 	{
-		m_bgImgUrl = imgUrl;
+		m_lpProperties.setBackgroundImgUrl( imgUrl );
 	}
 	
 	/**
@@ -614,7 +619,7 @@ public class ConfigData
 	 */
 	public void setHideMenu( boolean hideMenu )
 	{
-		m_hideMenu = hideMenu;
+		m_lpProperties.setHideMenu( hideMenu );
 	}
 	
 	/**

@@ -47,6 +47,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
+import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -716,6 +717,43 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     {
     	this.brandingExt = brandingExt; 
     }// end setBrandingExt()
+    
+    
+    /**
+     * Get the xml document that holds the landing page properties such as the background color,
+     * background image, etc. 
+     */
+    public Document getLandingPageProperties()
+    {
+		CustomAttribute customAttr;
+		Document doc;
+
+		doc = null;
+		customAttr = getCustomAttribute( "mashup" + DefinitionModule.MASHUP_PROPERTIES );
+		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.XML )
+		{
+			doc = (Document) customAttr.getValue();
+		}
+		
+		return doc;
+    }
+
+    /**
+     * 
+     */
+	public Binder getLandingPagePropertiesSourceBinder()
+	{
+		Document doc;
+		
+		doc = getLandingPageProperties();
+		if ( doc != null )
+    		return this;
+        
+    	if ( parentBinder == null )
+    		return this;
+        
+    	return parentBinder.getLandingPagePropertiesSourceBinder();
+	}
     
     /**
      * @hibernate.property

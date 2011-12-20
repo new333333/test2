@@ -1,5 +1,6 @@
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.NodeList;
@@ -13,20 +14,36 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  *
  */
 public class LandingPageProperties
+	implements IsSerializable
 {
-	public final String ROOT_ELEMENT_NAME = "landingPageData";
-	public final String BACKGROUND_ELEMENT_NAME = "background";
-	public final String PAGE_LAYOUT_ELEMENT_NAME = "pageLayout";
-	public final String COLOR_ATTRIBUTE_NAME = "color";
-	public final String IMAGE_NAME_ATTRIBUTE_NAME = "imgName";
-	public final String REPEAT_ATTRIBUTE_NAME = "repeat";
-	public final String HIDE_MENU_ATTRIBUTE_NAME = "hideMenu";
+	transient public final String ROOT_ELEMENT_NAME = "landingPageData";
+	transient public final String BACKGROUND_ELEMENT_NAME = "background";
+	transient public final String PAGE_LAYOUT_ELEMENT_NAME = "pageLayout";
+	transient public final String COLOR_ATTRIBUTE_NAME = "color";
+	transient public final String IMAGE_NAME_ATTRIBUTE_NAME = "imgName";
+	transient public final String REPEAT_ATTRIBUTE_NAME = "repeat";
+	transient public final String HIDE_MENU_ATTRIBUTE_NAME = "hideMenu";
 	
 	private String m_backgroundColor;
 	private String m_backgroundImageName;
+	private String m_backgroundImageUrl;
 	private String m_backgroundRepeat;
 	private boolean m_hideMenu;
+	private boolean m_inheritProperties;
 	
+	/**
+	 * 
+	 */
+	public LandingPageProperties()
+	{
+		m_backgroundColor = null;
+		m_backgroundImageName = null;
+		m_backgroundImageUrl = null;
+		m_backgroundRepeat = null;
+		m_hideMenu = false;
+		m_inheritProperties = true;
+	}
+
 	/**
 	 * 
 	 */
@@ -34,8 +51,10 @@ public class LandingPageProperties
 	{
 		m_backgroundColor = null;
 		m_backgroundImageName = null;
+		m_backgroundImageUrl = null;
 		m_backgroundRepeat = null;
 		m_hideMenu = false;
+		m_inheritProperties = true;
 		
 		if ( propertiesXML != null )
 		{
@@ -69,6 +88,8 @@ public class LandingPageProperties
 					
 					m_hideMenu = Boolean.parseBoolean( pageLayoutElement.getAttribute( HIDE_MENU_ATTRIBUTE_NAME ) );
 				}
+				
+				m_inheritProperties = false;
 			}
 			catch (DOMParseException ex)
 			{
@@ -83,8 +104,10 @@ public class LandingPageProperties
 	{
 		m_backgroundColor = lpProperties.getBackgroundColor();
 		m_backgroundImageName = lpProperties.getBackgroundImageName();
+		m_backgroundImageUrl = lpProperties.getBackgroundImageUrl();
 		m_backgroundRepeat = lpProperties.getBackgroundRepeat();
 		m_hideMenu = lpProperties.getHideMenu();
+		m_inheritProperties = lpProperties.getInheritProperties();
 	}
 	
 	/**
@@ -106,6 +129,14 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
+	public String getBackgroundImageUrl()
+	{
+		return m_backgroundImageUrl;
+	}
+	
+	/**
+	 * 
+	 */
 	public String getBackgroundRepeat()
 	{
 		return m_backgroundRepeat;
@@ -120,6 +151,14 @@ public class LandingPageProperties
 	}
 	
 	/**
+	 * 
+	 */
+	public boolean getInheritProperties()
+	{
+		return m_inheritProperties;
+	}
+	
+	/**
 	 * Return the properties as an xml string that looks like the following:
 	 *	<landingPageData>
 	 * 		<background color="" imgName="" />
@@ -130,6 +169,13 @@ public class LandingPageProperties
 	{
 		Document doc;
 		Element rootElement;
+		
+		// Are we inheriting the properties?
+		if ( m_inheritProperties )
+		{
+			// Yes, return null to indicate we are inheriting
+			return null;
+		}
 		
 		doc = XMLParser.createDocument();
 		
@@ -189,6 +235,14 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
+	public void setBackgroundImgUrl( String url )
+	{
+		m_backgroundImageUrl = url;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setBackgroundRepeat( String repeat )
 	{
 		m_backgroundRepeat = repeat;
@@ -200,5 +254,13 @@ public class LandingPageProperties
 	public void setHideMenu( boolean hide )
 	{
 		m_hideMenu = hide;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setInheritProperties( boolean inherit )
+	{
+		m_inheritProperties = inherit;
 	}
 }

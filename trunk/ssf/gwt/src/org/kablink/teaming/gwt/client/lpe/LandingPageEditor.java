@@ -161,7 +161,7 @@ public class LandingPageEditor extends Composite
 		m_enteredDropZones = new Stack<DropZone>();
 		
 		// Get the landing page properties.
-		m_landingPageProperties = new LandingPageProperties( m_lpeConfig.getMashupPropertiesXML() );
+		m_landingPageProperties = configData.initLandingPageProperties( m_lpeConfig.getMashupPropertiesXML() );
 		
 		// Create a vertical panel for the hint and the horizontal panel to live in.
 		vPanel = new VerticalPanel();
@@ -269,6 +269,7 @@ public class LandingPageEditor extends Composite
 		{
 			Element element;
 			InputElement ckboxElement;
+			String xmlStr;
 			
 			// Add the "hide menu" setting to the landing page properties.
 			try
@@ -283,7 +284,10 @@ public class LandingPageEditor extends Composite
 				
 			}
 			
-			m_propertiesHiddenInput.setValue( m_landingPageProperties.getPropertiesAsXMLString() );
+			xmlStr = m_landingPageProperties.getPropertiesAsXMLString();
+			if ( xmlStr == null )
+				xmlStr = "";
+			m_propertiesHiddenInput.setValue( xmlStr );
 		}
 	}
 	
