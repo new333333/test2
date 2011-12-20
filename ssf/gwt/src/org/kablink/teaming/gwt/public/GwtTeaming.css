@@ -17,6 +17,8 @@
 .displayBlock       { display: block;        }
 .displayInline      { display: inline;       }
 .displayInlineBlock { display: inline-block; }
+
+.vibe-verticalScroll {overflow-y: auto;}
 	
 /* Styles used with the activity stream control */
 .activityStreamCtrl

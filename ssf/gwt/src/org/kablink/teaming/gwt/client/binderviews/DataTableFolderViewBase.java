@@ -165,6 +165,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	// server is dumped as part of the content of the view.
 	private final static boolean DUMP_DISPLAY_DATA	= false;
 	
+	private final static int MINIMUM_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
+	private final static int NO_VSCROLL_ADJUST	=  28;	// Height adjustment required so there's no vertical scroll bar by default.
+	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that makeup a data table based folder view.
 	private final static int BREADCRUMB_PANEL_INDEX		= 0;
@@ -677,7 +680,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		
 		// ...create the main panel for the content...
 		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName("vibe-folderViewBase vibe-dataTableFolderViewBase");
+		m_mainPanel.addStyleName("vibe-folderViewBase vibe-dataTableFolderViewBase vibe-verticalScroll");
 
 		// ...set the sizing adjustments the account for the padding in
 		// ...the vibe-folderViewBase style...
@@ -1481,11 +1484,17 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		int dtPagerHeight	= m_dataTablePager.getOffsetHeight();								// Height of the data table's pager.
 		int fpHeight		= ((null == m_footerPanel) ? 0 : m_footerPanel.getOffsetHeight());	// Height of the view's footer panel.
 		int totalBelow		= (dtPagerHeight + fpHeight);										// Total space on the page below the data table.
-		
-		int dataTableHeight = ((viewHeight - dtTop) - totalBelow);								// How tall we can make the data table.
-		if (0 > dataTableHeight) {
-			dataTableHeight = 0;
+
+		// What's the optimum height for the data table so we don't get
+		// a vertical scroll bar?
+		int dataTableHeight = (((viewHeight - dtTop) - totalBelow) - NO_VSCROLL_ADJUST);
+		if (MINIMUM_HEIGHT > dataTableHeight) {
+			// Too small!  Use the minimum even though this will turn
+			// on the vertical scroll bar.
+			dataTableHeight = MINIMUM_HEIGHT;
 		}
+		
+		// Set the height of the data table.
 		m_dataTable.setHeight(dataTableHeight + "px");
 	}
 	

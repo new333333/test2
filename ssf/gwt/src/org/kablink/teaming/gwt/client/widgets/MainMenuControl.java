@@ -833,6 +833,16 @@ public class MainMenuControl extends Composite
 		
 		// ...and show it.
 		m_aboutPopup.center();
+		ScheduledCommand doCenter = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				// We do this twice, once deferred so that it can be
+				// rendered before it's really centered, by this 2nd
+				// call.
+				m_aboutPopup.center();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doCenter);
 	}
 	
 	/**
@@ -1359,7 +1369,7 @@ public class MainMenuControl extends Composite
 		// Do we currently have context items being constructed?
 		if (m_contextMenuSync.isConstructionInProgress()) {
 			// Yes!  That's an error.  Tell the user.
-			GwtClientHelper.debugAlert("MainMenuControl.showToolbarItemsNow( *Internal Error* ):  Request to show items while they're already in the process of being shown.");
+//!			GwtClientHelper.debugAlert("MainMenuControl.showToolbarItemsNow( *Internal Error* ):  Request to show items while they're already in the process of being shown.");
 		}
 		
 		else {
