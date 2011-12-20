@@ -32,11 +32,19 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -46,9 +54,12 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 
@@ -62,12 +73,14 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	@SuppressWarnings("unused")
 	private GwtTeamingMainMenuImageBundle	m_images;		// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
+	private String							m_importType;	// Type of import (calendar or task) being performed.  Used to patch strings used for both types.
+	private TextBox							m_url;			//
 	private VerticalPanel					m_vp;			//
 
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
 	 */
-	private class DlgLabel extends InlineLabel {
+	private class DlgLabel extends Label {
 		/**
 		 * Constructor method.
 		 * 
@@ -127,14 +140,9 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		// Create a panel to hold the dialog's content...
+		// Create and return a panel to hold the dialog's content.
 		m_vp = new VerticalPanel();
 		m_vp.addStyleName("vibe-iiUrlDlg_Panel");
-
-//!		...this needs to be implemented...
-		m_vp.add(new DlgLabel("...this needs to be implemented..."));
-		
-		// ...and return the Panel that holds the dialog's contents.
 		return m_vp;
 	}
 
@@ -164,8 +172,24 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-		// Unused.
-		return true;
+		// Do we have a URL to import?
+		String url = m_url.getValue();
+		if (null != url) {
+			url = url.trim();
+		}
+		if (GwtClientHelper.hasString(url)) {
+			// Yes!  Invoke the import method with it.
+			importIcalUrlAsync(url);
+		}
+		else {
+			// No, we don't have a URL to import!  Tell the user about
+			// the problem.
+			GwtClientHelper.deferredAlert(m_messages.mainMenuImportIcalByUrlDlgErrorNoUrl());
+		}
+		
+		// Return false.  If the import is successful, the dialog will
+		// be closed after the import completes.
+		return false;
 	}
 
 	/**
@@ -194,6 +218,90 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	}
 
 	/*
+	 * Asynchronously imports the given iCal URL.
+	 */
+	private void importIcalUrlAsync(final String url) {
+		ScheduledCommand doImport = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				importIcalUrlNow(url);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doImport);
+	}
+	
+	/*
+	 * Synchronously imports the given iCal URL.
+	 */
+	private void importIcalUrlNow(String url) {
+		GwtClientHelper.executeCommand(
+				new ImportIcalByUrlCmd(m_folderInfo.getBinderIdAsLong(), url),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_ImportIcalByUrl());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Was the import successful?
+				ImportIcalByUrlRpcResponseData responseData = ((ImportIcalByUrlRpcResponseData) response.getResponseData());
+				if (responseData.hasErrors()) {
+					// No!  Tell the user about the problem(s).
+					Map<FailureReason, String> errors = responseData.getErrors();
+					Set<FailureReason> reasons = errors.keySet();
+					StringBuffer msgs = new StringBuffer("");
+					int count = 0;
+					for (FailureReason reason:  reasons) {
+						count += 1;
+						String detail = errors.get(reason);
+						String msg;
+						switch (reason) {
+						case IMPORT_FAILED:    msg = m_messages.mainMenuImportIcalByUrlDlgErrorFailed(detail); break;
+						case PARSE_EXCEPTION:  msg = m_messages.mainMenuImportIcalByUrlDlgErrorParse( detail); break;
+						case URL_EXCEPTION:    msg = m_messages.mainMenuImportIcalByUrlDlgErrorUrl(   detail); break;
+						default:               msg = m_messages.mainMenuImportIcalByUrlDlgErrorUnknown();      break;
+						}
+						if (1 < count) {
+							msgs.append("\n\n");
+						}
+						msgs.append(msg);
+					}
+					Window.alert(msgs.toString());
+				}
+				
+				else {
+					// Yes, the import was successful!  Close the
+					// dialog...
+					hide();
+					
+					// ...tell the user what changed...
+					int added    = responseData.getAddedEntryIds().size();
+					int modified = responseData.getModifiedEntryIds().size();
+					GwtClientHelper.deferredAlert(
+						m_messages.mainMenuImportIcalByUrlDlgSuccess(
+							String.valueOf(added),
+							String.valueOf(modified)));
+					
+					// ...and if anything changed...
+					if (0 < (added + modified)) {
+						// ...force the UI to reload.
+						ScheduledCommand doReload = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								FullUIReloadEvent.fireOne();
+							}
+						};
+						Scheduler.get().scheduleDeferred(doReload);
+					}
+				}
+			}
+		});
+	}
+	
+	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
@@ -212,15 +320,31 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	private void populateDlgNow() {
 		// Update the caption with the correct string based on the
 		// folder that we're importing into.
-		String patch;
+		String hint;
 		switch (m_folderInfo.getFolderType()) {
-		case CALENDAR:  patch = m_messages.mainMenuImportIcalByUrlDlgHeaderCalendar(); break;
-		case TASK:      patch = m_messages.mainMenuImportIcalByUrlDlgHeaderTask();     break;
-		default:        patch = m_messages.mainMenuImportIcalByUrlDlgHeaderError();    break;
+		case CALENDAR:  m_importType = m_messages.mainMenuImportIcalTypeCalendar(); hint = m_messages.mainMenuImportIcalByUrlDlgHintCalendar(); break;
+		case TASK:      m_importType = m_messages.mainMenuImportIcalTypeTask();     hint = m_messages.mainMenuImportIcalByUrlDlgHintTask();     break;
+		default:        m_importType = m_messages.mainMenuImportIcalTypeError();    hint = null;                                                break;
 		}
-		setCaption(m_messages.mainMenuImportIcalByUrlDlgHeader(patch));
+		setCaption(m_messages.mainMenuImportIcalByUrlDlgHeader(m_importType));
+
+		// Create a panel to hold the content...
+		m_vp.clear();
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("vibe-iiUrlDlg_Content");
+		m_vp.add(fp);
 		
-//!		...this needs to be implemented...
+		// ....add the URL input widgets...
+		m_url = new TextBox();
+		m_url.addStyleName("vibe-iiUrlDlg_Input");
+		fp.add(m_url);
+		
+		// ...and if we have one, a hint as to what's expected.
+		if (GwtClientHelper.hasString(hint)) {
+			DlgLabel urlHint = new DlgLabel(hint);
+			urlHint.addStyleName("vibe-iiUrlDlg_Hint");
+			fp.add(urlHint);
+		}
 	}
 	
 	/*

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.text.Collator;
 import java.text.DateFormat;
@@ -57,6 +58,12 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpURL;
+import org.apache.commons.httpclient.HttpsURL;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -131,7 +138,9 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
+import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -154,6 +163,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -3406,7 +3416,27 @@ public class GwtServerHelper {
 		return getGwtTeamingException(null);
 	}
 
+	/*
+	 * Creates an HttpClient from an HttpURL.
+	 */
+	private static HttpClient getHttpClient(HttpURL hrl) throws URIException {
+		HttpClient client = new HttpClient();
+		HostConfiguration hc = client.getHostConfiguration();
+		hc.setHost(hrl);
+		return client;
+	}
 
+	/*
+	 * Creates an HttpURL from a URL string.
+	 */
+	private static HttpURL getHttpURL(String urlStr) throws URIException  {
+		HttpURL reply;
+		if(urlStr.startsWith("https"))
+			 reply = new HttpsURL(urlStr);
+		else reply = new HttpURL(urlStr);
+		return reply;
+	}
+	
 	/**
 	 * Get the landing page data for the given binder.
 	 */
@@ -4405,6 +4435,73 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Imports an iCal into a folder using a URL.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param iCalURL
+	 * 
+	 * @return
+	 */
+	public static ImportIcalByUrlRpcResponseData importIcalByUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId, String iCalURL) {
+		// Construct the RPC response data to return.
+		ImportIcalByUrlRpcResponseData reply = new ImportIcalByUrlRpcResponseData();
+
+		// Can we parse the URL?
+		GetMethod getMethod = null;
+		try {
+			HttpURL hrl = getHttpURL(iCalURL);
+			HttpClient httpClient = getHttpClient(hrl);
+			getMethod = new GetMethod(hrl.getPathQuery());
+			
+			// Can we perform the import using the URL?
+			int statusCode = httpClient.executeMethod(getMethod);
+			if (200 == statusCode) {
+				// Yes!  Get the response to the URL as an InputStream.
+				InputStream icalInputStream = getMethod.getResponseBodyAsStream();
+				
+				// Can we parse the data as iCal entries?
+				try {
+					AttendedEntries attendedEntries = bs.getIcalModule().parseToEntries(folderId, icalInputStream);
+					reply.setAddedEntryIds(   attendedEntries.added   );
+					reply.setModifiedEntryIds(attendedEntries.modified);
+				}
+				
+				catch (net.fortuna.ical4j.data.ParserException e) {
+					// No, we couldn't parse the data as iCal entries!
+					reply.setError(FailureReason.PARSE_EXCEPTION, e.getLocalizedMessage());
+				}
+				
+				// Close the input string.
+				icalInputStream.close();
+			}
+			else {
+				// No, we couldn't perform the import!
+				reply.setError(FailureReason.IMPORT_FAILED, "InvalidUrl");
+			}
+		}
+		
+		catch (Exception e) {
+			// No, we couldn't parse the URL!
+			reply.setError(FailureReason.URL_EXCEPTION, e.getLocalizedMessage());
+		}
+		
+		finally {
+			// If we're connected to the URL...
+			if (null != getMethod) {
+				// ...release the connection.
+				getMethod.releaseConnection();
+			}
+		}
+
+		// If we get here, reply refers to an
+		// ImportIcalByUrlRpcResponseData object that contains the
+		// results of the import.  Return it.
+		return reply;
+	}
+	
+	/**
 	 * Returns the WorkspaceType of a binder.
 	 * 
 	 * @param bs
@@ -4757,6 +4854,7 @@ public class GwtServerHelper {
 		case GET_VIEW_FOLDER_ENTRY_URL:
 		case GET_VIEW_INFO:
 		case HAS_ACTIVITY_STREAM_CHANGED:
+		case IMPORT_ICAL_BY_URL:
 		case IS_ALL_USERS_GROUP:
 		case IS_PERSON_TRACKED:
 		case IS_SEEN:
