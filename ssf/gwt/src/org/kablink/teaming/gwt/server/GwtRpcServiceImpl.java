@@ -1276,6 +1276,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case IMPORT_ICAL_BY_URL:
+		{
+			ImportIcalByUrlCmd iiUrlCmd = ((ImportIcalByUrlCmd) cmd);
+			ImportIcalByUrlRpcResponseData result = GwtServerHelper.importIcalByUrl( this, getRequest( ri ), iiUrlCmd.getFolderId(), iiUrlCmd.getUrl() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case IS_ALL_USERS_GROUP:
 		{
 			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();

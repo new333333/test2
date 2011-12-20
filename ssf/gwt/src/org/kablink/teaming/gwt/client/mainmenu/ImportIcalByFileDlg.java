@@ -62,6 +62,7 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 	@SuppressWarnings("unused")
 	private GwtTeamingMainMenuImageBundle	m_images;		// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
+	private String							m_importType;	// Type of import (calendar or task) being performed.  Used to patch strings used for both types.
 	private VerticalPanel					m_vp;			//
 
 	/*
@@ -127,14 +128,9 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		// Create a panel to hold the dialog's content...
+		// Create and return a panel to hold the dialog's content.
 		m_vp = new VerticalPanel();
 		m_vp.addStyleName("vibe-iiFileDlg_Panel");
-
-//!		...this needs to be implemented...
-		m_vp.add(new DlgLabel("...this needs to be implemented..."));
-		
-		// ...and return the Panel that holds the dialog's contents.
 		return m_vp;
 	}
 
@@ -212,15 +208,16 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 	private void populateDlgNow() {
 		// Update the caption with the correct string based on the
 		// folder that we're importing into.
-		String patch;
 		switch (m_folderInfo.getFolderType()) {
-		case CALENDAR:  patch = m_messages.mainMenuImportIcalByFileDlgHeaderCalendar(); break;
-		case TASK:      patch = m_messages.mainMenuImportIcalByFileDlgHeaderTask();     break;
-		default:        patch = m_messages.mainMenuImportIcalByFileDlgHeaderError();    break;
+		case CALENDAR:  m_importType = m_messages.mainMenuImportIcalTypeCalendar(); break;
+		case TASK:      m_importType = m_messages.mainMenuImportIcalTypeTask();     break;
+		default:        m_importType = m_messages.mainMenuImportIcalTypeError();    break;
 		}
-		setCaption(m_messages.mainMenuImportIcalByFileDlgHeader(patch));
+		setCaption(m_messages.mainMenuImportIcalByFileDlgHeader(m_importType));
 		
 //!		...this needs to be implemented...
+		m_vp.clear();
+		m_vp.add(new DlgLabel("...this needs to be implemented..."));
 	}
 	
 	/*

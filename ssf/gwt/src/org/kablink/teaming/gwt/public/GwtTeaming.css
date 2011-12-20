@@ -3389,8 +3389,11 @@ td.datePickerMonth {
 /* End:  Import iCal by file dialog styles. */
 
 /* Start:  Import iCal by URL dialog styles. */
-	.vibe-iiUrlDlg_Label {}
-	.vibe-iiUrlDlg_Panel {}
+	.vibe-iiUrlDlg_Content {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-iiUrlDlg_Hint    {margin: 8px 0px 8px 0px; font-size: 11px !important; color: #cccccc;}
+	.vibe-iiUrlDlg_Input   {width: 250px;}
+	.vibe-iiUrlDlg_Label   {}
+	.vibe-iiUrlDlg_Panel   {}
 /* End:  Import iCal by URL dialog styles. */
 
 /* The following styles are used with an object list table. */
