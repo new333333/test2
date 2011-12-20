@@ -3492,66 +3492,7 @@ public class GwtServerHelper {
     		configData.setLandingPageStyle( style );
 			
 			// Get the other settings that are stored in the "mashup__properties" custom attribute
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_PROPERTIES );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.XML )
-    		{
-    			Document doc;
-    			
-				doc = (Document) customAttr.getValue();
-				if ( doc != null )
-				{
-					Element bgElement;
-					Element pgLayoutElement;
-					
-					// Get the <background ...> element.
-					bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
-					if ( bgElement != null )
-					{
-						String bgColor;
-						String bgImgName;
-						
-						bgColor = bgElement.attributeValue( "color" );
-						if ( bgColor != null )
-							configData.setBackgroundColor( bgColor );
-						
-						bgImgName = bgElement.attributeValue( "imgName");
-						if ( bgImgName != null && bgImgName.length() > 0 )
-						{
-							String fileUrl;
-							String webPath;
-							
-							webPath = WebUrlUtil.getServletRootURL( request );
-	    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, bgImgName );
-	    					configData.setBackgroundImgUrl( fileUrl );
-							
-							// Get the background image repeat value.
-							{
-								String repeat;
-								
-								repeat = bgElement.attributeValue( "repeat" );
-								if ( repeat != null )
-									configData.setBackgroundImgRepeat( repeat );
-							}
-						}
-					}
-					
-					// Get the <pageLayout hideMenu="true | false" /> element.
-					pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
-					if ( pgLayoutElement != null )
-					{
-						String hideMenu;
-						
-						hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
-						if ( hideMenu != null )
-						{
-							boolean value;
-							
-							value = Boolean.parseBoolean( hideMenu );
-							configData.setHideMenu( value );
-						}
-					}
-				}
-    		}
+   			getLandingPageProperties( allModules, binder, configData, request );
 		}
 		catch (Exception ex)
 		{
@@ -3559,6 +3500,83 @@ public class GwtServerHelper {
 		}
 		
 		return configData;
+	}
+	
+	/**
+	 * Get the landing page properties (background color, background image, etc) for
+	 * the given binder.
+	 */
+	public static void getLandingPageProperties( AllModulesInjected ami, Binder binder, ConfigData lpConfigData, HttpServletRequest request )
+	{
+		Binder sourceBinder;
+		Document doc;
+			
+		// Landing page properties can be inherited.  Get the binder that holds the landing
+		// page properties.
+		sourceBinder = binder.getLandingPagePropertiesSourceBinder();
+		
+		// Does the user have rights to the binder where the landing page properties are coming from?
+		if ( !ami.getBinderModule().testAccess( sourceBinder, BinderOperation.readEntries ) )
+		{
+			// No, don't use inherited landing page properties.
+			sourceBinder = binder;
+		}
+		
+		// Get the landing page properties from the binder we inherit from.
+		doc = sourceBinder.getLandingPageProperties();
+		if ( doc != null )
+		{
+			Element bgElement;
+			Element pgLayoutElement;
+			
+			// Get the <background ...> element.
+			bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
+			if ( bgElement != null )
+			{
+				String bgColor;
+				String bgImgName;
+				
+				bgColor = bgElement.attributeValue( "color" );
+				if ( bgColor != null )
+					lpConfigData.setBackgroundColor( bgColor );
+				
+				bgImgName = bgElement.attributeValue( "imgName");
+				if ( bgImgName != null && bgImgName.length() > 0 )
+				{
+					String fileUrl;
+					String webPath;
+					
+					webPath = WebUrlUtil.getServletRootURL( request );
+					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, sourceBinder, bgImgName );
+					lpConfigData.setBackgroundImgUrl( fileUrl );
+					
+					// Get the background image repeat value.
+					{
+						String repeat;
+						
+						repeat = bgElement.attributeValue( "repeat" );
+						if ( repeat != null )
+							lpConfigData.setBackgroundImgRepeat( repeat );
+					}
+				}
+			}
+			
+			// Get the <pageLayout hideMenu="true | false" /> element.
+			pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
+			if ( pgLayoutElement != null )
+			{
+				String hideMenu;
+				
+				hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
+				if ( hideMenu != null )
+				{
+					boolean value;
+					
+					value = Boolean.parseBoolean( hideMenu );
+					lpConfigData.setHideMenu( value );
+				}
+			}
+		}
 	}
 	
 	/**

@@ -1154,6 +1154,7 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundRepeatX();
 	String backgroundRepeatY();
 	String backgroundNoRepeat();
+	String inheritPropertiesLabel();
 
 	// Strings used in the Novell Desktop App dialog (File Sync)
 	String fileSyncAppAutoUpdateUrlLabel();

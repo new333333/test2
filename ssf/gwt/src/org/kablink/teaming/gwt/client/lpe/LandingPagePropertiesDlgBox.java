@@ -58,6 +58,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -86,6 +87,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 
 	private AsyncCallback<VibeRpcResponse> m_rpcReadCallback;
 	private String m_binderId;
+	private CheckBox m_inheritProperties;
 	private ListBox m_bgImgListbox;
 	private ListBox m_bgImgRepeatListbox;
 	private TextBox m_bgColorTextbox;
@@ -161,6 +163,9 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		
+		m_inheritProperties = new CheckBox( GwtTeaming.getMessages().inheritPropertiesLabel() );
+		mainPanel.add( m_inheritProperties );
 
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
@@ -420,6 +425,9 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		
 		lpProperties = new LandingPageProperties( null );
 		
+		// Save the "inherit properties" selection
+		lpProperties.setInheritProperties( m_inheritProperties.getValue() );
+		
 		// Get the selected background image.
 		{
 			// Is something selected in the "background image" listbox?
@@ -506,6 +514,8 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		m_origLPProperties = lpProperties;
 		
 		m_binderId = binderId;
+		
+		m_inheritProperties.setValue( m_origLPProperties.getInheritProperties() );
 		
 		// Issue an ajax request to get the list of file attachments for this binder.
 		// When we get the response, updateListOfFileAttachments() will be called.
