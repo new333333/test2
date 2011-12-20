@@ -42,6 +42,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public enum VibeJspHtmlType implements IsSerializable
 {
+	ACCESSORY_PANEL,
 	ACCESSORY,
 	
 	UNDEFINED;

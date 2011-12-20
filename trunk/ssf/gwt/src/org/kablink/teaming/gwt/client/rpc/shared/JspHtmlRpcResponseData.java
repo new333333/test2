@@ -43,7 +43,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author phurley@novell.com
  */
 public class JspHtmlRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private String m_html;			//
+	private String m_html;					//
+	private Map<String,Object> m_context;	//jsp specific context to be passed back
 	
 	/**
 	 * Constructor method.
@@ -60,9 +61,10 @@ public class JspHtmlRpcResponseData implements IsSerializable, VibeRpcResponseDa
 	 * @param jsp
 	 * @param model
 	 */
-	public JspHtmlRpcResponseData(String html) {
+	public JspHtmlRpcResponseData(String html, Map<String,Object> context) {
 		this();
 		setHtml(html);
+		setContext(context);
 	}
 	
 	/**
@@ -71,6 +73,7 @@ public class JspHtmlRpcResponseData implements IsSerializable, VibeRpcResponseDa
 	 * @return
 	 */
 	public String getHtml()     {return m_html;}
+	public Map<String,Object> getContext()     {return m_context;}
 
 	/**
 	 * Set'er methods.
@@ -78,4 +81,5 @@ public class JspHtmlRpcResponseData implements IsSerializable, VibeRpcResponseDa
 	 * @param html
 	 */
 	public void setHtml(String html)       {m_html = html;}
+	public void setContext(Map<String,Object> context)    {m_context = context;}
 }

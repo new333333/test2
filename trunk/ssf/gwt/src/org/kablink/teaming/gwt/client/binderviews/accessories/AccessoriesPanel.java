@@ -67,8 +67,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 public class AccessoriesPanel extends ToolPanelBase {
 	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
 	private AccessoryLayout m_dashboardLayout;
-	private String m_html;
+	private Map<String,VibeFlowPanel> m_flowPanelMap;
 	private String m_binderId;
+	private int m_accessoryCount = 0;
 	
 	/*
 	 * Constructor method.
@@ -84,6 +85,7 @@ public class AccessoriesPanel extends ToolPanelBase {
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-accessoriesPanel");
+
 		initWidget(m_fp);
 		loadAccessoriesMapAsync();
 	}
@@ -147,12 +149,17 @@ public class AccessoriesPanel extends ToolPanelBase {
 	private void loadAccessoryPanelNow() {
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put("binderId", m_binderId);
+		m_flowPanelMap = new HashMap<String,VibeFlowPanel>();
 		String componentId = "";
     	List<String> dashboardLayout = m_dashboardLayout.getLayout();
     	if (null != dashboardLayout) {
+    		m_accessoryCount = dashboardLayout.size();
 	    	for (String cId : dashboardLayout) {
 	    		componentId = cId;
 	    		model.put("ssComponentId", componentId);
+	    		VibeFlowPanel vfp =  new VibeFlowPanel();
+	    		m_flowPanelMap.put(componentId, vfp);
+	    		m_fp.add(vfp);
 				GwtClientHelper.executeCommand(
 						new GetJspHtmlCmd(VibeJspHtmlType.ACCESSORY, model),
 						new AsyncCallback<VibeRpcResponse>() {
@@ -168,7 +175,11 @@ public class AccessoriesPanel extends ToolPanelBase {
 					public void onSuccess(VibeRpcResponse response) {
 						// Store the description and continue loading.
 						JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
-						m_html = responseData.getHtml();
+						Map<String,Object> context = responseData.getContext();
+						String componentId = (String)context.get("ssComponentId");
+						String html = responseData.getHtml();
+						VibeFlowPanel vfp = m_flowPanelMap.get(componentId);
+						vfp.add(new HTMLPanel(html));
 						loadAccessoryAsync();
 					}
 				});
@@ -196,21 +207,9 @@ public class AccessoriesPanel extends ToolPanelBase {
 	}
 	
 	private void loadAccessoryNow() {
-		// Do we have any HTML to show?
-		if (GwtClientHelper.hasString(m_html)) {
-			// Yes!  We need to render it.  Add the initial panel
-			// styles.
-			m_fp.addStyleName("vibe-binderViewTools vibe-descriptionPanel");
-			HTMLPanel htmlPanel = new HTMLPanel(m_html);
-			m_fp.add(htmlPanel);
-
-			// ...tell who's using it that it's ready to go.
-			toolPanelReady();
-		}
-		
-		else {
-			// No, we don't have a description!  Simply tell who's
-			// using this tool panel that it's ready to go.
+		//If this is the last one to be fetched, signal that we are done
+		m_accessoryCount--;
+		if (m_accessoryCount <= 0) {
 			toolPanelReady();
 		}
 	}
