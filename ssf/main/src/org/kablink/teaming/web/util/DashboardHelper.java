@@ -284,8 +284,14 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
+					//Also set up the wrokspace tree bean because it is used by all of these
+					getInstance().getWorkspaceTreeBean(binder, 
+						ssDashboard, model, id, component, false);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)){
 					getInstance().getTasksBean(binder, ssDashboard, model, id, component, false);
+					//Also set up the wrokspace tree bean because it is used by all of these
+					getInstance().getWorkspaceTreeBean(binder, 
+						ssDashboard, model, id, component, false);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_REMOTE_APPLICATION)){
 					getInstance().getRemoteApplicationBean(ssDashboard, id, component);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
