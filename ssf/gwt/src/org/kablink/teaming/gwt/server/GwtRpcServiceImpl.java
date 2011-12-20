@@ -252,12 +252,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			HttpServletResponse resp;
 			ServletContext servletContext;
 			ExecuteEnhancedViewJspCmd eevjCmd;
+			String jspPath;
 			String result;
 			
 			resp = getResponse( ri );
 			servletContext = getServletContext( ri );
 			eevjCmd = (ExecuteEnhancedViewJspCmd) cmd;
-			result = GwtServerHelper.executeEnhancedViewJsp( this, req, resp, servletContext, eevjCmd.getBinderId(), eevjCmd.getJspName(), eevjCmd.getConfigStr() );
+
+			// Construct the full path to the jsp
+			jspPath = "/WEB-INF/jsp/landing_page_enhanced_views/" + eevjCmd.getJspName();
+			
+			result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, eevjCmd.getBinderId(), jspPath, eevjCmd.getConfigStr() );
+			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
+			return response;
+		}
+		
+		case EXECUTE_LANDING_PAGE_CUSTOM_JSP:
+		{
+			HttpServletResponse resp;
+			ServletContext servletContext;
+			ExecuteLandingPageCustomJspCmd elpjCmd;
+			String jspPath;
+			String result;
+			
+			resp = getResponse( ri );
+			servletContext = getServletContext( ri );
+			elpjCmd = (ExecuteLandingPageCustomJspCmd) cmd;
+
+			// Construct the full path to the jsp
+			jspPath = "/WEB-INF/jsp/custom_jsps/" + elpjCmd.getJspName();
+			
+			result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, elpjCmd.getBinderId(), jspPath, elpjCmd.getConfigStr() );
 			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
 			return response;
 		}

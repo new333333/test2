@@ -195,7 +195,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "customJsp" ) )
 				{
-					configItem = new CustomJspConfig( itemData[i] );
+					configItem = new CustomJspConfig( itemData[i], getLandingPageStyle(), getBinderId() );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "tableStart" ) )

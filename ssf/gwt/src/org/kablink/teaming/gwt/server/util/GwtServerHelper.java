@@ -1120,17 +1120,13 @@ public class GwtServerHelper {
 	/**
 	 * Execute the given enhanced view jsp and return the resulting html.
 	 */
-	public static String executeEnhancedViewJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr )
+	public static String executeLandingPageJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr )
 	{
 		String results;
-		String path;
 		RequestDispatcher reqDispatcher;
 		StringServletResponse ssResponse;
 		
-		// Construct the full path to the jsp
-		path = "/WEB-INF/jsp/landing_page_enhanced_views/" + jspName;
-		
-		reqDispatcher = request.getRequestDispatcher( path );
+		reqDispatcher = request.getRequestDispatcher( jspName );
 		ssResponse = new StringServletResponse( response );
 
 		try
@@ -4673,6 +4669,7 @@ public class GwtServerHelper {
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_TASKS:
 		case EXECUTE_ENHANCED_VIEW_JSP:
+		case EXECUTE_LANDING_PAGE_CUSTOM_JSP:
 		case EXECUTE_SEARCH:
 		case EXPAND_HORIZONTAL_BUCKET:
 		case EXPAND_SUBTASKS:

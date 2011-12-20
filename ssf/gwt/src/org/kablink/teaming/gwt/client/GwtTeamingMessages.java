@@ -292,6 +292,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_EntryDoesNotExist();
+	String rpcFailure_executeCustomJsp();
 	String rpcFailure_executeEnhancedViewJsp();
 	String rpcFailure_ExpandBucket();
 	String rpcFailure_ExpandSubtasks();
