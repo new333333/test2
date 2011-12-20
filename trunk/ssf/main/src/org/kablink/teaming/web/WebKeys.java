@@ -1269,7 +1269,7 @@ public class WebKeys {
     public static final String SIMPLE_URL_INVALID_CHARACTERS="ss_simpleUrlInvalidCharactersError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String SMPT_ENABLED="ssSMTPEnabled";
-    public static final String SNIPPET="ss_snippet";
+    public static final String SNIPPET="ssf_snippet";
     public static final String TEAMING_LIVE_PREVIOUS_UPDATE_DATE = "ss_teaming_live_previous_update_date";
     public static final String TEAMING_LIVE_UPDATE_DATE = "ss_teaming_live_update_date";
     public static final String TEXT_VERIFICATION_RESPONSE = "kaptcha-response";

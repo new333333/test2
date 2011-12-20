@@ -384,7 +384,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	}
 	//penlets
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, String componentId, boolean isConfig) {
-		return getDashboardMap(binder, userProperties, model, DashboardHelper.Local, "", false, true);
+		return getDashboardMap(binder, userProperties, model, DashboardHelper.Local, componentId, false, true);
 	}
 	//penlets
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, 

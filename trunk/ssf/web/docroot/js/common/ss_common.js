@@ -141,6 +141,25 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ss_statusTimer = null;
 	var ss_statusObj = null;
 	var ss_statusOnMouseOver = false;
+	
+	//Dashboard variables
+	var ss_dbrn;
+	var ss_componentTextHide;
+	var ss_componentTextShow;
+	var ss_componentSrcHide;
+	var ss_componentSrcShow;
+	var ss_componentAltHide;
+	var ss_componentAltShow;
+	var ss_toolbarAddContent;
+	var ss_toolbarHideContent;
+	var ss_toolbarShowControls;
+	var ss_toolbarHideControls;
+	var ss_dashboardConfirmDelete;
+	var ss_dashboardConfirmDeleteLocal;
+	var ss_dashboardConfirmDeleteGlobal;
+	var ss_dashboardConfirmDeleteBinder;
+	var ss_dashboardConfirmDeleteUnknown;
+
 }
 var ss_common_loaded = 1;
 
