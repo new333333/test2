@@ -121,7 +121,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	// The following defines the maximum amount of time we wait to
 	// process the completion event for a context switch.  If we exceed
 	// this, we simply clear it.
-	private final static int MAX_BUSY_DURATION	= 5000;	//	5 seconds. 
+	private final static int MAX_BUSY_DURATION	= 10000;	//	10 seconds. 
 	
 	/*
 	 * Inner class that implements clicking on the various tree
@@ -395,9 +395,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 
 					// ...if we're in UI debug mode, display an alert
 					// ...about the problem.
-					GwtClientHelper.debugAlert(
-						"Rats!  I hate it when this happens.  We've entered an endless busy state with a sidebar tree spinner.\n\n" +
-						"That means that somewhere along the way, we failed to process the completion event for a context switch.");
+//!					GwtClientHelper.debugAlert(
+//!						"Rats!  I hate it when this happens.  We've entered an endless busy state with a sidebar tree spinner.\n\n" +
+//!						"That means that somewhere along the way, we failed to process the completion event for a context switch.");
 				}
 			};
 			m_maxBusyDurationTimer.schedule(MAX_BUSY_DURATION);
