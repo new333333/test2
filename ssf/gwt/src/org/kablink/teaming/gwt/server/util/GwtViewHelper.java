@@ -595,6 +595,32 @@ public class GwtViewHelper {
 			Map model = new HashMap();
 			Map dashboardMap = DashboardHelper.getDashboardMap(binder, userProps, model, "local", "", false, false);
 			AccessoryLayout dashboardLayout = new AccessoryLayout();
+			List<String> componentsToBeShown = new ArrayList<String>();
+			
+			//Build the list of accessories to be shown
+			String[] ComponentLists = {"wide_top", "narrow_fixed", "narrow_variable", "wide_bottom"};
+	    	List componentList = new ArrayList();
+	    	String componentId = "";
+	    	for (int i = 0; i < ComponentLists.length; i++) {
+				String scope = (String)dashboardMap.get("scope");
+				if (scope.equals("local")) {
+					componentList = (List) dashboardMap.get(ComponentLists[i]);
+				} else if (scope.equals("global")) {
+					componentList = (List) ((Map)dashboardMap.get("dashboard_global")).get(ComponentLists[i]);
+				} else if (scope.equals("binder")) {
+					componentList = (List) ((Map)dashboardMap.get("dashboard_binder")).get(ComponentLists[i]);
+				}
+				for (int j = 0; j < componentList.size(); j++) {
+					Map component = (Map) componentList.get(j);
+					if ((Boolean)component.get("visible")) {
+						//get the component id
+						componentId = (String)component.get("id");
+						componentsToBeShown.add(componentId);
+					}
+				}
+	    	}
+	    	dashboardLayout.setLayout(componentsToBeShown);
+
 			return
 				new BinderAccessoriesRpcResponseData(
 						dashboardLayout);
@@ -1448,47 +1474,86 @@ public class GwtViewHelper {
 		try {
 			switch (jspType) {
 				// The following are the supported jsp calls.
-				case ACCESSORY:
-				{
-					try {
-						//Set up bean used by the dashboard component (aka accessory)
-						User user = RequestContextHolder.getRequestContext().getUser();
-						String s_binderId = (String) model.get("binderId");
-						Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
-						Map<String,Object> ssDashboard = (Map<String,Object>) model.get("ssDashboard");
-						String componentId = (String) ssDashboard.get("ssComponentId");
-						String scope = (String) ssDashboard.get("scope");
-						UserProperties userProperties = new UserProperties(user.getId());
-						Map userProps = new HashMap();
-			    		if (userProperties.getProperties() != null) {
-			    			userProps = userProperties.getProperties();
-			    		}
-	
-			    		if (user != null) {
-			    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
-			    		}
-			    		if (componentId != null && !componentId.equals("")) {
-				    		Map<String,Object> componentModel = new HashMap<String,Object>();
-							DashboardHelper.getDashboardMap(binder, userProps, componentModel, scope, componentId, false);
-							Map<String,Object> componentDashboard = (Map<String,Object>) componentModel.get("ssDashboard");
-							componentDashboard.put("ssComponentId", componentId);
-							componentModel.put(WebKeys.BINDER_ID, binder.getId());
-							componentModel.put(WebKeys.BINDER, binder);
-							jspPath = "definition_elements/view_dashboard_component.jsp";
-							html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, componentModel);
-			    		}
-						break;
-					} catch(Exception e) {
-						if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-						     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
-						}
-						//Return an error back to the user
-						String[] args = new String[1];
-						args[0] = e.getMessage();
-						html = NLT.get("errorcode.dashboardComponentViewFailure", args);
+			case ACCESSORY_PANEL:
+			{
+				try {
+					//Display the whole accessory panel
+					User user = RequestContextHolder.getRequestContext().getUser();
+					String s_binderId = (String) model.get("binderId");
+					Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
+
+					UserProperties userProperties = new UserProperties(user.getId());
+					Map userProps = new HashMap();
+		    		if (userProperties.getProperties() != null) {
+		    			userProps = userProperties.getProperties();
+		    		}
+
+		    		if (user != null) {
+		    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
+		    		}
+		    		Map<String,Object> panelModel = new HashMap<String,Object>();
+					DashboardHelper.getDashboardMap(binder, userProps, panelModel);
+					
+					//Set up the beans used by the jsp
+					panelModel.put(WebKeys.BINDER_ID, binder.getId());
+					panelModel.put(WebKeys.BINDER, binder);
+					panelModel.put(WebKeys.USER_PROPERTIES, userProps);
+					
+					jspPath = "definition_elements/view_dashboard_canvas.jsp";
+					html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, panelModel);
+					break;
+				} catch(Exception e) {
+					if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+					     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
 					}
+					//Return an error back to the user
+					String[] args = new String[1];
+					args[0] = e.getMessage();
+					html = NLT.get("errorcode.dashboardComponentViewFailure", args);
 				}
-				
+			}
+			
+			case ACCESSORY:
+			{
+				try {
+					//Set up bean used by the dashboard component (aka accessory)
+					User user = RequestContextHolder.getRequestContext().getUser();
+					String s_binderId = (String) model.get("binderId");
+					Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
+					String componentId = (String) model.get("ssComponentId");
+					String scope = componentId.split("_")[0];
+
+					UserProperties userProperties = new UserProperties(user.getId());
+					Map userProps = new HashMap();
+		    		if (userProperties.getProperties() != null) {
+		    			userProps = userProperties.getProperties();
+		    		}
+
+		    		if (user != null) {
+		    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
+		    		}
+		    		if (componentId != null && !componentId.equals("")) {
+			    		Map<String,Object> componentModel = new HashMap<String,Object>();
+						DashboardHelper.getDashboardMap(binder, userProps, componentModel, scope, componentId, false);
+						Map<String,Object> componentDashboard = (Map<String,Object>) componentModel.get("ssDashboard");
+						componentDashboard.put("ssComponentId", componentId);
+						componentModel.put(WebKeys.BINDER_ID, binder.getId());
+						componentModel.put(WebKeys.BINDER, binder);
+						jspPath = "definition_elements/view_dashboard_component.jsp";
+						html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, componentModel);
+		    		}
+					break;
+				} catch(Exception e) {
+					if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+					     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
+					}
+					//Return an error back to the user
+					String[] args = new String[1];
+					args[0] = e.getMessage();
+					html = NLT.get("errorcode.dashboardComponentViewFailure", args);
+				}
+			}
+			
 				default: 
 				{
 					// Log an error that we encountered an unhandled command.
@@ -1497,7 +1562,7 @@ public class GwtViewHelper {
 				}
 			}
 			
-			return new JspHtmlRpcResponseData(html);
+			return new JspHtmlRpcResponseData(html, model);
 		}
 		
 		catch (Exception e) {
