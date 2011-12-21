@@ -47,6 +47,7 @@
 		forceSidebarReload:					'false',
 		helpUrl:							'<ssf:escapeJavaScript>${ss_helpUrl}</ssf:escapeJavaScript>',
 		imagesPath:							'<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
+		importFileUrl:						'<ssf:url action="__ajax_request"><ssf:param name="folderId" value="xxx_folderId_xxx"/><ssf:param name="operation" value="uploadICalendarFileGWT"/></ssf:url>',
 		isBinderAdmin:						'${ss_isBinderAdmin}',
 		isDiskQuotaHighWaterMarkExceeded:	'${ss_diskQuotaHighWaterMarkExceeded}',
 		isFormLoginAllowed:					'${isFormLoginAllowed}',

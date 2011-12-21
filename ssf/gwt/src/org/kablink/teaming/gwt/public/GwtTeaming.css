@@ -3386,8 +3386,11 @@ td.datePickerMonth {
 /* End:  Email notification dialog styles. */
 
 /* Start:  Import iCal by file dialog styles. */
-	.vibe-iiFileDlg_Label {}
-	.vibe-iiFileDlg_Panel {}
+	.vibe-iiFileDlg_Content {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-iiFileDlg_Hint    {margin: 8px 0px 8px 0px; font-size: 11px !important; color: #cccccc;}
+	.vibe-iiFileDlg_Input   {width: 250px;}
+	.vibe-iiFileDlg_Label   {}
+	.vibe-iiFileDlg_Panel   {}
 /* End:  Import iCal by file dialog styles. */
 
 /* Start:  Import iCal by URL dialog styles. */

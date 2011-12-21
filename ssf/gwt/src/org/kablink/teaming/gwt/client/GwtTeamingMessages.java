@@ -588,7 +588,13 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgImportTask();
 	String mainMenuFolderOptionsNoOptions();
 	String mainMenuFolderOptionsUnexpectedEvent(String eventName);
+	String mainMenuImportIcalByFileDlgErrorBogusJSONData(String jsonData);
+	String mainMenuImportIcalByFileDlgErrorFailed(String detail);
+	String mainMenuImportIcalByFileDlgErrorNoFile();
+	String mainMenuImportIcalByFileDlgErrorParse(String detail);
 	String mainMenuImportIcalByFileDlgHeader(String importType);
+	String mainMenuImportIcalByFileDlgHint();
+	String mainMenuImportIcalByFileDlgSuccess(String added, String modified);
 	String mainMenuImportIcalByUrlDlgErrorFailed(String detail);
 	String mainMenuImportIcalByUrlDlgErrorNoUrl();
 	String mainMenuImportIcalByUrlDlgErrorParse(String detail);
