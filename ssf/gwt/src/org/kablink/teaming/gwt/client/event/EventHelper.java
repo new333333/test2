@@ -181,6 +181,15 @@ public class EventHelper {
 			HandlerRegistration registrationHandler = null;
 			TeamingEvents te = eventsToBeRegistered[i];
 			switch (te) {
+			case ACCESSORY_RESIZED:
+				// An AccessoryResizedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof AccessoryResizedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = AccessoryResizedEvent.registerEvent(eventBus, ((AccessoryResizedEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case ACTIVITY_STREAM:
 				// An ActivityStreamEvent!  Can the event handler we
 				// were given handle that?
@@ -1090,6 +1099,8 @@ public class EventHelper {
 			boolean needsHandler = isTEInA(te, eventsToCheck);
 			boolean hasHandler   = false;
 			switch (te) {
+			case ACCESSORY_RESIZED:                   	hasHandler = (eventHandler instanceof AccessoryResizedEvent.Handler);              break;
+			
 			case ACTIVITY_STREAM:                   	hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);                break;
 			case ACTIVITY_STREAM_ENTER:             	hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);           break;
 			case ACTIVITY_STREAM_EXIT:              	hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);            break;
