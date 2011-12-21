@@ -225,7 +225,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				if (WebHelper.isMethodPost(request)) ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
-				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response, false);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE_GWT)) {
+				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response, true);
 			} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
 				ajaxLoadICalendarByURL(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
@@ -363,6 +365,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/json/vote_survey", model);				
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				return new ModelAndView("forum/json/icalendar_upload", model);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE_GWT)) {
+				return new ModelAndView("forum/json/icalendar_upload_gwt", model);
 			} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
 				return  new ModelAndView("forum/json/update_task", model);
 			}
@@ -470,7 +474,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_FIND_PLACE_FORM)) {
 			return ajaxFindPlaceForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
-			return ajaxUploadICalendarFileStatus(request, response);
+			return ajaxUploadICalendarFileStatus(request, response, false);
+		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE_GWT)) {
+			return ajaxUploadICalendarFileStatus(request, response, true);
 		} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
 			return ajaxLoadICalendarByURL(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
@@ -1720,7 +1726,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 	
 	private void ajaxUploadICalendarFile(ActionRequest request, 
-			ActionResponse response) throws Exception {
+			ActionResponse response, boolean gwtRequest) throws Exception {
 		// Get a handle on the uploaded file
 		AttendedEntries attendedEntries = new AttendedEntries();
 		String fileHandle = WebHelper.getFileHandleOnUploadedCalendarFile(request);
@@ -1731,7 +1737,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				try {
 					attendedEntries = getIcalModule().parseToEntries(folderId, file.getInputStream());
 				} catch (net.fortuna.ical4j.data.ParserException e) {
-					response.setRenderParameter("ssICalendarException", "parseException");
+					response.setRenderParameter("ssICalendarException", (gwtRequest ? e.getLocalizedMessage() : "parseException"));
 				}
 			}
 			WebHelper.releaseFileHandle(fileHandle);
@@ -1803,7 +1809,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 	}
 	
-	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response) {
+	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response, boolean gwtRequest) {
 		int entriesAddedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryAddedIdsSize", 0);
 		int entriesModifiedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryModifiedIdsSize", 0);
 		long[] entryAddedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarAddedEntryIds");
@@ -1819,7 +1825,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("exception", exception);
 		
 		response.setContentType("text/html");
-		return new ModelAndView("forum/json/icalendar_upload", model);
+		String jsp = gwtRequest ? "forum/json/icalendar_upload_gwt" : "forum/json/icalendar_upload";
+		return new ModelAndView(jsp, model);
 	}
 	
 	private ModelAndView ajaxLoadICalendarByURL(RenderRequest request, RenderResponse response) {

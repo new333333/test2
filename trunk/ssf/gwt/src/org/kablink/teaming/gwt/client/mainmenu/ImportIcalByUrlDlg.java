@@ -38,7 +38,6 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlCmd;
@@ -69,13 +68,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author drfoster@novell.com
  */
 public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private BinderInfo						m_folderInfo;	// The folder the dialog is running against.
-	@SuppressWarnings("unused")
-	private GwtTeamingMainMenuImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
-	private String							m_importType;	// Type of import (calendar or task) being performed.  Used to patch strings used for both types.
-	private TextBox							m_url;			//
-	private VerticalPanel					m_vp;			//
+	private BinderInfo			m_folderInfo;	// The folder the dialog is running against.
+	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
+	private String				m_importType;	// Type of import (calendar or task) being performed.  Used to patch strings used for both types.
+	private TextBox				m_url;			//
+	private VerticalPanel		m_vp;			//
 
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
@@ -118,7 +115,6 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 		super(false, true);
 
 		// ...initialize everything else...
-		m_images   = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.

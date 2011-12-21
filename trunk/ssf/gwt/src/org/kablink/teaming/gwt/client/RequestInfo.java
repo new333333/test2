@@ -208,6 +208,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the import file URL.
+	 * 
+	 * @return
+	 */
+	public final native String getImportFileUrl()
+	/*-{
+		return this.importFileUrl;
+	}-*/;
+
+	/**
 	 * Return the path to Teaming's JavaScript.
 	 * 
 	 * @return
