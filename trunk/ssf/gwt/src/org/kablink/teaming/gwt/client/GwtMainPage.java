@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
+import org.kablink.teaming.gwt.client.event.AccessoryResizedEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
@@ -648,6 +649,17 @@ public class GwtMainPage extends ResizeComposite
 	
 	/*
 	 * Called to create a JavaScript method that will be invoked from
+	 * an accessory when its size changes.
+	 */
+	private native void initAccessoryResizedJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_accessoryResized = function( binderId )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::accessoryResized(Ljava/lang/String;)( binderId );
+		}//end ss_accessoryResized()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that will be invoked from
 	 * an administration page when the user presses close or cancel in the administration page.
 	 */
 	private native void initCloseAdministrationContentPanelJS( GwtMainPage gwtMainPage ) /*-{
@@ -767,6 +779,10 @@ public class GwtMainPage extends ResizeComposite
 		// For example, we never want the jsp login page to be loaded in the content control.
 		initHandlePageWithGWTJS( this );
 		
+		// Initialize the JavaScript function that gets called when an
+		// accessory resizes.
+		initAccessoryResizedJS( this );
+		
 		// Initialize the JavaScript function that gets called when we want to close the
 		// administration content panel.
 		initCloseAdministrationContentPanelJS( this );
@@ -834,8 +850,18 @@ public class GwtMainPage extends ResizeComposite
 	private static native void jsFixupGwtMainTitle() /*-{
 		$wnd.top.document.title = $wnd.top.gwtContentIframe.document.title;
 	}-*/;
+
+	/*
+	 * Called when an accessory resizes.  Simply fires an
+	 * AccessoryResizedEvent.
+	 */
+	private void accessoryResized( String binderId )
+	{
+		AccessoryResizedEvent are = new AccessoryResizedEvent( Long.parseLong( binderId ));
+		GwtTeaming.fireEvent( are );
+	}// end accessoryResized()
 	
-	/**
+	/*
 	 * This method will close the administration content panel.
 	 */
 	private void closeAdministrationContentPanel()

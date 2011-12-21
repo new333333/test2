@@ -32,12 +32,17 @@
  */
 package org.kablink.teaming.gwt.client.binderviews.accessories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
+import org.kablink.teaming.gwt.client.event.AccessoryResizedEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
@@ -53,6 +58,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -60,11 +66,23 @@ import com.google.gwt.user.client.ui.HTMLPanel;
  * 
  * @author drfoster@novell.com
  */
-public class AccessoriesPanel extends ToolPanelBase {
-	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
-	private String m_binderId;
-	private String m_html;
+public class AccessoriesPanel extends ToolPanelBase
+	implements
+	// Event handlers implemented by this class.
+		AccessoryResizedEvent.Handler
+{
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private VibeFlowPanel				m_fp;						// The panel holding the AccessoryPanel's contents.
+	private String						m_binderId;					//
+	private String						m_html;						//
 	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.ACCESSORY_RESIZED,
+	};
+
 	/*
 	 * Constructor method.
 	 * 
@@ -164,6 +182,53 @@ public class AccessoriesPanel extends ToolPanelBase {
 			}
 		});
 	}
+
+	/**
+	 * Handles AccessoryResizedEvent's received by this class.
+	 * 
+	 * Implements the AccessoryResizedEvent.Handler.onAccessoryResized()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAccessoryResized(AccessoryResizedEvent event) {
+		Long binderId = event.getBinderId();
+		if (binderId.equals(m_binderInfo.getBinderIdAsLong())) {
+			ScheduledCommand doResize = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					onResize();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doResize);
+		}
+	}
+	
+	/**
+	 * Called when the accessories panel is attached to the document.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the accessories panel is detached from the document.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
 	
 	/**
 	 * Called from the binder view to allow the panel to do any
@@ -174,5 +239,39 @@ public class AccessoriesPanel extends ToolPanelBase {
 	@Override
 	public void resetPanel() {
 //!		...this needs to be implemented... 
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 }

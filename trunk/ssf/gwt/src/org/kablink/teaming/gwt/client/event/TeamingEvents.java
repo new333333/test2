@@ -46,6 +46,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum TeamingEvents implements IsSerializable {
+	ACCESSORY_RESIZED,					// An accessory has been resized.
+	
 	ACTIVITY_STREAM,					// Changes the selected an activity stream.
 	ACTIVITY_STREAM_ENTER,				// Enters activity stream mode.
 	ACTIVITY_STREAM_EXIT,				// Exits  activity stream mode.
