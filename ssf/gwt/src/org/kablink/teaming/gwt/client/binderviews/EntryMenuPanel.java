@@ -61,6 +61,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RequiresResize;
 
 
 /**
@@ -83,9 +84,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EntryMenuPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...store the parameters...
 		m_binderInfo = binderInfo;
@@ -105,15 +106,17 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Loads the EntryMenuPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
+	 * @param containerResizer
 	 * @param binderInfo
+	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				EntryMenuPanel emp = new EntryMenuPanel(binderInfo, toolPanelReady);
+				EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(emp);
 			}
 			

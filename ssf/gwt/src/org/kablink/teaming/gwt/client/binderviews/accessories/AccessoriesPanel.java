@@ -58,6 +58,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
@@ -90,9 +91,9 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private AccessoriesPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private AccessoriesPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -163,15 +164,17 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Loads the AccessoriesPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
+	 * @param containerResizer
 	 * @param binderInfo
+	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(AccessoriesPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				AccessoriesPanel ap = new AccessoriesPanel(binderInfo, toolPanelReady);
+				AccessoriesPanel ap = new AccessoriesPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(ap);
 			}
 			
@@ -198,7 +201,7 @@ public class AccessoriesPanel extends ToolPanelBase
 			ScheduledCommand doResize = new ScheduledCommand() {
 				@Override
 				public void execute() {
-					onResize();
+					panelResized();
 				}
 			};
 			Scheduler.get().scheduleDeferred(doResize);

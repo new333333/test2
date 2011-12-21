@@ -35,7 +35,10 @@ package org.kablink.teaming.gwt.client.binderviews;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
 
@@ -46,8 +49,19 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  */
 public abstract class ToolPanelBase extends ResizeComposite {
 	public    final        BinderInfo			m_binderInfo;							// Caches the BinderInfo for use by this tool panel.
+	private   final        RequiresResize		m_containerResizer;						//
 	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
+	private                Timer				m_resizeContainerTimer;					// A timer used to control telling the container something's been resized.
+	private                int					m_droppedResizes;						//
 	private                ToolPanelReady		m_toolPanelReady;						//
+
+	// The following defines the amount of time we wait after having
+	// been notified of a resize before passing it on to the container.
+	// We use this to control how often that notification gets sent up.
+	// The way the accessory resizing works, the notification happens
+	// repeatedly during a hide/show cycle and the timer control how
+	// often we tell the container.
+	private final static int WAIT_FOR_CONTAINER_RESIZE	= 250;	// 1/4 second.
 	
 	/**
 	 * Callback interface to provide access to the tool panel after it
@@ -63,15 +77,57 @@ public abstract class ToolPanelBase extends ResizeComposite {
 	 * 
 	 * @param binderInfo
 	 */
-	public ToolPanelBase(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the superclass...
 		super();
 		
 		// ...and store the parameters.
-		m_binderInfo     = binderInfo;
-		m_toolPanelReady = toolPanelReady;
+		m_binderInfo       = binderInfo;
+		m_containerResizer = containerResizer;
+		m_toolPanelReady   = toolPanelReady;
 	}
 
+	/*
+	 * Cancels and forgets about the timer to resize the container.
+	 */
+	private void clearTimer() {
+		if (null != m_resizeContainerTimer) {
+			m_resizeContainerTimer.cancel();
+			m_resizeContainerTimer = null;
+		}
+		m_droppedResizes = 0;
+	}
+	
+	/**
+	 * Called if the panel gets resized.
+	 */
+	final public void panelResized() {
+		// Tell the super class that we've been resized.
+		super.onResize();
+		
+		// Are we already waiting to notify the container about a
+		// resize?
+		if (null == m_resizeContainerTimer) {
+			// No!  Set up a timer to notify them now.
+			m_resizeContainerTimer = new Timer() {
+				@Override
+				public void run() {
+					// Clear the timer and tell the container to resize.
+					if (GwtClientHelper.isDebugUI()) {
+//						GwtClientHelper.deferredAlert("ToolPanelBase.panelResized():  Dropped resizes:  " + m_droppedResizes);
+					}
+					clearTimer();
+					m_containerResizer.onResize();
+				}
+			};
+			m_resizeContainerTimer.schedule(WAIT_FOR_CONTAINER_RESIZE);
+		}
+		
+		else {
+			m_droppedResizes += 1;
+		}
+	}
+	
 	/**
 	 * Called from the binder views to allow the tool panel to do any
 	 * work required to reset themselves.
