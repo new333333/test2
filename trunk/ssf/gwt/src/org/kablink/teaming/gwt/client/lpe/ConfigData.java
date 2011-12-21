@@ -489,6 +489,14 @@ public class ConfigData
 	}
 	
 	/**
+	 * 
+	 */
+	public boolean getInheritProperties()
+	{
+		return m_lpProperties.getInheritProperties();
+	}
+	
+	/**
 	 * Initialize the landing page properties from the given xml
 	 */
 	public LandingPageProperties initLandingPageProperties( String xml )
@@ -496,6 +504,14 @@ public class ConfigData
 		m_lpProperties = new LandingPageProperties( xml );
 		
 		return m_lpProperties;
+	}
+	
+	/**
+	 * Initialize the landing page properties from the given landing page properties
+	 */
+	public void initLandingPageProperties( LandingPageProperties lpProperties )
+	{
+		m_lpProperties.copy( lpProperties );
 	}
 	
 	/**

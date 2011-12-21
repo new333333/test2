@@ -1,5 +1,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -14,7 +16,7 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  *
  */
 public class LandingPageProperties
-	implements IsSerializable
+	implements IsSerializable, VibeRpcResponseData
 {
 	transient public final String ROOT_ELEMENT_NAME = "landingPageData";
 	transient public final String BACKGROUND_ELEMENT_NAME = "background";
