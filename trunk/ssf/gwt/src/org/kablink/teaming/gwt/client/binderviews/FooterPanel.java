@@ -66,6 +66,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -79,7 +80,6 @@ public class FooterPanel extends ToolPanelBase {
 	private GwtTeamingImageBundle	m_images;		//
 	private GwtTeamingMessages		m_messages;		//
 	private List<ToolbarItem>		m_toolbarIems;	//
-	private ResizeComposite			m_container;	//
 	private ToolbarItem				m_footerTBI;	//
 	private VibeFlowPanel			m_fp;			// The panel holding the FooterPanel's contents.
 	private VibeFlowPanel			m_dataPanel;	// The panel holding the display of the data, ..., once rendered.
@@ -91,14 +91,13 @@ public class FooterPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FooterPanel(ResizeComposite container, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private FooterPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, toolPanelReady);
 
 		// ...initialize the data members...
-		m_container = container;
-		m_images    = GwtTeaming.getImageBundle();
-		m_messages  = GwtTeaming.getMessages();
+		m_images   = GwtTeaming.getImageBundle();
+		m_messages = GwtTeaming.getMessages();
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -111,15 +110,17 @@ public class FooterPanel extends ToolPanelBase {
 	 * Loads the FooterPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
+	 * @param containerResizer
 	 * @param binderInfo
+	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final ResizeComposite container, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final ResizeComposite containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FooterPanel fp = new FooterPanel(container, binderInfo, toolPanelReady);
+				FooterPanel fp = new FooterPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
 			
@@ -227,7 +228,7 @@ public class FooterPanel extends ToolPanelBase {
 						// container to resize to reflect the new
 						// visibility state of the footer.
 						m_dataPanel.setVisible(!m_dataPanel.isVisible());
-						m_container.onResize();
+						panelResized();
 					}
 					
 					else {
@@ -304,7 +305,7 @@ public class FooterPanel extends ToolPanelBase {
 				// resize to reflect the new visibility state of the
 				// footer.
 				m_dataPanel.setVisible(false);
-				m_container.onResize();
+				panelResized();
 			}
 		});
 		closerA.addMouseOutHandler(new MouseOutHandler() {
@@ -423,7 +424,7 @@ public class FooterPanel extends ToolPanelBase {
 
 		// Finally, force the container to resize to reflect the
 		// expanded footer.
-		m_container.onResize();
+		panelResized();
 	}
 
 	/*

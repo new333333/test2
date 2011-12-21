@@ -42,6 +42,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RequiresResize;
 
 
 /**
@@ -60,9 +61,9 @@ public class BreadCrumbPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private BreadCrumbPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private BreadCrumbPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -75,15 +76,17 @@ public class BreadCrumbPanel extends ToolPanelBase {
 	 * Loads the BreadCrumbPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
+	 * @param containerResizer
 	 * @param binderInfo
+	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				BreadCrumbPanel bcp = new BreadCrumbPanel(binderInfo, toolPanelReady);
+				BreadCrumbPanel bcp = new BreadCrumbPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(bcp);
 			}
 			

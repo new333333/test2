@@ -150,7 +150,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
 			
 			// Add the description to the page.
-			DescriptionPanel.createAsync( m_binderInfo, this, new ToolPanelClient()
+			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()

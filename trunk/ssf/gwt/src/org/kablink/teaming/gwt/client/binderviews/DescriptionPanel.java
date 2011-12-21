@@ -57,6 +57,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RequiresResize;
 
 
 /**
@@ -88,9 +89,9 @@ public class DescriptionPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private DescriptionPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private DescriptionPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...initialize the data members...
 		m_images   = GwtTeaming.getDataTableImageBundle();
@@ -106,15 +107,17 @@ public class DescriptionPanel extends ToolPanelBase {
 	 * Loads the DescriptionPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
+	 * @param containerResizer
 	 * @param binderInfo
+	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(DescriptionPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				DescriptionPanel fp = new DescriptionPanel(binderInfo, toolPanelReady);
+				DescriptionPanel fp = new DescriptionPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
 			
@@ -135,6 +138,7 @@ public class DescriptionPanel extends ToolPanelBase {
 		m_expanderAnchor.getElement().setAttribute("n-state", "expand");
 		m_contentPanel.addStyleName("vibe-descriptionContentClipped");
 		persistStateAsync("collapsed");
+		panelResized();
 	}
 	
 	/*
@@ -146,6 +150,7 @@ public class DescriptionPanel extends ToolPanelBase {
 		m_expanderAnchor.getElement().setAttribute("n-state", "collapse");
 		m_contentPanel.removeStyleName("vibe-descriptionContentClipped");
 		persistStateAsync("expanded");
+		panelResized();
 	}
 	
 	/*

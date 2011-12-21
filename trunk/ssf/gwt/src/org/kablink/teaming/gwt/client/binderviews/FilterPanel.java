@@ -62,6 +62,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RequiresResize;
 
 
 /**
@@ -84,9 +85,9 @@ public class FilterPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FilterPanel(BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private FilterPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...initialize the data members...
 		m_messages = GwtTeaming.getMessages();
@@ -102,15 +103,17 @@ public class FilterPanel extends ToolPanelBase {
 	 * Loads the FilterPanel split point and returns an instance
 	 * of it via the callback.
 	 * 
+	 * @param containerResizer
 	 * @param binderInfo
+	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(FilterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FilterPanel fp = new FilterPanel(binderInfo, toolPanelReady);
+				FilterPanel fp = new FilterPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
 			

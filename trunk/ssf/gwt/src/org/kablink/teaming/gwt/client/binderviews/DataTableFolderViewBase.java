@@ -986,7 +986,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the BreadCrumbPanel.
 	 */
 	private void loadPart1Now() {
-		BreadCrumbPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
+		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1023,7 +1023,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the AccessoriesPanel.
 	 */
 	private void loadPart2Now() {
-		AccessoriesPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
+		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1060,7 +1060,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart3Now() {
-		DescriptionPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
+		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1097,7 +1097,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart4Now() {
-		FilterPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
+		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1134,7 +1134,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Now() {
-		EntryMenuPanel.createAsync(m_folderInfo, this, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
