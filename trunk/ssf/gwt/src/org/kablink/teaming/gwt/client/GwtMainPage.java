@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
-import org.kablink.teaming.gwt.client.event.AccessoryResizedEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
@@ -58,6 +57,7 @@ import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
+import org.kablink.teaming.gwt.client.event.JspLayoutChangedEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
@@ -649,13 +649,13 @@ public class GwtMainPage extends ResizeComposite
 	
 	/*
 	 * Called to create a JavaScript method that will be invoked from
-	 * an accessory when its size changes.
+	 * JSP based content when its layout changes.
 	 */
-	private native void initAccessoryResizedJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_accessoryResized = function( binderId )
+	private native void initJspLayoutChangedJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_jspLayoutChanged = function( binderId )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::accessoryResized(Ljava/lang/String;)( binderId );
-		}//end ss_accessoryResized()
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::jspLayoutChanged(Ljava/lang/String;)( binderId );
+		}//end ss_jspLayoutChanged()
 	}-*/;
 
 	/*
@@ -779,9 +779,9 @@ public class GwtMainPage extends ResizeComposite
 		// For example, we never want the jsp login page to be loaded in the content control.
 		initHandlePageWithGWTJS( this );
 		
-		// Initialize the JavaScript function that gets called when an
-		// accessory resizes.
-		initAccessoryResizedJS( this );
+		// Initialize the JavaScript function that gets called when
+		// JSP content layout changes.
+		initJspLayoutChangedJS( this );
 		
 		// Initialize the JavaScript function that gets called when we want to close the
 		// administration content panel.
@@ -852,14 +852,14 @@ public class GwtMainPage extends ResizeComposite
 	}-*/;
 
 	/*
-	 * Called when an accessory resizes.  Simply fires an
-	 * AccessoryResizedEvent.
+	 * Called when a the layout of JSP content changes.  Simply fires
+	 * an JspLayoutChangedEvent.
 	 */
-	private void accessoryResized( String binderId )
+	private void jspLayoutChanged( String binderId )
 	{
-		AccessoryResizedEvent are = new AccessoryResizedEvent( Long.parseLong( binderId ));
+		JspLayoutChangedEvent are = new JspLayoutChangedEvent( Long.parseLong( binderId ));
 		GwtTeaming.fireEvent( are );
-	}// end accessoryResized()
+	}// end jspLayoutChanged()
 	
 	/*
 	 * This method will close the administration content panel.
