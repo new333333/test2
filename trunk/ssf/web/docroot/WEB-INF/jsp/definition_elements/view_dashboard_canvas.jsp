@@ -262,8 +262,11 @@
 		</c:if>
 <script type="text/javascript">
 ss_createOnLayoutChangeObj('ss_resizeDashboardCanvas',
-		function() {ss_jspLayoutChanged('${ssBinder.id}')});
-
+	function() {
+		if (window.top.ss_jspLayoutChanged) {
+			window.top.ss_jspLayoutChanged('${ssBinder.id}');
+		}
+	});
 </script>
 		
 	</c:when>
