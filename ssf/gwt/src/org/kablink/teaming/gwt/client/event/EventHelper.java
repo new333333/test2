@@ -181,15 +181,6 @@ public class EventHelper {
 			HandlerRegistration registrationHandler = null;
 			TeamingEvents te = eventsToBeRegistered[i];
 			switch (te) {
-			case ACCESSORY_RESIZED:
-				// An AccessoryResizedEvent!  Can the event handler we
-				// were given handle that?
-				if (eventHandler instanceof AccessoryResizedEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = AccessoryResizedEvent.registerEvent(eventBus, ((AccessoryResizedEvent.Handler) eventHandler));
-				}
-				break;
-				
 			case ACTIVITY_STREAM:
 				// An ActivityStreamEvent!  Can the event handler we
 				// were given handle that?
@@ -538,6 +529,15 @@ public class EventHelper {
 				if (eventHandler instanceof InvokeTagEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeTagEvent.registerEvent(eventBus, ((InvokeTagEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case JSP_LAYOUT_CHANGED:
+				// An JspLayoutChangedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof JspLayoutChangedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = JspLayoutChangedEvent.registerEvent(eventBus, ((JspLayoutChangedEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -1099,8 +1099,6 @@ public class EventHelper {
 			boolean needsHandler = isTEInA(te, eventsToCheck);
 			boolean hasHandler   = false;
 			switch (te) {
-			case ACCESSORY_RESIZED:                   	hasHandler = (eventHandler instanceof AccessoryResizedEvent.Handler);              break;
-			
 			case ACTIVITY_STREAM:                   	hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);                break;
 			case ACTIVITY_STREAM_ENTER:             	hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);           break;
 			case ACTIVITY_STREAM_EXIT:              	hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);            break;
@@ -1154,6 +1152,8 @@ public class EventHelper {
 			case INVOKE_SIMPLE_PROFILE:             	hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);           break;
 			case INVOKE_SUBSCRIBE:                  	hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);               break;
 			case INVOKE_TAG:                        	hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                     break;
+			
+			case JSP_LAYOUT_CHANGED:                   	hasHandler = (eventHandler instanceof JspLayoutChangedEvent.Handler);              break;
 			
 			case LOGIN:                             	hasHandler = (eventHandler instanceof LoginEvent.Handler);                         break;
 			case LOGOUT:                            	hasHandler = (eventHandler instanceof LogoutEvent.Handler);                        break;

@@ -38,21 +38,21 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The AccessoryResizedEvent tells the UI that an accessory as been
- * resized.
+ * The JspLayoutChangedEvent tells the UI that the JSP layout has
+ * changed.
  * 
  * @author drfoster@novell.com
  */
-public class AccessoryResizedEvent extends VibeEventBase<AccessoryResizedEvent.Handler> {
+public class JspLayoutChangedEvent extends VibeEventBase<JspLayoutChangedEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private Long	m_binderId;	// The ID of the binder whose accessory was resized.
+	private Long	m_binderId;	// The ID of the binder whose JSP layout changed.
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onAccessoryResized(AccessoryResizedEvent event);
+		void onJspLayoutChanged(JspLayoutChangedEvent event);
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class AccessoryResizedEvent extends VibeEventBase<AccessoryResizedEvent.H
 	 * 
 	 * @param binderId
 	 */
-	public AccessoryResizedEvent(Long binderId) {
+	public JspLayoutChangedEvent(Long binderId) {
 		super();
 		setBinderId(binderId);
 	}
@@ -74,7 +74,7 @@ public class AccessoryResizedEvent extends VibeEventBase<AccessoryResizedEvent.H
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onAccessoryResized(this);
+		handler.onJspLayoutChanged(this);
 	}
 	
 	/**
@@ -99,7 +99,7 @@ public class AccessoryResizedEvent extends VibeEventBase<AccessoryResizedEvent.H
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.ACCESSORY_RESIZED;
+		return TeamingEvents.JSP_LAYOUT_CHANGED;
 	}
 		
 	/**

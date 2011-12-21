@@ -40,8 +40,8 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
-import org.kablink.teaming.gwt.client.event.AccessoryResizedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.JspLayoutChangedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
@@ -70,7 +70,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class AccessoriesPanel extends ToolPanelBase
 	implements
 	// Event handlers implemented by this class.
-		AccessoryResizedEvent.Handler
+		JspLayoutChangedEvent.Handler
 {
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private VibeFlowPanel				m_fp;						// The panel holding the AccessoryPanel's contents.
@@ -81,7 +81,7 @@ public class AccessoriesPanel extends ToolPanelBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.ACCESSORY_RESIZED,
+		TeamingEvents.JSP_LAYOUT_CHANGED,
 	};
 
 	/*
@@ -187,28 +187,6 @@ public class AccessoriesPanel extends ToolPanelBase
 	}
 
 	/**
-	 * Handles AccessoryResizedEvent's received by this class.
-	 * 
-	 * Implements the AccessoryResizedEvent.Handler.onAccessoryResized()
-	 * method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onAccessoryResized(AccessoryResizedEvent event) {
-		Long binderId = event.getBinderId();
-		if (binderId.equals(m_binderInfo.getBinderIdAsLong())) {
-			ScheduledCommand doResize = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					panelResized();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doResize);
-		}
-	}
-	
-	/**
 	 * Called when the accessories panel is attached to the document.
 	 * 
 	 * Overrides Widget.onAttach()
@@ -231,6 +209,28 @@ public class AccessoriesPanel extends ToolPanelBase
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles JspLayoutChangedEvent's received by this class.
+	 * 
+	 * Implements the JspLayoutChangedEvent.Handler.onJspLayoutChanged()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onJspLayoutChanged(JspLayoutChangedEvent event) {
+		Long binderId = event.getBinderId();
+		if (binderId.equals(m_binderInfo.getBinderIdAsLong())) {
+			ScheduledCommand doResize = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					panelResized();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doResize);
+		}
 	}
 	
 	/**

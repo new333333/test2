@@ -46,8 +46,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum TeamingEvents implements IsSerializable {
-	ACCESSORY_RESIZED,					// An accessory has been resized.
-	
 	ACTIVITY_STREAM,					// Changes the selected an activity stream.
 	ACTIVITY_STREAM_ENTER,				// Enters activity stream mode.
 	ACTIVITY_STREAM_EXIT,				// Exits  activity stream mode.
@@ -94,6 +92,8 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_SIMPLE_PROFILE,				// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,					// Invokes the 'subscribe to this entry' UI.
 	INVOKE_TAG,							// Invokes the 'tag this entry' UI.
+	
+	JSP_LAYOUT_CHANGED,					// The layout of JSP content has changed.
 	
 	LOGIN,								// Logs into   Vibe.
 	LOGOUT,								// Logs out of Vibe.
