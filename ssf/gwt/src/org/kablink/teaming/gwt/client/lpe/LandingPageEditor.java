@@ -718,9 +718,8 @@ public class LandingPageEditor extends Composite
 
 		configStr = createConfigString();
 		configData = new ConfigData( configStr, m_lpeConfig.getBinderId() );
+		configData.initLandingPageProperties( m_landingPageProperties );
 		configData.setBackgroundImgUrl( bgImgUrl );
-		configData.setBackgroundColor( m_landingPageProperties.getBackgroundColor() );
-		configData.setBackgroundImgRepeat( m_landingPageProperties.getBackgroundRepeat() );
 		configData.setPreviewMode( true );
 		
 		if ( m_previewDlg == null )
@@ -744,54 +743,64 @@ public class LandingPageEditor extends Composite
 	{
 		final String bgImgName;
 		
-		// Does the landing page have a background image?
-		bgImgName = m_landingPageProperties.getBackgroundImageName();
-		if ( bgImgName != null && bgImgName.length() > 0 )
+		// Are the landing page properties inherited?
+		if ( m_landingPageProperties.getInheritProperties() == false )
 		{
-			GetFileUrlCmd gfuCmd;
-			
-			// Yes, issue an rpc request to get the url of the background image.
-			gfuCmd = new GetFileUrlCmd( m_lpeConfig.getBinderId(), bgImgName );
-			GwtClientHelper.executeCommand( gfuCmd, new AsyncCallback<VibeRpcResponse>()
+			// No
+			// Does the landing page have a background image?
+			bgImgName = m_landingPageProperties.getBackgroundImageName();
+			if ( bgImgName != null && bgImgName.length() > 0 )
 			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable caught )
+				GetFileUrlCmd gfuCmd;
+				
+				// Yes, issue an rpc request to get the url of the background image.
+				gfuCmd = new GetFileUrlCmd( m_lpeConfig.getBinderId(), bgImgName );
+				GwtClientHelper.executeCommand( gfuCmd, new AsyncCallback<VibeRpcResponse>()
 				{
-					GwtClientHelper.handleGwtRPCFailure(
-							caught,
-							GwtTeaming.getMessages().rpcFailure_GetFileUrl(),
-							bgImgName );
-				}
-
-				/**
-				 * 
-				 */
-				public void onSuccess( final VibeRpcResponse result )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					/**
+					 * 
+					 */
+					public void onFailure( Throwable caught )
 					{
-						public void execute()
+						GwtClientHelper.handleGwtRPCFailure(
+								caught,
+								GwtTeaming.getMessages().rpcFailure_GetFileUrl(),
+								bgImgName );
+					}
+	
+					/**
+					 * 
+					 */
+					public void onSuccess( final VibeRpcResponse result )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
-							String url;
-							StringRpcResponseData responseData;
-
-							responseData = ((StringRpcResponseData) result.getResponseData());
-							url = responseData.getStringValue();
-							
-							invokePreview( url );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
+							public void execute()
+							{
+								String url;
+								StringRpcResponseData responseData;
+	
+								responseData = ((StringRpcResponseData) result.getResponseData());
+								url = responseData.getStringValue();
+								
+								invokePreview( url );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+			}
+			else
+			{
+				// No, invoke the preview dialog
+				invokePreview( null );
+			}
 		}
 		else
 		{
-			// No, invoke the preview dialog
+			// Yes, invoke the preview dialog
 			invokePreview( null );
 		}
 	}

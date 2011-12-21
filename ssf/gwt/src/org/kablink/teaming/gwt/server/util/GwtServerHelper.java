@@ -129,6 +129,7 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
+import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -3438,6 +3439,40 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Get the inherited landing page properties (background color, background image, etc) for
+	 * the given binder.
+	 * @throws GwtTeamingException 
+	 */
+	public static LandingPageProperties getInheritedLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
+	{
+		LandingPageProperties lpProperties = null;
+		
+		lpProperties = new LandingPageProperties();
+		lpProperties.setInheritProperties( true );
+		
+		try
+		{
+			Binder binder;
+			Binder parentBinder;
+			
+			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
+			
+			// Get the binder's parent.
+			parentBinder = binder.getParentBinder();
+			if ( parentBinder != null )
+				binder = parentBinder;
+			
+			lpProperties = getLandingPageProperties( ami, String.valueOf( binder.getId() ), request );
+		}
+		catch (Exception ex)
+		{
+			throw getGwtTeamingException( ex );
+		}
+		
+		return lpProperties;
+	}
+	
+	/**
 	 * Get the landing page data for the given binder.
 	 */
 	public static ConfigData getLandingPageData( HttpServletRequest request, AllModulesInjected allModules, String binderId ) throws GwtTeamingException
@@ -3492,7 +3527,7 @@ public class GwtServerHelper {
     		configData.setLandingPageStyle( style );
 			
 			// Get the other settings that are stored in the "mashup__properties" custom attribute
-   			getLandingPageProperties( allModules, binder, configData, request );
+   			getLandingPageProperties( allModules, binderId, configData, request );
 		}
 		catch (Exception ex)
 		{
@@ -3505,77 +3540,119 @@ public class GwtServerHelper {
 	/**
 	 * Get the landing page properties (background color, background image, etc) for
 	 * the given binder.
+	 * @throws GwtTeamingException 
 	 */
-	public static void getLandingPageProperties( AllModulesInjected ami, Binder binder, ConfigData lpConfigData, HttpServletRequest request )
+	public static LandingPageProperties getLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
 	{
-		Binder sourceBinder;
-		Document doc;
-			
-		// Landing page properties can be inherited.  Get the binder that holds the landing
-		// page properties.
-		sourceBinder = binder.getLandingPagePropertiesSourceBinder();
+		LandingPageProperties lpProperties = null;
 		
-		// Does the user have rights to the binder where the landing page properties are coming from?
-		if ( !ami.getBinderModule().testAccess( sourceBinder, BinderOperation.readEntries ) )
-		{
-			// No, don't use inherited landing page properties.
-			sourceBinder = binder;
-		}
+		lpProperties = new LandingPageProperties();
+		lpProperties.setInheritProperties( true );
 		
-		// Get the landing page properties from the binder we inherit from.
-		doc = sourceBinder.getLandingPageProperties();
-		if ( doc != null )
+		try
 		{
-			Element bgElement;
-			Element pgLayoutElement;
+			Binder binder;
+			Binder sourceBinder;
+			Document doc;
 			
-			// Get the <background ...> element.
-			bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
-			if ( bgElement != null )
+			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
+			
+			// Landing page properties can be inherited.  Get the binder that holds the landing
+			// page properties.
+			sourceBinder = binder.getLandingPagePropertiesSourceBinder();
+			
+			// Does the user have rights to the binder where the landing page properties are coming from?
+			if ( !ami.getBinderModule().testAccess( sourceBinder, BinderOperation.readEntries ) )
 			{
-				String bgColor;
-				String bgImgName;
+				// No, don't use inherited landing page properties.
+				sourceBinder = binder;
+			}
+			
+			// Get the landing page properties from the binder we inherit from.
+			doc = sourceBinder.getLandingPageProperties();
+			if ( doc != null )
+			{
+				Element bgElement;
+				Element pgLayoutElement;
 				
-				bgColor = bgElement.attributeValue( "color" );
-				if ( bgColor != null )
-					lpConfigData.setBackgroundColor( bgColor );
-				
-				bgImgName = bgElement.attributeValue( "imgName");
-				if ( bgImgName != null && bgImgName.length() > 0 )
+				// Did we inherit the properties from another landing page.
+				if ( sourceBinder == binder )
 				{
-					String fileUrl;
-					String webPath;
+					// No
+					lpProperties.setInheritProperties( false );
+				}
+				
+				// Get the <background ...> element.
+				bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
+				if ( bgElement != null )
+				{
+					String bgColor;
+					String bgImgName;
 					
-					webPath = WebUrlUtil.getServletRootURL( request );
-					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, sourceBinder, bgImgName );
-					lpConfigData.setBackgroundImgUrl( fileUrl );
+					bgColor = bgElement.attributeValue( "color" );
+					if ( bgColor != null )
+						lpProperties.setBackgroundColor( bgColor );
 					
-					// Get the background image repeat value.
+					bgImgName = bgElement.attributeValue( "imgName");
+					if ( bgImgName != null && bgImgName.length() > 0 )
 					{
-						String repeat;
+						String fileUrl;
+						String webPath;
 						
-						repeat = bgElement.attributeValue( "repeat" );
-						if ( repeat != null )
-							lpConfigData.setBackgroundImgRepeat( repeat );
+						webPath = WebUrlUtil.getServletRootURL( request );
+						fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, sourceBinder, bgImgName );
+						lpProperties.setBackgroundImgUrl( fileUrl );
+						
+						// Get the background image repeat value.
+						{
+							String repeat;
+							
+							repeat = bgElement.attributeValue( "repeat" );
+							if ( repeat != null )
+								lpProperties.setBackgroundRepeat( repeat );
+						}
+					}
+				}
+				
+				// Get the <pageLayout hideMenu="true | false" /> element.
+				pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
+				if ( pgLayoutElement != null )
+				{
+					String hideMenu;
+					
+					hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
+					if ( hideMenu != null )
+					{
+						boolean value;
+						
+						value = Boolean.parseBoolean( hideMenu );
+						lpProperties.setHideMenu( value );
 					}
 				}
 			}
-			
-			// Get the <pageLayout hideMenu="true | false" /> element.
-			pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
-			if ( pgLayoutElement != null )
-			{
-				String hideMenu;
-				
-				hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
-				if ( hideMenu != null )
-				{
-					boolean value;
-					
-					value = Boolean.parseBoolean( hideMenu );
-					lpConfigData.setHideMenu( value );
-				}
-			}
+		}
+		catch (Exception ex)
+		{
+			throw getGwtTeamingException( ex );
+		}
+		
+		return lpProperties;
+	}
+	
+	/**
+	 * Get the landing page properties (background color, background image, etc) for
+	 * the given binder.
+	 * @throws GwtTeamingException 
+	 */
+	public static void getLandingPageProperties( AllModulesInjected ami, String binderId, ConfigData lpConfigData, HttpServletRequest request ) throws GwtTeamingException
+	{
+		LandingPageProperties lpProperties;
+		
+		// Get the landing page properties for the given binder.
+		lpProperties = getLandingPageProperties( ami, binderId, request );
+		if ( lpProperties != null )
+		{
+			lpConfigData.initLandingPageProperties( lpProperties );
 		}
 	}
 	
@@ -4831,6 +4908,7 @@ public class GwtServerHelper {
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
 		case GET_IM_URL:
+		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
 		case GET_LANDING_PAGE_DATA:
 		case GET_LIST_OF_FILES:
 		case GET_LOGGED_IN_USER_PERMALINK:

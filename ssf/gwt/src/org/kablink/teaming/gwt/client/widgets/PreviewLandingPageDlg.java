@@ -37,8 +37,14 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
+import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
+import org.kablink.teaming.gwt.client.rpc.shared.GetInheritedLandingPagePropertiesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
 
@@ -51,6 +57,7 @@ import com.google.gwt.user.client.ui.Panel;
 public class PreviewLandingPageDlg extends DlgBox
 {
 	private VibeFlowPanel m_mainPanel = null;
+	private AsyncCallback<VibeRpcResponse> m_rpcCallback = null;
 	
 	/**
 	 * 
@@ -100,6 +107,65 @@ public class PreviewLandingPageDlg extends DlgBox
 		return null;
 	}
 	
+	/**
+	 * Issue an rpc request to get the inherited landing page properties
+	 */
+	private void getInheritedLandingPageProperties( final ConfigData lpData )
+	{
+		GetInheritedLandingPagePropertiesCmd cmd;
+		
+		if ( m_rpcCallback == null )
+		{
+			m_rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetInheritedLandingPageProperties(),
+						lpData.getBinderId() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( VibeRpcResponse response )
+				{
+					final LandingPageProperties lpProperties;
+					
+					lpProperties = (LandingPageProperties) response.getResponseData();
+					
+					if ( lpProperties != null )
+					{
+						Scheduler.ScheduledCommand cmd;
+
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								LandingPage lp;
+								
+								// Create a Landing Page widget from the inherited properties
+								lpData.initLandingPageProperties( lpProperties );
+								lp = new LandingPage( lpData );
+								m_mainPanel.add( lp );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+		}
+		
+		// Issue an rpc request to get the inherited landing page properties.
+		cmd = new GetInheritedLandingPagePropertiesCmd( lpData.getBinderId() );
+		GwtClientHelper.executeCommand( cmd, m_rpcCallback );
+	}
+	
 	
 	/**
 	 * Create a LandingPage widget from the given data.
@@ -110,7 +176,17 @@ public class PreviewLandingPageDlg extends DlgBox
 		
 		m_mainPanel.clear();
 		
-		lp = new LandingPage( lpData );
-		m_mainPanel.add( lp );
+		// Does this landing page inherit its properties?
+		if ( lpData.getInheritProperties() )
+		{
+			// Yes, issue an rpc request to get the inherited landing page properties
+			getInheritedLandingPageProperties( lpData );
+		}
+		else
+		{
+			// No
+			lp = new LandingPage( lpData );
+			m_mainPanel.add( lp );
+		}
 	}
 }
