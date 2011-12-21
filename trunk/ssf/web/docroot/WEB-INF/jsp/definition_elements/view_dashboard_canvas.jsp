@@ -260,6 +260,11 @@
 		<c:if test="${!empty ssDashboardToolbar}">
 		</div>
 		</c:if>
+<script type="text/javascript">
+ss_createOnLayoutChangeObj('ss_resizeDashboardCanvas',
+		function() {ss_accessoryResized('${ssBinder.id}')});
+
+</script>
 		
 	</c:when>
 	<c:otherwise>
