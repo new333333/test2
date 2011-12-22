@@ -89,7 +89,7 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 			if (GwtClientHelper.hasString(title)) {
 				setTitle(title);
 			}
-			addStyleName("vibe-iiUrlDlg_Label");
+			addStyleName("vibe-importIcalDlg_Label");
 		}
 		
 		/**
@@ -138,7 +138,7 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
 		m_vp = new VerticalPanel();
-		m_vp.addStyleName("vibe-iiUrlDlg_Panel");
+		m_vp.addStyleName("vibe-importIcalDlg_Panel");
 		return m_vp;
 	}
 
@@ -327,18 +327,18 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 		// Create a panel to hold the content...
 		m_vp.clear();
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("vibe-iiUrlDlg_Content");
+		fp.addStyleName("vibe-importIcalDlg_Content");
 		m_vp.add(fp);
 		
 		// ....add the URL input widgets...
 		m_url = new TextBox();
-		m_url.addStyleName("vibe-iiUrlDlg_Input");
+		m_url.addStyleName("vibe-importIcalDlg_Input");
 		fp.add(m_url);
 		
 		// ...and if we have one, a hint as to what's expected.
 		if (GwtClientHelper.hasString(hint)) {
 			DlgLabel urlHint = new DlgLabel(hint);
-			urlHint.addStyleName("vibe-iiUrlDlg_Hint");
+			urlHint.addStyleName("vibe-importIcalDlg_Hint");
 			fp.add(urlHint);
 		}
 	}
