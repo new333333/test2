@@ -45,6 +45,15 @@
 	border-width: 1px;
 }
 
+/* ######## Styles used with the landing page properties dialog ######## */
+
+.lpPropertiesPanel
+{
+	margin-top: 8px;
+	position: relative;
+}
+
+/* #################################################################### */
 
 
 /* ######## Styles used with the entry widget on a landing page. ######## */
