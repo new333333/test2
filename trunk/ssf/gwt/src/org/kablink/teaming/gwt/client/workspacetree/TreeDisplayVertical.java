@@ -121,7 +121,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	// The following defines the maximum amount of time we wait to
 	// process the completion event for a context switch.  If we exceed
 	// this, we simply clear it.
-	private final static int MAX_BUSY_DURATION	= 10000;	//	10 seconds. 
+	private final static int MAX_BUSY_DURATION	= 5000;	//	5 seconds. 
 	
 	/*
 	 * Inner class that implements clicking on the various tree
