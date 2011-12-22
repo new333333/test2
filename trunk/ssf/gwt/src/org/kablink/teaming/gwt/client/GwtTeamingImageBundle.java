@@ -367,6 +367,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource resumeActivityStream();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Widgets/sizingArrows.png")
+	public ImageResource sizingArrows();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/spacer_1px.png")
 	public ImageResource spacer1px();
 

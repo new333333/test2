@@ -69,10 +69,10 @@ public class EntryPinCell extends AbstractCell<EntryPinInfo> {
 	public EntryPinCell() {
 		// Sink the events we need to process a pin...
 		super(
-			VibeDataTable.CELL_EVENT_CLICK,
-			VibeDataTable.CELL_EVENT_KEYDOWN,
-			VibeDataTable.CELL_EVENT_MOUSEOVER,
-			VibeDataTable.CELL_EVENT_MOUSEOUT);
+			VibeDataTableConstants.CELL_EVENT_CLICK,
+			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 
 		// ...and initialize the data members.
 		m_images   = GwtTeaming.getDataTableImageBundle();
@@ -147,18 +147,18 @@ public class EntryPinCell extends AbstractCell<EntryPinInfo> {
     public void onBrowserEvent(Context context, Element parent, EntryPinInfo pinInfo, NativeEvent event, ValueUpdater<EntryPinInfo> valueUpdater) {
     	// Which of our pin widgets is being operated on? 
 		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE);
-		boolean isImage = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_PIN_IMAGE));
+		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		boolean isImage = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_PIN_IMAGE));
 
 		// What type of event are we processing?
     	String eventType = event.getType();
-    	if (VibeDataTable.CELL_EVENT_KEYDOWN.equals(eventType)) {
+    	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
         	// A key down!  Let AbstractCell handle it.  It will
     		// convert it to an entry key down, ... as necessary.
         	super.onBrowserEvent(context, parent, pinInfo, event, valueUpdater);
     	}
 
-    	else if (VibeDataTable.CELL_EVENT_CLICK.equals(eventType)) {
+    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
     		// A click!  Is it the image being clicked?
     		if (isImage) {
     			// Yes!  Strip off any over style.
@@ -167,12 +167,12 @@ public class EntryPinCell extends AbstractCell<EntryPinInfo> {
     		}
     	}
     	
-    	else if (isImage && VibeDataTable.CELL_EVENT_MOUSEOVER.equals(eventType)) {
+    	else if (isImage && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style.
 			eventTarget.addClassName("vibe-dataTableLink-hover");
     	}
     	
-    	else if (isImage && VibeDataTable.CELL_EVENT_MOUSEOUT.equals(eventType)) {
+    	else if (isImage && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
     		// A mouse out!  Remove the hover style.
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
     	}
@@ -225,8 +225,8 @@ public class EntryPinCell extends AbstractCell<EntryPinInfo> {
 		Image pinImg = new Image(pinImgRes.getSafeUri());
 		pinImg.setTitle(pinImgAlt);
 		Element piE = pinImg.getElement(); 
-		piE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_PIN_IMAGE);
-		piE.setId(VibeDataTable.CELL_WIDGET_ENTRY_PIN_IMAGE + "_" + pinInfo.getEntryId());
+		piE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_PIN_IMAGE);
+		piE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_PIN_IMAGE + "_" + pinInfo.getEntryId());
 		fp.add(pinImg);
 		
 		// ...and render that into the cell.

@@ -32,26 +32,21 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.view.client.ProvidesKey;
-
 /**
- * Common 'data table' base class for use by all Vibe folders that show
- * a simple list of entries.
+ * Constants used by the various Vibe data table implementations (i.e.,
+ * VibeDataGrid's, VibeCellTable's, ...
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTable<T> extends DataGrid<T> {
-	// The following are used as event names that are captured by
-	// various data table cell handlers. 
+public class VibeDataTableConstants {
+	// The following are used as event names that are captured by the
+	// various cell handlers. 
 	public final static String CELL_EVENT_CLICK		= "click";
 	public final static String CELL_EVENT_KEYDOWN	= "keydown";
 	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
 	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
 	
-	// The following are used to name widgets stored in the various
-	// cells of a data table.
+	// The following are used to name widgets stored in various cells.
 	public final static String CELL_WIDGET_ATTRIBUTE			= "n-cellWidget";
 	public final static String CELL_WIDGET_ENTRY_DOWNLOAD_LABEL	= "entryDownloadLabel";
 	public final static String CELL_WIDGET_ENTRY_PIN_IMAGE		= "entryPinImg";
@@ -61,33 +56,4 @@ public class VibeDataTable<T> extends DataGrid<T> {
 	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL		= "entryViewLabel";
 	public final static String CELL_WIDGET_PRESENCE				= "presenceControl";
 	public final static String CELL_WIDGET_PRESENCE_LABEL		= "presenceLabel";
-
-	/**
-	 * Interface to load data table styles that can override the
-	 * default styles.
-	 * 
-	 * This provides Lynn a way to easily edit the defaults.
-	 */ 
-	public interface VibeDataTableResources extends Resources {
-		@Source({DataGrid.Style.DEFAULT_CSS, "../../public/VibeDataTable.css"})
-		DataGrid.Style dataGridStyle();
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param pageSize
-	 * @param keyProvider
-	 */
-	public VibeDataTable(int pageSize, ProvidesKey<T> keyProvider) {
-		super(pageSize, getVibeDataTableResources(), keyProvider);
-	}
-
-	/*
-	 * Loads the resource file Vibe uses to overwrite those GWT defines
-	 * by default.
-	 */
-	private static DataGrid.Resources getVibeDataTableResources() { 
-		return GWT.create(VibeDataTableResources.class);
-	}
 }

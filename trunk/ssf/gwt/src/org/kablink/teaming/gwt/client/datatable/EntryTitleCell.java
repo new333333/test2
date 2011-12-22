@@ -74,10 +74,10 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		 * Sink the events we need to process an entry title.
 	     */
 		super(
-			VibeDataTable.CELL_EVENT_CLICK,
-			VibeDataTable.CELL_EVENT_KEYDOWN,
-			VibeDataTable.CELL_EVENT_MOUSEOVER,
-			VibeDataTable.CELL_EVENT_MOUSEOUT);
+			VibeDataTableConstants.CELL_EVENT_CLICK,
+			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
 	/*
@@ -146,13 +146,13 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	private void markEntryUISeenNow(final EntryTitleInfo eti) {
 		// Hide the marker to set the entry unseen...
 		String entryIdS = String.valueOf(eti.getEntryId());
-		Element e = DOM.getElementById(VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
+		Element e = DOM.getElementById(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
 		if (null != e) {
 			e.getStyle().setDisplay(Display.NONE);
 		}
 
 		// ...and take the bold off the title.
-		e = DOM.getElementById(VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
+		e = DOM.getElementById(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
 		if (null != e) {
 			e.removeClassName("bold");
 		}
@@ -176,19 +176,19 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     public void onBrowserEvent(Context context, Element parent, EntryTitleInfo eti, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
     	// Which of our entry title widgets is being operated on? 
 		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE);
-		boolean isLabel     = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL ));
-		boolean isUnseenImg = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE));
+		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		boolean isLabel     = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL ));
+		boolean isUnseenImg = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE));
 
 		// What type of event are we processing?
     	String eventType = event.getType();
-    	if (VibeDataTable.CELL_EVENT_KEYDOWN.equals(eventType)) {
+    	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
         	// A key down!  Let AbstractCell handle it.  It will
     		// convert it to an entry key down, ... as necessary.
         	super.onBrowserEvent(context, parent, eti, event, valueUpdater);
     	}
 
-    	else if (VibeDataTable.CELL_EVENT_CLICK.equals(eventType)) {
+    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
     		// A click!  Is it the label being clicked?
     		if (isLabel) {
     			// Yes!  Strip off any over style.
@@ -201,7 +201,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     		}
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOVER.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style...
 			eventTarget.addClassName("vibe-dataTableLink-hover");
 			
@@ -228,7 +228,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			}
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOUT.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
     		// A mouse out!  Remove the hover style...
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
 			
@@ -281,8 +281,8 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			Image i = GwtClientHelper.buildImage(GwtTeaming.getDataTableImageBundle().unread(), GwtTeaming.getMessages().vibeDataTable_Alt_Unread());
 			i.addStyleName("vibe-dataTableEntry-unseenMarker");
 			Element iE = i.getElement();
-			iE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE);
-			iE.setId(VibeDataTable.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
+			iE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE);
+			iE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
 			fp.add(i);
 		}
 
@@ -293,8 +293,8 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			titleLabel.addStyleName("bold");
 		}
 		Element elE = titleLabel.getElement(); 
-		elE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL);
-		elE.setId(VibeDataTable.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
+		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL);
+		elE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
 		fp.add(titleLabel);
 		
 		// ...and render that into the cell.

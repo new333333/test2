@@ -68,10 +68,10 @@ public class ViewCell extends AbstractCell<ViewFileInfo> {
 		 * Sink the events we need to process a view link.
 	     */
 		super(
-			VibeDataTable.CELL_EVENT_CLICK,
-			VibeDataTable.CELL_EVENT_KEYDOWN,
-			VibeDataTable.CELL_EVENT_MOUSEOVER,
-			VibeDataTable.CELL_EVENT_MOUSEOUT);
+			VibeDataTableConstants.CELL_EVENT_CLICK,
+			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
 	/*
@@ -79,7 +79,7 @@ public class ViewCell extends AbstractCell<ViewFileInfo> {
 	 */
 	private void invokeFileView(final ViewFileInfo vfi, Element pElement) {
 		// Have we store the view file HREF on the Anchor yet?
-		final Element viewAE = DOM.getElementById(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_ANCHOR + "_" + vfi.getFileId());
+		final Element viewAE = DOM.getElementById(VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_ANCHOR + "_" + vfi.getFileId());
 		if (!(GwtClientHelper.hasString(viewAE.getAttribute("href")))) {
 			// No!  Build one now...
 			GetViewFileUrlCmd cmd = new GetViewFileUrlCmd(vfi);
@@ -151,18 +151,18 @@ public class ViewCell extends AbstractCell<ViewFileInfo> {
     public void onBrowserEvent(Context context, Element parent, ViewFileInfo fileId, NativeEvent event, ValueUpdater<ViewFileInfo> valueUpdater) {
     	// Which of our view widgets is being operated on? 
 		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE);
-		boolean isLabel = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_LABEL ));
+		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		boolean isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_LABEL ));
 
 		// What type of event are we processing?
     	String eventType = event.getType();
-    	if (VibeDataTable.CELL_EVENT_KEYDOWN.equals(eventType)) {
+    	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
         	// A key down!  Let AbstractCell handle it.  It will
     		// convert it to an entry key down, ... as necessary.
         	super.onBrowserEvent(context, parent, fileId, event, valueUpdater);
     	}
 
-    	else if (VibeDataTable.CELL_EVENT_CLICK.equals(eventType)) {
+    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
     		// A click!  Is it the label being clicked?
     		if (isLabel) {
     			// Yes!  Strip off any over style.
@@ -171,12 +171,12 @@ public class ViewCell extends AbstractCell<ViewFileInfo> {
     		}
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOVER.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style.
 			eventTarget.addClassName("vibe-dataTableLink-hover");
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOUT.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
     		// A mouse out!  Remove the hover style.
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
     	}
@@ -222,15 +222,15 @@ public class ViewCell extends AbstractCell<ViewFileInfo> {
 		viewA.setTarget("_blank");
 		viewA.setHref(vfi.getViewFileUrl());
 		Element viewAE = viewA.getElement();
-		viewAE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_VIEW_ANCHOR);
-		viewAE.setId(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_ANCHOR + "_" + fileId);
+		viewAE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_ANCHOR);
+		viewAE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_ANCHOR + "_" + fileId);
 		
 		InlineLabel viewL = new InlineLabel(GwtTeaming.getMessages().vibeDataTable_View());
 		viewL.setTitle(GwtTeaming.getMessages().vibeDataTable_Alt_View());
 		viewL.addStyleName("vibe-dataTableEntry-viewLabel");
 		Element viewLE = viewL.getElement(); 
-		viewLE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_VIEW_LABEL);
-		viewLE.setId(VibeDataTable.CELL_WIDGET_ENTRY_VIEW_LABEL + "_" + fileId);
+		viewLE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_LABEL);
+		viewLE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_LABEL + "_" + fileId);
 		
 		viewAE.appendChild(viewLE);
 		fp.add(viewA);

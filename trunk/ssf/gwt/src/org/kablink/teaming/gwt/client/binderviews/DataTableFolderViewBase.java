@@ -61,12 +61,13 @@ import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
-import org.kablink.teaming.gwt.client.datatable.VibeDataTable;
+import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -137,8 +138,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler,
-		InvokeDropBoxEvent.Handler
+		InvokeColumnResizerEvent.Handler,
+		InvokeDropBoxEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler
 {
 	private final BinderInfo				m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
 	private boolean							m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
@@ -154,7 +156,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private List<ToolPanelBase>				m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
 	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> ColumWidth objects.
 	private String							m_folderSortBy;				// Which column the view is sorted on.
-	private VibeDataTable<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
+//!	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
+	private VibeDataGrid<FolderRow>			m_dataTable;				// The actual data table holding the view's information.
 	private VibeFlowPanel					m_mainPanel;				// The main panel holding the content of the view.
 	private VibeFlowPanel					m_flowPanel;				// The flow panel used to hold the view specific content of the view.
 	private VibeVerticalPanel				m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
@@ -213,8 +216,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_ENTRIES,
+		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
 	};
 	
 	/*
@@ -260,7 +264,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Inner class used to provide list of FolderRow's.
 	 */
 	private class FolderRowAsyncProvider extends AsyncDataProvider<FolderRow> {
-		private VibeDataTable<FolderRow> m_vdt;	// The data table we're providing data for.
+		private VibeDataGrid<FolderRow> m_vdt;	// The data table we're providing data for.
 		
 		/**
 		 * Constructor method.
@@ -268,7 +272,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		 * @param vdt
 		 * @param keyProvider
 		 */
-		public FolderRowAsyncProvider(VibeDataTable<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
+		public FolderRowAsyncProvider(VibeDataGrid<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
 			// Initialize the super class and keep track of the data
 			// table.
 			super(keyProvider);
@@ -1134,7 +1138,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(this, m_folderInfo, true, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1384,6 +1388,24 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 	
 	/**
+	 * Handles InvokeColumnResizerEvent's received by this class.
+	 * 
+	 * Implements the InvokeColumnResizerEvent.Handler.onInvokeColumnResizer() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeColumnResizer(InvokeColumnResizerEvent event) {
+		// Is the event targeted to this folder?
+		Long evenBinderId = event.getBinderId();
+		if (evenBinderId.equals(m_folderInfo.getBinderIdAsLong())) {
+			// Yes!  Invoke the column sizing dialog on the folder.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onInvokeColumnResizer(" + evenBinderId + "):  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
 	 * Handles InvokeDropBoxEvent's received by this class.
 	 * 
 	 * Implements the InvokeDropBoxEvent.Handler.onInvokeDropBox() method.
@@ -1397,7 +1419,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
 			// Yes!  Invoke the add file applet on the folder.
 //!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onInvokeDropBox(" + event.getFolderId() + "):  ...this needs to be implemented...");
+			Window.alert("DataTableFolderViewBase.onInvokeDropBox(" + eventFolderId + "):  ...this needs to be implemented...");
 		}
 	}
 	
@@ -1476,7 +1498,14 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 */
 	@Override
 	public void onResize() {
+		// Pass the resize on to the super class.
 		super.onResize();
+
+		// If we're running as a CellTable (instead of a DataGrid)...
+//!		if (m_dataTable instanceof VibeDataGrid) {
+//!			// ...we don't do anything with a resize.
+//!			return;
+//!		}
 
 		int viewHeight		= getOffsetHeight();												// Height of the view.
 		int viewTop			= getAbsoluteTop();													// Absolute top of the view.		
@@ -1525,7 +1554,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		FolderRowKeyProvider keyProvider = new FolderRowKeyProvider();
 		
 		// Create the table.
-		m_dataTable = new VibeDataTable<FolderRow>(m_folderPageSize, keyProvider);
+		m_dataTable = new VibeDataGrid<FolderRow>(m_folderPageSize, keyProvider);
+//!		m_dataTable.setWidth("100%", false);
 		m_dataTable.addStyleName("vibe-dataTableFolderDataTableBase");
 		if (GwtClientHelper.hasString(styleName)) {
 			m_dataTable.addStyleName(styleName);

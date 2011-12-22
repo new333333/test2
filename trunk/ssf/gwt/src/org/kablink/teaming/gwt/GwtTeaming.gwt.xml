@@ -30,7 +30,8 @@
     <stylesheet src='GwtLandingPage.css' />		
     <stylesheet src='GwtBinderViews.css' />		
     <stylesheet src='GwtMenus.css'       />		
-    <stylesheet src='VibeDataTable.css'  />		
+    <stylesheet src='VibeCellTable.css'  />		
+    <stylesheet src='VibeDataGrid.css'   />		
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
