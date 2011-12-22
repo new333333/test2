@@ -95,7 +95,7 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 			if (GwtClientHelper.hasString(title)) {
 				setTitle(title);
 			}
-			addStyleName("vibe-iiFileDlg_Label");
+			addStyleName("vibe-importIcalDlg_Label");
 		}
 		
 		/**
@@ -165,7 +165,7 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
 		m_vp = new VerticalPanel();
-		m_vp.addStyleName("vibe-iiFileDlg_Panel");
+		m_vp.addStyleName("vibe-importIcalDlg_Panel");
 		return m_vp;
 	}
 
@@ -256,7 +256,7 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 		// Create a panel to hold the content...
 		m_vp.clear();
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("vibe-iiFileDlg_Content");
+		fp.addStyleName("vibe-importIcalDlg_Content");
 		m_vp.add(fp);
 		
 		// ....create a form for the file input widgets...
@@ -378,12 +378,12 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 		// ...create the file input widget...
 		m_fileInput = new FileUpload();
 		m_fileInput.setName("iCalFile");
-		m_fileInput.addStyleName("vibe-iiFileDlg_Input");
+		m_fileInput.addStyleName("vibe-importIcalDlg_Input");
 		uploadPanel.add(m_fileInput);
 		
 		// ...and a hint as to what's expected.
 		DlgLabel urlHint = new DlgLabel(m_messages.mainMenuImportIcalByFileDlgHint());
-		urlHint.addStyleName("vibe-iiFileDlg_Hint");
+		urlHint.addStyleName("vibe-importIcalDlg_Hint");
 		fp.add(urlHint);
 	}
 	
