@@ -774,7 +774,7 @@ public class GwtClientHelper {
 	 * @param url
 	 */
 	public static native void jsShowForumEntry(String entryUrl) /*-{
-		$wnd.top.gwtContentIframe.ss_showForumEntry(entryUrl);
+		$wnd.top.ss_showForumEntry(entryUrl);
 	}-*/;
 	
 	/**
