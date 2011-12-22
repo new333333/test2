@@ -406,6 +406,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_COLUMN_RESIZER:
+				// An InvokeColumnResizerEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeColumnResizerEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeColumnResizerEvent.registerEvent(eventBus, ((InvokeColumnResizerEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_CONFIGURE_COLUMNS:
 				// An InvokeConfigureColumnsEvent!  Can the event
 				// handler we were given handle that?
@@ -1138,6 +1147,7 @@ public class EventHelper {
 						
 			case INVOKE_ABOUT:							hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                   break;
 			case INVOKE_CLIPBOARD:						hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);               break;
+			case INVOKE_COLUMN_RESIZER:				    hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);           break;
 			case INVOKE_CONFIGURE_COLUMNS:				hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);        break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler); break;
 			case INVOKE_DROPBOX:						hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                 break;

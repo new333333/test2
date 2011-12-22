@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -58,9 +59,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 
 
@@ -71,6 +75,7 @@ import com.google.gwt.user.client.ui.RequiresResize;
  */
 public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo			m_binderInfo;	//
+	private boolean				m_includeColumnResizer;	//
 	private List<ToolbarItem>	m_toolbarIems;	//
 	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
 	private VibeMenuBar			m_entryMenu;	//
@@ -84,12 +89,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, boolean includeColumnResizer, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...store the parameters...
-		m_binderInfo = binderInfo;
+		m_binderInfo   = binderInfo;
+		m_includeColumnResizer = includeColumnResizer;
 
 		// ...construct and initialize the panel...
 		m_fp = new VibeFlowPanel();
@@ -108,15 +114,16 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * 
 	 * @param containerResizer
 	 * @param binderInfo
+	 * @param includeColumnResizer
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, toolPanelReady);
+				EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, includeColumnResizer, toolPanelReady);
 				tpClient.onSuccess(emp);
 			}
 			
@@ -184,6 +191,17 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart2Now() {
+		// Are we supposed include a column sizing button?
+		if(m_includeColumnResizer) {
+			// Yes!  Render it.
+			renderImageMenuItem(
+				m_entryMenu,
+				m_images.sizingArrows(),
+				m_messages.vibeDataTable_Alt_ColumnResizer(),
+				new InvokeColumnResizerEvent(
+					m_binderInfo.getBinderIdAsLong()));
+		}
+		
 		// Do we have an entry toolbar?
 		ToolbarItem entryTBI = ToolbarItem.getNestedToolbarItem(m_toolbarIems, "ssEntryToolbar");
 		if (null != entryTBI) {
@@ -202,6 +220,25 @@ public class EntryMenuPanel extends ToolPanelBase {
 		toolPanelReady();
 	}
 
+	/*
+	 * Renders a menu item containing an image that simply fires an
+	 * event when triggered.
+	 */
+	private void renderImageMenuItem(VibeMenuBar menuBar, ImageResource imgRes, String imgAlt, final VibeEventBase<?> event) {
+		FlowPanel fp = new FlowPanel();
+		Image img = new Image(imgRes);
+		img.setTitle(imgAlt);
+		fp.add(img);
+		VibeMenuItem menuItem = new VibeMenuItem(fp.getElement().getInnerHTML(), true, new Command() {
+			@Override
+			public void execute() {
+				GwtTeaming.fireEvent(event);
+			}
+		});
+		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
+		menuBar.addItem(menuItem);
+	}
+	
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */

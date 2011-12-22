@@ -61,10 +61,10 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		 * Sink the events we need to process presence.
 	     */
 		super(
-			VibeDataTable.CELL_EVENT_CLICK,
-			VibeDataTable.CELL_EVENT_KEYDOWN,
-			VibeDataTable.CELL_EVENT_MOUSEOVER,
-			VibeDataTable.CELL_EVENT_MOUSEOUT);
+			VibeDataTableConstants.CELL_EVENT_CLICK,
+			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
 	/*
@@ -98,19 +98,19 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		boolean isPresence = (parent.getFirstChildElement().isOrHasChild(eventTarget));
 		boolean isLabel    = (!isPresence);
 		if (isLabel) {
-			String wt = eventTarget.getAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE);
-			isLabel = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_PRESENCE_LABEL));
+			String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+			isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL));
 		}
 
 		// What type of event are we processing?
     	String eventType = event.getType();
-    	if (VibeDataTable.CELL_EVENT_KEYDOWN.equals(eventType)) {
+    	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
         	// A key down!  Let AbstractCell handle it.  It will
     		// convert it to an entry key down, ... as necessary.
         	super.onBrowserEvent(context, parent, pi, event, valueUpdater);
     	}
 
-    	else if (VibeDataTable.CELL_EVENT_CLICK.equals(eventType)) {
+    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
     		// A click!  Is it the label being clicked?
     		if (isLabel) {
     			// Yes!  Strip off any over style.
@@ -124,12 +124,12 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
     		}
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOVER.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style.
 			eventTarget.addClassName("vibe-dataTableLink-hover");
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOUT.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
     		// A mouse out!  Remove the hover style.
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
     	}
@@ -174,13 +174,13 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		presenceControl.setImageAlignment("top");
 		presenceControl.addStyleName("vibe-dataTablePresence-control displayInline verticalAlignTop");
 		presenceControl.setAnchorStyleName("cursorPointer");
-		presenceControl.getElement().setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_PRESENCE);
+		presenceControl.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_PRESENCE);
 		fp.add(presenceControl);
 		
 		// ...add a name link for it...
 		Label presenceLabel = new Label(pi.getTitle());
 		presenceLabel.addStyleName("vibe-dataTablePresence-label vibe-dataTablePresence-enabled");
-		presenceLabel.getElement().setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_PRESENCE_LABEL);
+		presenceLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL);
 		fp.add(presenceLabel);
 		
 		// ...and render that into the cell.

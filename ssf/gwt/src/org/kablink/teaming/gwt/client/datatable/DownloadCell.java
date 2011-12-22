@@ -63,10 +63,10 @@ public class DownloadCell extends AbstractCell<Long> {
 		 * Sink the events we need to process a download link.
 	     */
 		super(
-			VibeDataTable.CELL_EVENT_CLICK,
-			VibeDataTable.CELL_EVENT_KEYDOWN,
-			VibeDataTable.CELL_EVENT_MOUSEOVER,
-			VibeDataTable.CELL_EVENT_MOUSEOUT);
+			VibeDataTableConstants.CELL_EVENT_CLICK,
+			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
+			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
 	/*
@@ -109,18 +109,18 @@ public class DownloadCell extends AbstractCell<Long> {
     public void onBrowserEvent(Context context, Element parent, Long entryId, NativeEvent event, ValueUpdater<Long> valueUpdater) {
     	// Which of our download widgets is being operated on? 
 		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE);
-		boolean isLabel = ((null != wt) && wt.equals(VibeDataTable.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL ));
+		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		boolean isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL ));
 
 		// What type of event are we processing?
     	String eventType = event.getType();
-    	if (VibeDataTable.CELL_EVENT_KEYDOWN.equals(eventType)) {
+    	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
         	// A key down!  Let AbstractCell handle it.  It will
     		// convert it to an entry key down, ... as necessary.
         	super.onBrowserEvent(context, parent, entryId, event, valueUpdater);
     	}
 
-    	else if (VibeDataTable.CELL_EVENT_CLICK.equals(eventType)) {
+    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
     		// A click!  Is it the label being clicked?
     		if (isLabel) {
     			// Yes!  Strip off any over style.
@@ -129,12 +129,12 @@ public class DownloadCell extends AbstractCell<Long> {
     		}
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOVER.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style.
 			eventTarget.addClassName("vibe-dataTableLink-hover");
     	}
     	
-    	else if (isLabel && VibeDataTable.CELL_EVENT_MOUSEOUT.equals(eventType)) {
+    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
     		// A mouse out!  Remove the hover style.
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
     	}
@@ -177,8 +177,8 @@ public class DownloadCell extends AbstractCell<Long> {
 		InlineLabel downloadLabel = new InlineLabel(GwtTeaming.getMessages().vibeDataTable_Download());
 		downloadLabel.addStyleName("vibe-dataTableEntry-download");
 		Element elE = downloadLabel.getElement(); 
-		elE.setAttribute(VibeDataTable.CELL_WIDGET_ATTRIBUTE, VibeDataTable.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL);
-		elE.setId(VibeDataTable.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL + "_" + entryId);
+		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL);
+		elE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL + "_" + entryId);
 		fp.add(downloadLabel);
 		
 		// ...and render that into the cell.

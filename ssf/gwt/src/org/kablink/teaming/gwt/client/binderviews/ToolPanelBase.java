@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -48,12 +49,13 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author drfoster@novell.com
  */
 public abstract class ToolPanelBase extends ResizeComposite {
-	public    final        BinderInfo			m_binderInfo;							// Caches the BinderInfo for use by this tool panel.
-	private   final        RequiresResize		m_containerResizer;						//
-	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
-	private                Timer				m_resizeContainerTimer;					// A timer used to control telling the container something's been resized.
-	private                int					m_droppedResizes;						//
-	private                ToolPanelReady		m_toolPanelReady;						//
+	public    final        BinderInfo				m_binderInfo;								// Caches the BinderInfo for use by this tool panel.
+	private   final        RequiresResize			m_containerResizer;							//
+	protected final static GwtTeamingImageBundle	m_images   = GwtTeaming.getImageBundle();	// Access to the GWT localized string resource.
+	protected final static GwtTeamingMessages		m_messages = GwtTeaming.getMessages();		// Access to the GWT localized string resource.
+	private                Timer					m_resizeContainerTimer;						// A timer used to control telling the container something's been resized.
+	private                int						m_droppedResizes;							//
+	private                ToolPanelReady			m_toolPanelReady;							//
 
 	// The following defines the amount of time we wait after having
 	// been notified of a resize before passing it on to the container.
