@@ -259,14 +259,12 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 		fp.addStyleName("vibe-iiFileDlg_Content");
 		m_vp.add(fp);
 		
-		// ....add the file input widgets...
-		FlowPanel uploadPanel = new FlowPanel();
+		// ....create a form for the file input widgets...
 		m_uploadForm = new FormPanel();
 		m_uploadForm.getElement().setId("ss_calendar_import_form");
-		String importFileUrl = GwtClientHelper.replace(GwtClientHelper.getRequestInfo().getImportFileUrl(), "xxx_folderId_xxx", m_folderInfo.getBinderId());
-		m_uploadForm.setAction(  importFileUrl               );
-		m_uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
-		m_uploadForm.setMethod(  FormPanel.METHOD_POST       );
+		m_uploadForm.setAction(  GwtClientHelper.getRequestInfo().getBaseVibeUrl());
+		m_uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART                     );
+		m_uploadForm.setMethod(  FormPanel.METHOD_POST                            );
 		m_uploadForm.addSubmitHandler(new SubmitHandler() {
 			/**
 			 * This event is fired just before the form is submitted.
@@ -365,16 +363,23 @@ public class ImportIcalByFileDlg extends DlgBox implements EditSuccessfulHandler
 				}
 			}
 		});
+
+		// ...connect the form to the dialog...
+		FlowPanel uploadPanel = new FlowPanel();
+		m_uploadForm.setWidget(uploadPanel);
+		fp.add(m_uploadForm);
+		
+		// ...create the hidden input parameters for the form's URL...
+		Hidden hi;
+		hi = new Hidden(); hi.setName("folderId");  hi.setValue(m_folderInfo.getBinderId()); uploadPanel.add(hi);
+		hi = new Hidden(); hi.setName("action");    hi.setValue("__ajax_request"          ); uploadPanel.add(hi);
+		hi = new Hidden(); hi.setName("operation"); hi.setValue("uploadICalendarFileGWT"  ); uploadPanel.add(hi);
+		
+		// ...create the file input widget...
 		m_fileInput = new FileUpload();
 		m_fileInput.setName("iCalFile");
 		m_fileInput.addStyleName("vibe-iiFileDlg_Input");
 		uploadPanel.add(m_fileInput);
-		Hidden folderId = new Hidden();
-		folderId.setName("folderId");
-		folderId.setValue(m_folderInfo.getBinderId());
-		uploadPanel.add(folderId);
-		m_uploadForm.setWidget(uploadPanel);
-		fp.add(m_uploadForm);
 		
 		// ...and a hint as to what's expected.
 		DlgLabel urlHint = new DlgLabel(m_messages.mainMenuImportIcalByFileDlgHint());

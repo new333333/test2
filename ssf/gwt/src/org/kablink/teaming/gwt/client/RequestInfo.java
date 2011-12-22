@@ -75,6 +75,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the base Vibe URL.
+	 * 
+	 * @return
+	 */
+	public final native String getBaseVibeUrl()
+	/*-{
+		return this.baseVibeUrl;
+	}-*/;
+
+	/**
 	 * Return the binder ID.
 	 * 
 	 * @return
@@ -205,16 +215,6 @@ public class RequestInfo extends JavaScriptObject
 	public final native String getImagesPath()
 	/*-{
 		return this.imagesPath;
-	}-*/;
-
-	/**
-	 * Return the import file URL.
-	 * 
-	 * @return
-	 */
-	public final native String getImportFileUrl()
-	/*-{
-		return this.importFileUrl;
 	}-*/;
 
 	/**

@@ -37,6 +37,7 @@
 	// Through an overlay we will access m_requestInfo from java.
 	var m_requestInfo = {
 		advancedSearchUrl:					'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true" windowState="maximized"><ssf:param name="action" value="advancedSearch"/><ssf:param name="tabTitle" value="SEARCH FORM"/><ssf:param name="newTab" value="0"/></ssf:url></ssf:escapeJavaScript>',
+		baseVibeUrl:						'<ssf:url></ssf:url>',
 		contentCss:							'<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>',
 		currentUserWorkspaceId:				'${ssUser.workspaceId}',
 		debugUI:							'${vibeUIDebug}',
@@ -47,7 +48,6 @@
 		forceSidebarReload:					'false',
 		helpUrl:							'<ssf:escapeJavaScript>${ss_helpUrl}</ssf:escapeJavaScript>',
 		imagesPath:							'<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
-		importFileUrl:						'<ssf:url action="__ajax_request"><ssf:param name="folderId" value="xxx_folderId_xxx"/><ssf:param name="operation" value="uploadICalendarFileGWT"/></ssf:url>',
 		isBinderAdmin:						'${ss_isBinderAdmin}',
 		isDiskQuotaHighWaterMarkExceeded:	'${ss_diskQuotaHighWaterMarkExceeded}',
 		isFormLoginAllowed:					'${isFormLoginAllowed}',
