@@ -3436,3 +3436,19 @@ td.datePickerMonth {
 	border-bottom: 1px solid #BBBBB9;
 }
 /* End of styles used with an object list table */
+
+
+.vibeGlassPanel
+{
+	background-color: #000;
+	bottom: 0;
+	filter: alpha(opacity=50);
+	left: 0;
+	opacity: 0.5;
+	overflow: hidden;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 1000;
+}
+

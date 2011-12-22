@@ -1161,7 +1161,16 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundRepeatX();
 	String backgroundRepeatY();
 	String backgroundNoRepeat();
+	String borderColorLabel();
+	String borderWidthLabel();
+	String contentTextColorLabel();
+	String headerBackgroundColorLabel();
+	String headerTextColorLabel();
 	String inheritPropertiesLabel();
+	String invalidBorderColor( String color );
+	String invalidContentTextColor( String color );
+	String invalidHeaderBgColor( String color );
+	String invalidHeaderTextColor( String color );
 
 	// Strings used in the Novell Desktop App dialog (File Sync)
 	String fileSyncAppAutoUpdateUrlLabel();

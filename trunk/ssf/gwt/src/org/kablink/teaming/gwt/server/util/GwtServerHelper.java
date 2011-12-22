@@ -3574,6 +3574,9 @@ public class GwtServerHelper {
 			{
 				Element bgElement;
 				Element pgLayoutElement;
+				Element headerElement;
+				Element contentElement;
+				Element borderElement;
 				
 				// Did we inherit the properties from another landing page.
 				if ( sourceBinder == binder )
@@ -3628,6 +3631,49 @@ public class GwtServerHelper {
 						value = Boolean.parseBoolean( hideMenu );
 						lpProperties.setHideMenu( value );
 					}
+				}
+
+				// Get the <header bgColor="" textColor="" /> element.
+				headerElement = (Element) doc.selectSingleNode( "//landingPageData/header" );
+				if ( headerElement != null )
+				{
+					String bgColor;
+					String textColor;
+					
+					bgColor = headerElement.attributeValue( "bgColor" );
+					if ( bgColor != null )
+						lpProperties.setHeaderBgColor( bgColor );
+					
+					textColor = headerElement.attributeValue( "textColor" );
+					if ( textColor != null )
+						lpProperties.setHeaderTextColor( textColor );
+				}
+				
+				// Get the <content textColor="" /> element.
+				contentElement = (Element) doc.selectSingleNode( "//landingPageData/content" );
+				if ( contentElement != null )
+				{
+					String textColor;
+					
+					textColor = contentElement.attributeValue( "textColor" );
+					if ( textColor != null )
+						lpProperties.setContentTextColor( textColor );
+				}
+				
+				// Get the <border color="" width="" /> element
+				borderElement = (Element) doc.selectSingleNode( "//landingPageData/border" );
+				if ( borderElement != null )
+				{
+					String borderColor;
+					String width;
+					
+					borderColor = borderElement.attributeValue( "color" );
+					if ( borderColor != null )
+						lpProperties.setBorderColor( borderColor );
+					
+					width = borderElement.attributeValue( "width" );
+					if ( width != null )
+						lpProperties.setBorderWidth( width );
 				}
 			}
 		}
