@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.FilterPanel;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
@@ -59,10 +60,11 @@ import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
+import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
+import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
-import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
@@ -110,10 +112,12 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.Range;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
+import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
@@ -143,24 +147,25 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		InvokeDropBoxEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler
 {
-	private final BinderInfo				m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
-	private boolean							m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
-	private boolean							m_viewReady;				// Set true once the view and all its components are ready.
-	private int								m_folderPageSize;			// Page size as per the user's personal preferences.
-	private int								m_readyComponents;			// Tracks items as they become ready.
-	private EntryMenuPanel					m_entryMenuPanel;			// Panel that holds the entry menu.
-	private FolderRowPager 					m_dataTablePager;			// Pager widgets at the bottom of the data table.
-	private FooterPanel						m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
-	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private List<Long>						m_contributorIds;			//
-	private List<ToolPanelBase>				m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
-	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> ColumWidth objects.
-	private String							m_folderSortBy;				// Which column the view is sorted on.
-	private VibeCellTable<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
-	private VibeFlowPanel					m_mainPanel;				// The main panel holding the content of the view.
-	private VibeFlowPanel					m_flowPanel;				// The flow panel used to hold the view specific content of the view.
-	private VibeVerticalPanel				m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
+	private final BinderInfo			m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
+	private boolean						m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
+	private boolean						m_viewReady;				// Set true once the view and all its components are ready.
+	private int							m_folderPageSize;			// Page size as per the user's personal preferences.
+	private int							m_readyComponents;			// Tracks items as they become ready.
+	private EntryMenuPanel				m_entryMenuPanel;			// Panel that holds the entry menu.
+	private FolderRowPager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
+	private FooterPanel					m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
+	private List<FolderColumn>			m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private List<Long>					m_contributorIds;			//
+	private List<ToolPanelBase>			m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
+	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> ColumnWidth objects.
+	private SizeColumnsDlg				m_sizeColumnsDlg;			//
+	private String						m_folderSortBy;				// Which column the view is sorted on.
+	private VibeCellTable<FolderRow>	m_dataTable;				// The actual data table holding the view's information.
+	private VibeFlowPanel				m_mainPanel;				// The main panel holding the content of the view.
+	private VibeFlowPanel				m_flowPanel;				// The flow panel used to hold the view specific content of the view.
+	private VibeVerticalPanel			m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
 	
 	protected GwtTeamingDataTableImageBundle m_images;	//
 
@@ -221,45 +226,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
 	};
 	
-	/*
-	 * Inner class used to specify column widths.
-	 */
-	private static class ColumnWidth {
-		private int		m_width;	//
-		private Unit	m_units;	//
-
-		/**
-		 * Constructor method.
-		 * 
-		 * @param width
-		 * @param units
-		 */
-		public ColumnWidth(int width, Unit units) {
-			super();
-			
-			m_width = width;
-			m_units = units;
-		}
-		
-		/**
-		 * Constructor method.
-		 * 
-		 * @param width
-		 */
-		public ColumnWidth(int width) {
-			// Always use the initial form of the method.
-			this(width, Unit.PCT);
-		}
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public int  getWidth() {return m_width;}
-		public Unit getUnits() {return m_units;}
-	}
-
 	/*
 	 * Inner class used to provide list of FolderRow's.
 	 */
@@ -554,6 +520,21 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	final public void setFolderSortBy(     String             folderSortBy)      {m_folderSortBy      = folderSortBy;     }
 
 	/*
+	 * Returns true if access to the column sizing dialog is enabled on
+	 * the entry menu and false otherwise.
+	 */
+	private boolean allowColumnSizingImpl(CellTable<FolderRow> ct) {
+		// CallTable's allow variable column sizes.
+		return true;
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean allowColumnSizingImpl(DataGrid<FolderRow> dg) {
+		// DataGrid's must use fixed column sizes.
+		return false;
+	}
+	
+	/*
 	 * Adds a column to manage pinning entries.
 	 */
 	private void addPinColumn(final FolderRowSelectionModel selectionModel, int colIndex) {
@@ -729,6 +710,35 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		};
 		Scheduler.get().scheduleDeferred(doConstructView);
 	}
+
+	/*
+	 * Returns a List<FolderColumn> we can use to run the column sizing
+	 * dialog.
+	 */
+	private List<FolderColumn> getColumnsForSizing() {
+		// Allocate a List<FolderColumn> we can return...
+		List<FolderColumn> reply = new ArrayList<FolderColumn>();
+
+		// ...add a column for the checkbox selector...
+		FolderColumn fc = new FolderColumn();
+		fc.setColumnName(COLUMN_SELECT);
+		fc.setColumnTitle(m_messages.vibeDataTable_Select());
+		reply.add(fc);
+		
+		// ...add a column for the pin selector...
+		fc = new FolderColumn();
+		fc.setColumnName(COLUMN_PIN);
+		fc.setColumnTitle(m_messages.vibeDataTable_Pin());
+		reply.add(fc);
+
+		// ...copy all the defined columns...
+		for (FolderColumn fcScan:  m_folderColumnsList) {
+			reply.add(fcScan);
+		}
+		
+		// ...and return the List<FolderColumn>.
+		return reply;
+	}
 	
 	/*
 	 * Various column type detectors.
@@ -788,7 +798,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// created for the view.
 		m_toolPanels = new ArrayList<ToolPanelBase>();
 
-		// Initialize a map of the column widths used in the data
+		// Initialize a map of the ColumnWidth's used in the data
 		// table...
 		m_columnWidths = new HashMap<String, ColumnWidth>();
 		m_columnWidths.put(COLUMN_SELECT, new ColumnWidth(40, Unit.PX));
@@ -799,11 +809,14 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 
 	/*
-	 * Initializes the additional data members required when the data
-	 * table is implemented using a DataGrid.
+	 * Initializes any additional data members.
 	 */
+	private void initDataMembersImpl(CellTable<FolderRow> ct) {
+		m_columnWidths.put(COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
+	}
+	
 	@SuppressWarnings("unused")
-	private void initDataMembersImpl(VibeDataGrid<FolderRow> dg) {
+	private void initDataMembersImpl(DataGrid<FolderRow> dg) {
 		// Add the widths for predefined column names...
 		m_columnWidths.put(COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
 		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
@@ -820,14 +833,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 
 		// ...and then one for everything else.
 		m_columnWidths.put(COLUMN_OTHER,    new ColumnWidth(20));	// All columns not otherwise listed.
-	}
-	
-	/*
-	 * Initializes the additional data members required when the data
-	 * table is implemented using a CellTable.
-	 */
-	private void initDataMembersImpl(VibeCellTable<FolderRow> ct) {
-		m_columnWidths.put(COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
 	}
 	
 	/*
@@ -1156,7 +1161,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, true, this, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(this, m_folderInfo, allowColumnSizingImpl(m_dataTable), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -1418,8 +1423,36 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		Long evenBinderId = event.getBinderId();
 		if (evenBinderId.equals(m_folderInfo.getBinderIdAsLong())) {
 			// Yes!  Invoke the column sizing dialog on the folder.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onInvokeColumnResizer(" + evenBinderId + "):  ...this needs to be implemented...");
+			// Have we instantiated a size columns dialog yet?
+			if (null == m_sizeColumnsDlg) {
+				// No!  Instantiate one now.
+				SizeColumnsDlg.createAsync(new SizeColumnsDlgClient() {			
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(final SizeColumnsDlg scDlg) {
+						// ...and show it.
+						m_sizeColumnsDlg = scDlg;
+						ScheduledCommand doShow = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								showSizeColumnsDlgNow();
+							}
+						};
+						Scheduler.get().scheduleDeferred(doShow);
+					}
+				});
+			}
+			
+			else {
+				// Yes, we've instantiated a size columns dialog
+				// already!  Simply show it.
+				showSizeColumnsDlgNow();
+			}
 		}
 	}
 	
@@ -1524,11 +1557,14 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 
 	/*
-	 * Performs the local resizing necessary when the data table is
-	 * implemented using a DataGrid.
+	 * Performs the local resizing necessary.
 	 */
+	private void onResizeImpl(CellTable<FolderRow> ct) {
+		// Nothing to do.
+	}
+	
 	@SuppressWarnings("unused")
-	private void onResizeImpl(VibeDataGrid<FolderRow> dg) {
+	private void onResizeImpl(DataGrid<FolderRow> dg) {
 		int viewHeight		= getOffsetHeight();												// Height of the view.
 		int viewTop			= getAbsoluteTop();													// Absolute top of the view.		
 		int dtTop			= (dg.getAbsoluteTop() - viewTop);									// Top of the data table relative to the top of the view.		
@@ -1547,14 +1583,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		
 		// Set the height of the data table.
 		dg.setHeight(dataTableHeight + "px");
-	}
-	
-	/*
-	 * Performs the local resizing necessary when the data table is
-	 * implemented using a CellTable.
-	 */
-	private void onResizeImpl(VibeCellTable<FolderRow> ct) {
-		// Nothing to do.
 	}
 	
 	/**
@@ -1731,22 +1759,29 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 	
 	/*
-	 * Sets the table width required when the data table is implemented
-	 * as a DataGrid.
+	 * Sets the table width.
 	 */
+	private void setDataTableWidthImpl(CellTable<FolderRow> ct) {
+		ct.setWidth("100%", false);	// false -> Not fixed layout.
+	}
+
 	@SuppressWarnings("unused")
-	private void setDataTableWidthImpl(VibeDataGrid<FolderRow> ct) {
+	private void setDataTableWidthImpl(DataGrid<FolderRow> ct) {
 		// Nothing to do.
 	}
 
 	/*
-	 * Sets the table width required when the data table is implemented
-	 * as a CellTable.
+	 * Synchronously shows the clipboard dialog.
 	 */
-	private void setDataTableWidthImpl(VibeCellTable<FolderRow> ct) {
-		ct.setWidth("100%", false);	// false -> Not fixed layout.
+	private void showSizeColumnsDlgNow() {
+		SizeColumnsDlg.initAndShow(
+			m_sizeColumnsDlg,
+			m_folderInfo,
+			getColumnsForSizing(),
+			m_columnWidths,
+			m_dataTable);
 	}
-
+	
 	/**
 	 * Implements the ToolPanelReady.toolPanelReady() method.
 	 */

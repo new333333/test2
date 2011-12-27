@@ -452,6 +452,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
+	String codeSplitFailure_SizeColumnsDlg();
 	String codeSplitFailure_TagThisDlg();
 	String codeSplitFailure_TaskListing();
 	String codeSplitFailure_TinyMCEDlg();
@@ -1230,6 +1231,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_End();
 	String vibeDataTable_Event_Duration(String days);
 	String vibeDataTable_Event_Start();
+	String vibeDataTable_Pin();
+	String vibeDataTable_Select();
 	String vibeDataTable_View();
 	
 	// String used in the Landing Page
@@ -1246,5 +1249,11 @@ public interface GwtTeamingMessages extends Messages
 	String taskFolderWidget_percentDone();
 	String taskFolderWidget_priority();
 	String taskFolderWidget_status();
-	
+
+	// Strings used in the SizeColumnsDlg.
+	String sizeColumnsDlgFixedRB();
+	String sizeColumnsDlgFlowRB();
+	String sizeColumnsDlgHeader();
+	String sizeColumnsDlgUnitPercentRB();
+	String sizeColumnsDlgUnitPixelRB();
 }// end GwtTeamingMessages
