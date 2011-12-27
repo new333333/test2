@@ -1,0 +1,2503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+<changeSet author="jong (generated)" id="1324484190501-1">
+<createTable tableName="jbpm_action">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="class" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="ISPROPAGATIONALLOWED_" type="BIT"/>
+<column name="ACTIONEXPRESSION_" type="VARCHAR(255)"/>
+<column name="ISASYNC_" type="BIT"/>
+<column name="REFERENCEDACTION_" type="BIGINT"/>
+<column name="ACTIONDELEGATION_" type="BIGINT"/>
+<column name="EVENT_" type="BIGINT"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="TIMERNAME_" type="VARCHAR(255)"/>
+<column name="DUEDATE_" type="VARCHAR(255)"/>
+<column name="REPEAT_" type="VARCHAR(255)"/>
+<column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+<column name="TIMERACTION_" type="BIGINT"/>
+<column name="EXPRESSION_" type="VARCHAR(4000)"/>
+<column name="EVENTINDEX_" type="INT"/>
+<column name="EXCEPTIONHANDLER_" type="BIGINT"/>
+<column name="EXCEPTIONHANDLERINDEX_" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-2">
+<createTable tableName="jbpm_bytearray">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="FILEDEFINITION_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-3">
+<createTable tableName="jbpm_byteblock">
+<column name="PROCESSFILE_" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="BYTES_" type="BLOB"/>
+<column name="INDEX_" type="INT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-4">
+<createTable tableName="jbpm_comment">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="VERSION_" type="INT">
+<constraints nullable="false"/>
+</column>
+<column name="ACTORID_" type="VARCHAR(255)"/>
+<column name="TIME_" type="DATETIME"/>
+<column name="MESSAGE_" type="VARCHAR(4000)"/>
+<column name="TOKEN_" type="BIGINT"/>
+<column name="TASKINSTANCE_" type="BIGINT"/>
+<column name="TOKENINDEX_" type="INT"/>
+<column name="TASKINSTANCEINDEX_" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-5">
+<createTable tableName="jbpm_decisionconditions">
+<column name="DECISION_" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+<column name="EXPRESSION_" type="VARCHAR(255)"/>
+<column name="INDEX_" type="INT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-6">
+<createTable tableName="jbpm_delegation">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASSNAME_" type="VARCHAR(4000)"/>
+<column name="CONFIGURATION_" type="VARCHAR(4000)"/>
+<column name="CONFIGTYPE_" type="VARCHAR(255)"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-7">
+<createTable tableName="jbpm_event">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="EVENTTYPE_" type="VARCHAR(255)"/>
+<column name="TYPE_" type="CHAR(1)"/>
+<column name="GRAPHELEMENT_" type="BIGINT"/>
+<column name="NODE_" type="BIGINT"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="TRANSITION_" type="BIGINT"/>
+<column name="TASK_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-8">
+<createTable tableName="jbpm_exceptionhandler">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="EXCEPTIONCLASSNAME_" type="VARCHAR(4000)"/>
+<column name="TYPE_" type="CHAR(1)"/>
+<column name="GRAPHELEMENT_" type="BIGINT"/>
+<column name="NODE_" type="BIGINT"/>
+<column name="GRAPHELEMENTINDEX_" type="INT"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="TRANSITION_" type="BIGINT"/>
+<column name="TASK_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-9">
+<createTable tableName="jbpm_log">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASS_" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="INDEX_" type="INT"/>
+<column name="DATE_" type="DATETIME"/>
+<column name="TOKEN_" type="BIGINT"/>
+<column name="PARENT_" type="BIGINT"/>
+<column name="SWIMLANEINSTANCE_" type="BIGINT"/>
+<column name="TASKINSTANCE_" type="BIGINT"/>
+<column name="TASKACTORID_" type="VARCHAR(255)"/>
+<column name="NODE_" type="BIGINT"/>
+<column name="ENTER_" type="DATETIME"/>
+<column name="LEAVE_" type="DATETIME"/>
+<column name="DURATION_" type="BIGINT"/>
+<column name="NEWLONGVALUE_" type="BIGINT"/>
+<column name="TRANSITION_" type="BIGINT"/>
+<column name="SOURCENODE_" type="BIGINT"/>
+<column name="DESTINATIONNODE_" type="BIGINT"/>
+<column name="EXCEPTION_" type="VARCHAR(4000)"/>
+<column name="ACTION_" type="BIGINT"/>
+<column name="TASKOLDACTORID_" type="VARCHAR(255)"/>
+<column name="VARIABLEINSTANCE_" type="BIGINT"/>
+<column name="OLDSTRINGVALUE_" type="VARCHAR(4000)"/>
+<column name="NEWSTRINGVALUE_" type="VARCHAR(4000)"/>
+<column name="OLDDOUBLEVALUE_" type="DOUBLE"/>
+<column name="NEWDOUBLEVALUE_" type="DOUBLE"/>
+<column name="OLDLONGIDCLASS_" type="VARCHAR(255)"/>
+<column name="OLDLONGIDVALUE_" type="BIGINT"/>
+<column name="NEWLONGIDCLASS_" type="VARCHAR(255)"/>
+<column name="NEWLONGIDVALUE_" type="BIGINT"/>
+<column name="OLDSTRINGIDCLASS_" type="VARCHAR(255)"/>
+<column name="OLDSTRINGIDVALUE_" type="VARCHAR(255)"/>
+<column name="NEWSTRINGIDCLASS_" type="VARCHAR(255)"/>
+<column name="NEWSTRINGIDVALUE_" type="VARCHAR(255)"/>
+<column name="CHILD_" type="BIGINT"/>
+<column name="MESSAGE_" type="VARCHAR(4000)"/>
+<column name="OLDLONGVALUE_" type="BIGINT"/>
+<column name="OLDDATEVALUE_" type="DATETIME"/>
+<column name="NEWDATEVALUE_" type="DATETIME"/>
+<column name="OLDBYTEARRAY_" type="BIGINT"/>
+<column name="NEWBYTEARRAY_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-10">
+<createTable tableName="jbpm_message">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASS_" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="DESTINATION_" type="VARCHAR(255)"/>
+<column name="EXCEPTION_" type="VARCHAR(4000)"/>
+<column name="ISSUSPENDED_" type="BIT"/>
+<column name="TOKEN_" type="BIGINT"/>
+<column name="TEXT_" type="VARCHAR(255)"/>
+<column name="ACTION_" type="BIGINT"/>
+<column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+<column name="TASKINSTANCE_" type="BIGINT"/>
+<column name="NODE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-11">
+<createTable tableName="jbpm_moduledefinition">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASS_" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="NAME_" type="VARCHAR(4000)"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="STARTTASK_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-12">
+<createTable tableName="jbpm_moduleinstance">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASS_" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="PROCESSINSTANCE_" type="BIGINT"/>
+<column name="TASKMGMTDEFINITION_" type="BIGINT"/>
+<column name="NAME_" type="VARCHAR(255)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-13">
+<createTable tableName="jbpm_node">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASS_" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="ISASYNC_" type="BIT"/>
+<column name="ACTION_" type="BIGINT"/>
+<column name="SUPERSTATE_" type="BIGINT"/>
+<column name="DECISIONEXPRESSION_" type="VARCHAR(255)"/>
+<column name="DECISIONDELEGATION" type="BIGINT"/>
+<column name="SUBPROCESSDEFINITION_" type="BIGINT"/>
+<column name="SIGNAL_" type="INT"/>
+<column name="CREATETASKS_" type="BIT"/>
+<column name="ENDTASKS_" type="BIT"/>
+<column name="NODECOLLECTIONINDEX_" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-14">
+<createTable tableName="jbpm_pooledactor">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="ACTORID_" type="VARCHAR(255)"/>
+<column name="SWIMLANEINSTANCE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-15">
+<createTable tableName="jbpm_processdefinition">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="VERSION_" type="INT"/>
+<column name="ISTERMINATIONIMPLICIT_" type="BIT"/>
+<column name="STARTSTATE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-16">
+<createTable tableName="jbpm_processinstance">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="VERSION_" type="INT">
+<constraints nullable="false"/>
+</column>
+<column name="START_" type="DATETIME"/>
+<column name="END_" type="DATETIME"/>
+<column name="ISSUSPENDED_" type="BIT"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="ROOTTOKEN_" type="BIGINT"/>
+<column name="SUPERPROCESSTOKEN_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-17">
+<createTable tableName="jbpm_runtimeaction">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="VERSION_" type="INT">
+<constraints nullable="false"/>
+</column>
+<column name="EVENTTYPE_" type="VARCHAR(255)"/>
+<column name="TYPE_" type="CHAR(1)"/>
+<column name="GRAPHELEMENT_" type="BIGINT"/>
+<column name="PROCESSINSTANCE_" type="BIGINT"/>
+<column name="ACTION_" type="BIGINT"/>
+<column name="PROCESSINSTANCEINDEX_" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-18">
+<createTable tableName="jbpm_swimlane">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="ACTORIDEXPRESSION_" type="VARCHAR(255)"/>
+<column name="POOLEDACTORSEXPRESSION_" type="VARCHAR(255)"/>
+<column name="ASSIGNMENTDELEGATION_" type="BIGINT"/>
+<column name="TASKMGMTDEFINITION_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-19">
+<createTable tableName="jbpm_swimlaneinstance">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="ACTORID_" type="VARCHAR(255)"/>
+<column name="SWIMLANE_" type="BIGINT"/>
+<column name="TASKMGMTINSTANCE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-20">
+<createTable tableName="jbpm_task">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="DESCRIPTION_" type="VARCHAR(4000)"/>
+<column name="ISBLOCKING_" type="BIT"/>
+<column name="ISSIGNALLING_" type="BIT"/>
+<column name="DUEDATE_" type="VARCHAR(255)"/>
+<column name="ACTORIDEXPRESSION_" type="VARCHAR(255)"/>
+<column name="POOLEDACTORSEXPRESSION_" type="VARCHAR(255)"/>
+<column name="TASKMGMTDEFINITION_" type="BIGINT"/>
+<column name="TASKNODE_" type="BIGINT"/>
+<column name="STARTSTATE_" type="BIGINT"/>
+<column name="ASSIGNMENTDELEGATION_" type="BIGINT"/>
+<column name="SWIMLANE_" type="BIGINT"/>
+<column name="TASKCONTROLLER_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-21">
+<createTable tableName="jbpm_taskactorpool">
+<column name="POOLEDACTOR_" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="TASKINSTANCE_" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-22">
+<createTable tableName="jbpm_taskcontroller">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="TASKCONTROLLERDELEGATION_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-23">
+<createTable tableName="jbpm_taskinstance">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASS_" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="DESCRIPTION_" type="VARCHAR(4000)"/>
+<column name="ACTORID_" type="VARCHAR(255)"/>
+<column name="CREATE_" type="DATETIME"/>
+<column name="START_" type="DATETIME"/>
+<column name="END_" type="DATETIME"/>
+<column name="DUEDATE_" type="DATETIME"/>
+<column name="PRIORITY_" type="INT"/>
+<column name="ISCANCELLED_" type="BIT"/>
+<column name="ISSUSPENDED_" type="BIT"/>
+<column name="ISOPEN_" type="BIT"/>
+<column name="ISSIGNALLING_" type="BIT"/>
+<column name="ISBLOCKING_" type="BIT"/>
+<column name="TASK_" type="BIGINT"/>
+<column name="TOKEN_" type="BIGINT"/>
+<column name="SWIMLANINSTANCE_" type="BIGINT"/>
+<column name="TASKMGMTINSTANCE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-24">
+<createTable tableName="jbpm_timer">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="DUEDATE_" type="DATETIME"/>
+<column name="REPEAT_" type="VARCHAR(255)"/>
+<column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+<column name="EXCEPTION_" type="VARCHAR(4000)"/>
+<column name="ISSUSPENDED_" type="BIT"/>
+<column name="ACTION_" type="BIGINT"/>
+<column name="TOKEN_" type="BIGINT"/>
+<column name="PROCESSINSTANCE_" type="BIGINT"/>
+<column name="TASKINSTANCE_" type="BIGINT"/>
+<column name="GRAPHELEMENTTYPE_" type="VARCHAR(255)"/>
+<column name="GRAPHELEMENT_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-25">
+<createTable tableName="jbpm_token">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="VERSION_" type="INT">
+<constraints nullable="false"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="START_" type="DATETIME"/>
+<column name="END_" type="DATETIME"/>
+<column name="NODEENTER_" type="DATETIME"/>
+<column name="NEXTLOGINDEX_" type="INT"/>
+<column name="ISABLETOREACTIVATEPARENT_" type="BIT"/>
+<column name="ISTERMINATIONIMPLICIT_" type="BIT"/>
+<column name="ISSUSPENDED_" type="BIT"/>
+<column name="NODE_" type="BIGINT"/>
+<column name="PROCESSINSTANCE_" type="BIGINT"/>
+<column name="PARENT_" type="BIGINT"/>
+<column name="SUBPROCESSINSTANCE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-26">
+<createTable tableName="jbpm_tokenvariablemap">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="TOKEN_" type="BIGINT"/>
+<column name="CONTEXTINSTANCE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-27">
+<createTable tableName="jbpm_transition">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="PROCESSDEFINITION_" type="BIGINT"/>
+<column name="FROM_" type="BIGINT"/>
+<column name="TO_" type="BIGINT"/>
+<column name="FROMINDEX_" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-28">
+<createTable tableName="jbpm_variableaccess">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="VARIABLENAME_" type="VARCHAR(255)"/>
+<column name="ACCESS_" type="VARCHAR(255)"/>
+<column name="MAPPEDNAME_" type="VARCHAR(255)"/>
+<column name="PROCESSSTATE_" type="BIGINT"/>
+<column name="TASKCONTROLLER_" type="BIGINT"/>
+<column name="INDEX_" type="INT"/>
+<column name="SCRIPT_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-29">
+<createTable tableName="jbpm_variableinstance">
+<column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CLASS_" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="NAME_" type="VARCHAR(255)"/>
+<column name="CONVERTER_" type="CHAR(1)"/>
+<column name="TOKEN_" type="BIGINT"/>
+<column name="TOKENVARIABLEMAP_" type="BIGINT"/>
+<column name="PROCESSINSTANCE_" type="BIGINT"/>
+<column name="BYTEARRAYVALUE_" type="BIGINT"/>
+<column name="DATEVALUE_" type="DATETIME"/>
+<column name="DOUBLEVALUE_" type="DOUBLE"/>
+<column name="LONGIDCLASS_" type="VARCHAR(255)"/>
+<column name="LONGVALUE_" type="BIGINT"/>
+<column name="STRINGIDCLASS_" type="VARCHAR(255)"/>
+<column name="STRINGVALUE_" type="VARCHAR(255)"/>
+<column name="TASKINSTANCE_" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-30">
+<createTable tableName="ss_attachments">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="folderEntry" type="BIGINT"/>
+<column name="principal" type="BIGINT"/>
+<column name="binder" type="BIGINT"/>
+<column name="ownerType" type="VARCHAR(16)"/>
+<column name="ownerId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="name" type="VARCHAR(64)"/>
+<column name="relevanceUUID" type="VARCHAR(256)"/>
+<column name="creation_date" type="DATETIME"/>
+<column name="creation_principal" type="BIGINT"/>
+<column name="modification_date" type="DATETIME"/>
+<column name="modification_principal" type="BIGINT"/>
+<column name="fileName" type="VARCHAR(255)"/>
+<column name="fileLength" type="BIGINT"/>
+<column name="description_text" type="LONGTEXT"/>
+<column name="description_format" type="INT"/>
+<column name="lastVersion" type="INT"/>
+<column name="majorVersion" type="INT"/>
+<column name="minorVersion" type="INT"/>
+<column name="fileStatus" type="INT"/>
+<column name="agingEnabled" type="BIT"/>
+<column name="agingDate" type="DATETIME"/>
+<column name="encrypted" type="BIT"/>
+<column name="encryptionKey" type="BLOB"/>
+<column name="repositoryName" type="VARCHAR(128)"/>
+<column name="filelock_id" type="VARCHAR(128)"/>
+<column name="filelock_subject" type="VARCHAR(192)"/>
+<column name="filelock_owner" type="BIGINT"/>
+<column name="filelock_expirationDate" type="DATETIME"/>
+<column name="filelock_ownerInfo" type="VARCHAR(256)"/>
+<column name="filelock_dirty" type="BIT"/>
+<column name="versionNumber" type="INT"/>
+<column name="versionName" type="VARCHAR(256)"/>
+<column name="parentAttachment" type="CHAR(32)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-31">
+<createTable tableName="ss_audittrail">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="startDate" type="DATETIME"/>
+<column name="startBy" type="BIGINT"/>
+<column name="endBy" type="BIGINT"/>
+<column name="endDate" type="DATETIME"/>
+<column name="entityType" type="VARCHAR(16)"/>
+<column name="entityId" type="BIGINT"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="description" type="VARCHAR(512)"/>
+<column name="transactionType" type="VARCHAR(16)"/>
+<column name="fileId" type="CHAR(32)"/>
+<column name="applicationId" type="BIGINT"/>
+<column name="deletedFolderEntryFamily" type="VARCHAR(32)"/>
+<column name="tokenId" type="BIGINT"/>
+<column name="state" type="VARCHAR(64)"/>
+<column name="threadName" type="VARCHAR(64)"/>
+<column name="definitionId" type="VARCHAR(32)"/>
+<column name="ended" type="BIT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-32">
+<createTable tableName="ss_binderquota">
+<column name="binderId" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="diskQuota" type="BIGINT"/>
+<column name="diskSpaceUsed" type="BIGINT"/>
+<column name="diskSpaceUsedCumulative" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-33">
+<createTable tableName="ss_changelogs">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="docNumber" type="VARCHAR(512)"/>
+<column name="userName" type="VARCHAR(82)"/>
+<column name="userId" type="BIGINT"/>
+<column name="operationDate" type="DATETIME"/>
+<column name="operation" type="VARCHAR(32)"/>
+<column name="version" type="BIGINT"/>
+<column name="xmlString" type="LONGTEXT"/>
+<column name="entityType" type="VARCHAR(16)"/>
+<column name="entityId" type="BIGINT"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-34">
+<createTable tableName="ss_customattributes">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="folderEntry" type="BIGINT"/>
+<column name="principal" type="BIGINT"/>
+<column name="binder" type="BIGINT"/>
+<column name="ownerType" type="VARCHAR(16)"/>
+<column name="ownerId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="name" type="VARCHAR(64)"/>
+<column name="stringValue" type="VARCHAR(2000)"/>
+<column name="description_text" type="LONGTEXT"/>
+<column name="description_format" type="INT"/>
+<column name="longValue" type="BIGINT"/>
+<column name="dateValue" type="DATETIME"/>
+<column name="serializedValue" type="LONGBLOB"/>
+<column name="xmlValue" type="LONGTEXT"/>
+<column name="booleanValue" type="BIT"/>
+<column name="valueType" type="INT"/>
+<column name="position" type="INT"/>
+<column name="parent" type="CHAR(32)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-35">
+<createTable tableName="ss_dashboards">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="VARCHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="nextComponentId" type="INT"/>
+<column name="showComponents" type="BIT"/>
+<column name="version" type="INT"/>
+<column name="properties" type="LONGBLOB"/>
+<column name="creation_date" type="DATETIME"/>
+<column name="creation_principal" type="BIGINT"/>
+<column name="modification_date" type="DATETIME"/>
+<column name="modification_principal" type="BIGINT"/>
+<column name="owner_id" type="BIGINT"/>
+<column name="owner_type" type="INT"/>
+<column name="binderId" type="BIGINT"/>
+<column name="portletName" type="VARCHAR(256)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-36">
+<createTable tableName="ss_definitionmap">
+<column name="binder" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="definition" type="CHAR(32)">
+<constraints nullable="false"/>
+</column>
+<column name="position" type="INT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-37">
+<createTable tableName="ss_definitions">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="name" type="VARCHAR(64)"/>
+<column name="title" type="VARCHAR(128)"/>
+<column name="internalId" type="VARCHAR(32)"/>
+<column name="type" type="INT"/>
+<column name="visibility" type="INT"/>
+<column name="encoding" type="LONGBLOB"/>
+<column name="binderId" type="BIGINT"/>
+<column name="creation_date" type="DATETIME"/>
+<column name="creation_principal" type="BIGINT"/>
+<column name="modification_date" type="DATETIME"/>
+<column name="modification_principal" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-38">
+<createTable tableName="ss_emailaddresses">
+<column name="principal" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="type" type="VARCHAR(64)">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="address" type="VARCHAR(256)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-39">
+<createTable tableName="ss_emaillog">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="sendDate" type="DATETIME">
+<constraints nullable="false"/>
+</column>
+<column name="fromField" type="VARCHAR(255)"/>
+<column name="subj" type="VARCHAR(255)"/>
+<column name="comments" type="LONGTEXT"/>
+<column name="status" type="VARCHAR(16)">
+<constraints nullable="false"/>
+</column>
+<column name="type" type="VARCHAR(32)">
+<constraints nullable="false"/>
+</column>
+<column name="toEmailAddresses" type="LONGTEXT"/>
+<column name="fileAttachments" type="LONGTEXT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-40">
+<createTable tableName="ss_events">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="folderEntry" type="BIGINT"/>
+<column name="principal" type="BIGINT"/>
+<column name="binder" type="BIGINT"/>
+<column name="ownerType" type="VARCHAR(16)"/>
+<column name="ownerId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="name" type="VARCHAR(64)"/>
+<column name="dtStart" type="DATETIME"/>
+<column name="dtCalcStart" type="DATETIME"/>
+<column name="dtEnd" type="DATETIME"/>
+<column name="dtCalcEnd" type="DATETIME"/>
+<column name="frequency" type="INT"/>
+<column name="repeatInterval" type="INT"/>
+<column name="until" type="DATETIME"/>
+<column name="repeatCount" type="INT"/>
+<column name="weekStart" type="INT"/>
+<column name="timeZoneSensitive" type="BIT"/>
+<column name="days" type="VARCHAR(100)"/>
+<column name="monthDay" type="VARCHAR(100)"/>
+<column name="yearDay" type="VARCHAR(100)"/>
+<column name="weekNo" type="VARCHAR(100)"/>
+<column name="months" type="VARCHAR(100)"/>
+<column name="minutes" type="VARCHAR(100)"/>
+<column name="hours" type="VARCHAR(100)"/>
+<column name="duration" type="VARCHAR(32)"/>
+<column name="creation_date" type="DATETIME"/>
+<column name="creation_principal" type="BIGINT"/>
+<column name="modification_date" type="DATETIME"/>
+<column name="modification_principal" type="BIGINT"/>
+<column name="timeZone" type="VARCHAR(80)"/>
+<column name="calUid" type="VARCHAR(255)"/>
+<column name="freeBusy" type="VARCHAR(32)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-41">
+<createTable tableName="ss_extensions">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="name" type="VARCHAR(64)"/>
+<column name="description" type="VARCHAR(256)"/>
+<column name="title" type="VARCHAR(255)"/>
+<column name="version" type="VARCHAR(255)"/>
+<column name="type" type="INT"/>
+<column name="author" type="VARCHAR(255)"/>
+<column name="authorEmail" type="VARCHAR(255)"/>
+<column name="authorSite" type="VARCHAR(255)"/>
+<column name="dateCreated" type="VARCHAR(255)"/>
+<column name="dateDeployed" type="VARCHAR(255)"/>
+<column name="zoneId" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-42">
+<createTable tableName="ss_folderentries">
+<column autoIncrement="true" name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="preDeleted" type="BIT"/>
+<column name="preDeletedWhen" type="BIGINT"/>
+<column name="preDeletedBy" type="BIGINT"/>
+<column name="deleted" type="BIT"/>
+<column name="subscribed" type="BIT"/>
+<column name="hasEntryAcl" type="BIT"/>
+<column name="checkFolderAcl" type="BIT"/>
+<column name="reserved_date" type="DATETIME"/>
+<column name="reserved_principal" type="BIGINT"/>
+<column name="entry_level" type="INT"/>
+<column name="entry_sortKey" type="VARCHAR(255)"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="lastActivity" type="DATETIME"/>
+<column name="logVersion" type="BIGINT"/>
+<column name="replyCount" type="INT"/>
+<column name="nextDescendant" type="INT"/>
+<column name="totalReplyCount" type="INT"/>
+<column name="postedBy" type="VARCHAR(256)"/>
+<column name="topEntry" type="BIGINT"/>
+<column name="parentEntry" type="BIGINT"/>
+<column name="wrk_date" type="DATETIME"/>
+<column name="wrk_principal" type="BIGINT"/>
+<column name="parentBinder" type="BIGINT"/>
+<column name="description_text" type="LONGTEXT"/>
+<column name="description_format" type="INT"/>
+<column name="title" type="VARCHAR(255)"/>
+<column name="normalTitle" type="VARCHAR(255)"/>
+<column name="iconName" type="VARCHAR(64)"/>
+<column name="entryDef" type="CHAR(32)"/>
+<column name="creation_date" type="DATETIME"/>
+<column name="creation_principal" type="BIGINT"/>
+<column name="modification_date" type="DATETIME"/>
+<column name="modification_principal" type="BIGINT"/>
+<column name="definitionType" type="INT"/>
+<column name="ratings_average" type="DOUBLE"/>
+<column name="ratings_count" type="BIGINT"/>
+<column name="popularity" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-43">
+<createTable tableName="ss_folderentrystats">
+<column name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="popularity" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-44">
+<createTable tableName="ss_forums">
+<column autoIncrement="true" name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="VARCHAR(16)">
+<constraints nullable="false"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="library" type="BIT"/>
+<column name="deleted" type="BIT"/>
+<column name="uniqueTitles" type="BIT"/>
+<column name="logVersion" type="BIGINT"/>
+<column name="mirrored" type="BIT"/>
+<column name="binderCount" type="INT"/>
+<column name="resourceDriverName" type="VARCHAR(64)"/>
+<column name="resourcePath" type="VARCHAR(1024)"/>
+<column name="parentBinder" type="BIGINT"/>
+<column name="owner" type="BIGINT"/>
+<column name="name" type="VARCHAR(128)"/>
+<column name="pathName" type="VARCHAR(1024)"/>
+<column name="notify_teamOn" type="BIT"/>
+<column name="notify_style" type="INT"/>
+<column name="notify_email" type="LONGTEXT"/>
+<column name="notify_fromAddress" type="VARCHAR(128)"/>
+<column name="notify_subject" type="VARCHAR(128)"/>
+<column name="posting" type="CHAR(32)"/>
+<column name="properties" type="LONGBLOB"/>
+<column name="functionMembershipInherited" type="BIT">
+<constraints nullable="false"/>
+</column>
+<column name="definitionsInherited" type="BIT"/>
+<column name="definitionType" type="INT"/>
+<column name="teamMembershipInherited" type="BIT"/>
+<column name="ratings_average" type="DOUBLE"/>
+<column name="ratings_count" type="BIGINT"/>
+<column name="description_text" type="LONGTEXT"/>
+<column name="description_format" type="INT"/>
+<column name="branding" type="LONGTEXT"/>
+<column name="brandingExt" type="LONGTEXT"/>
+<column name="title" type="VARCHAR(255)"/>
+<column name="normalTitle" type="VARCHAR(255)"/>
+<column name="iconName" type="VARCHAR(64)"/>
+<column name="internalId" type="VARCHAR(32)"/>
+<column name="nextBinderNumber" type="INT"/>
+<column name="binder_level" type="INT"/>
+<column name="binder_sortKey" type="VARCHAR(255)"/>
+<column name="versionsEnabled" type="BIT"/>
+<column name="versionsToKeep" type="BIGINT"/>
+<column name="versionAgingDays" type="BIGINT"/>
+<column name="versionAgingEnabled" type="BIT"/>
+<column name="maxFileSize" type="BIGINT"/>
+<column name="fileEncryptionEnabled" type="BIT"/>
+<column name="entryDef" type="CHAR(32)"/>
+<column name="creation_date" type="DATETIME"/>
+<column name="creation_principal" type="BIGINT"/>
+<column name="modification_date" type="DATETIME"/>
+<column name="modification_principal" type="BIGINT"/>
+<column name="postingEnabled" type="BIT"/>
+<column name="topFolder" type="BIGINT"/>
+<column name="nextEntryNumber" type="INT"/>
+<column name="entryRootKey" type="CHAR(15)"/>
+<column name="preDeleted" type="BIT"/>
+<column name="preDeletedWhen" type="BIGINT"/>
+<column name="preDeletedBy" type="BIGINT"/>
+<column name="searchTitle" type="VARCHAR(255)"/>
+<column name="templateTitle" type="VARCHAR(128)"/>
+<column name="tDescription_text" type="LONGTEXT"/>
+<column name="tDescription_format" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-45">
+<createTable tableName="ss_functionconditionmap">
+<column name="functionId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="meet" type="VARCHAR(16)"/>
+<column name="conditionId" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-46">
+<createTable tableName="ss_functionconditions">
+<column autoIncrement="true" name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="VARCHAR(32)">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="encodedSpec" type="LONGTEXT"/>
+<column name="title" type="VARCHAR(255)">
+<constraints nullable="false"/>
+</column>
+<column name="description_text" type="LONGTEXT"/>
+<column name="description_format" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-47">
+<createTable tableName="ss_functionoperations">
+<column name="functionId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="operationName" type="VARCHAR(128)">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-48">
+<createTable tableName="ss_functions">
+<column autoIncrement="true" name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="name" type="VARCHAR(128)">
+<constraints nullable="false"/>
+</column>
+<column name="internalId" type="VARCHAR(32)"/>
+<column name="zoneWide" type="BIT"/>
+<column name="scope" type="VARCHAR(16)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-49">
+<createTable tableName="ss_indexingjournal">
+<column autoIncrement="true" name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="nodeName" type="VARCHAR(128)"/>
+<column name="indexName" type="VARCHAR(160)"/>
+<column name="operationName" type="VARCHAR(32)"/>
+<column name="operationArgs" type="LONGBLOB"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-50">
+<createTable tableName="ss_indexnode">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="nodeName" type="VARCHAR(128)"/>
+<column name="indexName" type="VARCHAR(160)"/>
+<column name="zoneId" type="BIGINT"/>
+<column name="accessMode" type="VARCHAR(16)"/>
+<column name="inSynch" type="BIT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-51">
+<createTable tableName="ss_ldapconnectionconfig">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="url" type="VARCHAR(255)"/>
+<column name="userIdAttribute" type="VARCHAR(255)"/>
+<column name="mappings" type="LONGTEXT"/>
+<column name="userSearches" type="LONGTEXT"/>
+<column name="groupSearches" type="LONGTEXT"/>
+<column name="principal" type="VARCHAR(255)"/>
+<column name="credentials" type="VARCHAR(255)"/>
+<column name="position" type="INT"/>
+<column name="ldapGuidAttribute" type="VARCHAR(255)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-52">
+<createTable tableName="ss_libraryentries">
+<column name="binderId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="type" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="name" type="VARCHAR(255)">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="entityId" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-53">
+<createTable tableName="ss_licensestats">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="snapshotDate" type="DATETIME"/>
+<column name="internalUserCount" type="BIGINT"/>
+<column name="externalUserCount" type="BIGINT"/>
+<column name="activeUserCount" type="BIGINT"/>
+<column name="checksum" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-54">
+<createTable tableName="ss_notifications">
+<column name="binderId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="principalId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-55">
+<createTable tableName="ss_notifystatus">
+<column name="ownerId" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="ownerType" type="VARCHAR(16)"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="lastModified" type="DATETIME"/>
+<column name="lastDigestSent" type="DATETIME"/>
+<column name="lastFullSent" type="DATETIME"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-56">
+<createTable tableName="ss_postings">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="enabled" type="BIT"/>
+<column name="emailAddress" type="VARCHAR(256)"/>
+<column name="password" type="VARCHAR(64)"/>
+<column name="credentials" type="VARCHAR(64)"/>
+<column name="binder" type="BIGINT"/>
+<column name="definition" type="CHAR(32)"/>
+<column name="replyPostingOption" type="INT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-57">
+<createTable tableName="ss_principalmembership">
+<column name="userId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="groupId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-58">
+<createTable tableName="ss_principals">
+<column autoIncrement="true" name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="VARCHAR(16)">
+<constraints nullable="false"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="workspaceId" type="BIGINT"/>
+<column name="internalId" type="VARCHAR(32)"/>
+<column name="deleted" type="BIT"/>
+<column name="disabled" type="BIT"/>
+<column name="logVersion" type="BIGINT"/>
+<column name="emailAddress" type="VARCHAR(24)"/>
+<column name="name" type="VARCHAR(128)"/>
+<column name="foreignName" type="VARCHAR(255)"/>
+<column name="ldapGuid" type="VARCHAR(128)"/>
+<column name="theme" type="VARCHAR(64)"/>
+<column name="parentBinder" type="BIGINT"/>
+<column name="description_text" type="LONGTEXT"/>
+<column name="description_format" type="INT"/>
+<column name="title" type="VARCHAR(255)"/>
+<column name="normalTitle" type="VARCHAR(255)"/>
+<column name="iconName" type="VARCHAR(64)"/>
+<column name="definitionType" type="INT"/>
+<column name="entryDef" type="CHAR(32)"/>
+<column name="creation_date" type="DATETIME"/>
+<column name="creation_principal" type="BIGINT"/>
+<column name="modification_date" type="DATETIME"/>
+<column name="modification_principal" type="BIGINT"/>
+<column name="diskQuota" type="BIGINT"/>
+<column name="fileSizeLimit" type="BIGINT"/>
+<column name="displayStyle" type="VARCHAR(16)"/>
+<column name="loginDate" type="DATETIME"/>
+<column name="firstName" type="VARCHAR(64)"/>
+<column name="lastName" type="VARCHAR(64)"/>
+<column name="middleName" type="VARCHAR(64)"/>
+<column name="organization" type="VARCHAR(256)"/>
+<column name="phone" type="VARCHAR(128)"/>
+<column name="zonName" type="VARCHAR(100)"/>
+<column name="skypeId" type="VARCHAR(64)"/>
+<column name="twitterId" type="VARCHAR(64)"/>
+<column name="status" type="VARCHAR(256)"/>
+<column name="statusDate" type="DATETIME"/>
+<column name="miniBlogId" type="BIGINT"/>
+<column name="maxGroupsQuota" type="BIGINT"/>
+<column name="maxGroupsFileSizeLimit" type="BIGINT"/>
+<column name="diskSpaceUsed" type="BIGINT"/>
+<column name="password" type="VARCHAR(64)"/>
+<column name="pwdenc" type="VARCHAR(32)"/>
+<column name="timeZone" type="VARCHAR(80)"/>
+<column name="locale" type="VARCHAR(32)"/>
+<column name="digestSeed" type="BIGINT"/>
+<column name="postUrl" type="VARCHAR(256)"/>
+<column name="timeout" type="INT"/>
+<column name="trusted" type="BIT"/>
+<column name="maxIdleTime" type="INT"/>
+<column name="sameAddrPolicy" type="BIT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-59">
+<createTable tableName="ss_ratings">
+<column name="principalId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="entityId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="entityType" type="INT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="rating" type="BIGINT"/>
+<column name="readCount" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-60">
+<createTable tableName="ss_schemainfo">
+<column name="schemaVersion" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-61">
+<createTable tableName="ss_seenmap">
+<column name="principalId" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="seenMap" type="LONGBLOB">
+<constraints nullable="false"/>
+</column>
+<column name="lastPrune" type="DATETIME"/>
+<column name="pruneDays" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-62">
+<createTable tableName="ss_sharedentity">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="referer" type="BIGINT"/>
+<column name="zoneId" type="BIGINT"/>
+<column name="accessType" type="BIGINT"/>
+<column name="accessId" type="BIGINT"/>
+<column name="sharedDate" type="DATETIME"/>
+<column name="entityType" type="VARCHAR(16)"/>
+<column name="entityId" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-63">
+<createTable tableName="ss_simplename">
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="name" type="VARCHAR(128)">
+<constraints nullable="false"/>
+</column>
+<column name="emailAddress" type="VARCHAR(128)"/>
+<column name="binderId" type="BIGINT"/>
+<column name="binderType" type="VARCHAR(16)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-64">
+<createTable tableName="ss_subscriptions">
+<column name="principalId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="entityId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="entityType" type="INT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="style" type="INT"/>
+<column name="encodedStyles" type="VARCHAR(256)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-65">
+<createTable tableName="ss_tags">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="entity_type" type="INT"/>
+<column name="entity_id" type="BIGINT"/>
+<column name="owner_type" type="INT"/>
+<column name="owner_id" type="BIGINT"/>
+<column name="name" type="VARCHAR(64)"/>
+<column name="isPublic" type="BIT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-66">
+<createTable tableName="ss_tokeninfo">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="type" type="CHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="seed" type="VARCHAR(128)"/>
+<column name="lastAccessTime" type="DATETIME"/>
+<column name="userId" type="BIGINT"/>
+<column name="applicationId" type="BIGINT"/>
+<column name="binderId" type="BIGINT"/>
+<column name="binderAccessConstraints" type="INT"/>
+<column name="requesterId" type="BIGINT"/>
+<column name="clientAddr" type="VARCHAR(128)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-67">
+<createTable tableName="ss_userproperties">
+<column name="principalId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="binderId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="properties" type="LONGBLOB">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-68">
+<createTable tableName="ss_workareafunctionmembers">
+<column name="workAreaFunctionMembershipId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="memberId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-69">
+<createTable tableName="ss_workareafunctionmemberships">
+<column autoIncrement="true" name="id" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="workAreaId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="workAreaType" type="VARCHAR(16)">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="functionId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-70">
+<createTable tableName="ss_workflowhistory">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="startBy" type="BIGINT"/>
+<column name="startDate" type="DATETIME"/>
+<column name="endBy" type="BIGINT"/>
+<column name="endDate" type="DATETIME"/>
+<column name="entityId" type="BIGINT"/>
+<column name="entityType" type="VARCHAR(16)"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="tokenId" type="BIGINT"/>
+<column name="state" type="VARCHAR(64)"/>
+<column name="threadName" type="VARCHAR(64)"/>
+<column name="definitionId" type="VARCHAR(32)"/>
+<column name="ended" type="BIT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-71">
+<createTable tableName="ss_workflowmap">
+<column name="binder" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="workflowDefinition" type="CHAR(32)">
+<constraints nullable="false"/>
+</column>
+<column name="entryDefinition" type="VARCHAR(32)">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-72">
+<createTable tableName="ss_workflowresponses">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="folderEntry" type="BIGINT"/>
+<column name="principal" type="BIGINT"/>
+<column name="binder" type="BIGINT"/>
+<column name="ownerType" type="VARCHAR(16)"/>
+<column name="ownerId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="name" type="VARCHAR(64)"/>
+<column name="response" type="VARCHAR(2000)"/>
+<column name="definitionId" type="VARCHAR(32)"/>
+<column name="responderId" type="BIGINT"/>
+<column name="responseDate" type="DATETIME"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-73">
+<createTable tableName="ss_workflowstates">
+<column name="tokenId" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="lockVersion" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneId" type="BIGINT"/>
+<column name="folderEntry" type="BIGINT"/>
+<column name="principal" type="BIGINT"/>
+<column name="binder" type="BIGINT"/>
+<column name="ownerType" type="VARCHAR(16)"/>
+<column name="ownerId" type="BIGINT"/>
+<column name="owningBinderKey" type="VARCHAR(255)"/>
+<column name="owningBinderId" type="BIGINT"/>
+<column name="wrk_date" type="DATETIME"/>
+<column name="wrk_principal" type="BIGINT"/>
+<column name="state" type="VARCHAR(64)"/>
+<column name="threadName" type="VARCHAR(64)"/>
+<column name="timerId" type="BIGINT"/>
+<column name="definition" type="CHAR(32)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-74">
+<createTable tableName="ss_zoneconfig">
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="upgradeVersion" type="INT"/>
+<column name="mobileAccessEnabled" type="BIT"/>
+<column name="diskQuotasEnabled" type="BIT"/>
+<column name="diskQuotaUserDefault" type="INT"/>
+<column name="diskQuotasHighwaterPercentage" type="INT"/>
+<column name="fileSizeLimitUserDefault" type="BIGINT"/>
+<column name="binderQuotasInitialized" type="BIT"/>
+<column name="binderQuotasEnabled" type="BIT"/>
+<column name="binderQuotasAllowOwner" type="BIT"/>
+<column name="fileVersionsMaxAge" type="BIGINT"/>
+<column name="fsaEnabled" type="BIT"/>
+<column name="fsaSynchInterval" type="INT"/>
+<column name="fsaAutoUpdateUrl" type="VARCHAR(255)"/>
+<column name="postingEnabled" type="BIT"/>
+<column name="simpleUrlPostingEnabled" type="BIT"/>
+<column name="sendMailEnabled" type="BIT"/>
+<column name="defaultHomePageId" type="BIGINT"/>
+<column name="defaultGuestHomePageId" type="BIGINT"/>
+<column name="holidays" type="VARCHAR(4000)"/>
+<column name="weekendDays" type="VARCHAR(128)"/>
+<column name="allowLocalLogin" type="BIT"/>
+<column name="allowAnonymousAccess" type="BIT"/>
+<column name="allowSelfRegistration" type="BIT"/>
+<column name="lastUpdate" type="BIGINT"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-75">
+<createTable tableName="ss_zoneinfo">
+<column name="id" type="CHAR(32)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="zoneId" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="zoneName" type="VARCHAR(128)">
+<constraints nullable="false"/>
+</column>
+<column name="virtualHost" type="VARCHAR(255)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-76">
+<createTable tableName="ssqrtz_blob_triggers">
+<column name="TRIGGER_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="BLOB_DATA" type="BLOB"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-77">
+<createTable tableName="ssqrtz_calendars">
+<column name="CALENDAR_NAME" type="VARCHAR(100)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="CALENDAR" type="BLOB">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-78">
+<createTable tableName="ssqrtz_cron_triggers">
+<column name="TRIGGER_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="CRON_EXPRESSION" type="VARCHAR(120)">
+<constraints nullable="false"/>
+</column>
+<column name="TIME_ZONE_ID" type="VARCHAR(80)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-79">
+<createTable tableName="ssqrtz_fired_triggers">
+<column name="ENTRY_ID" type="VARCHAR(95)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="TRIGGER_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="IS_VOLATILE" type="VARCHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="INSTANCE_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="FIRED_TIME" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="PRIORITY" type="INT">
+<constraints nullable="false"/>
+</column>
+<column name="STATE" type="VARCHAR(16)">
+<constraints nullable="false"/>
+</column>
+<column name="JOB_NAME" type="VARCHAR(100)"/>
+<column name="JOB_GROUP" type="VARCHAR(100)"/>
+<column name="IS_STATEFUL" type="VARCHAR(1)"/>
+<column name="REQUESTS_RECOVERY" type="VARCHAR(1)"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-80">
+<createTable tableName="ssqrtz_job_details">
+<column name="JOB_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="JOB_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="DESCRIPTION" type="VARCHAR(250)"/>
+<column name="JOB_CLASS_NAME" type="VARCHAR(250)">
+<constraints nullable="false"/>
+</column>
+<column name="IS_DURABLE" type="VARCHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="IS_VOLATILE" type="VARCHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="IS_STATEFUL" type="VARCHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="REQUESTS_RECOVERY" type="VARCHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="JOB_DATA" type="BLOB"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-81">
+<createTable tableName="ssqrtz_job_listeners">
+<column name="JOB_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="JOB_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="JOB_LISTENER" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-82">
+<createTable tableName="ssqrtz_locks">
+<column name="LOCK_NAME" type="VARCHAR(40)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-83">
+<createTable tableName="ssqrtz_paused_trigger_grps">
+<column name="TRIGGER_GROUP" type="VARCHAR(100)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-84">
+<createTable tableName="ssqrtz_scheduler_state">
+<column name="INSTANCE_NAME" type="VARCHAR(100)">
+<constraints nullable="false" primaryKey="true"/>
+</column>
+<column name="LAST_CHECKIN_TIME" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="CHECKIN_INTERVAL" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-85">
+<createTable tableName="ssqrtz_simple_triggers">
+<column name="TRIGGER_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="REPEAT_COUNT" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="REPEAT_INTERVAL" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="TIMES_TRIGGERED" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-86">
+<createTable tableName="ssqrtz_trigger_listeners">
+<column name="TRIGGER_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_LISTENER" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-87">
+<createTable tableName="ssqrtz_triggers">
+<column name="TRIGGER_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="JOB_NAME" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="JOB_GROUP" type="VARCHAR(100)">
+<constraints nullable="false"/>
+</column>
+<column name="IS_VOLATILE" type="VARCHAR(1)">
+<constraints nullable="false"/>
+</column>
+<column name="DESCRIPTION" type="VARCHAR(250)"/>
+<column name="NEXT_FIRE_TIME" type="BIGINT"/>
+<column name="PREV_FIRE_TIME" type="BIGINT"/>
+<column name="PRIORITY" type="INT"/>
+<column name="TRIGGER_STATE" type="VARCHAR(16)">
+<constraints nullable="false"/>
+</column>
+<column name="TRIGGER_TYPE" type="VARCHAR(8)">
+<constraints nullable="false"/>
+</column>
+<column name="START_TIME" type="BIGINT">
+<constraints nullable="false"/>
+</column>
+<column name="END_TIME" type="BIGINT"/>
+<column name="CALENDAR_NAME" type="VARCHAR(100)"/>
+<column name="MISFIRE_INSTR" type="SMALLINT"/>
+<column name="JOB_DATA" type="BLOB"/>
+</createTable>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-88">
+<addPrimaryKey columnNames="PROCESSFILE_, INDEX_" tableName="jbpm_byteblock"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-89">
+<addPrimaryKey columnNames="DECISION_, INDEX_" tableName="jbpm_decisionconditions"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-90">
+<addPrimaryKey columnNames="TASKINSTANCE_, POOLEDACTOR_" tableName="jbpm_taskactorpool"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-91">
+<addPrimaryKey columnNames="binder, position" tableName="ss_definitionmap"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-92">
+<addPrimaryKey columnNames="principal, type" tableName="ss_emailaddresses"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-93">
+<addPrimaryKey columnNames="functionId, operationName" tableName="ss_functionoperations"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-94">
+<addPrimaryKey columnNames="binderId, type, name" tableName="ss_libraryentries"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-95">
+<addPrimaryKey columnNames="userId, groupId" tableName="ss_principalmembership"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-96">
+<addPrimaryKey columnNames="principalId, entityId, entityType" tableName="ss_ratings"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-97">
+<addPrimaryKey columnNames="zoneId, name" tableName="ss_simplename"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-98">
+<addPrimaryKey columnNames="principalId, entityId, entityType" tableName="ss_subscriptions"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-99">
+<addPrimaryKey columnNames="principalId, binderId" tableName="ss_userproperties"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-100">
+<addPrimaryKey columnNames="workAreaFunctionMembershipId, memberId" tableName="ss_workareafunctionmembers"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-101">
+<addPrimaryKey columnNames="binder, entryDefinition" tableName="ss_workflowmap"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-102">
+<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_blob_triggers"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-103">
+<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_cron_triggers"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-104">
+<addPrimaryKey columnNames="JOB_NAME, JOB_GROUP" tableName="ssqrtz_job_details"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-105">
+<addPrimaryKey columnNames="JOB_NAME, JOB_GROUP, JOB_LISTENER" tableName="ssqrtz_job_listeners"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-106">
+<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_simple_triggers"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-107">
+<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_LISTENER" tableName="ssqrtz_trigger_listeners"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-108">
+<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_triggers"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-109">
+<addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_" baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2" constraintName="FK_ACTION_ACTNDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-110">
+<addForeignKeyConstraint baseColumnNames="EVENT_" baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2" constraintName="FK_ACTION_EVENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_event" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-111">
+<addForeignKeyConstraint baseColumnNames="EXCEPTIONHANDLER_" baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2" constraintName="FK_ACTION_EXPTHDL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_exceptionhandler" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-112">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2" constraintName="FK_ACTION_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-113">
+<addForeignKeyConstraint baseColumnNames="REFERENCEDACTION_" baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2" constraintName="FK_ACTION_REFACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-114">
+<addForeignKeyConstraint baseColumnNames="TIMERACTION_" baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2" constraintName="FK_CRTETIMERACT_TA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-115">
+<addForeignKeyConstraint baseColumnNames="FILEDEFINITION_" baseTableName="jbpm_bytearray" baseTableSchemaName="sitescape_3_2" constraintName="FK_BYTEARR_FILDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-116">
+<addForeignKeyConstraint baseColumnNames="PROCESSFILE_" baseTableName="jbpm_byteblock" baseTableSchemaName="sitescape_3_2" constraintName="FK_BYTEBLOCK_FILE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-117">
+<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_comment" baseTableSchemaName="sitescape_3_2" constraintName="FK_COMMENT_TSK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-118">
+<addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_comment" baseTableSchemaName="sitescape_3_2" constraintName="FK_COMMENT_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-119">
+<addForeignKeyConstraint baseColumnNames="DECISION_" baseTableName="jbpm_decisionconditions" baseTableSchemaName="sitescape_3_2" constraintName="FK_DECCOND_DEC" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-120">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_delegation" baseTableSchemaName="sitescape_3_2" constraintName="FK_DELEGATION_PRCD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-121">
+<addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2" constraintName="FK_EVENT_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-122">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2" constraintName="FK_EVENT_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-123">
+<addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2" constraintName="FK_EVENT_TASK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_task" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-124">
+<addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2" constraintName="FK_EVENT_TRANS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_transition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-125">
+<addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-126">
+<addForeignKeyConstraint baseColumnNames="CHILD_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_CHILDTOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-127">
+<addForeignKeyConstraint baseColumnNames="DESTINATIONNODE_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_DESTNODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-128">
+<addForeignKeyConstraint baseColumnNames="NEWBYTEARRAY_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_NEWBYTES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-129">
+<addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-130">
+<addForeignKeyConstraint baseColumnNames="OLDBYTEARRAY_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_OLDBYTES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-131">
+<addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_PARENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_log" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-132">
+<addForeignKeyConstraint baseColumnNames="SOURCENODE_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_SOURCENODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-133">
+<addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_SWIMINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-134">
+<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-135">
+<addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-136">
+<addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_TRANSITION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_transition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-137">
+<addForeignKeyConstraint baseColumnNames="VARIABLEINSTANCE_" baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2" constraintName="FK_LOG_VARINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_variableinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-138">
+<addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2" constraintName="FK_CMD_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-139">
+<addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2" constraintName="FK_CMD_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-140">
+<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2" constraintName="FK_CMD_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-141">
+<addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2" constraintName="FK_MSG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-142">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_moduledefinition" baseTableSchemaName="sitescape_3_2" constraintName="FK_MODDEF_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-143">
+<addForeignKeyConstraint baseColumnNames="STARTTASK_" baseTableName="jbpm_moduledefinition" baseTableSchemaName="sitescape_3_2" constraintName="FK_TSKDEF_START" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_task" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-144">
+<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_moduleinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_MODINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-145">
+<addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="jbpm_moduleinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASKMGTINST_TMD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-146">
+<addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2" constraintName="FK_NODE_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-147">
+<addForeignKeyConstraint baseColumnNames="DECISIONDELEGATION" baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2" constraintName="FK_DECISION_DELEG" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-148">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2" constraintName="FK_NODE_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-149">
+<addForeignKeyConstraint baseColumnNames="SUBPROCESSDEFINITION_" baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2" constraintName="FK_PROCST_SBPRCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-150">
+<addForeignKeyConstraint baseColumnNames="SUPERSTATE_" baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2" constraintName="FK_NODE_SUPERSTATE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-151">
+<addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="jbpm_pooledactor" baseTableSchemaName="sitescape_3_2" constraintName="FK_POOLEDACTOR_SLI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-152">
+<addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="jbpm_processdefinition" baseTableSchemaName="sitescape_3_2" constraintName="FK_PROCDEF_STRTSTA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-153">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_processinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_PROCIN_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-154">
+<addForeignKeyConstraint baseColumnNames="ROOTTOKEN_" baseTableName="jbpm_processinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_PROCIN_ROOTTKN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-155">
+<addForeignKeyConstraint baseColumnNames="SUPERPROCESSTOKEN_" baseTableName="jbpm_processinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_PROCIN_SPROCTKN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-156">
+<addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_runtimeaction" baseTableSchemaName="sitescape_3_2" constraintName="FK_RTACTN_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-157">
+<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_runtimeaction" baseTableSchemaName="sitescape_3_2" constraintName="FK_RTACTN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-158">
+<addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="jbpm_swimlane" baseTableSchemaName="sitescape_3_2" constraintName="FK_SWL_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-159">
+<addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="jbpm_swimlane" baseTableSchemaName="sitescape_3_2" constraintName="FK_SWL_TSKMGMTDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-160">
+<addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="jbpm_swimlaneinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_SWIMLANEINST_SL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlane" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-161">
+<addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="jbpm_swimlaneinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_SWIMLANEINST_TM" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-162">
+<addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASK_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-163">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASK_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-164">
+<addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASK_STARTST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-165">
+<addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASK_SWIMLANE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlane" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-166">
+<addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2" constraintName="FK_TSK_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskcontroller" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-167">
+<addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASK_TASKMGTDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-168">
+<addForeignKeyConstraint baseColumnNames="TASKNODE_" baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASK_TASKNODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-169">
+<addForeignKeyConstraint baseColumnNames="POOLEDACTOR_" baseTableName="jbpm_taskactorpool" baseTableSchemaName="sitescape_3_2" constraintName="FK_TSKACTPOL_PLACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_pooledactor" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-170">
+<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_taskactorpool" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASKACTPL_TSKI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-171">
+<addForeignKeyConstraint baseColumnNames="TASKCONTROLLERDELEGATION_" baseTableName="jbpm_taskcontroller" baseTableSchemaName="sitescape_3_2" constraintName="FK_TSKCTRL_DELEG" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-172">
+<addForeignKeyConstraint baseColumnNames="SWIMLANINSTANCE_" baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASKINST_SLINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-173">
+<addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASKINST_TASK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_task" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-174">
+<addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASKINST_TMINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-175">
+<addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_TASKINST_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-176">
+<addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2" constraintName="FK_TIMER_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-177">
+<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2" constraintName="FK_TIMER_PRINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-178">
+<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2" constraintName="FK_TIMER_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-179">
+<addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2" constraintName="FK_TIMER_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-180">
+<addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2" constraintName="FK_TOKEN_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-181">
+<addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2" constraintName="FK_TOKEN_PARENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-182">
+<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2" constraintName="FK_TOKEN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-183">
+<addForeignKeyConstraint baseColumnNames="SUBPROCESSINSTANCE_" baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2" constraintName="FK_TOKEN_SUBPI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-184">
+<addForeignKeyConstraint baseColumnNames="CONTEXTINSTANCE_" baseTableName="jbpm_tokenvariablemap" baseTableSchemaName="sitescape_3_2" constraintName="FK_TKVARMAP_CTXT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-185">
+<addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_tokenvariablemap" baseTableSchemaName="sitescape_3_2" constraintName="FK_TKVARMAP_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-186">
+<addForeignKeyConstraint baseColumnNames="FROM_" baseTableName="jbpm_transition" baseTableSchemaName="sitescape_3_2" constraintName="FK_TRANSITION_FROM" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-187">
+<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_transition" baseTableSchemaName="sitescape_3_2" constraintName="FK_TRANS_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-188">
+<addForeignKeyConstraint baseColumnNames="TO_" baseTableName="jbpm_transition" baseTableSchemaName="sitescape_3_2" constraintName="FK_TRANSITION_TO" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-189">
+<addForeignKeyConstraint baseColumnNames="PROCESSSTATE_" baseTableName="jbpm_variableaccess" baseTableSchemaName="sitescape_3_2" constraintName="FK_VARACC_PROCST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-190">
+<addForeignKeyConstraint baseColumnNames="SCRIPT_" baseTableName="jbpm_variableaccess" baseTableSchemaName="sitescape_3_2" constraintName="FK_VARACC_SCRIPT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-191">
+<addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="jbpm_variableaccess" baseTableSchemaName="sitescape_3_2" constraintName="FK_VARACC_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskcontroller" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-192">
+<addForeignKeyConstraint baseColumnNames="BYTEARRAYVALUE_" baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_BYTEINST_ARRAY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-193">
+<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_VARINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-194">
+<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_VAR_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-195">
+<addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_VARINST_TK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-196">
+<addForeignKeyConstraint baseColumnNames="TOKENVARIABLEMAP_" baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2" constraintName="FK_VARINST_TKVARMP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_tokenvariablemap" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-197">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2" constraintName="FKA1AD4C31AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-198">
+<addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2" constraintName="FKA1AD4C3176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-199">
+<addForeignKeyConstraint baseColumnNames="filelock_owner" baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2" constraintName="FKA1AD4C31DC9F01CF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-200">
+<addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2" constraintName="FKA1AD4C31F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-201">
+<addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2" constraintName="FKA1AD4C31BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-202">
+<addForeignKeyConstraint baseColumnNames="parentAttachment" baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2" constraintName="FKA1AD4C312D9DE71B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_attachments" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-203">
+<addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2" constraintName="FKA1AD4C31E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-204">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2" constraintName="FK476EDFC7AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-205">
+<addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2" constraintName="FK476EDFC7F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-206">
+<addForeignKeyConstraint baseColumnNames="parent" baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2" constraintName="FK476EDFC7F05A86A6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_customattributes" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-207">
+<addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2" constraintName="FK476EDFC7E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-208">
+<addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_dashboards" baseTableSchemaName="sitescape_3_2" constraintName="FKFA9653BE76767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-209">
+<addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_dashboards" baseTableSchemaName="sitescape_3_2" constraintName="FKFA9653BEBE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-210">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_definitionmap" baseTableSchemaName="sitescape_3_2" constraintName="FK170F74AAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-211">
+<addForeignKeyConstraint baseColumnNames="definition" baseTableName="ss_definitionmap" baseTableSchemaName="sitescape_3_2" constraintName="FK170F74A5D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-212">
+<addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_definitions" baseTableSchemaName="sitescape_3_2" constraintName="FK7B56F60176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-213">
+<addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_definitions" baseTableSchemaName="sitescape_3_2" constraintName="FK7B56F601BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-214">
+<addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_emailaddresses" baseTableSchemaName="sitescape_3_2" constraintName="FKC706C345E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-215">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_events" baseTableSchemaName="sitescape_3_2" constraintName="FKDE0E53F8AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-216">
+<addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_events" baseTableSchemaName="sitescape_3_2" constraintName="FKDE0E53F876767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-217">
+<addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_events" baseTableSchemaName="sitescape_3_2" constraintName="FKDE0E53F8F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-218">
+<addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_events" baseTableSchemaName="sitescape_3_2" constraintName="FKDE0E53F8BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-219">
+<addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_events" baseTableSchemaName="sitescape_3_2" constraintName="FKDE0E53F8E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-220">
+<addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2" constraintName="FKA6632C8376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-221">
+<addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2" constraintName="FKA6632C83BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-222">
+<addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2" constraintName="FKA6632C835B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-223">
+<addForeignKeyConstraint baseColumnNames="parentEntry" baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2" constraintName="FKA6632C832EBDEAFD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-224">
+<addForeignKeyConstraint baseColumnNames="reserved_principal" baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2" constraintName="FKA6632C83DAD68C8B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-225">
+<addForeignKeyConstraint baseColumnNames="topEntry" baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2" constraintName="FKA6632C83B8A6E532" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-226">
+<addForeignKeyConstraint baseColumnNames="wrk_principal" baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2" constraintName="FKA6632C8386C93453" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-227">
+<addForeignKeyConstraint baseColumnNames="id" baseTableName="ss_folderentrystats" baseTableSchemaName="sitescape_3_2" constraintName="FKC94AB27AF1E91E10" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-228">
+<addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2" constraintName="FKDF668A5176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-229">
+<addForeignKeyConstraint baseColumnNames="entryDef" baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2" constraintName="FKDF668A511CD53535" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-230">
+<addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2" constraintName="FKDF668A51BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-231">
+<addForeignKeyConstraint baseColumnNames="owner" baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2" constraintName="FKDF668A5156E7C372" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-232">
+<addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2" constraintName="FKDF668A515B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-233">
+<addForeignKeyConstraint baseColumnNames="posting" baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2" constraintName="FKDF668A514477DE34" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_postings" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-234">
+<addForeignKeyConstraint baseColumnNames="topFolder" baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2" constraintName="FKDF668A511CACB780" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-235">
+<addForeignKeyConstraint baseColumnNames="conditionId" baseTableName="ss_functionconditionmap" baseTableSchemaName="sitescape_3_2" constraintName="FK945D2AD868DAC30E" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_functionconditions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-236">
+<addForeignKeyConstraint baseColumnNames="functionId" baseTableName="ss_functionconditionmap" baseTableSchemaName="sitescape_3_2" constraintName="FK945D2AD8BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_functions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-237">
+<addForeignKeyConstraint baseColumnNames="functionId" baseTableName="ss_functionoperations" baseTableSchemaName="sitescape_3_2" constraintName="FKBEF25643BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_functions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-238">
+<addForeignKeyConstraint baseColumnNames="binderId" baseTableName="ss_notifications" baseTableSchemaName="sitescape_3_2" constraintName="FK9131F9293AD146FE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-239">
+<addForeignKeyConstraint baseColumnNames="principalId" baseTableName="ss_notifications" baseTableSchemaName="sitescape_3_2" constraintName="FK9131F9295212927D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-240">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_postings" baseTableSchemaName="sitescape_3_2" constraintName="FKB05DE490AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-241">
+<addForeignKeyConstraint baseColumnNames="definition" baseTableName="ss_postings" baseTableSchemaName="sitescape_3_2" constraintName="FKB05DE4905D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-242">
+<addForeignKeyConstraint baseColumnNames="groupId" baseTableName="ss_principalmembership" baseTableSchemaName="sitescape_3_2" constraintName="FK176F6225395F3D38" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-243">
+<addForeignKeyConstraint baseColumnNames="userId" baseTableName="ss_principalmembership" baseTableSchemaName="sitescape_3_2" constraintName="FK176F6225921A9ADA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-244">
+<addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_principals" baseTableSchemaName="sitescape_3_2" constraintName="FK7693816476767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-245">
+<addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_principals" baseTableSchemaName="sitescape_3_2" constraintName="FK76938164BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-246">
+<addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="ss_principals" baseTableSchemaName="sitescape_3_2" constraintName="FK769381645B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-247">
+<addForeignKeyConstraint baseColumnNames="referer" baseTableName="ss_sharedentity" baseTableSchemaName="sitescape_3_2" constraintName="FK93426C47D4068DC7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-248">
+<addForeignKeyConstraint baseColumnNames="workAreaFunctionMembershipId" baseTableName="ss_workareafunctionmembers" baseTableSchemaName="sitescape_3_2" constraintName="FK72202A04B4C37436" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_workareafunctionmemberships" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-249">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_workflowmap" baseTableSchemaName="sitescape_3_2" constraintName="FK33D2499EAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-250">
+<addForeignKeyConstraint baseColumnNames="workflowDefinition" baseTableName="ss_workflowmap" baseTableSchemaName="sitescape_3_2" constraintName="FK33D2499EE2459134" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-251">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_workflowresponses" baseTableSchemaName="sitescape_3_2" constraintName="FKC44C5F14AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-252">
+<addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_workflowresponses" baseTableSchemaName="sitescape_3_2" constraintName="FKC44C5F14F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-253">
+<addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_workflowresponses" baseTableSchemaName="sitescape_3_2" constraintName="FKC44C5F14E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-254">
+<addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2" constraintName="FK8FA8AA80AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-255">
+<addForeignKeyConstraint baseColumnNames="definition" baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2" constraintName="FK8FA8AA805D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-256">
+<addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2" constraintName="FK8FA8AA80F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-257">
+<addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2" constraintName="FK8FA8AA80E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-258">
+<addForeignKeyConstraint baseColumnNames="wrk_principal" baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2" constraintName="FK8FA8AA8086C93453" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-259">
+<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_blob_triggers" baseTableSchemaName="sitescape_3_2" constraintName="FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-260">
+<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_cron_triggers" baseTableSchemaName="sitescape_3_2" constraintName="FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-261">
+<addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="ssqrtz_job_listeners" baseTableSchemaName="sitescape_3_2" constraintName="FK_SSQRTZ_JOB_LISTENERS_SSQRTZ_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="ssqrtz_job_details" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-262">
+<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_simple_triggers" baseTableSchemaName="sitescape_3_2" constraintName="FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-263">
+<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_trigger_listeners" baseTableSchemaName="sitescape_3_2" constraintName="FK_SSQRTZ_TRIGGER_LISTENERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-264">
+<addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="ssqrtz_triggers" baseTableSchemaName="sitescape_3_2" constraintName="FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="ssqrtz_job_details" referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false"/>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-265">
+<createIndex indexName="IDX_PLDACTR_ACTID" tableName="jbpm_pooledactor" unique="false">
+<column name="ACTORID_"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-266">
+<createIndex indexName="IDX_TASK_ACTORID" tableName="jbpm_taskinstance" unique="false">
+<column name="ACTORID_"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-267">
+<createIndex indexName="entityOwner_Att" tableName="ss_attachments" unique="false">
+<column name="ownerType"/>
+<column name="ownerId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-268">
+<createIndex indexName="owningBinder_Att" tableName="ss_attachments" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-269">
+<createIndex indexName="entityOwner_audit" tableName="ss_audittrail" unique="false">
+<column name="entityType"/>
+<column name="entityId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-270">
+<createIndex indexName="owningBinder_audit" tableName="ss_audittrail" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-271">
+<createIndex indexName="search_audit" tableName="ss_audittrail" unique="false">
+<column name="zoneId"/>
+<column name="startDate"/>
+<column name="startBy"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-272">
+<createIndex indexName="entityOwner_clog" tableName="ss_changelogs" unique="false">
+<column name="entityType"/>
+<column name="entityId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-273">
+<createIndex indexName="operationDate_clog" tableName="ss_changelogs" unique="false">
+<column name="zoneId"/>
+<column name="operationDate"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-274">
+<createIndex indexName="owningBinder_clog" tableName="ss_changelogs" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-275">
+<createIndex indexName="entityOwner_cAtt" tableName="ss_customattributes" unique="false">
+<column name="ownerType"/>
+<column name="ownerId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-276">
+<createIndex indexName="owningBinder_cAtt" tableName="ss_customattributes" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-277">
+<createIndex indexName="binder_Dash" tableName="ss_dashboards" unique="false">
+<column name="binderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-278">
+<createIndex indexName="ownerKey_Dash" tableName="ss_dashboards" unique="false">
+<column name="owner_id"/>
+<column name="owner_type"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-279">
+<createIndex indexName="internal_Definition" tableName="ss_definitions" unique="false">
+<column name="zoneId"/>
+<column name="internalId"/>
+<column name="type"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-280">
+<createIndex indexName="zoneId" tableName="ss_definitions" unique="true">
+<column name="zoneId"/>
+<column name="binderId"/>
+<column name="name"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-281">
+<createIndex indexName="address_email" tableName="ss_emailaddresses" unique="false">
+<column name="address"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-282">
+<createIndex indexName="sendDate_emaillog" tableName="ss_emaillog" unique="false">
+<column name="zoneId"/>
+<column name="sendDate"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-283">
+<createIndex indexName="entityOwner_Event" tableName="ss_events" unique="false">
+<column name="ownerType"/>
+<column name="ownerId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-284">
+<createIndex indexName="owningBinder_Event" tableName="ss_events" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-285">
+<createIndex indexName="zoneId" tableName="ss_extensions" unique="true">
+<column name="zoneId"/>
+<column name="name"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-286">
+<createIndex indexName="entryDef_fEntry" tableName="ss_folderentries" unique="false">
+<column name="entryDef"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-287">
+<createIndex indexName="entry_sortKey" tableName="ss_folderentries" unique="true">
+<column name="entry_sortKey"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-288">
+<createIndex indexName="owningBinderKey_fEntry" tableName="ss_folderentries" unique="false">
+<column name="owningBinderKey"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-289">
+<createIndex indexName="binder_sortKey" tableName="ss_forums" unique="true">
+<column name="binder_sortKey"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-290">
+<createIndex indexName="internal_Binder" tableName="ss_forums" unique="false">
+<column name="zoneId"/>
+<column name="internalId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-291">
+<createIndex indexName="zoneId" tableName="ss_functions" unique="true">
+<column name="zoneId"/>
+<column name="name"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-292">
+<createIndex indexName="indexingJournal_nodeIndex" tableName="ss_indexingjournal" unique="false">
+<column name="nodeName"/>
+<column name="indexName"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-293">
+<createIndex indexName="nodeName" tableName="ss_indexnode" unique="true">
+<column name="nodeName"/>
+<column name="indexName"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-294">
+<createIndex indexName="snapshot_lstats" tableName="ss_licensestats" unique="false">
+<column name="zoneId"/>
+<column name="snapshotDate"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-295">
+<createIndex indexName="notifyStatus_digest" tableName="ss_notifystatus" unique="false">
+<column name="zoneId"/>
+<column name="lastModified"/>
+<column name="lastDigestSent"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-296">
+<createIndex indexName="notifyStatus_full" tableName="ss_notifystatus" unique="false">
+<column name="zoneId"/>
+<column name="lastModified"/>
+<column name="lastFullSent"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-297">
+<createIndex indexName="email_postings" tableName="ss_postings" unique="false">
+<column name="zoneId"/>
+<column name="emailAddress"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-298">
+<createIndex indexName="entryDef_principal" tableName="ss_principals" unique="false">
+<column name="entryDef"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-299">
+<createIndex indexName="internal_principal" tableName="ss_principals" unique="false">
+<column name="zoneId"/>
+<column name="internalId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-300">
+<createIndex indexName="ldapGuid_principal" tableName="ss_principals" unique="false">
+<column name="ldapGuid"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-301">
+<createIndex indexName="type_principal" tableName="ss_principals" unique="false">
+<column name="zoneId"/>
+<column name="type"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-302">
+<createIndex indexName="zoneId" tableName="ss_principals" unique="true">
+<column name="zoneId"/>
+<column name="name"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-303">
+<createIndex indexName="zoneId_2" tableName="ss_principals" unique="true">
+<column name="zoneId"/>
+<column name="foreignName"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-304">
+<createIndex indexName="entity_Ratings" tableName="ss_ratings" unique="false">
+<column name="entityId"/>
+<column name="entityType"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-305">
+<createIndex indexName="access_shared" tableName="ss_sharedentity" unique="false">
+<column name="accessType"/>
+<column name="accessId"/>
+<column name="sharedDate"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-306">
+<createIndex indexName="entity_shared" tableName="ss_sharedentity" unique="false">
+<column name="entityType"/>
+<column name="entityId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-307">
+<createIndex indexName="binderId_simpleName" tableName="ss_simplename" unique="false">
+<column name="binderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-308">
+<createIndex indexName="emailAddress_simpleName" tableName="ss_simplename" unique="false">
+<column name="emailAddress"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-309">
+<createIndex indexName="entity_Subscriptions" tableName="ss_subscriptions" unique="false">
+<column name="entityId"/>
+<column name="entityType"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-310">
+<createIndex indexName="entity_tag" tableName="ss_tags" unique="false">
+<column name="entity_type"/>
+<column name="entity_id"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-311">
+<createIndex indexName="owner_tag" tableName="ss_tags" unique="false">
+<column name="owner_type"/>
+<column name="owner_id"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-312">
+<createIndex indexName="userId_tokenInfoSession" tableName="ss_tokeninfo" unique="false">
+<column name="userId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-313">
+<createIndex indexName="entityOwner_wfhistory" tableName="ss_workflowhistory" unique="false">
+<column name="entityId"/>
+<column name="entityType"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-314">
+<createIndex indexName="owningBinder_wfhistory" tableName="ss_workflowhistory" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-315">
+<createIndex indexName="startDate_wfhistory" tableName="ss_workflowhistory" unique="false">
+<column name="zoneId"/>
+<column name="startDate"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-316">
+<createIndex indexName="entityOwner" tableName="ss_workflowresponses" unique="false">
+<column name="ownerType"/>
+<column name="ownerId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-317">
+<createIndex indexName="owningBinder" tableName="ss_workflowresponses" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-318">
+<createIndex indexName="entityOwner_wState" tableName="ss_workflowstates" unique="false">
+<column name="ownerType"/>
+<column name="ownerId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-319">
+<createIndex indexName="owningBinder_wState" tableName="ss_workflowstates" unique="false">
+<column name="owningBinderId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-320">
+<createIndex indexName="virtualHost" tableName="ss_zoneinfo" unique="true">
+<column name="virtualHost"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-321">
+<createIndex indexName="zoneId" tableName="ss_zoneinfo" unique="true">
+<column name="zoneId"/>
+</createIndex>
+</changeSet>
+<changeSet author="jong (generated)" id="1324484190501-322">
+<createIndex indexName="zoneName" tableName="ss_zoneinfo" unique="true">
+<column name="zoneName"/>
+</createIndex>
+</changeSet>
+</databaseChangeLog>
