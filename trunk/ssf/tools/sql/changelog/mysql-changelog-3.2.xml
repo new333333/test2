@@ -1723,1256 +1723,1255 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-109">
 		<addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_"
-			baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_action" 
 			constraintName="FK_ACTION_ACTNDEL" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_delegation"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-110">
 		<addForeignKeyConstraint baseColumnNames="EVENT_"
-			baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_action" 
 			constraintName="FK_ACTION_EVENT" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_event"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-111">
 		<addForeignKeyConstraint baseColumnNames="EXCEPTIONHANDLER_"
-			baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_action" 
 			constraintName="FK_ACTION_EXPTHDL" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_exceptionhandler"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-112">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_action" 
 			constraintName="FK_ACTION_PROCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-113">
 		<addForeignKeyConstraint baseColumnNames="REFERENCEDACTION_"
-			baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_action" 
 			constraintName="FK_ACTION_REFACT" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_action"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-114">
 		<addForeignKeyConstraint baseColumnNames="TIMERACTION_"
-			baseTableName="jbpm_action" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_action" 
 			constraintName="FK_CRTETIMERACT_TA" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_action"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-115">
 		<addForeignKeyConstraint baseColumnNames="FILEDEFINITION_"
-			baseTableName="jbpm_bytearray" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_bytearray" 
 			constraintName="FK_BYTEARR_FILDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-116">
 		<addForeignKeyConstraint baseColumnNames="PROCESSFILE_"
-			baseTableName="jbpm_byteblock" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_byteblock" 
 			constraintName="FK_BYTEBLOCK_FILE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_bytearray"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-117">
 		<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_"
-			baseTableName="jbpm_comment" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_comment" 
 			constraintName="FK_COMMENT_TSK" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_taskinstance" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-118">
 		<addForeignKeyConstraint baseColumnNames="TOKEN_"
-			baseTableName="jbpm_comment" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_comment" 
 			constraintName="FK_COMMENT_TOKEN" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_token"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-119">
 		<addForeignKeyConstraint baseColumnNames="DECISION_"
-			baseTableName="jbpm_decisionconditions" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_decisionconditions" 
 			constraintName="FK_DECCOND_DEC" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_node" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-120">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_delegation" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_delegation" 
 			constraintName="FK_DELEGATION_PRCD" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-121">
 		<addForeignKeyConstraint baseColumnNames="NODE_"
-			baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_event" 
 			constraintName="FK_EVENT_NODE" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_node" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-122">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_event" 
 			constraintName="FK_EVENT_PROCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-123">
 		<addForeignKeyConstraint baseColumnNames="TASK_"
-			baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_event" 
 			constraintName="FK_EVENT_TASK" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_task" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_task" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-124">
 		<addForeignKeyConstraint baseColumnNames="TRANSITION_"
-			baseTableName="jbpm_event" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_event" 
 			constraintName="FK_EVENT_TRANS" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_transition" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_transition" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-125">
 		<addForeignKeyConstraint baseColumnNames="ACTION_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_ACTION" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_action" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-126">
 		<addForeignKeyConstraint baseColumnNames="CHILD_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_CHILDTOKEN" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_token"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-127">
 		<addForeignKeyConstraint baseColumnNames="DESTINATIONNODE_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_DESTNODE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-128">
 		<addForeignKeyConstraint baseColumnNames="NEWBYTEARRAY_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_NEWBYTES" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_bytearray"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-129">
 		<addForeignKeyConstraint baseColumnNames="NODE_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_NODE" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_node" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-130">
 		<addForeignKeyConstraint baseColumnNames="OLDBYTEARRAY_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_OLDBYTES" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_bytearray"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-131">
 		<addForeignKeyConstraint baseColumnNames="PARENT_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_PARENT" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_log" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_log" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-132">
 		<addForeignKeyConstraint baseColumnNames="SOURCENODE_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_SOURCENODE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-133">
 		<addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_SWIMINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-134">
 		<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_TASKINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-135">
 		<addForeignKeyConstraint baseColumnNames="TOKEN_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_TOKEN" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_token" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-136">
 		<addForeignKeyConstraint baseColumnNames="TRANSITION_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_TRANSITION" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_transition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-137">
 		<addForeignKeyConstraint baseColumnNames="VARIABLEINSTANCE_"
-			baseTableName="jbpm_log" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_log" 
 			constraintName="FK_LOG_VARINST" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
 			referencedTableName="jbpm_variableinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-138">
 		<addForeignKeyConstraint baseColumnNames="ACTION_"
-			baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_message" 
 			constraintName="FK_CMD_ACTION" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_action" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-139">
 		<addForeignKeyConstraint baseColumnNames="NODE_"
-			baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_message" 
 			constraintName="FK_CMD_NODE" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_node" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-140">
 		<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_"
-			baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_message" 
 			constraintName="FK_CMD_TASKINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-141">
 		<addForeignKeyConstraint baseColumnNames="TOKEN_"
-			baseTableName="jbpm_message" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_message" 
 			constraintName="FK_MSG_TOKEN" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_token" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-142">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_moduledefinition" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_moduledefinition" 
 			constraintName="FK_MODDEF_PROCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-143">
 		<addForeignKeyConstraint baseColumnNames="STARTTASK_"
-			baseTableName="jbpm_moduledefinition" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_moduledefinition" 
 			constraintName="FK_TSKDEF_START" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_task"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-144">
 		<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_"
-			baseTableName="jbpm_moduleinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_moduleinstance" 
 			constraintName="FK_MODINST_PRCINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-145">
 		<addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_"
-			baseTableName="jbpm_moduleinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_moduleinstance" 
 			constraintName="FK_TASKMGTINST_TMD" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-146">
 		<addForeignKeyConstraint baseColumnNames="ACTION_"
-			baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_node" 
 			constraintName="FK_NODE_ACTION" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_action" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_action" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-147">
 		<addForeignKeyConstraint baseColumnNames="DECISIONDELEGATION"
-			baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_node" 
 			constraintName="FK_DECISION_DELEG" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_delegation"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-148">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_node" 
 			constraintName="FK_NODE_PROCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-149">
 		<addForeignKeyConstraint baseColumnNames="SUBPROCESSDEFINITION_"
-			baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_node" 
 			constraintName="FK_PROCST_SBPRCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-150">
 		<addForeignKeyConstraint baseColumnNames="SUPERSTATE_"
-			baseTableName="jbpm_node" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_node" 
 			constraintName="FK_NODE_SUPERSTATE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-151">
 		<addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_"
-			baseTableName="jbpm_pooledactor" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_pooledactor" 
 			constraintName="FK_POOLEDACTOR_SLI" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-152">
 		<addForeignKeyConstraint baseColumnNames="STARTSTATE_"
-			baseTableName="jbpm_processdefinition" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_processdefinition" 
 			constraintName="FK_PROCDEF_STRTSTA" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-153">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_processinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_processinstance" 
 			constraintName="FK_PROCIN_PROCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-154">
 		<addForeignKeyConstraint baseColumnNames="ROOTTOKEN_"
-			baseTableName="jbpm_processinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_processinstance" 
 			constraintName="FK_PROCIN_ROOTTKN" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_token"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-155">
 		<addForeignKeyConstraint baseColumnNames="SUPERPROCESSTOKEN_"
-			baseTableName="jbpm_processinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_processinstance" 
 			constraintName="FK_PROCIN_SPROCTKN" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_token"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-156">
 		<addForeignKeyConstraint baseColumnNames="ACTION_"
-			baseTableName="jbpm_runtimeaction" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_runtimeaction" 
 			constraintName="FK_RTACTN_ACTION" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_action"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-157">
 		<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_"
-			baseTableName="jbpm_runtimeaction" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_runtimeaction" 
 			constraintName="FK_RTACTN_PROCINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-158">
 		<addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_"
-			baseTableName="jbpm_swimlane" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_swimlane" 
 			constraintName="FK_SWL_ASSDEL" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_delegation" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_delegation" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-159">
 		<addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_"
-			baseTableName="jbpm_swimlane" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_swimlane" 
 			constraintName="FK_SWL_TSKMGMTDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-160">
 		<addForeignKeyConstraint baseColumnNames="SWIMLANE_"
-			baseTableName="jbpm_swimlaneinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_swimlaneinstance" 
 			constraintName="FK_SWIMLANEINST_SL" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_swimlane"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-161">
 		<addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_"
-			baseTableName="jbpm_swimlaneinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_swimlaneinstance" 
 			constraintName="FK_SWIMLANEINST_TM" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-162">
 		<addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_"
-			baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_task" 
 			constraintName="FK_TASK_ASSDEL" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_delegation" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_delegation" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-163">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_task" 
 			constraintName="FK_TASK_PROCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-164">
 		<addForeignKeyConstraint baseColumnNames="STARTSTATE_"
-			baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_task" 
 			constraintName="FK_TASK_STARTST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-165">
 		<addForeignKeyConstraint baseColumnNames="SWIMLANE_"
-			baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_task" 
 			constraintName="FK_TASK_SWIMLANE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_swimlane"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-166">
 		<addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_"
-			baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_task" 
 			constraintName="FK_TSK_TSKCTRL" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_taskcontroller" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_taskcontroller" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-167">
 		<addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_"
-			baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_task" 
 			constraintName="FK_TASK_TASKMGTDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-168">
 		<addForeignKeyConstraint baseColumnNames="TASKNODE_"
-			baseTableName="jbpm_task" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_task" 
 			constraintName="FK_TASK_TASKNODE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-169">
 		<addForeignKeyConstraint baseColumnNames="POOLEDACTOR_"
-			baseTableName="jbpm_taskactorpool" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_taskactorpool" 
 			constraintName="FK_TSKACTPOL_PLACT" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_pooledactor"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-170">
 		<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_"
-			baseTableName="jbpm_taskactorpool" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_taskactorpool" 
 			constraintName="FK_TASKACTPL_TSKI" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-171">
 		<addForeignKeyConstraint baseColumnNames="TASKCONTROLLERDELEGATION_"
-			baseTableName="jbpm_taskcontroller" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_taskcontroller" 
 			constraintName="FK_TSKCTRL_DELEG" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_delegation"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-172">
 		<addForeignKeyConstraint baseColumnNames="SWIMLANINSTANCE_"
-			baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_taskinstance" 
 			constraintName="FK_TASKINST_SLINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-173">
 		<addForeignKeyConstraint baseColumnNames="TASK_"
-			baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_taskinstance" 
 			constraintName="FK_TASKINST_TASK" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_task"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-174">
 		<addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_"
-			baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_taskinstance" 
 			constraintName="FK_TASKINST_TMINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-175">
 		<addForeignKeyConstraint baseColumnNames="TOKEN_"
-			baseTableName="jbpm_taskinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_taskinstance" 
 			constraintName="FK_TASKINST_TOKEN" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_token"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-176">
 		<addForeignKeyConstraint baseColumnNames="ACTION_"
-			baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_timer" 
 			constraintName="FK_TIMER_ACTION" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_action"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-177">
 		<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_"
-			baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_timer" 
 			constraintName="FK_TIMER_PRINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-178">
 		<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_"
-			baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_timer" 
 			constraintName="FK_TIMER_TSKINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-179">
 		<addForeignKeyConstraint baseColumnNames="TOKEN_"
-			baseTableName="jbpm_timer" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_timer" 
 			constraintName="FK_TIMER_TOKEN" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_token" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-180">
 		<addForeignKeyConstraint baseColumnNames="NODE_"
-			baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_token" 
 			constraintName="FK_TOKEN_NODE" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_node" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_node" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-181">
 		<addForeignKeyConstraint baseColumnNames="PARENT_"
-			baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_token" 
 			constraintName="FK_TOKEN_PARENT" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_token"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-182">
 		<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_"
-			baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_token" 
 			constraintName="FK_TOKEN_PROCINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-183">
 		<addForeignKeyConstraint baseColumnNames="SUBPROCESSINSTANCE_"
-			baseTableName="jbpm_token" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_token" 
 			constraintName="FK_TOKEN_SUBPI" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_processinstance" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_processinstance" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-184">
 		<addForeignKeyConstraint baseColumnNames="CONTEXTINSTANCE_"
-			baseTableName="jbpm_tokenvariablemap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_tokenvariablemap" 
 			constraintName="FK_TKVARMAP_CTXT" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-185">
 		<addForeignKeyConstraint baseColumnNames="TOKEN_"
-			baseTableName="jbpm_tokenvariablemap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_tokenvariablemap" 
 			constraintName="FK_TKVARMAP_TOKEN" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_token"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-186">
 		<addForeignKeyConstraint baseColumnNames="FROM_"
-			baseTableName="jbpm_transition" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_transition" 
 			constraintName="FK_TRANSITION_FROM" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-187">
 		<addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_"
-			baseTableName="jbpm_transition" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_transition" 
 			constraintName="FK_TRANS_PROCDEF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-188">
 		<addForeignKeyConstraint baseColumnNames="TO_"
-			baseTableName="jbpm_transition" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_transition" 
 			constraintName="FK_TRANSITION_TO" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-189">
 		<addForeignKeyConstraint baseColumnNames="PROCESSSTATE_"
-			baseTableName="jbpm_variableaccess" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableaccess" 
 			constraintName="FK_VARACC_PROCST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_node"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-190">
 		<addForeignKeyConstraint baseColumnNames="SCRIPT_"
-			baseTableName="jbpm_variableaccess" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableaccess" 
 			constraintName="FK_VARACC_SCRIPT" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_action"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-191">
 		<addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_"
-			baseTableName="jbpm_variableaccess" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableaccess" 
 			constraintName="FK_VARACC_TSKCTRL" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_taskcontroller"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-192">
 		<addForeignKeyConstraint baseColumnNames="BYTEARRAYVALUE_"
-			baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableinstance" 
 			constraintName="FK_BYTEINST_ARRAY" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_bytearray"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-193">
 		<addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_"
-			baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableinstance" 
 			constraintName="FK_VARINST_PRCINST" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_processinstance"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-194">
 		<addForeignKeyConstraint baseColumnNames="TASKINSTANCE_"
-			baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableinstance" 
 			constraintName="FK_VAR_TSKINST" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_taskinstance" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_taskinstance" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-195">
 		<addForeignKeyConstraint baseColumnNames="TOKEN_"
-			baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableinstance" 
 			constraintName="FK_VARINST_TK" deferrable="false" initiallyDeferred="false"
 			onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_"
-			referencedTableName="jbpm_token" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="jbpm_token" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-196">
 		<addForeignKeyConstraint baseColumnNames="TOKENVARIABLEMAP_"
-			baseTableName="jbpm_variableinstance" baseTableSchemaName="sitescape_3_2"
+			baseTableName="jbpm_variableinstance" 
 			constraintName="FK_VARINST_TKVARMP" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="ID_" referencedTableName="jbpm_tokenvariablemap"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-197">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_attachments" 
 			constraintName="FKA1AD4C31AFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-198">
 		<addForeignKeyConstraint baseColumnNames="creation_principal"
-			baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_attachments" 
 			constraintName="FKA1AD4C3176767782" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-199">
 		<addForeignKeyConstraint baseColumnNames="filelock_owner"
-			baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_attachments" 
 			constraintName="FKA1AD4C31DC9F01CF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-200">
 		<addForeignKeyConstraint baseColumnNames="folderEntry"
-			baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_attachments" 
 			constraintName="FKA1AD4C31F8D591B9" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-201">
 		<addForeignKeyConstraint baseColumnNames="modification_principal"
-			baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_attachments" 
 			constraintName="FKA1AD4C31BE6C51FF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-202">
 		<addForeignKeyConstraint baseColumnNames="parentAttachment"
-			baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_attachments" 
 			constraintName="FKA1AD4C312D9DE71B" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_attachments"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-203">
 		<addForeignKeyConstraint baseColumnNames="principal"
-			baseTableName="ss_attachments" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_attachments" 
 			constraintName="FKA1AD4C31E49240ED" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-204">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_customattributes" 
 			constraintName="FK476EDFC7AFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-205">
 		<addForeignKeyConstraint baseColumnNames="folderEntry"
-			baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_customattributes" 
 			constraintName="FK476EDFC7F8D591B9" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-206">
 		<addForeignKeyConstraint baseColumnNames="parent"
-			baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_customattributes" 
 			constraintName="FK476EDFC7F05A86A6" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_customattributes"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-207">
 		<addForeignKeyConstraint baseColumnNames="principal"
-			baseTableName="ss_customattributes" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_customattributes" 
 			constraintName="FK476EDFC7E49240ED" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-208">
 		<addForeignKeyConstraint baseColumnNames="creation_principal"
-			baseTableName="ss_dashboards" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_dashboards" 
 			constraintName="FKFA9653BE76767782" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-209">
 		<addForeignKeyConstraint baseColumnNames="modification_principal"
-			baseTableName="ss_dashboards" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_dashboards" 
 			constraintName="FKFA9653BEBE6C51FF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-210">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_definitionmap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_definitionmap" 
 			constraintName="FK170F74AAFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-211">
 		<addForeignKeyConstraint baseColumnNames="definition"
-			baseTableName="ss_definitionmap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_definitionmap" 
 			constraintName="FK170F74A5D291C35" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_definitions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-212">
 		<addForeignKeyConstraint baseColumnNames="creation_principal"
-			baseTableName="ss_definitions" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_definitions" 
 			constraintName="FK7B56F60176767782" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-213">
 		<addForeignKeyConstraint baseColumnNames="modification_principal"
-			baseTableName="ss_definitions" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_definitions" 
 			constraintName="FK7B56F601BE6C51FF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-214">
 		<addForeignKeyConstraint baseColumnNames="principal"
-			baseTableName="ss_emailaddresses" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_emailaddresses" 
 			constraintName="FKC706C345E49240ED" deferrable="false"
 			initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-215">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_events" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_events" 
 			constraintName="FKDE0E53F8AFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-216">
 		<addForeignKeyConstraint baseColumnNames="creation_principal"
-			baseTableName="ss_events" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_events" 
 			constraintName="FKDE0E53F876767782" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-217">
 		<addForeignKeyConstraint baseColumnNames="folderEntry"
-			baseTableName="ss_events" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_events" 
 			constraintName="FKDE0E53F8F8D591B9" deferrable="false"
 			initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-218">
 		<addForeignKeyConstraint baseColumnNames="modification_principal"
-			baseTableName="ss_events" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_events" 
 			constraintName="FKDE0E53F8BE6C51FF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-219">
 		<addForeignKeyConstraint baseColumnNames="principal"
-			baseTableName="ss_events" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_events" 
 			constraintName="FKDE0E53F8E49240ED" deferrable="false"
 			initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-220">
 		<addForeignKeyConstraint baseColumnNames="creation_principal"
-			baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentries" 
 			constraintName="FKA6632C8376767782" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-221">
 		<addForeignKeyConstraint baseColumnNames="modification_principal"
-			baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentries" 
 			constraintName="FKA6632C83BE6C51FF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-222">
 		<addForeignKeyConstraint baseColumnNames="parentBinder"
-			baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentries" 
 			constraintName="FKA6632C835B285D8D" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-223">
 		<addForeignKeyConstraint baseColumnNames="parentEntry"
-			baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentries" 
 			constraintName="FKA6632C832EBDEAFD" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-224">
 		<addForeignKeyConstraint baseColumnNames="reserved_principal"
-			baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentries" 
 			constraintName="FKA6632C83DAD68C8B" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-225">
 		<addForeignKeyConstraint baseColumnNames="topEntry"
-			baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentries" 
 			constraintName="FKA6632C83B8A6E532" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-226">
 		<addForeignKeyConstraint baseColumnNames="wrk_principal"
-			baseTableName="ss_folderentries" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentries" 
 			constraintName="FKA6632C8386C93453" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-227">
 		<addForeignKeyConstraint baseColumnNames="id"
-			baseTableName="ss_folderentrystats" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_folderentrystats" 
 			constraintName="FKC94AB27AF1E91E10" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-228">
 		<addForeignKeyConstraint baseColumnNames="creation_principal"
-			baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_forums" 
 			constraintName="FKDF668A5176767782" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-229">
 		<addForeignKeyConstraint baseColumnNames="entryDef"
-			baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_forums" 
 			constraintName="FKDF668A511CD53535" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_definitions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-230">
 		<addForeignKeyConstraint baseColumnNames="modification_principal"
-			baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_forums" 
 			constraintName="FKDF668A51BE6C51FF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-231">
 		<addForeignKeyConstraint baseColumnNames="owner"
-			baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_forums" 
 			constraintName="FKDF668A5156E7C372" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-232">
 		<addForeignKeyConstraint baseColumnNames="parentBinder"
-			baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_forums" 
 			constraintName="FKDF668A515B285D8D" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-233">
 		<addForeignKeyConstraint baseColumnNames="posting"
-			baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_forums" 
 			constraintName="FKDF668A514477DE34" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_postings"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-234">
 		<addForeignKeyConstraint baseColumnNames="topFolder"
-			baseTableName="ss_forums" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_forums" 
 			constraintName="FKDF668A511CACB780" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-235">
 		<addForeignKeyConstraint baseColumnNames="conditionId"
-			baseTableName="ss_functionconditionmap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_functionconditionmap" 
 			constraintName="FK945D2AD868DAC30E" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_functionconditions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-236">
 		<addForeignKeyConstraint baseColumnNames="functionId"
-			baseTableName="ss_functionconditionmap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_functionconditionmap" 
 			constraintName="FK945D2AD8BCA364AE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_functions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-237">
 		<addForeignKeyConstraint baseColumnNames="functionId"
-			baseTableName="ss_functionoperations" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_functionoperations" 
 			constraintName="FKBEF25643BCA364AE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_functions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-238">
 		<addForeignKeyConstraint baseColumnNames="binderId"
-			baseTableName="ss_notifications" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_notifications" 
 			constraintName="FK9131F9293AD146FE" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-239">
 		<addForeignKeyConstraint baseColumnNames="principalId"
-			baseTableName="ss_notifications" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_notifications" 
 			constraintName="FK9131F9295212927D" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-240">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_postings" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_postings" 
 			constraintName="FKB05DE490AFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-241">
 		<addForeignKeyConstraint baseColumnNames="definition"
-			baseTableName="ss_postings" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_postings" 
 			constraintName="FKB05DE4905D291C35" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_definitions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-242">
 		<addForeignKeyConstraint baseColumnNames="groupId"
-			baseTableName="ss_principalmembership" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_principalmembership" 
 			constraintName="FK176F6225395F3D38" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-243">
 		<addForeignKeyConstraint baseColumnNames="userId"
-			baseTableName="ss_principalmembership" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_principalmembership" 
 			constraintName="FK176F6225921A9ADA" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-244">
 		<addForeignKeyConstraint baseColumnNames="creation_principal"
-			baseTableName="ss_principals" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_principals" 
 			constraintName="FK7693816476767782" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-245">
 		<addForeignKeyConstraint baseColumnNames="modification_principal"
-			baseTableName="ss_principals" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_principals" 
 			constraintName="FK76938164BE6C51FF" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-246">
 		<addForeignKeyConstraint baseColumnNames="parentBinder"
-			baseTableName="ss_principals" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_principals" 
 			constraintName="FK769381645B285D8D" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-247">
 		<addForeignKeyConstraint baseColumnNames="referer"
-			baseTableName="ss_sharedentity" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_sharedentity" 
 			constraintName="FK93426C47D4068DC7" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-248">
 		<addForeignKeyConstraint baseColumnNames="workAreaFunctionMembershipId"
-			baseTableName="ss_workareafunctionmembers" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workareafunctionmembers" 
 			constraintName="FK72202A04B4C37436" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_workareafunctionmemberships"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-249">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_workflowmap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowmap" 
 			constraintName="FK33D2499EAFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-250">
 		<addForeignKeyConstraint baseColumnNames="workflowDefinition"
-			baseTableName="ss_workflowmap" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowmap" 
 			constraintName="FK33D2499EE2459134" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_definitions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-251">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_workflowresponses" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowresponses" 
 			constraintName="FKC44C5F14AFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-252">
 		<addForeignKeyConstraint baseColumnNames="folderEntry"
-			baseTableName="ss_workflowresponses" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowresponses" 
 			constraintName="FKC44C5F14F8D591B9" deferrable="false"
 			initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-253">
 		<addForeignKeyConstraint baseColumnNames="principal"
-			baseTableName="ss_workflowresponses" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowresponses" 
 			constraintName="FKC44C5F14E49240ED" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-254">
 		<addForeignKeyConstraint baseColumnNames="binder"
-			baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowstates" 
 			constraintName="FK8FA8AA80AFFFFC63" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_forums"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-255">
 		<addForeignKeyConstraint baseColumnNames="definition"
-			baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowstates" 
 			constraintName="FK8FA8AA805D291C35" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_definitions"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-256">
 		<addForeignKeyConstraint baseColumnNames="folderEntry"
-			baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowstates" 
 			constraintName="FK8FA8AA80F8D591B9" deferrable="false"
 			initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_folderentries"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-257">
 		<addForeignKeyConstraint baseColumnNames="principal"
-			baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowstates" 
 			constraintName="FK8FA8AA80E49240ED" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-258">
 		<addForeignKeyConstraint baseColumnNames="wrk_principal"
-			baseTableName="ss_workflowstates" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ss_workflowstates" 
 			constraintName="FK8FA8AA8086C93453" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="id" referencedTableName="ss_principals"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			 referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-259">
 		<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			baseTableName="ssqrtz_blob_triggers" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ssqrtz_blob_triggers" 
 			constraintName="FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="ssqrtz_triggers" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-260">
 		<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			baseTableName="ssqrtz_cron_triggers" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ssqrtz_cron_triggers" 
 			constraintName="FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false"
 			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
 			referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="ssqrtz_triggers" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-261">
 		<addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP"
-			baseTableName="ssqrtz_job_listeners" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ssqrtz_job_listeners" 
 			constraintName="FK_SSQRTZ_JOB_LISTENERS_SSQRTZ_JOB_DETAILS"
 			deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
 			onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP"
-			referencedTableName="ssqrtz_job_details" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="ssqrtz_job_details" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-262">
 		<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			baseTableName="ssqrtz_simple_triggers" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ssqrtz_simple_triggers" 
 			constraintName="FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS"
 			deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
 			onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="ssqrtz_triggers" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-263">
 		<addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			baseTableName="ssqrtz_trigger_listeners" baseTableSchemaName="sitescape_3_2"
+			baseTableName="ssqrtz_trigger_listeners" 
 			constraintName="FK_SSQRTZ_TRIGGER_LISTENERS_SSQRTZ_TRIGGERS"
 			deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
 			onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			referencedTableName="ssqrtz_triggers" referencedTableSchemaName="sitescape_3_2"
+			referencedTableName="ssqrtz_triggers" 
 			referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-264">
 		<addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP"
-			baseTableName="ssqrtz_triggers" baseTableSchemaName="sitescape_3_2"
-			constraintName="FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS" deferrable="false"
-			initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
-			referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="ssqrtz_job_details"
-			referencedTableSchemaName="sitescape_3_2" referencesUniqueColumn="false" />
+			baseTableName="ssqrtz_triggers" constraintName="FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS"
+			deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+			onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP"
+			referencedTableName="ssqrtz_job_details" referencesUniqueColumn="false" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-265">
 		<createIndex indexName="IDX_PLDACTR_ACTID" tableName="jbpm_pooledactor"
