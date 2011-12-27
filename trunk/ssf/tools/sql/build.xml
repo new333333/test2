@@ -49,6 +49,11 @@
 		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
 	</target>
 		
+	<target name="init-lb-settings" depends="init-database-type">
+		<property file="${project.dir}/tools/sql/lb-${database.type}.${user.name}.properties"/>
+		<property file="${project.dir}/tools/sql/lb-${database.type}.properties"/>
+	</target>
+		
   	<target name="generate-create-tables-script" depends="init-database-type"
   		description="Generate sql script used for creating tables in sitescape database.">
 		<path id="initpath">
@@ -301,11 +306,7 @@
 		</antcall>
 	</target>
 	<!-- Only called by other targets (like subroutines) -->
-	<target name="execute-script" description="Execute a sql script.">
-  		<!--special file incase the dba is not the account that icecore runs on (customer request for oracle) -->
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}-dba.properties"/>
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
+	<target name="execute-script" description="Execute a sql script." depends="init-jdbc-connection-settings">
 		<sql driver="${jdbc.driver}"
 			url="${jdbc.url}"
 			userid="${jdbc.username}"
@@ -316,7 +317,7 @@
 		</sql>
 	</target>
 		
-	<target name="lb-apply-changelog" depends="init-jdbc-connection-settings">
+	<target name="lb-apply-changelog" depends="init-lb-settings">
 	    <fail unless="database.type">database.type not set</fail>
 		<echo>database.type=${database.type}</echo>
 	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
@@ -328,7 +329,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-master.xml"/>
+		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-create-3.3.xml"/>
 
 	    <updateDatabase
     			logLevel="${lb.log.level}"
@@ -339,7 +340,6 @@
 	            password="${destination.jdbc.password}"
 	            dropFirst="false"
 	            classpathref="project.classpath"
-	    	outputFile="TEMP.SQL"
 	    />		
 	</target>
 	
@@ -367,7 +367,7 @@
 		<antcall target="lb-apply-changelog-sqlserver" inheritAll="false"/>
 	</target>
 
-	<target name="lb-markasran-changelog" depends="init-jdbc-connection-settings">
+	<target name="lb-markasran-changelog" depends="init-lb-settings">
 	    <fail unless="database.type">database.type not set</fail>
 		<echo>database.type=${database.type}</echo>
 	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
@@ -416,7 +416,7 @@
 		<antcall target="lb-markasran-changelog-sqlserver" inheritAll="false"/>
 	</target>
 	
-	<target name="lb-generate-full-changelog" depends="init-jdbc-connection-settings">
+	<target name="lb-generate-full-changelog" depends="init-lb-settings">
 	    <fail unless="database.type">database.type not set</fail>
 		<echo>database.type=${database.type}</echo>
 	    <fail unless="source.jdbc.driver">source.jdbc.driver not set</fail>
@@ -469,7 +469,7 @@
 		<antcall target="lb-generate-full-changelog-sqlserver" inheritAll="false"/>
 	</target>
 	
-	<target name="lb-generate-diff-changelog" depends="init-jdbc-connection-settings">
+	<target name="lb-generate-diff-changelog" depends="init-lb-settings">
 	    <fail unless="database.type">database.type not set</fail>
 		<echo>database.type=${database.type}</echo>
 
