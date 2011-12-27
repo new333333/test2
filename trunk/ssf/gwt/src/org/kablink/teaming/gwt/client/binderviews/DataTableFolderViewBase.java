@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
+import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
@@ -156,8 +157,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private List<ToolPanelBase>				m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
 	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> ColumWidth objects.
 	private String							m_folderSortBy;				// Which column the view is sorted on.
-//!	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
-	private VibeDataGrid<FolderRow>			m_dataTable;				// The actual data table holding the view's information.
+	private VibeCellTable<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
 	private VibeFlowPanel					m_mainPanel;				// The main panel holding the content of the view.
 	private VibeFlowPanel					m_flowPanel;				// The flow panel used to hold the view specific content of the view.
 	private VibeVerticalPanel				m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
@@ -264,7 +264,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Inner class used to provide list of FolderRow's.
 	 */
 	private class FolderRowAsyncProvider extends AsyncDataProvider<FolderRow> {
-		private VibeDataGrid<FolderRow> m_vdt;	// The data table we're providing data for.
+		private VibeCellTable<FolderRow> m_vdt;	// The data table we're providing data for.
 		
 		/**
 		 * Constructor method.
@@ -272,7 +272,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		 * @param vdt
 		 * @param keyProvider
 		 */
-		public FolderRowAsyncProvider(VibeDataGrid<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
+		public FolderRowAsyncProvider(VibeCellTable<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
 			// Initialize the super class and keep track of the data
 			// table.
 			super(keyProvider);
@@ -791,25 +791,43 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// Initialize a map of the column widths used in the data
 		// table...
 		m_columnWidths = new HashMap<String, ColumnWidth>();
+		m_columnWidths.put(COLUMN_SELECT, new ColumnWidth(40, Unit.PX));
+		m_columnWidths.put(COLUMN_PIN,    new ColumnWidth(40, Unit.PX));
 
-		// ...first, the predefined column names...
-		m_columnWidths.put(COLUMN_AUTHOR,   new ColumnWidth( 24));	// Unless otherwise specified...
-		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth(  8));	// ...the widths default to...
-		m_columnWidths.put(COLUMN_DATE,     new ColumnWidth( 20));	// ...be a percentage value.
-		m_columnWidths.put(COLUMN_DOWNLOAD, new ColumnWidth(  8));
-		m_columnWidths.put(COLUMN_HTML,     new ColumnWidth( 10));
-		m_columnWidths.put(COLUMN_LOCATION, new ColumnWidth( 30));
-		m_columnWidths.put(COLUMN_NUMBER,   new ColumnWidth(  5));
-		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth( 10));
-		m_columnWidths.put(COLUMN_SIZE,     new ColumnWidth(  8));
-		m_columnWidths.put(COLUMN_STATE,    new ColumnWidth(  8));
-		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth( 10));
-		m_columnWidths.put(COLUMN_TITLE,    new ColumnWidth( 28));
+		// ...and initialize the remaining data members.
+		initDataMembersImpl(m_dataTable);
+	}
 
-		// ...and then the internal column names.
-		m_columnWidths.put(COLUMN_SELECT,   new ColumnWidth( 40, Unit.PX));
-		m_columnWidths.put(COLUMN_PIN,      new ColumnWidth( 40, Unit.PX));
-		m_columnWidths.put(COLUMN_OTHER,    new ColumnWidth( 20));	// All columns not otherwise listed.
+	/*
+	 * Initializes the additional data members required when the data
+	 * table is implemented using a DataGrid.
+	 */
+	@SuppressWarnings("unused")
+	private void initDataMembersImpl(VibeDataGrid<FolderRow> dg) {
+		// Add the widths for predefined column names...
+		m_columnWidths.put(COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
+		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
+		m_columnWidths.put(COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
+		m_columnWidths.put(COLUMN_DOWNLOAD, new ColumnWidth( 8));
+		m_columnWidths.put(COLUMN_HTML,     new ColumnWidth(10));
+		m_columnWidths.put(COLUMN_LOCATION, new ColumnWidth(30));
+		m_columnWidths.put(COLUMN_NUMBER,   new ColumnWidth( 5));
+		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(COLUMN_SIZE,     new ColumnWidth( 8));
+		m_columnWidths.put(COLUMN_STATE,    new ColumnWidth( 8));
+		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(COLUMN_TITLE,    new ColumnWidth(28));
+
+		// ...and then one for everything else.
+		m_columnWidths.put(COLUMN_OTHER,    new ColumnWidth(20));	// All columns not otherwise listed.
+	}
+	
+	/*
+	 * Initializes the additional data members required when the data
+	 * table is implemented using a CellTable.
+	 */
+	private void initDataMembersImpl(VibeCellTable<FolderRow> ct) {
+		m_columnWidths.put(COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
 	}
 	
 	/*
@@ -958,8 +976,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			// Complete the initialization of the column.
 			column.setSortable(true);
 			m_dataTable.addColumn(column, fc.getColumnTitle());
-		    setColumnStyles(      column, cName, colIndex++);
-		    setColumnWidth(               cName, column    );
+		    setColumnStyles(      column, cName, colIndex++  );
+		    setColumnWidth(               cName, column      );
 
 		    // Is this the column we're sorted on?
 		    if (fc.getColumnSortKey().equalsIgnoreCase(m_folderSortBy)) {
@@ -1498,18 +1516,22 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 */
 	@Override
 	public void onResize() {
-		// Pass the resize on to the super class.
+		// Pass the resize on to the super class...
 		super.onResize();
 
-		// If we're running as a CellTable (instead of a DataGrid)...
-//!		if (m_dataTable instanceof VibeDataGrid) {
-//!			// ...we don't do anything with a resize.
-//!			return;
-//!		}
+		// ...and do what we need to do locally.
+		onResizeImpl(m_dataTable);
+	}
 
+	/*
+	 * Performs the local resizing necessary when the data table is
+	 * implemented using a DataGrid.
+	 */
+	@SuppressWarnings("unused")
+	private void onResizeImpl(VibeDataGrid<FolderRow> dg) {
 		int viewHeight		= getOffsetHeight();												// Height of the view.
 		int viewTop			= getAbsoluteTop();													// Absolute top of the view.		
-		int dtTop			= (m_dataTable.getAbsoluteTop() - viewTop);							// Top of the data table relative to the top of the view.		
+		int dtTop			= (dg.getAbsoluteTop() - viewTop);									// Top of the data table relative to the top of the view.		
 		int dtPagerHeight	= m_dataTablePager.getOffsetHeight();								// Height of the data table's pager.
 		int fpHeight		= ((null == m_footerPanel) ? 0 : m_footerPanel.getOffsetHeight());	// Height of the view's footer panel.
 		int totalBelow		= (dtPagerHeight + fpHeight);										// Total space on the page below the data table.
@@ -1524,7 +1546,15 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		}
 		
 		// Set the height of the data table.
-		m_dataTable.setHeight(dataTableHeight + "px");
+		dg.setHeight(dataTableHeight + "px");
+	}
+	
+	/*
+	 * Performs the local resizing necessary when the data table is
+	 * implemented using a CellTable.
+	 */
+	private void onResizeImpl(VibeCellTable<FolderRow> ct) {
+		// Nothing to do.
 	}
 	
 	/**
@@ -1554,8 +1584,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		FolderRowKeyProvider keyProvider = new FolderRowKeyProvider();
 		
 		// Create the table.
-		m_dataTable = new VibeDataGrid<FolderRow>(m_folderPageSize, keyProvider);
-//!		m_dataTable.setWidth("100%", false);
+		m_dataTable = new VibeCellTable<FolderRow>(m_folderPageSize, keyProvider);
+		setDataTableWidthImpl(m_dataTable);
 		m_dataTable.addStyleName("vibe-dataTableFolderDataTableBase");
 		if (GwtClientHelper.hasString(styleName)) {
 			m_dataTable.addStyleName(styleName);
@@ -1700,6 +1730,23 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		}
 	}
 	
+	/*
+	 * Sets the table width required when the data table is implemented
+	 * as a DataGrid.
+	 */
+	@SuppressWarnings("unused")
+	private void setDataTableWidthImpl(VibeDataGrid<FolderRow> ct) {
+		// Nothing to do.
+	}
+
+	/*
+	 * Sets the table width required when the data table is implemented
+	 * as a CellTable.
+	 */
+	private void setDataTableWidthImpl(VibeCellTable<FolderRow> ct) {
+		ct.setWidth("100%", false);	// false -> Not fixed layout.
+	}
+
 	/**
 	 * Implements the ToolPanelReady.toolPanelReady() method.
 	 */
