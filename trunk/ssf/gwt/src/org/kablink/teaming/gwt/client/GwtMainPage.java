@@ -2325,21 +2325,9 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSearchSimple( SearchSimpleEvent event )
 	{		
-		// What are we searching for?
 		String searchFor = event.getSimpleSearchString();
-		if ( null == searchFor )
-		{
-			searchFor = "";
-		}
-		if (GwtClientHelper.jsHasSimpleSearchForm()) {
-			fireContextChanging();
-			GwtClientHelper.jsInvokeSimpleSearch( searchFor );
-		}
-		
-		else {
-			String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
-			gotoUrlAsync( searchUrl );
-		}
+		String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
+		gotoUrlAsync( searchUrl );
 	}// end onSearchSimple()
 	
 	/**

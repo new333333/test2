@@ -515,7 +515,7 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 				if (ss_isGwtUIActive) {
 					// Yes! Then submit the url to the GWT UI content
 					// frame.
-					window.top.gwtContentIframe.location.href = url;
+					ss_setContentLocation(url);
 				}
 				else {
 					// No, the GWT UI isn't active! Submit the URL
@@ -574,7 +574,7 @@ function ss_openTitleUrl(obj, showInParent) {
 				ss_setSelfLocation(obj.href);
 				return false;
 			} else if (typeof top.window.frames["gwtContentIframe"] != "undefined") {
-				top.window.frames["gwtContentIframe"].location.href = obj.href;
+				ss_setContentLocation(obj.href);
 				return false;
 			}
 			if (self != self.parent) {
@@ -791,7 +791,7 @@ function ss_reloadOpener(fallBackUrl) {
 		if (ss_isGwtUIActive) {
 			// Yes! Then submit the fallBackUrl to the GWT UI
 			// content frame.
-			window.top.gwtContentIframe.location.href = fallBackUrl;
+			ss_setContentLocation(fallBackUrl);
 		}
 		
 		// The remainder of this code is unchanged from what was
@@ -809,7 +809,7 @@ function ss_reloadOpener(fallBackUrl) {
 			} else {
 				if (ss_isGwtUIActive) {
 					self.opener.top.m_requestInfo.forceSidebarReload = "true";
-					self.opener.top.gwtContentIframe.location.href = fallBackUrl;
+					ss_setOpenerLocation(fallBackUrl);
 				}
 				else {
 					self.opener.location.href = fallBackUrl;
@@ -9695,6 +9695,30 @@ function TinyMCEWebKitPasteFixup(t, v) {
 		break;
 	}
 	return v;
+}
+
+/*
+ * Sets the content to a specific URL.
+ */
+function ss_setContentLocation(url) {
+	if (window.top.ss_gotoContentUrl) {
+		window.top.ss_gotoContentUrl(url);
+	}
+	else {
+		window.top.gwtContentIframe.location.href = url;		
+	}
+}
+
+/*
+ * Sets the opener's content to a specific URL.
+ */
+function ss_setOpenerLocation(url) {
+	if (self.opener.top.ss_gotoContentUrl) {
+		self.opener.top.ss_gotoContentUrl(url);
+	}
+	else {
+		self.opener.top.gwtContentIframe.location.href = url;
+	}
 }
 
 /*
