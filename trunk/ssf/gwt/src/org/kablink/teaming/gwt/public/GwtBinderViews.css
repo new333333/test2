@@ -122,3 +122,29 @@
 		.vibe-fileFolderFlowPanel {}
 	/* ...End:  File folder view styles. */
 /* End:  GWT folder view styles. */
+
+/* Start:  Size columns dialog styles. */
+	.vibe-sizeColumnsDlg-colCaption  {font-size:  14px; font-weight: bold;}
+	.vibe-sizeColumnsDlg-cell-even   {background: white;  }
+	.vibe-sizeColumnsDlg-cell-odd    {background: #F3F7FB;}
+	.vibe-sizeColumnsDlg-colPanel    {}
+	.vibe-sizeColumnsDlg-horizPanel  {}
+	.vibe-sizeColumnsDlg-label       {}
+	.vibe-sizeColumnsDlg-radio       {}
+	.vibe-sizeColumnsDlg-radioLabel  {}
+	.vibe-sizeColumnsDlg-scrollLimit {width: 600px;}
+	.vibe-sizeColumnsDlg-scrollPanel {overflow-y: hidden; overflow-x: auto;}
+	.vibe-sizeColumnsDlg-sizePanel   {}
+	.vibe-sizeColumnsDlg-sizeRB      {marging-top: 0px !important;}
+	.vibe-sizeColumnsDlg-sizeSpinner {}
+	.vibe-sizeColumnsDlg-sizeSpinner .textBox
+	{
+		font-size: 12px;
+		padding: 2px 0px;
+		border: 0px;
+		text-align: center;
+		font-family: sans-serif;
+		font-weight: bold;
+		border: 1px solid #949494;
+	}
+/* End:  Size columns dialog  styles. */

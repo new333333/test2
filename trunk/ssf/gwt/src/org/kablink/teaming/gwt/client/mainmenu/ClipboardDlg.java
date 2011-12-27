@@ -494,7 +494,7 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler, EditC
 	}
 
 	/**
-	 * Returns the edited List<FavoriteInfo>.
+	 * Unused.
 	 * 
 	 * Implements the DlgBox.getDataFromDlg() abstract method.
 	 * 
