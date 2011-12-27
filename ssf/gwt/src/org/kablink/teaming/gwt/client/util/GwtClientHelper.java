@@ -504,13 +504,13 @@ public class GwtClientHelper {
 	public static native String jsBuildTagSearchUrl(String tag) /*-{
 		// Find the base tag search result URL...
 		var searchUrl;
-	   	                      try {searchUrl =                           ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
-		if (searchUrl == "") {try {searchUrl =               self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-		if (searchUrl == "") {try {searchUrl =               self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-		if (searchUrl == "") {try {searchUrl = $wnd.top.gwtContentIframe.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+	   	                      try {searchUrl =             ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
+		if (searchUrl == "") {try {searchUrl = self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl = self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl =    $wnd.top.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
 
 		// ...and return it with the tag patched in.
-		searchUrl = $wnd.top.gwtContentIframe.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
+		searchUrl = $wnd.top.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
 		return searchUrl;
 	}-*/;
 	
@@ -607,24 +607,6 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
-	 * Returns true if the GWT simple search form is available and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	public static native boolean jsHasSimpleSearchForm() /*-{
-		var reply = false;
-		var contentIFrame = $wnd.top.gwtContentIframe;
-		if (null != contentIFrame) {
-			var contentDoc = contentIFrame.document;
-			if (null != contentDoc) {
-				reply = (null != contentDoc.getElementById("gwtSimpleSearchForm"));
-			}
-		}
-		return reply;
-	}-*/;
-	
-	/**
 	 * Hides the popup entry iframe div if one exists.
 	 */
 	public static native void jsHideEntryPopupDiv() /*-{
@@ -651,17 +633,6 @@ public class GwtClientHelper {
 		$wnd.top.ss_editAppConfig();
 	}-*/;
 
-	/**
-	 * Invokes a simple search on the given string.
-	 * 
-	 * @param searchForThis
-	 */
-	public static native void jsInvokeSimpleSearch(String searchFor) /*-{
-		var contentDoc = $wnd.top.gwtContentIframe.document;
-		contentDoc.getElementById("gwtSimpleSearchText").value = searchFor;
-		contentDoc.getElementById("gwtSimpleSearchForm").submit();
-	}-*/;
-	
 	/**
 	 * Returns true if we're running in any flavor of IE and false
 	 * otherwise.
