@@ -162,7 +162,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<Long>					m_contributorIds;			//
 	private List<ToolPanelBase>			m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
-	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> ColumnWidth objects.
+	private Map<String, ColumnWidth>	m_defaultColumnWidths;		// Map of column names -> Default ColumnWidth objects.
+	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
 	private SizeColumnsDlg				m_sizeColumnsDlg;			//
 	private String						m_folderSortBy;				// Which column the view is sorted on.
 	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
@@ -189,25 +190,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	@SuppressWarnings("unused")
 	private final static int DATA_TABLE_PANEL_INDEX		= 5;
 	private final static int FOOTER_PANEL_INDEX			= 6;
-
-	// The following are the various predefined names used for columns
-	// in the data table.
-	private final static String COLUMN_AUTHOR	= "author";
-	private final static String COLUMN_COMMENTS	= "comments";
-	private final static String COLUMN_DATE		= "date";
-	private final static String COLUMN_DOWNLOAD	= "download";
-	private final static String COLUMN_HTML		= "html";
-	private final static String COLUMN_LOCATION	= "location";
-	private final static String COLUMN_NUMBER	= "number";
-	private final static String COLUMN_RATING	= "rating";
-	private final static String COLUMN_SIZE		= "size";
-	private final static String COLUMN_STATE	= "state";
-	private final static String COLUMN_TITLE	= "title";
-	
-	// The following are the various internal names used for columns in
-	// the data table.
-	private final static String COLUMN_SELECT	= "--select--";
-	private final static String COLUMN_PIN		= "--pin--";
 
 	// The following are used to construct the style names applied
 	// to the columns and rows of the data table.
@@ -562,8 +544,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		
 		// ...and connect it all together.
 	    m_dataTable.addColumn(column, pinHeader);
-	    setColumnStyles(column, COLUMN_PIN, colIndex);
-	    setColumnWidth(         COLUMN_PIN, column  );
+	    setColumnStyles(column, ColumnWidth.COLUMN_PIN, colIndex);
+	    setColumnWidth(         ColumnWidth.COLUMN_PIN, column  );
 	}
 	
 	/*
@@ -617,8 +599,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 
 		// ...and connect it all together.
 	    m_dataTable.addColumn(column, saHeader);
-	    setColumnStyles(column, COLUMN_SELECT, colIndex);
-	    setColumnWidth(         COLUMN_SELECT, column  );
+	    setColumnStyles(column, ColumnWidth.COLUMN_SELECT, colIndex);
+	    setColumnWidth(         ColumnWidth.COLUMN_SELECT, column  );
 	}
 
 	/*
@@ -643,6 +625,14 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		return false;
 	}
 
+	/*
+	 * Returns true if entries can be pinned in the current folder and
+	 * false otherwise.
+	 */
+	private boolean canPinEntries() {
+		return (FolderType.DISCUSSION == m_folderInfo.getFolderType());
+	}
+	
 	/*
 	 * Checks how many items are ready and once everything is, calls
 	 * super class' viewReady() method.
@@ -723,15 +713,18 @@ public abstract class DataTableFolderViewBase extends ViewBase
 
 		// ...add a column for the checkbox selector...
 		FolderColumn fc = new FolderColumn();
-		fc.setColumnName(COLUMN_SELECT);
+		fc.setColumnName(ColumnWidth.COLUMN_SELECT);
 		fc.setColumnTitle(m_messages.vibeDataTable_Select());
 		reply.add(fc);
 		
-		// ...add a column for the pin selector...
-		fc = new FolderColumn();
-		fc.setColumnName(COLUMN_PIN);
-		fc.setColumnTitle(m_messages.vibeDataTable_Pin());
-		reply.add(fc);
+		// ...if this folder supports entry pinning...
+		if (canPinEntries()) {
+			// ...add a column for the pin selector...
+			fc = new FolderColumn();
+			fc.setColumnName(ColumnWidth.COLUMN_PIN);
+			fc.setColumnTitle(m_messages.vibeDataTable_Pin());
+			reply.add(fc);
+		}
 
 		// ...copy all the defined columns...
 		for (FolderColumn fcScan:  m_folderColumnsList) {
@@ -754,12 +747,12 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			 columnName.equals("assignment_groups") ||
 			 columnName.equals("assignment_teams"));
 	}
-	private static boolean isColumnCustom(      FolderColumn column)     {return column.isCustomColumn();           }
-	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(COLUMN_DOWNLOAD);}
-	private static boolean isColumnRating(      String       columnName) {return columnName.equals(COLUMN_RATING);  }
-	private static boolean isColumnPresence(    String       columnName) {return columnName.equals(COLUMN_AUTHOR);  }
-	private static boolean isColumnTitle(       String       columnName) {return columnName.equals(COLUMN_TITLE);   }
-	private static boolean isColumnView(        String       columnName) {return columnName.equals(COLUMN_HTML);    }
+	private static boolean isColumnCustom(      FolderColumn column)     {return column.isCustomColumn();                       }
+	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);}
+	private static boolean isColumnRating(      String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);  }
+	private static boolean isColumnPresence(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_AUTHOR);  }
+	private static boolean isColumnTitle(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TITLE);   }
+	private static boolean isColumnView(        String       columnName) {return columnName.equals(ColumnWidth.COLUMN_HTML);    }
 
 	/**
 	 * Returns a List<Long> of the IDs of the selected rows from the
@@ -804,11 +797,14 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// table...
 		m_columnWidths = new HashMap<String, ColumnWidth>();
 
-		// ...and initialize the remaining data members.
+		// ...initialize the remaining data members...
 		m_fixedLayout = isFixedLayoutImpl(m_dataTable);
 		if (m_fixedLayout)
 		     initDataMembersFixed();
 		else initDataMembersFloat();
+		
+		// ...and store the initial columns widths as the defaults.
+		m_defaultColumnWidths = ColumnWidth.copyColumnWidths(m_columnWidths);
 	}
 
 	/*
@@ -821,22 +817,22 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		m_defaultColumnWidth = new ColumnWidth(20);
 
 		// Add the widths for predefined column names...
-		m_columnWidths.put(COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
-		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
-		m_columnWidths.put(COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
-		m_columnWidths.put(COLUMN_DOWNLOAD, new ColumnWidth( 8));
-		m_columnWidths.put(COLUMN_HTML,     new ColumnWidth(10));
-		m_columnWidths.put(COLUMN_LOCATION, new ColumnWidth(30));
-		m_columnWidths.put(COLUMN_NUMBER,   new ColumnWidth( 5));
-		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth(10));
-		m_columnWidths.put(COLUMN_SIZE,     new ColumnWidth( 8));
-		m_columnWidths.put(COLUMN_STATE,    new ColumnWidth( 8));
-		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth(10));
-		m_columnWidths.put(COLUMN_TITLE,    new ColumnWidth(28));
+		m_columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
+		m_columnWidths.put(ColumnWidth.COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
+		m_columnWidths.put(ColumnWidth.COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
+		m_columnWidths.put(ColumnWidth.COLUMN_DOWNLOAD, new ColumnWidth( 8));
+		m_columnWidths.put(ColumnWidth.COLUMN_HTML,     new ColumnWidth(10));
+		m_columnWidths.put(ColumnWidth.COLUMN_LOCATION, new ColumnWidth(30));
+		m_columnWidths.put(ColumnWidth.COLUMN_NUMBER,   new ColumnWidth( 5));
+		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(ColumnWidth.COLUMN_SIZE,     new ColumnWidth( 8));
+		m_columnWidths.put(ColumnWidth.COLUMN_STATE,    new ColumnWidth( 8));
+		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(28));
 
 		// ...and then add the widths for everything else.
-		m_columnWidths.put(COLUMN_SELECT, new ColumnWidth(40, Unit.PX));
-		m_columnWidths.put(COLUMN_PIN,    new ColumnWidth(40, Unit.PX));
+		m_columnWidths.put(ColumnWidth.COLUMN_SELECT,   new ColumnWidth(40, Unit.PX));
+		m_columnWidths.put(ColumnWidth.COLUMN_PIN,      new ColumnWidth(40, Unit.PX));
 	}
 	
 	/*
@@ -850,7 +846,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 
 		// For a floating table layout, the only column whose width we
 		// explicitly set is the title.
-		m_columnWidths.put(COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
+		m_columnWidths.put(ColumnWidth.COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
 	}
 	
 	/*
@@ -865,8 +861,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		int colIndex = 0;
 		addSelectColumn(selectionModel, colIndex++);
 
-		// For discussion folders...
-		if (FolderType.DISCUSSION == m_folderInfo.getFolderType()) {
+		// If this folder supports entry pinning...
+		if (canPinEntries()) {
 			// ...add a column to manage pinning the entry.
 			addPinColumn(selectionModel, colIndex++);
 		}
@@ -1327,12 +1323,40 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Store the folder display data and tell the
-				// implementing class to construct itself.
+				// Store the core folder display data.
 				FolderDisplayDataRpcResponseData responseData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
 				m_folderSortBy      = responseData.getFolderSortBy();
 				m_folderSortDescend = responseData.getFolderSortDescend();
 				m_folderPageSize    = responseData.getFolderPageSize();
+
+				// Did we get any column width overrides?
+				Map<String, String> widths = responseData.getFolderColumnWidths();
+				if ((null != widths) && (!(widths.isEmpty()))) {
+					// Yes!  Scan them...
+					for (String cName:  widths.keySet()) {
+						try {
+							// ...parsing the width string...
+							Unit units = Unit.PX;
+							String cwS = widths.get(cName);
+							int unitPos = cwS.indexOf('%');
+							if (0 < unitPos)
+								 units   = Unit.PCT;
+							else unitPos = cwS.indexOf("px");
+							if (0 < unitPos) {
+								cwS = cwS.substring(0, unitPos);
+							}
+							// ...and storing it in the
+							// ...Map<String, ColumnWidth>.
+							m_columnWidths.put(cName, new ColumnWidth(Integer.parseInt(cwS), units));
+						}
+						catch (Exception e) {
+							// On any exception, simply ignore the override.
+						}
+					}
+				}
+				
+				// Finally, tell the implementing class to construct
+				// itself.
 				constructViewAsync();
 			}
 		});
@@ -1766,7 +1790,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	    styles.append(" ");
 	    styles.append(STYLE_COL_BASE);
 	    styles.append("-");
-	    styles.append(columnName.equals(COLUMN_SELECT) ? STYLE_COL_SELECT : columnName);
+	    styles.append(columnName.equals(ColumnWidth.COLUMN_SELECT) ? STYLE_COL_SELECT : columnName);
 	    m_dataTable.addColumnStyleName(colIndex, styles.toString());
 	}
 	
@@ -1807,6 +1831,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			getColumnsForSizing(),
 			m_columnWidths,
 			m_defaultColumnWidth,
+			m_defaultColumnWidths,
 			m_dataTable,
 			m_fixedLayout);
 	}

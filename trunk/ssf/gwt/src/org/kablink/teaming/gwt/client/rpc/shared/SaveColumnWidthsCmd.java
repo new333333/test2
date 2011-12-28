@@ -34,69 +34,65 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.Map;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-
 /**
- * This class holds the response data for the 'get folder display data'
- * RPC command.
+ * This class holds all of the information necessary to execute the
+ * 'save column widths' command.
  * 
  * @author drfoster@novell.com
  */
-public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private boolean				m_folderSortDescend;	//
-	private int					m_folderPageSize;		//
-	private Map<String, String>	m_folderColumnWidths;	//
-	private String				m_folderSortBy;			//
+public class SaveColumnWidthsCmd extends VibeRpcCmd {
+	private Long				m_folderId;		//
+	private Map<String, String>	m_columnWidths;	//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public FolderDisplayDataRpcResponseData() {
+	public SaveColumnWidthsCmd() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Constructor method.
-	 *
-	 * @param folderSortBy
-	 * @param folderSortDescend
-	 * @param folderPageSize
-	 * @param folderColumnWidths
+	 * 
+	 * @param folderId
 	 */
-	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths) {
+	public SaveColumnWidthsCmd(Long folderId, Map<String, String> columnWidths) {
 		// Initialize this object...
 		this();
-		
-		// ...and store the parameters.
-		setFolderSortBy(      folderSortBy       );
-		setFolderSortDescend( folderSortDescend  );
-		setFolderPageSize(    folderPageSize     );
-		setFolderColumnWidths(folderColumnWidths);
+
+		// ...and save the parameters.
+		setFolderId(    folderId    );
+		setColumnWidths(columnWidths);
 	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public boolean             getFolderSortDescend()  {return m_folderSortDescend; }
-	public int                 getFolderPageSize()     {return m_folderPageSize;    }
-	public Map<String, String> getFolderColumnWidths() {return m_folderColumnWidths;}
-	public String              getFolderSortBy()       {return m_folderSortBy;      }
-
+	public Long                getFolderId()     {return m_folderId;    }
+	public Map<String, String> getColumnWidths() {return m_columnWidths;}
+	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param folderSortDescend
-	 * @param folderColumnsList
-	 * @param folderSortBy
+	 * @param
 	 */
-	public void setFolderSortDescend( boolean             folderSortDescend)  {m_folderSortDescend  = folderSortDescend; }
-	public void setFolderPageSize(    int                 folderPageSize)     {m_folderPageSize     = folderPageSize;    }
-	public void setFolderColumnWidths(Map<String, String> folderColumnWidths) {m_folderColumnWidths = folderColumnWidths;}
-	public void setFolderSortBy(      String              folderSortBy)       {m_folderSortBy       = folderSortBy;      }
+	public void setFolderId(    Long                folderId)     {m_folderId     = folderId;    }
+	public void setColumnWidths(Map<String, String> columnWidths) {m_columnWidths = columnWidths;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_COLUMN_WIDTHS.ordinal();
+	}
 }

@@ -387,6 +387,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SaveBinderRegionState();
 	String rpcFailure_SaveClipboardUsers();
+	String rpcFailure_SaveColumnWidths();
 	String rpcFailure_SaveEmailNotificationInfo();
 	String rpcFailure_SaveFileSyncAppConfiguration();
 	String rpcFailure_SaveFolderColumns();

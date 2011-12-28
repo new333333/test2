@@ -33,20 +33,37 @@
 
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Class used to specify column widths in a data table.
  * 
  * @author drfoster@novell.com
  */
-public class ColumnWidth implements IsSerializable {
+public class ColumnWidth {
+	// The following are the various predefined names used for columns.
+	public final static String COLUMN_AUTHOR	= "author";
+	public final static String COLUMN_COMMENTS	= "comments";
+	public final static String COLUMN_DATE		= "date";
+	public final static String COLUMN_DOWNLOAD	= "download";
+	public final static String COLUMN_HTML		= "html";
+	public final static String COLUMN_LOCATION	= "location";
+	public final static String COLUMN_NUMBER	= "number";
+	public final static String COLUMN_RATING	= "rating";
+	public final static String COLUMN_SIZE		= "size";
+	public final static String COLUMN_STATE		= "state";
+	public final static String COLUMN_TITLE		= "title";
+	
+	// The following are the various internal names used for columns.
+	public final static String COLUMN_SELECT	= "--select--";
+	public final static String COLUMN_PIN		= "--pin--";
+
 	private int		m_width;	//
 	private Unit	m_units;	//
-
+	
 	/**
 	 * Constructor method.
 	 */
@@ -116,6 +133,60 @@ public class ColumnWidth implements IsSerializable {
 	public void setWidth(double width) {m_width = ((int) width);}
 	public void setUnits(Unit   units) {m_units =        units; }
 
+	/**
+	 * Returns a copy of a ColumnWidth.
+	 * 
+	 * @return
+	 */
+	public ColumnWidth copyColumnWidth() {
+		return new ColumnWidth(getWidth(), getUnits());
+	}
+
+	/**
+	 * Returns a copy of a Map<String, ColumnWidth>.
+	 * 
+	 * @param cwList
+	 * 
+	 * @return
+	 */
+	public static Map<String, ColumnWidth> copyColumnWidths(Map<String, ColumnWidth> cwList) {
+		// If we weren't given a list...
+		if (null == cwList) {
+			// ...don't return one.
+			return null;
+		}
+
+		// Copy the list into a newly allocated
+		// Map<String, ColumnWidth>()...
+		Map<String, ColumnWidth> reply = new HashMap<String, ColumnWidth>();
+		for (String cName:  cwList.keySet()) {
+			ColumnWidth cw = cwList.get(cName);
+			reply.put(cName, cw.copyColumnWidth());
+		}
+		
+		// ...and return that.
+		return reply;
+	}
+
+	/**
+	 * Returns true of a provide ColumnWidth equals this one.
+	 * 
+	 * @param cw
+	 * 
+	 * @return
+	 */
+	public boolean equals(ColumnWidth cw) {
+		// If we weren't given one to compare to...
+		if (null == cw) {
+			// ...they can't be equal.
+			return false;
+		}
+		
+		// Return true if the data members are equal and false
+		// otherwise.
+		return (cw.getWidth() == getWidth() && cw.getUnits().equals(getUnits()));
+	}
+	
 	/**
 	 * Returns a Column width as a String for use in a style
 	 * 

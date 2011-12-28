@@ -500,6 +500,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_COLUMN_WIDTHS:
+		{
+			GetColumnWidthsCmd gcwCmd = ((GetColumnWidthsCmd) cmd);
+			ColumnWidthsRpcResponseData result = GwtViewHelper.getColumnWidths(
+				this,
+				getRequest( ri ),
+				gcwCmd.getFolderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
 			ActivityStreamInfo asi;
@@ -1498,6 +1509,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			SaveClipboardUsersCmd scuCmd = ((SaveClipboardUsersCmd) cmd);
 			BooleanRpcResponseData result = GwtServerHelper.saveClipboardUsers( this, getRequest( ri ), scuCmd.getClipboardUserList() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SAVE_COLUMN_WIDTHS:
+		{
+			SaveColumnWidthsCmd scwCmd = ((SaveColumnWidthsCmd) cmd);
+			BooleanRpcResponseData result = GwtViewHelper.saveColumnWidths(
+				this,
+				getRequest( ri ),
+				scwCmd.getFolderId(),
+				scwCmd.getColumnWidths() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
