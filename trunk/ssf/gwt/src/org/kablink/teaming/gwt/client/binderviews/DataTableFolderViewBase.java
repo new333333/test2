@@ -63,7 +63,7 @@ import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
-import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
+import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
@@ -112,6 +112,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.Range;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
@@ -148,8 +149,10 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		PurgeSelectedEntriesEvent.Handler
 {
 	private final BinderInfo			m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
+	private boolean						m_fixedLayout;				//
 	private boolean						m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
 	private boolean						m_viewReady;				// Set true once the view and all its components are ready.
+	private ColumnWidth					m_defaultColumnWidth;		//
 	private int							m_folderPageSize;			// Page size as per the user's personal preferences.
 	private int							m_readyComponents;			// Tracks items as they become ready.
 	private EntryMenuPanel				m_entryMenuPanel;			// Panel that holds the entry menu.
@@ -162,7 +165,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> ColumnWidth objects.
 	private SizeColumnsDlg				m_sizeColumnsDlg;			//
 	private String						m_folderSortBy;				// Which column the view is sorted on.
-	private VibeCellTable<FolderRow>	m_dataTable;				// The actual data table holding the view's information.
+	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
 	private VibeFlowPanel				m_mainPanel;				// The main panel holding the content of the view.
 	private VibeFlowPanel				m_flowPanel;				// The flow panel used to hold the view specific content of the view.
 	private VibeVerticalPanel			m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
@@ -205,7 +208,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	// the data table.
 	private final static String COLUMN_SELECT	= "--select--";
 	private final static String COLUMN_PIN		= "--pin--";
-	private final static String COLUMN_OTHER	= "--other--";
 
 	// The following are used to construct the style names applied
 	// to the columns and rows of the data table.
@@ -230,7 +232,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Inner class used to provide list of FolderRow's.
 	 */
 	private class FolderRowAsyncProvider extends AsyncDataProvider<FolderRow> {
-		private VibeCellTable<FolderRow> m_vdt;	// The data table we're providing data for.
+		private AbstractCellTable<FolderRow> m_vdt;	// The data table we're providing data for.
 		
 		/**
 		 * Constructor method.
@@ -238,7 +240,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		 * @param vdt
 		 * @param keyProvider
 		 */
-		public FolderRowAsyncProvider(VibeCellTable<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
+		public FolderRowAsyncProvider(AbstractCellTable<FolderRow> vdt, ProvidesKey<FolderRow> keyProvider) {
 			// Initialize the super class and keep track of the data
 			// table.
 			super(keyProvider);
@@ -520,18 +522,18 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	final public void setFolderSortBy(     String             folderSortBy)      {m_folderSortBy      = folderSortBy;     }
 
 	/*
-	 * Returns true if access to the column sizing dialog is enabled on
-	 * the entry menu and false otherwise.
+	 * Returns true if access to the column sizing dialog should be
+	 * included on the entry menu and false otherwise.
 	 */
+	@SuppressWarnings("unused")
 	private boolean allowColumnSizingImpl(CellTable<FolderRow> ct) {
 		// CallTable's allow variable column sizes.
 		return true;
 	}
 	
-	@SuppressWarnings("unused")
 	private boolean allowColumnSizingImpl(DataGrid<FolderRow> dg) {
-		// DataGrid's must use fixed column sizes.
-		return false;
+		// DataGrid's allow variable column sizes.
+		return true;
 	}
 	
 	/*
@@ -801,22 +803,23 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// Initialize a map of the ColumnWidth's used in the data
 		// table...
 		m_columnWidths = new HashMap<String, ColumnWidth>();
-		m_columnWidths.put(COLUMN_SELECT, new ColumnWidth(40, Unit.PX));
-		m_columnWidths.put(COLUMN_PIN,    new ColumnWidth(40, Unit.PX));
 
 		// ...and initialize the remaining data members.
-		initDataMembersImpl(m_dataTable);
+		m_fixedLayout = isFixedLayoutImpl(m_dataTable);
+		if (m_fixedLayout)
+		     initDataMembersFixed();
+		else initDataMembersFloat();
 	}
 
 	/*
-	 * Initializes any additional data members.
+	 * Initializes any additional data members required when using a
+	 * fixed table layout.
 	 */
-	private void initDataMembersImpl(CellTable<FolderRow> ct) {
-		m_columnWidths.put(COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
-	}
-	
-	@SuppressWarnings("unused")
-	private void initDataMembersImpl(DataGrid<FolderRow> dg) {
+	private void initDataMembersFixed() {
+		// The following defines the default width that will be used for
+		// columns that don't have one specified.
+		m_defaultColumnWidth = new ColumnWidth(20);
+
 		// Add the widths for predefined column names...
 		m_columnWidths.put(COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
 		m_columnWidths.put(COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
@@ -831,8 +834,23 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		m_columnWidths.put(COLUMN_RATING,   new ColumnWidth(10));
 		m_columnWidths.put(COLUMN_TITLE,    new ColumnWidth(28));
 
-		// ...and then one for everything else.
-		m_columnWidths.put(COLUMN_OTHER,    new ColumnWidth(20));	// All columns not otherwise listed.
+		// ...and then add the widths for everything else.
+		m_columnWidths.put(COLUMN_SELECT, new ColumnWidth(40, Unit.PX));
+		m_columnWidths.put(COLUMN_PIN,    new ColumnWidth(40, Unit.PX));
+	}
+	
+	/*
+	 * Initializes any additional data members required when using a
+	 * floating table layout.
+	 */
+	private void initDataMembersFloat() {
+		// The following defines the default width that will be used for
+		// columns that don't have one specified.
+		m_defaultColumnWidth = null;	// new ColumnWidth(1, Unit.PX);
+
+		// For a floating table layout, the only column whose width we
+		// explicitly set is the title.
+		m_columnWidths.put(COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
 	}
 	
 	/*
@@ -992,6 +1010,21 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		}
 	}
 
+	/*
+	 * Return true if the data table should used a fixed layout and
+	 * false other wise. 
+	 */
+	@SuppressWarnings("unused")
+	private boolean isFixedLayoutImpl(CellTable<FolderRow> ct) {
+		// A CellTable can optionally use a fixed table layout.
+		return false;
+	}
+	
+	private boolean isFixedLayoutImpl(DataGrid<FolderRow> dg) {
+		// A DataGrid must always use a fixed table layout.
+		return true;
+	}
+	
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
@@ -1559,11 +1592,11 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/*
 	 * Performs the local resizing necessary.
 	 */
+	@SuppressWarnings("unused")
 	private void onResizeImpl(CellTable<FolderRow> ct) {
 		// Nothing to do.
 	}
 	
-	@SuppressWarnings("unused")
 	private void onResizeImpl(DataGrid<FolderRow> dg) {
 		int viewHeight		= getOffsetHeight();												// Height of the view.
 		int viewTop			= getAbsoluteTop();													// Absolute top of the view.		
@@ -1612,7 +1645,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		FolderRowKeyProvider keyProvider = new FolderRowKeyProvider();
 		
 		// Create the table.
-		m_dataTable = new VibeCellTable<FolderRow>(m_folderPageSize, keyProvider);
+		m_dataTable = new VibeDataGrid<FolderRow>(m_folderPageSize, keyProvider);
 		setDataTableWidthImpl(m_dataTable);
 		m_dataTable.addStyleName("vibe-dataTableFolderDataTableBase");
 		if (GwtClientHelper.hasString(styleName)) {
@@ -1741,33 +1774,27 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Sets the width of a column in the data table based on the
 	 * column's name.
 	 */
-	private void setColumnWidth(String columnName, Column<FolderRow, ?> column) {
+	private void setColumnWidth(String cName, Column<FolderRow, ?> column) {
 		// Determine the width for the column...
-		ColumnWidth width = m_columnWidths.get(columnName);
-		if (null == width) {
-			width = m_columnWidths.get(COLUMN_OTHER);
+		ColumnWidth cw = m_columnWidths.get(cName);
+		if (null == cw) {
+			cw = m_defaultColumnWidth;
 		}
 		
-		// ...and if we have a one...
-		if (null != width) {
-			// ...put it into affect.
-			m_dataTable.setColumnWidth(
-				column,
-				width.getWidth(),
-				width.getUnits());
-		}
+		// ...and put it into affect.
+		m_dataTable.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
 	}
 	
 	/*
 	 * Sets the table width.
 	 */
+	@SuppressWarnings("unused")
 	private void setDataTableWidthImpl(CellTable<FolderRow> ct) {
-		ct.setWidth("100%", false);	// false -> Not fixed layout.
+		ct.setWidth("100%", m_fixedLayout);
 	}
 
-	@SuppressWarnings("unused")
-	private void setDataTableWidthImpl(DataGrid<FolderRow> ct) {
-		// Nothing to do.
+	private void setDataTableWidthImpl(DataGrid<FolderRow> dg) {
+		dg.setWidth("100%");
 	}
 
 	/*
@@ -1779,7 +1806,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			m_folderInfo,
 			getColumnsForSizing(),
 			m_columnWidths,
-			m_dataTable);
+			m_defaultColumnWidth,
+			m_dataTable,
+			m_fixedLayout);
 	}
 	
 	/**
