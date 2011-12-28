@@ -204,20 +204,6 @@
             <property name="width" value=""/> 
           </properties> 
         </item>  
-        <item name="profileConferencingID" caption="__conferencingID" type="data" category="profileEntryData" display="form" id="132"> 
-          <properties> 
-            <property name="caption" value="__conferencingID"/>  
-            <property name="name" value="conferencingID"/>  
-            <property name="width" value=""/> 
-          </properties> 
-        </item>  
-        <item name="profileConferencingPwd" caption="__conferencingPwd" type="data" category="profileEntryData" display="form" id="133"> 
-          <properties> 
-            <property name="caption" value="__conferencingPwd"/>  
-            <property name="name" value="conferencingPwd"/>  
-            <property name="width" value=""/> 
-          </properties> 
-        </item>  
         <item name="profileSkypeId" caption="__skypeId" type="data" dataType="id" category="profileEntryData" display="form" id="134"> 
           <properties> 
             <property name="caption" value="__skypeId"/>  

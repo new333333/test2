@@ -114,9 +114,10 @@
 	</bean>
 
     <!-- ============================= Conferencing Service    ============================ -->
+    <!-- ============================= This has been discintinued    ============================ -->
 	<bean id="conferencingModuleImpl" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.conferencing.impl.ConferencingModuleImpl">
-		<property name="conferencingURL"><value>${conferencing.service.url}</value></property>
-		<property name="enabled"><value>${conferencing.service.enable}</value></property>
+		<property name="conferencingURL"><value></value></property>
+		<property name="enabled"><value>false</value></property>
 	</bean>
 
 	<!-- =========================== Timer-based scheduler for non-stateful jobs ====================== -->
