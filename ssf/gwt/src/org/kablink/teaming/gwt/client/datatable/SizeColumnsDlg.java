@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,13 +83,16 @@ import com.google.gwt.user.client.ui.Widget;
  */
 @SuppressWarnings("unused")
 public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private AbstractCellTable<FolderRow>	m_dt;			// The data table containing the columns.
-	private BinderInfo						m_folderInfo;	// The folder the dialog is running against.
-	private GwtTeamingMainMenuImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
-	private List<FolderColumn> 				m_fcList;		// The columns the dialog is sizing.
-	private Map<String, ColumnWidth>		m_columnWidths;	// The current widths of the columns.
-	private ScrollPanel						m_sp;			// ScrollPanel with the dialog's contents.
+	private AbstractCellTable<FolderRow>	m_dt;					// The data table containing the columns.
+	private BinderInfo						m_folderInfo;			// The folder the dialog is running against.
+	private boolean							m_warnOnUnitMix;		// true -> Warn the user about mixing %/pixel values.  false -> Don't.
+	private ColumnWidth						m_defaultColumnWidth;	// The default column width for the data table.
+	private GwtTeamingMainMenuImageBundle	m_images;				// Access to Vibe's images.
+	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
+	private List<FolderColumn> 				m_fcList;				// The columns the dialog is sizing.
+	private Map<String, ColumnWidth>		m_columnWidths;			// The current widths of the columns.
+	private Map<String, ColumnWidth>		m_initialColumnWidths;	// The widths of the columns passed in when the dialog was invoked.
+	private ScrollPanel						m_sp;					// ScrollPanel with the dialog's contents.
 
 	// The following defines the amount of padded that will be inserted
 	// between the bottom of the dialog and the top of the data table.
@@ -100,7 +104,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	private final static int ROW_DEFAULT_RB	= 1;
 	private final static int ROW_FIXED_RB	= 2;
 	private final static int ROW_SIZER		= 3;
-
+	
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
 	 */
@@ -155,33 +159,113 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 
 	/*
 	 * Changes a column width, both in the data table and the data
-	 * structure used to persist the changes.
+	 * structures used to persist the changes.
 	 */
-	private void adjustColumnWidth(Column<FolderRow, ?> column, double value, Unit units) {
+	private void adjustColumnWidth(String cName, Column<FolderRow, ?> column, ColumnWidth cw) {
 		// Adjust the table to show the width...
-		m_dt.setColumnWidth(column, value, units);
+		m_dt.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
 		
-//!		...this needs to be implemented...
 		// ...and persist the ColumnWidth value.
+		if (null == cw)
+		     m_columnWidths.remove(cName);
+		else m_columnWidths.put(cName, cw);
 	}
 	
-	private void adjustColumnWidth(String cName, double value, Unit units) {
+	private void adjustColumnWidth(String cName, ColumnWidth cw) {
 		// Always use the initial form of the method.
-		adjustColumnWidth(m_dt.getColumn(getColumnIndex(cName)), value, units);
+		adjustColumnWidth(cName, m_dt.getColumn(getColumnIndex(cName)), cw);
 	}
 
 	/*
 	 * Changes a column width based on a unit change.
 	 */
-	private void adjustColumnWidthByUnits(String cName, Spinner unitSpinner, Unit units) {
+	private void adjustColumnWidthByUnits(String cName, ValueSpinner vUnitSpinner, Unit units) {
+		Spinner unitSpinner = vUnitSpinner.getSpinner();
 		double value = unitSpinner.getValue();
-		int max = getWidthMax(units);
+		int max = getUnitMax(units);
 		unitSpinner.setMax(max);
-		if (max > value) {
+		if (max < value) {
+			vUnitSpinner.getTextBox().setValue(String.valueOf(max));
 			unitSpinner.setValue(max, false);
 			value = max;
 		}
-		adjustColumnWidth(cName, value, units);
+		adjustColumnWidth(cName, new ColumnWidth(value, units));
+	}
+
+	/*
+	 * Connect the appropriate column listeners to the various sizing
+	 * widgets for a column.
+	 */
+	private void connectColumnListeners(final String cName, final RadioButton flowRB, final RadioButton fixedRB, final ValueSpinner vSizeSpinner, final RadioButton pctRB, final RadioButton pxRB) {
+		// Connect a listener to the flow radio button.
+		flowRB.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// If this radio button is being checked...
+				if (flowRB.getValue()) {
+					// ...adjust the column widths accordingly and
+					// ...disable the sizer widgets.
+					adjustColumnWidth(cName, m_defaultColumnWidth);
+					setSizeWidgetsEnabled(false, vSizeSpinner, pctRB, pxRB);
+				}
+			}
+		});
+		
+		// Connect a listener to the fixed radio button.
+		fixedRB.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// If this radio button is being checked...
+				if (fixedRB.getValue()) {
+					// ...adjust the column widths accordingly and
+					// ...enable the sizer widgets.
+					adjustColumnWidth(cName, new ColumnWidth(vSizeSpinner.getSpinner().getValue(), (pctRB.getValue() ? Unit.PCT : Unit.PX)));
+					setSizeWidgetsEnabled(true, vSizeSpinner, pctRB, pxRB);
+				}
+			}
+		});
+
+		// Connect a listener to the size spinner.
+		vSizeSpinner.getSpinner().addSpinnerListener(new SpinnerListener() {
+			@Override
+			public void onSpinning(long value) {
+				// Adjust the column width with the value from the
+				// spinner.
+				adjustColumnWidth(cName, new ColumnWidth(value, (pctRB.getValue() ? Unit.PCT : Unit.PX)));
+			}
+		});
+
+		// Connect a listener to the '%' radio button.
+		pctRB.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// If this radio button is being checked...
+				if (pctRB.getValue()) {
+					// ...adjust the column widths accordingly.
+					adjustColumnWidthByUnits(cName, vSizeSpinner, Unit.PCT);
+				}
+			}
+		});
+
+		// Connect a listener to the 'px' radio button.
+		pxRB.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// If this radio button is being checked...
+				if (pxRB.getValue()) {
+					// ...adjust the column widths accordingly.
+					adjustColumnWidthByUnits(cName, vSizeSpinner, Unit.PX);
+
+					// Do we need to warn the user about mixing pixel
+					// widths with percentage widths?
+					if (m_warnOnUnitMix && ColumnWidth.hasPercentWidths(m_columnWidths)) {
+						// Yes!  Warn them.
+						m_warnOnUnitMix = false;
+						Window.alert(m_messages.sizeColumnsDlgWarnPercents());
+					}
+				}
+			}
+		});
 	}
 	
 	/**
@@ -213,7 +297,24 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @return
 	 */
 	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
+		// Restore the column widths to what we were initially given...
+		m_columnWidths.clear();
+		for (String cName:  m_initialColumnWidths.keySet()) {
+			m_columnWidths.put(cName, m_initialColumnWidths.get(cName));
+		}
+
+		// ...restore the widths in the data table as well...
+		for (FolderColumn fc:  m_fcList) {
+			String cName = fc.getColumnName();
+			ColumnWidth cw = m_initialColumnWidths.get(cName);
+			if (null == cw) {
+				cw = m_defaultColumnWidth;
+			}
+			Column<FolderRow, ?> column = m_dt.getColumn(getColumnIndex(cName));
+			m_dt.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
+		}
+		
+		// ...and return true to close the dialog.
 		return true;
 	}
 	
@@ -229,7 +330,10 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-		// Unused.
+		// Persist the new column widths...
+//!		...this needs to be implemented...
+
+		// ..and return true to close the dialog.
 		return true;
 	}
 
@@ -252,18 +356,6 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		// If we get here, we couldn't find the column in question. 
 		// Return -1.
 		return (-1);
-	}
-	
-	/*
-	 * Returns the maximum width constraint for a given unit of
-	 * measure.
-	 */
-	private int getWidthMax(Unit units) {
-		int reply;
-		if (Unit.PCT == units)
-		     reply = 100;
-		else reply = 1000;
-		return reply;
 	}
 	
 	/**
@@ -291,6 +383,18 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		return null;
 	}
 
+	/*
+	 * Returns the maximum width constraint for a given unit of
+	 * measure.
+	 */
+	private int getUnitMax(Unit units) {
+		int reply;
+		if (Unit.PCT == units)
+		     reply = 100;						// Maximum percentage:  100%.
+		else reply = Window.getClientWidth();	// Maximum pixels:      Width of the window.
+		return reply;
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -360,46 +464,37 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		ftFmt.setColSpan(ROW_CAPTION, 0, 4            );
 		
 		// Create a radio button to allow this column's width to flow.
-		final String cName = fc.getColumnName();
+		String cName = fc.getColumnName();
 		ColumnWidth cw = m_columnWidths.get(cName);
 		boolean isFlow = (null == cw);	// No column width -> Flow.
+		if (isFlow) {
+			cw = m_defaultColumnWidth;
+			if (null == cw) {
+				cw = new ColumnWidth(
+					1,
+					(ColumnWidth.hasPercentWidths(m_columnWidths) ?
+						Unit.PCT                                  :
+						Unit.PX));
+			}
+		}
 		String rbGroup = (cName + "_value");
-		final RadioButton flowRB = new RadioButton(rbGroup);
+		RadioButton flowRB = new RadioButton(rbGroup);
 		flowRB.addStyleName("vibe-sizeColumnsDlg-radio");
 		ft.setWidget(ROW_DEFAULT_RB, 0, flowRB);
 		flowRB.setValue(isFlow);
-		flowRB.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				// If this radio button is being checked...
-				if (flowRB.getValue()) {
-					// ...adjust the column widths accordingly.
-//!					...this needs to be implemented...
-				}
-			}
-		});
 		
-		DlgLabel flowLabel = new DlgLabel(m_messages.sizeColumnsDlgFlowRB());
+		String flowText = ((null == m_defaultColumnWidth) ? m_messages.sizeColumnsDlgFlowRB() : m_messages.sizeColumnsDlgDefaultRB(m_defaultColumnWidth.getWidth() + m_defaultColumnWidth.getUnits().getType()));
+		DlgLabel flowLabel = new DlgLabel(flowText);
 		flowLabel.addStyleName("vibe-sizeColumnsDlg-radioLabel");
 		ft.setWidget(    ROW_DEFAULT_RB, 1, flowLabel);
 		ftFmt.setColSpan(ROW_DEFAULT_RB, 1, 3        );
 
 		// Create a radio button to specify a fixed width for this
 		// column.
-		final RadioButton fixedRB = new RadioButton(rbGroup);
+		RadioButton fixedRB = new RadioButton(rbGroup);
 		fixedRB.addStyleName("vibe-sizeColumnsDlg-radio");
 		ft.setWidget(ROW_FIXED_RB, 0, fixedRB);
-		fixedRB.setValue(!isFlow);	// Checked if column width.
-		fixedRB.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				// If this radio button is being checked...
-				if (fixedRB.getValue()) {
-					// ...adjust the column widths accordingly.
-//!					...this needs to be implemented...
-				}
-			}
-		});
+		fixedRB.setValue(!isFlow);
 		
 		DlgLabel fixedLabel = new DlgLabel(m_messages.sizeColumnsDlgFixedRB());
 		fixedLabel.addStyleName("vibe-sizeColumnsDlg-radioLabel");
@@ -408,71 +503,47 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 
 		// Create the widgets for specifying a fixed width for a
 		// column...
-		String unitRBGroup = (cName + "_units");
-		final RadioButton pctRB = new RadioButton(unitRBGroup, m_messages.sizeColumnsDlgUnitPercentRB());
-		final RadioButton pxRB  = new RadioButton(unitRBGroup, m_messages.sizeColumnsDlgUnitPixelRB()  );
-		
-		int  size  = (isFlow ? 50      : cw.getWidth());
-		Unit units = (isFlow ? Unit.PX : cw.getUnits());
-		ValueSpinner vSpinner = new ValueSpinner(size, 0, getWidthMax(units));
-		final Spinner spinner = vSpinner.getSpinner();
-		vSpinner.addStyleName("vibe-sizeColumnsDlg-sizeSpinner");
-		ft.setWidget(ROW_SIZER, 1, vSpinner);
-		vSpinner.getTextBox().setVisibleLength(5);
-		spinner.addSpinnerListener(new SpinnerListener() {
-			@Override
-			public void onSpinning(long value) {
-				// Adjust the column width with the value from the
-				// spinner.
-				adjustColumnWidth(cName, value, (pctRB.getValue() ? Unit.PCT : Unit.PX));
-			}
-		});
+		ValueSpinner vSizeSpinner = new ValueSpinner(cw.getWidth(), 0, getUnitMax(cw.getUnits()));
+		vSizeSpinner.addStyleName("vibe-sizeColumnsDlg-sizeSpinner");
+		ft.setWidget(ROW_SIZER, 1, vSizeSpinner);
+		vSizeSpinner.getTextBox().setVisibleLength(5);
 
 		// ...that can either be a percentage...
 		VerticalPanel sizerPanel = new VibeVerticalPanel();
 		sizerPanel.addStyleName("vibe-sizeColumnsDlg-sizePanel");
 		ft.setWidget(ROW_SIZER, 2, sizerPanel);
+		String unitRBGroup = (cName + "_units");
+		RadioButton pctRB = new RadioButton(unitRBGroup, m_messages.sizeColumnsDlgUnitPercentRB());
 		pctRB.addStyleName("vibe-sizeColumnsDlg-sizeRB");
 		sizerPanel.add(pctRB);
 		pctRB.setWordWrap(false);
-		pctRB.setValue(Unit.PCT == units);
-		pctRB.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				// If this radio button is being checked...
-				if (pctRB.getValue()) {
-					// ...adjust the column widths accordingly.
-					adjustColumnWidthByUnits(cName, spinner, Unit.PCT);
-				}
-			}
-		});
+		pctRB.setValue(Unit.PCT == cw.getUnits());
 
 		// ...or a pixel value.
+		RadioButton pxRB  = new RadioButton(unitRBGroup, m_messages.sizeColumnsDlgUnitPixelRB()  );
 		pxRB.addStyleName("vibe-sizeColumnsDlg-sizeRB");
 		sizerPanel.add(pxRB);
 		pxRB.setWordWrap(false);
-		pxRB.setValue(Unit.PX == units);
-		pxRB.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				// If this radio button is being checked...
-				if (pxRB.getValue()) {
-					// ...adjust the column widths accordingly.
-					adjustColumnWidthByUnits(cName, spinner, Unit.PX);
-				}
-			}
-		});
+		pxRB.setValue(Unit.PX == cw.getUnits());
+
+		// Finally, in flow mode... 
+		if (isFlow) {
+			// ...disable the sizer widgets...
+			setSizeWidgetsEnabled(false, vSizeSpinner, pctRB, pxRB);
+		}
+		// ...and connect the appropriate column listeners.
+		connectColumnListeners(cName, flowRB, fixedRB, vSizeSpinner, pctRB, pxRB);
 	}
 	
 	/*
 	 * Asynchronously runs the given instance of the size columns
 	 * dialog.
 	 */
-	private static void runDlgAsync(final SizeColumnsDlg cbDlg, final BinderInfo fi, final List<FolderColumn> fcList, final Map<String, ColumnWidth> columnWidths, final AbstractCellTable<FolderRow> dt) {
+	private static void runDlgAsync(final SizeColumnsDlg cbDlg, final BinderInfo fi, final List<FolderColumn> fcList, final Map<String, ColumnWidth> columnWidths, final ColumnWidth defaultColumnWidth, final AbstractCellTable<FolderRow> dt, final boolean fixedLayout) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cbDlg.runDlgNow(fi, fcList, columnWidths, dt);
+				cbDlg.runDlgNow(fi, fcList, columnWidths, defaultColumnWidth, dt, fixedLayout);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -482,15 +553,36 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Synchronously runs the given instance of the size columns
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, AbstractCellTable<FolderRow> dt) {
+	private void runDlgNow(BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
 		// Store the parameters...
-		m_folderInfo   = fi;
-		m_fcList       = fcList;
-		m_columnWidths = columnWidths;
-		m_dt           = dt;
+		m_folderInfo         = fi;
+		m_fcList             = fcList;
+		m_columnWidths       = columnWidths;
+		m_defaultColumnWidth = defaultColumnWidth;
+		m_dt                 = dt;
+		
+		// ...initialize any other data members...
+		m_warnOnUnitMix = (!fixedLayout);	// We need to warn the user about mixing %/pixel widths when not using a fixed table layout.
+		
+		// ...clone the column widths so we can restore them if the
+		// ...dialog is canceled...
+		m_initialColumnWidths = new HashMap<String, ColumnWidth>();
+		for (String cName:  m_columnWidths.keySet()) {
+			ColumnWidth cw = m_columnWidths.get(cName);
+			m_initialColumnWidths.put(cName, new ColumnWidth(cw.getWidth(), cw.getUnits()));
+		}
 
 		// ...and populate dialog.
 		populateDlgAsync();
+	}
+
+	/*
+	 * Enabled/disables the sizer widgets.
+	 */
+	private void setSizeWidgetsEnabled(boolean enabled, ValueSpinner vSizeSpinner, RadioButton pctRB, RadioButton pxRB) {
+		vSizeSpinner.setEnabled(enabled);
+		pctRB.setEnabled(       enabled);
+		pxRB.setEnabled(        enabled);
 	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -521,7 +613,9 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			final BinderInfo						fi,
 			final List<FolderColumn>				fcList,
 			final Map<String, ColumnWidth>			columnWidths,
-			final AbstractCellTable<FolderRow>		dt) {
+			final ColumnWidth						defaultColumnWidth,
+			final AbstractCellTable<FolderRow>		dt,
+			final boolean							fixedLayout) {
 		GWT.runAsync(SizeColumnsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -544,7 +638,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(scDlg, fi, fcList, columnWidths, dt);
+					runDlgAsync(scDlg, fi, fcList, columnWidths, defaultColumnWidth, dt, fixedLayout);
 				}
 			}
 		});
@@ -557,7 +651,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @param cbDlgClient
 	 */
 	public static void createAsync(SizeColumnsDlgClient cbDlgClient) {
-		doAsyncOperation(cbDlgClient, null, null, null, null, null);
+		doAsyncOperation(cbDlgClient, null, null, null, null, null, null, false);
 	}
 	
 	/**
@@ -566,9 +660,12 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @param cbDlg
 	 * @param fi
 	 * @param fcList
+	 * @param columnWidths
+	 * @param defaultColumnWidth
 	 * @param dt
+	 * @param fixedLayout
 	 */
-	public static void initAndShow(SizeColumnsDlg cbDlg, BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, AbstractCellTable<FolderRow> dt) {
-		doAsyncOperation(null, cbDlg, fi, fcList, columnWidths, dt);
+	public static void initAndShow(SizeColumnsDlg cbDlg, BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
+		doAsyncOperation(null, cbDlg, fi, fcList, columnWidths, defaultColumnWidth, dt, fixedLayout);
 	}
 }

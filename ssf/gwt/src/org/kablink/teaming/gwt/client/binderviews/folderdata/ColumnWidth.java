@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
+import java.util.Map;
+
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -68,6 +70,16 @@ public class ColumnWidth implements IsSerializable {
 		setUnits(units);
 	}
 	
+	public ColumnWidth(long width, Unit units) {
+		// Always use an alternate form of the constructor.
+		this(((int) width), units);
+	}
+	
+	public ColumnWidth(double width, Unit units) {
+		// Always use an alternate form of the constructor.
+		this(((int) width), units);
+	}
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -76,6 +88,14 @@ public class ColumnWidth implements IsSerializable {
 	public ColumnWidth(int width) {
 		// Always use an alternate form of the constructor.
 		this(width, Unit.PCT);
+	}
+	public ColumnWidth(long width) {
+		// Always use an alternate form of the constructor.
+		this(((int) width), Unit.PCT);
+	}
+	public ColumnWidth(double width) {
+		// Always use an alternate form of the constructor.
+		this(((int) width), Unit.PCT);
 	}
 
 	/**
@@ -91,6 +111,48 @@ public class ColumnWidth implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setWidth(int  width) {m_width = width;}
-	public void setUnits(Unit units) {m_units = units;}
+	public void setWidth(int    width) {m_width =        width; }
+	public void setWidth(long   width) {m_width = ((int) width);}
+	public void setWidth(double width) {m_width = ((int) width);}
+	public void setUnits(Unit   units) {m_units =        units; }
+
+	/**
+	 * Returns a Column width as a String for use in a style
+	 * 
+	 * @return
+	 */
+	public String getWidthStyle() {
+		return (getWidth() + getUnits().getType());
+	}
+	
+	public static String getWidthStyle(ColumnWidth cw) {
+		return ((null == cw) ? null : cw.getWidthStyle());
+	}
+
+	/**
+	 * Returns true of a Map<String, ColumnWidth> contains any percent
+	 * based widths and false otherwise.
+	 * 
+	 * @param columnWidths
+	 * 
+	 * @return
+	 */
+	public static boolean hasPercentWidths(Map<String, ColumnWidth> columnWidths) {
+		// Were we given a Map?
+		if (null != columnWidths) {
+			// Yes!  Scan the ColumnWidth's in the Map.
+			for (String cName:  columnWidths.keySet()) {
+				// Is this ColumnWidth percentage based?
+				ColumnWidth cw = columnWidths.get(cName);
+				if (Unit.PCT == cw.getUnits()) {
+					// Yes!  Return true.
+					return true;
+				}
+			}
+		}
+
+		// If we get here, there were no percentage base ColumnWidths
+		// in the Map.  Return false.
+		return false;
+	}
 }
