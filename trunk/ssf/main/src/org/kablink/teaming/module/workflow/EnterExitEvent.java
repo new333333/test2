@@ -168,7 +168,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 					items  = WorkflowProcessUtils.getOnEntry(ws.getDefinition(), state);
 				} else {
 					isEnter = false;
-					//cancel timers associated with this state.  onElapsedTime timers cancelled by jbpm
+					//cancel timers associated with this state.  onElapsedTime timer is now part of "onDataValue"
 					executionContext.getJbpmContext().getSchedulerSession().cancelTimersByName("onDataValue", token);
 					items  = WorkflowProcessUtils.getOnExit(ws.getDefinition(), state);				
 				}

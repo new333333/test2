@@ -58,6 +58,8 @@ import org.dom4j.DocumentException;
 
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.jbpm.JbpmContext;
+import org.jbpm.graph.exe.Token;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
@@ -98,6 +100,8 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowModule;
+import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
+import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -1480,7 +1484,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					setDefinition(def, definitionTree);
 					
 					//if we are modifying the readAccess then we should reindex all entries associated with this workflow
-					if(itemType.equals("readAccess")){
+					if (itemType.equals("readAccess")){
 						Element ele = item.getParent().getParent();
 						String stateValue = DefinitionUtils.getPropertyValue(ele, "name");
 					    
@@ -1497,6 +1501,28 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
 						for(FolderEntry fEntry: folderEntries){
 							folderModule.indexEntry(fEntry, false);
+						}
+					}
+					
+					if (itemType.equals("transitionOnElapsedTime") || 
+							itemType.equals("transitionOnElapsedTime")) {
+						//modifying timers. Check to see if any conditions need to be processed
+						Element ele = item.getParent().getParent();
+						String stateValue = DefinitionUtils.getPropertyValue(ele, "name");
+					    
+						List<Long> ids = getFolderDao().findFolderIdsFromWorkflowState(def.getId(), stateValue);
+						final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+						if (ids != null && ids.size() > 0) {
+							for(Long id: ids){
+								FolderEntry entry = getFolderDao().loadFolderEntry(id, zoneId);
+								Set<WorkflowState> states = entry.getWorkflowStates();
+								for (WorkflowState state : states) {
+									if (state.getDefinition().equals(def) &&
+											state.getState().equals(stateValue)) {
+										WorkflowProcessUtils.processConditions(entry, false, false);
+									}
+								}
+							}
 						}
 					}
 				}
