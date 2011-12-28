@@ -73,6 +73,7 @@ import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneDayView;
@@ -85,6 +86,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -161,7 +163,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
 		User user = RequestContextHolder.getRequestContext().getUser();
-		if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (WebHelper.isUserLoggedIn(request)) {
 		
 			//The user is logged in
 			if (op.equals(WebKeys.OPERATION_MOBILE_ADD_ENTRY)) {
@@ -200,7 +202,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 
 		User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (!WebHelper.isUserLoggedIn(request)) {
 			if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
 				return ajaxMobileLogin(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
 			} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
@@ -292,10 +294,22 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileShowFollowing(this, request, response);
 		}
 		
-		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (!WebHelper.isUserLoggedIn(request)) {
 			return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 		} else {
-			return ajaxMobileFrontPage(this, request, response);
+			//There is no operation specified. See if this should go to the default home page
+			Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+			HomePageConfig homePageConfig = getZoneModule().getZoneConfig(zoneId).getHomePageConfig();
+			Long binderId = homePageConfig.getDefaultHomePageId();
+			if (WebHelper.isGuestLoggedIn(request) && homePageConfig != null) {
+				binderId = homePageConfig.getDefaultGuestHomePageId();
+				if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
+			}
+			if (binderId != null) {
+				return ajaxMobileShowWorkspace(this, request, response, binderId, null);
+			} else {
+				return ajaxMobileFrontPage(this, request, response);
+			}
 		}
 	} 
 
@@ -1126,13 +1140,17 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowWorkspace(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		return ajaxMobileShowWorkspace(bs, request, response, binderId, entryId);
+	}
+	private ModelAndView ajaxMobileShowWorkspace(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Long binderId, Long entryId) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		if (entryId != null && getProfileModule().getProfileBinderId().equals(binderId)) {
 			//This is a request to show a user. Check if there is a workspace for this user
 			Principal u = getProfileModule().getEntry(entryId);
