@@ -1505,7 +1505,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					}
 					
 					if (itemType.equals("transitionOnElapsedTime") || 
-							itemType.equals("transitionOnElapsedTime")) {
+							itemType.equals("transitionOnEntryData")) {
 						//modifying timers. Check to see if any conditions need to be processed
 						Element ele = item.getParent().getParent();
 						String stateValue = DefinitionUtils.getPropertyValue(ele, "name");
