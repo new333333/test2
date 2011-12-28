@@ -39,11 +39,14 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveColumnWidthsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -63,8 +66,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -87,10 +92,11 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	private BinderInfo						m_folderInfo;			// The folder the dialog is running against.
 	private boolean							m_warnOnUnitMix;		// true -> Warn the user about mixing %/pixel values.  false -> Don't.
 	private ColumnWidth						m_defaultColumnWidth;	// The default column width for the data table.
-	private GwtTeamingMainMenuImageBundle	m_images;				// Access to Vibe's images.
+	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
 	private List<FolderColumn> 				m_fcList;				// The columns the dialog is sizing.
 	private Map<String, ColumnWidth>		m_columnWidths;			// The current widths of the columns.
+	private Map<String, ColumnWidth>		m_defaultColumnWidths;	// The default widths of the columns in the data table.
 	private Map<String, ColumnWidth>		m_initialColumnWidths;	// The widths of the columns passed in when the dialog was invoked.
 	private ScrollPanel						m_sp;					// ScrollPanel with the dialog's contents.
 
@@ -146,7 +152,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		super(false, true);
 
 		// ...initialize everything else...
-		m_images   = GwtTeaming.getMainMenuImageBundle();
+		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
@@ -205,7 +211,11 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 				if (flowRB.getValue()) {
 					// ...adjust the column widths accordingly and
 					// ...disable the sizer widgets.
-					adjustColumnWidth(cName, m_defaultColumnWidth);
+					ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
+					if (null == defaultCW) {
+						defaultCW = m_defaultColumnWidth;
+					}
+					adjustColumnWidth(cName, defaultCW);
 					setSizeWidgetsEnabled(false, vSizeSpinner, pctRB, pxRB);
 				}
 			}
@@ -308,7 +318,10 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			String cName = fc.getColumnName();
 			ColumnWidth cw = m_initialColumnWidths.get(cName);
 			if (null == cw) {
-				cw = m_defaultColumnWidth;
+				cw = m_defaultColumnWidths.get(cName);
+				if (null == cw) {
+					cw = m_defaultColumnWidth;
+				}
 			}
 			Column<FolderRow, ?> column = m_dt.getColumn(getColumnIndex(cName));
 			m_dt.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
@@ -330,11 +343,11 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-		// Persist the new column widths...
-//!		...this needs to be implemented...
-
-		// ..and return true to close the dialog.
-		return true;
+		// Start saving the contents of the dialog and return false.
+		// We'll keep the dialog open until the save is successful, at
+		// which point, we'll close it. 
+		persistColumnWidthsAsync();
+		return false;
 	}
 
 	/*
@@ -393,6 +406,59 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		     reply = 100;						// Maximum percentage:  100%.
 		else reply = Window.getClientWidth();	// Maximum pixels:      Width of the window.
 		return reply;
+	}
+	
+	/*
+	 * Asynchronously saves the contents of the dialog.
+	 */
+	private void persistColumnWidthsAsync() {
+		ScheduledCommand doSave = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				persistColumnWidthsNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSave);
+	}
+	
+	/*
+	 * Synchronously saves the contents of the dialog.
+	 */
+	private void persistColumnWidthsNow() {
+		// Create a save command with the contents of the dialog.
+		Map<String, String> saveableColumnWidths = new HashMap<String, String>();
+		for (String cName:  m_columnWidths.keySet()) {
+			ColumnWidth cw = m_columnWidths.get(cName);
+			ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
+			if (!(cw.equals(defaultCW))) {
+				String cwS = (String.valueOf((int) cw.getWidth()) + cw.getUnits().getType());
+				saveableColumnWidths.put(cName, cwS);
+			}
+		}
+		SaveColumnWidthsCmd saveCmd = new SaveColumnWidthsCmd(
+			m_folderInfo.getBinderIdAsLong(),
+			(saveableColumnWidths.isEmpty() ?
+				null                        :
+				saveableColumnWidths));
+
+		// Can we perform the save?
+		GwtClientHelper.executeCommand(
+				saveCmd,
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SaveColumnWidths());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Yes, the save was successful.  Simply close the
+				// dialog.
+				hide();
+			}
+		});
 	}
 	
 	/*
@@ -458,23 +524,37 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		FlexCellFormatter ftFmt = ft.getFlexCellFormatter();
 
 		// Create a caption for this column's sizer.
-		DlgLabel columnCaption = new DlgLabel(fc.getColumnTitle());
-		columnCaption.addStyleName("vibe-sizeColumnsDlg-colCaption");
-		ft.setWidget(    ROW_CAPTION, 0, columnCaption);
+		Widget captionWidget;
+		String cName = fc.getColumnName();
+		if (cName.equals(ColumnWidth.COLUMN_PIN)) {
+			Image columnCaption = new Image(m_images.grayPin());
+			columnCaption.addStyleName("vibe-sizeColumnsDlg-colCaptionImg");
+			columnCaption.setTitle(m_messages.vibeDataTable_Alt_PinHeader());
+			captionWidget = columnCaption;
+		}
+		else {
+			DlgLabel columnCaption = new DlgLabel(fc.getColumnTitle());
+			columnCaption.addStyleName("vibe-sizeColumnsDlg-colCaptionTxt");
+			captionWidget = columnCaption;
+		}
+		ft.setWidget(    ROW_CAPTION, 0, captionWidget);
 		ftFmt.setColSpan(ROW_CAPTION, 0, 4            );
 		
 		// Create a radio button to allow this column's width to flow.
-		String cName = fc.getColumnName();
 		ColumnWidth cw = m_columnWidths.get(cName);
-		boolean isFlow = (null == cw);	// No column width -> Flow.
+		ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
+		boolean isFlow = ((null == cw) || (cw.equals(defaultCW)));	// No column width or the default for the column -> Flow.
 		if (isFlow) {
-			cw = m_defaultColumnWidth;
-			if (null == cw) {
-				cw = new ColumnWidth(
-					1,
-					(ColumnWidth.hasPercentWidths(m_columnWidths) ?
-						Unit.PCT                                  :
-						Unit.PX));
+			cw = defaultCW;
+			if (null == defaultCW) {
+				cw = m_defaultColumnWidth;
+				if (null == cw) {
+					cw = new ColumnWidth(
+						1,
+						(ColumnWidth.hasPercentWidths(m_columnWidths) ?
+							Unit.PCT                                  :
+							Unit.PX));
+				}
 			}
 		}
 		String rbGroup = (cName + "_value");
@@ -482,8 +562,10 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		flowRB.addStyleName("vibe-sizeColumnsDlg-radio");
 		ft.setWidget(ROW_DEFAULT_RB, 0, flowRB);
 		flowRB.setValue(isFlow);
-		
-		String flowText = ((null == m_defaultColumnWidth) ? m_messages.sizeColumnsDlgFlowRB() : m_messages.sizeColumnsDlgDefaultRB(m_defaultColumnWidth.getWidth() + m_defaultColumnWidth.getUnits().getType()));
+		if (null == defaultCW) {
+			defaultCW = m_defaultColumnWidth;
+		}
+		String flowText = ((null == defaultCW) ? m_messages.sizeColumnsDlgFlowRB() : m_messages.sizeColumnsDlgDefaultRB(defaultCW.getWidth() + defaultCW.getUnits().getType()));
 		DlgLabel flowLabel = new DlgLabel(flowText);
 		flowLabel.addStyleName("vibe-sizeColumnsDlg-radioLabel");
 		ft.setWidget(    ROW_DEFAULT_RB, 1, flowLabel);
@@ -539,11 +621,18 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Asynchronously runs the given instance of the size columns
 	 * dialog.
 	 */
-	private static void runDlgAsync(final SizeColumnsDlg cbDlg, final BinderInfo fi, final List<FolderColumn> fcList, final Map<String, ColumnWidth> columnWidths, final ColumnWidth defaultColumnWidth, final AbstractCellTable<FolderRow> dt, final boolean fixedLayout) {
+	private static void runDlgAsync(final SizeColumnsDlg cbDlg, final BinderInfo fi, final List<FolderColumn> fcList, final Map<String, ColumnWidth> columnWidths, final ColumnWidth defaultColumnWidth, final Map<String, ColumnWidth> defaultColumnWidths, final AbstractCellTable<FolderRow> dt, final boolean fixedLayout) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cbDlg.runDlgNow(fi, fcList, columnWidths, defaultColumnWidth, dt, fixedLayout);
+				cbDlg.runDlgNow(
+					fi,
+					fcList,
+					columnWidths,
+					defaultColumnWidth,
+					defaultColumnWidths,
+					dt,
+					fixedLayout);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -553,24 +642,21 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Synchronously runs the given instance of the size columns
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
+	private void runDlgNow(BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, Map<String, ColumnWidth> defaultColumnWidths, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
 		// Store the parameters...
-		m_folderInfo         = fi;
-		m_fcList             = fcList;
-		m_columnWidths       = columnWidths;
-		m_defaultColumnWidth = defaultColumnWidth;
-		m_dt                 = dt;
+		m_folderInfo          = fi;
+		m_fcList              = fcList;
+		m_columnWidths        = columnWidths;
+		m_defaultColumnWidth  = defaultColumnWidth;
+		m_defaultColumnWidths = defaultColumnWidths;
+		m_dt                  = dt;
 		
 		// ...initialize any other data members...
 		m_warnOnUnitMix = (!fixedLayout);	// We need to warn the user about mixing %/pixel widths when not using a fixed table layout.
 		
 		// ...clone the column widths so we can restore them if the
 		// ...dialog is canceled...
-		m_initialColumnWidths = new HashMap<String, ColumnWidth>();
-		for (String cName:  m_columnWidths.keySet()) {
-			ColumnWidth cw = m_columnWidths.get(cName);
-			m_initialColumnWidths.put(cName, new ColumnWidth(cw.getWidth(), cw.getUnits()));
-		}
+		m_initialColumnWidths = ColumnWidth.copyColumnWidths(m_columnWidths);
 
 		// ...and populate dialog.
 		populateDlgAsync();
@@ -614,6 +700,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			final List<FolderColumn>				fcList,
 			final Map<String, ColumnWidth>			columnWidths,
 			final ColumnWidth						defaultColumnWidth,
+			final Map<String, ColumnWidth>			defaultColumnWidths,
 			final AbstractCellTable<FolderRow>		dt,
 			final boolean							fixedLayout) {
 		GWT.runAsync(SizeColumnsDlg.class, new RunAsyncCallback() {
@@ -638,7 +725,15 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(scDlg, fi, fcList, columnWidths, defaultColumnWidth, dt, fixedLayout);
+					runDlgAsync(
+						scDlg,
+						fi,
+						fcList,
+						columnWidths,
+						defaultColumnWidth,
+						defaultColumnWidths,
+						dt,
+						fixedLayout);
 				}
 			}
 		});
@@ -651,7 +746,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @param cbDlgClient
 	 */
 	public static void createAsync(SizeColumnsDlgClient cbDlgClient) {
-		doAsyncOperation(cbDlgClient, null, null, null, null, null, null, false);
+		doAsyncOperation(cbDlgClient, null, null, null, null, null, null, null, false);
 	}
 	
 	/**
@@ -662,10 +757,20 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @param fcList
 	 * @param columnWidths
 	 * @param defaultColumnWidth
+	 * @param defaultColumnWidths
 	 * @param dt
 	 * @param fixedLayout
 	 */
-	public static void initAndShow(SizeColumnsDlg cbDlg, BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
-		doAsyncOperation(null, cbDlg, fi, fcList, columnWidths, defaultColumnWidth, dt, fixedLayout);
+	public static void initAndShow(SizeColumnsDlg cbDlg, BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, Map<String, ColumnWidth> defaultColumnWidths, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
+		doAsyncOperation(
+			null,
+			cbDlg,
+			fi,
+			fcList,
+			columnWidths,
+			defaultColumnWidth,
+			defaultColumnWidths,
+			dt,
+			fixedLayout);
 	}
 }

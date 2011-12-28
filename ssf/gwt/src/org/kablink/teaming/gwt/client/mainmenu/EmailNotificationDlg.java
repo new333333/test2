@@ -498,7 +498,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_GetEmailNotificationInfo());
+					m_messages.rpcFailure_SaveEmailNotificationInfo());
 			}
 			
 			@Override

@@ -81,6 +81,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
@@ -773,6 +774,43 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns the column widths for a user on a folder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static ColumnWidthsRpcResponseData getColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+		try {
+			// Read the column widths stored in the folder properties...
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+			Map<String, String> columnWidths = ((Map<String, String>) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS));
+			if ((null != columnWidths) && columnWidths.isEmpty()) {
+				columnWidths = null;
+			}
+			
+			// ...and return a ColumnWidthsRpcResponseData containing
+			// ...them.
+			return new ColumnWidthsRpcResponseData(columnWidths);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getColumnWidths( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Returns the entry description from a search results Map.
 	 */
@@ -1077,9 +1115,12 @@ public class GwtViewHelper {
 			try                  {pageSize = Integer.parseInt(MiscUtil.entriesPerPage(userProperties));}
 			catch (Exception ex) {pageSize = 25;                                                       }
 			
+			// Has the user defined any column widths on this folder?
+			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderId);
+			
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
-			return new FolderDisplayDataRpcResponseData(sortBy, sortDescend, pageSize);
+			return new FolderDisplayDataRpcResponseData(sortBy, sortDescend, pageSize, cwData.getColumnWidths());
 		}
 		
 		catch (Exception e) {
@@ -1404,6 +1445,7 @@ public class GwtViewHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static JspHtmlRpcResponseData getJspHtml(AllModulesInjected bs, HttpServletRequest request, 
 			HttpServletResponse response, ServletContext servletContext, 
 			VibeJspHtmlType jspType, Map<String,Object> model) throws GwtTeamingException {
@@ -1965,6 +2007,41 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Stores the column widths for a user on a folder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param columnWidths
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData saveColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId, Map<String, String> columnWidths) throws GwtTeamingException {
+		try {
+			// Store the column widths...
+			bs.getProfileModule().setUserProperty(
+				GwtServerHelper.getCurrentUser().getId(),
+				folderId,
+				ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS,
+				columnWidths);
+			
+			// ...and return true.
+			return new BooleanRpcResponseData(Boolean.TRUE);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.saveColumnWidths( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Generates a value for a custom column in a row.
 	 * 

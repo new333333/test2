@@ -36,46 +36,36 @@ import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * This class holds the response data for the 'get folder display data'
- * RPC command.
+ * This class holds the response data for any command that expects a
+ * Map<String, String> of column width data.
  * 
  * @author drfoster@novell.com
  */
-public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private boolean				m_folderSortDescend;	//
-	private int					m_folderPageSize;		//
-	private Map<String, String>	m_folderColumnWidths;	//
-	private String				m_folderSortBy;			//
+public class ColumnWidthsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private Map<String, String>	m_columnWidths;	// The map of column name to column width values.
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public FolderDisplayDataRpcResponseData() {
+	public ColumnWidthsRpcResponseData() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Constructor method.
-	 *
-	 * @param folderSortBy
-	 * @param folderSortDescend
-	 * @param folderPageSize
-	 * @param folderColumnWidths
+	 * 
+	 * @param columnWidths
 	 */
-	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths) {
-		// Initialize this object...
+	public ColumnWidthsRpcResponseData(Map<String, String> columnWidths) {
+		// Initialize the this object..
 		this();
 		
-		// ...and store the parameters.
-		setFolderSortBy(      folderSortBy       );
-		setFolderSortDescend( folderSortDescend  );
-		setFolderPageSize(    folderPageSize     );
-		setFolderColumnWidths(folderColumnWidths);
+		// ...and store the parameter.
+		setColumnWidths(columnWidths);
 	}
 	
 	/**
@@ -83,20 +73,12 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public boolean             getFolderSortDescend()  {return m_folderSortDescend; }
-	public int                 getFolderPageSize()     {return m_folderPageSize;    }
-	public Map<String, String> getFolderColumnWidths() {return m_folderColumnWidths;}
-	public String              getFolderSortBy()       {return m_folderSortBy;      }
-
+	public Map<String, String> getColumnWidths() {return m_columnWidths;}
+	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param folderSortDescend
-	 * @param folderColumnsList
-	 * @param folderSortBy
+	 * @param
 	 */
-	public void setFolderSortDescend( boolean             folderSortDescend)  {m_folderSortDescend  = folderSortDescend; }
-	public void setFolderPageSize(    int                 folderPageSize)     {m_folderPageSize     = folderPageSize;    }
-	public void setFolderColumnWidths(Map<String, String> folderColumnWidths) {m_folderColumnWidths = folderColumnWidths;}
-	public void setFolderSortBy(      String              folderSortBy)       {m_folderSortBy       = folderSortBy;      }
+	public void setColumnWidths(Map<String, String> columnWidths) {m_columnWidths = columnWidths;}
 }
