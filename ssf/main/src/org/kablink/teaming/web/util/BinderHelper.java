@@ -668,7 +668,7 @@ public class BinderHelper {
 	public static String setupMobileFrontPageBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, String view) {
         User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (!WebHelper.isUserLoggedIn(request)) {
 	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 	    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
 	    	if(ex != null) {
@@ -689,6 +689,7 @@ public class BinderHelper {
 			}
 		}
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		if (userProperties == null) userProperties = new HashMap();
 		Long binderId = user.getWorkspaceId();
 		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
 		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
@@ -729,6 +730,7 @@ public class BinderHelper {
 		}
       	//Get the total records found by the search
       	Integer totalRecords = (Integer)model.get(WebKeys.SEARCH_TOTAL_HITS);
+      	if (totalRecords == null) totalRecords = 0;
       	//Get the records returned (which may be more than the page size)
       	if (totalRecords.intValue() < pageStart) {
       		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
