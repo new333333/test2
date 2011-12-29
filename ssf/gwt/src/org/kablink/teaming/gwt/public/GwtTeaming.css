@@ -1565,6 +1565,12 @@ body, table td, select
 }
 .breadCrumb_Browser
 {
+}
+.breadCrumb_BrowserBinder
+{
+}
+.breadCrumb_BrowserPopup
+{
 	background-color: #f6f6f6;
 	margin: 0 8px 8px;
 	border-top: 1px solid #808384;
@@ -1584,6 +1590,12 @@ body, table td, select
 {
 	color: #FFFFFF;
 	font-size: .85em;
+}
+.breadCrumb_ContentBinder
+{
+}
+.breadCrumb_ContentPopup
+{
 	margin: 0px 20px;
 }
 .breadCrumb_ContentNode
@@ -1599,6 +1611,13 @@ body, table td, select
 {
 	margin-top: 2px;
 	margin-right: 15px;
+}
+.breadCrumb_ContentNode_AnchorBinderRoot
+{
+	font-size: large !important;
+}
+.breadCrumb_ContentNode_AnchorPopupRoot
+{
 }
 
 .popupMenuItemSeparator 

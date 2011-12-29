@@ -910,6 +910,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case TREE_NODE_COLLAPSED:
+				// A TreeNodeCollapsedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TreeNodeCollapsedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TreeNodeCollapsedEvent.registerEvent(eventBus, ((TreeNodeCollapsedEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TREE_NODE_EXPANDED:
+				// A TreeNodeExpandedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TreeNodeExpandedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TreeNodeExpandedEvent.registerEvent(eventBus, ((TreeNodeExpandedEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case UNTRACK_CURRENT_BINDER:
 				// A UntrackCurrentBinderEvent!  Can the event handler
 				// we were given handle that?
@@ -1206,6 +1224,9 @@ public class EventHelper {
 			case TASK_SET_PRIORITY:                 	hasHandler = (eventHandler instanceof TaskSetPriorityEvent.Handler);               break;
 			case TASK_SET_STATUS:                   	hasHandler = (eventHandler instanceof TaskSetStatusEvent.Handler);                 break;
 			case TASK_VIEW:                         	hasHandler = (eventHandler instanceof TaskViewEvent.Handler);                      break;
+			
+			case TREE_NODE_COLLAPSED:                   hasHandler = (eventHandler instanceof TreeNodeCollapsedEvent.Handler);             break;
+			case TREE_NODE_EXPANDED:                    hasHandler = (eventHandler instanceof TreeNodeExpandedEvent.Handler);              break;
 			
 			case TRACK_CURRENT_BINDER:              	hasHandler = (eventHandler instanceof TrackCurrentBinderEvent.Handler);            break;
 			case UNTRACK_CURRENT_BINDER:            	hasHandler = (eventHandler instanceof UntrackCurrentBinderEvent.Handler);          break;

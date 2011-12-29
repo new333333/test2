@@ -1772,7 +1772,7 @@ public class GwtMainPage extends ResizeComposite
 		WorkspaceTreeControl.createAsync(
 				this,
 				m_selectedBinderId,
-				TreeMode.HORIZONTAL,
+				TreeMode.HORIZONTAL_POPUP,
 				new WorkspaceTreeControlClient() {				
 			@Override
 			public void onUnavailable()

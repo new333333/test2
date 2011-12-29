@@ -69,8 +69,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
@@ -78,7 +78,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  * @author drfoster@novell.com
  */
-public class WorkspaceTreeControl extends Composite
+public class WorkspaceTreeControl extends ResizeComposite
 	implements
 	// Event handlers implemented by this class.
 		ActivityStreamEnterEvent.Handler,
@@ -90,6 +90,7 @@ public class WorkspaceTreeControl extends Composite
 		SidebarShowEvent.Handler
 {	
 	private GwtMainPage m_mainPage;
+	private Long m_selectedBinderId;
 	private TreeDisplayBase m_treeDisplay;
 	private TreeMode m_tm;
 	
@@ -114,12 +115,55 @@ public class WorkspaceTreeControl extends Composite
 	/**
 	 * The mode this WorkspaceTreeControl is running in.
 	 * 
-	 * HORIZONTAL:  Typically used in the Teaming bread crumbs.
-	 * VERTICAL:    Typically used in the Teaming sidebar. 
+	 * HORIZONTAL_BINDER:  Typically used in the Vibe bread crumbs embedded in a folder view.
+	 * HORIZONTAL_POPUP:   Typically used in the Vibe bread crumbs drop down from the main menu.
+	 * VERTICAL:           Typically used in the Vibe sidebar. 
 	 */
 	public enum TreeMode {
-		HORIZONTAL,
-		VERTICAL,
+		HORIZONTAL_BINDER,
+		HORIZONTAL_POPUP,
+		VERTICAL;
+		
+		/**
+		 * Returns true if we'redisplaying a horizontal tree and false
+		 * otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean isHorizontal() {
+			return (isHorizontalBinder() || isHorizontalPopup());
+		}
+		
+		/**
+		 * Returns true if we'redisplaying a horizontal binder tree and
+		 * false otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean isHorizontalBinder() {
+			return (TreeMode.HORIZONTAL_BINDER == this);
+		}
+		
+		/**
+		 * Returns true if we'redisplaying a horizontal popup tree and 
+		 * false otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean isHorizontalPopup() {
+			return (TreeMode.HORIZONTAL_POPUP == this);
+		}
+		
+		/**
+		 * Returns true if we'redisplaying a vertical tree and false
+		 * otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean isVertical() {
+			return (TreeMode.VERTICAL == this);
+		}
+		
 	}
 	
 	/*
@@ -131,17 +175,25 @@ public class WorkspaceTreeControl extends Composite
 	 * through its createAsync().
 	 */
 	private WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
-		// Save the parameters.
-		m_mainPage = mainPage;
-		m_tm       = tm;
-
-		final WorkspaceTreeControl wsTree = this;
-		final FlowPanel mainPanel = new FlowPanel();
+		// Initialize the super class...
+		super();
 		
+		// ...save the parameters...
+		m_mainPage         = mainPage;
+		m_selectedBinderId = Long.parseLong(selectedBinderId);
+		m_tm               = tm;
+
+		// ...and initialize everything else.
+		final WorkspaceTreeControl wsTree = this;
+		final VibeFlowPanel mainPanel = new VibeFlowPanel();
+
+		// What type of tree are we constructing?
 		switch (m_tm) {
-		case HORIZONTAL:
+		case HORIZONTAL_BINDER:
+		case HORIZONTAL_POPUP:
 		{
-			mainPanel.addStyleName("breadCrumb_Browser");
+			boolean isBinder = (TreeMode.HORIZONTAL_BINDER == m_tm);
+			mainPanel.addStyleName("breadCrumb_Browser " + (isBinder ? "breadCrumb_BrowserBinder" : "breadCrumb_BrowserPopup"));
 			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				public void onFailure(Throwable t) {
@@ -261,13 +313,31 @@ public class WorkspaceTreeControl extends Composite
 	}
 
 	/**
+	 * Returns the ID of the binder this tree control was built from.
+	 * 
+	 * @return
+	 */
+	public Long getSelectedBinderId() {
+		return m_selectedBinderId;
+	}
+	
+	/**
+	 * Returns the TreeMode of the workspace tree being hosted.
+	 * 
+	 * @return
+	 */
+	public TreeMode getTreeMode() {
+		return m_tm;
+	}
+	
+	/**
 	 * Returns true if the WorkspaceTreeControl is a bread crumb tree
 	 * and false otherwise.
 	 * 
 	 * @return
 	 */
 	public boolean isBreadcrumbTree() {
-		return (TreeMode.HORIZONTAL == m_tm);
+		return (getTreeMode().isHorizontalPopup());
 	}
 	
 	/**
@@ -287,7 +357,7 @@ public class WorkspaceTreeControl extends Composite
 	 * @return
 	 */
 	public boolean isSidebarTree() {
-		return (TreeMode.VERTICAL == m_tm);
+		return (getTreeMode().isVertical());
 	}
 	
 	/**
@@ -595,8 +665,7 @@ public class WorkspaceTreeControl extends Composite
 	 * @param wsTreeCtrlClient
 	 */
 	public static void createAsync(final GwtMainPage mainPage, final String selectedBinderId, final TreeMode mode, final WorkspaceTreeControlClient wsTreeCtrlClient) {
-		GWT.runAsync(WorkspaceTreeControl.class, new RunAsyncCallback()
-		{			
+		GWT.runAsync(WorkspaceTreeControl.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
 				WorkspaceTreeControl wsTreeCtrl = new WorkspaceTreeControl(mainPage, selectedBinderId, mode);
