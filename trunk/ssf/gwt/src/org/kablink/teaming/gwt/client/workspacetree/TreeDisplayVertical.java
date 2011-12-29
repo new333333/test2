@@ -40,6 +40,8 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
+import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
@@ -166,12 +168,16 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Synchronously collapses the current row.
 		 */
 		private void doCollapseRowNow() {
+			// Collapse the row...
 			if (!m_ti.isActivityStream()) {
 				m_ti.clearChildBindersList();
 			}
 			m_ti.setBinderExpanded(false);
 			reRenderRow(m_grid, m_gridRow, m_ti, true);
 			m_expanderImg.setResource(getImages().tree_opener());
+			
+			// ...and tell everybody that it's been collapsed.
+			GwtTeaming.fireEventAsync(new TreeNodeCollapsedEvent(getSelectedBinderId(), getTreeMode()));
 		}
 
 		/*
@@ -191,12 +197,16 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Synchronously expands the current row.
 		 */
 		private void doExpandRowNow(TreeInfo expandedTI) {
+			// Expand the row...
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
 			if (0 < m_ti.getBinderChildren()) {
 				reRenderRow(m_grid, m_gridRow, m_ti, false);
 			}
 			m_expanderImg.setResource(getImages().tree_closer());
+			
+			// ...and tell everybody that it's been expanded.
+			GwtTeaming.fireEventAsync(new TreeNodeExpandedEvent(getSelectedBinderId(), getTreeMode()));
 		}
 		
 		/**
@@ -407,8 +417,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Called to clear the busy state.
 		 */
 		public void clearBusy() {
-			// Clear the time.
+			// Clear the timer.
 			clearTimer();
+			m_busyInfo = null;
 			
 			// Do we have a TreeInfo for the tree node that's busy?
 			if (hasBusyTI()) {
@@ -468,7 +479,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param rootTI
 	 */
 	public TreeDisplayVertical(WorkspaceTreeControl wsTree, TreeInfo rootTI) {
-		// Construct the super class...
+		// Initialize the super class...
 		super(wsTree, rootTI);
 		
 		// ...and initialize everything else.
@@ -667,9 +678,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Are we tracking a BusyInfo indicating that we're in the
 		// middle of a context switch?
 		if (null != m_busyInfo) {
-			// Yes!  Clear the busy state and forget about it.
+			// Yes!  Clear the busy state.
 			m_busyInfo.clearBusy();
-			m_busyInfo = null;
 		}
 	}
 

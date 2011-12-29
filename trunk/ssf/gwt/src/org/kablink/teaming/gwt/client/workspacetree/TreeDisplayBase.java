@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -135,7 +136,10 @@ public abstract class TreeDisplayBase {
 	 * @param rootTI
 	 */
 	public TreeDisplayBase(WorkspaceTreeControl wsTree, TreeInfo rootTI) {
-		// Simply store the parameters.
+		// Initialize the super class...
+		super();
+		
+		// ...and store the parameters.
 		m_wsTree = wsTree;
 		m_rootTI = rootTI;
 	}
@@ -143,12 +147,16 @@ public abstract class TreeDisplayBase {
 	/**
 	 * Constructor method.  (2 of 2)
 	 *
+	 * @param tm
 	 * @param wsTree
 	 * @param rootTIList
 	 */
 	public TreeDisplayBase(WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
-		// Simply store the parameters.
-		m_wsTree = wsTree;
+		// Initialize the super class...
+		super();
+		
+		// ...and store the parameters.
+		m_wsTree     = wsTree;
 		m_rootTIList = rootTIList;
 	}
 
@@ -295,6 +303,24 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
+	 * Returns the ID of the binder this tree control was built from.
+	 * 
+	 * @return
+	 */
+	Long getSelectedBinderId() {
+		return m_wsTree.getSelectedBinderId();
+	}
+	
+	/**
+	 * Returns the TreeMode being displayed.
+	 * 
+	 * @return
+	 */
+	TreeMode getTreeMode() {
+		return m_wsTree.getTreeMode();
+	}
+
+	/**
 	 * Returns the root List<TreeInfo>, if that's what we're
 	 * displaying.
 	 *  
@@ -312,7 +338,7 @@ public abstract class TreeDisplayBase {
 	GwtRpcServiceAsync getRpcService() {
 		return GwtTeaming.getRpcService();
 	}
-		
+
 	/**
 	 * Called to reset the main menu context to that previously loaded.
 	 */

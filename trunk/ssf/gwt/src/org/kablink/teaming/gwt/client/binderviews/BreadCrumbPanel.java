@@ -32,18 +32,27 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
+import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
-
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class used for the content of the bread crumb tree in the binder
@@ -51,8 +60,22 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * 
  * @author drfoster@novell.com
  */
-public class BreadCrumbPanel extends ToolPanelBase {
-	private VibeFlowPanel	m_fp;	// The panel holding the AccessoryPanel's contents.
+public class BreadCrumbPanel extends ToolPanelBase
+	implements
+	// Event handlers implemented by this class.
+		TreeNodeCollapsedEvent.Handler,
+		TreeNodeExpandedEvent.Handler
+{
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private VibeFlowPanel				m_fp;						// The panel holding the content.
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.TREE_NODE_COLLAPSED,
+		TeamingEvents.TREE_NODE_EXPANDED,
+	};
 	
 	/*
 	 * Constructor method.
@@ -82,8 +105,7 @@ public class BreadCrumbPanel extends ToolPanelBase {
 	 * @param tpClient
 	 */
 	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback()
-		{			
+		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
 				BreadCrumbPanel bcp = new BreadCrumbPanel(containerResizer, binderInfo, toolPanelReady);
@@ -96,6 +118,26 @@ public class BreadCrumbPanel extends ToolPanelBase {
 				tpClient.onUnavailable();
 			}
 		});
+	}
+
+	/*
+	 * Asynchronously handles the panel being resized.
+	 */
+	private void doResizeAsync() {
+		ScheduledCommand doResize = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doResizeNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doResize);
+	}
+	
+	/*
+	 * Synchronously handles the panel being resized.
+	 */
+	private void doResizeNow() {
+		panelResized();
 	}
 	
 	/*
@@ -113,25 +155,137 @@ public class BreadCrumbPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the bread crumb panel.
+	 * Synchronously construct's the contents of the panel.
 	 */
 	private void loadPart1Now() {
-//!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("BreadCrumbPanel.loadPart1Now( " + m_binderInfo.getBinderId() + " ):  ...this needs to be implemented..."));
-		
-		// Finally, tell who's using this tool panel that it's ready to
-		// go.
-		toolPanelReady();
+		WorkspaceTreeControl.createAsync(
+				GwtTeaming.getMainPage(),
+				m_binderInfo.getBinderId(),
+				TreeMode.HORIZONTAL_BINDER,
+				new WorkspaceTreeControlClient() {				
+			@Override
+			public void onUnavailable() {
+				// Nothing to do other than tell our container that
+				// we're ready.  The error is handled in the
+				// asynchronous provider.
+				toolPanelReady();
+			}
+			
+			@Override
+			public void onSuccess(WorkspaceTreeControl wsTreeCtrl) {
+				// Add the tree to the panel and tell our container
+				// that we're ready.
+				m_fp.add(wsTreeCtrl);
+				toolPanelReady();
+			}
+		});
 	}
 	
 	/**
-	 * Called from the binder view to allow the panel to do any
-	 * work required to reset itself.
+	 * Called when the accessories panel is attached to the document.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the accessories panel is detached from the document.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Handles TreeNodeCollapsedEvent's received by this class.
+	 * 
+	 * Implements the TreeNodeCollapsedEvent.Handler.onTreeNodeCollapsed()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTreeNodeCollapsed(TreeNodeCollapsedEvent event) {
+		// If this is our bread crumb tree being collapsed...
+		Long binderId = event.getBinderId();
+		if ((binderId.equals(m_binderInfo.getBinderIdAsLong())) && event.getTreeMode().isHorizontalBinder()) {
+			// ...tell our container about the size change.
+			doResizeAsync();
+		}
+	}
+	
+	/**
+	 * Handles TreeNodeExpandedEvent's received by this class.
+	 * 
+	 * Implements the TreeNodeExpandedEvent.Handler.onTreeNodeExpanded()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTreeNodeExpanded(TreeNodeExpandedEvent event) {
+		// If this is our bread crumb tree being expanded...
+		Long binderId = event.getBinderId();
+		if ((binderId.equals(m_binderInfo.getBinderIdAsLong())) && event.getTreeMode().isHorizontalBinder()) {
+			// ...tell our container about the size change.
+			doResizeAsync();
+		}
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+	
+	/**
+	 * Called from the binder view to allow the panel to do any work
+	 * required to reset itself.
 	 * 
 	 * Implements ToolPanelBase.resetPanel()
 	 */
 	@Override
 	public void resetPanel() {
-//!		...this needs to be implemented... 
+		// Reset the widgets and reload the bread crumb tree.
+		m_fp.clear();
+		loadPart1Async();
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 }

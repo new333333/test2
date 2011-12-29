@@ -144,6 +144,9 @@ public enum TeamingEvents implements IsSerializable {
 	TASK_SET_STATUS,					// Sets a Task's Status.
 	TASK_VIEW,							// Sets a Task's View.
 	
+	TREE_NODE_COLLAPSED,				// Fired when the node in a tree is collapsed.
+	TREE_NODE_EXPANDED,					// Fired when the node in a tree is expanded.
+	
 	TRACK_CURRENT_BINDER,				// Tracks the current binder.
 	UNTRACK_CURRENT_BINDER,				// Removes tracking from the current binder.
 	UNTRACK_CURRENT_PERSON,				// Removes tracking from the current person.

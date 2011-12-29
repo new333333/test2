@@ -47,6 +47,8 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -416,12 +418,30 @@ public class GwtTeaming implements EntryPoint
 
 	
 	/**
-	 * Fire a Vibe OnPrem event on the event bus.
+	 * Synchronously fires a Vibe event on the event bus.
 	 * 
 	 * @param event
 	 */
 	public static void fireEvent( VibeEventBase<?> event )
 	{
 		m_eventBus.fireEvent( event );
+	}// end fireEvent()
+	
+	/**
+	 * Asynchronously fires a Vibe event on the event bus.
+	 * 
+	 * @param event
+	 */
+	public static void fireEventAsync( final VibeEventBase<?> event )
+	{
+		ScheduledCommand doEvent = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				fireEvent( event );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred(doEvent);
 	}// end fireEvent()	
 }// end GwtTeaming
