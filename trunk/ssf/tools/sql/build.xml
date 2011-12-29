@@ -14,7 +14,7 @@
 	<property name="update.dir" value="${temporary.dir}/update" />
 	<property name="cinternal.dir" value="${create.dir}/internal" />
 	<property name="uinternal.dir" value="${update.dir}/internal" />
-	<property name="changelog.dir" value="${basedir}/changelog" />
+	<property name="changelog.dir" value="${basedir}/scripts/changelog" />
 	<property name="full.changelog.temp.dir" value="${temporary.dir}/full-changelog" />
 	<property name="diff.changelog.temp.dir" value="${temporary.dir}/diff-changelog" />
 	<property name="lb.log.level" value="info"/>
@@ -329,7 +329,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-create-3.3.xml"/>
+		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-master.xml"/>
 
 	    <updateDatabase
     			logLevel="${lb.log.level}"
