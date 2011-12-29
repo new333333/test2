@@ -238,7 +238,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		// Connect a listener to the size spinner.
 		vSizeSpinner.getSpinner().addSpinnerListener(new SpinnerListener() {
 			@Override
-			public void onSpinning(long value) {
+			public void onSpinning(double value) {
 				// Adjust the column width with the value from the
 				// spinner.
 				adjustColumnWidth(cName, new ColumnWidth(value, (pctRB.getValue() ? Unit.PCT : Unit.PX)));
@@ -412,13 +412,13 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Asynchronously saves the contents of the dialog.
 	 */
 	private void persistColumnWidthsAsync() {
-		ScheduledCommand doSave = new ScheduledCommand() {
+		ScheduledCommand doPersist = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				persistColumnWidthsNow();
 			}
 		};
-		Scheduler.get().scheduleDeferred(doSave);
+		Scheduler.get().scheduleDeferred(doPersist);
 	}
 	
 	/*
@@ -428,11 +428,10 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		// Create a save command with the contents of the dialog.
 		Map<String, String> saveableColumnWidths = new HashMap<String, String>();
 		for (String cName:  m_columnWidths.keySet()) {
-			ColumnWidth cw = m_columnWidths.get(cName);
+			ColumnWidth cw         = m_columnWidths.get(      cName);
 			ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
 			if (!(cw.equals(defaultCW))) {
-				String cwS = (String.valueOf((int) cw.getWidth()) + cw.getUnits().getType());
-				saveableColumnWidths.put(cName, cwS);
+				saveableColumnWidths.put(cName, cw.getWidthStyle());
 			}
 		}
 		SaveColumnWidthsCmd saveCmd = new SaveColumnWidthsCmd(
@@ -541,7 +540,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		ftFmt.setColSpan(ROW_CAPTION, 0, 4            );
 		
 		// Create a radio button to allow this column's width to flow.
-		ColumnWidth cw = m_columnWidths.get(cName);
+		ColumnWidth cw        = m_columnWidths.get(       cName);
 		ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
 		boolean isFlow = ((null == cw) || (cw.equals(defaultCW)));	// No column width or the default for the column -> Flow.
 		if (isFlow) {

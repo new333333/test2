@@ -86,16 +86,16 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
       getSpinner().setValue(date.getTime(), true);
     }
 
-    protected String formatValue(long value) {
+	protected String formatValue(double value) {
       dateInMillis = value;
       if (dateTimeFormat != null) {
-        return dateTimeFormat.format(new Date(dateInMillis));
+        return dateTimeFormat.format(new Date((long) dateInMillis));
       }
       return "";
     }
 
-    protected long parseValue(String value) {
-      Date parsedDate = new Date(dateInMillis);
+    protected double parseValue(String value) {
+      Date parsedDate = new Date((long) dateInMillis);
       dateTimeFormat.parse(value, 0, parsedDate);
       return parsedDate.getTime();
     }
@@ -108,13 +108,13 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
   private static final int DAY_IN_MS = 86400000;
 
   private List<TimeSpinner> timeSpinners = new ArrayList<TimeSpinner>();
-  private long dateInMillis;
+  private double dateInMillis;
   private boolean enabled = true;
 
   private SpinnerListener listener = new SpinnerListener() {
-    public void onSpinning(long value) {
-      ValueChangeEvent.fireIfNotEqual(TimePicker.this, new Date(dateInMillis),
-          new Date(value));
+    public void onSpinning(double value) {
+      ValueChangeEvent.fireIfNotEqual(TimePicker.this, new Date((long) dateInMillis),
+          new Date((long) value));
     };
   };
 
@@ -240,7 +240,7 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
 	if (!hasTime()) {
 		return null;
 	}
-    return new Date(dateInMillis);
+    return new Date((long) dateInMillis);
   }
 
   /**
@@ -260,7 +260,7 @@ public class TimePicker extends Composite implements HasValueChangeHandlers<Date
 	}
 	
     // Only change the date part, leave time part untouched
-    dateInMillis = (long) ((Math.floor(date.getTime() / DAY_IN_MS) + 1) * DAY_IN_MS) + dateInMillis % DAY_IN_MS;
+    dateInMillis = (double) ((Math.floor(date.getTime() / DAY_IN_MS) + 1) * DAY_IN_MS) + dateInMillis % DAY_IN_MS;
     for (TimeSpinner spinner:  timeSpinners) {
       spinner.getSpinner().setValue(dateInMillis, false);
     }

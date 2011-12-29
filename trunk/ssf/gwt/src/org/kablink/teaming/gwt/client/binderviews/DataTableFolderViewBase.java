@@ -842,7 +842,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private void initDataMembersFloat() {
 		// The following defines the default width that will be used for
 		// columns that don't have one specified.
-		m_defaultColumnWidth = null;	// new ColumnWidth(1, Unit.PX);
+		m_defaultColumnWidth = null;	// null -> Flow (no specific width.)
 
 		// For a floating table layout, the only column whose width we
 		// explicitly set is the title.
@@ -1336,18 +1336,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 					for (String cName:  widths.keySet()) {
 						try {
 							// ...parsing the width string...
-							Unit units = Unit.PX;
 							String cwS = widths.get(cName);
-							int unitPos = cwS.indexOf('%');
-							if (0 < unitPos)
-								 units   = Unit.PCT;
-							else unitPos = cwS.indexOf("px");
-							if (0 < unitPos) {
-								cwS = cwS.substring(0, unitPos);
-							}
-							// ...and storing it in the
-							// ...Map<String, ColumnWidth>.
-							m_columnWidths.put(cName, new ColumnWidth(Integer.parseInt(cwS), units));
+							m_columnWidths.put(cName, ColumnWidth.parseWidthStyle(cwS));
 						}
 						catch (Exception e) {
 							// On any exception, simply ignore the override.
