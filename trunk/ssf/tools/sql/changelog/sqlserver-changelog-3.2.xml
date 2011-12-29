@@ -6,7 +6,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_ACTION">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_ACT__C4971C0F05A3D694" />
+					primaryKeyName="PK__JBPM_ACTION" />
 			</column>
 			<column name="class" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -34,7 +34,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_BYTEARRAY">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_BYT__C4971C0F09746778" />
+					primaryKeyName="PK__JBPM_BYTEARRAY" />
 			</column>
 			<column name="NAME_" type="VARCHAR(255)" />
 			<column name="FILEDEFINITION_" type="NUMERIC(19,0)" />
@@ -55,7 +55,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_COMMENT">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_COM__C4971C0F11158940" />
+					primaryKeyName="PK__JBPM_COMMENT" />
 			</column>
 			<column name="VERSION_" type="INT">
 				<constraints nullable="false" />
@@ -85,7 +85,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_DELEGATION">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_DEL__C4971C0F18B6AB08" />
+					primaryKeyName="PK__JBPM_DELEGATION" />
 			</column>
 			<column name="CLASSNAME_" type="VARCHAR(4000)" />
 			<column name="CONFIGURATION_" type="VARCHAR(4000)" />
@@ -97,7 +97,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_EVENT">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_EVE__C4971C0F1C873BEC" />
+					primaryKeyName="PK__JBPM_EVENT" />
 			</column>
 			<column name="EVENTTYPE_" type="VARCHAR(255)" />
 			<column name="TYPE_" type="CHAR(1)" />
@@ -112,7 +112,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_EXCEPTIONHANDLER">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_EXC__C4971C0F2057CCD0" />
+					primaryKeyName="PK__JBPM_EXCEPTIONHANDLER" />
 			</column>
 			<column name="EXCEPTIONCLASSNAME_" type="VARCHAR(4000)" />
 			<column name="TYPE_" type="CHAR(1)" />
@@ -128,7 +128,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_LOG">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_LOG__C4971C0F24285DB4" />
+					primaryKeyName="PK__JBPM_LOG" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -177,7 +177,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_MESSAGE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_MES__C4971C0F27F8EE98" />
+					primaryKeyName="PK__JBPM_MESSAGE" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -197,7 +197,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_MODULEDEFINITION">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_MOD__C4971C0F2BC97F7C" />
+					primaryKeyName="PK__JBPM_MODULEDEFINITION" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -211,7 +211,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_MODULEINSTANCE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_MOD__C4971C0F2F9A1060" />
+					primaryKeyName="PK__JBPM_MODULEINSTANCE" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -225,7 +225,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_NODE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_NOD__C4971C0F336AA144" />
+					primaryKeyName="PK__JBPM_NODE" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -248,7 +248,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_POOLEDACTOR">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_POO__C4971C0F373B3228" />
+					primaryKeyName="PK__JBPM_POOLEDACTOR" />
 			</column>
 			<column name="ACTORID_" type="VARCHAR(255)" />
 			<column name="SWIMLANEINSTANCE_" type="NUMERIC(19,0)" />
@@ -258,7 +258,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_PROCESSDEFINITION">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_PRO__C4971C0F3B0BC30C" />
+					primaryKeyName="PK__JBPM_PROCESSDEFINITION" />
 			</column>
 			<column name="NAME_" type="VARCHAR(255)" />
 			<column name="VERSION_" type="INT" />
@@ -270,7 +270,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_PROCESSINSTANCE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_PRO__C4971C0F3EDC53F0" />
+					primaryKeyName="PK__JBPM_PROCESSINSTANCE" />
 			</column>
 			<column name="VERSION_" type="INT">
 				<constraints nullable="false" />
@@ -287,7 +287,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_RUNTIMEACTION">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_RUN__C4971C0F42ACE4D4" />
+					primaryKeyName="PK__JBPM_RUNTIMEACTION" />
 			</column>
 			<column name="VERSION_" type="INT">
 				<constraints nullable="false" />
@@ -304,7 +304,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_SWIMLANE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_SWI__C4971C0F467D75B8" />
+					primaryKeyName="PK__JBPM_SWIMLANE" />
 			</column>
 			<column name="NAME_" type="VARCHAR(255)" />
 			<column name="ACTORIDEXPRESSION_" type="VARCHAR(255)" />
@@ -317,7 +317,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_SWIMLANEINSTANCE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_SWI__C4971C0F4A4E069C" />
+					primaryKeyName="PK__JBPM_SWIMLANEINSTANCE" />
 			</column>
 			<column name="NAME_" type="VARCHAR(255)" />
 			<column name="ACTORID_" type="VARCHAR(255)" />
@@ -329,7 +329,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_TASK">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_TAS__C4971C0F4E1E9780" />
+					primaryKeyName="PK__JBPM_TASK" />
 			</column>
 			<column name="NAME_" type="VARCHAR(255)" />
 			<column name="PROCESSDEFINITION_" type="NUMERIC(19,0)" />
@@ -361,7 +361,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_TASKCONTROLLER">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_TAS__C4971C0F55BFB948" />
+					primaryKeyName="PK__JBPM_TASKCONTROLLER" />
 			</column>
 			<column name="TASKCONTROLLERDELEGATION_" type="NUMERIC(19,0)" />
 		</createTable>
@@ -370,7 +370,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_TASKINSTANCE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_TAS__C4971C0F59904A2C" />
+					primaryKeyName="PK__JBPM_TASKINSTANCE" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -398,7 +398,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_TIMER">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_TIM__C4971C0F5D60DB10" />
+					primaryKeyName="PK__JBPM_TIMER" />
 			</column>
 			<column name="NAME_" type="VARCHAR(255)" />
 			<column name="DUEDATE_" type="DATETIME" />
@@ -418,7 +418,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_TOKEN">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_TOK__C4971C0F61316BF4" />
+					primaryKeyName="PK__JBPM_TOKEN" />
 			</column>
 			<column name="VERSION_" type="INT">
 				<constraints nullable="false" />
@@ -441,7 +441,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_TOKENVARIABLEMAP">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_TOK__C4971C0F6501FCD8" />
+					primaryKeyName="PK__JBPM_TOKENVARIABLEMAP" />
 			</column>
 			<column name="TOKEN_" type="NUMERIC(19,0)" />
 			<column name="CONTEXTINSTANCE_" type="NUMERIC(19,0)" />
@@ -451,7 +451,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_TRANSITION">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_TRA__C4971C0F68D28DBC" />
+					primaryKeyName="PK__JBPM_TRANSITION" />
 			</column>
 			<column name="NAME_" type="NVARCHAR(255)" />
 			<column name="PROCESSDEFINITION_" type="NUMERIC(19,0)" />
@@ -464,7 +464,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_VARIABLEACCESS">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_VAR__C4971C0F6CA31EA0" />
+					primaryKeyName="PK__JBPM_VARIABLEACCESS" />
 			</column>
 			<column name="VARIABLENAME_" type="VARCHAR(255)" />
 			<column name="ACCESS_" type="VARCHAR(255)" />
@@ -479,7 +479,7 @@
 		<createTable schemaName="dbo" tableName="JBPM_VARIABLEINSTANCE">
 			<column autoIncrement="true" name="ID_" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__JBPM_VAR__C4971C0F7073AF84" />
+					primaryKeyName="PK__JBPM_VARIABLEINSTANCE" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -503,7 +503,7 @@
 		<createTable schemaName="dbo" tableName="SS_Attachments">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Attac__3213E83F7F60ED59" />
+					primaryKeyName="PK__SS_Attachments" />
 			</column>
 			<column name="type" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -553,7 +553,7 @@
 		<createTable schemaName="dbo" tableName="SS_AuditTrail">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Audit__3213E83F03317E3D" />
+					primaryKeyName="PK__SS_AuditTrail" />
 			</column>
 			<column name="type" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -583,7 +583,7 @@
 		<createTable schemaName="dbo" tableName="SS_BinderQuota">
 			<column name="binderId" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Binde__903D2BAA07020F21" />
+					primaryKeyName="PK__SS_BinderQuota" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -597,7 +597,7 @@
 		<createTable schemaName="dbo" tableName="SS_ChangeLogs">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Chang__3213E83F0AD2A005" />
+					primaryKeyName="PK__SS_ChangeLogs" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="docNumber" type="VARCHAR(512)" />
@@ -617,7 +617,7 @@
 		<createTable schemaName="dbo" tableName="SS_CustomAttributes">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Custo__3213E83F0EA330E9" />
+					primaryKeyName="PK__SS_CustomAttributes" />
 			</column>
 			<column name="type" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -648,7 +648,7 @@
 		<createTable schemaName="dbo" tableName="SS_Dashboards">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Dashb__3213E83F1273C1CD" />
+					primaryKeyName="PK__SS_Dashboards" />
 			</column>
 			<column name="type" type="VARCHAR(1)">
 				<constraints nullable="false" />
@@ -688,7 +688,7 @@
 		<createTable schemaName="dbo" tableName="SS_Definitions">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Defin__3213E83F1A14E395" />
+					primaryKeyName="PK__SS_Definitions" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -727,7 +727,7 @@
 		<createTable schemaName="dbo" tableName="SS_EmailLog">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Email__3213E83F24927208" />
+					primaryKeyName="PK__SS_EmailLog" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -752,7 +752,7 @@
 		<createTable schemaName="dbo" tableName="SS_Events">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Event__3213E83F286302EC" />
+					primaryKeyName="PK__SS_Events" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -797,7 +797,7 @@
 		<createTable schemaName="dbo" tableName="SS_Extensions">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Exten__3213E83F2C3393D0" />
+					primaryKeyName="PK__SS_Extensions" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -819,7 +819,7 @@
 		<createTable schemaName="dbo" tableName="SS_FolderEntries">
 			<column autoIncrement="true" name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Folde__3213E83F32E0915F" />
+					primaryKeyName="PK__SS_FolderEntries" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -868,7 +868,7 @@
 		<createTable schemaName="dbo" tableName="SS_FolderEntryStats">
 			<column name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Folde__3213E83F398D8EEE" />
+					primaryKeyName="PK__SS_FolderEntryStats" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="popularity" type="NUMERIC(19,0)" />
@@ -878,7 +878,7 @@
 		<createTable schemaName="dbo" tableName="SS_Forums">
 			<column autoIncrement="true" name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Forum__3213E83F3D5E1FD2" />
+					primaryKeyName="PK__SS_Forums" />
 			</column>
 			<column name="type" type="VARCHAR(16)">
 				<constraints nullable="false" />
@@ -964,7 +964,7 @@
 		<createTable schemaName="dbo" tableName="SS_FunctionConditions">
 			<column autoIncrement="true" name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Funct__3213E83F44FF419A" />
+					primaryKeyName="PK__SS_FunctionConditions" />
 			</column>
 			<column name="type" type="VARCHAR(32)">
 				<constraints nullable="false" />
@@ -994,7 +994,7 @@
 		<createTable schemaName="dbo" tableName="SS_Functions">
 			<column autoIncrement="true" name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Funct__3213E83F4CA06362" />
+					primaryKeyName="PK__SS_Functions" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -1014,7 +1014,7 @@
 		<createTable schemaName="dbo" tableName="SS_IndexingJournal">
 			<column autoIncrement="true" name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Index__3213E83F59FA5E80" />
+					primaryKeyName="PK__SS_IndexingJournal" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="nodeName" type="VARCHAR(128)" />
@@ -1027,7 +1027,7 @@
 		<createTable schemaName="dbo" tableName="SS_IndexNode">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Index__3213E83F534D60F1" />
+					primaryKeyName="PK__SS_IndexNode" />
 			</column>
 			<column name="nodeName" type="VARCHAR(128)" />
 			<column name="indexName" type="VARCHAR(160)" />
@@ -1040,7 +1040,7 @@
 		<createTable schemaName="dbo" tableName="SS_LdapConnectionConfig">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_LdapC__3213E83F5DCAEF64" />
+					primaryKeyName="PK__SS_LdapConnectionConfig" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="url" type="NVARCHAR(255)" />
@@ -1073,7 +1073,7 @@
 		<createTable schemaName="dbo" tableName="SS_LicenseStats">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Licen__3213E83F656C112C" />
+					primaryKeyName="PK__SS_LicenseStats" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -1099,7 +1099,7 @@
 		<createTable schemaName="dbo" tableName="SS_NotifyStatus">
 			<column name="ownerId" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Notif__7E4B714C6A30C649" />
+					primaryKeyName="PK__SS_NotifyStatus" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="ownerType" type="VARCHAR(16)" />
@@ -1114,7 +1114,7 @@
 		<createTable schemaName="dbo" tableName="SS_Postings">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Posti__3213E83F6E01572D" />
+					primaryKeyName="PK__SS_Postings" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -1145,7 +1145,7 @@
 		<createTable schemaName="dbo" tableName="SS_Principals">
 			<column autoIncrement="true" name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Princ__3213E83F75A278F5" />
+					primaryKeyName="PK__SS_Principals" />
 			</column>
 			<column name="type" type="VARCHAR(16)">
 				<constraints nullable="false" />
@@ -1226,7 +1226,7 @@
 		<createTable schemaName="dbo" tableName="SS_SchemaInfo">
 			<column name="schemaVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Schem__956A078E02FC7413" />
+					primaryKeyName="PK__SS_SchemaInfo" />
 			</column>
 		</createTable>
 	</changeSet>
@@ -1234,7 +1234,7 @@
 		<createTable schemaName="dbo" tableName="SS_SeenMap">
 			<column name="principalId" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_SeenM__C255CCD806CD04F7" />
+					primaryKeyName="PK__SS_SeenMap" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="seenMap" type="image">
@@ -1248,7 +1248,7 @@
 		<createTable schemaName="dbo" tableName="SS_SharedEntity">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Share__3213E83F0A9D95DB" />
+					primaryKeyName="PK__SS_SharedEntity" />
 			</column>
 			<column name="referer" type="NUMERIC(19,0)" />
 			<column name="zoneId" type="NUMERIC(19,0)" />
@@ -1292,7 +1292,7 @@
 		<createTable schemaName="dbo" tableName="SS_Tags">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Tags__3213E83F160F4887" />
+					primaryKeyName="PK__SS_Tags" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="entity_type" type="INT" />
@@ -1307,7 +1307,7 @@
 		<createTable schemaName="dbo" tableName="SS_TokenInfo">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Token__3213E83F19DFD96B" />
+					primaryKeyName="PK__SS_TokenInfo" />
 			</column>
 			<column name="type" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -1351,7 +1351,7 @@
 		<createTable schemaName="dbo" tableName="SS_WorkAreaFunctionMemberships">
 			<column autoIncrement="true" name="id" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_WorkA__3213E83F25518C17" />
+					primaryKeyName="PK__SS_WorkAreaFunctionMemberships" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -1374,7 +1374,7 @@
 		<createTable schemaName="dbo" tableName="SS_WorkflowHistory">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Workf__3213E83F29221CFB" />
+					primaryKeyName="PK__SS_WorkflowHistory" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="startBy" type="NUMERIC(19,0)" />
@@ -1409,7 +1409,7 @@
 		<createTable schemaName="dbo" tableName="SS_WorkflowResponses">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Workf__3213E83F30C33EC3" />
+					primaryKeyName="PK__SS_WorkflowResponses" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)" />
 			<column name="folderEntry" type="NUMERIC(19,0)" />
@@ -1430,7 +1430,7 @@
 		<createTable schemaName="dbo" tableName="SS_WorkflowStates">
 			<column name="tokenId" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_Workf__AC16DB473493CFA7" />
+					primaryKeyName="PK__SS_WorkflowStates" />
 			</column>
 			<column name="lockVersion" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -1455,7 +1455,7 @@
 		<createTable schemaName="dbo" tableName="SS_ZoneConfig">
 			<column name="zoneId" type="NUMERIC(19,0)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_ZoneC__2F75DF793864608B" />
+					primaryKeyName="PK__SS_ZoneConfig" />
 			</column>
 			<column name="upgradeVersion" type="INT" />
 			<column name="mobileAccessEnabled" type="TINYINT" />
@@ -1487,7 +1487,7 @@
 		<createTable schemaName="dbo" tableName="SS_ZoneInfo">
 			<column name="id" type="CHAR(32)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_ZoneI__3213E83F3C34F16F" />
+					primaryKeyName="PK__SS_ZoneInfo" />
 			</column>
 			<column name="zoneId" type="NUMERIC(19,0)">
 				<constraints nullable="false" />
@@ -1513,7 +1513,7 @@
 		<createTable schemaName="dbo" tableName="SSQRTZ_CALENDARS">
 			<column name="CALENDAR_NAME" type="VARCHAR(100)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SSQRTZ_C__AABE986A4830B400" />
+					primaryKeyName="PK__SSQRTZ_CALENDARS" />
 			</column>
 			<column name="CALENDAR" type="image">
 				<constraints nullable="false" />
@@ -1538,7 +1538,7 @@
 		<createTable schemaName="dbo" tableName="SSQRTZ_FIRED_TRIGGERS">
 			<column name="ENTRY_ID" type="VARCHAR(95)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SSQRTZ_F__3850D0B04FD1D5C8" />
+					primaryKeyName="PK__SSQRTZ_FIRED_TRIGGERS" />
 			</column>
 			<column name="TRIGGER_NAME" type="VARCHAR(100)">
 				<constraints nullable="false" />
@@ -1611,7 +1611,7 @@
 		<createTable schemaName="dbo" tableName="SSQRTZ_LOCKS">
 			<column name="LOCK_NAME" type="VARCHAR(40)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SSQRTZ_L__938476505B438874" />
+					primaryKeyName="PK__SSQRTZ_LOCKS" />
 			</column>
 		</createTable>
 	</changeSet>
@@ -1619,7 +1619,7 @@
 		<createTable schemaName="dbo" tableName="SSQRTZ_PAUSED_TRIGGER_GRPS">
 			<column name="TRIGGER_GROUP" type="VARCHAR(100)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SSQRTZ_P__D77888F153A266AC" />
+					primaryKeyName="PK__SSQRTZ_PAUSED_TRIGGER_GRPS" />
 			</column>
 		</createTable>
 	</changeSet>
@@ -1627,7 +1627,7 @@
 		<createTable schemaName="dbo" tableName="SSQRTZ_SCHEDULER_STATE">
 			<column name="INSTANCE_NAME" type="VARCHAR(100)">
 				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SSQRTZ_S__CD57CF8B5772F790" />
+					primaryKeyName="PK__SSQRTZ_SCHEDULER_STATE" />
 			</column>
 			<column name="LAST_CHECKIN_TIME" type="BIGINT">
 				<constraints nullable="false" />
@@ -1707,107 +1707,107 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-88">
 		<addPrimaryKey columnNames="PROCESSFILE_, INDEX_"
-			constraintName="PK__JBPM_BYT__84996C4E0D44F85C" schemaName="dbo"
+			constraintName="PK__JBPM_BYTEBLOCK" schemaName="dbo"
 			tableName="JBPM_BYTEBLOCK" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-89">
 		<addPrimaryKey columnNames="DECISION_, INDEX_"
-			constraintName="PK__JBPM_DEC__AAF025B014E61A24" schemaName="dbo"
+			constraintName="PK__JBPM_DECISIONCONDITIONS" schemaName="dbo"
 			tableName="JBPM_DECISIONCONDITIONS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-90">
 		<addPrimaryKey columnNames="TASKINSTANCE_, POOLEDACTOR_"
-			constraintName="PK__JBPM_TAS__AE563B9551EF2864" schemaName="dbo"
+			constraintName="PK__JBPM_TASKACTORPOOL" schemaName="dbo"
 			tableName="JBPM_TASKACTORPOOL" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-91">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			constraintName="PK__SSQRTZ_B__4E22C6756A85CC04" schemaName="dbo"
+			constraintName="PK__SSQRTZ_BLOB_TRIGGERS" schemaName="dbo"
 			tableName="SSQRTZ_BLOB_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-92">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			constraintName="PK__SSQRTZ_C__4E22C6754C0144E4" schemaName="dbo"
+			constraintName="PK__SSQRTZ_CRON_TRIGGERS" schemaName="dbo"
 			tableName="SSQRTZ_CRON_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-93">
 		<addPrimaryKey columnNames="JOB_NAME, JOB_GROUP"
-			constraintName="PK__SSQRTZ_J__4DC76EC95F141958" schemaName="dbo"
+			constraintName="PK__SSQRTZ_JOB_DETAILS" schemaName="dbo"
 			tableName="SSQRTZ_JOB_DETAILS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-94">
 		<addPrimaryKey columnNames="JOB_NAME, JOB_GROUP, JOB_LISTENER"
-			constraintName="PK__SSQRTZ_J__3F32A92362E4AA3C" schemaName="dbo"
+			constraintName="PK__SSQRTZ_JOB_LISTENERS" schemaName="dbo"
 			tableName="SSQRTZ_JOB_LISTENERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-95">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			constraintName="PK__SSQRTZ_S__4E22C67566B53B20" schemaName="dbo"
+			constraintName="PK__SSQRTZ_SIMPLE_TRIGGERS" schemaName="dbo"
 			tableName="SSQRTZ_SIMPLE_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-96">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			constraintName="PK__SSQRTZ_T__4E22C6757226EDCC" schemaName="dbo"
+			constraintName="PK__SSQRTZ_TRIGGERS" schemaName="dbo"
 			tableName="SSQRTZ_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-97">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_LISTENER"
-			constraintName="PK__SSQRTZ_T__B47382806E565CE8" schemaName="dbo"
+			constraintName="PK__SSQRTZ_TRIGGER_LISTENERS" schemaName="dbo"
 			tableName="SSQRTZ_TRIGGER_LISTENERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-98">
 		<addPrimaryKey columnNames="binder, position"
-			constraintName="PK__SS_Defin__162A6318164452B1" schemaName="dbo"
+			constraintName="PK__SS_DefinitionMap" schemaName="dbo"
 			tableName="SS_DefinitionMap" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-99">
 		<addPrimaryKey columnNames="principal, type"
-			constraintName="PK__SS_Email__F4CF28F620C1E124" schemaName="dbo"
+			constraintName="PK__SS_EmailAddresses" schemaName="dbo"
 			tableName="SS_EmailAddresses" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-100">
 		<addPrimaryKey columnNames="functionId, operationName"
-			constraintName="PK__SS_Funct__149FD26248CFD27E" schemaName="dbo"
+			constraintName="PK__SS_FunctionOperations" schemaName="dbo"
 			tableName="SS_FunctionOperations" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-101">
 		<addPrimaryKey columnNames="binderId, type, name"
-			constraintName="PK__SS_Libra__05704FA1619B8048" schemaName="dbo"
+			constraintName="PK__SS_LibraryEntries" schemaName="dbo"
 			tableName="SS_LibraryEntries" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-102">
 		<addPrimaryKey columnNames="userId, groupId"
-			constraintName="PK__SS_Princ__03160CCB71D1E811" schemaName="dbo"
+			constraintName="PK__SS_PrincipalMembership" schemaName="dbo"
 			tableName="SS_PrincipalMembership" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-103">
 		<addPrimaryKey columnNames="principalId, entityId, entityType"
-			constraintName="PK__SS_Ratin__1B85FCD27F2BE32F" schemaName="dbo"
+			constraintName="PK__SS_Ratings" schemaName="dbo"
 			tableName="SS_Ratings" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-104">
 		<addPrimaryKey columnNames="zoneId, name"
-			constraintName="PK__SS_Simpl__985BCD880E6E26BF" schemaName="dbo"
+			constraintName="PK__SS_SimpleName" schemaName="dbo"
 			tableName="SS_SimpleName" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-105">
 		<addPrimaryKey columnNames="principalId, entityId, entityType"
-			constraintName="PK__SS_Subsc__1B85FCD2123EB7A3" schemaName="dbo"
+			constraintName="PK__SS_Subscriptions" schemaName="dbo"
 			tableName="SS_Subscriptions" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-106">
 		<addPrimaryKey columnNames="principalId, binderId"
-			constraintName="PK__SS_UserP__7B561E621DB06A4F" schemaName="dbo"
+			constraintName="PK__SS_UserProperties" schemaName="dbo"
 			tableName="SS_UserProperties" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-107">
 		<addPrimaryKey columnNames="workAreaFunctionMembershipId, memberId"
-			constraintName="PK__SS_WorkA__F56B37B42180FB33" schemaName="dbo"
+			constraintName="PK__SS_WorkAreaFunctionMembers" schemaName="dbo"
 			tableName="SS_WorkAreaFunctionMembers" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-108">
 		<addPrimaryKey columnNames="binder, entryDefinition"
-			constraintName="PK__SS_Workf__5A2742382CF2ADDF" schemaName="dbo"
+			constraintName="PK__SS_WorkflowMap" schemaName="dbo"
 			tableName="SS_WorkflowMap" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-109">
