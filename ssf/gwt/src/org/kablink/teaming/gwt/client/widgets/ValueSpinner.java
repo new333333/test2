@@ -89,7 +89,7 @@ public class ValueSpinner extends HorizontalPanel {
 	private final TextBox valueBox = new TextBox();
 
 	private SpinnerListener spinnerListener = new SpinnerListener() {
-		public void onSpinning(long value) {
+		public void onSpinning(double value) {
 			if (getSpinner() != null) {
 				getSpinner().setValue(value, false);
 			}
@@ -116,7 +116,7 @@ public class ValueSpinner extends HorizontalPanel {
 			}
 			valueBox.cancelKey();
 			try {
-				long newValue = parseValue(newText);
+				double newValue = parseValue(newText);
 				if (spinner.isConstrained()
 						&& (newValue > spinner.getMax() || newValue < spinner
 								.getMin())) {
@@ -132,7 +132,7 @@ public class ValueSpinner extends HorizontalPanel {
 	/**
 	 * @param value	Initial value.
 	 */
-	public ValueSpinner(long value) {
+	public ValueSpinner(double value) {
 		this(value, 0, 0, 1, 99, false);
 	}
 
@@ -141,7 +141,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * @param styles	The styles and images used by this widget.
 	 * @param images	The images used by the spinner.
 	 */
-	public ValueSpinner(long value, ValueSpinnerResources styles, SpinnerResources images) {
+	public ValueSpinner(double value, ValueSpinnerResources styles, SpinnerResources images) {
 		this(value, 0, 0, 1, 99, false, styles, images);
 	}
 
@@ -150,7 +150,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * @param min	Minimum value.
 	 * @param max	Maximum value.
 	 */
-	public ValueSpinner(long value, int min, int max) {
+	public ValueSpinner(double value, int min, int max) {
 		this(value, min, max, 1, 99, true);
 	}
 
@@ -161,7 +161,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * @param minStep	Minimum value for stepping
 	 * @param maxStep	Maxiumum value for stepping
 	 */
-	public ValueSpinner(long value, int min, int max, int minStep, int maxStep) {
+	public ValueSpinner(double value, int min, int max, int minStep, int maxStep) {
 		this(value, min, max, minStep, maxStep, true);
 	}
 
@@ -173,7 +173,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * @param maxStep		Maximum value for stepping.
 	 * @param constrained	If set to false minimum and maximum values will not have any effect.
 	 */
-	public ValueSpinner(long value, int min, int max, int minStep, int maxStep, boolean constrained) {
+	public ValueSpinner(double value, int min, int max, int minStep, int maxStep, boolean constrained) {
 		this(value, min, max, minStep, maxStep, constrained, null);
 	}
 
@@ -186,7 +186,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * @param constrained	If set to false minimum and maximum values will not have any effect.
 	 * @param resources		The styles and images used by this widget.
 	 */
-	public ValueSpinner(long value, int min, int max, int minStep, int maxStep, boolean constrained, ValueSpinnerResources resources) {
+	public ValueSpinner(double value, int min, int max, int minStep, int maxStep, boolean constrained, ValueSpinnerResources resources) {
 		this(value, min, max, minStep, maxStep, constrained, resources, null);
 	}
 
@@ -200,7 +200,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * @param resources		The styles and images used by this widget.
 	 * @param images		The images used by the spinner.
 	 */
-	public ValueSpinner(long value, int min, int max, int minStep, int maxStep, boolean constrained, ValueSpinnerResources resources, SpinnerResources images) {
+	public ValueSpinner(double value, int min, int max, int minStep, int maxStep, boolean constrained, ValueSpinnerResources resources, SpinnerResources images) {
 		super();
 		setStylePrimaryName(STYLENAME_DEFAULT);
 		if (images == null) {
@@ -265,7 +265,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * 
 	 * @return	The formatted value.
 	 */
-	protected String formatValue(long value) {
+	protected String formatValue(double value) {
 		return String.valueOf(value);
 	}
 
@@ -274,7 +274,7 @@ public class ValueSpinner extends HorizontalPanel {
 	 * 
 	 * @return	The parsed value.
 	 */
-	protected long parseValue(String value) {
+	protected double parseValue(String value) {
 		return Long.valueOf(value);
 	}
 	

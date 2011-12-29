@@ -61,7 +61,7 @@ public class ColumnWidth {
 	public final static String COLUMN_SELECT	= "--select--";
 	public final static String COLUMN_PIN		= "--pin--";
 
-	private int		m_width;	//
+	private double	m_width;	//
 	private Unit	m_units;	//
 	
 	/**
@@ -78,7 +78,7 @@ public class ColumnWidth {
 	 * @param width
 	 * @param units
 	 */
-	public ColumnWidth(int width, Unit units) {
+	public ColumnWidth(double width, Unit units) {
 		// Initialize this object...
 		this();
 		
@@ -87,32 +87,14 @@ public class ColumnWidth {
 		setUnits(units);
 	}
 	
-	public ColumnWidth(long width, Unit units) {
-		// Always use an alternate form of the constructor.
-		this(((int) width), units);
-	}
-	
-	public ColumnWidth(double width, Unit units) {
-		// Always use an alternate form of the constructor.
-		this(((int) width), units);
-	}
-	
 	/**
 	 * Constructor method.
 	 * 
 	 * @param width
 	 */
-	public ColumnWidth(int width) {
-		// Always use an alternate form of the constructor.
-		this(width, Unit.PCT);
-	}
-	public ColumnWidth(long width) {
-		// Always use an alternate form of the constructor.
-		this(((int) width), Unit.PCT);
-	}
 	public ColumnWidth(double width) {
 		// Always use an alternate form of the constructor.
-		this(((int) width), Unit.PCT);
+		this(width, Unit.PCT);
 	}
 
 	/**
@@ -120,18 +102,16 @@ public class ColumnWidth {
 	 * 
 	 * @return
 	 */
-	public int  getWidth() {return m_width;}
-	public Unit getUnits() {return m_units;}
+	public double getWidth() {return m_width;}
+	public Unit   getUnits() {return m_units;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setWidth(int    width) {m_width =        width; }
-	public void setWidth(long   width) {m_width = ((int) width);}
-	public void setWidth(double width) {m_width = ((int) width);}
-	public void setUnits(Unit   units) {m_units =        units; }
+	public void setWidth(double width) {m_width = width;}
+	public void setUnits(Unit   units) {m_units = units;}
 
 	/**
 	 * Returns a copy of a ColumnWidth.
@@ -188,7 +168,7 @@ public class ColumnWidth {
 	}
 	
 	/**
-	 * Returns a Column width as a String for use in a style
+	 * Returns a Column width as a String for use in a style.
 	 * 
 	 * @return
 	 */
@@ -225,5 +205,27 @@ public class ColumnWidth {
 		// If we get here, there were no percentage base ColumnWidths
 		// in the Map.  Return false.
 		return false;
+	}
+
+	/**
+	 * Given a width string as returned by getWidthStyle(), returns an
+	 * equivalent ColumnWidth object.
+	 * 
+	 * @param cwS
+	 * 
+	 * @return
+	 * 
+	 * @throws NumberFormatException
+	 */
+	public static ColumnWidth parseWidthStyle(String cwS) throws NumberFormatException {
+		Unit units = Unit.PX;
+		int unitPos = cwS.indexOf('%');
+		if (0 < unitPos)
+			 units   = Unit.PCT;
+		else unitPos = cwS.indexOf("px");
+		if (0 < unitPos) {
+			cwS = cwS.substring(0, unitPos);
+		}
+		return new ColumnWidth(Double.parseDouble(cwS), units);
 	}
 }
