@@ -54,6 +54,8 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
+import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
@@ -148,6 +150,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		InvokeDropBoxEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler
 {
+	private AddFilesDlg					m_addFilesDlg;				//
 	private final BinderInfo			m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
 	private boolean						m_fixedLayout;				//
 	private boolean						m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
@@ -1515,9 +1518,37 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
-			// Yes!  Invoke the add file applet on the folder.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onInvokeDropBox(" + eventFolderId + "):  ...this needs to be implemented...");
+			// Yes!  Invoke the add file dialog on the folder.
+			// Have we instantiated an add files dialog yet?
+			if (null == m_addFilesDlg) {
+				// No!  Instantiate one now.
+				AddFilesDlg.createAsync(new AddFilesDlgClient() {			
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(final AddFilesDlg afDlg) {
+						// ...and show it.
+						m_addFilesDlg = afDlg;
+						ScheduledCommand doShow = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								showAddFilesDlgNow();
+							}
+						};
+						Scheduler.get().scheduleDeferred(doShow);
+					}
+				});
+			}
+			
+			else {
+				// Yes, we've instantiated an add files dialog already!
+				// Simply show it.
+				showAddFilesDlgNow();
+			}
 		}
 	}
 	
@@ -1811,6 +1842,16 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		dg.setWidth("100%");
 	}
 
+	/*
+	 * Synchronously shows the add files dialog.
+	 */
+	private void showAddFilesDlgNow() {
+		AddFilesDlg.initAndShow(
+			m_addFilesDlg,
+			m_folderInfo,
+			m_entryMenuPanel.getAddFilesMenuItem());
+	}
+	
 	/*
 	 * Synchronously shows the clipboard dialog.
 	 */

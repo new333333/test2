@@ -123,6 +123,14 @@
 	/* ...End:  File folder view styles. */
 /* End:  GWT folder view styles. */
 
+/* Start:  Add files dialog styles. */
+	.vibe-addFilesDlgBox .popupContent {background-color: white !important;}
+	.vibe-addFilesDlg-HelpPanel        {padding-right: 6px;}
+	.vibe-addFilesDlg_IFrame           {padding: 6px !important; visibility: visible !important;}
+	.vibe-addFilesDlg_Label            {}
+	.vibe-addFilesDlg_Panel            {width: 500px; height: 280px;}
+/* End:  Add files dialog styles. */
+
 /* Start:  Size columns dialog styles. */
 	.vibe-sizeColumnsDlg-colCaptionImg {}
 	.vibe-sizeColumnsDlg-colCaptionTxt {font-size:  14px; font-weight: bold;}

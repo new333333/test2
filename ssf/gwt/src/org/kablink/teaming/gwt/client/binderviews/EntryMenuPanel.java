@@ -79,6 +79,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private List<ToolbarItem>	m_toolbarIems;	//
 	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
 	private VibeMenuBar			m_entryMenu;	//
+	private VibeMenuItem		m_addFilesMenu;	//
 	private VibeMenuItem		m_deleteMenu;	//
 	private VibeMenuItem		m_purgeMenu;	//
 	
@@ -135,6 +136,15 @@ public class EntryMenuPanel extends ToolPanelBase {
 		});
 	}
 
+	/**
+	 * Returns the add files menu item, if displayed on the menu.
+	 * 
+	 * @return
+	 */
+	public VibeMenuItem getAddFilesMenuItem() {
+		return m_addFilesMenu;
+	}
+	
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
@@ -285,8 +295,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 			}
 		});
 		switch (simpleTBI.getTeamingEvent()) {
-		case DELETE_SELECTED_ENTRIES:  m_deleteMenu = menuItem; break;
-		case PURGE_SELECTED_ENTRIES:   m_purgeMenu  = menuItem; break;
+		case INVOKE_DROPBOX:           m_addFilesMenu = menuItem; break;
+		case DELETE_SELECTED_ENTRIES:  m_deleteMenu   = menuItem; break;
+		case PURGE_SELECTED_ENTRIES:   m_purgeMenu    = menuItem; break;
 		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		menuBar.addItem(menuItem);

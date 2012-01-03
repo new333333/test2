@@ -423,6 +423,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used to describe various split point load failures.
 	String codeSplitFailure_AccessoriesPanel();
 	String codeSplitFailure_ActivityStreamCtrl();
+	String codeSplitFailure_AddFilesDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BreadCrumbPanel();
@@ -1259,4 +1260,9 @@ public interface GwtTeamingMessages extends Messages
 	String sizeColumnsDlgUnitPercentRB();
 	String sizeColumnsDlgUnitPixelRB();
 	String sizeColumnsDlgWarnPercents();
+	
+	// Strings used in the AddFilesDlg.
+	String addFilesDlgFrameTitle();
+	String addFilesDlgHavingTrouble();
+	String addFilesDlgHeader();
 }// end GwtTeamingMessages
