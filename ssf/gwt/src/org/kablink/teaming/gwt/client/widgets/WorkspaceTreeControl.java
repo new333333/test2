@@ -429,6 +429,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
 				if (getRequestInfo().forceSidebarReload()) {
 					osbInfo.setForceSidebarReload(true);
+					getRequestInfo().clearSidebarReload();
 				}
 				Instigator instigator = osbInfo.getInstigator();
 				if ((Instigator.SIDEBAR_TREE_SELECT  != instigator) ||
