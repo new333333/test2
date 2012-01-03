@@ -933,6 +933,10 @@ body, table td, select
 	margin-right: .5em;
 	white-space: nowrap;
 }
+.findSearchResultItemWidget a
+{
+	font-size: .75em !important;
+}
 .findSearchResultItemWidget span.gwt-InlineLabel
 {
 	color: #505354;
@@ -1572,7 +1576,7 @@ body, table td, select
 .breadCrumb_BrowserPopup
 {
 	background-color: #f6f6f6;
-	margin: 0 8px 8px;
+	margin: 0 6px 6px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
@@ -1674,7 +1678,7 @@ body, table td, select
 	color: #333 !important;
 	font-size: .85em;
 	background-color: #f6f6f6;
-	margin: 0 8px 8px;
+	margin: 0 6px 6px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
