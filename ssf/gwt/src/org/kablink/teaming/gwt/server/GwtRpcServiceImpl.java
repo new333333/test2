@@ -796,6 +796,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_HELP_URL:
+		{
+			GetHelpUrlCmd ghuCmd = ((GetHelpUrlCmd) cmd);
+			String helpUrl = MiscUtil.getHelpUrl(ghuCmd.getGuideName(), ghuCmd.getPageId(), ghuCmd.getSectionId());
+			return new VibeRpcResponse( new StringRpcResponseData( helpUrl ));
+		}
+		
 		case GET_HORIZONTAL_NODE:
 		{
 			GetHorizontalNodeCmd ghnCmd;

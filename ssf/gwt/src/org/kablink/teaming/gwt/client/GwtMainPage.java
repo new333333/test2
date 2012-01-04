@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FilesDroppedEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
@@ -702,6 +703,17 @@ public class GwtMainPage extends ResizeComposite
 	}-*/;
 
 	/*
+	 * Called to create a JavaScript method that will be invoked from
+	 * JSP when file(s) are successfully dropped on an applet.
+	 */
+	private native void initFireFilesDroppedJS(GwtMainPage gwtMainPage) /*-{
+		$wnd.ss_filesDropped = function( binderId )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireFilesDropped(Ljava/lang/String;)( binderId );
+		}//end ss_filesDropped()
+	}-*/;
+
+	/*
 	 * Called to create a JavaScript method that will be invoked from a page that holds a landing page.
 	 * There are options in the landing page settings to hide the masthead, hide the sidebar, etc.
 	 * This method will show/hide controls based on these settings.
@@ -773,6 +785,11 @@ public class GwtMainPage extends ResizeComposite
 		// JSP based UI to tell the GWT UI that a context switch is
 		// about to occur.
 		initFireContextChangingJS( this );
+
+		// Initialize the JavaScript function that gets called when
+		// files are successfully dropped on the file drag and drop
+		// applet.
+		initFireFilesDroppedJS( this );
 		
 		// Initialize the JavaScript function that gets called when we want to handle a page using
 		// GWT instead of in jsp.
@@ -2871,6 +2888,14 @@ public class GwtMainPage extends ResizeComposite
 	{
 		ContextChangingEvent.fireOne();
 	}// end fireContextChanging()
+
+	/*
+	 * Fires a FilesDroppedEvent from JSP.
+	 */
+	private void fireFilesDropped( String binderId )
+	{
+		GwtTeaming.fireEvent(new FilesDroppedEvent( Long.parseLong( binderId )));
+	}// end fireFilesDropped()
 	
 	/*
 	 * Fires a GotoContentUrlEvent from the JSP based UI.

@@ -137,9 +137,9 @@ public class ContributorsHelper {
 		}
 		
 		/**
-		 * Handles ContributorIdsRequestEvent's received by this class.
+		 * Handles ContributorIdsReplyEvent's received by this class.
 		 * 
-		 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest()
+		 * Implements the ContributorIdsReplyEvent.Handler.onContributorIdsReply()
 		 * method.
 		 * 
 		 * @param event

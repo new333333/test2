@@ -125,7 +125,8 @@
 
 /* Start:  Add files dialog styles. */
 	.vibe-addFilesDlgBox .popupContent {background-color: white !important;}
-	.vibe-addFilesDlg-HelpPanel        {padding-right: 6px;}
+	.vibe-addFilesDlg_HelpImg          {margin-left: 10px;}
+	.vibe-addFilesDlg-HelpPanel        {display: block; padding-right: 6px; white-space: nowrap;}
 	.vibe-addFilesDlg_IFrame           {padding: 6px !important; visibility: visible !important;}
 	.vibe-addFilesDlg_Label            {}
 	.vibe-addFilesDlg_Panel            {width: 500px; height: 280px;}

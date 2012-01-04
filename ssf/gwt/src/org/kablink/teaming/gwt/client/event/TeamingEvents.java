@@ -68,7 +68,8 @@ public enum TeamingEvents implements IsSerializable {
 	EDIT_LANDING_PAGE_PROPERTIES,		// Edit the landing page properties
 	EDIT_PERSONAL_PREFERENCES,			// Edits the user's personal preferences.
 	EDIT_SITE_BRANDING,					// Edits the site branding.
-	
+
+	FILES_DROPPED,						// Fired when files have been successfully dropped on the drag and drop applet.
 	FULL_UI_RELOAD,						// Forces the full Vibe OnPrem UI to be reloaded.
 	
 	GOTO_CONTENT_URL,					// Changes the current context to a non-permalink URL.

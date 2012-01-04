@@ -31,49 +31,72 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
-
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.resources.client.ImageResource.RepeatStyle;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * Images used by the GWT Teaming 'Data Table' implementation.
+ * This class holds all of the information necessary to execute the
+ * 'unpin entry' command.
  * 
  * @author drfoster@novell.com
  */
-public interface GwtTeamingDataTableImageBundle extends ClientBundle {
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
-	public ImageResource collapseDescription();
+public class GetHelpUrlCmd extends VibeRpcCmd {
+	private String m_guideName;	//
+	private String m_pageId;	//
+	private String m_sectionId;	//
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/expand_16.png")
-	public ImageResource expandDescription();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gold.png")
-	public ImageResource goldStar();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_gray.png")
-	public ImageResource grayPin();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gray.png")
-	public ImageResource grayStar();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
-	public ImageResource help();
+	/**
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
+	 */
+	public GetHelpUrlCmd() {
+		super();		
+	}
 
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_orange.png")
-	public ImageResource orangePin();
+	/**
+	 * Class constructor.
+	 * 
+	 * @param guideName
+	 * @param pageId
+	 * @param sectionId
+	 */
+	public GetHelpUrlCmd(String guideName, String pageId, String sectionId) {
+		this();
+
+		setGuideName(guideName);
+		setPageId(   pageId   );
+		setSectionId(sectionId);
+	}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
-	public ImageResource unread();
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String getGuideName() {return m_guideName;}
+	public String getPageId()    {return m_pageId;   }
+	public String getSectionId() {return m_sectionId;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setGuideName(String guideName) {m_guideName = guideName;}
+	public void setPageId(   String pageId)    {m_pageId    = pageId;   }
+	public void setSectionId(String sectionId) {m_sectionId = sectionId;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_HELP_URL.ordinal();
+	}
 }
