@@ -62,6 +62,7 @@ public class EnhancedViewWidget extends VibeWidget
 {
 	private String m_lpBinderId;	// landing page binder id
 	private EnhancedViewProperties m_properties;
+	private WidgetStyles m_widgetStyles;
 	private AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
 	private VibeFlowPanel m_mainPanel;
 	private String m_html;		// The html that we got from executing a jsp
@@ -69,7 +70,7 @@ public class EnhancedViewWidget extends VibeWidget
 	/**
 	 * Create the appropriate widget based on what type of enhanced view we are dealing with
 	 */
-	public static VibeWidget createWidget( EnhancedViewConfig config, String lpBinderId )
+	public static VibeWidget createWidget( EnhancedViewConfig config, WidgetStyles widgetStyles, String lpBinderId )
 	{
 		EnhancedViewProperties properties;
 		String landingPageStyle;
@@ -96,7 +97,7 @@ public class EnhancedViewWidget extends VibeWidget
 			entryProperties.setHeightUnits( properties.getHeightUnits() );
 			entryProperties.setOverflow( properties.getOverflow() );
 			
-			widget = new EntryWidget( entryProperties, landingPageStyle );
+			widget = new EntryWidget( entryProperties, widgetStyles, landingPageStyle );
 			break;
 		}
 
@@ -121,7 +122,7 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setHeightUnits( properties.getHeightUnits() );
 			folderProperties.setOverflow( properties.getOverflow() );
 			
-			widget = new FolderWidget( folderProperties, landingPageStyle );
+			widget = new FolderWidget( folderProperties, widgetStyles, landingPageStyle );
 			break;
 		}
 
@@ -146,7 +147,7 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setHeightUnits( properties.getHeightUnits() );
 			folderProperties.setOverflow( properties.getOverflow() );
 			
-			widget = new FolderWidget( folderProperties, landingPageStyle );
+			widget = new FolderWidget( folderProperties, widgetStyles, landingPageStyle );
 			break;
 		}
 		
@@ -171,7 +172,7 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties.setHeightUnits( properties.getHeightUnits() );
 			folderProperties.setOverflow( properties.getOverflow() );
 			
-			widget = new FolderWidget( folderProperties, landingPageStyle );
+			widget = new FolderWidget( folderProperties, widgetStyles, landingPageStyle );
 			break;
 		}
 
@@ -217,7 +218,7 @@ public class EnhancedViewWidget extends VibeWidget
 		case DISPLAY_SURVEY:
 		case UNKNOWN:
 		default:
-			widget = new EnhancedViewWidget( config, lpBinderId );
+			widget = new EnhancedViewWidget( config, widgetStyles, lpBinderId );
 			break;
 		}
 		
@@ -228,14 +229,14 @@ public class EnhancedViewWidget extends VibeWidget
 	/**
 	 * This widget simply displays the name of the jsp file that is associated with the view type. 
 	 */
-	private EnhancedViewWidget( EnhancedViewConfig config, String lpBinderId )
+	private EnhancedViewWidget( EnhancedViewConfig config, WidgetStyles widgetStyles, String lpBinderId )
 	{
 		VibeFlowPanel mainPanel;
 		
 		// Remember the landing page binderId.
 		m_lpBinderId = lpBinderId;
 		
-		mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
+		mainPanel = init( config.getProperties(), widgetStyles, config.getLandingPageStyle() );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -326,8 +327,10 @@ public class EnhancedViewWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( EnhancedViewProperties properties, String landingPageStyle )
+	private VibeFlowPanel init( EnhancedViewProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
+		m_widgetStyles = widgetStyles;
+		
 		m_properties = new EnhancedViewProperties();
 		m_properties.copy( properties );
 		

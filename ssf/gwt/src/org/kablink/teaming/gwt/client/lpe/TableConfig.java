@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.widgets.TableWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.http.client.URL;
 
@@ -216,11 +217,11 @@ public class TableConfig extends ConfigItem
 	/**
 	 * Create a widget that can be used on any page.
 	 */
-	public VibeWidget createWidget()
+	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
 		TableWidget tableWidget;
 		
-		tableWidget = new TableWidget( this );
+		tableWidget = new TableWidget( this, widgetStyles );
 		return tableWidget;
 	}
 	

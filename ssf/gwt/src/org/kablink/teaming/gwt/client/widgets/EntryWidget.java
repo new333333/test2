@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -70,16 +69,17 @@ public class EntryWidget extends VibeWidget
 	private Element m_dateElement;
 	private VibeFlowPanel m_repliesPanel;
 	private EntryProperties m_properties;
+	private WidgetStyles m_widgetStyles;
 	private String m_style;
 
 	/**
 	 * 
 	 */
-	public EntryWidget( EntryConfig config )
+	public EntryWidget( EntryConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
+		mainPanel = init( config.getProperties(), widgetStyles, config.getLandingPageStyle() );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -88,11 +88,11 @@ public class EntryWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public EntryWidget( EntryProperties properties, String landingPageStyle )
+	public EntryWidget( EntryProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( properties, landingPageStyle );
+		mainPanel = init( properties, widgetStyles, landingPageStyle );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -131,7 +131,7 @@ public class EntryWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( EntryProperties properties, String landingPageStyle )
+	private VibeFlowPanel init( EntryProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel titlePanel;
 		VibeFlowPanel mainPanel;
@@ -139,6 +139,7 @@ public class EntryWidget extends VibeWidget
 		m_properties = new EntryProperties();
 		m_properties.copy( properties );
 		
+		m_widgetStyles = widgetStyles;
 		m_style = landingPageStyle;
 		
 		mainPanel = new VibeFlowPanel();
@@ -147,6 +148,9 @@ public class EntryWidget extends VibeWidget
 		
 		mainPanel.removeStyleName( "landingPageWidgetNoBorder" );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+		
+		// Set the border width and color.
+		GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
 		
 		// Set the width and height
 		{
@@ -204,6 +208,12 @@ public class EntryWidget extends VibeWidget
 			} );
 			titlePanel.add( label );
 			m_titleElement = label.getElement();
+			
+			// Set the title background color.
+			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), widgetStyles.getHeaderBgColor() );
+			
+			// Set the title text color.
+			GwtClientHelper.setElementTextColor( m_titleElement, widgetStyles.getHeaderTextColor() );
 			
 			mainPanel.add( titlePanel );
 		}
@@ -277,6 +287,9 @@ public class EntryWidget extends VibeWidget
 			label.addStyleName( "entryWidgetDesc" + m_style );
 			contentPanel.add( label );
 			m_descElement = label.getElement();
+			
+			// Set the text color for the description.
+			GwtClientHelper.setElementTextColor( contentPanel.getElement(), widgetStyles.getContentTextColor() );
 			
 			mainPanel.add( contentPanel );
 		}
@@ -383,7 +396,7 @@ public class EntryWidget extends VibeWidget
 					entryProperties.setNumRepliesToShow( 0 );
 					
 					// Add an EntryWidget to the panel that holds all the replies.
-					entryWidget = new EntryWidget( entryProperties, m_style );
+					entryWidget = new EntryWidget( entryProperties, m_widgetStyles, m_style );
 					m_repliesPanel.add( entryWidget );
 				}
 			}

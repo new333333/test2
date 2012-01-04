@@ -35,6 +35,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 /**
  * 
@@ -54,7 +55,7 @@ public abstract class ConfigItem
 	 * Create a widget that can be used on any page.  Currently, the returned widget
 	 * is only used in a landing page.
 	 */
-	public abstract VibeWidget createWidget();
+	public abstract VibeWidget createWidget( WidgetStyles widgetStyles );
 
 	/**
 	 * Create a DropWidget that is used in the landing page editor.

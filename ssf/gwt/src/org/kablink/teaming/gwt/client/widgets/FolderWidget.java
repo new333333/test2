@@ -56,7 +56,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -181,6 +180,7 @@ public class FolderWidget extends VibeWidget
 	}
 	
 	private FolderProperties m_properties;
+	private WidgetStyles m_widgetStyles;
 	private String m_style;
 	private Element m_folderTitleElement;
 	private Element m_folderDescElement;
@@ -189,11 +189,11 @@ public class FolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public FolderWidget( FolderConfig config )
+	public FolderWidget( FolderConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
+		mainPanel = init( config.getProperties(), widgetStyles, config.getLandingPageStyle() );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -202,11 +202,11 @@ public class FolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public FolderWidget( FolderProperties properties, String landingPageStyle )
+	public FolderWidget( FolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( properties, landingPageStyle );
+		mainPanel = init( properties, widgetStyles, landingPageStyle );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -254,7 +254,7 @@ public class FolderWidget extends VibeWidget
 					entryProperties.setShowDate( m_properties.getShowEntryDate() );
 					entryProperties.setNumRepliesToShow( m_properties.getNumRepliesToShow() );
 					
-					entryWidget = new EntryWidget( entryProperties, m_style );
+					entryWidget = new EntryWidget( entryProperties, m_widgetStyles, m_style );
 					m_listOfEntriesPanel.add( entryWidget );
 				}
 				else
@@ -334,7 +334,7 @@ public class FolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( FolderProperties properties, String landingPageStyle )
+	private VibeFlowPanel init( FolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		int numEntries;
@@ -342,12 +342,16 @@ public class FolderWidget extends VibeWidget
 		m_properties = new FolderProperties();
 		m_properties.copy( properties );
 		
+		m_widgetStyles = widgetStyles;
 		m_style = landingPageStyle;
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "folderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+		
+		// Set the border width and color.
+		GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
 		
 		// Set the width and height
 		{
@@ -408,6 +412,12 @@ public class FolderWidget extends VibeWidget
 			titlePanel.add( label );
 			m_folderTitleElement = label.getElement();
 			
+			// Set the title background color.
+			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), widgetStyles.getHeaderBgColor() );
+			
+			// Set the title text color.
+			GwtClientHelper.setElementTextColor( m_folderTitleElement, widgetStyles.getHeaderTextColor() );
+			
 			mainPanel.add( titlePanel );
 		}
 		
@@ -425,6 +435,9 @@ public class FolderWidget extends VibeWidget
 			label.addStyleName( "folderWidgetDesc" + m_style );
 			contentPanel.add( label );
 			m_folderDescElement = label.getElement();
+			
+			// Set the text color for the description.
+			GwtClientHelper.setElementTextColor( contentPanel.getElement(), widgetStyles.getContentTextColor() );
 			
 			mainPanel.add( contentPanel );
 		}

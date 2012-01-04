@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.EnhancedViewWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
@@ -237,9 +238,9 @@ public class EnhancedViewConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
-	public VibeWidget createWidget()
+	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return EnhancedViewWidget.createWidget( this, m_lpBinderId );
+		return EnhancedViewWidget.createWidget( this, widgetStyles, m_lpBinderId );
 	}
 	
 	/**
