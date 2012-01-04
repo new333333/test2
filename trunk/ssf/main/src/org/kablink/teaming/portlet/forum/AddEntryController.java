@@ -376,7 +376,13 @@ public class AddEntryController extends SAbstractController {
 				String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
 	        	boolean blnCheckForAppletFile = true;
 	        	int intFileCount = 1;
-	        	Binder folder = getBinderModule().getBinder(folderId);
+	        	Binder folder = null;
+	        	try {
+	        		folder = getBinderModule().getBinder(folderId);
+	        	} catch(AccessControlException ace) {
+	        		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, ace.getMessage());
+	        		return;
+	        	}
 	        	Definition fileDef = folder.getDefaultFileEntryDef();
 	        	String fileDefId = null;
 	        	if (fileDef != null) fileDefId = fileDef.getId();
