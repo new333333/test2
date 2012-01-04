@@ -191,7 +191,7 @@ public class EnhancedViewWidget extends VibeWidget
 			fileFolderProperties.setHeightUnits( properties.getHeightUnits() );
 			fileFolderProperties.setOverflow( properties.getOverflow() );
 			
-			widget = new FileFolderWidget( fileFolderProperties, landingPageStyle );
+			widget = new FileFolderWidget( fileFolderProperties, widgetStyles, landingPageStyle );
 			break;
 		}
 		
@@ -209,7 +209,7 @@ public class EnhancedViewWidget extends VibeWidget
 			taskFolderProperties.setHeightUnits( properties.getHeightUnits() );
 			taskFolderProperties.setOverflow( properties.getOverflow() );
 			
-			widget = new TaskFolderWidget( taskFolderProperties, landingPageStyle );
+			widget = new TaskFolderWidget( taskFolderProperties, widgetStyles, landingPageStyle );
 			break;
 		}
 		

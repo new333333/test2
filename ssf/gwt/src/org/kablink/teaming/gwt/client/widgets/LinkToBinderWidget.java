@@ -64,11 +64,11 @@ public class LinkToBinderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public LinkToBinderWidget( LinkToFolderConfig config )
+	public LinkToBinderWidget( LinkToFolderConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config, widgetStyles );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -111,7 +111,7 @@ public class LinkToBinderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( LinkToFolderConfig config )
+	private VibeFlowPanel init( LinkToFolderConfig config, WidgetStyles widgetStyles )
 	{
 		LinkToFolderProperties properties;
 		VibeFlowPanel mainPanel;
@@ -142,6 +142,9 @@ public class LinkToBinderWidget extends VibeWidget
 
 		m_link = new InlineLabel( title );
 		m_link.addStyleName( "linkToBinderWidgetLink" + m_style );
+		
+		// Set the text color for the content.
+		GwtClientHelper.setElementTextColor( m_link.getElement(), widgetStyles.getContentTextColor() );
 		
 		mainPanel.add( m_link );
 		

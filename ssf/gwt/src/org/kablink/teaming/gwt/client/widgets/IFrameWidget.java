@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.lpe.IFrameConfig;
 import org.kablink.teaming.gwt.client.lpe.IFrameProperties;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
@@ -54,11 +55,11 @@ public class IFrameWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public IFrameWidget( IFrameConfig config )
+	public IFrameWidget( IFrameConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config, widgetStyles );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -67,7 +68,7 @@ public class IFrameWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( IFrameConfig config )
+	private VibeFlowPanel init( IFrameConfig config, WidgetStyles widgetStyles )
 	{
 		IFrameProperties properties;
 		VibeFlowPanel mainPanel;
@@ -98,7 +99,12 @@ public class IFrameWidget extends VibeWidget
 			
 			// Update the frame's properties.
 			if ( m_properties.getShowBorder() == true )
+			{
 				iframe.addStyleName( "iFrameWidgetShowBorder" );
+
+				// Set the border width and color.
+				GwtClientHelper.setElementBorderStyles( iframeElement, widgetStyles );
+			}
 			else
 				iframe.addStyleName( "iFrameWidgetNoBorder" );
 			

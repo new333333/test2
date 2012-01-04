@@ -492,12 +492,12 @@ public class TaskFolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public TaskFolderWidget( TaskFolderProperties properties, String landingPageStyle )
+	public TaskFolderWidget( TaskFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		
 		m_numTasksDisplayed = 0;
-		mainPanel = init( properties, landingPageStyle );
+		mainPanel = init( properties, widgetStyles, landingPageStyle );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -919,7 +919,7 @@ public class TaskFolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( TaskFolderProperties properties, String landingPageStyle )
+	private VibeFlowPanel init( TaskFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		int numTasks;
@@ -991,6 +991,12 @@ public class TaskFolderWidget extends VibeWidget
 			titlePanel.add( label );
 			m_folderTitleElement = label.getElement();
 			
+			// Set the title background color.
+			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), widgetStyles.getHeaderBgColor() );
+			
+			// Set the title text color.
+			GwtClientHelper.setElementTextColor( m_folderTitleElement, widgetStyles.getHeaderTextColor() );
+
 			mainPanel.add( titlePanel );
 		}
 		
@@ -1032,6 +1038,9 @@ public class TaskFolderWidget extends VibeWidget
 			tasksPanel = new VibeFlowPanel();
 			tasksPanel.addStyleName( "taskFolderWidgetListOfTasksPanel" + m_style );
 			mainPanel.add( tasksPanel );
+			
+			// Set the text color for the content.
+			GwtClientHelper.setElementTextColor( tasksPanel.getElement(), widgetStyles.getContentTextColor() );
 			
 			// Create a table that will hold the tasks
 			{
