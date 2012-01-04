@@ -397,6 +397,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the namespace name of Teaming.
+	 * 
+	 * @return
+	 */
+	public final native String getNamespace()
+	/*-{
+		return this.namespace;
+	}-*/;
+
+	/**
 	 * Returns the source of this RequestInfo object (i.e., main,
 	 * profile, taskListing, ...
 	 * 

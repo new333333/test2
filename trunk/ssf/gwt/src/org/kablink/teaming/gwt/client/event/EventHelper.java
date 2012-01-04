@@ -343,6 +343,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case FILES_DROPPED:
+				// An FilesDroppedEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof FilesDroppedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = FilesDroppedEvent.registerEvent(eventBus, ((FilesDroppedEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case FULL_UI_RELOAD:
 				// An FullUIReloadEvent!  Can the event handler we were
 				// given handle that?
@@ -1156,6 +1165,7 @@ public class EventHelper {
 			case MENU_HIDE:                     		hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	   break;
 			case MENU_SHOW:                     		hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                      break;
 
+			case FILES_DROPPED:                    	    hasHandler = (eventHandler instanceof FilesDroppedEvent.Handler);                  break;
 			case FULL_UI_RELOAD:                    	hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);                  break;
 			
 			case GOTO_CONTENT_URL:                  	hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);                break;

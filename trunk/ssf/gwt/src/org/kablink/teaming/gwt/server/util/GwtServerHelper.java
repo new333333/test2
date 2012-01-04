@@ -2805,6 +2805,7 @@ public class GwtServerHelper {
 		BinderInfo reply = new BinderInfo();
 		                                    reply.setBinderId(     binder.getId()             );
 		                                    reply.setBinderTitle(  binder.getTitle()          );
+		                                    reply.setIsLibrary(    binder.isLibrary()         );
 		                                    reply.setEntityType(   getBinderEntityType(binder));
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
@@ -4952,6 +4953,7 @@ public class GwtServerHelper {
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP:
 		case GET_GROUPS:
+		case GET_HELP_URL:
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
 		case GET_IM_URL:

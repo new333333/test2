@@ -65,6 +65,7 @@
 		loginPostUrl:						'<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 		loginRefererUrl:					'${loginRefererUrl}',
 		modifyUrl:							'${ss_modifyEntryAdapter}',
+		namespace:                          '${ss_namespace}',
 		productName:						'${productName}',
 		promptForLogin:						'${promptForLogin}',
 		quotasDiskMessage:					'${ss_quotaMessage}',

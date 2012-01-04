@@ -335,6 +335,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetGroupMembership();
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
+	String rpcFailure_GetHelpUrl();
 	String rpcFailure_GetImUrl();
 	String rpcFailure_GetInheritedLandingPageProperties();
 	String rpcFailure_GetLocale();

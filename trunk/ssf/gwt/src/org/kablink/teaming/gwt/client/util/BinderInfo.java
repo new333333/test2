@@ -47,6 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private BinderType    m_binderType  = BinderType.OTHER;					//
+	private boolean       m_isLibrary   = false;							//
 	private FolderType    m_folderType  = FolderType.NOT_A_FOLDER;			//
 	private String        m_binderId    = "";								//
 	private String        m_binderTitle = "";								//
@@ -74,6 +75,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setEntityType(   m_entityType );
 		reply.setBinderType(   m_binderType );
 		reply.setFolderType(   m_folderType );
+		reply.setIsLibrary(    m_isLibrary  );
 		reply.setWorkspaceType(m_wsType     );
 		return reply;
 	}
@@ -84,6 +86,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 * @return
 	 */
 	public BinderType    getBinderType()     {return                m_binderType; }
+	public boolean       isLibrary()         {return                m_isLibrary;  }  
 	public FolderType    getFolderType()     {return                m_folderType; }
 	public Long          getBinderIdAsLong() {return Long.parseLong(m_binderId);  }
 	public String        getBinderId()       {return                m_binderId;   }
@@ -191,6 +194,15 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		
 		// ...and store it.
 		m_folderType = folderType;
+	}
+
+	/**
+	 * Stores whether the given binder is a library.
+	 * 
+	 * @param isLibrary
+	 */
+	public void setIsLibrary(boolean isLibrary) {
+		m_isLibrary = isLibrary;
 	}
 	
 	/**

@@ -32,28 +32,41 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FilesDroppedEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHelpUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -61,13 +74,25 @@ import com.google.gwt.user.client.ui.UIObject;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
-public class AddFilesDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private BinderInfo						m_folderInfo;			// The folder the add files is running against.
-	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
-	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
-	private UIObject						m_showRelativeWidget;	// The UIObject to show the dialog relative to.
-	private VibeFlowPanel					m_fp;					// The panel that holds the dialog's contents.
+public class AddFilesDlg extends DlgBox
+	implements EditSuccessfulHandler, EditCanceledHandler,
+	// Event handlers implemented by this class.
+		FilesDroppedEvent.Handler
+{
+	private BinderInfo						m_folderInfo;				// The folder the add files is running against.
+	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
+	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private UIObject						m_showRelativeWidget;		// The UIObject to show the dialog relative to.
+	private String							m_havingTroubleUrl;			// The URL to the 'having trouble' help page.
+	private VibeFlowPanel					m_fp;						// The panel that holds the dialog's contents.
+
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.FILES_DROPPED,
+	};
 
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
@@ -196,6 +221,50 @@ public class AddFilesDlg extends DlgBox implements EditSuccessfulHandler, EditCa
 		return null;
 	}
 
+	/**
+	 * Called when the data table is attached.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the data table is detached.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Handles FilesDroppedEvent's received by this class.
+	 * 
+	 * Implements the FilesDroppedEvent.Handler.onFilesDropped()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFilesDropped(final FilesDroppedEvent event) {
+		// Is this event targeted to the our folder?
+		final Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
+			// Yes!  That means the drop and drops are complete.
+			// Simply close the dialog.
+			hide();
+		}
+	}
+
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -213,11 +282,49 @@ public class AddFilesDlg extends DlgBox implements EditSuccessfulHandler, EditCa
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
+		GwtClientHelper.executeCommand(
+				new GetHelpUrlCmd("user", "trouble", "trouble_upload"),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetHelpUrl());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Extract the help URL from the response data and use
+				// it to populate the dialog.
+				m_havingTroubleUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				populateDlgWithDataAsync();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously populates the contents of the dialog.
+	 */
+	private void populateDlgWithDataAsync() {
+		ScheduledCommand doPopulate = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateDlgWithDataNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
+	}
+	
+	/*
+	 * Synchronously populates the contents of the dialog.
+	 */
+	private void populateDlgWithDataNow() {
 		// Clear the current contents of the dialog...
 		m_fp.clear();
 
 		// ...create an IFRAME to run the applet...
-		String frameName = ("ss_iframe_folder_dropbox"+ m_folderInfo.getBinderId() + "_ss_forum_");
+		String ns = GwtClientHelper.getRequestInfo().getNamespace();
+		String frameName = ("ss_iframe_folder_dropbox"+ m_folderInfo.getBinderId() + ns);
 		NamedFrame iFrame = new NamedFrame(frameName);
 		iFrame.addStyleName("vibe-addFilesDlg_IFrame");
 		iFrame.removeStyleName("gwt-Frame");
@@ -231,9 +338,9 @@ public class AddFilesDlg extends DlgBox implements EditSuccessfulHandler, EditCa
 		StringBuffer url = new StringBuffer(GwtClientHelper.getRequestInfo().getBaseVibeUrl());
 		url.append("&action=__ajax_request");
 		url.append("&operation=add_folder_attachment_options");
-		url.append("&binderId=" + m_folderInfo.getBinderId());
-		url.append("&namespace=_ss_forum_");
-		url.append("&library=false");
+		url.append("&binderId="  + m_folderInfo.getBinderId());
+		url.append("&namespace=" + ns);
+		url.append("&library="   + String.valueOf(m_folderInfo.isLibrary()));
 		iFrame.setUrl(url.toString());
 		m_fp.add(iFrame);
 
@@ -244,12 +351,44 @@ public class AddFilesDlg extends DlgBox implements EditSuccessfulHandler, EditCa
 		DlgLabel fpLabel = new DlgLabel(m_messages.addFilesDlgHavingTrouble());
 		fpLabel.addStyleName("ss_fineprint");
 		fp.add(fpLabel);
+		Image img = new Image(m_images.help());
+		img.addStyleName("vibe-addFilesDlg_HelpImg");
+		img.setTitle(m_messages.mainMenuEmailNotificationDlgAltHelpAll());
+		img.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.open(m_havingTroubleUrl, "teaming_help_window", "resizeable,scrollbar");
+			}
+		});
+		fp.add(img);
 		m_fp.add(fp);
 
 		// ...and show the dialog.
 		showRelativeTo(m_showRelativeWidget);
 	}
 	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
 	/*
 	 * Asynchronously runs the given instance of the add files dialog.
 	 */
@@ -275,6 +414,18 @@ public class AddFilesDlg extends DlgBox implements EditSuccessfulHandler, EditCa
 		populateDlgAsync();
 	}
 
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
+	}
+	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the add files dialog and perform some operation on it.        */
