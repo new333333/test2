@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -53,6 +54,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -866,6 +869,62 @@ public class GwtClientHelper {
 			grid.getCellFormatter().getElement(row, start).addClassName("grid_HideCell");
 		}
 		
+	}
+	
+	/**
+	 * Set the background color if specified in the WidgetStyles.
+	 */
+	public static void setElementBackgroundColor( Element element, String color )
+	{
+		if ( element != null && color != null && color.length() > 0 )
+		{
+			Style style;
+
+			style = element.getStyle();
+			style.setBackgroundColor( color );
+		}
+	}
+	
+	/**
+	 * Set the border width and color if specified in the WidgetStyles
+	 */
+	public static void setElementBorderStyles( Element element, WidgetStyles widgetStyles )
+	{
+		if ( element != null )
+		{
+			String width;
+			String color;
+			Style style;
+			
+			style = element.getStyle();
+			
+			width = widgetStyles.getBorderWidth();
+			if ( width != null && width.length() > 0 )
+			{
+				style.setBorderWidth( Double.valueOf( width ), Unit.PX );
+			}
+			
+			color = widgetStyles.getBorderColor();
+			if ( color != null && color.length() > 0 )
+			{
+				style.setBorderColor( color );
+			}
+		}
+	}
+	
+	/**
+	 * Set the text color if one is specified in the WidgetStyles.
+	 */
+	public static void setElementTextColor( Element element, String color )
+	{
+		if ( element != null && color != null && color.length() > 0 )
+		{
+			Style style;
+			
+			style = element.getStyle();
+			
+			style.setColor( color );
+		}
 	}
 	
 	/**

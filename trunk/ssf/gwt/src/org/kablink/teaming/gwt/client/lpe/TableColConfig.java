@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.lpe;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 
 /**
@@ -71,7 +72,7 @@ public class TableColConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
-	public VibeWidget createWidget()
+	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
 		return null;
 	}

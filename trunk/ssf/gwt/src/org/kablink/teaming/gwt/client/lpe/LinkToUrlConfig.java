@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.UrlWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.http.client.URL;
 
@@ -101,7 +102,7 @@ public class LinkToUrlConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
-	public VibeWidget createWidget()
+	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
 		return new UrlWidget( this );
 	}

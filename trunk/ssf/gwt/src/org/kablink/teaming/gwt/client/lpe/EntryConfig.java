@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.EntryWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.dom.client.Style;
 
@@ -207,9 +208,9 @@ public class EntryConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
-	public VibeWidget createWidget()
+	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return new EntryWidget( this );
+		return new EntryWidget( this, widgetStyles );
 	}
 	
 	/**

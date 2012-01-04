@@ -1,6 +1,40 @@
+/**
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * 
+ * This work is governed by the Common Public Attribution License Version 1.0 (the
+ * "CPAL"); you may not use this file except in compliance with the CPAL. You may
+ * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
+ * CPAL is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide
+ * for limited attribution for the Original Developer. In addition, Exhibit A has
+ * been modified to be consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
+ * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
+ * language governing rights and limitations under the CPAL.
+ * 
+ * The Original Code is ICEcore, now called Kablink. The Original Developer is
+ * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * 
+ * Attribution Information:
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
+ * Attribution URL: [www.kablink.org]
+ * Graphic Image as provided in the Covered Code
+ * [ssf/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are
+ * defined in the CPAL as a work which combines Covered Code or portions thereof
+ * with code not governed by the terms of the CPAL.
+ * 
+ * NOVELL and the Novell logo are registered trademarks and Kablink and the
+ * Kablink logos are trademarks of Novell, Inc.
+ */
+
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.xml.client.Document;
@@ -36,13 +70,9 @@ public class LandingPageProperties
 	private String m_backgroundImageName;
 	private String m_backgroundImageUrl;
 	private String m_backgroundRepeat;
-	private String m_headerBgColor;
-	private String m_headerTextColor;
-	private String m_contentTextColor;
-	private String m_borderColor;
-	private String m_borderWidth;
 	private boolean m_hideMenu;
 	private boolean m_inheritProperties;
+	private WidgetStyles m_widgetStyles;
 	
 	/**
 	 * 
@@ -53,11 +83,7 @@ public class LandingPageProperties
 		m_backgroundImageName = null;
 		m_backgroundImageUrl = null;
 		m_backgroundRepeat = null;
-		m_headerBgColor = null;
-		m_headerTextColor = null;
-		m_contentTextColor = null;
-		m_borderColor = null;
-		m_borderWidth = null;
+		m_widgetStyles = new WidgetStyles();
 		m_hideMenu = false;
 		m_inheritProperties = true;
 	}
@@ -71,11 +97,7 @@ public class LandingPageProperties
 		m_backgroundImageName = null;
 		m_backgroundImageUrl = null;
 		m_backgroundRepeat = null;
-		m_headerBgColor = null;
-		m_headerTextColor = null;
-		m_contentTextColor = null;
-		m_borderColor = null;
-		m_borderWidth = null;
+		m_widgetStyles = new WidgetStyles();
 		m_hideMenu = false;
 		m_inheritProperties = true;
 		
@@ -91,11 +113,11 @@ public class LandingPageProperties
 		m_backgroundImageName = lpProperties.getBackgroundImageName();
 		m_backgroundImageUrl = lpProperties.getBackgroundImageUrl();
 		m_backgroundRepeat = lpProperties.getBackgroundRepeat();
-		m_headerBgColor = lpProperties.getHeaderBgColor();
-		m_headerTextColor = lpProperties.getHeaderTextColor();
-		m_contentTextColor = lpProperties.getContentTextColor();
-		m_borderColor = lpProperties.getBorderColor();
-		m_borderWidth = lpProperties.getBorderWidth();
+		m_widgetStyles.setHeaderBgColor( lpProperties.getHeaderBgColor() );
+		m_widgetStyles.setHeaderTextColor( lpProperties.getHeaderTextColor() );
+		m_widgetStyles.setContentTextColor( lpProperties.getContentTextColor() );
+		m_widgetStyles.setBorderColor( lpProperties.getBorderColor() );
+		m_widgetStyles.setBorderWidth( lpProperties.getBorderWidth() );
 		m_hideMenu = lpProperties.getHideMenu();
 		m_inheritProperties = lpProperties.getInheritProperties();
 	}
@@ -137,7 +159,7 @@ public class LandingPageProperties
 	 */
 	public String getBorderColor()
 	{
-		return m_borderColor;
+		return m_widgetStyles.getBorderColor();
 	}
 	
 	/**
@@ -145,7 +167,7 @@ public class LandingPageProperties
 	 */
 	public String getBorderWidth()
 	{
-		return m_borderWidth;
+		return m_widgetStyles.getBorderWidth();
 	}
 	
 	/**
@@ -153,7 +175,7 @@ public class LandingPageProperties
 	 */
 	public String getContentTextColor()
 	{
-		return m_contentTextColor;
+		return m_widgetStyles.getContentTextColor();
 	}
 
 	/**
@@ -161,7 +183,7 @@ public class LandingPageProperties
 	 */
 	public String getHeaderBgColor()
 	{
-		return m_headerBgColor;
+		return m_widgetStyles.getHeaderBgColor();
 	}
 	
 	/**
@@ -169,7 +191,7 @@ public class LandingPageProperties
 	 */
 	public String getHeaderTextColor()
 	{
-		return m_headerTextColor;
+		return m_widgetStyles.getHeaderTextColor();
 	}
 	
 	/**
@@ -202,6 +224,7 @@ public class LandingPageProperties
 	{
 		Document doc;
 		Element rootElement;
+		String color;
 		
 		// Are we inheriting the properties?
 		if ( m_inheritProperties )
@@ -252,11 +275,13 @@ public class LandingPageProperties
 			
 			headerElement = doc.createElement( HEADER_ELEMENT_NAME );
 			
-			if ( m_headerBgColor != null )
-				headerElement.setAttribute( BG_COLOR_ATTRIBUTE_NAME, m_headerBgColor );
+			color = m_widgetStyles.getHeaderBgColor();
+			if ( color != null )
+				headerElement.setAttribute( BG_COLOR_ATTRIBUTE_NAME, color );
 			
-			if ( m_headerTextColor != null )
-				headerElement.setAttribute( TEXT_COLOR_ATTRIBUTE_NAME, m_headerTextColor );
+			color = m_widgetStyles.getHeaderTextColor();
+			if ( color != null )
+				headerElement.setAttribute( TEXT_COLOR_ATTRIBUTE_NAME, color );
 			
 			rootElement.appendChild( headerElement );
 		}
@@ -267,8 +292,9 @@ public class LandingPageProperties
 			
 			contentElement = doc.createElement( CONTENT_ELEMENT_NAME );
 			
-			if ( m_contentTextColor != null )
-				contentElement.setAttribute( TEXT_COLOR_ATTRIBUTE_NAME, m_contentTextColor );
+			color = m_widgetStyles.getContentTextColor();
+			if ( color != null )
+				contentElement.setAttribute( TEXT_COLOR_ATTRIBUTE_NAME, color );
 			
 			rootElement.appendChild( contentElement );
 		}
@@ -276,19 +302,30 @@ public class LandingPageProperties
 		// Add the <border color="" width="" /> element
 		{
 			Element borderElement;
+			String width;
 			
 			borderElement = doc.createElement( BORDER_ELEMENT_NAME );
 			
-			if ( m_borderColor != null )
-				borderElement.setAttribute( COLOR_ATTRIBUTE_NAME, m_borderColor );
+			color = m_widgetStyles.getBorderColor();
+			if ( color != null )
+				borderElement.setAttribute( COLOR_ATTRIBUTE_NAME, color );
 			
-			if ( m_borderWidth != null )
-				borderElement.setAttribute( WIDTH_ATTRIBUTE_NAME, m_borderWidth );
+			width = m_widgetStyles.getBorderWidth();
+			if ( width != null )
+				borderElement.setAttribute( WIDTH_ATTRIBUTE_NAME, width );
 			
 			rootElement.appendChild( borderElement );
 		}
 		
 		return doc.toString();
+	}
+	
+	/**
+	 * 
+	 */
+	public WidgetStyles getWidgetStyles()
+	{
+		return m_widgetStyles;
 	}
 	
 	/**
@@ -337,8 +374,8 @@ public class LandingPageProperties
 					
 					headerElement = (Element) nodeList.item( 0 );
 					
-					m_headerBgColor = headerElement.getAttribute( BG_COLOR_ATTRIBUTE_NAME );
-					m_headerTextColor = headerElement.getAttribute( TEXT_COLOR_ATTRIBUTE_NAME );
+					m_widgetStyles.setHeaderBgColor( headerElement.getAttribute( BG_COLOR_ATTRIBUTE_NAME ) );
+					m_widgetStyles.setHeaderTextColor( headerElement.getAttribute( TEXT_COLOR_ATTRIBUTE_NAME ) );
 				}
 				
 				// Get the <content...> element
@@ -349,7 +386,7 @@ public class LandingPageProperties
 					
 					contentElement = (Element) nodeList.item( 0 );
 					
-					m_contentTextColor = contentElement.getAttribute( TEXT_COLOR_ATTRIBUTE_NAME );
+					m_widgetStyles.setContentTextColor( contentElement.getAttribute( TEXT_COLOR_ATTRIBUTE_NAME ) );
 				}
 				
 				// Get the <border...> element
@@ -360,8 +397,8 @@ public class LandingPageProperties
 					
 					borderElement = (Element) nodeList.item( 0 );
 					
-					m_borderColor = borderElement.getAttribute( COLOR_ATTRIBUTE_NAME );
-					m_borderWidth = borderElement.getAttribute( WIDTH_ATTRIBUTE_NAME );
+					m_widgetStyles.setBorderColor( borderElement.getAttribute( COLOR_ATTRIBUTE_NAME ) );
+					m_widgetStyles.setBorderWidth( borderElement.getAttribute( WIDTH_ATTRIBUTE_NAME ) );
 				}
 				
 				m_inheritProperties = false;
@@ -409,7 +446,7 @@ public class LandingPageProperties
 	 */
 	public void setBorderColor( String color )
 	{
-		m_borderColor = color;
+		m_widgetStyles.setBorderColor( color );
 	}
 	
 	/**
@@ -417,7 +454,7 @@ public class LandingPageProperties
 	 */
 	public void setBorderWidth( String width )
 	{
-		m_borderWidth = width;
+		m_widgetStyles.setBorderWidth( width );
 	}
 	
 	/**
@@ -425,7 +462,7 @@ public class LandingPageProperties
 	 */
 	public void setContentTextColor( String color )
 	{
-		m_contentTextColor = color;
+		m_widgetStyles.setContentTextColor( color );
 	}
 	
 	/**
@@ -433,7 +470,7 @@ public class LandingPageProperties
 	 */
 	public void setHeaderBgColor( String color )
 	{
-		m_headerBgColor = color;
+		m_widgetStyles.setHeaderBgColor( color );
 	}
 	
 	/**
@@ -441,7 +478,7 @@ public class LandingPageProperties
 	 */
 	public void setHeaderTextColor( String color )
 	{
-		m_headerTextColor = color;
+		m_widgetStyles.setHeaderTextColor( color );
 	}
 	
 	/**

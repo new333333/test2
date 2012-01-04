@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.lpe.TableColConfig;
 import org.kablink.teaming.gwt.client.lpe.TableConfig;
 import org.kablink.teaming.gwt.client.lpe.TableProperties;
 import org.kablink.teaming.gwt.client.lpe.TableRowConfig;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -58,16 +59,18 @@ public class TableWidget extends VibeWidget
 	private VibeFlowPanel m_layoutPanel;
 	private FlexTable m_table;
 	private String m_style;
+	private WidgetStyles m_widgetStyles;
 
 	/**
 	 * 
 	 */
-	public TableWidget( TableConfig config )
+	public TableWidget( TableConfig config, WidgetStyles widgetStyles )
 	{
 		TableProperties properties;
 		
 		properties = config.getProperties();
 		m_style = config.getLandingPageStyle();
+		m_widgetStyles = widgetStyles;
 		
 		init( properties );
 		
@@ -144,7 +147,7 @@ public class TableWidget extends VibeWidget
 						configItem = tableColConfig.get( i );
 						
 						// Create the appropriate widget based on the given ConfigItem.
-						widget = configItem.createWidget();
+						widget = configItem.createWidget( m_widgetStyles );
 						if ( widget != null )
 							flowPanel.add( widget );
 						else
@@ -159,7 +162,7 @@ public class TableWidget extends VibeWidget
 				else
 				{
 					// Create the appropriate Widget based on the configuration data.
-					widget = configData.createWidget();
+					widget = configData.createWidget( m_widgetStyles );
 					
 					// Add the widget to the appropriate col.
 					flowPanel.add( widget );
@@ -244,6 +247,8 @@ public class TableWidget extends VibeWidget
 				{
 					cellFormatter.removeStyleName( 0, col, "landingPageWidgetNoBorder" );
 					cellFormatter.addStyleName( 0, col, "landingPageWidgetShowBorder" );
+					
+					GwtClientHelper.setElementBorderStyles( cellFormatter.getElement( 0, col ), m_widgetStyles );
 				}
 				else
 				{

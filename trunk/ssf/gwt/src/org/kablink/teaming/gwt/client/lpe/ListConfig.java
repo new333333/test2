@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.widgets.ListWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
@@ -219,11 +220,11 @@ public class ListConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
-	public VibeWidget createWidget()
+	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
 		ListWidget listWidget;
 		
-		listWidget = new ListWidget( this );
+		listWidget = new ListWidget( this, widgetStyles );
 		return listWidget;
 	}
 	

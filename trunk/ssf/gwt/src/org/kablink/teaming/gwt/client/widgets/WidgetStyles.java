@@ -30,110 +30,112 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.widgets;
 
-package org.kablink.teaming.gwt.client.lpe;
-
-
-import org.kablink.teaming.gwt.client.widgets.HtmlWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
-
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents the configuration data for an Html widget
+ * This class holds the values for the various styles used by a widget.
  * @author jwootton
  *
  */
-public class HtmlConfig extends ConfigItem
+public class WidgetStyles
+	implements IsSerializable
 {
-	private HtmlProperties	m_properties;
-	private String m_binderId;
+	private String m_headerBgColor;
+	private String m_headerTextColor;
+	private String m_contentTextColor;
+	private String m_borderColor;
+	private String m_borderWidth;
+
+	/**
+	 * 
+	 */
+	public WidgetStyles()
+	{
+		m_headerBgColor = null;
+		m_headerTextColor = null;
+		m_contentTextColor = null;
+		m_borderColor = null;
+		m_borderWidth = null;
+	}
+
+	/**
+	 * 
+	 */
+	public String getBorderColor()
+	{
+		return m_borderColor;
+	}
 	
 	/**
 	 * 
 	 */
-	public HtmlConfig( String configStr, String binderId )
+	public String getBorderWidth()
 	{
-		String[] results;
-		
-		m_properties = new HtmlProperties();
-		m_binderId = binderId;
-		
-		// Split the configuration data into its parts.
-		results = configStr.split( "[,;]" );
-		if ( results != null )
-		{
-			int i;
-			
-			for (i = 0; i < results.length; ++i)
-			{
-				String[] results2;
-				
-				results2 = ConfigData.splitConfigItem( results[i] );
-				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
-				{
-					try
-					{
-						if ( results2[0].equalsIgnoreCase( "data" ) )
-						{
-							String html;
-							
-							html = ConfigData.decodeSeparators( results2[1] );
-							m_properties.setHtmlWithMarkup( html );
-						}
-					}
-					catch (Exception ex)
-					{
-						// Nothing to do.  This is here to handle the case when the data is
-						// not properly url encoded.
-					}
-				}
-			}
-		}
+		return m_borderWidth;
 	}
-	
 	
 	/**
 	 * 
 	 */
-	public void addChild( ConfigItem configItem )
+	public String getContentTextColor()
 	{
-		// Nothing to do.
+		return m_contentTextColor;
 	}
-	
-	
 	/**
-	 * Create a composite that can be used on any page.
+	 * 
 	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
+	public String getHeaderBgColor()
 	{
-		return new HtmlWidget( this );
+		return m_headerBgColor;
 	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public HtmlDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new HtmlDropWidget( lpe, this );
-	}
-	
 	
 	/**
 	 * 
 	 */
-	public String getBinderId()
+	public String getHeaderTextColor()
 	{
-		return m_binderId;
+		return m_headerTextColor;
 	}
-	
+
+	/**
+	 * 
+	 */
+	public void setBorderColor( String color )
+	{
+		m_borderColor = color;
+	}
 	
 	/**
 	 * 
 	 */
-	public HtmlProperties getProperties()
+	public void setBorderWidth( String width )
 	{
-		return m_properties;
+		m_borderWidth = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setContentTextColor( String color )
+	{
+		m_contentTextColor = color;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeaderBgColor( String color )
+	{
+		m_headerBgColor = color;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeaderTextColor( String color )
+	{
+		m_headerTextColor = color;
 	}
 }

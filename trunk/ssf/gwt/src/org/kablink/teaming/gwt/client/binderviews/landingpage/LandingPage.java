@@ -134,14 +134,12 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 		m_configData.parse();
 		
 		if ( m_configData == null )
-		{
-			// Tell the base class that we're done constructing the landing
-			// page view.
-			if ( configData.isPreviewMode() == false )
-				super.viewReady();
-
 			return;
-		}
+
+		// Tell the base class that we're done constructing the landing
+		// page view.
+		if ( configData.isPreviewMode() == false )
+			super.viewReady();
 
 		String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
 		if ( configData.isPreviewMode() == false && binderId != null )
@@ -206,7 +204,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 				ResizeComposite widget;
 				
 				// Create the appropriate composite based on the given ConfigItem.
-				widget = configItem.createWidget();
+				widget = configItem.createWidget( m_configData.getLandingPageProperties().getWidgetStyles() );
 				if ( widget != null )
 				{
 					m_mainPanel.add( widget );

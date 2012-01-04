@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -96,7 +97,7 @@ public class ConfigData
 		/**
 		 * This is just a place holder.  Nothing to do.
 		 */
-		public VibeWidget createWidget()
+		public VibeWidget createWidget( WidgetStyles widgetStyles )
 		{
 			return null;
 		}
@@ -494,6 +495,14 @@ public class ConfigData
 	public boolean getInheritProperties()
 	{
 		return m_lpProperties.getInheritProperties();
+	}
+	
+	/**
+	 * 
+	 */
+	public LandingPageProperties getLandingPageProperties()
+	{
+		return m_lpProperties;
 	}
 	
 	/**

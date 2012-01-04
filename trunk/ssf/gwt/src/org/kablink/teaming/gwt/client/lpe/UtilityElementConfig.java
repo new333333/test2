@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.UtilityElementWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeWidget;
+import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 /**
  * This class represents the configuration data for a Utility Element
@@ -107,7 +108,7 @@ public class UtilityElementConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
-	public VibeWidget createWidget()
+	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
 		return new UtilityElementWidget( this );
 	}

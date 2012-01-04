@@ -37,9 +37,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.lpe.ListConfig;
 import org.kablink.teaming.gwt.client.lpe.ListProperties;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -80,7 +80,7 @@ public class ListWidget extends VibeWidget
 			
 			table.setWidget( 0, 0, img );
 			table.setWidget( 0, 1, child );
-			child.getElement().setAttribute( "style", "font-size: medium;" );
+			child.addStyleName( "fontSizeMedium" );
 			table.getFlexCellFormatter().setWidth( 0, 1, "100%" );
 			
 			flowPanel = new VibeFlowPanel();
@@ -95,12 +95,15 @@ public class ListWidget extends VibeWidget
 	private VibeFlowPanel m_contentPanel;
 	private ListProperties m_properties;
 	private String m_style;
+	private WidgetStyles m_widgetStyles;
 
 	/**
 	 * 
 	 */
-	public ListWidget( ListConfig config )
+	public ListWidget( ListConfig config, WidgetStyles widgetStyles )
 	{
+		m_widgetStyles = widgetStyles;
+		
 		init( config );
 		
 		// Add a widget to this table as defined in the TableConfig data
@@ -126,7 +129,7 @@ public class ListWidget extends VibeWidget
 			configItem = config.get( i );
 			
 			// Create the appropriate widget based on the given ConfigItem.
-			widget = configItem.createWidget();
+			widget = configItem.createWidget( m_widgetStyles );
 			if ( widget != null )
 			{
 				ListItem listItem;
@@ -168,6 +171,9 @@ public class ListWidget extends VibeWidget
 		{
 			m_layoutPanel.removeStyleName( "landingPageWidgetNoBorder" );
 			m_layoutPanel.addStyleName( "landingPageWidgetShowBorder" );
+			
+			// Set the border width and color.
+			GwtClientHelper.setElementBorderStyles( m_layoutPanel.getElement(), m_widgetStyles );
 		}
 		else
 		{
@@ -214,6 +220,12 @@ public class ListWidget extends VibeWidget
 			label = new InlineLabel( title );
 			titlePanel.add( label );
 			
+			// Set the title background color.
+			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), m_widgetStyles.getHeaderBgColor() );
+			
+			// Set the title text color.
+			GwtClientHelper.setElementTextColor( titlePanel.getElement(), m_widgetStyles.getHeaderTextColor() );
+
 			m_layoutPanel.add( titlePanel );
 		}
 		
