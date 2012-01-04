@@ -223,7 +223,7 @@ public class GraphicConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return new GraphicWidget( this );
+		return new GraphicWidget( this, widgetStyles );
 	}
 	
 	/**

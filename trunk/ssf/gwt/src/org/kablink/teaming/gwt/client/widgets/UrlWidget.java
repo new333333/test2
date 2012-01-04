@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.lpe.LinkToUrlConfig;
 import org.kablink.teaming.gwt.client.lpe.LinkToUrlProperties;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -58,11 +59,11 @@ public class UrlWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public UrlWidget( LinkToUrlConfig config )
+	public UrlWidget( LinkToUrlConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config, widgetStyles );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -71,7 +72,7 @@ public class UrlWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( LinkToUrlConfig config )
+	private VibeFlowPanel init( LinkToUrlConfig config, WidgetStyles widgetStyles )
 	{
 		LinkToUrlProperties properties;
 		VibeFlowPanel mainPanel;
@@ -123,6 +124,9 @@ public class UrlWidget extends VibeWidget
 				}
 			});
 			
+			// Set the text color for the content.
+			GwtClientHelper.setElementTextColor( link.getElement(), widgetStyles.getContentTextColor() );
+
 			mainPanel.add( link );
 		}
 		

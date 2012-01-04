@@ -130,11 +130,11 @@ public class FileFolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public FileFolderWidget( FileFolderProperties properties, String landingPageStyle )
+	public FileFolderWidget( FileFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( properties, landingPageStyle );
+		mainPanel = init( properties, widgetStyles, landingPageStyle );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -196,7 +196,7 @@ public class FileFolderWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( FileFolderProperties properties, String landingPageStyle )
+	private VibeFlowPanel init( FileFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		int numEntries;
@@ -210,6 +210,9 @@ public class FileFolderWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "fileFolderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+		
+		// Set the border width and color.
+		GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
 		
 		// Set the width and height
 		{
@@ -270,6 +273,12 @@ public class FileFolderWidget extends VibeWidget
 			titlePanel.add( label );
 			m_folderTitleElement = label.getElement();
 			
+			// Set the title background color.
+			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), widgetStyles.getHeaderBgColor() );
+			
+			// Set the title text color.
+			GwtClientHelper.setElementTextColor( m_folderTitleElement, widgetStyles.getHeaderTextColor() );
+
 			mainPanel.add( titlePanel );
 			
 			// Create a panel for the description
@@ -287,6 +296,9 @@ public class FileFolderWidget extends VibeWidget
 				contentPanel.add( descLabel );
 				m_folderDescElement = descLabel.getElement();
 				
+				// Set the text color for the content.
+				GwtClientHelper.setElementTextColor( contentPanel.getElement(), widgetStyles.getContentTextColor() );
+
 				mainPanel.add( contentPanel );
 			}
 			

@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.lpe.GraphicConfig;
 import org.kablink.teaming.gwt.client.lpe.GraphicProperties;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
@@ -59,11 +60,11 @@ public class GraphicWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public GraphicWidget( GraphicConfig config )
+	public GraphicWidget( GraphicConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config, widgetStyles );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -72,7 +73,7 @@ public class GraphicWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( GraphicConfig config )
+	private VibeFlowPanel init( GraphicConfig config, WidgetStyles widgetStyles )
 	{
 		GraphicProperties properties;
 		VibeFlowPanel mainPanel;
@@ -95,7 +96,12 @@ public class GraphicWidget extends VibeWidget
 		m_img = new Image();
 		imgPanel.add( m_img );
 		if ( m_properties.getShowBorderValue() == true )
+		{
 			m_img.addStyleName( "landingPageWidgetShowBorder" );
+
+			// Set the border width and color.
+			GwtClientHelper.setElementBorderStyles( m_img.getElement(), widgetStyles );
+		}
 		
 		// Set the width and height
 		{

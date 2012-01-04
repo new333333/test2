@@ -69,11 +69,11 @@ public class UtilityElementWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public UtilityElementWidget( UtilityElementConfig config )
+	public UtilityElementWidget( UtilityElementConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config, widgetStyles );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -190,7 +190,7 @@ public class UtilityElementWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( UtilityElementConfig config )
+	private VibeFlowPanel init( UtilityElementConfig config, WidgetStyles widgetStyles )
 	{
 		UtilityElementProperties properties;
 		VibeFlowPanel mainPanel;
@@ -268,6 +268,9 @@ public class UtilityElementWidget extends VibeWidget
 				}
 			} );
 
+			// Set the text color for the content.
+			GwtClientHelper.setElementTextColor( m_link.getElement(), widgetStyles.getContentTextColor() );
+			
 			mainPanel.add( m_link );
 		}
 		

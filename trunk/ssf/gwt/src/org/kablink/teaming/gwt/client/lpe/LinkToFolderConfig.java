@@ -107,7 +107,7 @@ public class LinkToFolderConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return new LinkToBinderWidget( this );
+		return new LinkToBinderWidget( this, widgetStyles );
 	}
 	
 	/**

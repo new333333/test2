@@ -61,11 +61,11 @@ public class LinkToEntryWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	public LinkToEntryWidget( LinkToEntryConfig config )
+	public LinkToEntryWidget( LinkToEntryConfig config, WidgetStyles widgetStyles )
 	{
 		VibeFlowPanel mainPanel;
 		
-		mainPanel = init( config );
+		mainPanel = init( config, widgetStyles );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -106,7 +106,7 @@ public class LinkToEntryWidget extends VibeWidget
 	/**
 	 * 
 	 */
-	private VibeFlowPanel init( LinkToEntryConfig config )
+	private VibeFlowPanel init( LinkToEntryConfig config, WidgetStyles widgetStyles )
 	{
 		LinkToEntryProperties properties;
 		VibeFlowPanel mainPanel;
@@ -140,6 +140,9 @@ public class LinkToEntryWidget extends VibeWidget
 
 		m_link = new InlineLabel( title );
 		m_link.addStyleName( "linkToEntryWidgetLink" + m_style );
+		
+		// Set the text color for the content.
+		GwtClientHelper.setElementTextColor( m_link.getElement(), widgetStyles.getContentTextColor() );
 		
 		mainPanel.add( m_link );
 		

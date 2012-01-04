@@ -104,7 +104,7 @@ public class LinkToUrlConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return new UrlWidget( this );
+		return new UrlWidget( this, widgetStyles );
 	}
 	
 	/**

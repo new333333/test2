@@ -112,7 +112,7 @@ public class IFrameConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return new IFrameWidget( this );
+		return new IFrameWidget( this, widgetStyles );
 	}
 	
 	/**

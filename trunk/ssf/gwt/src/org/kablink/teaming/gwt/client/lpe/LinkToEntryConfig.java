@@ -107,7 +107,7 @@ public class LinkToEntryConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return new LinkToEntryWidget( this );
+		return new LinkToEntryWidget( this, widgetStyles );
 	}
 	
 	/**

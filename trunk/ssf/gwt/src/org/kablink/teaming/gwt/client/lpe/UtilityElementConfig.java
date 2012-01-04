@@ -110,7 +110,7 @@ public class UtilityElementConfig extends ConfigItem
 	 */
 	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
-		return new UtilityElementWidget( this );
+		return new UtilityElementWidget( this, widgetStyles );
 	}
 	
 	/**
