@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.workspacetree;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -302,8 +301,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		
 		// Is this item a bucket?
 		String baseLabelStyle = "breadCrumb_ContentNode_Anchor";
-		if (rootNode) {
-			baseLabelStyle += (" " + (getTreeMode().isHorizontalBinder() ? "breadCrumb_ContentNode_AnchorBinderRoot" : "breadCrumb_ContentNode_AnchorPopupRoot"));
+		if (rootNode && ti.isRootTail() && getTreeMode().isHorizontalBinder()) {
+			baseLabelStyle += (" breadCrumb_ContentNode_AnchorTail");
 		}
 		if (ti.isBucket()) {
 			// Yes!  Generate the appropriate widgets. 
@@ -368,7 +367,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			Grid nodeGrid = createGrid(1, 2, "breadCrumb_ContentNode");
 			nodeGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, "0");
 			contentGrid.setWidget(0, i, nodeGrid);
-			renderNode(rootTIList.get(i), nodeGrid);
+			TreeInfo ti = rootTIList.get(i);
+			ti.setRootTail((i + 1) == count);
+			renderNode(ti, nodeGrid);
 		}
 		
 		// ...and add the content Grid to the root panel.
@@ -428,11 +429,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			vp.setSpacing(0);
 			vp.add(w);
 			nodeGrid.setWidget(0, 1, vp);
-			for (Iterator<TreeInfo> tii = ti.getChildBindersList().iterator(); tii.hasNext(); ) {
+			for (TreeInfo tii:  ti.getChildBindersList()) {
 				Grid expansionGrid = createGrid(1, 2, "breadCrumb_ContentNode");
 				expansionGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, String.valueOf(depth + 1));
 				vp.add(expansionGrid);
-				renderNode(tii.next(), expansionGrid);
+				tii.setRootTail(false);	// Nested node -> Can never be a root tail.
+				renderNode(tii, expansionGrid);
 			}
 		}
 	}
