@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -72,8 +73,10 @@ public abstract class DlgBox extends PopupPanel
 	private FlowPanel m_errorPanel;
 	private Panel m_contentPanel;
 	private FlowPanel m_footerPanel;
+	private int m_id;
     	
 	protected static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
+	private static int m_uniqueId = 100;
 	
 	public enum DlgButtonMode {
 		Close,
@@ -134,11 +137,34 @@ public abstract class DlgBox extends PopupPanel
 		m_dlgBtnMode = dlgBtnMode;
 		
 		// Override the style used for PopupPanel
+		m_id = m_uniqueId;
+		++m_uniqueId;
 		setStyleName( "teamingDlgBox" );
+		getElement().setId( "teamingDlgBox-" + String.valueOf( m_id ) );
 		
 		setAnimationEnabled( true );
 		
 		setPopupPosition( xPos, yPos );
+		
+		// Create a callback that will be called when this dialog is visible.
+		// When the callback is called we will call makeDraggable().  We can't call
+		// makeDraggable() before the dialog is visible.
+		setPopupPositionAndShow( new PositionCallback()
+		{
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				ScheduledCommand cmd;
+				
+				cmd = new ScheduledCommand()
+				{
+					public void execute()
+					{
+						makeDraggable( String.valueOf( m_id ) );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
 	}// end DlgBox()
 	
 	
@@ -282,6 +308,7 @@ public abstract class DlgBox extends PopupPanel
 		
 		flowPanel = new FlowPanel();
 		flowPanel.setStyleName( "teamingDlgBoxHeader" );
+		flowPanel.getElement().setId( "teamingDlgBoxHeader-" + String.valueOf( m_id ) );
 
 		m_caption = new Label( caption );
 		flowPanel.add( m_caption );
@@ -419,8 +446,15 @@ public abstract class DlgBox extends PopupPanel
 		}
 	}
 	
-	
-	/*
+	/**
+     * Makes this dialog draggable by using the native JQuery Draggable
+     */
+    private static native void makeDraggable( String id ) /*-{
+		$wnd.jQuery( "#teamingDlgBox-" + id ).draggable( { handle : '#teamingDlgBoxHeader-' + id } );
+	}-*/;
+
+    
+    /*
 	 * This method gets called when the user clicks on the ok or cancel button.
 	 */
 	public void onClick( ClickEvent event )
@@ -519,8 +553,6 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Get the widget that should be given the focus when this dialog is displayed.
 		m_focusWidget = getFocusWidget();
-		
-		// Do we have a widget to give the initial focus to?
 		if ( m_focusWidget != null )
 		{
 			Timer timer;

@@ -43,6 +43,15 @@
 <%@ page import="org.kablink.teaming.domain.FileAttachment" %>
 <%@ page import="org.kablink.teaming.domain.FileItem" %>
 
+<% // The DlgBox class uses JQuery to make dialogs draggable. %>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
+<script type="text/javascript">
+	// Relinquish jQuery's control of the $ variable.
+    jQuery.noConflict();
+</script>
+
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  
 	Long ss_mashupTableDepth = Long.valueOf(0);

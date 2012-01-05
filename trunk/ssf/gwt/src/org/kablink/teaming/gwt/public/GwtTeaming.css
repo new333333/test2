@@ -2413,6 +2413,11 @@ body, table td, select
 	-webkit-border-top-right-radius: 3px;
 }
 
+.teamingDlgBoxHeader:hover
+{
+	cursor: move;
+}
+
 /* Used by GwtClientHelper.setGridColSpan() to hide a cell in a Grid. */
 .grid_HideCell
 {

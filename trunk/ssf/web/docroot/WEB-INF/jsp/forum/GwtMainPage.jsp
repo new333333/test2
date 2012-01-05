@@ -56,6 +56,15 @@
 
 	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 
+<% // The DlgBox class uses JQuery to make dialogs draggable. %>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
+<script type="text/javascript">
+	// Relinquish jQuery's control of the $ variable.
+    jQuery.noConflict();
+</script>
+
 	<c:set var="gwtPage" value="main" scope="request"/>	
 	<%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
     <%@ include file="/WEB-INF/jsp/common/tinymce_translations.jsp" %>
@@ -297,6 +306,7 @@
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= ReleaseInfo.getContentVersion() %>"></script>
+	
   </head>
 
   <body>
