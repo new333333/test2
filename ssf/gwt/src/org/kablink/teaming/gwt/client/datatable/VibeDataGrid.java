@@ -33,6 +33,9 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.view.client.ProvidesKey;
 
@@ -49,7 +52,16 @@ public class VibeDataGrid<T> extends DataGrid<T> {
 	 * 
 	 * This provides Lynn a way to easily edit the defaults.
 	 */ 
-	public interface VibeDataGridResources extends Resources {
+	public interface VibeDataGridResources extends DataGrid.Resources {
+		/**
+		 * Header background.
+		 * 
+		 * @return the image resource
+		 */
+		@ImageOptions(repeatStyle = RepeatStyle.Both)
+		@Source("org/kablink/teaming/gwt/public/images/blends/gray_blend8_28.png")
+		ImageResource headerBackground();
+
 		@Source({DataGrid.Style.DEFAULT_CSS, "../../public/VibeDataGrid.css"})
 		DataGrid.Style dataGridStyle();
 	}
