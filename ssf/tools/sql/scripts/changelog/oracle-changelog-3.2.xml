@@ -1174,13 +1174,6 @@
 			<column name="READCOUNT" type="NUMBER(19,0)" />
 		</createTable>
 	</changeSet>
-	<changeSet author="jong (generated)" id="1324484219445-60">
-		<createTable tableName="SS_SCHEMAINFO">
-			<column name="SCHEMAVERSION" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true" />
-			</column>
-		</createTable>
-	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-61">
 		<createTable tableName="SS_SEENMAP">
 			<column name="PRINCIPALID" type="NUMBER(19,0)">

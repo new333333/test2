@@ -1222,14 +1222,6 @@
 			<column name="readCount" type="NUMERIC(19,0)" />
 		</createTable>
 	</changeSet>
-	<changeSet author="jong (generated)" id="1324484223508-60">
-		<createTable schemaName="dbo" tableName="SS_SchemaInfo">
-			<column name="schemaVersion" type="NUMERIC(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyName="PK__SS_SchemaInfo" />
-			</column>
-		</createTable>
-	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-61">
 		<createTable schemaName="dbo" tableName="SS_SeenMap">
 			<column name="principalId" type="NUMERIC(19,0)">

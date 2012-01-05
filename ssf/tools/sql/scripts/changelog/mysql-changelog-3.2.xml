@@ -4,18 +4,18 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 	<changeSet author="jong (generated)" id="1324484190501-1">
 		<createTable tableName="jbpm_action">
-			<column autoIncrement="true" name="ID_" type="BIGINT">
-				<constraints nullable="false" primaryKey="true" />
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="class" type="CHAR(1)">
 				<constraints nullable="false" />
 			</column>
-			<column name="NAME_" type="VARCHAR(255)" />
-			<column name="ISPROPAGATIONALLOWED_" type="BIT" />
-			<column name="ACTIONEXPRESSION_" type="VARCHAR(255)" />
-			<column name="ISASYNC_" type="BIT" />
-			<column name="REFERENCEDACTION_" type="BIGINT" />
-			<column name="ACTIONDELEGATION_" type="BIGINT" />
+<column name="NAME_" type="VARCHAR(255)" />
+<column name="ISPROPAGATIONALLOWED_" type="BIT" />
+<column name="ACTIONEXPRESSION_" type="VARCHAR(255)" />
+<column name="ISASYNC_" type="BIT" />
+<column name="REFERENCEDACTION_" type="BIGINT" />
+<column name="ACTIONDELEGATION_" type="BIGINT" />
 			<column name="EVENT_" type="BIGINT" />
 			<column name="PROCESSDEFINITION_" type="BIGINT" />
 			<column name="TIMERNAME_" type="VARCHAR(255)" />
@@ -1172,13 +1172,6 @@
 			<column name="zoneId" type="BIGINT" />
 			<column name="rating" type="BIGINT" />
 			<column name="readCount" type="BIGINT" />
-		</createTable>
-	</changeSet>
-	<changeSet author="jong (generated)" id="1324484190501-60">
-		<createTable tableName="ss_schemainfo">
-			<column name="schemaVersion" type="BIGINT">
-				<constraints nullable="false" primaryKey="true" />
-			</column>
 		</createTable>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484190501-61">
