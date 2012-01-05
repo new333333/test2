@@ -123,6 +123,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_DISCUSSION_FOLDER,				// Shows a discussion folder.
 	SHOW_FILE_FOLDER,					// Shows a file       folder.
 	SHOW_LANDING_PAGE,					// Shows a landing page.
+	SHOW_TASK_FOLDER,					// Shows a task folder.
 	
 	SIDEBAR_HIDE,						// Hides the left navigation panel.
 	SIDEBAR_RELOAD,						// Tells the left navigation panel to reload itself.

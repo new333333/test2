@@ -123,6 +123,12 @@
 		.vibe-fileFolderDataTable {}
 		.vibe-fileFolderFlowPanel {}
 	/* ...End:  File folder view styles. */
+	
+	/* ...Start:  Task folder view styles. */
+		.vibe-taskFolderView          {}
+		.vibe-taskFolderVerticalPanel {}
+		.vibe-taskFolderFlowPanel     {}
+	/* ...End:  Task folder view styles. */
 /* End:  GWT folder view styles. */
 
 /* Start:  Add files dialog styles. */
