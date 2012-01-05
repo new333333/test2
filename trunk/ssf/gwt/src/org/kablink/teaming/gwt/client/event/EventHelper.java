@@ -748,6 +748,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_TASK_FOLDER:
+				// A ShowTaskFolderEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowTaskFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowTaskFolderEvent.registerEvent(eventBus, ((ShowTaskFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SIDEBAR_HIDE:
 				// A SidebarHideEvent!  Can the event handler we were
 				// given handle that?
@@ -1213,6 +1222,7 @@ public class EventHelper {
 			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
 			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
+			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
 			
 			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;
 			case SIDEBAR_RELOAD:                    	hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);                 break;

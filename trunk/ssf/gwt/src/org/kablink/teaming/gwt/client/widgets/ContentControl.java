@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
+import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -52,6 +53,7 @@ import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
+import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
@@ -98,7 +100,8 @@ public class ContentControl extends Composite
 		GotoUrlEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowFileFolderEvent.Handler,
-		ShowLandingPageEvent.Handler
+		ShowLandingPageEvent.Handler,
+		ShowTaskFolderEvent.Handler
 {
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
@@ -123,6 +126,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_LANDING_PAGE,
+		TeamingEvents.SHOW_TASK_FOLDER,
 	};
 
 	// Maximum number of URLs tracked in the content history stack.
@@ -552,6 +556,14 @@ public class ContentControl extends Composite
 						break;
 						
 						
+					case TASK:
+/*
+						GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
+						m_contentInGWT = true;
+						break;
+*/
+
+						
 					case BLOG:
 					case CALENDAR:
 					case GUESTBOOK:
@@ -560,7 +572,6 @@ public class ContentControl extends Composite
 					case MIRROREDFILE:
 					case PHOTOALBUM:
 					case SURVEY:
-					case TASK:
 					case TRASH:
 					case WIKI:
 						// These aren't handled!  Let things take the
@@ -837,10 +848,10 @@ public class ContentControl extends Composite
 			}// end onUnavailable()
 
 			@Override
-			public void onSuccess( ViewBase dfView )
+			public void onSuccess( ViewBase ffView )
 			{
-				dfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( dfView );
+				ffView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( ffView );
 			}// end onSuccess()
 		});
 	}// end onShowFileFolder()
@@ -875,6 +886,37 @@ public class ContentControl extends Composite
 		// Create a LandingPage widget for the selected binder.
 		LandingPage.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}// end onShowLandingPage()
+	
+	/**
+	 * Handles ShowTaskFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowTaskFolderEvent.Handler.onShowTaskFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowTaskFolder( final ShowTaskFolderEvent event )
+	{
+		// Create a TaskFolderView widget for the selected binder.
+		TaskFolderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase tfView )
+			{
+				tfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+			}// end onSuccess()
+		});
+	}// end onShowTaskFolder()
 	
 	/**
 	 * Callback interface to interact with the content control
