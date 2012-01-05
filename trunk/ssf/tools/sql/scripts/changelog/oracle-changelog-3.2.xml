@@ -5,8 +5,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-1">
 		<createTable tableName="JBPM_ACTION">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -33,8 +32,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-2">
 		<createTable tableName="JBPM_BYTEARRAY">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="FILEDEFINITION_" type="NUMBER(19,0)" />
@@ -54,8 +52,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-4">
 		<createTable tableName="JBPM_COMMENT">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="VERSION_" type="NUMBER(10,0)">
 				<constraints nullable="false" />
@@ -84,8 +81,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-6">
 		<createTable tableName="JBPM_DELEGATION">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASSNAME_" type="VARCHAR2(4000 BYTE)" />
 			<column name="CONFIGURATION_" type="VARCHAR2(4000 BYTE)" />
@@ -96,8 +92,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-7">
 		<createTable tableName="JBPM_EVENT">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="EVENTTYPE_" type="VARCHAR2(255 CHAR)" />
 			<column name="TYPE_" type="CHAR(1)" />
@@ -111,8 +106,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-8">
 		<createTable tableName="JBPM_EXCEPTIONHANDLER">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="EXCEPTIONCLASSNAME_" type="VARCHAR2(4000 BYTE)" />
 			<column name="TYPE_" type="CHAR(1)" />
@@ -127,8 +121,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-9">
 		<createTable tableName="JBPM_LOG">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -176,8 +169,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-10">
 		<createTable tableName="JBPM_MESSAGE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -196,8 +188,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-11">
 		<createTable tableName="JBPM_MODULEDEFINITION">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -210,8 +201,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-12">
 		<createTable tableName="JBPM_MODULEINSTANCE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -224,8 +214,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-13">
 		<createTable tableName="JBPM_NODE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -247,8 +236,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-14">
 		<createTable tableName="JBPM_POOLEDACTOR">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ACTORID_" type="VARCHAR2(255 CHAR)" />
 			<column name="SWIMLANEINSTANCE_" type="NUMBER(19,0)" />
@@ -257,8 +245,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-15">
 		<createTable tableName="JBPM_PROCESSDEFINITION">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="VERSION_" type="NUMBER(10,0)" />
@@ -269,8 +256,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-16">
 		<createTable tableName="JBPM_PROCESSINSTANCE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="VERSION_" type="NUMBER(10,0)">
 				<constraints nullable="false" />
@@ -286,8 +272,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-17">
 		<createTable tableName="JBPM_RUNTIMEACTION">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="VERSION_" type="NUMBER(10,0)">
 				<constraints nullable="false" />
@@ -303,8 +288,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-18">
 		<createTable tableName="JBPM_SWIMLANE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="ACTORIDEXPRESSION_" type="VARCHAR2(255 CHAR)" />
@@ -316,8 +300,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-19">
 		<createTable tableName="JBPM_SWIMLANEINSTANCE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="ACTORID_" type="VARCHAR2(255 CHAR)" />
@@ -328,8 +311,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-20">
 		<createTable tableName="JBPM_TASK">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="PROCESSDEFINITION_" type="NUMBER(19,0)" />
@@ -360,8 +342,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-22">
 		<createTable tableName="JBPM_TASKCONTROLLER">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TASKCONTROLLERDELEGATION_" type="NUMBER(19,0)" />
 		</createTable>
@@ -369,8 +350,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-23">
 		<createTable tableName="JBPM_TASKINSTANCE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -397,8 +377,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-24">
 		<createTable tableName="JBPM_TIMER">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="DUEDATE_" type="TIMESTAMP(6)" />
@@ -417,8 +396,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-25">
 		<createTable tableName="JBPM_TOKEN">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="VERSION_" type="NUMBER(10,0)">
 				<constraints nullable="false" />
@@ -440,8 +418,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-26">
 		<createTable tableName="JBPM_TOKENVARIABLEMAP">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TOKEN_" type="NUMBER(19,0)" />
 			<column name="CONTEXTINSTANCE_" type="NUMBER(19,0)" />
@@ -450,8 +427,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-27">
 		<createTable tableName="JBPM_TRANSITION">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="PROCESSDEFINITION_" type="NUMBER(19,0)" />
@@ -463,8 +439,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-28">
 		<createTable tableName="JBPM_VARIABLEACCESS">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="VARIABLENAME_" type="VARCHAR2(255 CHAR)" />
 			<column name="ACCESS_" type="VARCHAR2(255 CHAR)" />
@@ -478,8 +453,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-29">
 		<createTable tableName="JBPM_VARIABLEINSTANCE">
 			<column name="ID_" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CLASS_" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -502,8 +476,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-30">
 		<createTable tableName="SS_ATTACHMENTS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -552,8 +525,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-31">
 		<createTable tableName="SS_AUDITTRAIL">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -582,8 +554,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-32">
 		<createTable tableName="SS_BINDERQUOTA">
 			<column name="BINDERID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -596,8 +567,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-33">
 		<createTable tableName="SS_CHANGELOGS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="DOCNUMBER" type="VARCHAR2(512 CHAR)" />
@@ -616,8 +586,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-34">
 		<createTable tableName="SS_CUSTOMATTRIBUTES">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -647,8 +616,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-35">
 		<createTable tableName="SS_DASHBOARDS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="VARCHAR2(1 CHAR)">
 				<constraints nullable="false" />
@@ -687,8 +655,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-37">
 		<createTable tableName="SS_DEFINITIONS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -726,8 +693,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-39">
 		<createTable tableName="SS_EMAILLOG">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -751,8 +717,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-40">
 		<createTable tableName="SS_EVENTS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -796,8 +761,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-41">
 		<createTable tableName="SS_EXTENSIONS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -818,8 +782,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-42">
 		<createTable tableName="SS_FOLDERENTRIES">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -867,8 +830,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-43">
 		<createTable tableName="SS_FOLDERENTRYSTATS">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="POPULARITY" type="NUMBER(19,0)" />
@@ -877,8 +839,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-44">
 		<createTable tableName="SS_FORUMS">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="VARCHAR2(16 CHAR)">
 				<constraints nullable="false" />
@@ -963,8 +924,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-46">
 		<createTable tableName="SS_FUNCTIONCONDITIONS">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="VARCHAR2(32 CHAR)">
 				<constraints nullable="false" />
@@ -993,8 +953,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-48">
 		<createTable tableName="SS_FUNCTIONS">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -1013,8 +972,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-49">
 		<createTable tableName="SS_INDEXINGJOURNAL">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="NODENAME" type="VARCHAR2(128 CHAR)" />
@@ -1026,8 +984,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-50">
 		<createTable tableName="SS_INDEXNODE">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="NODENAME" type="VARCHAR2(128 CHAR)" />
 			<column name="INDEXNAME" type="VARCHAR2(160 CHAR)" />
@@ -1039,8 +996,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-51">
 		<createTable tableName="SS_LDAPCONNECTIONCONFIG">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="URL" type="VARCHAR2(255 CHAR)" />
@@ -1072,8 +1028,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-53">
 		<createTable tableName="SS_LICENSESTATS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -1098,8 +1053,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-55">
 		<createTable tableName="SS_NOTIFYSTATUS">
 			<column name="OWNERID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="OWNERTYPE" type="VARCHAR2(16 CHAR)" />
@@ -1113,8 +1067,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-56">
 		<createTable tableName="SS_POSTINGS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -1144,8 +1097,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-58">
 		<createTable tableName="SS_PRINCIPALS">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="VARCHAR2(16 CHAR)">
 				<constraints nullable="false" />
@@ -1225,16 +1177,14 @@
 	<changeSet author="jong (generated)" id="1324484219445-60">
 		<createTable tableName="SS_SCHEMAINFO">
 			<column name="SCHEMAVERSION" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 		</createTable>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-61">
 		<createTable tableName="SS_SEENMAP">
 			<column name="PRINCIPALID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="SEENMAP" type="BLOB">
@@ -1247,8 +1197,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-62">
 		<createTable tableName="SS_SHAREDENTITY">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="REFERER" type="NUMBER(19,0)" />
 			<column name="ZONEID" type="NUMBER(19,0)" />
@@ -1291,8 +1240,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-65">
 		<createTable tableName="SS_TAGS">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="ENTITY_TYPE" type="NUMBER(10,0)" />
@@ -1306,8 +1254,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-66">
 		<createTable tableName="SS_TOKENINFO">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TYPE" type="CHAR(1)">
 				<constraints nullable="false" />
@@ -1350,8 +1297,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-69">
 		<createTable tableName="SS_WORKAREAFUNCTIONMEMBERSHIPS">
 			<column name="ID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -1373,8 +1319,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-70">
 		<createTable tableName="SS_WORKFLOWHISTORY">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="STARTBY" type="NUMBER(19,0)" />
@@ -1408,8 +1353,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-72">
 		<createTable tableName="SS_WORKFLOWRESPONSES">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)" />
 			<column name="FOLDERENTRY" type="NUMBER(19,0)" />
@@ -1429,8 +1373,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-73">
 		<createTable tableName="SS_WORKFLOWSTATES">
 			<column name="TOKENID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LOCKVERSION" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -1454,8 +1397,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-74">
 		<createTable tableName="SS_ZONECONFIG">
 			<column name="ZONEID" type="NUMBER(19,0)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="UPGRADEVERSION" type="NUMBER(10,0)" />
 			<column name="MOBILEACCESSENABLED" type="NUMBER(1,0)" />
@@ -1486,8 +1428,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-75">
 		<createTable tableName="SS_ZONEINFO">
 			<column name="ID" type="CHAR(32)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="ZONEID" type="NUMBER(19,0)">
 				<constraints nullable="false" />
@@ -1512,8 +1453,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-77">
 		<createTable tableName="SSQRTZ_CALENDARS">
 			<column name="CALENDAR_NAME" type="VARCHAR2(100 BYTE)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="CALENDAR" type="BLOB">
 				<constraints nullable="false" />
@@ -1537,8 +1477,7 @@
 	<changeSet author="jong (generated)" id="1324484219445-79">
 		<createTable tableName="SSQRTZ_FIRED_TRIGGERS">
 			<column name="ENTRY_ID" type="VARCHAR2(95 BYTE)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="TRIGGER_NAME" type="VARCHAR2(100 BYTE)">
 				<constraints nullable="false" />
@@ -1610,24 +1549,21 @@
 	<changeSet author="jong (generated)" id="1324484219445-82">
 		<createTable tableName="SSQRTZ_LOCKS">
 			<column name="LOCK_NAME" type="VARCHAR2(40 BYTE)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 		</createTable>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-83">
 		<createTable tableName="SSQRTZ_PAUSED_TRIGGER_GRPS">
 			<column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 		</createTable>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-84">
 		<createTable tableName="SSQRTZ_SCHEDULER_STATE">
 			<column name="INSTANCE_NAME" type="VARCHAR2(100 BYTE)">
-				<constraints nullable="false" primaryKey="true"
-					primaryKeyTablespace="USERS" />
+				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="LAST_CHECKIN_TIME" type="NUMBER(13,0)">
 				<constraints nullable="false" />
@@ -1707,142 +1643,138 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-88">
 		<addPrimaryKey columnNames="PROCESSFILE_, INDEX_"
-			tableName="JBPM_BYTEBLOCK" tablespace="USERS" />
+			tableName="JBPM_BYTEBLOCK" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-89">
 		<addPrimaryKey columnNames="DECISION_, INDEX_"
-			tableName="JBPM_DECISIONCONDITIONS" tablespace="USERS" />
+			tableName="JBPM_DECISIONCONDITIONS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-90">
 		<addPrimaryKey columnNames="TASKINSTANCE_, POOLEDACTOR_"
-			tableName="JBPM_TASKACTORPOOL" tablespace="USERS" />
+			tableName="JBPM_TASKACTORPOOL" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-91">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			tableName="SSQRTZ_BLOB_TRIGGERS" tablespace="USERS" />
+			tableName="SSQRTZ_BLOB_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-92">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			tableName="SSQRTZ_CRON_TRIGGERS" tablespace="USERS" />
+			tableName="SSQRTZ_CRON_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-93">
 		<addPrimaryKey columnNames="JOB_NAME, JOB_GROUP"
-			tableName="SSQRTZ_JOB_DETAILS" tablespace="USERS" />
+			tableName="SSQRTZ_JOB_DETAILS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-94">
 		<addPrimaryKey columnNames="JOB_NAME, JOB_GROUP, JOB_LISTENER"
-			tableName="SSQRTZ_JOB_LISTENERS" tablespace="USERS" />
+			tableName="SSQRTZ_JOB_LISTENERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-95">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			tableName="SSQRTZ_SIMPLE_TRIGGERS" tablespace="USERS" />
+			tableName="SSQRTZ_SIMPLE_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-96">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			tableName="SSQRTZ_TRIGGERS" tablespace="USERS" />
+			tableName="SSQRTZ_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-97">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_LISTENER"
-			tableName="SSQRTZ_TRIGGER_LISTENERS" tablespace="USERS" />
+			tableName="SSQRTZ_TRIGGER_LISTENERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-98">
-		<addPrimaryKey columnNames="BINDER, POSITION" tableName="SS_DEFINITIONMAP"
-			tablespace="USERS" />
+		<addPrimaryKey columnNames="BINDER, POSITION" tableName="SS_DEFINITIONMAP" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-99">
-		<addPrimaryKey columnNames="PRINCIPAL, TYPE" tableName="SS_EMAILADDRESSES"
-			tablespace="USERS" />
+		<addPrimaryKey columnNames="PRINCIPAL, TYPE" tableName="SS_EMAILADDRESSES" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-100">
 		<addPrimaryKey columnNames="FUNCTIONID, OPERATIONNAME"
-			tableName="SS_FUNCTIONOPERATIONS" tablespace="USERS" />
+			tableName="SS_FUNCTIONOPERATIONS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-101">
 		<addPrimaryKey columnNames="BINDERID, TYPE, NAME"
-			tableName="SS_LIBRARYENTRIES" tablespace="USERS" />
+			tableName="SS_LIBRARYENTRIES" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-102">
-		<addPrimaryKey columnNames="USERID, GROUPID" tableName="SS_PRINCIPALMEMBERSHIP"
-			tablespace="USERS" />
+		<addPrimaryKey columnNames="USERID, GROUPID" tableName="SS_PRINCIPALMEMBERSHIP" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-103">
 		<addPrimaryKey columnNames="PRINCIPALID, ENTITYID, ENTITYTYPE"
-			tableName="SS_RATINGS" tablespace="USERS" />
+			tableName="SS_RATINGS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-104">
-		<addPrimaryKey columnNames="ZONEID, NAME" tableName="SS_SIMPLENAME"
-			tablespace="USERS" />
+		<addPrimaryKey columnNames="ZONEID, NAME" tableName="SS_SIMPLENAME" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-105">
 		<addPrimaryKey columnNames="PRINCIPALID, ENTITYID, ENTITYTYPE"
-			tableName="SS_SUBSCRIPTIONS" tablespace="USERS" />
+			tableName="SS_SUBSCRIPTIONS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-106">
 		<addPrimaryKey columnNames="PRINCIPALID, BINDERID"
-			tableName="SS_USERPROPERTIES" tablespace="USERS" />
+			tableName="SS_USERPROPERTIES" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-107">
 		<addPrimaryKey columnNames="WORKAREAFUNCTIONMEMBERSHIPID, MEMBERID"
-			tableName="SS_WORKAREAFUNCTIONMEMBERS" tablespace="USERS" />
+			tableName="SS_WORKAREAFUNCTIONMEMBERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-108">
 		<addPrimaryKey columnNames="BINDER, ENTRYDEFINITION"
-			tableName="SS_WORKFLOWMAP" tablespace="USERS" />
+			tableName="SS_WORKFLOWMAP" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-109">
 		<addUniqueConstraint columnNames="ZONEID, BINDERID, NAME"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_DEFINITIONS" tablespace="USERS" />
+			tableName="SS_DEFINITIONS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-110">
 		<addUniqueConstraint columnNames="ZONEID, NAME"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_EXTENSIONS" tablespace="USERS" />
+			tableName="SS_EXTENSIONS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-111">
 		<addUniqueConstraint columnNames="ENTRY_SORTKEY"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_FOLDERENTRIES" tablespace="USERS" />
+			tableName="SS_FOLDERENTRIES" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-112">
 		<addUniqueConstraint columnNames="BINDER_SORTKEY"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_FORUMS" tablespace="USERS" />
+			tableName="SS_FORUMS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-113">
 		<addUniqueConstraint columnNames="ZONEID, NAME"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_FUNCTIONS" tablespace="USERS" />
+			tableName="SS_FUNCTIONS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-114">
 		<addUniqueConstraint columnNames="NODENAME, INDEXNAME"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_INDEXNODE" tablespace="USERS" />
+			tableName="SS_INDEXNODE" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-115">
 		<addUniqueConstraint columnNames="ZONEID, NAME"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_PRINCIPALS" tablespace="USERS" />
+			tableName="SS_PRINCIPALS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-116">
 		<addUniqueConstraint columnNames="ZONEID, FOREIGNNAME"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_PRINCIPALS" tablespace="USERS" />
+			tableName="SS_PRINCIPALS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-117">
 		<addUniqueConstraint columnNames="ZONEID"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_ZONEINFO" tablespace="USERS" />
+			tableName="SS_ZONEINFO" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-118">
 		<addUniqueConstraint columnNames="ZONENAME"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_ZONEINFO" tablespace="USERS" />
+			tableName="SS_ZONEINFO" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-119">
 		<addUniqueConstraint columnNames="VIRTUALHOST"
 			deferrable="false" disabled="false" initiallyDeferred="false"
-			tableName="SS_ZONEINFO" tablespace="USERS" />
+			tableName="SS_ZONEINFO" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-120">
 		<addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_"
@@ -2921,131 +2853,131 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-276">
 		<createIndex indexName="IDX_PLDACTR_ACTID" tableName="JBPM_POOLEDACTOR"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ACTORID_" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-277">
 		<createIndex indexName="IDX_TASK_ACTORID" tableName="JBPM_TASKINSTANCE"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ACTORID_" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-278">
 		<createIndex indexName="IDX_QRTZ_FT_JOB_GROUP" tableName="SSQRTZ_FIRED_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="JOB_GROUP" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-279">
 		<createIndex indexName="IDX_QRTZ_FT_JOB_NAME" tableName="SSQRTZ_FIRED_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="JOB_NAME" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-280">
 		<createIndex indexName="IDX_QRTZ_FT_JOB_REQ_RECOVERY"
-			tableName="SSQRTZ_FIRED_TRIGGERS" tablespace="USERS" unique="false">
+			tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
 			<column name="REQUESTS_RECOVERY" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-281">
 		<createIndex indexName="IDX_QRTZ_FT_JOB_STATEFUL"
-			tableName="SSQRTZ_FIRED_TRIGGERS" tablespace="USERS" unique="false">
+			tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
 			<column name="IS_STATEFUL" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-282">
 		<createIndex indexName="IDX_QRTZ_FT_TRIG_GROUP" tableName="SSQRTZ_FIRED_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="TRIGGER_GROUP" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-283">
 		<createIndex indexName="IDX_QRTZ_FT_TRIG_INST_NAME"
-			tableName="SSQRTZ_FIRED_TRIGGERS" tablespace="USERS" unique="false">
+			tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
 			<column name="INSTANCE_NAME" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-284">
 		<createIndex indexName="IDX_QRTZ_FT_TRIG_NAME" tableName="SSQRTZ_FIRED_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="TRIGGER_NAME" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-285">
 		<createIndex indexName="IDX_QRTZ_FT_TRIG_NM_GP" tableName="SSQRTZ_FIRED_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="TRIGGER_NAME" />
 			<column name="TRIGGER_GROUP" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-286">
 		<createIndex indexName="IDX_QRTZ_FT_TRIG_VOLATILE"
-			tableName="SSQRTZ_FIRED_TRIGGERS" tablespace="USERS" unique="false">
+			tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
 			<column name="IS_VOLATILE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-287">
 		<createIndex indexName="IDX_QRTZ_J_REQ_RECOVERY"
-			tableName="SSQRTZ_JOB_DETAILS" tablespace="USERS" unique="false">
+			tableName="SSQRTZ_JOB_DETAILS" unique="false">
 			<column name="REQUESTS_RECOVERY" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-288">
 		<createIndex indexName="IDX_QRTZ_T_NEXT_FIRE_TIME"
-			tableName="SSQRTZ_TRIGGERS" tablespace="USERS" unique="false">
+			tableName="SSQRTZ_TRIGGERS" unique="false">
 			<column name="NEXT_FIRE_TIME" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-289">
 		<createIndex indexName="IDX_QRTZ_T_NFT_ST" tableName="SSQRTZ_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="NEXT_FIRE_TIME" />
 			<column name="TRIGGER_STATE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-290">
 		<createIndex indexName="IDX_QRTZ_T_STATE" tableName="SSQRTZ_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="TRIGGER_STATE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-291">
 		<createIndex indexName="IDX_QRTZ_T_VOLATILE" tableName="SSQRTZ_TRIGGERS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="IS_VOLATILE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-292">
 		<createIndex indexName="ENTITYOWNER_ATT" tableName="SS_ATTACHMENTS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNERTYPE" />
 			<column name="OWNERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-293">
 		<createIndex indexName="OWNINGBINDER_ATT" tableName="SS_ATTACHMENTS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-294">
 		<createIndex indexName="ENTITYOWNER_AUDIT" tableName="SS_AUDITTRAIL"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTITYTYPE" />
 			<column name="ENTITYID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-295">
 		<createIndex indexName="OWNINGBINDER_AUDIT" tableName="SS_AUDITTRAIL"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-296">
 		<createIndex indexName="SEARCH_AUDIT" tableName="SS_AUDITTRAIL"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="STARTDATE" />
 			<column name="STARTBY" />
@@ -3053,53 +2985,53 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-297">
 		<createIndex indexName="ENTITYOWNER_CLOG" tableName="SS_CHANGELOGS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTITYTYPE" />
 			<column name="ENTITYID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-298">
 		<createIndex indexName="OPERATIONDATE_CLOG" tableName="SS_CHANGELOGS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="OPERATIONDATE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-299">
 		<createIndex indexName="OWNINGBINDER_CLOG" tableName="SS_CHANGELOGS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-300">
 		<createIndex indexName="ENTITYOWNER_CATT" tableName="SS_CUSTOMATTRIBUTES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNERTYPE" />
 			<column name="OWNERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-301">
 		<createIndex indexName="OWNINGBINDER_CATT" tableName="SS_CUSTOMATTRIBUTES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-302">
 		<createIndex indexName="BINDER_DASH" tableName="SS_DASHBOARDS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="BINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-303">
 		<createIndex indexName="OWNERKEY_DASH" tableName="SS_DASHBOARDS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNER_ID" />
 			<column name="OWNER_TYPE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-304">
 		<createIndex indexName="INTERNAL_DEFINITION" tableName="SS_DEFINITIONS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="INTERNALID" />
 			<column name="TYPE" />
@@ -3107,66 +3039,66 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-305">
 		<createIndex indexName="ADDRESS_EMAIL" tableName="SS_EMAILADDRESSES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ADDRESS" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-306">
 		<createIndex indexName="SENDDATE_EMAILLOG" tableName="SS_EMAILLOG"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="SENDDATE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-307">
 		<createIndex indexName="ENTITYOWNER_EVENT" tableName="SS_EVENTS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNERTYPE" />
 			<column name="OWNERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-308">
 		<createIndex indexName="OWNINGBINDER_EVENT" tableName="SS_EVENTS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-309">
 		<createIndex indexName="ENTRYDEF_FENTRY" tableName="SS_FOLDERENTRIES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTRYDEF" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-310">
 		<createIndex indexName="OWNINGBINDERKEY_FENTRY" tableName="SS_FOLDERENTRIES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERKEY" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-311">
 		<createIndex indexName="INTERNAL_BINDER" tableName="SS_FORUMS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="INTERNALID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-312">
 		<createIndex indexName="INDEXINGJOURNAL_NODEINDEX"
-			tableName="SS_INDEXINGJOURNAL" tablespace="USERS" unique="false">
+			tableName="SS_INDEXINGJOURNAL" unique="false">
 			<column name="NODENAME" />
 			<column name="INDEXNAME" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-313">
 		<createIndex indexName="SNAPSHOT_LSTATS" tableName="SS_LICENSESTATS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="SNAPSHOTDATE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-314">
 		<createIndex indexName="NOTIFYSTATUS_DIGEST" tableName="SS_NOTIFYSTATUS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="LASTMODIFIED" />
 			<column name="LASTDIGESTSENT" />
@@ -3174,7 +3106,7 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-315">
 		<createIndex indexName="NOTIFYSTATUS_FULL" tableName="SS_NOTIFYSTATUS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="LASTMODIFIED" />
 			<column name="LASTFULLSENT" />
@@ -3182,47 +3114,47 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-316">
 		<createIndex indexName="EMAIL_POSTINGS" tableName="SS_POSTINGS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="EMAILADDRESS" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-317">
 		<createIndex indexName="ENTRYDEF_PRINCIPAL" tableName="SS_PRINCIPALS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTRYDEF" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-318">
 		<createIndex indexName="INTERNAL_PRINCIPAL" tableName="SS_PRINCIPALS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="INTERNALID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-319">
 		<createIndex indexName="LDAPGUID_PRINCIPAL" tableName="SS_PRINCIPALS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="LDAPGUID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-320">
 		<createIndex indexName="TYPE_PRINCIPAL" tableName="SS_PRINCIPALS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="TYPE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-321">
 		<createIndex indexName="ENTITY_RATINGS" tableName="SS_RATINGS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTITYID" />
 			<column name="ENTITYTYPE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-322">
 		<createIndex indexName="ACCESS_SHARED" tableName="SS_SHAREDENTITY"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ACCESSTYPE" />
 			<column name="ACCESSID" />
 			<column name="SHAREDDATE" />
@@ -3230,93 +3162,93 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-323">
 		<createIndex indexName="ENTITY_SHARED" tableName="SS_SHAREDENTITY"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTITYTYPE" />
 			<column name="ENTITYID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-324">
 		<createIndex indexName="BINDERID_SIMPLENAME" tableName="SS_SIMPLENAME"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="BINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-325">
 		<createIndex indexName="EMAILADDRESS_SIMPLENAME"
-			tableName="SS_SIMPLENAME" tablespace="USERS" unique="false">
+			tableName="SS_SIMPLENAME" unique="false">
 			<column name="EMAILADDRESS" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-326">
 		<createIndex indexName="ENTITY_SUBSCRIPTIONS" tableName="SS_SUBSCRIPTIONS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTITYID" />
 			<column name="ENTITYTYPE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-327">
 		<createIndex indexName="ENTITY_TAG" tableName="SS_TAGS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTITY_TYPE" />
 			<column name="ENTITY_ID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-328">
 		<createIndex indexName="OWNER_TAG" tableName="SS_TAGS"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNER_TYPE" />
 			<column name="OWNER_ID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-329">
 		<createIndex indexName="USERID_TOKENINFOSESSION"
-			tableName="SS_TOKENINFO" tablespace="USERS" unique="false">
+			tableName="SS_TOKENINFO" unique="false">
 			<column name="USERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-330">
 		<createIndex indexName="ENTITYOWNER_WFHISTORY" tableName="SS_WORKFLOWHISTORY"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ENTITYID" />
 			<column name="ENTITYTYPE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-331">
 		<createIndex indexName="OWNINGBINDER_WFHISTORY" tableName="SS_WORKFLOWHISTORY"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-332">
 		<createIndex indexName="STARTDATE_WFHISTORY" tableName="SS_WORKFLOWHISTORY"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="ZONEID" />
 			<column name="STARTDATE" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-333">
 		<createIndex indexName="ENTITYOWNER" tableName="SS_WORKFLOWRESPONSES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNERTYPE" />
 			<column name="OWNERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-334">
 		<createIndex indexName="OWNINGBINDER" tableName="SS_WORKFLOWRESPONSES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-335">
 		<createIndex indexName="ENTITYOWNER_WSTATE" tableName="SS_WORKFLOWSTATES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNERTYPE" />
 			<column name="OWNERID" />
 		</createIndex>
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484219445-336">
 		<createIndex indexName="OWNINGBINDER_WSTATE" tableName="SS_WORKFLOWSTATES"
-			tablespace="USERS" unique="false">
+			unique="false">
 			<column name="OWNINGBINDERID" />
 		</createIndex>
 	</changeSet>
