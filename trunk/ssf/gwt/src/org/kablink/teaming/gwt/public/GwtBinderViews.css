@@ -7,8 +7,7 @@
 	.vibe-binderViewTools
 	{
 		display: block;
-		padding: 10px;
-		margin-bottom: 5px;
+		padding: 5px;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
 	}
@@ -35,7 +34,10 @@
 	/* ...End:  Description panel styles. */
 	
 	/* ...Start:  Entry menu panel styles. */
-		.vibe-entryMenuPanel {padding: 0px !important; padding-top: 10px !important;}
+		.vibe-entryMenuPanel {
+			padding: 0px !important;
+			background-color: #ededed; 
+		}
 	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
@@ -46,7 +48,7 @@
 		.vibe-filterAnchorLabel-notcurrent {font-weight: normal !important; padding: 2px 5px;}
 		.vibe-filterEditPanel              {font-size: 11px !important;}
 		.vibe-filterEditLabel              {font-size: 11px; white-space: nowrap;}
-		.vibe-filterPanel                  {background-color: #EAF5F5;}
+		.vibe-filterPanel                  {background-color: transparent;}
 		.vibe-filtersGrid                  {}
 		.vibe-filtersLabel                 {}
 		.vibe-filtersPanel                 {padding-left: 10px; font-size: 11px !important;}
@@ -103,8 +105,8 @@
 		.vibe-dataTableEntry-unseenMarker    {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-viewAnchor      {text-decoration: none;}
 		.vibe-dataTableEntry-viewLabel       {}
-		.vibe-dataTableLink-hover            {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
-		.vibe-dataTableLink-hoverHint        {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d6dede; margin:2px; padding: 10px; background-color: #EBECA5; width: 300px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-dataTableLink-hover            {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px; text-shadow: 2px 3px 0 #DDDDFF;}
+		.vibe-dataTableLink-hoverHint        {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d6dede; margin:2px; padding: 10px; background-color: #fafafa; width: 300px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
 		.vibe-dataTableLink-hoverHintLabel   {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #333333;}
 		.vibe-dataTablePresence-control      {}
 		.vibe-dataTablePresence-label        {display: inline; font-weight: bold; padding-left: 2px !important;}
