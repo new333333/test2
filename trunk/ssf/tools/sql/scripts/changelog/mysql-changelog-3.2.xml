@@ -3202,4 +3202,21 @@
 			<column name="zoneName" />
 		</createIndex>
 	</changeSet>
+	<changeSet author="jong (generated)" id="1324484190501-323">
+		<insert tableName="ssqrtz_locks">
+			<column name="LOCK_NAME" value="CALENDAR_ACCESS" />
+		</insert>
+		<insert tableName="ssqrtz_locks">
+			<column name="LOCK_NAME" value="JOB_ACCESS" />
+		</insert>
+		<insert tableName="ssqrtz_locks">
+			<column name="LOCK_NAME" value="MISFIRE_ACCESS" />
+		</insert>
+		<insert tableName="ssqrtz_locks">
+			<column name="LOCK_NAME" value="STATE_ACCESS" />
+		</insert>
+		<insert tableName="ssqrtz_locks">
+			<column name="LOCK_NAME" value="TRIGGER_ACCESS" />
+		</insert>
+	</changeSet>
 </databaseChangeLog>

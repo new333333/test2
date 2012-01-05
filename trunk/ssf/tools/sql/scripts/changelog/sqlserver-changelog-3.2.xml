@@ -1707,8 +1707,7 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-88">
 		<addPrimaryKey columnNames="PROCESSFILE_, INDEX_"
-			constraintName="PK__JBPM_BYTEBLOCK" schemaName="dbo"
-			tableName="JBPM_BYTEBLOCK" />
+			constraintName="PK__JBPM_BYTEBLOCK" schemaName="dbo" tableName="JBPM_BYTEBLOCK" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-89">
 		<addPrimaryKey columnNames="DECISION_, INDEX_"
@@ -1747,8 +1746,7 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-96">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP"
-			constraintName="PK__SSQRTZ_TRIGGERS" schemaName="dbo"
-			tableName="SSQRTZ_TRIGGERS" />
+			constraintName="PK__SSQRTZ_TRIGGERS" schemaName="dbo" tableName="SSQRTZ_TRIGGERS" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-97">
 		<addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_LISTENER"
@@ -1757,13 +1755,11 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-98">
 		<addPrimaryKey columnNames="binder, position"
-			constraintName="PK__SS_DefinitionMap" schemaName="dbo"
-			tableName="SS_DefinitionMap" />
+			constraintName="PK__SS_DefinitionMap" schemaName="dbo" tableName="SS_DefinitionMap" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-99">
 		<addPrimaryKey columnNames="principal, type"
-			constraintName="PK__SS_EmailAddresses" schemaName="dbo"
-			tableName="SS_EmailAddresses" />
+			constraintName="PK__SS_EmailAddresses" schemaName="dbo" tableName="SS_EmailAddresses" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-100">
 		<addPrimaryKey columnNames="functionId, operationName"
@@ -1772,8 +1768,7 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-101">
 		<addPrimaryKey columnNames="binderId, type, name"
-			constraintName="PK__SS_LibraryEntries" schemaName="dbo"
-			tableName="SS_LibraryEntries" />
+			constraintName="PK__SS_LibraryEntries" schemaName="dbo" tableName="SS_LibraryEntries" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-102">
 		<addPrimaryKey columnNames="userId, groupId"
@@ -1782,23 +1777,19 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-103">
 		<addPrimaryKey columnNames="principalId, entityId, entityType"
-			constraintName="PK__SS_Ratings" schemaName="dbo"
-			tableName="SS_Ratings" />
+			constraintName="PK__SS_Ratings" schemaName="dbo" tableName="SS_Ratings" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-104">
 		<addPrimaryKey columnNames="zoneId, name"
-			constraintName="PK__SS_SimpleName" schemaName="dbo"
-			tableName="SS_SimpleName" />
+			constraintName="PK__SS_SimpleName" schemaName="dbo" tableName="SS_SimpleName" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-105">
 		<addPrimaryKey columnNames="principalId, entityId, entityType"
-			constraintName="PK__SS_Subscriptions" schemaName="dbo"
-			tableName="SS_Subscriptions" />
+			constraintName="PK__SS_Subscriptions" schemaName="dbo" tableName="SS_Subscriptions" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-106">
 		<addPrimaryKey columnNames="principalId, binderId"
-			constraintName="PK__SS_UserProperties" schemaName="dbo"
-			tableName="SS_UserProperties" />
+			constraintName="PK__SS_UserProperties" schemaName="dbo" tableName="SS_UserProperties" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-107">
 		<addPrimaryKey columnNames="workAreaFunctionMembershipId, memberId"
@@ -1807,8 +1798,7 @@
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-108">
 		<addPrimaryKey columnNames="binder, entryDefinition"
-			constraintName="PK__SS_WorkflowMap" schemaName="dbo"
-			tableName="SS_WorkflowMap" />
+			constraintName="PK__SS_WorkflowMap" schemaName="dbo" tableName="SS_WorkflowMap" />
 	</changeSet>
 	<changeSet author="jong (generated)" id="1324484223508-109">
 		<addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_"
@@ -3393,5 +3383,22 @@
 			schemaName="dbo" tableName="SS_ZoneInfo" unique="true">
 			<column name="virtualHost" />
 		</createIndex>
+	</changeSet>
+	<changeSet author="jong (generated)" id="1324484223508-323">
+		<insert schemaName="dbo" tableName="SSQRTZ_LOCKS">
+			<column name="LOCK_NAME" value="CALENDAR_ACCESS" />
+		</insert>
+		<insert schemaName="dbo" tableName="SSQRTZ_LOCKS">
+			<column name="LOCK_NAME" value="JOB_ACCESS" />
+		</insert>
+		<insert schemaName="dbo" tableName="SSQRTZ_LOCKS">
+			<column name="LOCK_NAME" value="MISFIRE_ACCESS" />
+		</insert>
+		<insert schemaName="dbo" tableName="SSQRTZ_LOCKS">
+			<column name="LOCK_NAME" value="STATE_ACCESS" />
+		</insert>
+		<insert schemaName="dbo" tableName="SSQRTZ_LOCKS">
+			<column name="LOCK_NAME" value="TRIGGER_ACCESS" />
+		</insert>
 	</changeSet>
 </databaseChangeLog>
