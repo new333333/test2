@@ -33,6 +33,9 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.view.client.ProvidesKey;
 
@@ -50,7 +53,21 @@ public class VibeCellTable<T> extends CellTable<T> {
 	 * This provides Lynn a way to easily edit the defaults.
 	 */ 
 	public interface VibeCellTableResources extends Resources {
-		@Source({CellTable.Style.DEFAULT_CSS, "../../public/VibeCellTable.css"})
+		// Define the images...
+		@ImageOptions(repeatStyle = RepeatStyle.Both)
+		@Source("org/kablink/teaming/gwt/public/images/sortAZ.gif")
+		ImageResource cellTableSortAscending();
+
+		@ImageOptions(repeatStyle = RepeatStyle.Both)
+		@Source("org/kablink/teaming/gwt/public/images/sortZA.gif")
+		ImageResource cellTableSortDescending();
+
+		@ImageOptions(repeatStyle = RepeatStyle.Both)
+		@Source("org/kablink/teaming/gwt/public/images/blends/gray_blend8_28.png")
+		ImageResource headerBackground();
+
+		// ...and style sheets.
+		@Source({CellTable.Style.DEFAULT_CSS, "org/kablink/teaming/gwt/public/VibeCellTable.css"})
 		CellTable.Style cellTableStyle();
 	}
 	

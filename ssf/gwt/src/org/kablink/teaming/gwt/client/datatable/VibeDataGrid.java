@@ -53,16 +53,21 @@ public class VibeDataGrid<T> extends DataGrid<T> {
 	 * This provides Lynn a way to easily edit the defaults.
 	 */ 
 	public interface VibeDataGridResources extends DataGrid.Resources {
-		/**
-		 * Header background.
-		 * 
-		 * @return the image resource
-		 */
+		// Define the images...
+		@ImageOptions(repeatStyle = RepeatStyle.Both)
+		@Source("org/kablink/teaming/gwt/public/images/sortAZ.gif")
+		ImageResource dataGridSortAscending();
+
+		@ImageOptions(repeatStyle = RepeatStyle.Both)
+		@Source("org/kablink/teaming/gwt/public/images/sortZA.gif")
+		ImageResource dataGridSortDescending();
+
 		@ImageOptions(repeatStyle = RepeatStyle.Both)
 		@Source("org/kablink/teaming/gwt/public/images/blends/gray_blend8_28.png")
 		ImageResource headerBackground();
 
-		@Source({DataGrid.Style.DEFAULT_CSS, "../../public/VibeDataGrid.css"})
+		// ...and style sheets.
+		@Source({DataGrid.Style.DEFAULT_CSS, "org/kablink/teaming/gwt/public/VibeDataGrid.css"})
 		DataGrid.Style dataGridStyle();
 	}
 	
