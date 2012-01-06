@@ -223,7 +223,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				
 				// ...and show it with the description HTML.
 				m_titleHintLabel.getElement().setInnerHTML(description);
-				m_titleHintPanel.setPopupPosition((eventTarget.getAbsoluteLeft() + 20), (eventTarget.getAbsoluteBottom() + 12));	// 20,12:  Same as JSP way of showing these hints.
+				m_titleHintPanel.setPopupPosition((eventTarget.getAbsoluteLeft() + 0), (eventTarget.getAbsoluteBottom() + 8));	// 20,12:  Same as JSP way of showing these hints.
 				m_titleHintPanel.show();
 			}
     	}
