@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <changeSet author="jong (generated)" id="1325864746197-1">
+    <changeSet author="jong (generated)" id="1325864746197-1" context="schema">
         <createTable tableName="jbpm_action">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -27,7 +27,7 @@
             <column name="EXCEPTIONHANDLERINDEX_" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-2">
+    <changeSet author="jong (generated)" id="1325864746197-2" context="schema">
         <createTable tableName="jbpm_bytearray">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -36,7 +36,7 @@
             <column name="FILEDEFINITION_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-3">
+    <changeSet author="jong (generated)" id="1325864746197-3" context="schema">
         <createTable tableName="jbpm_byteblock">
             <column name="PROCESSFILE_" type="BIGINT">
                 <constraints nullable="false"/>
@@ -47,7 +47,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-4">
+    <changeSet author="jong (generated)" id="1325864746197-4" context="schema">
         <createTable tableName="jbpm_comment">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -64,7 +64,7 @@
             <column name="TASKINSTANCEINDEX_" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-5">
+    <changeSet author="jong (generated)" id="1325864746197-5" context="schema">
         <createTable tableName="jbpm_decisionconditions">
             <column name="DECISION_" type="BIGINT">
                 <constraints nullable="false"/>
@@ -76,7 +76,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-6">
+    <changeSet author="jong (generated)" id="1325864746197-6" context="schema">
         <createTable tableName="jbpm_delegation">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -87,7 +87,7 @@
             <column name="PROCESSDEFINITION_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-7">
+    <changeSet author="jong (generated)" id="1325864746197-7" context="schema">
         <createTable tableName="jbpm_event">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -101,7 +101,7 @@
             <column name="TASK_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-8">
+    <changeSet author="jong (generated)" id="1325864746197-8" context="schema">
         <createTable tableName="jbpm_exceptionhandler">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -116,7 +116,7 @@
             <column name="TASK_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-9">
+    <changeSet author="jong (generated)" id="1325864746197-9" context="schema">
         <createTable tableName="jbpm_log">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -164,7 +164,7 @@
             <column name="NEWBYTEARRAY_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-10">
+    <changeSet author="jong (generated)" id="1325864746197-10" context="schema">
         <createTable tableName="jbpm_message">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -183,7 +183,7 @@
             <column name="NODE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-11">
+    <changeSet author="jong (generated)" id="1325864746197-11" context="schema">
         <createTable tableName="jbpm_moduledefinition">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -196,7 +196,7 @@
             <column name="STARTTASK_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-12">
+    <changeSet author="jong (generated)" id="1325864746197-12" context="schema">
         <createTable tableName="jbpm_moduleinstance">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -209,7 +209,7 @@
             <column name="NAME_" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-13">
+    <changeSet author="jong (generated)" id="1325864746197-13" context="schema">
         <createTable tableName="jbpm_node">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -231,7 +231,7 @@
             <column name="NODECOLLECTIONINDEX_" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-14">
+    <changeSet author="jong (generated)" id="1325864746197-14" context="schema">
         <createTable tableName="jbpm_pooledactor">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -240,7 +240,7 @@
             <column name="SWIMLANEINSTANCE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-15">
+    <changeSet author="jong (generated)" id="1325864746197-15" context="schema">
         <createTable tableName="jbpm_processdefinition">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -251,7 +251,7 @@
             <column name="STARTSTATE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-16">
+    <changeSet author="jong (generated)" id="1325864746197-16" context="schema">
         <createTable tableName="jbpm_processinstance">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -267,7 +267,7 @@
             <column name="SUPERPROCESSTOKEN_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-17">
+    <changeSet author="jong (generated)" id="1325864746197-17" context="schema">
         <createTable tableName="jbpm_runtimeaction">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -283,7 +283,7 @@
             <column name="PROCESSINSTANCEINDEX_" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-18">
+    <changeSet author="jong (generated)" id="1325864746197-18" context="schema">
         <createTable tableName="jbpm_swimlane">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -295,7 +295,7 @@
             <column name="TASKMGMTDEFINITION_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-19">
+    <changeSet author="jong (generated)" id="1325864746197-19" context="schema">
         <createTable tableName="jbpm_swimlaneinstance">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -306,7 +306,7 @@
             <column name="TASKMGMTINSTANCE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-20">
+    <changeSet author="jong (generated)" id="1325864746197-20" context="schema">
         <createTable tableName="jbpm_task">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -327,7 +327,7 @@
             <column name="TASKCONTROLLER_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-21">
+    <changeSet author="jong (generated)" id="1325864746197-21" context="schema">
         <createTable tableName="jbpm_taskactorpool">
             <column name="POOLEDACTOR_" type="BIGINT">
                 <constraints nullable="false"/>
@@ -337,7 +337,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-22">
+    <changeSet author="jong (generated)" id="1325864746197-22" context="schema">
         <createTable tableName="jbpm_taskcontroller">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -345,7 +345,7 @@
             <column name="TASKCONTROLLERDELEGATION_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-23">
+    <changeSet author="jong (generated)" id="1325864746197-23" context="schema">
         <createTable tableName="jbpm_taskinstance">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -372,7 +372,7 @@
             <column name="TASKMGMTINSTANCE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-24">
+    <changeSet author="jong (generated)" id="1325864746197-24" context="schema">
         <createTable tableName="jbpm_timer">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -391,7 +391,7 @@
             <column name="GRAPHELEMENT_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-25">
+    <changeSet author="jong (generated)" id="1325864746197-25" context="schema">
         <createTable tableName="jbpm_token">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -413,7 +413,7 @@
             <column name="SUBPROCESSINSTANCE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-26">
+    <changeSet author="jong (generated)" id="1325864746197-26" context="schema">
         <createTable tableName="jbpm_tokenvariablemap">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -422,7 +422,7 @@
             <column name="CONTEXTINSTANCE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-27">
+    <changeSet author="jong (generated)" id="1325864746197-27" context="schema">
         <createTable tableName="jbpm_transition">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -434,7 +434,7 @@
             <column name="FROMINDEX_" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-28">
+    <changeSet author="jong (generated)" id="1325864746197-28" context="schema">
         <createTable tableName="jbpm_variableaccess">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -448,7 +448,7 @@
             <column name="SCRIPT_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-29">
+    <changeSet author="jong (generated)" id="1325864746197-29" context="schema">
         <createTable tableName="jbpm_variableinstance">
             <column autoIncrement="true" name="ID_" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -471,7 +471,7 @@
             <column name="TASKINSTANCE_" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-30">
+    <changeSet author="jong (generated)" id="1325864746197-30" context="schema">
         <createTable tableName="ss_attachments">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -520,7 +520,7 @@
             <column name="parentAttachment" type="CHAR(32)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-31">
+    <changeSet author="jong (generated)" id="1325864746197-31" context="schema">
         <createTable tableName="ss_audittrail">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -549,7 +549,7 @@
             <column name="ended" type="BIT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-32">
+    <changeSet author="jong (generated)" id="1325864746197-32" context="schema">
         <createTable tableName="ss_binderquota">
             <column name="binderId" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -562,7 +562,7 @@
             <column name="diskSpaceUsedCumulative" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-33">
+    <changeSet author="jong (generated)" id="1325864746197-33" context="schema">
         <createTable tableName="ss_changelogs">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -581,7 +581,7 @@
             <column name="owningBinderKey" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-34">
+    <changeSet author="jong (generated)" id="1325864746197-34" context="schema">
         <createTable tableName="ss_customattributes">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -611,7 +611,7 @@
             <column name="parent" type="CHAR(32)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-35">
+    <changeSet author="jong (generated)" id="1325864746197-35" context="schema">
         <createTable tableName="ss_dashboards">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -637,7 +637,7 @@
             <column name="portletName" type="VARCHAR(256)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-36">
+    <changeSet author="jong (generated)" id="1325864746197-36" context="schema">
         <createTable tableName="ss_definitionmap">
             <column name="binder" type="BIGINT">
                 <constraints nullable="false"/>
@@ -650,7 +650,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-37">
+    <changeSet author="jong (generated)" id="1325864746197-37" context="schema">
         <createTable tableName="ss_definitions">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -674,7 +674,7 @@
             <column name="modification_principal" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-38">
+    <changeSet author="jong (generated)" id="1325864746197-38" context="schema">
         <createTable tableName="ss_emailaddresses">
             <column name="principal" type="BIGINT">
                 <constraints nullable="false"/>
@@ -688,7 +688,7 @@
             <column name="address" type="VARCHAR(256)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-39">
+    <changeSet author="jong (generated)" id="1325864746197-39" context="schema">
         <createTable tableName="ss_emaillog">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -712,7 +712,7 @@
             <column name="fileAttachments" type="LONGTEXT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-40">
+    <changeSet author="jong (generated)" id="1325864746197-40" context="schema">
         <createTable tableName="ss_events">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -756,7 +756,7 @@
             <column name="freeBusy" type="VARCHAR(32)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-41">
+    <changeSet author="jong (generated)" id="1325864746197-41" context="schema">
         <createTable tableName="ss_extensions">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -777,7 +777,7 @@
             <column name="zoneId" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-42">
+    <changeSet author="jong (generated)" id="1325864746197-42" context="schema">
         <createTable tableName="ss_folderentries">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -825,7 +825,7 @@
             <column name="popularity" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-43">
+    <changeSet author="jong (generated)" id="1325864746197-43" context="schema">
         <createTable tableName="ss_folderentrystats">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -834,7 +834,7 @@
             <column name="popularity" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-44">
+    <changeSet author="jong (generated)" id="1325864746197-44" context="schema">
         <createTable tableName="ss_forums">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -910,7 +910,7 @@
             <column name="tDescription_format" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-45">
+    <changeSet author="jong (generated)" id="1325864746197-45" context="schema">
         <createTable tableName="ss_functionconditionmap">
             <column name="functionId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -919,7 +919,7 @@
             <column name="conditionId" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-46">
+    <changeSet author="jong (generated)" id="1325864746197-46" context="schema">
         <createTable tableName="ss_functionconditions">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -938,7 +938,7 @@
             <column name="description_format" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-47">
+    <changeSet author="jong (generated)" id="1325864746197-47" context="schema">
         <createTable tableName="ss_functionoperations">
             <column name="functionId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -948,7 +948,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-48">
+    <changeSet author="jong (generated)" id="1325864746197-48" context="schema">
         <createTable tableName="ss_functions">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -967,7 +967,7 @@
             <column name="scope" type="VARCHAR(16)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-49">
+    <changeSet author="jong (generated)" id="1325864746197-49" context="schema">
         <createTable tableName="ss_indexingjournal">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -979,7 +979,7 @@
             <column name="operationArgs" type="LONGBLOB"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-50">
+    <changeSet author="jong (generated)" id="1325864746197-50" context="schema">
         <createTable tableName="ss_indexnode">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -991,7 +991,7 @@
             <column name="inSynch" type="BIT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-51">
+    <changeSet author="jong (generated)" id="1325864746197-51" context="schema">
         <createTable tableName="ss_ldapconnectionconfig">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1008,7 +1008,7 @@
             <column name="ldapGuidAttribute" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-52">
+    <changeSet author="jong (generated)" id="1325864746197-52" context="schema">
         <createTable tableName="ss_libraryentries">
             <column name="binderId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1023,7 +1023,7 @@
             <column name="entityId" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-53">
+    <changeSet author="jong (generated)" id="1325864746197-53" context="schema">
         <createTable tableName="ss_licensestats">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1038,7 +1038,7 @@
             <column name="checksum" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-54">
+    <changeSet author="jong (generated)" id="1325864746197-54" context="schema">
         <createTable tableName="ss_notifications">
             <column name="binderId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1048,7 +1048,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-55">
+    <changeSet author="jong (generated)" id="1325864746197-55" context="schema">
         <createTable tableName="ss_notifystatus">
             <column name="ownerId" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1062,7 +1062,7 @@
             <column name="lastFullSent" type="DATETIME"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-56">
+    <changeSet author="jong (generated)" id="1325864746197-56" context="schema">
         <createTable tableName="ss_postings">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1082,7 +1082,7 @@
             <column name="replyPostingOption" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-57">
+    <changeSet author="jong (generated)" id="1325864746197-57" context="schema">
         <createTable tableName="ss_principalmembership">
             <column name="userId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1092,7 +1092,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-58">
+    <changeSet author="jong (generated)" id="1325864746197-58" context="schema">
         <createTable tableName="ss_principals">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1156,7 +1156,7 @@
             <column name="sameAddrPolicy" type="BIT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-59">
+    <changeSet author="jong (generated)" id="1325864746197-59" context="schema">
         <createTable tableName="ss_ratings">
             <column name="principalId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1172,7 +1172,7 @@
             <column name="readCount" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-60">
+    <changeSet author="jong (generated)" id="1325864746197-60" context="schema">
         <createTable tableName="ss_seenmap">
             <column name="principalId" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1185,7 +1185,7 @@
             <column name="pruneDays" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-61">
+    <changeSet author="jong (generated)" id="1325864746197-61" context="schema">
         <createTable tableName="ss_sharedentity">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1199,7 +1199,7 @@
             <column name="entityId" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-62">
+    <changeSet author="jong (generated)" id="1325864746197-62" context="schema">
         <createTable tableName="ss_simplename">
             <column name="zoneId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1212,7 +1212,7 @@
             <column name="binderType" type="VARCHAR(16)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-63">
+    <changeSet author="jong (generated)" id="1325864746197-63" context="schema">
         <createTable tableName="ss_subscriptions">
             <column name="principalId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1228,7 +1228,7 @@
             <column name="encodedStyles" type="VARCHAR(256)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-64">
+    <changeSet author="jong (generated)" id="1325864746197-64" context="schema">
         <createTable tableName="ss_tags">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1242,7 +1242,7 @@
             <column name="isPublic" type="BIT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-65">
+    <changeSet author="jong (generated)" id="1325864746197-65" context="schema">
         <createTable tableName="ss_tokeninfo">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1261,7 +1261,7 @@
             <column name="clientAddr" type="VARCHAR(128)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-66">
+    <changeSet author="jong (generated)" id="1325864746197-66" context="schema">
         <createTable tableName="ss_userproperties">
             <column name="principalId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1275,7 +1275,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-67">
+    <changeSet author="jong (generated)" id="1325864746197-67" context="schema">
         <createTable tableName="ss_workareafunctionmembers">
             <column name="workAreaFunctionMembershipId" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1285,7 +1285,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-68">
+    <changeSet author="jong (generated)" id="1325864746197-68" context="schema">
         <createTable tableName="ss_workareafunctionmemberships">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1307,7 +1307,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-69">
+    <changeSet author="jong (generated)" id="1325864746197-69" context="schema">
         <createTable tableName="ss_workflowhistory">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1328,7 +1328,7 @@
             <column name="ended" type="BIT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-70">
+    <changeSet author="jong (generated)" id="1325864746197-70" context="schema">
         <createTable tableName="ss_workflowmap">
             <column name="binder" type="BIGINT">
                 <constraints nullable="false"/>
@@ -1341,7 +1341,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-71">
+    <changeSet author="jong (generated)" id="1325864746197-71" context="schema">
         <createTable tableName="ss_workflowresponses">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1361,7 +1361,7 @@
             <column name="responseDate" type="DATETIME"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-72">
+    <changeSet author="jong (generated)" id="1325864746197-72" context="schema">
         <createTable tableName="ss_workflowstates">
             <column name="tokenId" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1385,7 +1385,7 @@
             <column name="definition" type="CHAR(32)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-73">
+    <changeSet author="jong (generated)" id="1325864746197-73" context="schema">
         <createTable tableName="ss_zoneconfig">
             <column name="zoneId" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1416,7 +1416,7 @@
             <column name="lastUpdate" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-74">
+    <changeSet author="jong (generated)" id="1325864746197-74" context="schema">
         <createTable tableName="ss_zoneinfo">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1430,7 +1430,7 @@
             <column name="virtualHost" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-75">
+    <changeSet author="jong (generated)" id="1325864746197-75" context="schema">
         <createTable tableName="ssqrtz_blob_triggers">
             <column name="TRIGGER_NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
@@ -1441,7 +1441,7 @@
             <column name="BLOB_DATA" type="BLOB"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-76">
+    <changeSet author="jong (generated)" id="1325864746197-76" context="schema">
         <createTable tableName="ssqrtz_calendars">
             <column name="CALENDAR_NAME" type="VARCHAR(100)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1451,7 +1451,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-77">
+    <changeSet author="jong (generated)" id="1325864746197-77" context="schema">
         <createTable tableName="ssqrtz_cron_triggers">
             <column name="TRIGGER_NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
@@ -1465,7 +1465,7 @@
             <column name="TIME_ZONE_ID" type="VARCHAR(80)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-78">
+    <changeSet author="jong (generated)" id="1325864746197-78" context="schema">
         <createTable tableName="ssqrtz_fired_triggers">
             <column name="ENTRY_ID" type="VARCHAR(95)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1497,7 +1497,7 @@
             <column name="REQUESTS_RECOVERY" type="VARCHAR(1)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-79">
+    <changeSet author="jong (generated)" id="1325864746197-79" context="schema">
         <createTable tableName="ssqrtz_job_details">
             <column name="JOB_NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
@@ -1524,7 +1524,7 @@
             <column name="JOB_DATA" type="BLOB"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-80">
+    <changeSet author="jong (generated)" id="1325864746197-80" context="schema">
         <createTable tableName="ssqrtz_job_listeners">
             <column name="JOB_NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
@@ -1537,21 +1537,21 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-81">
+    <changeSet author="jong (generated)" id="1325864746197-81" context="schema">
         <createTable tableName="ssqrtz_locks">
             <column name="LOCK_NAME" type="VARCHAR(40)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-82">
+    <changeSet author="jong (generated)" id="1325864746197-82" context="schema">
         <createTable tableName="ssqrtz_paused_trigger_grps">
             <column name="TRIGGER_GROUP" type="VARCHAR(100)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-83">
+    <changeSet author="jong (generated)" id="1325864746197-83" context="schema">
         <createTable tableName="ssqrtz_scheduler_state">
             <column name="INSTANCE_NAME" type="VARCHAR(100)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1564,7 +1564,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-84">
+    <changeSet author="jong (generated)" id="1325864746197-84" context="schema">
         <createTable tableName="ssqrtz_simple_triggers">
             <column name="TRIGGER_NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
@@ -1583,7 +1583,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-85">
+    <changeSet author="jong (generated)" id="1325864746197-85" context="schema">
         <createTable tableName="ssqrtz_trigger_listeners">
             <column name="TRIGGER_NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
@@ -1596,7 +1596,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-86">
+    <changeSet author="jong (generated)" id="1325864746197-86" context="schema">
         <createTable tableName="ssqrtz_triggers">
             <column name="TRIGGER_NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
@@ -1632,868 +1632,868 @@
             <column name="JOB_DATA" type="BLOB"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-87">
+    <changeSet author="jong (generated)" id="1325864746197-87" context="schema">
         <addPrimaryKey columnNames="PROCESSFILE_, INDEX_" tableName="jbpm_byteblock"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-88">
+    <changeSet author="jong (generated)" id="1325864746197-88" context="schema">
         <addPrimaryKey columnNames="DECISION_, INDEX_" tableName="jbpm_decisionconditions"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-89">
+    <changeSet author="jong (generated)" id="1325864746197-89" context="schema">
         <addPrimaryKey columnNames="TASKINSTANCE_, POOLEDACTOR_" tableName="jbpm_taskactorpool"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-90">
+    <changeSet author="jong (generated)" id="1325864746197-90" context="schema">
         <addPrimaryKey columnNames="binder, position" tableName="ss_definitionmap"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-91">
+    <changeSet author="jong (generated)" id="1325864746197-91" context="schema">
         <addPrimaryKey columnNames="principal, type" tableName="ss_emailaddresses"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-92">
+    <changeSet author="jong (generated)" id="1325864746197-92" context="schema">
         <addPrimaryKey columnNames="functionId, operationName" tableName="ss_functionoperations"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-93">
+    <changeSet author="jong (generated)" id="1325864746197-93" context="schema">
         <addPrimaryKey columnNames="binderId, type, name" tableName="ss_libraryentries"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-94">
+    <changeSet author="jong (generated)" id="1325864746197-94" context="schema">
         <addPrimaryKey columnNames="userId, groupId" tableName="ss_principalmembership"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-95">
+    <changeSet author="jong (generated)" id="1325864746197-95" context="schema">
         <addPrimaryKey columnNames="principalId, entityId, entityType" tableName="ss_ratings"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-96">
+    <changeSet author="jong (generated)" id="1325864746197-96" context="schema">
         <addPrimaryKey columnNames="zoneId, name" tableName="ss_simplename"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-97">
+    <changeSet author="jong (generated)" id="1325864746197-97" context="schema">
         <addPrimaryKey columnNames="principalId, entityId, entityType" tableName="ss_subscriptions"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-98">
+    <changeSet author="jong (generated)" id="1325864746197-98" context="schema">
         <addPrimaryKey columnNames="principalId, binderId" tableName="ss_userproperties"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-99">
+    <changeSet author="jong (generated)" id="1325864746197-99" context="schema">
         <addPrimaryKey columnNames="workAreaFunctionMembershipId, memberId" tableName="ss_workareafunctionmembers"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-100">
+    <changeSet author="jong (generated)" id="1325864746197-100" context="schema">
         <addPrimaryKey columnNames="binder, entryDefinition" tableName="ss_workflowmap"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-101">
+    <changeSet author="jong (generated)" id="1325864746197-101" context="schema">
         <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_blob_triggers"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-102">
+    <changeSet author="jong (generated)" id="1325864746197-102" context="schema">
         <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_cron_triggers"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-103">
+    <changeSet author="jong (generated)" id="1325864746197-103" context="schema">
         <addPrimaryKey columnNames="JOB_NAME, JOB_GROUP" tableName="ssqrtz_job_details"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-104">
+    <changeSet author="jong (generated)" id="1325864746197-104" context="schema">
         <addPrimaryKey columnNames="JOB_NAME, JOB_GROUP, JOB_LISTENER" tableName="ssqrtz_job_listeners"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-105">
+    <changeSet author="jong (generated)" id="1325864746197-105" context="schema">
         <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_simple_triggers"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-106">
+    <changeSet author="jong (generated)" id="1325864746197-106" context="schema">
         <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_LISTENER" tableName="ssqrtz_trigger_listeners"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-107">
+    <changeSet author="jong (generated)" id="1325864746197-107" context="schema">
         <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="ssqrtz_triggers"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-108">
+    <changeSet author="jong (generated)" id="1325864746197-108" context="schema">
         <addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_" baseTableName="jbpm_action" constraintName="FK_ACTION_ACTNDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-109">
+    <changeSet author="jong (generated)" id="1325864746197-109" context="schema">
         <addForeignKeyConstraint baseColumnNames="EVENT_" baseTableName="jbpm_action" constraintName="FK_ACTION_EVENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_event" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-110">
+    <changeSet author="jong (generated)" id="1325864746197-110" context="schema">
         <addForeignKeyConstraint baseColumnNames="EXCEPTIONHANDLER_" baseTableName="jbpm_action" constraintName="FK_ACTION_EXPTHDL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_exceptionhandler" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-111">
+    <changeSet author="jong (generated)" id="1325864746197-111" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_action" constraintName="FK_ACTION_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-112">
+    <changeSet author="jong (generated)" id="1325864746197-112" context="schema">
         <addForeignKeyConstraint baseColumnNames="REFERENCEDACTION_" baseTableName="jbpm_action" constraintName="FK_ACTION_REFACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-113">
+    <changeSet author="jong (generated)" id="1325864746197-113" context="schema">
         <addForeignKeyConstraint baseColumnNames="TIMERACTION_" baseTableName="jbpm_action" constraintName="FK_CRTETIMERACT_TA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-114">
+    <changeSet author="jong (generated)" id="1325864746197-114" context="schema">
         <addForeignKeyConstraint baseColumnNames="FILEDEFINITION_" baseTableName="jbpm_bytearray" constraintName="FK_BYTEARR_FILDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-115">
+    <changeSet author="jong (generated)" id="1325864746197-115" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSFILE_" baseTableName="jbpm_byteblock" constraintName="FK_BYTEBLOCK_FILE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-116">
+    <changeSet author="jong (generated)" id="1325864746197-116" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_comment" constraintName="FK_COMMENT_TSK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-117">
+    <changeSet author="jong (generated)" id="1325864746197-117" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_comment" constraintName="FK_COMMENT_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-118">
+    <changeSet author="jong (generated)" id="1325864746197-118" context="schema">
         <addForeignKeyConstraint baseColumnNames="DECISION_" baseTableName="jbpm_decisionconditions" constraintName="FK_DECCOND_DEC" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-119">
+    <changeSet author="jong (generated)" id="1325864746197-119" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_delegation" constraintName="FK_DELEGATION_PRCD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-120">
+    <changeSet author="jong (generated)" id="1325864746197-120" context="schema">
         <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_event" constraintName="FK_EVENT_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-121">
+    <changeSet author="jong (generated)" id="1325864746197-121" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_event" constraintName="FK_EVENT_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-122">
+    <changeSet author="jong (generated)" id="1325864746197-122" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="jbpm_event" constraintName="FK_EVENT_TASK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_task" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-123">
+    <changeSet author="jong (generated)" id="1325864746197-123" context="schema">
         <addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="jbpm_event" constraintName="FK_EVENT_TRANS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_transition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-124">
+    <changeSet author="jong (generated)" id="1325864746197-124" context="schema">
         <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_log" constraintName="FK_LOG_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-125">
+    <changeSet author="jong (generated)" id="1325864746197-125" context="schema">
         <addForeignKeyConstraint baseColumnNames="CHILD_" baseTableName="jbpm_log" constraintName="FK_LOG_CHILDTOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-126">
+    <changeSet author="jong (generated)" id="1325864746197-126" context="schema">
         <addForeignKeyConstraint baseColumnNames="DESTINATIONNODE_" baseTableName="jbpm_log" constraintName="FK_LOG_DESTNODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-127">
+    <changeSet author="jong (generated)" id="1325864746197-127" context="schema">
         <addForeignKeyConstraint baseColumnNames="NEWBYTEARRAY_" baseTableName="jbpm_log" constraintName="FK_LOG_NEWBYTES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-128">
+    <changeSet author="jong (generated)" id="1325864746197-128" context="schema">
         <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_log" constraintName="FK_LOG_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-129">
+    <changeSet author="jong (generated)" id="1325864746197-129" context="schema">
         <addForeignKeyConstraint baseColumnNames="OLDBYTEARRAY_" baseTableName="jbpm_log" constraintName="FK_LOG_OLDBYTES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-130">
+    <changeSet author="jong (generated)" id="1325864746197-130" context="schema">
         <addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="jbpm_log" constraintName="FK_LOG_PARENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_log" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-131">
+    <changeSet author="jong (generated)" id="1325864746197-131" context="schema">
         <addForeignKeyConstraint baseColumnNames="SOURCENODE_" baseTableName="jbpm_log" constraintName="FK_LOG_SOURCENODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-132">
+    <changeSet author="jong (generated)" id="1325864746197-132" context="schema">
         <addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="jbpm_log" constraintName="FK_LOG_SWIMINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-133">
+    <changeSet author="jong (generated)" id="1325864746197-133" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_log" constraintName="FK_LOG_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-134">
+    <changeSet author="jong (generated)" id="1325864746197-134" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_log" constraintName="FK_LOG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-135">
+    <changeSet author="jong (generated)" id="1325864746197-135" context="schema">
         <addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="jbpm_log" constraintName="FK_LOG_TRANSITION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_transition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-136">
+    <changeSet author="jong (generated)" id="1325864746197-136" context="schema">
         <addForeignKeyConstraint baseColumnNames="VARIABLEINSTANCE_" baseTableName="jbpm_log" constraintName="FK_LOG_VARINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_variableinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-137">
+    <changeSet author="jong (generated)" id="1325864746197-137" context="schema">
         <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_message" constraintName="FK_CMD_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-138">
+    <changeSet author="jong (generated)" id="1325864746197-138" context="schema">
         <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_message" constraintName="FK_CMD_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-139">
+    <changeSet author="jong (generated)" id="1325864746197-139" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_message" constraintName="FK_CMD_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-140">
+    <changeSet author="jong (generated)" id="1325864746197-140" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_message" constraintName="FK_MSG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-141">
+    <changeSet author="jong (generated)" id="1325864746197-141" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_moduledefinition" constraintName="FK_MODDEF_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-142">
+    <changeSet author="jong (generated)" id="1325864746197-142" context="schema">
         <addForeignKeyConstraint baseColumnNames="STARTTASK_" baseTableName="jbpm_moduledefinition" constraintName="FK_TSKDEF_START" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_task" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-143">
+    <changeSet author="jong (generated)" id="1325864746197-143" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_moduleinstance" constraintName="FK_MODINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-144">
+    <changeSet author="jong (generated)" id="1325864746197-144" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="jbpm_moduleinstance" constraintName="FK_TASKMGTINST_TMD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-145">
+    <changeSet author="jong (generated)" id="1325864746197-145" context="schema">
         <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_node" constraintName="FK_NODE_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-146">
+    <changeSet author="jong (generated)" id="1325864746197-146" context="schema">
         <addForeignKeyConstraint baseColumnNames="DECISIONDELEGATION" baseTableName="jbpm_node" constraintName="FK_DECISION_DELEG" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-147">
+    <changeSet author="jong (generated)" id="1325864746197-147" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_node" constraintName="FK_NODE_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-148">
+    <changeSet author="jong (generated)" id="1325864746197-148" context="schema">
         <addForeignKeyConstraint baseColumnNames="SUBPROCESSDEFINITION_" baseTableName="jbpm_node" constraintName="FK_PROCST_SBPRCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-149">
+    <changeSet author="jong (generated)" id="1325864746197-149" context="schema">
         <addForeignKeyConstraint baseColumnNames="SUPERSTATE_" baseTableName="jbpm_node" constraintName="FK_NODE_SUPERSTATE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-150">
+    <changeSet author="jong (generated)" id="1325864746197-150" context="schema">
         <addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="jbpm_pooledactor" constraintName="FK_POOLEDACTOR_SLI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-151">
+    <changeSet author="jong (generated)" id="1325864746197-151" context="schema">
         <addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="jbpm_processdefinition" constraintName="FK_PROCDEF_STRTSTA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-152">
+    <changeSet author="jong (generated)" id="1325864746197-152" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_processinstance" constraintName="FK_PROCIN_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-153">
+    <changeSet author="jong (generated)" id="1325864746197-153" context="schema">
         <addForeignKeyConstraint baseColumnNames="ROOTTOKEN_" baseTableName="jbpm_processinstance" constraintName="FK_PROCIN_ROOTTKN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-154">
+    <changeSet author="jong (generated)" id="1325864746197-154" context="schema">
         <addForeignKeyConstraint baseColumnNames="SUPERPROCESSTOKEN_" baseTableName="jbpm_processinstance" constraintName="FK_PROCIN_SPROCTKN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-155">
+    <changeSet author="jong (generated)" id="1325864746197-155" context="schema">
         <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_runtimeaction" constraintName="FK_RTACTN_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-156">
+    <changeSet author="jong (generated)" id="1325864746197-156" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_runtimeaction" constraintName="FK_RTACTN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-157">
+    <changeSet author="jong (generated)" id="1325864746197-157" context="schema">
         <addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="jbpm_swimlane" constraintName="FK_SWL_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-158">
+    <changeSet author="jong (generated)" id="1325864746197-158" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="jbpm_swimlane" constraintName="FK_SWL_TSKMGMTDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-159">
+    <changeSet author="jong (generated)" id="1325864746197-159" context="schema">
         <addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="jbpm_swimlaneinstance" constraintName="FK_SWIMLANEINST_SL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlane" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-160">
+    <changeSet author="jong (generated)" id="1325864746197-160" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="jbpm_swimlaneinstance" constraintName="FK_SWIMLANEINST_TM" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-161">
+    <changeSet author="jong (generated)" id="1325864746197-161" context="schema">
         <addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="jbpm_task" constraintName="FK_TASK_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-162">
+    <changeSet author="jong (generated)" id="1325864746197-162" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_task" constraintName="FK_TASK_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-163">
+    <changeSet author="jong (generated)" id="1325864746197-163" context="schema">
         <addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="jbpm_task" constraintName="FK_TASK_STARTST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-164">
+    <changeSet author="jong (generated)" id="1325864746197-164" context="schema">
         <addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="jbpm_task" constraintName="FK_TASK_SWIMLANE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlane" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-165">
+    <changeSet author="jong (generated)" id="1325864746197-165" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="jbpm_task" constraintName="FK_TSK_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskcontroller" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-166">
+    <changeSet author="jong (generated)" id="1325864746197-166" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="jbpm_task" constraintName="FK_TASK_TASKMGTDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduledefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-167">
+    <changeSet author="jong (generated)" id="1325864746197-167" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKNODE_" baseTableName="jbpm_task" constraintName="FK_TASK_TASKNODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-168">
+    <changeSet author="jong (generated)" id="1325864746197-168" context="schema">
         <addForeignKeyConstraint baseColumnNames="POOLEDACTOR_" baseTableName="jbpm_taskactorpool" constraintName="FK_TSKACTPOL_PLACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_pooledactor" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-169">
+    <changeSet author="jong (generated)" id="1325864746197-169" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_taskactorpool" constraintName="FK_TASKACTPL_TSKI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-170">
+    <changeSet author="jong (generated)" id="1325864746197-170" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKCONTROLLERDELEGATION_" baseTableName="jbpm_taskcontroller" constraintName="FK_TSKCTRL_DELEG" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_delegation" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-171">
+    <changeSet author="jong (generated)" id="1325864746197-171" context="schema">
         <addForeignKeyConstraint baseColumnNames="SWIMLANINSTANCE_" baseTableName="jbpm_taskinstance" constraintName="FK_TASKINST_SLINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_swimlaneinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-172">
+    <changeSet author="jong (generated)" id="1325864746197-172" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="jbpm_taskinstance" constraintName="FK_TASKINST_TASK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_task" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-173">
+    <changeSet author="jong (generated)" id="1325864746197-173" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="jbpm_taskinstance" constraintName="FK_TASKINST_TMINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-174">
+    <changeSet author="jong (generated)" id="1325864746197-174" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_taskinstance" constraintName="FK_TASKINST_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-175">
+    <changeSet author="jong (generated)" id="1325864746197-175" context="schema">
         <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="jbpm_timer" constraintName="FK_TIMER_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-176">
+    <changeSet author="jong (generated)" id="1325864746197-176" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_timer" constraintName="FK_TIMER_PRINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-177">
+    <changeSet author="jong (generated)" id="1325864746197-177" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_timer" constraintName="FK_TIMER_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-178">
+    <changeSet author="jong (generated)" id="1325864746197-178" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_timer" constraintName="FK_TIMER_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-179">
+    <changeSet author="jong (generated)" id="1325864746197-179" context="schema">
         <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="jbpm_token" constraintName="FK_TOKEN_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-180">
+    <changeSet author="jong (generated)" id="1325864746197-180" context="schema">
         <addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="jbpm_token" constraintName="FK_TOKEN_PARENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-181">
+    <changeSet author="jong (generated)" id="1325864746197-181" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_token" constraintName="FK_TOKEN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-182">
+    <changeSet author="jong (generated)" id="1325864746197-182" context="schema">
         <addForeignKeyConstraint baseColumnNames="SUBPROCESSINSTANCE_" baseTableName="jbpm_token" constraintName="FK_TOKEN_SUBPI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-183">
+    <changeSet author="jong (generated)" id="1325864746197-183" context="schema">
         <addForeignKeyConstraint baseColumnNames="CONTEXTINSTANCE_" baseTableName="jbpm_tokenvariablemap" constraintName="FK_TKVARMAP_CTXT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_moduleinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-184">
+    <changeSet author="jong (generated)" id="1325864746197-184" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_tokenvariablemap" constraintName="FK_TKVARMAP_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-185">
+    <changeSet author="jong (generated)" id="1325864746197-185" context="schema">
         <addForeignKeyConstraint baseColumnNames="FROM_" baseTableName="jbpm_transition" constraintName="FK_TRANSITION_FROM" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-186">
+    <changeSet author="jong (generated)" id="1325864746197-186" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="jbpm_transition" constraintName="FK_TRANS_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processdefinition" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-187">
+    <changeSet author="jong (generated)" id="1325864746197-187" context="schema">
         <addForeignKeyConstraint baseColumnNames="TO_" baseTableName="jbpm_transition" constraintName="FK_TRANSITION_TO" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-188">
+    <changeSet author="jong (generated)" id="1325864746197-188" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSSTATE_" baseTableName="jbpm_variableaccess" constraintName="FK_VARACC_PROCST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_node" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-189">
+    <changeSet author="jong (generated)" id="1325864746197-189" context="schema">
         <addForeignKeyConstraint baseColumnNames="SCRIPT_" baseTableName="jbpm_variableaccess" constraintName="FK_VARACC_SCRIPT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_action" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-190">
+    <changeSet author="jong (generated)" id="1325864746197-190" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="jbpm_variableaccess" constraintName="FK_VARACC_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskcontroller" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-191">
+    <changeSet author="jong (generated)" id="1325864746197-191" context="schema">
         <addForeignKeyConstraint baseColumnNames="BYTEARRAYVALUE_" baseTableName="jbpm_variableinstance" constraintName="FK_BYTEINST_ARRAY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_bytearray" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-192">
+    <changeSet author="jong (generated)" id="1325864746197-192" context="schema">
         <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="jbpm_variableinstance" constraintName="FK_VARINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_processinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-193">
+    <changeSet author="jong (generated)" id="1325864746197-193" context="schema">
         <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="jbpm_variableinstance" constraintName="FK_VAR_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_taskinstance" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-194">
+    <changeSet author="jong (generated)" id="1325864746197-194" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="jbpm_variableinstance" constraintName="FK_VARINST_TK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_token" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-195">
+    <changeSet author="jong (generated)" id="1325864746197-195" context="schema">
         <addForeignKeyConstraint baseColumnNames="TOKENVARIABLEMAP_" baseTableName="jbpm_variableinstance" constraintName="FK_VARINST_TKVARMP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="jbpm_tokenvariablemap" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-196">
+    <changeSet author="jong (generated)" id="1325864746197-196" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_attachments" constraintName="FKA1AD4C31AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-197">
+    <changeSet author="jong (generated)" id="1325864746197-197" context="schema">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_attachments" constraintName="FKA1AD4C3176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-198">
+    <changeSet author="jong (generated)" id="1325864746197-198" context="schema">
         <addForeignKeyConstraint baseColumnNames="filelock_owner" baseTableName="ss_attachments" constraintName="FKA1AD4C31DC9F01CF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-199">
+    <changeSet author="jong (generated)" id="1325864746197-199" context="schema">
         <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_attachments" constraintName="FKA1AD4C31F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-200">
+    <changeSet author="jong (generated)" id="1325864746197-200" context="schema">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_attachments" constraintName="FKA1AD4C31BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-201">
+    <changeSet author="jong (generated)" id="1325864746197-201" context="schema">
         <addForeignKeyConstraint baseColumnNames="parentAttachment" baseTableName="ss_attachments" constraintName="FKA1AD4C312D9DE71B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_attachments" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-202">
+    <changeSet author="jong (generated)" id="1325864746197-202" context="schema">
         <addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_attachments" constraintName="FKA1AD4C31E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-203">
+    <changeSet author="jong (generated)" id="1325864746197-203" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_customattributes" constraintName="FK476EDFC7AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-204">
+    <changeSet author="jong (generated)" id="1325864746197-204" context="schema">
         <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_customattributes" constraintName="FK476EDFC7F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-205">
+    <changeSet author="jong (generated)" id="1325864746197-205" context="schema">
         <addForeignKeyConstraint baseColumnNames="parent" baseTableName="ss_customattributes" constraintName="FK476EDFC7F05A86A6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_customattributes" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-206">
+    <changeSet author="jong (generated)" id="1325864746197-206" context="schema">
         <addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_customattributes" constraintName="FK476EDFC7E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-207">
+    <changeSet author="jong (generated)" id="1325864746197-207" context="schema">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_dashboards" constraintName="FKFA9653BE76767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-208">
+    <changeSet author="jong (generated)" id="1325864746197-208" context="schema">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_dashboards" constraintName="FKFA9653BEBE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-209">
+    <changeSet author="jong (generated)" id="1325864746197-209" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_definitionmap" constraintName="FK170F74AAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-210">
+    <changeSet author="jong (generated)" id="1325864746197-210" context="schema">
         <addForeignKeyConstraint baseColumnNames="definition" baseTableName="ss_definitionmap" constraintName="FK170F74A5D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-211">
+    <changeSet author="jong (generated)" id="1325864746197-211" context="schema">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_definitions" constraintName="FK7B56F60176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-212">
+    <changeSet author="jong (generated)" id="1325864746197-212" context="schema">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_definitions" constraintName="FK7B56F601BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-213">
+    <changeSet author="jong (generated)" id="1325864746197-213" context="schema">
         <addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_emailaddresses" constraintName="FKC706C345E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-214">
+    <changeSet author="jong (generated)" id="1325864746197-214" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_events" constraintName="FKDE0E53F8AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-215">
+    <changeSet author="jong (generated)" id="1325864746197-215" context="schema">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_events" constraintName="FKDE0E53F876767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-216">
+    <changeSet author="jong (generated)" id="1325864746197-216" context="schema">
         <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_events" constraintName="FKDE0E53F8F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-217">
+    <changeSet author="jong (generated)" id="1325864746197-217" context="schema">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_events" constraintName="FKDE0E53F8BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-218">
+    <changeSet author="jong (generated)" id="1325864746197-218" context="schema">
         <addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_events" constraintName="FKDE0E53F8E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-219">
+    <changeSet author="jong (generated)" id="1325864746197-219" context="schema">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_folderentries" constraintName="FKA6632C8376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-220">
+    <changeSet author="jong (generated)" id="1325864746197-220" context="schema">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_folderentries" constraintName="FKA6632C83BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-221">
+    <changeSet author="jong (generated)" id="1325864746197-221" context="schema">
         <addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="ss_folderentries" constraintName="FKA6632C835B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-222">
+    <changeSet author="jong (generated)" id="1325864746197-222" context="schema">
         <addForeignKeyConstraint baseColumnNames="parentEntry" baseTableName="ss_folderentries" constraintName="FKA6632C832EBDEAFD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-223">
+    <changeSet author="jong (generated)" id="1325864746197-223" context="schema">
         <addForeignKeyConstraint baseColumnNames="reserved_principal" baseTableName="ss_folderentries" constraintName="FKA6632C83DAD68C8B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-224">
+    <changeSet author="jong (generated)" id="1325864746197-224" context="schema">
         <addForeignKeyConstraint baseColumnNames="topEntry" baseTableName="ss_folderentries" constraintName="FKA6632C83B8A6E532" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-225">
+    <changeSet author="jong (generated)" id="1325864746197-225" context="schema">
         <addForeignKeyConstraint baseColumnNames="wrk_principal" baseTableName="ss_folderentries" constraintName="FKA6632C8386C93453" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-226">
+    <changeSet author="jong (generated)" id="1325864746197-226" context="schema">
         <addForeignKeyConstraint baseColumnNames="id" baseTableName="ss_folderentrystats" constraintName="FKC94AB27AF1E91E10" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-227">
+    <changeSet author="jong (generated)" id="1325864746197-227" context="schema">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_forums" constraintName="FKDF668A5176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-228">
+    <changeSet author="jong (generated)" id="1325864746197-228" context="schema">
         <addForeignKeyConstraint baseColumnNames="entryDef" baseTableName="ss_forums" constraintName="FKDF668A511CD53535" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-229">
+    <changeSet author="jong (generated)" id="1325864746197-229" context="schema">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_forums" constraintName="FKDF668A51BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-230">
+    <changeSet author="jong (generated)" id="1325864746197-230" context="schema">
         <addForeignKeyConstraint baseColumnNames="owner" baseTableName="ss_forums" constraintName="FKDF668A5156E7C372" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-231">
+    <changeSet author="jong (generated)" id="1325864746197-231" context="schema">
         <addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="ss_forums" constraintName="FKDF668A515B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-232">
+    <changeSet author="jong (generated)" id="1325864746197-232" context="schema">
         <addForeignKeyConstraint baseColumnNames="posting" baseTableName="ss_forums" constraintName="FKDF668A514477DE34" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_postings" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-233">
+    <changeSet author="jong (generated)" id="1325864746197-233" context="schema">
         <addForeignKeyConstraint baseColumnNames="topFolder" baseTableName="ss_forums" constraintName="FKDF668A511CACB780" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-234">
+    <changeSet author="jong (generated)" id="1325864746197-234" context="schema">
         <addForeignKeyConstraint baseColumnNames="conditionId" baseTableName="ss_functionconditionmap" constraintName="FK945D2AD868DAC30E" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_functionconditions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-235">
+    <changeSet author="jong (generated)" id="1325864746197-235" context="schema">
         <addForeignKeyConstraint baseColumnNames="functionId" baseTableName="ss_functionconditionmap" constraintName="FK945D2AD8BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_functions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-236">
+    <changeSet author="jong (generated)" id="1325864746197-236" context="schema">
         <addForeignKeyConstraint baseColumnNames="functionId" baseTableName="ss_functionoperations" constraintName="FKBEF25643BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_functions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-237">
+    <changeSet author="jong (generated)" id="1325864746197-237" context="schema">
         <addForeignKeyConstraint baseColumnNames="binderId" baseTableName="ss_notifications" constraintName="FK9131F9293AD146FE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-238">
+    <changeSet author="jong (generated)" id="1325864746197-238" context="schema">
         <addForeignKeyConstraint baseColumnNames="principalId" baseTableName="ss_notifications" constraintName="FK9131F9295212927D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-239">
+    <changeSet author="jong (generated)" id="1325864746197-239" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_postings" constraintName="FKB05DE490AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-240">
+    <changeSet author="jong (generated)" id="1325864746197-240" context="schema">
         <addForeignKeyConstraint baseColumnNames="definition" baseTableName="ss_postings" constraintName="FKB05DE4905D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-241">
+    <changeSet author="jong (generated)" id="1325864746197-241" context="schema">
         <addForeignKeyConstraint baseColumnNames="groupId" baseTableName="ss_principalmembership" constraintName="FK176F6225395F3D38" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-242">
+    <changeSet author="jong (generated)" id="1325864746197-242" context="schema">
         <addForeignKeyConstraint baseColumnNames="userId" baseTableName="ss_principalmembership" constraintName="FK176F6225921A9ADA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-243">
+    <changeSet author="jong (generated)" id="1325864746197-243" context="schema">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="ss_principals" constraintName="FK7693816476767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-244">
+    <changeSet author="jong (generated)" id="1325864746197-244" context="schema">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="ss_principals" constraintName="FK76938164BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-245">
+    <changeSet author="jong (generated)" id="1325864746197-245" context="schema">
         <addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="ss_principals" constraintName="FK769381645B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-246">
+    <changeSet author="jong (generated)" id="1325864746197-246" context="schema">
         <addForeignKeyConstraint baseColumnNames="referer" baseTableName="ss_sharedentity" constraintName="FK93426C47D4068DC7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-247">
+    <changeSet author="jong (generated)" id="1325864746197-247" context="schema">
         <addForeignKeyConstraint baseColumnNames="workAreaFunctionMembershipId" baseTableName="ss_workareafunctionmembers" constraintName="FK72202A04B4C37436" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_workareafunctionmemberships" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-248">
+    <changeSet author="jong (generated)" id="1325864746197-248" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_workflowmap" constraintName="FK33D2499EAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-249">
+    <changeSet author="jong (generated)" id="1325864746197-249" context="schema">
         <addForeignKeyConstraint baseColumnNames="workflowDefinition" baseTableName="ss_workflowmap" constraintName="FK33D2499EE2459134" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-250">
+    <changeSet author="jong (generated)" id="1325864746197-250" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_workflowresponses" constraintName="FKC44C5F14AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-251">
+    <changeSet author="jong (generated)" id="1325864746197-251" context="schema">
         <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_workflowresponses" constraintName="FKC44C5F14F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-252">
+    <changeSet author="jong (generated)" id="1325864746197-252" context="schema">
         <addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_workflowresponses" constraintName="FKC44C5F14E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-253">
+    <changeSet author="jong (generated)" id="1325864746197-253" context="schema">
         <addForeignKeyConstraint baseColumnNames="binder" baseTableName="ss_workflowstates" constraintName="FK8FA8AA80AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_forums" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-254">
+    <changeSet author="jong (generated)" id="1325864746197-254" context="schema">
         <addForeignKeyConstraint baseColumnNames="definition" baseTableName="ss_workflowstates" constraintName="FK8FA8AA805D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_definitions" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-255">
+    <changeSet author="jong (generated)" id="1325864746197-255" context="schema">
         <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="ss_workflowstates" constraintName="FK8FA8AA80F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_folderentries" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-256">
+    <changeSet author="jong (generated)" id="1325864746197-256" context="schema">
         <addForeignKeyConstraint baseColumnNames="principal" baseTableName="ss_workflowstates" constraintName="FK8FA8AA80E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-257">
+    <changeSet author="jong (generated)" id="1325864746197-257" context="schema">
         <addForeignKeyConstraint baseColumnNames="wrk_principal" baseTableName="ss_workflowstates" constraintName="FK8FA8AA8086C93453" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-258">
+    <changeSet author="jong (generated)" id="1325864746197-258" context="schema">
         <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_blob_triggers" constraintName="FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-259">
+    <changeSet author="jong (generated)" id="1325864746197-259" context="schema">
         <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_cron_triggers" constraintName="FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-260">
+    <changeSet author="jong (generated)" id="1325864746197-260" context="schema">
         <addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="ssqrtz_job_listeners" constraintName="FK_SSQRTZ_JOB_LISTENERS_SSQRTZ_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="ssqrtz_job_details" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-261">
+    <changeSet author="jong (generated)" id="1325864746197-261" context="schema">
         <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_simple_triggers" constraintName="FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-262">
+    <changeSet author="jong (generated)" id="1325864746197-262" context="schema">
         <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="ssqrtz_trigger_listeners" constraintName="FK_SSQRTZ_TRIGGER_LISTENERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="ssqrtz_triggers" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-263">
+    <changeSet author="jong (generated)" id="1325864746197-263" context="schema">
         <addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="ssqrtz_triggers" constraintName="FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="ssqrtz_job_details" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-264">
+    <changeSet author="jong (generated)" id="1325864746197-264" context="schema">
         <createIndex indexName="IDX_PLDACTR_ACTID" tableName="jbpm_pooledactor" unique="false">
             <column name="ACTORID_"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-265">
+    <changeSet author="jong (generated)" id="1325864746197-265" context="schema">
         <createIndex indexName="IDX_TASK_ACTORID" tableName="jbpm_taskinstance" unique="false">
             <column name="ACTORID_"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-266">
+    <changeSet author="jong (generated)" id="1325864746197-266" context="schema">
         <createIndex indexName="entityOwner_Att" tableName="ss_attachments" unique="false">
             <column name="ownerType"/>
             <column name="ownerId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-267">
+    <changeSet author="jong (generated)" id="1325864746197-267" context="schema">
         <createIndex indexName="owningBinder_Att" tableName="ss_attachments" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-268">
+    <changeSet author="jong (generated)" id="1325864746197-268" context="schema">
         <createIndex indexName="entityOwner_audit" tableName="ss_audittrail" unique="false">
             <column name="entityType"/>
             <column name="entityId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-269">
+    <changeSet author="jong (generated)" id="1325864746197-269" context="schema">
         <createIndex indexName="owningBinder_audit" tableName="ss_audittrail" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-270">
+    <changeSet author="jong (generated)" id="1325864746197-270" context="schema">
         <createIndex indexName="search_audit" tableName="ss_audittrail" unique="false">
             <column name="zoneId"/>
             <column name="startDate"/>
             <column name="startBy"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-271">
+    <changeSet author="jong (generated)" id="1325864746197-271" context="schema">
         <createIndex indexName="entityOwner_clog" tableName="ss_changelogs" unique="false">
             <column name="entityType"/>
             <column name="entityId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-272">
+    <changeSet author="jong (generated)" id="1325864746197-272" context="schema">
         <createIndex indexName="operationDate_clog" tableName="ss_changelogs" unique="false">
             <column name="zoneId"/>
             <column name="operationDate"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-273">
+    <changeSet author="jong (generated)" id="1325864746197-273" context="schema">
         <createIndex indexName="owningBinder_clog" tableName="ss_changelogs" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-274">
+    <changeSet author="jong (generated)" id="1325864746197-274" context="schema">
         <createIndex indexName="entityOwner_cAtt" tableName="ss_customattributes" unique="false">
             <column name="ownerType"/>
             <column name="ownerId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-275">
+    <changeSet author="jong (generated)" id="1325864746197-275" context="schema">
         <createIndex indexName="owningBinder_cAtt" tableName="ss_customattributes" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-276">
+    <changeSet author="jong (generated)" id="1325864746197-276" context="schema">
         <createIndex indexName="binder_Dash" tableName="ss_dashboards" unique="false">
             <column name="binderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-277">
+    <changeSet author="jong (generated)" id="1325864746197-277" context="schema">
         <createIndex indexName="ownerKey_Dash" tableName="ss_dashboards" unique="false">
             <column name="owner_id"/>
             <column name="owner_type"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-278">
+    <changeSet author="jong (generated)" id="1325864746197-278" context="schema">
         <createIndex indexName="internal_Definition" tableName="ss_definitions" unique="false">
             <column name="zoneId"/>
             <column name="internalId"/>
             <column name="type"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-279">
+    <changeSet author="jong (generated)" id="1325864746197-279" context="schema">
         <createIndex indexName="zoneId" tableName="ss_definitions" unique="true">
             <column name="zoneId"/>
             <column name="binderId"/>
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-280">
+    <changeSet author="jong (generated)" id="1325864746197-280" context="schema">
         <createIndex indexName="address_email" tableName="ss_emailaddresses" unique="false">
             <column name="address"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-281">
+    <changeSet author="jong (generated)" id="1325864746197-281" context="schema">
         <createIndex indexName="sendDate_emaillog" tableName="ss_emaillog" unique="false">
             <column name="zoneId"/>
             <column name="sendDate"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-282">
+    <changeSet author="jong (generated)" id="1325864746197-282" context="schema">
         <createIndex indexName="entityOwner_Event" tableName="ss_events" unique="false">
             <column name="ownerType"/>
             <column name="ownerId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-283">
+    <changeSet author="jong (generated)" id="1325864746197-283" context="schema">
         <createIndex indexName="owningBinder_Event" tableName="ss_events" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-284">
+    <changeSet author="jong (generated)" id="1325864746197-284" context="schema">
         <createIndex indexName="zoneId" tableName="ss_extensions" unique="true">
             <column name="zoneId"/>
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-285">
+    <changeSet author="jong (generated)" id="1325864746197-285" context="schema">
         <createIndex indexName="entryDef_fEntry" tableName="ss_folderentries" unique="false">
             <column name="entryDef"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-286">
+    <changeSet author="jong (generated)" id="1325864746197-286" context="schema">
         <createIndex indexName="entry_sortKey" tableName="ss_folderentries" unique="true">
             <column name="entry_sortKey"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-287">
+    <changeSet author="jong (generated)" id="1325864746197-287" context="schema">
         <createIndex indexName="owningBinderKey_fEntry" tableName="ss_folderentries" unique="false">
             <column name="owningBinderKey"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-288">
+    <changeSet author="jong (generated)" id="1325864746197-288" context="schema">
         <createIndex indexName="binder_sortKey" tableName="ss_forums" unique="true">
             <column name="binder_sortKey"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-289">
+    <changeSet author="jong (generated)" id="1325864746197-289" context="schema">
         <createIndex indexName="internal_Binder" tableName="ss_forums" unique="false">
             <column name="zoneId"/>
             <column name="internalId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-290">
+    <changeSet author="jong (generated)" id="1325864746197-290" context="schema">
         <createIndex indexName="zoneId" tableName="ss_functions" unique="true">
             <column name="zoneId"/>
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-291">
+    <changeSet author="jong (generated)" id="1325864746197-291" context="schema">
         <createIndex indexName="indexingJournal_nodeIndex" tableName="ss_indexingjournal" unique="false">
             <column name="nodeName"/>
             <column name="indexName"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-292">
+    <changeSet author="jong (generated)" id="1325864746197-292" context="schema">
         <createIndex indexName="nodeName" tableName="ss_indexnode" unique="true">
             <column name="nodeName"/>
             <column name="indexName"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-293">
+    <changeSet author="jong (generated)" id="1325864746197-293" context="schema">
         <createIndex indexName="snapshot_lstats" tableName="ss_licensestats" unique="false">
             <column name="zoneId"/>
             <column name="snapshotDate"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-294">
+    <changeSet author="jong (generated)" id="1325864746197-294" context="schema">
         <createIndex indexName="notifyStatus_digest" tableName="ss_notifystatus" unique="false">
             <column name="zoneId"/>
             <column name="lastModified"/>
             <column name="lastDigestSent"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-295">
+    <changeSet author="jong (generated)" id="1325864746197-295" context="schema">
         <createIndex indexName="notifyStatus_full" tableName="ss_notifystatus" unique="false">
             <column name="zoneId"/>
             <column name="lastModified"/>
             <column name="lastFullSent"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-296">
+    <changeSet author="jong (generated)" id="1325864746197-296" context="schema">
         <createIndex indexName="email_postings" tableName="ss_postings" unique="false">
             <column name="zoneId"/>
             <column name="emailAddress"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-297">
+    <changeSet author="jong (generated)" id="1325864746197-297" context="schema">
         <createIndex indexName="entryDef_principal" tableName="ss_principals" unique="false">
             <column name="entryDef"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-298">
+    <changeSet author="jong (generated)" id="1325864746197-298" context="schema">
         <createIndex indexName="internal_principal" tableName="ss_principals" unique="false">
             <column name="zoneId"/>
             <column name="internalId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-299">
+    <changeSet author="jong (generated)" id="1325864746197-299" context="schema">
         <createIndex indexName="ldapGuid_principal" tableName="ss_principals" unique="false">
             <column name="ldapGuid"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-300">
+    <changeSet author="jong (generated)" id="1325864746197-300" context="schema">
         <createIndex indexName="type_principal" tableName="ss_principals" unique="false">
             <column name="zoneId"/>
             <column name="type"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-301">
+    <changeSet author="jong (generated)" id="1325864746197-301" context="schema">
         <createIndex indexName="zoneId" tableName="ss_principals" unique="true">
             <column name="zoneId"/>
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-302">
+    <changeSet author="jong (generated)" id="1325864746197-302" context="schema">
         <createIndex indexName="zoneId_2" tableName="ss_principals" unique="true">
             <column name="zoneId"/>
             <column name="foreignName"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-303">
+    <changeSet author="jong (generated)" id="1325864746197-303" context="schema">
         <createIndex indexName="entity_Ratings" tableName="ss_ratings" unique="false">
             <column name="entityId"/>
             <column name="entityType"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-304">
+    <changeSet author="jong (generated)" id="1325864746197-304" context="schema">
         <createIndex indexName="access_shared" tableName="ss_sharedentity" unique="false">
             <column name="accessType"/>
             <column name="accessId"/>
             <column name="sharedDate"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-305">
+    <changeSet author="jong (generated)" id="1325864746197-305" context="schema">
         <createIndex indexName="entity_shared" tableName="ss_sharedentity" unique="false">
             <column name="entityType"/>
             <column name="entityId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-306">
+    <changeSet author="jong (generated)" id="1325864746197-306" context="schema">
         <createIndex indexName="binderId_simpleName" tableName="ss_simplename" unique="false">
             <column name="binderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-307">
+    <changeSet author="jong (generated)" id="1325864746197-307" context="schema">
         <createIndex indexName="emailAddress_simpleName" tableName="ss_simplename" unique="false">
             <column name="emailAddress"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-308">
+    <changeSet author="jong (generated)" id="1325864746197-308" context="schema">
         <createIndex indexName="entity_Subscriptions" tableName="ss_subscriptions" unique="false">
             <column name="entityId"/>
             <column name="entityType"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-309">
+    <changeSet author="jong (generated)" id="1325864746197-309" context="schema">
         <createIndex indexName="entity_tag" tableName="ss_tags" unique="false">
             <column name="entity_type"/>
             <column name="entity_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-310">
+    <changeSet author="jong (generated)" id="1325864746197-310" context="schema">
         <createIndex indexName="owner_tag" tableName="ss_tags" unique="false">
             <column name="owner_type"/>
             <column name="owner_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-311">
+    <changeSet author="jong (generated)" id="1325864746197-311" context="schema">
         <createIndex indexName="userId_tokenInfoSession" tableName="ss_tokeninfo" unique="false">
             <column name="userId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-312">
+    <changeSet author="jong (generated)" id="1325864746197-312" context="schema">
         <createIndex indexName="entityOwner_wfhistory" tableName="ss_workflowhistory" unique="false">
             <column name="entityId"/>
             <column name="entityType"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-313">
+    <changeSet author="jong (generated)" id="1325864746197-313" context="schema">
         <createIndex indexName="owningBinder_wfhistory" tableName="ss_workflowhistory" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-314">
+    <changeSet author="jong (generated)" id="1325864746197-314" context="schema">
         <createIndex indexName="startDate_wfhistory" tableName="ss_workflowhistory" unique="false">
             <column name="zoneId"/>
             <column name="startDate"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-315">
+    <changeSet author="jong (generated)" id="1325864746197-315" context="schema">
         <createIndex indexName="entityOwner" tableName="ss_workflowresponses" unique="false">
             <column name="ownerType"/>
             <column name="ownerId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-316">
+    <changeSet author="jong (generated)" id="1325864746197-316" context="schema">
         <createIndex indexName="owningBinder" tableName="ss_workflowresponses" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-317">
+    <changeSet author="jong (generated)" id="1325864746197-317" context="schema">
         <createIndex indexName="entityOwner_wState" tableName="ss_workflowstates" unique="false">
             <column name="ownerType"/>
             <column name="ownerId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-318">
+    <changeSet author="jong (generated)" id="1325864746197-318" context="schema">
         <createIndex indexName="owningBinder_wState" tableName="ss_workflowstates" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-319">
+    <changeSet author="jong (generated)" id="1325864746197-319" context="schema">
         <createIndex indexName="virtualHost" tableName="ss_zoneinfo" unique="true">
             <column name="virtualHost"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-320">
+    <changeSet author="jong (generated)" id="1325864746197-320" context="schema">
         <createIndex indexName="zoneId" tableName="ss_zoneinfo" unique="true">
             <column name="zoneId"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-321">
+    <changeSet author="jong (generated)" id="1325864746197-321" context="schema">
         <createIndex indexName="zoneName" tableName="ss_zoneinfo" unique="true">
             <column name="zoneName"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong (generated)" id="1325864746197-322">
+    <changeSet author="jong (generated)" id="1325864746197-322" context="data">
         <insert tableName="ssqrtz_locks">
             <column name="LOCK_NAME" value="CALENDAR_ACCESS" />
         </insert> 
