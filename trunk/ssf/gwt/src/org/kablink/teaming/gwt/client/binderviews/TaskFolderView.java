@@ -36,36 +36,20 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
-import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
-import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
-import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
-import org.kablink.teaming.gwt.client.binderviews.FilterPanel;
-import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
-import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -74,34 +58,17 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * 
  * @author drfoster@novell.com
  */
-public class TaskFolderView extends ViewBase
+public class TaskFolderView extends FolderViewBase
 	implements ToolPanelReady,
 	// Event handlers implemented by this class.
 		DeleteSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler
 {
-	private final BinderInfo			m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
-	private boolean						m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
-	private boolean						m_viewReady;				// Set true once the view and all its components are ready.
-	private int							m_readyComponents;			// Tracks items as they become ready.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private List<ToolPanelBase>			m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
-	private String						m_folderSortBy;				// Which column the view is sorted on.
-	private VibeFlowPanel				m_flowPanel;				// The flow panel used to hold the view specific content of the view.
-	private VibeVerticalPanel			m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
-	
 
 	// The following define the indexes into a VibeVerticalPanel of the
-	// various panels that makeup a data table based folder view.
-	private final static int BREADCRUMB_PANEL_INDEX		= 0;
-	private final static int ACCESSORY_PANEL_INDEX		= 1;
-	private final static int DESCRIPTION_PANEL_INDEX	= 2;
+	// addition panel that makes up a task folder view.
 	private final static int TASK_GRAPHS_PANEL_INDEX	= 3;
-	private final static int FILTER_PANEL_INDEX			= 4;
-	private final static int ENTRY_MENU_PANEL_INDEX		= 5;
-	@SuppressWarnings("unused")
-	private final static int DATA_TABLE_PANEL_INDEX		= 6;
-	private final static int FOOTER_PANEL_INDEX			= 7;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -118,180 +85,36 @@ public class TaskFolderView extends ViewBase
 	 * @param viewReady
 	 */
 	public TaskFolderView(BinderInfo folderInfo, ViewReady viewReady) {
-		// Initialize the super class...
-		super(viewReady);
-
-		// ...store the parameters...
-		m_folderInfo = folderInfo;
-		
-		// ...initialize any other data members...
-		
-		// ...create the main content panels and initialize the
-		// ...composite...
-		VibeFlowPanel mainPanel = constructInitialContent();
-		initWidget(mainPanel);
-
-		// ...and finally, asynchronously initialize the view.
-		loadPart1Async();
+		// Simply initialize the super class.
+		super(folderInfo, viewReady, "vibe-taskFolder");
 	}
 	
 	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	final public BinderInfo    getFolderInfo()        {return m_folderInfo;                    }	// The binder being viewed.
-	final public boolean       getFolderSortDescend() {return m_folderSortDescend;             }	//
-	final public Long          getFolderId()          {return m_folderInfo.getBinderIdAsLong();}	//
-	final public String        getFolderSortBy()      {return m_folderSortBy;                  }	//
-	final public VibeFlowPanel getFlowPanel()         {return m_flowPanel;                     }	// Flow panel holding the data table content (no toolbars, ...)
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	final public void setFolderSortDescend(boolean folderSortDescend) {m_folderSortDescend = folderSortDescend;}
-	final public void setFolderSortBy(     String  folderSortBy)      {m_folderSortBy      = folderSortBy;     }
-
-	/*
-	 * Checks how many items are ready and once everything is, calls
-	 * super class' viewReady() method.
-	 */
-	private void checkReadyness() {
-		// If everything's ready...
-		int toolPanels = m_toolPanels.size();
-		if ((toolPanels + 1) == m_readyComponents) {	// Count of tool panels plus 1 for the view itself.
-			// ...tell the super class.
-			m_viewReady = true;
-			super.viewReady();
-		}
-	}
-	
-	/*
-	 * Creates the initial content panels, ... required by the task
-	 * view.
-	 */
-	private VibeFlowPanel constructInitialContent() {
-		// Initialize various data members of the class...
-		initDataMembers();
-		
-		// ...create the main panel for the content...
-		VibeFlowPanel mainPanel = new VibeFlowPanel();
-		mainPanel.addStyleName("vibe-folderViewBase vibe-taskFolderView vibe-verticalScroll");
-
-		// ...set the sizing adjustments the account for the padding in
-		// ...the vibe-folderViewBase style...
-		final int padAdjust = (2 * GwtConstants.PANEL_PADDING);
-		setContentHeightAdjust(getContentHeightAdjust() - padAdjust);
-		setContentWidthAdjust( getContentWidthAdjust()  - padAdjust);
-
-		// ...create a vertical panel to holds the layout that flows
-		// ...down the view...
-		m_verticalPanel = new VibeVerticalPanel();
-		m_verticalPanel.addStyleName("vibe-taskFolderVerticalPanel");
-	
-		// ...create a flow panel to put the main content...
-		m_flowPanel = new VibeFlowPanel();
-		m_flowPanel.addStyleName("vibe-taskFolderFlowPanel");
-		
-		// ...and finally, tie everything together.
-		m_verticalPanel.add(m_flowPanel);
-		m_verticalPanel.addBottomPad();
-		mainPanel.add(m_verticalPanel);
-		
-		return mainPanel;
-	}
-
-	/*
 	 * Called to construct the view.
 	 */
-	private void constructView() {
-//!		...this needs to be implemented...
-		m_flowPanel.add(new InlineLabel("TaskFolderView:  ...this needs to be implemented..."));
+	@Override
+	public void constructView() {
+		loadTaskGraphsAsync();
 	}
 	
 	/*
-	 * Asynchronously tells the view to construct itself.
+	 * Asynchronously loads the TaskGraphsPanel.
 	 */
-	private void constructViewAsync() {
-		ScheduledCommand doConstructView = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				constructView();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doConstructView);
-	}
-
-	/*
-	 * Initializes various data members for the class.
-	 */
-	private void initDataMembers() {
-		// Allocate a List<ToolPanelBase> to track the tool panels
-		// created for the view.
-		m_toolPanels = new ArrayList<ToolPanelBase>();
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the BreadCrumbPanel.
-	 */
-	private void loadPart1Async() {
+	private void loadTaskGraphsAsync() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart1Now();
+				loadTaskGraphsNow();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the BreadCrumbPanel.
+	 * Synchronously loads the TaskGraphsPanel.
 	 */
-	private void loadPart1Now() {
-		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpp) {
-				m_toolPanels.add(tpp);
-				m_verticalPanel.insert(tpp, BREADCRUMB_PANEL_INDEX);
-				loadPart2Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart2Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart2Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart2Now() {
-		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+	private void loadTaskGraphsNow() {
+		TaskGraphsPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -300,244 +123,12 @@ public class TaskFolderView extends ViewBase
 			
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, ACCESSORY_PANEL_INDEX);
-				loadPart3Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart3Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart3Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart3Now() {
-		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, DESCRIPTION_PANEL_INDEX);
-				loadPart4Async();
+				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
+				populateViewAsync();
 			}
 		});
 	}
 
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the TaskGraphsPanel.
-	 */
-	private void loadPart4Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart4Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the TaskGraphsPanel.
-	 */
-	private void loadPart4Now() {
-		TaskGraphsPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, TASK_GRAPHS_PANEL_INDEX);
-				loadPart5Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart5Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart5Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart5Now() {
-		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, FILTER_PANEL_INDEX);
-				loadPart6Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart6Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart6Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart6Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, false, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, ENTRY_MENU_PANEL_INDEX);
-				loadPart7Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart7Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart7Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart7Now() {
-		FooterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, FOOTER_PANEL_INDEX);
-				loadPart8Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart8Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart8Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart8Now() {
-		final Long folderId = m_folderInfo.getBinderIdAsLong();
-		GwtClientHelper.executeCommand(
-				new GetFolderDisplayDataCmd(folderId),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetFolderDisplayData(),
-					folderId);
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the core folder display data.
-				FolderDisplayDataRpcResponseData responseData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
-				m_folderSortBy      = responseData.getFolderSortBy();
-				m_folderSortDescend = responseData.getFolderSortDescend();
-
-				// Finally, tell the view to construct itself.
-				constructViewAsync();
-			}
-		});
-	}
-	
 	/**
 	 * Handles DeleteSelectedEntriesEvent's received by this class.
 	 * 
@@ -551,7 +142,7 @@ public class TaskFolderView extends ViewBase
 	}
 	
 	/**
-	 * Called when the data table is attached.
+	 * Called when the view is attached.
 	 * 
 	 * Overrides Widget.onAttach()
 	 */
@@ -563,7 +154,7 @@ public class TaskFolderView extends ViewBase
 	}
 	
 	/**
-	 * Called when the data table is detached.
+	 * Called when the view is detached.
 	 * 
 	 * Overrides Widget.onDetach()
 	 */
@@ -587,17 +178,34 @@ public class TaskFolderView extends ViewBase
 //!		...this needs to be implemented...
 	}
 	
+	/*
+	 * Asynchronously populates the the task view.
+	 */
+	private void populateViewAsync() {
+		Scheduler.ScheduledCommand doPopulate = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateViewNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
+	}
+	
+	/*
+	 * Synchronously populates the the task view.
+	 */
+	private void populateViewNow() {
+//!		...this needs to be implemented...
+		getFlowPanel().add(new InlineLabel("TaskFolderView:  ...this needs to be implemented..."));
+	}
+	
 	/**
-	 * Synchronously sets the size of the data table based on its
-	 * position in the view.
+	 * Synchronously sets the size of the view.
 	 * 
-	 * Overrides ViewBase.onResize()
+	 * Implements FolderViewBase.resizeView()
 	 */
 	@Override
-	public void onResize() {
-		// Pass the resize on to the super class...
-		super.onResize();
-
+	public void resizeView() {
 		// ...and do what we need to do to resize the task view.
 //!		...this needs to be implemented...
 	}
@@ -624,21 +232,6 @@ public class TaskFolderView extends ViewBase
 		}
 	}
 
-	/**
-	 * Implements the ToolPanelReady.toolPanelReady() method.
-	 */
-	@Override
-	public void toolPanelReady(ToolPanelBase toolPanel) {
-		if (!m_viewReady) {
-			m_readyComponents += 1;
-			checkReadyness();
-		}
-		
-		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
-			Window.alert("TaskFolderView.toolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
-		}
-	}
-
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
@@ -648,22 +241,6 @@ public class TaskFolderView extends ViewBase
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
-	}
-	
-	/**
-	 * Called by classes that extend this base class so that it can
-	 * inform the world that its view is ready to go.
-	 */
-	@Override
-	public void viewReady() {
-		if (!m_viewReady) {
-			m_readyComponents += 1;
-			checkReadyness();
-		}
-		
-		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
-			Window.alert("TaskFolderView.viewReady( *Internal Error* ):  Unexpected call to viewReady() method.");
 		}
 	}
 	

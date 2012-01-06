@@ -103,6 +103,8 @@ public class ContentControl extends Composite
 		ShowLandingPageEvent.Handler,
 		ShowTaskFolderEvent.Handler
 {
+	private final static boolean ENABLE_NEW_TASKS = true;	// Temporary until I get the new task stuff working.
+	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -557,11 +559,12 @@ public class ContentControl extends Composite
 						
 						
 					case TASK:
-/*
-						GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
-						m_contentInGWT = true;
-						break;
-*/
+						if ( ENABLE_NEW_TASKS )
+						{
+							GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+							break;
+						}
 
 						
 					case BLOG:
