@@ -101,13 +101,13 @@
 		.vibe-dataTableCustom-event-duration {}
 		.vibe-dataTableCustom-string         {}
 		.vibe-dataTableEntry-download        {border: 0px solid #666666; background: url(images/move_down.gif); background-repeat: no-repeat; background-position:  left center; padding-left: 15px; padding-right: 0px; line-height: 11px;}
-		.vibe-dataTableEntry-title           {cursor: pointer; color: #135c8f !important;}
+		.vibe-dataTableEntry-title           {cursor: pointer; color: #135c8f !important; padding: 2px;}
 		.vibe-dataTableEntry-unseenMarker    {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-viewAnchor      {text-decoration: none;}
 		.vibe-dataTableEntry-viewLabel       {}
-		.vibe-dataTableLink-hover            {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px; text-shadow: 2px 3px 0 #DDDDFF;}
-		.vibe-dataTableLink-hoverHint        {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d6dede; margin:2px; padding: 10px; background-color: #fafafa; width: 300px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
-		.vibe-dataTableLink-hoverHintLabel   {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #333333;}
+		.vibe-dataTableLink-hover            {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLink-hoverHint        {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: 300px; -moz-border-radius: 6px; -webkit-border-radius: 6px; }
+		.vibe-dataTableLink-hoverHintLabel   {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
 		.vibe-dataTablePresence-control      {}
 		.vibe-dataTablePresence-label        {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled     {color: #c4c4c4;}
