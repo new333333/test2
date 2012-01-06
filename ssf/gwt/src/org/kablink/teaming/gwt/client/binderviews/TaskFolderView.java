@@ -44,13 +44,15 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
+import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -65,6 +67,8 @@ public class TaskFolderView extends FolderViewBase
 		PurgeSelectedEntriesEvent.Handler
 {
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private TaskListing					m_taskListing;				// The TaskList composite.
+	private VibeFlowPanel				m_gwtTaskFilter;			//
 
 	// The following define the indexes into a VibeVerticalPanel of the
 	// addition panel that makes up a task folder view.
@@ -90,23 +94,35 @@ public class TaskFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public VibeFlowPanel getGwtTaskFilter() {return m_gwtTaskFilter;}
+	
+	/**
 	 * Called to construct the view.
 	 * 
 	 * Implements the FolderViewBase.constructView() method.
 	 */
 	@Override
 	public void constructView() {
-		loadTaskGraphsAsync();
+//!		...this needs to be implemented...
+		m_gwtTaskFilter = new VibeFlowPanel();
+		m_gwtTaskFilter.getElement().setId("gwtTaskFilter");
+		getFlowPanel().add(m_gwtTaskFilter);
+		
+		loadPart1Async();
 	}
 	
 	/*
 	 * Asynchronously loads the TaskGraphsPanel.
 	 */
-	private void loadTaskGraphsAsync() {
+	private void loadPart1Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadTaskGraphsNow();
+				loadPart1Now();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
@@ -115,7 +131,7 @@ public class TaskFolderView extends FolderViewBase
 	/*
 	 * Synchronously loads the TaskGraphsPanel.
 	 */
-	private void loadTaskGraphsNow() {
+	private void loadPart1Now() {
 		TaskGraphsPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
@@ -126,6 +142,41 @@ public class TaskFolderView extends FolderViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
+				loadPart2Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the TaskListing.
+	 */
+	private void loadPart2Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the TaskListing.
+	 */
+	private void loadPart2Now() {
+		// Yes!  Load the task listing's split point.
+		TaskListing.createAsync(
+				this,
+				new TaskListingClient() {				
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(TaskListing taskListing) {
+				m_taskListing = taskListing;
 				populateViewAsync();
 			}
 		});
@@ -198,7 +249,7 @@ public class TaskFolderView extends FolderViewBase
 	 */
 	private void populateViewNow() {
 //!		...this needs to be implemented...
-		getFlowPanel().add(new InlineLabel("TaskFolderView:  ...this needs to be implemented..."));
+		getFlowPanel().add(m_taskListing);
 		viewReady();
 	}
 	

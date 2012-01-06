@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -49,6 +50,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -85,7 +87,8 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class TaskListing extends Composite {
 	public static RequestInfo m_requestInfo;			//
-	
+
+	private boolean			m_embeddedInJSP;			// true -> The TaskListing is embedded in a JSP page.  false -> It's embedded in a TaskFolderView.
 	private boolean			m_updateCalculatedDates;	// true -> Tell the task table to update the calculated dates upon loading.
 	private boolean			m_showModeSelect;			// true -> Show the 'All Entries vs. From Folder' options.  false -> Don't.
 	private boolean			m_sortDescend;				// true -> Sort is descending.  false -> Sort is ascending.
@@ -96,7 +99,6 @@ public class TaskListing extends Composite {
 	private FlowPanel		m_taskToolsWarningDIV;		//
 	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
-	private RootPanel		m_taskFilterRoot;			//
 	private String			m_filterType;				// The current filtering in affect, if any.
 	private String			m_mode;						// The current mode being displayed (PHYSICAL vs. VITRUAL.)
 	private String			m_sortBy;					// The column the tasks are currently sorted by.
@@ -110,6 +112,7 @@ public class TaskListing extends Composite {
 	private TaskButton		m_moveRightButton;			//
 	private TaskButton		m_purgeButton;				//
 	private TaskFilter		m_taskFilter;				//
+	private TaskFolderView	m_taskFolderView;			//
 	private TaskPopupMenu	m_viewMenu;					//
 	private TaskTable		m_taskTable;				//
 	
@@ -302,27 +305,26 @@ public class TaskListing extends Composite {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private TaskListing() {
+	private TaskListing(TaskFolderView taskFolderView) {
+		// Initialize the super class
 		super();
-		
-		// Initialize the JSNI components...
-		jsInitResizeHandler(this);		
-		m_requestInfo = jsGetRequestInfo();
-		
-		// ...extract the parameters we need to render the tasks...
-		m_binderId              = Long.parseLong(m_requestInfo.getBinderId());
-		m_filterType            =                 jsGetElementValue("ssCurrentTaskFilterType");
-		m_mode                  =                 jsGetElementValue("ssCurrentFolderModeType");
-		m_sortBy                =                 jsGetElementValue("ssFolderSortBy"         );
-		m_sortDescend           = Boolean.valueOf(jsGetElementValue("ssFolderSortDescend"   ));
-		m_taskChangeId          =                 jsGetElementValue("taskId"                 );
-		m_taskChangeReason      =                 jsGetElementValue("taskChange"             );
-		m_updateCalculatedDates = Boolean.valueOf(jsGetElementValue("updateCalculatedDates" ));
-		
-		String showMode = jsGetElementValue("ssShowFolderModeSelect");
-		m_showModeSelect = (GwtClientHelper.hasString(showMode) && Boolean.valueOf(showMode));
 
-		// ...create the panels that are to contain the task tools and
+		// Is this task listing embedded in a JSP page?
+		m_embeddedInJSP = (null == taskFolderView);
+		if (m_embeddedInJSP){
+			// Yes!  Initialize it based on the values store in the
+			// JSP.
+			initFromJSP();
+		}
+		else {
+			// No, it's no embedded in a JSP page!  It must be embedded
+			// in a task folder view!  Store the task folder view and
+			// initialize based on it.
+			m_taskFolderView = taskFolderView;
+			initFromTaskFolderView();
+		}
+		
+		// Create the panels that are to contain the task tools and
 		// ...listing...
 		m_taskRootDIV  = new FlowPanel();		
 		m_taskToolsDIV = new FlowPanel();
@@ -360,6 +362,7 @@ public class TaskListing extends Composite {
 	 * 
 	 * @return
 	 */
+	public boolean     getEmbeddedInJSP()         {return m_embeddedInJSP;        }
 	public boolean     getSortDescend()           {return m_sortDescend;          }
 	public boolean     getUpdateCalculatedDates() {return m_updateCalculatedDates;}
 	public FlowPanel   getTaskListingDIV()        {return m_taskListingDIV;       }
@@ -439,6 +442,49 @@ public class TaskListing extends Composite {
 		url = GwtClientHelper.replace(url, "xxx_option_xxx",  viewOption);
 		GwtClientHelper.jsLoadUrlInCurrentWindow(url);
 	}
+
+	/*
+	 * Called to initialize the TaskListing when it's embedded in a JSP
+	 * page.
+	 */
+	private void initFromJSP() {
+		// Initialize the JSNI components...
+		jsInitResizeHandler(this);		
+		m_requestInfo = jsGetRequestInfo();
+		
+		// ...and extract the parameters we need to render the tasks.
+		m_binderId              = Long.parseLong(m_requestInfo.getBinderId());
+		m_filterType            =                 jsGetElementValue("ssCurrentTaskFilterType");
+		m_mode                  =                 jsGetElementValue("ssCurrentFolderModeType");
+		m_sortBy                =                 jsGetElementValue("ssFolderSortBy"         );
+		m_sortDescend           = Boolean.valueOf(jsGetElementValue("ssFolderSortDescend"   ));
+		m_taskChangeId          =                 jsGetElementValue("taskId"                 );
+		m_taskChangeReason      =                 jsGetElementValue("taskChange"             );
+		m_updateCalculatedDates = Boolean.valueOf(jsGetElementValue("updateCalculatedDates" ));
+		
+		String showMode = jsGetElementValue("ssShowFolderModeSelect");
+		m_showModeSelect = (GwtClientHelper.hasString(showMode) && Boolean.valueOf(showMode));
+
+	}
+	
+	/*
+	 * Called to initialize the TaskListing when it's embedded in a
+	 * TaskFolderView.
+	 */
+	private void initFromTaskFolderView() {
+		// Extract the parameters we need to render the tasks.
+//! 	...this needs to be implemented...
+		m_binderId = m_taskFolderView.getFolderId();
+		m_filterType            = "ALL";		//! ...this needs to be implemented...
+		m_mode                  = "PHYSICAL";	//! ...this needs to be implemented...
+		m_sortBy                = m_taskFolderView.getFolderDisplayData().getFolderSortBy();
+		m_sortDescend           = m_taskFolderView.getFolderDisplayData().getFolderSortDescend();
+		m_taskChangeId          = "";			//! ...this needs to be implemented...
+		m_taskChangeReason      = "";			//! ...this needs to be implemented...
+		m_updateCalculatedDates = false;		//! ...this needs to be implemented...
+		
+		m_showModeSelect        = false;		//! ...this needs to be implemented...
+	}
 	
 	/*
 	 * Uses JSNI to return the value of a document element.
@@ -487,9 +533,23 @@ public class TaskListing extends Composite {
 	 * Adds the task filter widgets to the task filter DIV.
 	 */
 	private void populateTaskFilterDIV() {
-		m_taskFilterRoot = RootPanel.get("gwtTaskFilter");		
-		m_taskFilter     = new TaskFilter();
-		m_taskFilterRoot.add(m_taskFilter);
+		// Create a TaskFilter widget.
+		m_taskFilter = new TaskFilter();
+		
+		// Is this TaskListing embedded in  JSP page?
+		if (m_embeddedInJSP) {
+			// Yes!  Attach the TaskFilter appropriately.
+			RootPanel taskFilterRoot = RootPanel.get("gwtTaskFilter");		
+			taskFilterRoot.add(m_taskFilter);
+		}
+		else {
+			// No, this TaskListing is not embedded in  JSP page!  It
+			// must be embedded in a TaskFolderView.  Attach the
+			// TaskFilter appropriately.
+//!			...this needs to be implemented...
+			VibeFlowPanel taskFilterRoot = m_taskFolderView.getGwtTaskFilter();
+			taskFilterRoot.add(m_taskFilter);
+		}
 	}
 	
 	/*
@@ -787,12 +847,12 @@ public class TaskListing extends Composite {
 	 * 
 	 * @param taskListingClient
 	 */
-	public static void createAsync(final TaskListingClient taskListingClient) {
+	public static void createAsync(final TaskFolderView taskFolderView, final TaskListingClient taskListingClient) {
 		GWT.runAsync(TaskListing.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				TaskListing taskListing = new TaskListing();
+				TaskListing taskListing = new TaskListing(taskFolderView);
 				taskListingClient.onSuccess(taskListing);
 			}
 			
