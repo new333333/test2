@@ -21,6 +21,16 @@
 	<property name="sql.output.temp.dir" value="${temporary.dir}/sql-output" />
 	<property name="lb.log.level" value="info"/>
 	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<fileset dir="${project.dir}/lib">
+			<include name="*.jar" />
+			<exclude name="gwt-servlet.jar" />
+			<!-- Exclude xalan.jar so that it won't be picked up by the JDK. It doesn't handle indentation properly. -->
+			<exclude name="xalan.jar" />
+		</fileset>
+	</path>
+
 	<taskdef name="dbunit"
 	    classname="org.dbunit.ant.DbUnitTask">
 		<classpath>
