@@ -60,7 +60,7 @@ java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase
 goto end
 
 :generateSqlToUpdateDatabase
-java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" --outputFile=".\%1-update.sql" updateSQL
+java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" updateSQL > ".\%1-update.sql"
 goto end
 
 :markDatabaseAsUpdated
@@ -68,19 +68,19 @@ java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase
 goto end
 
 :generateSqlToMarkDatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" --outputFile=".\%1-markasupdated.sql" changeLogSyncSQL
+java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" changeLogSyncSQL > ".\%1-markasupdated.sql"
 goto end
 
 :exportSchema
-java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --outputFile=".\%1-schema-changelog.xml" generateChangeLog
+java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" generateChangeLog > ".\%1-schema-changelog.xml"
 goto end
 
 :exportData
-java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --outputFile=".\%1-data-changelog.xml" --diffTypes="data" generateChangeLog
+java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --diffTypes="data" generateChangeLog > ".\%1-data-changelog.xml"
 goto end
 
 :diffDatabases
-java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" --outputFile=".\%1-diff-changelog.xml" diff
+java -jar ".\lib\liquibase.jar" --logLevel="%LL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CP%" diffChangeLog > ".\%1-diff-changelog.xml"
 goto end
 
 :end
