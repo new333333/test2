@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,8 +42,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Base class that binder views MUST extend to work in that they'll
- * used to say when the view is ready to be used.
+ * Base class that binder views MUST extend so that they'll say when
+ * the view is ready to be used.
  * 
  * @author drfoster@novell.com
  */
@@ -98,7 +98,7 @@ public abstract class ViewBase extends ResizeComposite {
 	 * Intercepts the initWidget call to the composite so that a
 	 * ViewBase specific style can be added to it.
 	 * 
-	 * Overrides ResizeComposite.initWidget() 
+	 * Overrides the ResizeComposite.initWidget() method. 
 	 */
 	@Override
 	protected void initWidget(Widget widget) {
@@ -109,7 +109,7 @@ public abstract class ViewBase extends ResizeComposite {
 	/**
 	 * Manages resizing the view.
 	 * 
-	 * Overrides RequiresResize.onResize()
+	 * Overrides the RequiresResize.onResize() method.
 	 */
 	@Override
 	public void onResize() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -76,6 +76,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public abstract class FolderViewBase extends ViewBase implements ToolPanelReady {
 	private BinderInfo							m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
+	private boolean								m_allowColumnSizing;	// true -> Add the column sizing entry menu item.  false -> Don't.
 	private boolean								m_viewReady;			// Set true once the view and all its components are ready.
 	private FolderDisplayDataRpcResponseData	m_folderDisplayData;	// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
 	private int									m_readyComponents;		// Tracks items as they become ready.
@@ -100,13 +101,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public FolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String styleBase) {
+	public FolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String styleBase, boolean allowColumnSizing) {
 		// Initialize the super class...
 		super(viewReady);
 
 		// ...store the parameters...
-		m_folderInfo = folderInfo;
-		m_styleBase  = ((GwtClientHelper.hasString(styleBase) ? styleBase : "vibe-folderView"));
+		m_folderInfo        = folderInfo;
+		m_styleBase         = ((GwtClientHelper.hasString(styleBase) ? styleBase : "vibe-folderView"));
+		m_allowColumnSizing = allowColumnSizing;
 		
 		// ...create the main content panels and initialize the
 		// ...composite...
@@ -181,9 +183,10 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Called to construct the view.
 	 * 
 	 * Implemented by classes that extend this base class so that they
-	 * can construct the main content of their view.
+	 * can construct and reset the main content of their view.
 	 */
 	public abstract void constructView();
+	public abstract void resetView();
 	
 	/*
 	 * Asynchronously tells the view to construct itself.
@@ -383,7 +386,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, false, this, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(this, m_folderInfo, m_allowColumnSizing, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -480,7 +483,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	/**
 	 * Synchronously sets the size of the view.
 	 * 
-	 * Overrides ViewBase.onResize()
+	 * Overrides the ViewBase.onResize() method.
 	 */
 	@Override
 	public void onResize() {
@@ -490,6 +493,24 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		resizeViewAsync();
 	}
 
+	/**
+	 * Does what's necessary to reset the view.
+	 */
+	final public void resetContent() {
+		// Clear the flow panel's content...
+		m_flowPanel.clear();
+		
+		// ...tell the tool panels to perform any resetting they need
+		// ...to do...
+		for (ToolPanelBase tpb:  m_toolPanels) {
+			tpb.resetPanel();
+		}
+		
+		// ...and reset any other information.
+		m_readyComponents = 0;
+		m_viewReady       = false;
+	}
+	
 	/**
 	 * Called to resize the view.
 	 * 
@@ -529,6 +550,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	/**
 	 * Called by classes that extend this base class so that it can
 	 * inform the world that its view is ready to go.
+	 * 
+	 * Overrides the ViewBase.viewReady() method.
 	 */
 	@Override
 	public void viewReady() {
