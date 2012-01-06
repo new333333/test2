@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,22 +46,23 @@ import com.google.gwt.user.client.Window;
  * @author drfoster@novell.com
  */
 public class DiscussionFolderView extends DataTableFolderViewBase {
-	/**
-	 * Constructor method.
+	/*
+	 * Class constructor.
 	 * 
-	 * @param folderInfo
-	 * @param viewReady
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
-	public DiscussionFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	private DiscussionFolderView(BinderInfo folderInfo, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady);
+		super(folderInfo, viewReady, "vibe-discussionFolderDataTable");
 	}
 	
 	/**
 	 * Called from the base class to complete the construction of this
 	 * discussion folder view.
 	 * 
-	 * Implements DataTableFolderViewBase.constructView().
+	 * Implements the FolderViewBase.constructView() method.
 	 */
 	@Override
 	public void constructView() {
@@ -69,7 +70,7 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 		// populate the view's contents and tell the base class
 		// that we're done with the construction.
 		getFlowPanel().addStyleName("vibe-discussionFolderFlowPanel");
-		populateContent("vibe-discussionFolderDataTable");
+		populateContent();
 		super.viewReady();
 	}
 	
@@ -101,12 +102,23 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * Called from the base class to reset the content of this
 	 * discussion folder view.
 	 * 
-	 * Implements DataTableFolderViewBase.resetView().
+	 * Implements the FolderViewBase.resetView() method.
 	 */
 	@Override
 	public void resetView() {
 		// Clear any existing content from the view and repopulate it.
 		resetContent();
-		populateContent("vibe-discussionFolderDataTable");
+		populateContent();
+	}
+	
+	/**
+	 * Called from the base class to resize the content of this
+	 * discussion folder view.
+	 * 
+	 * Implements the FolderViewBase.resizeView() method.
+	 */
+	@Override
+	public void resizeView() {
+		// Nothing to do.
 	}
 }

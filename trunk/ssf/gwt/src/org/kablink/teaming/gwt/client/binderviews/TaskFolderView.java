@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -86,11 +86,13 @@ public class TaskFolderView extends FolderViewBase
 	 */
 	public TaskFolderView(BinderInfo folderInfo, ViewReady viewReady) {
 		// Simply initialize the super class.
-		super(folderInfo, viewReady, "vibe-taskFolder");
+		super(folderInfo, viewReady, "vibe-taskFolder", false);
 	}
 	
 	/**
 	 * Called to construct the view.
+	 * 
+	 * Implements the FolderViewBase.constructView() method.
 	 */
 	@Override
 	public void constructView() {
@@ -144,7 +146,7 @@ public class TaskFolderView extends FolderViewBase
 	/**
 	 * Called when the view is attached.
 	 * 
-	 * Overrides Widget.onAttach()
+	 * Overrides the Widget.onAttach() method.
 	 */
 	@Override
 	public void onAttach() {
@@ -156,7 +158,7 @@ public class TaskFolderView extends FolderViewBase
 	/**
 	 * Called when the view is detached.
 	 * 
-	 * Overrides Widget.onDetach()
+	 * Overrides the Widget.onDetach() method.
 	 */
 	@Override
 	public void onDetach() {
@@ -200,9 +202,21 @@ public class TaskFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Called from the base class to reset the content of this
+	 * discussion folder view.
+	 * 
+	 * Implements the FolderViewBase.resetView() method.
+	 */
+	@Override
+	public void resetView() {
+		getFlowPanel().clear();
+		populateViewAsync();
+	}
+	
+	/**
 	 * Synchronously sets the size of the view.
 	 * 
-	 * Implements FolderViewBase.resizeView()
+	 * Implements the FolderViewBase.resizeView() method.
 	 */
 	@Override
 	public void resizeView() {

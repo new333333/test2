@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,21 +38,14 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
-import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
-import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
-import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
-import org.kablink.teaming.gwt.client.binderviews.FilterPanel;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
-import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
-import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
@@ -78,10 +71,8 @@ import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
@@ -141,7 +132,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * 
  * @author drfoster@novell.com
  */
-public abstract class DataTableFolderViewBase extends ViewBase
+public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements ToolPanelReady,
 	// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
@@ -151,28 +142,17 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		PurgeSelectedEntriesEvent.Handler
 {
 	private AddFilesDlg					m_addFilesDlg;				//
-	private final BinderInfo			m_folderInfo;				// A BinderInfo object that describes the folder being viewed.
 	private boolean						m_fixedLayout;				//
-	private boolean						m_folderSortDescend;		// true -> The folder is sorted in descending order.  false -> It's sorted in ascending order.
-	private boolean						m_viewReady;				// Set true once the view and all its components are ready.
 	private ColumnWidth					m_defaultColumnWidth;		//
-	private int							m_folderPageSize;			// Page size as per the user's personal preferences.
-	private int							m_readyComponents;			// Tracks items as they become ready.
-	private EntryMenuPanel				m_entryMenuPanel;			// Panel that holds the entry menu.
 	private FolderRowPager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
-	private FooterPanel					m_footerPanel;				// Panel that holds the links, ... displayed at the bottom of the view.
 	private List<FolderColumn>			m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<Long>					m_contributorIds;			//
-	private List<ToolPanelBase>			m_toolPanels;				// List<ToolPanelBase>'s of the various tools panels that appear above the table.
 	private Map<String, ColumnWidth>	m_defaultColumnWidths;		// Map of column names -> Default ColumnWidth objects.
 	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
 	private SizeColumnsDlg				m_sizeColumnsDlg;			//
-	private String						m_folderSortBy;				// Which column the view is sorted on.
+	private String						m_folderStyles;				// Specific style(s) for the for the folders that extend this.
 	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
-	private VibeFlowPanel				m_mainPanel;				// The main panel holding the content of the view.
-	private VibeFlowPanel				m_flowPanel;				// The flow panel used to hold the view specific content of the view.
-	private VibeVerticalPanel			m_verticalPanel;			// The vertical panel that holds all components of the view, both common and view specific.
 	
 	protected GwtTeamingDataTableImageBundle m_images;	//
 
@@ -183,17 +163,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private final static int MINIMUM_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	private final static int NO_VSCROLL_ADJUST	=  28;	// Height adjustment required so there's no vertical scroll bar by default.
 	
-	// The following define the indexes into a VibeVerticalPanel of the
-	// various panels that makeup a data table based folder view.
-	private final static int BREADCRUMB_PANEL_INDEX		= 0;
-	private final static int ACCESSORY_PANEL_INDEX		= 1;
-	private final static int DESCRIPTION_PANEL_INDEX	= 2;
-	private final static int FILTER_PANEL_INDEX			= 3;
-	private final static int ENTRY_MENU_PANEL_INDEX		= 4;
-	@SuppressWarnings("unused")
-	private final static int DATA_TABLE_PANEL_INDEX		= 5;
-	private final static int FOOTER_PANEL_INDEX			= 6;
-
 	// The following are used to construct the style names applied
 	// to the columns and rows of the data table.
 	private final static String STYLE_COL_BASE		= "vibe-dataTableFolderColumn";
@@ -237,15 +206,15 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		 * 
 		 * @param display
 		 * 
-		 * Overrides AsyncDataProvider.onRowChanged()
+		 * Overrides the AsyncDataProvider.onRowChanged() method.
 		 */
 		@Override
 		protected void onRangeChanged(HasData<FolderRow> display) {
-			final Long folderId = m_folderInfo.getBinderIdAsLong();
+			final Long folderId = getFolderInfo().getBinderIdAsLong();
 			final Range range = display.getVisibleRange();
 			final int rowsRequested = range.getLength();
 			GwtClientHelper.executeCommand(
-					new GetFolderRowsCmd(folderId, m_folderInfo.getFolderType(), m_folderColumnsList, range.getStart(), rowsRequested),
+					new GetFolderRowsCmd(folderId, getFolderInfo().getFolderType(), m_folderColumnsList, range.getStart(), rowsRequested),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -286,7 +255,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		 * 
 		 * @param fr
 		 * 
-		 * Implements ProvidesKey.getKey()
+		 * Implements the ProvidesKey.getKey() method.
 		 */
 		@Override
 		public Object getKey(FolderRow fr) {
@@ -362,7 +331,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		 * Called when the user clicks a column to change the sort
 		 * order.
 		 * 
-		 * Implements ColumnSortEvent.Handler.onColumnSort()
+		 * Implements the ColumnSortEvent.Handler.onColumnSort()
+		 * method.
 		 * 
 		 * @param event
 		 */
@@ -373,9 +343,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				@SuppressWarnings("unchecked")
 				final FolderColumn fc = ((VibeColumn) column).getFolderColumn();
 				final String  folderSortBy        = fc.getColumnSortKey();
-				final boolean folderSortByChanged = (!(folderSortBy.equalsIgnoreCase(m_folderSortBy)));
-				final boolean folderSortDescend   = (folderSortByChanged ? m_folderSortDescend : (!m_folderSortDescend));
-				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(m_folderInfo.getBinderIdAsLong(), fc.getColumnSortKey(), (!folderSortDescend));
+				final boolean folderSortByChanged = (!(folderSortBy.equalsIgnoreCase(getFolderSortBy())));
+				final boolean folderSortDescend   = (folderSortByChanged ? getFolderSortDescend() : (!getFolderSortDescend()));
+				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(getFolderInfo().getBinderIdAsLong(), fc.getColumnSortKey(), (!folderSortDescend));
 				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -420,7 +390,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		/**
 		 * Get'er methods.
 		 * 
-		 * Overrides Header.getValue()
+		 * Overrides the Header.getValue() method.
 		 * 
 		 * @return
 		 */
@@ -444,7 +414,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		 * @param elem
 		 * @param event
 		 * 
-		 * Overrides Header.onBroserEvent()
+		 * Overrides the Header.onBroserEvent() method.
 		 */
 		@Override
 		public void onBrowserEvent(Context context, Element elem, NativeEvent event) {
@@ -463,64 +433,30 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * 
 	 * @param folderInfo
 	 * @param viewReady
+	 * @param folderStyles
 	 */
-	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady) {
+	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String folderStyles) {
 		// Initialize the super class...
-		super(viewReady);
+		super(folderInfo, viewReady, "vibe-dataTableFolder", true);
 
-		// ...store the parameters...
-		m_folderInfo = folderInfo;
-		
-		// ...initialize any other data members...
-		m_images = GwtTeaming.getDataTableImageBundle();
-		
-		// ...create the main content panels and initialize the
-		// ...composite...
-		constructCommonContent();
-		initWidget(m_mainPanel);
-
-		// ...and finally, asynchronously initialize the view.
-		loadPart1Async();
+		// ...and initialize any other data members.
+		initDataMembers(folderStyles);
 	}
 	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	final public BinderInfo         getFolderInfo()        {return m_folderInfo;                    }	// The binder being viewed.
-	final public boolean			getFolderSortDescend() {return m_folderSortDescend;             }	//
-	final public int                getFolderPageSize()    {return m_folderPageSize;                }	//
-	final public List<FolderColumn>	getFolderColumns()     {return m_folderColumnsList;             }	// Columns, in order, to be shown in the data table.
-	final public Long               getFolderId()          {return m_folderInfo.getBinderIdAsLong();}	//
-	final public String				getFolderSortBy()      {return m_folderSortBy;                  }	//
-	final public VibeFlowPanel      getFlowPanel()         {return m_flowPanel;                     }	// Flow panel holding the data table content (no toolbars, ...)
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	final public void setFolderSortDescend(boolean            folderSortDescend) {m_folderSortDescend = folderSortDescend;}
-	final public void setFolderPageSize(   int                folderPageSize)    {m_folderPageSize    = folderPageSize;   }
-	final public void setFolderColumns(    List<FolderColumn> folderColumnsList) {m_folderColumnsList = folderColumnsList;}
-	final public void setFolderSortBy(     String             folderSortBy)      {m_folderSortBy      = folderSortBy;     }
-
 	/*
-	 * Returns true if access to the column sizing dialog should be
-	 * included on the entry menu and false otherwise.
+	 * Get'er methods.
 	 */
-	@SuppressWarnings("unused")
-	private boolean allowColumnSizingImpl(CellTable<FolderRow> ct) {
-		// CallTable's allow variable column sizes.
-		return true;
-	}
+	private boolean             getFolderSortDescend()  {return getFolderDisplayData().getFolderSortDescend(); }
+	private int                 getFolderPageSize()     {return getFolderDisplayData().getFolderPageSize();    }
+	private Map<String, String> getFolderColumnWidths() {return getFolderDisplayData().getFolderColumnWidths();}
+	private String              getFolderSortBy()       {return getFolderDisplayData().getFolderSortBy();      }
 	
-	private boolean allowColumnSizingImpl(DataGrid<FolderRow> dg) {
-		// DataGrid's allow variable column sizes.
-		return true;
-	}
-	
+	/*
+	 * Set'er methods.
+	 */
+	private void setFolderSortBy(     String  folderSortBy)      {getFolderDisplayData().setFolderSortBy(folderSortBy);          }
+	private void setFolderSortDescend(boolean folderSortDescend) {getFolderDisplayData().setFolderSortDescend(folderSortDescend);}
+
 	/*
 	 * Adds a column to manage pinning entries.
 	 */
@@ -540,7 +476,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				return
 					new EntryPinInfo(
 						fr.getPinned(),
-						m_folderInfo.getBinderIdAsLong(),
+						getFolderInfo().getBinderIdAsLong(),
 						fr.getEntryId());
 			}
 		};
@@ -593,9 +529,10 @@ public abstract class DataTableFolderViewBase extends ViewBase
 				}
 
 				// If we have an entry menu...
-				if (null != m_entryMenuPanel) {
+				EntryMenuPanel emp = getEntryMenuPanel();
+				if (null != emp) {
 					// ...tell it to update the state of the delete and purge.
-					m_entryMenuPanel.setDeleteAndPurgeState(checked);
+					emp.setDeleteAndPurgeState(checked);
 				}
 			};
 		});
@@ -633,79 +570,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * false otherwise.
 	 */
 	private boolean canPinEntries() {
-		return (FolderType.DISCUSSION == m_folderInfo.getFolderType());
+		return (FolderType.DISCUSSION == getFolderInfo().getFolderType());
 	}
 	
-	/*
-	 * Checks how many items are ready and once everything is, calls
-	 * super class' viewReady() method.
-	 */
-	private void checkReadyness() {
-		// If everything's ready...
-		int toolPanels = m_toolPanels.size();
-		if ((toolPanels + 1) == m_readyComponents) {	// Count of tool panels plus 1 for the view itself.
-			// ...tell the super class.
-			m_viewReady = true;
-			super.viewReady();
-		}
-	}
-	
-	/*
-	 * Creates the content panels, ... common to all data table folder
-	 * view implementations.
-	 */
-	private void constructCommonContent() {
-		// Initialize various data members of the class...
-		initDataMembers();
-		
-		// ...create the main panel for the content...
-		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName("vibe-folderViewBase vibe-dataTableFolderViewBase vibe-verticalScroll");
-
-		// ...set the sizing adjustments the account for the padding in
-		// ...the vibe-folderViewBase style...
-		final int padAdjust = (2 * GwtConstants.PANEL_PADDING);
-		setContentHeightAdjust(getContentHeightAdjust() - padAdjust);
-		setContentWidthAdjust( getContentWidthAdjust()  - padAdjust);
-
-		// ...create a vertical panel to holds the layout that flows
-		// ...down the view...
-		m_verticalPanel = new VibeVerticalPanel();
-		m_verticalPanel.addStyleName("vibe-dataTableFolderVerticalPanelBase");
-	
-		// ...create a flow panel for the implementing class to put
-		// ...its content...
-		m_flowPanel = new VibeFlowPanel();
-		m_flowPanel.addStyleName("vibe-dataTableFolderFlowPanelBase");
-		
-		// ...and finally, tie everything together.
-		m_verticalPanel.add(m_flowPanel);
-		m_verticalPanel.addBottomPad();
-		m_mainPanel.add(m_verticalPanel);
-	}
-
-	/**
-	 * Abstract methods.
-	 * 
-	 * Called to allow the implementing class to complete the
-	 * construction of the view.
-	 */
-	public abstract void constructView();
-	public abstract void resetView();
-
-	/*
-	 * Asynchronously tells the implementing class to construct itself.
-	 */
-	private void constructViewAsync() {
-		ScheduledCommand doConstructView = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				constructView();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doConstructView);
-	}
-
 	/*
 	 * Returns a List<FolderColumn> we can use to run the column sizing
 	 * dialog.
@@ -736,6 +603,31 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		
 		// ...and return the List<FolderColumn>.
 		return reply;
+	}
+
+	/*
+	 * Scan the defined tool panels for an entry menu panel and returns
+	 * it.
+	 */
+	private EntryMenuPanel getEntryMenuPanel() {
+		for (ToolPanelBase tpb:  getToolPanels()) {
+			if (tpb instanceof EntryMenuPanel) {
+				return ((EntryMenuPanel) tpb);
+			}
+		}
+		return null;
+	}
+	
+	/*
+	 * Scan the defined tool panels for a footer panel and returns it.
+	 */
+	private FooterPanel getFooterPanel() {
+		for (ToolPanelBase tpb:  getToolPanels()) {
+			if (tpb instanceof FooterPanel) {
+				return ((FooterPanel) tpb);
+			}
+		}
+		return null;
 	}
 	
 	/*
@@ -791,16 +683,16 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 *    column width were extracted from the implementation of
 	 *    folder_view_common2.jsp.
 	 */
-	private void initDataMembers() {
-		// Allocate a List<ToolPanelBase> to track the tool panels
-		// created for the view.
-		m_toolPanels = new ArrayList<ToolPanelBase>();
+	private void initDataMembers(String folderStyles) {
+		// Store the parameters...
+		m_folderStyles = folderStyles;
 
 		// Initialize a map of the ColumnWidth's used in the data
 		// table...
 		m_columnWidths = new HashMap<String, ColumnWidth>();
 
 		// ...initialize the remaining data members...
+		m_images      = GwtTeaming.getDataTableImageBundle();
 		m_fixedLayout = isFixedLayoutImpl(m_dataTable);
 		if (m_fixedLayout)
 		     initDataMembersFixed();
@@ -1002,9 +894,9 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		    setColumnWidth(               cName, column      );
 
 		    // Is this the column we're sorted on?
-		    if (fc.getColumnSortKey().equalsIgnoreCase(m_folderSortBy)) {
+		    if (fc.getColumnSortKey().equalsIgnoreCase(getFolderSortBy())) {
 		    	// Yes!  Tell the data table about it.
-				csl.push(new ColumnSortInfo(column, (!m_folderSortDescend)));
+				csl.push(new ColumnSortInfo(column, (!getFolderSortDescend())));
 		    }
 		}
 	}
@@ -1025,253 +917,25 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 	
 	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the BreadCrumbPanel.
+	 * Asynchronously loads the column information for the folder.
 	 */
-	private void loadPart1Async() {
+	private void loadFolderColumnsAsync() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart1Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the BreadCrumbPanel.
-	 */
-	private void loadPart1Now() {
-		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpp) {
-				m_toolPanels.add(tpp);
-				m_verticalPanel.insert(tpp, BREADCRUMB_PANEL_INDEX);
-				loadPart2Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart2Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart2Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart2Now() {
-		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, ACCESSORY_PANEL_INDEX);
-				loadPart3Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart3Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart3Now();
+				loadFolderColumnsNow();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
 	}
 
 	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
+	 * Synchronously loads the column information for the folder.
 	 */
-	private void loadPart3Now() {
-		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, DESCRIPTION_PANEL_INDEX);
-				loadPart4Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart4Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart4Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart4Now() {
-		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, FILTER_PANEL_INDEX);
-				loadPart5Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart5Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart5Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart5Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, allowColumnSizingImpl(m_dataTable), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_entryMenuPanel = ((EntryMenuPanel) tpb);
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, ENTRY_MENU_PANEL_INDEX);
-				loadPart6Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart6Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart6Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart6Now() {
-		FooterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_footerPanel = ((FooterPanel) tpb);
-				m_toolPanels.add(tpb);
-				m_verticalPanel.insert(tpb, FOOTER_PANEL_INDEX);
-				loadPart7Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the column information for the folder.
-	 */
-	private void loadPart7Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart7Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the column information for the folder.
-	 */
-	private void loadPart7Now() {
-		final Long folderId = m_folderInfo.getBinderIdAsLong();
+	private void loadFolderColumnsNow() {
+		final Long folderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderColumnsCmd(folderId, m_folderInfo.getFolderType()),
+				new GetFolderColumnsCmd(folderId, getFolderInfo().getFolderType()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1283,74 +947,10 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Store the folder columns and continue loading.
+				// Store the folder columns and complete the population of the view.
 				FolderColumnsRpcResponseData responseData = ((FolderColumnsRpcResponseData) response.getResponseData());
 				m_folderColumnsList = responseData.getFolderColumns();
-				loadPart8Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart8Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart8Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart8Now() {
-		final Long folderId = m_folderInfo.getBinderIdAsLong();
-		GwtClientHelper.executeCommand(
-				new GetFolderDisplayDataCmd(folderId),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetFolderDisplayData(),
-					folderId);
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the core folder display data.
-				FolderDisplayDataRpcResponseData responseData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
-				m_folderSortBy      = responseData.getFolderSortBy();
-				m_folderSortDescend = responseData.getFolderSortDescend();
-				m_folderPageSize    = responseData.getFolderPageSize();
-
-				// Did we get any column width overrides?
-				Map<String, String> widths = responseData.getFolderColumnWidths();
-				if ((null != widths) && (!(widths.isEmpty()))) {
-					// Yes!  Scan them...
-					for (String cName:  widths.keySet()) {
-						try {
-							// ...parsing the width string...
-							String cwS = widths.get(cName);
-							m_columnWidths.put(cName, ColumnWidth.parseWidthStyle(cwS));
-						}
-						catch (Exception e) {
-							// On any exception, simply ignore the override.
-						}
-					}
-				}
-				
-				// Finally, tell the implementing class to construct
-				// itself.
-				constructViewAsync();
+				populateViewAsync();
 			}
 		});
 	}
@@ -1366,7 +966,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
 		// Is the event targeted to this folder?
 		final Long eventBinderId = event.getBinderId();
-		if (eventBinderId.equals(m_folderInfo.getBinderIdAsLong())) {
+		if (eventBinderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Asynchronously fire the corresponding reply event
 			// with the contributor IDs.
 			ScheduledCommand doReply = new ScheduledCommand() {
@@ -1393,7 +993,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Asynchronously delete the selected entries.
 			ScheduledCommand doDelete = new ScheduledCommand() {
 				@Override
@@ -1415,7 +1015,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			// Yes!  Is the user sure they want to delete them?
 			if (Window.confirm(m_messages.vibeDataTable_Confirm_Delete())) {
 				// Yes!  Delete them from the folder.
-				DeleteFolderEntriesCmd cmd = new DeleteFolderEntriesCmd(m_folderInfo.getBinderIdAsLong(), selectedIds);
+				DeleteFolderEntriesCmd cmd = new DeleteFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -1438,7 +1038,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/**
 	 * Called when the data table is attached.
 	 * 
-	 * Overrides Widget.onAttach()
+	 * Overrides the Widget.onAttach() method.
 	 */
 	@Override
 	public void onAttach() {
@@ -1450,7 +1050,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	/**
 	 * Called when the data table is detached.
 	 * 
-	 * Overrides Widget.onDetach()
+	 * Overrides the Widget.onDetach() method.
 	 */
 	@Override
 	public void onDetach() {
@@ -1471,7 +1071,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	public void onInvokeColumnResizer(InvokeColumnResizerEvent event) {
 		// Is the event targeted to this folder?
 		Long evenBinderId = event.getBinderId();
-		if (evenBinderId.equals(m_folderInfo.getBinderIdAsLong())) {
+		if (evenBinderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the column sizing dialog on the folder.
 			// Have we instantiated a size columns dialog yet?
 			if (null == m_sizeColumnsDlg) {
@@ -1517,7 +1117,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	public void onInvokeDropBox(InvokeDropBoxEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the add file dialog on the folder.
 			// Have we instantiated an add files dialog yet?
 			if (null == m_addFilesDlg) {
@@ -1563,7 +1163,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_folderInfo.getBinderIdAsLong())) {
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Asynchronously purge the selected entries.
 			ScheduledCommand doPurge = new ScheduledCommand() {
 				@Override
@@ -1585,7 +1185,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			// Yes!  Is the user sure they want to purge them?
 			if (Window.confirm(m_messages.vibeDataTable_Confirm_Purge())) {
 				// Yes!  Purge them from the folder.
-				PurgeFolderEntriesCmd cmd = new PurgeFolderEntriesCmd(m_folderInfo.getBinderIdAsLong(), selectedIds);
+				PurgeFolderEntriesCmd cmd = new PurgeFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -1623,7 +1223,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	 * Synchronously sets the size of the data table based on its
 	 * position in the view.
 	 * 
-	 * Overrides ViewBase.onResize()
+	 * Overrides the ViewBase.onResize() method.
 	 */
 	@Override
 	public void onResize() {
@@ -1643,12 +1243,14 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	}
 	
 	private void onResizeImpl(DataGrid<FolderRow> dg) {
-		int viewHeight		= getOffsetHeight();												// Height of the view.
-		int viewTop			= getAbsoluteTop();													// Absolute top of the view.		
-		int dtTop			= (dg.getAbsoluteTop() - viewTop);									// Top of the data table relative to the top of the view.		
-		int dtPagerHeight	= m_dataTablePager.getOffsetHeight();								// Height of the data table's pager.
-		int fpHeight		= ((null == m_footerPanel) ? 0 : m_footerPanel.getOffsetHeight());	// Height of the view's footer panel.
-		int totalBelow		= (dtPagerHeight + fpHeight);										// Total space on the page below the data table.
+		FooterPanel fp = getFooterPanel();
+		
+		int viewHeight		= getOffsetHeight();							// Height of the view.
+		int viewTop			= getAbsoluteTop();								// Absolute top of the view.		
+		int dtTop			= (dg.getAbsoluteTop() - viewTop);				// Top of the data table relative to the top of the view.		
+		int dtPagerHeight	= m_dataTablePager.getOffsetHeight();			// Height of the data table's pager.
+		int fpHeight		= ((null == fp) ? 0 : fp.getOffsetHeight());	// Height of the view's footer panel.
+		int totalBelow		= (dtPagerHeight + fpHeight);					// Total space on the page below the data table.
 
 		// What's the optimum height for the data table so we don't get
 		// a vertical scroll bar?
@@ -1662,27 +1264,66 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		// Set the height of the data table.
 		dg.setHeight(dataTableHeight + "px");
 	}
-	
+
 	/**
-	 * Called from the super class to populate the content of this
-	 * folder view.
+	 * Completes populating the data table view specific content.
 	 */
-	public void populateContent(String styleName) {		
+	final public void populateContent() {
+		// Did we get any column width overrides?
+		Map<String, String> widths = getFolderColumnWidths();
+		if ((null != widths) && (!(widths.isEmpty()))) {
+			// Yes!  Scan them...
+			for (String cName:  widths.keySet()) {
+				try {
+					// ...parsing the width string...
+					String cwS = widths.get(cName);
+					m_columnWidths.put(cName, ColumnWidth.parseWidthStyle(cwS));
+				}
+				catch (Exception e) {
+					// On any exception, simply ignore the override.
+				}
+			}
+		}
+		
+		// Asynchronously load the remaining data table specific
+		// components of a folder view.
+		loadFolderColumnsAsync();
+	}
+
+	/*
+	 * Asynchronously populates the data table view given the available
+	 * data.
+	 */
+	private void populateViewAsync() {
+		Scheduler.ScheduledCommand doPopulate = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateView();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
+	}
+	
+	/*
+	 * Synchronously populates the data table view given the available
+	 * data.
+	 */
+	private void populateView() {		
 		// If we're supposed to dump the display data we're building this on...
 		VibeVerticalPanel vp;
 		if (DUMP_DISPLAY_DATA) {
 			// ...dump it.
 			vp = new VibeVerticalPanel();
 			vp.add(new HTML("<br/>- - - - - Start:  Folder Display Data - - - - -<br/><br/>"));
-			vp.add(new InlineLabel("Sort by:  "         + m_folderSortBy)     );
-			vp.add(new InlineLabel("Sort descending:  " + m_folderSortDescend));
-			vp.add(new InlineLabel("Page size:  "       + m_folderPageSize)   );
+			vp.add(new InlineLabel("Sort by:  "         + getFolderSortBy())     );
+			vp.add(new InlineLabel("Sort descending:  " + getFolderSortDescend()));
+			vp.add(new InlineLabel("Page size:  "       + getFolderPageSize())   );
 			vp.add(new HTML("<br/>"));
 			for (FolderColumn fc:  m_folderColumnsList) {
 				vp.add(new InlineLabel(fc.getColumnEleName() + "='" + fc.getColumnTitle() + "'"));
 			}
 			vp.add(new HTML("<br/>- - - - - End:  Folder Display Data - - - - -<br/>"));
-			m_flowPanel.add(vp);
+			getFlowPanel().add(vp);
 		}
 		
 		// Create a key provider that will provide a unique key for
@@ -1690,11 +1331,11 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		FolderRowKeyProvider keyProvider = new FolderRowKeyProvider();
 		
 		// Create the table.
-		m_dataTable = new VibeDataGrid<FolderRow>(m_folderPageSize, keyProvider);
+		m_dataTable = new VibeDataGrid<FolderRow>(getFolderPageSize(), keyProvider);
 		setDataTableWidthImpl(m_dataTable);
 		m_dataTable.addStyleName("vibe-dataTableFolderDataTableBase");
-		if (GwtClientHelper.hasString(styleName)) {
-			m_dataTable.addStyleName(styleName);
+		if (GwtClientHelper.hasString(m_folderStyles)) {
+			m_dataTable.addStyleName(m_folderStyles);
 		}
 		m_dataTable.setRowStyles(new RowStyles<FolderRow>() {
 			@Override
@@ -1735,17 +1376,12 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	    vp.add(m_dataTable);
 	    vp.add(m_dataTablePager);
 	    vp.setCellHorizontalAlignment(m_dataTablePager, HasHorizontalAlignment.ALIGN_CENTER);
-		m_flowPanel.add(vp);
+		getFlowPanel().add(vp);
 		
 		// Finally, ensure the table gets sized correctly.
 		onResizeAsync();
 	}
 	
-	public void populateContent() {
-		// Always use the initial form of the method.
-		populateContent(null);
-	}
-
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
@@ -1768,22 +1404,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		}
 	}
 
-	/**
-	 * Resets the content for the implementing class.
-	 */
-	public void resetContent() {
-		// Clear the flow panel's content...
-		m_flowPanel.clear();
-		
-		// ...tell the tool panels to perform any resetting they need
-		// ...to do...
-		for (ToolPanelBase tpb:  m_toolPanels) {
-			tpb.resetPanel();
-		}
-		
-		// ...and reset anything else that's necessary.
-	}
-
 	/*
 	 * Asynchronously resets the view.
 	 */
@@ -1791,8 +1411,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 		ScheduledCommand doResetView = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				m_readyComponents = 0;
-				m_viewReady       = false;
 				resetView();
 			}
 		};
@@ -1848,8 +1466,8 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private void showAddFilesDlgNow() {
 		AddFilesDlg.initAndShow(
 			m_addFilesDlg,
-			m_folderInfo,
-			m_entryMenuPanel.getAddFilesMenuItem());
+			getFolderInfo(),
+			getEntryMenuPanel().getAddFilesMenuItem());
 	}
 	
 	/*
@@ -1858,7 +1476,7 @@ public abstract class DataTableFolderViewBase extends ViewBase
 	private void showSizeColumnsDlgNow() {
 		SizeColumnsDlg.initAndShow(
 			m_sizeColumnsDlg,
-			m_folderInfo,
+			getFolderInfo(),
 			getColumnsForSizing(),
 			m_columnWidths,
 			m_defaultColumnWidth,
@@ -1867,21 +1485,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			m_fixedLayout);
 	}
 	
-	/**
-	 * Implements the ToolPanelReady.toolPanelReady() method.
-	 */
-	@Override
-	public void toolPanelReady(ToolPanelBase toolPanel) {
-		if (!m_viewReady) {
-			m_readyComponents += 1;
-			checkReadyness();
-		}
-		
-		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
-			Window.alert("DataTableFolderViewBase.toolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
-		}
-	}
-
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
@@ -1891,22 +1494,6 @@ public abstract class DataTableFolderViewBase extends ViewBase
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
-	}
-	
-	/**
-	 * Called by classes that extend this base class so that it can
-	 * inform the world that its view is ready to go.
-	 */
-	@Override
-	public void viewReady() {
-		if (!m_viewReady) {
-			m_readyComponents += 1;
-			checkReadyness();
-		}
-		
-		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
-			Window.alert("DataTableFolderViewBase.viewReady( *Internal Error* ):  Unexpected call to viewReady() method.");
 		}
 	}
 }
