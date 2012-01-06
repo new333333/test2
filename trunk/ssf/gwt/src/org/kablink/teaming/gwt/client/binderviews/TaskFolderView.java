@@ -59,7 +59,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class TaskFolderView extends FolderViewBase
-	implements ToolPanelReady,
+	implements
 	// Event handlers implemented by this class.
 		DeleteSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler
@@ -199,6 +199,7 @@ public class TaskFolderView extends FolderViewBase
 	private void populateViewNow() {
 //!		...this needs to be implemented...
 		getFlowPanel().add(new InlineLabel("TaskFolderView:  ...this needs to be implemented..."));
+		viewReady();
 	}
 	
 	/**
