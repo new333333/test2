@@ -36,10 +36,10 @@ package org.kablink.teaming.gwt.client.whatsnew;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ViewAllEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewUnreadEntriesEvent;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
 
-import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This popup menu is used to display the "show all" and "show unread" actions.
@@ -48,8 +48,8 @@ import com.google.gwt.user.client.ui.PopupPanel;
  */
 public class ShowSettingPopupMenu extends PopupMenu
 {
-	private PopupMenuItem m_showAllMenuItem;
-	private PopupMenuItem m_showUnreadMenuItem;
+	private VibeMenuItem m_showAllMenuItem;
+	private VibeMenuItem m_showUnreadMenuItem;
 	
 	/**
 	 * 
@@ -81,26 +81,5 @@ public class ShowSettingPopupMenu extends PopupMenu
 			setMenuItemCheckedState( m_showAllMenuItem, false );
 			setMenuItemCheckedState( m_showUnreadMenuItem, true );
 		}
-	}
-
-	
-	/**
-	 * Show this popup menu.
-	 */
-	public void showMenu( final int x, final int y )
-	{
-		PopupPanel.PositionCallback posCallback;
-
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				setPopupPosition( x-offsetWidth, y );
-			}
-		};
-		setPopupPositionAndShow( posCallback );
 	}
 }

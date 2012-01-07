@@ -2727,7 +2727,7 @@ top:100px;
 	color: #FFFFFF;
 	cursor: pointer;
 	line-height: 1.1em; 
-	padding: 0.4em 0.75em 0.5em; 
+	padding-left: 0.4em; 
 	white-space: nowrap;
 }
 

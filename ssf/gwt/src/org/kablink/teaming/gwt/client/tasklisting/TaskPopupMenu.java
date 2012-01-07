@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.TaskSetStatusEvent;
 import org.kablink.teaming.gwt.client.event.TaskViewEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 
@@ -71,7 +72,7 @@ public class TaskPopupMenu extends PopupMenu
 		TaskViewEvent.Handler
 {
 	private List<HandlerRegistration>	m_registeredEventHandlers;	//
-	private List<PopupMenuItem>			m_menuItems;				//
+	private List<VibeMenuItem>			m_menuItems;				//
 	private List<TaskMenuOption>		m_menuOptions;				//
 	private TaskListItem				m_task;						//
 	private TaskListing					m_taskListing;				//
@@ -118,7 +119,7 @@ public class TaskPopupMenu extends PopupMenu
 			}});
 		
 		// ...and add the menu items.
-		m_menuItems = new ArrayList<PopupMenuItem>();
+		m_menuItems = new ArrayList<VibeMenuItem>();
 		for (TaskMenuOption po:  m_menuOptions) {
 			if (po.isSeparator()) {
 				addSeparator();
@@ -136,7 +137,7 @@ public class TaskPopupMenu extends PopupMenu
 					Window.alert(GwtTeaming.getMessages().taskInternalError_UnexpectedEvent(m_taskEventEnum.toString()));
 					continue;
 				}
-				PopupMenuItem pmi =
+				VibeMenuItem pmi =
 					addMenuItem(
 						taskEvent,
 						po.buildImage(),
@@ -280,8 +281,8 @@ public class TaskPopupMenu extends PopupMenu
 		m_menuPartner = menuPartner;
 		
 		// ...make sure all the menu items are visible...
-		for (PopupMenuItem mi:  m_menuItems) {
-			setMenuItemVisibility(mi, true);
+		for (VibeMenuItem mi:  m_menuItems) {
+			mi.setVisible( true );
 		}
 
 		// ...and allow the popup to be closed if the parter item is
@@ -289,7 +290,7 @@ public class TaskPopupMenu extends PopupMenu
 		addAutoHidePartner(m_menuPartner.getElement());
 		
 		// ...and position and show the popup.
-		showRelativeTo(menuPartner);
+		showRelativeToTarget(menuPartner);
 	}
 	
 	public void showTaskPopupMenu(Widget menuPartner) {
