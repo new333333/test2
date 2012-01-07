@@ -33,26 +33,22 @@
 
 package org.kablink.teaming.gwt.client.menu;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.MenuItemSeparator;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.UIObject;
 
 
 /**
@@ -63,375 +59,76 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class PopupMenu extends TeamingPopupPanel
 {
-	private FlowPanel m_mainPanel = null;
-	private FlexTable m_menuItemsTable = null;
+	private VibeMenuBar m_menu;
 	
 
-	/**
-	 *
-	 */
-	public class PopupMenuItem extends Composite
-		implements MouseUpHandler, MouseOverHandler, MouseOutHandler
-	{
-		private VibeEventBase<?> m_event;
-		private FlowPanel m_mainPanel;
-		private Image m_checkedImg;				// Image used to put a checkmark next to the menu item.
-		private Image m_checkedSpacerImg;		// Image used as a spacer if this menu item does not used the checkmark image
-		private Image m_img;					// Image used with this menu item.
-		private Image m_spacerImg;				// Image used as a spacer if this menu item does not use an image
-		
-		/**
-		 */
-		public PopupMenuItem( VibeEventBase<?> event, Image img, String text )
-		{
-			InlineLabel label;
-			ImageResource imageResource;
-			
-			m_event = event;
-			
-			m_mainPanel = new FlowPanel();
-			m_mainPanel.addStyleName( "popupMenuItem" );
-
-			// Create a checkbox image in case we need it.
-			imageResource = GwtTeaming.getImageBundle().check12();
-			m_checkedImg = new Image( imageResource );
-			m_checkedImg.setVisible( false );
-			m_checkedImg.getElement().setAttribute( "align", "absmiddle" );
-			m_mainPanel.add( m_checkedImg );
-
-			// Create some spacer images.
-			imageResource = GwtTeaming.getImageBundle().spacer1px();
-			m_checkedSpacerImg = new Image( imageResource );
-			m_checkedSpacerImg.setWidth( "12px" );
-			m_checkedSpacerImg.setVisible( false );
-			m_mainPanel.add( m_checkedSpacerImg );
-			
-			m_spacerImg = new Image( imageResource );
-			m_spacerImg.setWidth( "12px" );
-			m_spacerImg.setVisible( false );
-			
-			// Do we have an image?
-			m_img = img;
-			if ( img != null )
-				m_mainPanel.add( img );
-			else
-				m_mainPanel.add( m_spacerImg );
-			
-			label = new InlineLabel( text );
-			m_mainPanel.add( label );
-			
-			// Add a MouseUp event handler
-			addDomHandler( this, MouseUpEvent.getType() );
-			
-			// Add a mouse over/out event handlers
-			addDomHandler( this, MouseOverEvent.getType() );
-			addDomHandler( this, MouseOutEvent.getType() );
-			
-			initWidget( m_mainPanel );
-		}
-		
-		/**
-		 * Add the styles needed when the mouse is over this menu item.
-		 */
-		private void addMouseOverStyles()
-		{
-			m_mainPanel.addStyleName( "popupMenuItem_Hover" );
-		}
-		
-		
-		/**
-		 *
-		 */
-		public void adjustSpacingForChecked( boolean spacingNeeded )
-		{
-			m_checkedSpacerImg.setVisible( false );
-			
-			// Do we need to allow for spacing for a check mark?
-			if ( spacingNeeded )
-			{
-				// Yes
-				if ( m_checkedImg.isVisible() == false )
-					m_checkedSpacerImg.setVisible( true );
-			}
-			else
-				m_checkedSpacerImg.setVisible( false );
-		}
-		
-		/**
-		 * If this menu item does not have an image then show the spacer image.
-		 */
-		public void adjustSpacingForImage()
-		{
-			// Do we have an image?
-			if ( m_img == null )
-			{
-				// No, show the spacer image.
-				m_spacerImg.setVisible( true );
-			}
-		}
-		
-		
-		/**
-		 * 
-		 */
-		public VibeEventBase<?> getEvent()
-		{
-			return m_event;
-		}
-		
-		
-		/**
-		 * This method gets called when this menu item is selected.
-		 */
-		private void handleMenuItemSelected()
-		{
-			removeMouseOverStyles();
-			
-			// Close the menu we are a part of.
-			menuItemSelected( this );
-			
-			fireEvent();
-		}
-		
-		
-		/*
-		 */
-		private void fireEvent()
-		{
-			if ( m_event != null )
-			{
-				GwtTeaming.fireEvent( m_event );
-			}
-		}
-		
-		/**
-		 * Does this menu item have a check mark by it?
-		 */
-		public boolean isChecked()
-		{
-			return m_checkedImg.isVisible();
-		}
-		
-		
-		/**
-		 * This gets called when the user clicks on this menu item.
-		 */
-		public void onMouseUp( MouseUpEvent event )
-		{
-			ScheduledCommand cmd = new ScheduledCommand()
-			{
-				/**
-				 * 
-				 */
-				public void execute()
-				{
-					handleMenuItemSelected();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-		
-		
-		/**
-		 * 
-		 */
-		public void onMouseOut( MouseOutEvent event )
-		{
-			// Remove the style used when the mouse is over this menu item.
-			removeMouseOverStyles();
-		}
-
-
-		/**
-		 * 
-		 */
-		public void onMouseOver( MouseOverEvent event )
-		{
-			// Add the style used when the mouse is over this menu item.
-			addMouseOverStyles();
-		}
-
-
-		/**
-		 * Remove the styles used when the mouse is over this menu item.
-		 */
-		private void removeMouseOverStyles()
-		{
-			m_mainPanel.removeStyleName( "popupMenuItem_Hover" );
-		}
-		
-		
-		/**
-		 * Set the checked state of this menu item.
-		 */
-		public void setCheckedState( boolean checked )
-		{
-			m_checkedImg.setVisible( checked );
-		}
-	}
-
-	
 	/**
 	 * 
 	 */
 	public PopupMenu( boolean autoHide, boolean modal )
 	{
 		super( autoHide, modal );
-
-		FlowPanel topPanel;
-		FlowPanel bottomPanel;
 		
-		// Tell the menu to 'roll down' when opening. 
-		GwtClientHelper.rollDownPopup( this );
+		// We need to replace gwt-PopupPanel style name because it is causing an empty
+		// box to be displayed because initially this control's width and height are 0.
+		setStylePrimaryName( "popupMenu" );
 		
-		// Override the style used for PopupPanel
-		setStyleName( "popupMenu" );
-
-		m_mainPanel = new FlowPanel();
+		m_menu = new VibeMenuBar( true, "popupMenu" );
 		
-		// Create a top panel.
-		topPanel = new FlowPanel();
-		topPanel.addStyleName( "popupMenuTopPanel" );
-		m_mainPanel.add( topPanel );
-		
-		// Create a table where the menu items will live.
-		m_menuItemsTable = new FlexTable();
-		m_menuItemsTable.setCellPadding( 0 );
-		m_menuItemsTable.setCellSpacing( 0 );
-		m_mainPanel.add( m_menuItemsTable );
-		
-		// Create a bottom panel.
-		bottomPanel = new FlowPanel();
-		bottomPanel.addStyleName( "popupMenuBottomPanel" );
-		m_mainPanel.add( bottomPanel );
-		
-		setWidget( m_mainPanel );
+		setWidget( m_menu );
 	}
 	
-	
+
 	/**
-	 * Add a menu item to this popup menu
 	 * 
-	 * @param event
-	 * @param img
-	 * @param text
 	 */
-	public PopupMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
+	public VibeMenuItem addMenuItem( final VibeEventBase<?> event, Image img, String text )
 	{
-		PopupMenuItem menuItem;
-		int row;
+		VibeMenuItem menuItem;
+		Command cmd;
 
-	    menuItem = new PopupMenuItem( event, img, text );
-		
-		// Add the menu item.
-		row = m_menuItemsTable.getRowCount();
-		m_menuItemsTable.setWidget( row, 0, menuItem );
-
-		// Does this menu item have an image?
-		if ( img != null )
+		cmd = new Command()
 		{
-			int i;
-			
-			// Yes
-		    img.addStyleName( "popupMenuItemImg" );
-			img.getElement().setAttribute( "align", "absmiddle" );
-
-			// We need to have all menu items that don't have an image, to leave room as if they had an image.
-			for (i = 0; i < m_menuItemsTable.getRowCount(); ++i)
+			@Override
+			public void execute()
 			{
-				Widget widget;
+				// Close this menu.
+				hide();
 				
-				widget = m_menuItemsTable.getWidget( i, 0 );
-				if ( widget instanceof PopupMenuItem )
-				{
-					PopupMenuItem nextMenuItem;
-
-					nextMenuItem = (PopupMenuItem) widget;
-					nextMenuItem.adjustSpacingForImage();
-				}
+				GwtTeaming.fireEvent( event );
 			}
-		}
-		
+		};
+
+		menuItem = new VibeMenuItem( cmd, event, img, text, "popupMenuItem" );
+		m_menu.addItem( menuItem );
+
 		return menuItem;
 	}
-
-	/**
-	 * Add a separator to this popup menu.
-	 */
-	public void addSeparator()
-	{
-		FlowPanel separatorPanel;
-		int row;
-		
-		separatorPanel = new FlowPanel();
-		separatorPanel.addStyleName( "popupMenuItemSeparator" );
-		
-		row = m_menuItemsTable.getRowCount();
-		m_menuItemsTable.setWidget( row, 0, separatorPanel );
-	}
 	
-
 	/**
 	 * 
 	 */
-	public void menuItemSelected( PopupMenuItem menuItem )
+	public MenuItemSeparator addSeparator()
 	{
-		// Close this menu.
-		hide();
+		return m_menu.addSeparator();
+	}
+
+	/**
+	 * Remove the given menu item from the menu.
+	 */
+	public void removeMenuItem( VibeMenuItem menuItem )
+	{
+		m_menu.removeItem( menuItem );
 	}
 	
-	
 	/**
-	 * Set the checked state of the given menu item.
+	 * 
 	 */
-	public void setMenuItemCheckedState( PopupMenuItem menuItem, boolean checked )
+	public void setMenuItemCheckedState( VibeMenuItem menuItem, boolean checked )
 	{
-		int i;
-		boolean areChecked;
-		
 		menuItem.setCheckedState( checked );
-
-		// See if there are any menu items that are checked.
-		areChecked = checked;
-		for (i = 0; i < m_menuItemsTable.getRowCount() && areChecked == false; ++i)
-		{
-			Widget widget;
-			
-			widget = m_menuItemsTable.getWidget( i, 0 );
-			if ( widget instanceof PopupMenuItem )
-			{
-				PopupMenuItem nextMenuItem;
-
-				nextMenuItem = (PopupMenuItem) widget;
-				if ( nextMenuItem.isChecked() )
-					areChecked = true;
-			}
-		}
-		
-		// Go through all the menu items and adjust the spacing.
-		for (i = 0; i < m_menuItemsTable.getRowCount(); ++i)
-		{
-			Widget widget;
-			
-			widget = m_menuItemsTable.getWidget( i, 0 );
-			if ( widget instanceof PopupMenuItem )
-			{
-				PopupMenuItem nextMenuItem;
-
-				nextMenuItem = (PopupMenuItem) widget;
-				nextMenuItem.adjustSpacingForChecked( areChecked );
-			}
-		}
 	}
-	
-	/**
-	 * Set the visibility of the given menu item.
-	 */
-	public void setMenuItemVisibility( PopupMenuItem menuItem, boolean visible )
-	{
-		menuItem.setVisible( visible );
-	}
-	
+
 	/**
 	 * Shows the popup menu.
 	 */
@@ -444,4 +141,61 @@ public class PopupMenu extends TeamingPopupPanel
 		// ...duration of the popup.
 		GwtClientHelper.scrollUIForPopup(this);
 	}	
+
+	/**
+	 * 
+	 */
+	public void showRelativeToTarget( UIObject target )
+	{
+		int x;
+		int y;
+		
+		x = target.getAbsoluteLeft();
+		y = target.getAbsoluteTop();
+		
+		showMenu( x, y );
+	}
+	
+	/**
+	 * 
+	 */
+	public void showMenu( final int x, final int y )
+	{
+		PopupPanel.PositionCallback posCallback;
+
+		// Create a callback that will be called when this menu is shown.
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				int left;
+				int maxWidth;
+				List<MenuItem> menuItems;
+				
+				// Figure out how wide the menu is.  For some unknown reason calling
+				// m_menu.getAbsoluteWidth() doesn't work.
+				maxWidth = 0;
+				menuItems = m_menu.getItems();
+				for (MenuItem menuItem : menuItems)
+				{
+					int width;
+					
+					width = menuItem.getOffsetWidth();
+					if ( width > maxWidth )
+						maxWidth = width;
+				}
+				
+				if ( (x + maxWidth) > Window.getClientWidth() )
+					left = Window.getClientWidth() - maxWidth - 5;
+				else
+					left = x;
+				
+				setPopupPosition( left, y );
+			}
+		};
+		setPopupPositionAndShow( posCallback );
+	}
 }

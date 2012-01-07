@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -208,6 +210,14 @@ public class VibeMenuBar extends MenuBar {
 		super.clearItems();
 		m_itemCount    = 0;
 		m_spacerNeeded = false;
+	}
+	
+	/**
+	 * 
+	 */
+	public List<MenuItem> getItems()
+	{
+		return super.getItems();
 	}
 	
 	@Override

@@ -40,9 +40,9 @@ import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
 import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This popup menu is used to display the actions in the masthead, such as help, personal prefs, resource library.
@@ -61,7 +60,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  */
 public class MastheadPopupMenu extends PopupMenu
 {
-	PopupMenuItem m_adminMenuItem;
+	VibeMenuItem m_adminMenuItem;
 	
 	/**
 	 * 
@@ -116,24 +115,6 @@ public class MastheadPopupMenu extends PopupMenu
 	
 
 	/**
-	 * 
-	 * @param event
-	 * @param img
-	 * @param text
-	 * 
-	 * @return
-	 */
-	@Override
-	public PopupMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
-	{
-		PopupMenuItem menuItem;
-
-	    menuItem = super.addMenuItem( event, img, text );
-
-		return menuItem;
-	}
-	
-	/**
 	 * Issue an ajax request to see if the user has rights to run the "site administration" page.
 	 * If they don't we will remove the "administration" menu item from the menu.
 	 */
@@ -157,7 +138,8 @@ public class MastheadPopupMenu extends PopupMenu
 				GwtClientHelper.handleGwtRPCFailure( t );
 				
 				// The user does not have the rights to run the "site administration" page.
-				m_adminMenuItem.removeFromParent();
+				// Remove the admin menu item.
+				removeMenuItem( m_adminMenuItem );
 				m_adminMenuItem = null;
 			}
 	
@@ -205,25 +187,5 @@ public class MastheadPopupMenu extends PopupMenu
 			cmd = new GetSiteAdminUrlCmd( mastheadBinderId );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
-	}
-	
-	/**
-	 * Show this popup menu.
-	 */
-	public void showMenu( final int x, final int y )
-	{
-		PopupPanel.PositionCallback posCallback;
-
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				setPopupPosition( x - offsetWidth, y );
-			}
-		};
-		setPopupPositionAndShow( posCallback );
 	}
 }

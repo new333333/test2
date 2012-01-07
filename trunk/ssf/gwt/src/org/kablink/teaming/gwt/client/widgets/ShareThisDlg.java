@@ -974,7 +974,10 @@ public class ShareThisDlg extends DlgBox
 	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return m_findCtrl.getFocusWidget();
+		if ( m_findCtrl != null )
+			return m_findCtrl.getFocusWidget();
+		
+		return null;
 	}
 	
 

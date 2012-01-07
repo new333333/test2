@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.EventValidationListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEntryEventsCmd;
@@ -55,7 +56,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This popup menu is used to display the actions a user can take on a given entry.
@@ -64,12 +64,12 @@ import com.google.gwt.user.client.ui.PopupPanel;
  */
 public class ActionsPopupMenu extends PopupMenu
 {
-	private PopupMenuItem m_replyMenuItem;
-	private PopupMenuItem m_shareMenuItem;
-	private PopupMenuItem m_subscribeMenuItem;
-	private PopupMenuItem m_tagMenuItem;
-	private PopupMenuItem m_markReadMenuItem;
-	private PopupMenuItem m_markUnreadMenuItem;
+	private VibeMenuItem m_replyMenuItem;
+	private VibeMenuItem m_shareMenuItem;
+	private VibeMenuItem m_subscribeMenuItem;
+	private VibeMenuItem m_tagMenuItem;
+	private VibeMenuItem m_markReadMenuItem;
+	private VibeMenuItem m_markUnreadMenuItem;
 	private AsyncCallback<VibeRpcResponse> m_checkRightsCallback = null;
 	private List<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
@@ -124,10 +124,10 @@ public class ActionsPopupMenu extends PopupMenu
 	 * @return
 	 */
 	@Override
-	public PopupMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
+	public VibeMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
 	{
 		EventValidation eventValidation;
-		PopupMenuItem menuItem;
+		VibeMenuItem menuItem;
 
 	    menuItem = super.addMenuItem( event, img, text );
 
@@ -180,18 +180,18 @@ public class ActionsPopupMenu extends PopupMenu
 							event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 							
 							if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
-								setMenuItemVisibility( m_replyMenuItem, false );
+								m_replyMenuItem.setVisible( false );
 							else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
-								setMenuItemVisibility( m_subscribeMenuItem, false );
+								m_subscribeMenuItem.setVisible( false );
 							else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
-								setMenuItemVisibility( m_shareMenuItem, false );
+								m_shareMenuItem.setVisible( false );
 							else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
-								setMenuItemVisibility( m_tagMenuItem, false );
+								m_tagMenuItem.setVisible( false );
 						}
 					}
 					
 					// Now that we have validated all the events, show this menu.
-					showMenu();
+					showMenu( m_x, m_y );
 				}// end onSuccess()
 			};
 		}
@@ -235,42 +235,21 @@ public class ActionsPopupMenu extends PopupMenu
 		markUnread.setUIEntry( entry );
 		
 		// Make sure all the menu items are visible.
-		setMenuItemVisibility( m_replyMenuItem, true );
-		setMenuItemVisibility( m_shareMenuItem, true );
-		setMenuItemVisibility( m_subscribeMenuItem, true );
-		setMenuItemVisibility( m_tagMenuItem, true );
-		setMenuItemVisibility( m_markReadMenuItem, true );
-		setMenuItemVisibility( m_markUnreadMenuItem, true );
+		m_replyMenuItem.setVisible( true );
+		m_shareMenuItem.setVisible( true );
+		m_subscribeMenuItem.setVisible( true );
+		m_tagMenuItem.setVisible( true );
+		m_markReadMenuItem.setVisible( true );
+		m_markUnreadMenuItem.setVisible( true );
 		
 		// Hide "Mark read" or "Mark unread" depending on whether or not the entry has been read.
 		if ( entry.isEntryUnread() )
-			setMenuItemVisibility( m_markUnreadMenuItem, false );
+			m_markUnreadMenuItem.setVisible( false );
 		else
-			setMenuItemVisibility( m_markReadMenuItem, false );
+			m_markReadMenuItem.setVisible( false );
 
 		// Make an ajax request to see what rights the user has for the given entry.
 		// After the ajax request returns we will display this menu.
 		checkRights();
-	}
-	
-	
-	/**
-	 * Show this popup menu.
-	 */
-	private void showMenu()
-	{
-		PopupPanel.PositionCallback posCallback;
-
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				setPopupPosition( m_x - offsetWidth, m_y );
-			}// end setPosition()
-		};
-		setPopupPositionAndShow( posCallback );
 	}
 }

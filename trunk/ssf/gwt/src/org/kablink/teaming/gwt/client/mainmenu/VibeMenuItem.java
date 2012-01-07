@@ -32,9 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 
@@ -45,6 +50,9 @@ import com.google.gwt.user.client.ui.MenuItem;
  * @author drfoster@novell.com
  */
 public class VibeMenuItem extends MenuItem {
+	VibeEventBase<?> m_event;
+	
+	
 	/**
 	 * Constructor method.
 	 *
@@ -127,5 +135,61 @@ public class VibeMenuItem extends MenuItem {
 	public VibeMenuItem(String text, MenuBar subMenu) {
 		// Always use one of the initial forms of the constructor.
 		this(text, false, subMenu, null);
+	}
+	
+	/**
+	 * Constructor method.  This is used instead of using PopupMenuItem
+	 */
+	public VibeMenuItem( Command cmd, VibeEventBase<?> event, Image img, String text, String styleName )
+	{
+		super( "", cmd );
+
+		InlineLabel label;
+		FlowPanel outerPanel;
+		FlowPanel mainPanel;
+		
+		m_event = event;
+		
+		outerPanel = new FlowPanel();
+		
+		mainPanel = new FlowPanel();
+		mainPanel.addStyleName( styleName );
+		
+		outerPanel.add( mainPanel );
+
+		// Do we have an image?
+		if ( img != null )
+		{
+			img.getElement().setAttribute( "align", "absmiddle" );
+			img.addStyleName( "popupMenuItemImg" );
+			mainPanel.add( img );
+		}
+		
+		label = new InlineLabel( text );
+		mainPanel.add( label );
+		
+		setHTML( SafeHtmlUtils.fromTrustedString( outerPanel.getElement().getInnerHTML() ) );
+	}
+	
+	/**
+	 *
+	 */
+	public void adjustSpacingForChecked( boolean spacingNeeded )
+	{
+	}
+	
+	/**
+	 * 
+	 */
+	public VibeEventBase<?> getEvent()
+	{
+		return m_event;
+	}
+
+	/**
+	 * Set the checked state of this menu item.
+	 */
+	public void setCheckedState( boolean checked )
+	{
 	}
 }

@@ -201,7 +201,7 @@ public class MastHead extends Composite
 					 */
 					public void onClick( ClickEvent event )
 					{
-						m_popupMenu.showRelativeTo( panel );
+						m_popupMenu.showRelativeToTarget( panel );
 					}
 				};
 
