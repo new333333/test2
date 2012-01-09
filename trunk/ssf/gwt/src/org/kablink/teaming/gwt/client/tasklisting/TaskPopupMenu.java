@@ -98,7 +98,7 @@ public class TaskPopupMenu extends PopupMenu
 	 */
 	private TaskPopupMenu(TaskTable taskTable, TaskListing taskListing, TeamingEvents taskEventEnum, List<TaskMenuOption> menuOptions) {
 		// Initialize the super class...
-		super(true, true);
+		super(true, true, true);
 		
 		// ...store the parameters...
 		m_taskTable     = taskTable;
@@ -143,7 +143,6 @@ public class TaskPopupMenu extends PopupMenu
 						po.buildImage(),
 						po.getMenuAlt());
 				pmi.setCheckedState(po.isMenuChecked());
-				pmi.adjustSpacingForChecked(true);
 				m_menuItems.add(pmi);
 			}
 		}

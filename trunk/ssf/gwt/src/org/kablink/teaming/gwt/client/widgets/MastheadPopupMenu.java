@@ -67,7 +67,7 @@ public class MastheadPopupMenu extends PopupMenu
 	 */
 	public MastheadPopupMenu( String mastheadBinderId, boolean isUserLoggedIn, boolean autoHide, boolean modal )
 	{
-		super( autoHide, modal );
+		super( autoHide, modal, false );
 		
 		// Add all the possible menu items.
 		{

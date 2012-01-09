@@ -56,7 +56,7 @@ public class ShowSettingPopupMenu extends PopupMenu
 	 */
 	public ShowSettingPopupMenu( boolean autoHide, boolean modal )
 	{
-		super( autoHide, modal );
+		super( autoHide, modal, true );
 
 		// Add the "show all" menu item.
 		m_showAllMenuItem = addMenuItem( new ViewAllEntriesEvent(), null, GwtTeaming.getMessages().showAll() );

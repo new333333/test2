@@ -32,9 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -51,6 +53,9 @@ import com.google.gwt.user.client.ui.MenuItem;
  */
 public class VibeMenuItem extends MenuItem {
 	VibeEventBase<?> m_event;
+	Image m_checkMarkImg;	// Image used to put a checkmark next to a menu item.
+	Image m_spacerImg;		// Image used as a spacer if this menu item does not use the checkmark image
+	FlowPanel m_outerPanel;
 	
 	
 	/**
@@ -140,42 +145,57 @@ public class VibeMenuItem extends MenuItem {
 	/**
 	 * Constructor method.  This is used instead of using PopupMenuItem
 	 */
-	public VibeMenuItem( Command cmd, VibeEventBase<?> event, Image img, String text, String styleName )
+	public VibeMenuItem( Command cmd, VibeEventBase<?> event, Image img, String text, String styleName, boolean allowForCheckMark )
 	{
 		super( "", cmd );
 
 		InlineLabel label;
-		FlowPanel outerPanel;
 		FlowPanel mainPanel;
 		
 		m_event = event;
 		
-		outerPanel = new FlowPanel();
+		m_outerPanel = new FlowPanel();
 		
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( styleName );
+		if ( styleName != null )
+			mainPanel.addStyleName( styleName );
 		
-		outerPanel.add( mainPanel );
+		m_outerPanel.add( mainPanel );
+		
+		// Do we need to allow space for a check image?
+		if ( allowForCheckMark )
+		{
+			ImageResource imageResource;
+			
+			// Yes
+			// Create a checkbox image in case we need it.
+			imageResource = GwtTeaming.getImageBundle().check12();
+			m_checkMarkImg = new Image( imageResource );
+			m_checkMarkImg.setVisible( false );
+			m_checkMarkImg.getElement().setAttribute( "align", "absmiddle" );
+			mainPanel.add( m_checkMarkImg );
+
+			// Create a spacer image that will be used instead of a checkmark image.
+			imageResource = GwtTeaming.getImageBundle().spacer1px();
+			m_spacerImg = new Image( imageResource );
+			m_spacerImg.setWidth( "12px" );
+			m_spacerImg.setVisible( false );
+			mainPanel.add( m_spacerImg );
+			
+		}
 
 		// Do we have an image?
 		if ( img != null )
 		{
 			img.getElement().setAttribute( "align", "absmiddle" );
-			img.addStyleName( "popupMenuItemImg" );
+			img.addStyleName( "vibe-popupMenuItemImg" );
 			mainPanel.add( img );
 		}
 		
 		label = new InlineLabel( text );
 		mainPanel.add( label );
 		
-		setHTML( SafeHtmlUtils.fromTrustedString( outerPanel.getElement().getInnerHTML() ) );
-	}
-	
-	/**
-	 *
-	 */
-	public void adjustSpacingForChecked( boolean spacingNeeded )
-	{
+		setMenuItemHTML();
 	}
 	
 	/**
@@ -185,11 +205,39 @@ public class VibeMenuItem extends MenuItem {
 	{
 		return m_event;
 	}
+	
+	/**
+	 * Is this menu item checked.
+	 */
+	public boolean isChecked()
+	{
+		if ( m_checkMarkImg != null )
+			return m_checkMarkImg.isVisible();
+		
+		return false;
+	}
 
 	/**
 	 * Set the checked state of this menu item.
 	 */
 	public void setCheckedState( boolean checked )
 	{
+		if ( m_checkMarkImg != null )
+		{
+			m_checkMarkImg.setVisible( checked );
+			m_spacerImg.setVisible( !checked );
+			
+			// Refresh the html used by this menu item.
+			setMenuItemHTML();
+		}
+	}
+	
+	/**
+	 * Set the HTML for this menu item.
+	 */
+	private void setMenuItemHTML()
+	{
+		if ( m_outerPanel != null )
+			setHTML( SafeHtmlUtils.fromTrustedString( m_outerPanel.getElement().getInnerHTML() ) );		
 	}
 }

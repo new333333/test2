@@ -249,4 +249,15 @@
 	webkit-border-vertical-spacing: 0px;	
 	}	
 	
+.vibe-popupMenu
+{
+	z-index: 400;
+}
+
+.vibe-popupMenuItemImg
+{
+	margin-right: 5px;
+}
+
+
 /* End:  Main menu styles. */
