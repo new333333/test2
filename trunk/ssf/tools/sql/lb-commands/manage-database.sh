@@ -14,12 +14,12 @@ echo "                   sets to the database."
 echo "   generateSqlToUpdateDatabase"
 echo "                   Apply un-run change sets to generate SQL in a file which can"
 echo "                   later be executed to update database to current version."
-echo "   markDatabaseAsUpdated"
-echo "                   Mark all change sets as ran against the database."
-echo "                   Used only for transition from earlier legacy schema."
+echo "   mark32DatabaseAsUpdated"
+echo "                   Mark all change sets as ran against the 3.2 database."
+echo "                   Used for one-time transition from 3.2 schema to later version."
 echo "   generateSqlToMarkDatabaseAsUpdated"
 echo "                   Generate SQL in a file which can later be executed to mark"
-echo "                   all change sets as ran against the database."
+echo "                   all change sets as ran against the 3.2 database."
 echo ""
 echo "troubleshooting commands (useful for verification, testing, or troubleshooting):"
 echo "   exportSchema    Export schema from existing database into a change log file"
@@ -63,10 +63,10 @@ if [ "$2 = "updateDatabase" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --contexts="$CONTEXTS" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="./scripts/changelog/$1-changelog-master.xml" update
 elif [ "$2 = "generateSqlToUpdateDatabase" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --contexts="$CONTEXTS" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="./scripts/changelog/$1-changelog-master.xml" updateSQL > "./$1-update.sql"
-elif [ "$2 = "markDatabaseAsUpdated" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --contexts="$CONTEXTS" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="./scripts/changelog/$1-changelog-master.xml" changeLogSync
-elif [ "$2 = "generateSqlToMarkDatabaseAsUpdated" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --contexts="$CONTEXTS" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="./scripts/changelog/$1-changelog-master.xml" changeLogSyncSQL > "./$1-markasupdated.sql"
+elif [ "$2 = "mark32DatabaseAsUpdated" ]; then
+  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --contexts="$CONTEXTS" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="./scripts/changelog/$1-changelog-3.2.xml" changeLogSync
+elif [ "$2 = "generateSqlToMark32DatabaseAsUpdated" ]; then
+  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --contexts="$CONTEXTS" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="./scripts/changelog/$1-changelog-3.2.xml" changeLogSyncSQL > "./$1-markasupdated.sql"
 elif [ "$2 = "exportSchema" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --contexts="$CONTEXTS" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" generateChangeLog > "./$1-schema-changelog.xml"
 elif [ "$2 = "exportData" ]; then

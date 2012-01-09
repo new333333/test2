@@ -49,12 +49,12 @@ echo                    sets to the database.
 echo    generateSqlToUpdateDatabase         
 echo                    Apply un-run change sets to generate SQL in a file which can
 echo                    later be executed to update database to current version.
-echo    markDatabaseAsUpdated
-echo                    Mark all change sets as ran against the database. 
-echo                    Used only for transition from earlier legacy schema.
-echo    generateSqlToMarkDatabaseAsUpdated
+echo    mark32DatabaseAsUpdated
+echo                    Mark all change sets as ran against the 3.2 database. 
+echo                    Used for one-time transition from 3.2 schema to later version.
+echo    generateSqlToMark32DatabaseAsUpdated
 echo                    Generate SQL in a file which can later be executed to mark
-echo                    all change sets as ran against the database.
+echo                    all change sets as ran against the 3.2 database.
 echo.
 echo troubleshooting commands (useful for verification, testing, or troubleshooting):
 echo    exportSchema    Export schema from existing database into a change log file
@@ -79,12 +79,12 @@ goto end
 java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" updateSQL > ".\%1-update.sql"
 goto end
 
-:markDatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" changeLogSync
+:mark32DatabaseAsUpdated
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-3.2.xml" changeLogSync
 goto end
 
-:generateSqlToMarkDatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" changeLogSyncSQL > ".\%1-markasupdated.sql"
+:generateSqlToMark32DatabaseAsUpdated
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-3.2.xml" changeLogSyncSQL > ".\%1-markasupdated.sql"
 goto end
 
 :exportSchema
