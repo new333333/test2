@@ -81,7 +81,7 @@ public class ActionsPopupMenu extends PopupMenu
 	 */
 	public ActionsPopupMenu( boolean autoHide, boolean modal )
 	{
-		super( autoHide, modal );
+		super( autoHide, modal, false );
 		
 		// Add all the possible menu items.
 		{

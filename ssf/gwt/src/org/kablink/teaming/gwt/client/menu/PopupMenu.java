@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
@@ -60,20 +61,23 @@ import com.google.gwt.user.client.ui.UIObject;
 public class PopupMenu extends TeamingPopupPanel
 {
 	private VibeMenuBar m_menu;
+	private boolean m_canHaveCheckedMenuItems;	// Can this pop-up menu have menu items that are checked?
 	
 
 	/**
 	 * 
 	 */
-	public PopupMenu( boolean autoHide, boolean modal )
+	public PopupMenu( boolean autoHide, boolean modal, boolean canHaveCheckedMenuItems )
 	{
 		super( autoHide, modal );
 		
+		m_canHaveCheckedMenuItems = canHaveCheckedMenuItems;
+		
 		// We need to replace gwt-PopupPanel style name because it is causing an empty
 		// box to be displayed because initially this control's width and height are 0.
-		setStylePrimaryName( "popupMenu" );
+		addStyleName( "vibe-popupMenu" );
 		
-		m_menu = new VibeMenuBar( true, "popupMenu" );
+		m_menu = new VibeMenuBar( true, "vibe-mainMenuPopup" );
 		
 		setWidget( m_menu );
 	}
@@ -99,7 +103,7 @@ public class PopupMenu extends TeamingPopupPanel
 			}
 		};
 
-		menuItem = new VibeMenuItem( cmd, event, img, text, "popupMenuItem" );
+		menuItem = new VibeMenuItem( cmd, event, img, text, "vibe-mainMenuPopup_Item", m_canHaveCheckedMenuItems );
 		m_menu.addItem( menuItem );
 
 		return menuItem;
@@ -174,6 +178,7 @@ public class PopupMenu extends TeamingPopupPanel
 				int left;
 				int maxWidth;
 				List<MenuItem> menuItems;
+				Command cmd;
 				
 				// Figure out how wide the menu is.  For some unknown reason calling
 				// m_menu.getAbsoluteWidth() doesn't work.
@@ -189,11 +194,22 @@ public class PopupMenu extends TeamingPopupPanel
 				}
 				
 				if ( (x + maxWidth) > Window.getClientWidth() )
-					left = Window.getClientWidth() - maxWidth - 5;
+					left = Window.getClientWidth() - maxWidth - 15;
 				else
 					left = x;
 				
 				setPopupPosition( left, y );
+
+				cmd = new Command()
+				{
+					@Override
+					public void execute()
+					{
+						// Give the menu bar the focus.
+						m_menu.focus();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		setPopupPositionAndShow( posCallback );
