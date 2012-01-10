@@ -67,16 +67,21 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	private BinderInfo m_binderInfo;
 	private ConfigData m_configData;
 	private VibeFlowPanel m_mainPanel;
+	private boolean m_showDesc;
+	private boolean m_showFooter;
 	
 	/**
 	 * 
 	 */
-	public LandingPage( final BinderInfo binderInfo, final ViewReady viewReady )
+	public LandingPage( final BinderInfo binderInfo, final ViewReady viewReady, boolean showDesc, boolean showFooter )
 	{
 		super( viewReady );
 		
 		Scheduler.ScheduledCommand cmd;
 
+		m_showDesc = showDesc;
+		m_showFooter = showFooter;
+		
 		init();
 		
 		cmd = new Scheduler.ScheduledCommand()
@@ -84,6 +89,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 			/**
 			 * 
 			 */
+			@Override
 			public void execute()
 			{
 				// Initialize this landing page for the given binder.
@@ -102,6 +108,9 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 		
 		Scheduler.ScheduledCommand cmd;
 		
+		m_showDesc = true;
+		m_showFooter = true;
+		
 		init();
 
 		cmd = new Scheduler.ScheduledCommand()
@@ -109,6 +118,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 			/**
 			 * 
 			 */
+			@Override
 			public void execute()
 			{
 				// Initialize this landing page for the given binder.
@@ -121,7 +131,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	/**
 	 * Build this landing page for the given ConfigData.
 	 */
-	public void buildLandingPage( ConfigData configData )
+	private void buildLandingPage( ConfigData configData )
 	{
 		int i;;
 		int numItems;
@@ -147,22 +157,25 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
 			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, m_configData.getHideMasthead(), m_configData.getHideNavPanel(), false, m_configData.getHideMenu() );
 			
-			// Add the description to the page.
-			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					// Insert the description as the first element on the landing page.
-					m_mainPanel.insert( tpb, 0 );
-				}
-			} );
+			if ( m_showDesc )
+			{
+				// Add the description to the page.
+				DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+				{			
+					@Override
+					public void onUnavailable()
+					{
+						// Nothing to do.  Error handled in asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess( ToolPanelBase tpb )
+					{
+						// Insert the description as the first element on the landing page.
+						m_mainPanel.insert( tpb, 0 );
+					}
+				} );
+			}
 		}
 		
 		// Is a background color specified?
@@ -222,20 +235,23 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 		// Add the footer to the page
 		if ( m_binderInfo != null )
 		{
-			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					m_mainPanel.add( tpb );
-				}
-			} );
+			if ( m_showFooter )
+			{
+				FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+				{			
+					@Override
+					public void onUnavailable()
+					{
+						// Nothing to do.  Error handled in asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess( ToolPanelBase tpb )
+					{
+						m_mainPanel.add( tpb );
+					}
+				} );
+			}
 		}
 		
 		// Tell the base class that we're done constructing the landing
@@ -249,7 +265,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	 * 
 	 * @param binderInfo
 	 */
-	public void buildLandingPage( BinderInfo binderInfo )
+	private void buildLandingPage( BinderInfo binderInfo )
 	{
 		m_configData = null;
 		m_binderInfo = binderInfo;
@@ -268,6 +284,18 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	 */
 	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
 	{
+		LandingPage.createAsync( binderInfo, viewReady, true, true, vClient );
+	}
+	
+	/**
+	 * Loads the LandingPage split point and returns an instance of it
+	 * via the callback.
+	 *
+	 * @param binderInfo
+	 * @param vClient
+	 */
+	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final boolean showDesc, final boolean showFooter, final ViewClient vClient )
+	{
 		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
 		{			
 			@Override
@@ -275,7 +303,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 			{
 				LandingPage lp;
 				
-				lp = new LandingPage( binderInfo, viewReady );
+				lp = new LandingPage( binderInfo, viewReady, showDesc, showFooter );
 				vClient.onSuccess( lp );
 			}
 			
@@ -347,6 +375,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -359,6 +388,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -371,6 +401,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 					/**
 					 * 
 					 */
+					@Override
 					public void execute()
 					{
 						// Add the landing page elements to the landing page.
@@ -388,6 +419,6 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	@Override
 	public void toolPanelReady( ToolPanelBase toolPanel )
 	{
-//!		...this needs to be implemented...		
-	}// end toolPanelReady()
+		// Nothing to do.  We don't need to know when tool panels are ready.
+	}
 }
