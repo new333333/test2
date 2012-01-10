@@ -44,15 +44,20 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTaskDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -66,9 +71,10 @@ public class TaskFolderView extends FolderViewBase
 		DeleteSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler
 {
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private TaskListing					m_taskListing;				// The TaskList composite.
-	private VibeFlowPanel				m_gwtTaskFilter;			//
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private TaskDisplayDataRpcResponseData	m_taskDisplayData;			//
+	private TaskListing						m_taskListing;				// The TaskList composite.
+	private VibeFlowPanel					m_gwtTaskFilter;			//
 
 	// The following define the indexes into a VibeVerticalPanel of the
 	// addition panel that makes up a task folder view.
@@ -98,7 +104,8 @@ public class TaskFolderView extends FolderViewBase
 	 * 
 	 * @return
 	 */
-	public VibeFlowPanel getGwtTaskFilter() {return m_gwtTaskFilter;}
+	public TaskDisplayDataRpcResponseData getTaskDisplayData() {return m_taskDisplayData;}
+	public VibeFlowPanel                  getGwtTaskFilter()   {return m_gwtTaskFilter;  }
 	
 	/**
 	 * Called to construct the view.
@@ -148,7 +155,7 @@ public class TaskFolderView extends FolderViewBase
 	}
 
 	/*
-	 * Asynchronously loads the TaskListing.
+	 * Asynchronously loads the task display data.
 	 */
 	private void loadPart2Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -161,9 +168,43 @@ public class TaskFolderView extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously loads the TaskListing.
+	 * Synchronously loads the task display data.
 	 */
 	private void loadPart2Now() {
+		GetTaskDisplayDataCmd cmd = new GetTaskDisplayDataCmd(getFolderInfo().getBinderIdAsLong());
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// Handle the failure...
+				String error = m_messages.rpcFailure_GetTaskList();
+				GwtClientHelper.handleGwtRPCFailure(caught, error);
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				m_taskDisplayData = ((TaskDisplayDataRpcResponseData) result.getResponseData());
+				loadPart3Async();
+			}			
+		});
+	}
+
+	/*
+	 * Asynchronously loads the TaskListing.
+	 */
+	private void loadPart3Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the TaskListing.
+	 */
+	private void loadPart3Now() {
 		// Yes!  Load the task listing's split point.
 		TaskListing.createAsync(
 				this,

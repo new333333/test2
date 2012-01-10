@@ -114,6 +114,7 @@ import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
+import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -125,10 +126,12 @@ import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.search.Constants;
 
 
@@ -1853,6 +1856,20 @@ public class GwtViewHelper {
 						binderId,
 						sortBy,
 						(!sortDescend));
+				}
+				
+				// If the request contain changes to the task
+				// filtering...
+				Long userId = GwtServerHelper.getCurrentUser().getId();
+				String taskFilterType = getQueryParameterString(nvMap, WebKeys.TASK_FILTER_TYPE);
+				if (MiscUtil.hasString(taskFilterType)) {
+					// ...put them into effect.
+					TaskHelper.setTaskFilterType(bs, userId, binderId, FilterType.valueOf(taskFilterType));
+				}
+				String folderModeType = getQueryParameterString(nvMap, WebKeys.FOLDER_MODE_TYPE);
+				if (MiscUtil.hasString(folderModeType)) {
+					// ...put them into effect.
+					ListFolderHelper.setFolderModeType(bs, userId, binderId, ModeType.valueOf(folderModeType));
 				}
 			}
 			

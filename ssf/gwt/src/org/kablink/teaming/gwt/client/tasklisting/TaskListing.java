@@ -40,11 +40,13 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskBundleRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
@@ -99,10 +101,11 @@ public class TaskListing extends Composite {
 	private FlowPanel		m_taskToolsWarningDIV;		//
 	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
+	private Long			m_taskChangeId;				// Empty or the ID of an added or modified task.
+	private String			m_adaptedUrl;				//
 	private String			m_filterType;				// The current filtering in affect, if any.
 	private String			m_mode;						// The current mode being displayed (PHYSICAL vs. VITRUAL.)
 	private String			m_sortBy;					// The column the tasks are currently sorted by.
-	private String			m_taskChangeId;				// Empty or the ID of an added or modified task.
 	private String			m_taskChangeReason;			// Empty, taskAdded or taskModified, as the case may be.
 	private TaskBundle		m_taskBundle;				// The TaskLinkage and List<TaskListItem> that we're listing.
 	private TaskButton		m_deleteButton;				//
@@ -371,6 +374,7 @@ public class TaskListing extends Composite {
 	public FlowPanel   getTaskToolsLinkageDIV()   {return m_taskToolsLinkageDIV;  }
 	public FlowPanel   getTaskToolsWarningDIV()   {return m_taskToolsWarningDIV;  }
 	public Long        getBinderId()              {return m_binderId;             }
+	public Long        getTaskChangeId()          {return m_taskChangeId;         }
 	public RequestInfo getRequestInfo()           {return m_requestInfo;          }
 	public String      getFilterType()            {return m_filterType;           }
 	public String      getMode()                  {return m_mode;                 }
@@ -383,14 +387,6 @@ public class TaskListing extends Composite {
 	public TaskButton  getMoveLeftButton()        {return m_moveLeftButton;       }
 	public TaskButton  getMoveRightButton()       {return m_moveRightButton;      }
 	public TaskButton  getPurgeButton()           {return m_purgeButton;          }
-	
-	public Long getTaskChangeId() {
-		Long reply;
-		if (GwtClientHelper.hasString(m_taskChangeId))
-		     reply = Long.parseLong(m_taskChangeId);
-		else reply = null;
-		return reply;
-	}
 	
 	/**
 	 * Set'er methods.
@@ -437,10 +433,12 @@ public class TaskListing extends Composite {
 		}
 		
 		// Put the view option into affect.
-		String url = m_requestInfo.getAdaptedUrl();
+		String url = m_adaptedUrl;
 		url = GwtClientHelper.replace(url, "xxx_operand_xxx", operand);
 		url = GwtClientHelper.replace(url, "xxx_option_xxx",  viewOption);
-		GwtClientHelper.jsLoadUrlInCurrentWindow(url);
+		if (null == m_taskFolderView)
+		     GwtClientHelper.jsLoadUrlInCurrentWindow(    url);
+		else GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
 	}
 
 	/*
@@ -451,6 +449,7 @@ public class TaskListing extends Composite {
 		// Initialize the JSNI components...
 		jsInitResizeHandler(this);		
 		m_requestInfo = jsGetRequestInfo();
+		m_adaptedUrl  = m_requestInfo.getAdaptedUrl();
 		
 		// ...and extract the parameters we need to render the tasks.
 		m_binderId              = Long.parseLong(m_requestInfo.getBinderId());
@@ -458,13 +457,13 @@ public class TaskListing extends Composite {
 		m_mode                  =                 jsGetElementValue("ssCurrentFolderModeType");
 		m_sortBy                =                 jsGetElementValue("ssFolderSortBy"         );
 		m_sortDescend           = Boolean.valueOf(jsGetElementValue("ssFolderSortDescend"   ));
-		m_taskChangeId          =                 jsGetElementValue("taskId"                 );
-		m_taskChangeReason      =                 jsGetElementValue("taskChange"             );
 		m_updateCalculatedDates = Boolean.valueOf(jsGetElementValue("updateCalculatedDates" ));
+		m_taskChangeReason      =                 jsGetElementValue("taskChange"             );
+		String tcId = jsGetElementValue("taskId");
+		m_taskChangeId          = (GwtClientHelper.hasString(tcId) ? Long.parseLong(tcId) : null);
 		
 		String showMode = jsGetElementValue("ssShowFolderModeSelect");
 		m_showModeSelect = (GwtClientHelper.hasString(showMode) && Boolean.valueOf(showMode));
-
 	}
 	
 	/*
@@ -472,18 +471,23 @@ public class TaskListing extends Composite {
 	 * TaskFolderView.
 	 */
 	private void initFromTaskFolderView() {
-		// Extract the parameters we need to render the tasks.
-//! 	...this needs to be implemented...
-		m_binderId = m_taskFolderView.getFolderId();
-		m_filterType            = "ALL";		//! ...this needs to be implemented...
-		m_mode                  = "PHYSICAL";	//! ...this needs to be implemented...
+		// Get the task display data from the task view.
+		TaskDisplayDataRpcResponseData tdd = m_taskFolderView.getTaskDisplayData();
+		
+		// Initialize the request info object...
+		m_requestInfo = GwtClientHelper.getRequestInfo();
+		m_adaptedUrl  = tdd.getAdaptedUrl();
+		
+		// ...and extract the parameters we need to render the tasks.
+		m_binderId              = m_taskFolderView.getFolderId();
+		m_filterType            = tdd.getFilterType();
+		m_mode                  = tdd.getMode();
 		m_sortBy                = m_taskFolderView.getFolderDisplayData().getFolderSortBy();
 		m_sortDescend           = m_taskFolderView.getFolderDisplayData().getFolderSortDescend();
-		m_taskChangeId          = "";			//! ...this needs to be implemented...
-		m_taskChangeReason      = "";			//! ...this needs to be implemented...
-		m_updateCalculatedDates = false;		//! ...this needs to be implemented...
-		
-		m_showModeSelect        = false;		//! ...this needs to be implemented...
+		m_taskChangeId          = tdd.getTaskChangeId();
+		m_taskChangeReason      = tdd.getTaskChangeReason();
+		m_updateCalculatedDates = tdd.getUpdateCalculatedDates();
+		m_showModeSelect        = tdd.getShowModeSelect();
 	}
 	
 	/*
@@ -500,14 +504,6 @@ public class TaskListing extends Composite {
 	private native RequestInfo jsGetRequestInfo() /*-{
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
-	}-*/;
-
-	/*
-	 * Uses JSNI to grab the document Element that's to contain the
-	 * task filter widgets.
-	 */
-	private native Element jsGetTaskFilterDIV() /*-{
-		return $doc.getElementById("gwtTaskFilter");
 	}-*/;
 
 	/*

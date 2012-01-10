@@ -524,6 +524,7 @@ public class GwtMainPage extends ResizeComposite
 			// Execute a deferred command the will display it.
 			ScheduledCommand cmd = new ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					// Is the user logged in?
@@ -586,6 +587,7 @@ public class GwtMainPage extends ResizeComposite
 				// invoke the login dialog.
 				ScheduledCommand cmd = new ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						invokeLoginDlg( false );
@@ -966,6 +968,7 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new GetBinderPermalinkCmd( contextBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -974,6 +977,7 @@ public class GwtMainPage extends ResizeComposite
 					contextBinderId );
 			}//end onFailure()
 			
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String binderPermalink;
@@ -1070,6 +1074,7 @@ public class GwtMainPage extends ResizeComposite
 				/**
 				 * This method gets called when user user presses ok in the "Edit Branding" dialog.
 				 */
+				@Override
 				public boolean editSuccessful( Object obj )
 				{
 					// Create the callback that will be used when we issue an ajax request to save the branding data.
@@ -1080,6 +1085,7 @@ public class GwtMainPage extends ResizeComposite
 							/**
 							 * 
 							 */
+							@Override
 							public void onFailure( Throwable t )
 							{
 								GwtClientHelper.handleGwtRPCFailure(
@@ -1092,6 +1098,7 @@ public class GwtMainPage extends ResizeComposite
 							 * 
 							 * @param result
 							 */
+							@Override
 							public void onSuccess( VibeRpcResponse response )
 							{
 								// Did we just save site branding?
@@ -1135,6 +1142,7 @@ public class GwtMainPage extends ResizeComposite
 				/**
 				 * This method gets called when the user presses cancel in the "Edit Branding" dialog.
 				 */
+				@Override
 				public boolean editCanceled()
 				{
 					return true;
@@ -1239,6 +1247,7 @@ public class GwtMainPage extends ResizeComposite
 					/**
 					 * 
 					 */
+					@Override
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -1250,6 +1259,7 @@ public class GwtMainPage extends ResizeComposite
 					/**
 					 * 
 					 */
+					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						BooleanRpcResponseData responseData;
@@ -1268,6 +1278,7 @@ public class GwtMainPage extends ResizeComposite
 								/**
 								 * 
 								 */
+								@Override
 								public void execute()
 								{
 									MenuHideEvent.fireOne();
@@ -1419,6 +1430,7 @@ public class GwtMainPage extends ResizeComposite
 					 * with the new list of tags.
 					 */
 					@SuppressWarnings("unchecked")
+					@Override
 					public boolean editSuccessful( Object obj )
 					{
 						if ( obj != null && obj instanceof ArrayList )
@@ -1652,6 +1664,7 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new PersistActivityStreamSelectionCmd( asi );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1659,6 +1672,7 @@ public class GwtMainPage extends ResizeComposite
 					GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
 			}// end onFailure()
 			
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// Note that we're not doing anything with the results
@@ -1675,6 +1689,7 @@ public class GwtMainPage extends ResizeComposite
 	 * 
 	 * @param event
 	 */
+	@Override
 	public void onActivityStreamEnter( ActivityStreamEnterEvent event )
 	{
 		handleOnActivityStreamEnter( event.getShowSetting() );
@@ -1688,6 +1703,7 @@ public class GwtMainPage extends ResizeComposite
 	 * 
 	 * @param event
 	 */
+	@Override
 	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
 		m_contentLayoutPanel.showContentControl();
@@ -1893,6 +1909,7 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1903,6 +1920,7 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				int x;
@@ -1926,6 +1944,7 @@ public class GwtMainPage extends ResizeComposite
 						/**
 						 * This method gets called when user user presses ok in the "Personal Preferences" dialog.
 						 */
+						@Override
 						public boolean editSuccessful( Object obj )
 						{
 							personalPrefs = (GwtPersonalPreferences) obj;
@@ -1938,6 +1957,7 @@ public class GwtMainPage extends ResizeComposite
 									/**
 									 * 
 									 */
+									@Override
 									public void onFailure( Throwable t )
 									{
 										GwtClientHelper.handleGwtRPCFailure(
@@ -1949,6 +1969,7 @@ public class GwtMainPage extends ResizeComposite
 									 * 
 									 * @param result
 									 */
+									@Override
 									public void onSuccess( VibeRpcResponse response )
 									{
 										@SuppressWarnings("unused")
@@ -2151,6 +2172,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
 				{
+					@Override
 					public void setPosition(int offsetWidth, int offsetHeight)
 					{
 						int x;
@@ -2250,6 +2272,7 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void execute()
 			{
 				relayoutPage( true );
@@ -2279,6 +2302,7 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void execute()
 			{
 				relayoutPage( true );
@@ -2381,6 +2405,7 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2391,6 +2416,7 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				final String url;
@@ -2405,6 +2431,7 @@ public class GwtMainPage extends ResizeComposite
 				{
 					cmd = new ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							int height;
@@ -2498,6 +2525,7 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new TrackBinderCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2506,6 +2534,7 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// It's overkill to force a full context reload, which
@@ -2547,6 +2576,7 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new UntrackBinderCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2555,6 +2585,7 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
+			@Override
 			public void onSuccess( VibeRpcResponse respnse )
 			{
 				// It's overkill to force a full context reload, which
@@ -2581,6 +2612,7 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new GetBinderPermalinkCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
+			@Override
 			public void onFailure( Throwable t ) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -2588,6 +2620,7 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String binderUrl;
@@ -2677,6 +2710,7 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new UntrackPersonCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2685,6 +2719,7 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// It's overkill to force a full context reload, which
@@ -2758,6 +2793,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			ScheduledCommand cmd = new ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					relayoutPage( true );

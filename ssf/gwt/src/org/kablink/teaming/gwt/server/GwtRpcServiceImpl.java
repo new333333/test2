@@ -188,6 +188,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Execute the given command.
 	 */
+	@Override
 	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException
 	{
 		VibeRpcResponse response = null;
@@ -1124,6 +1125,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetTaskBundleCmd gtbCmd = ((GetTaskBundleCmd) cmd);
 			TaskBundle results = getTaskBundle( ri, gtbCmd.getBinderId(), gtbCmd.getFilterType(), gtbCmd.getModeType() );
 			TaskBundleRpcResponseData responseData = new TaskBundleRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_TASK_DISPLAY_DATA:
+		{
+			GetTaskDisplayDataCmd gtddCmd = ((GetTaskDisplayDataCmd) cmd);
+			TaskDisplayDataRpcResponseData responseData = GwtTaskHelper.getTaskDisplayData( getRequest( ri ), this, gtddCmd.getBinderId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

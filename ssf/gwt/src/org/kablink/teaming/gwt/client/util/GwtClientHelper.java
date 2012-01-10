@@ -187,6 +187,7 @@ public class GwtClientHelper {
 	public static void deferredAlert(final String msg) {
 		if (hasString(msg)) {
 			ScheduledCommand cmd = new ScheduledCommand() {
+				@Override
 				public void execute() {
 					Window.alert(msg);
 				}
@@ -992,6 +993,7 @@ public class GwtClientHelper {
 
 			// ...and when the popup closes...
 			popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+				@Override
 				public void onClose(CloseEvent<PopupPanel> event) {
 					// ...remove it.
 					bodyElement.removeClassName(scrollClass);
