@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model-processor-mapping SYSTEM "../dtd/model-processor-mapping-1_0_0.dtd">
+
+<!-- Make sure new additions are handled in xslt merge -->
+
+<model-processor-mapping>
+	<processors>
+		<processor class="org.kablink.teaming.module.mail.impl.DefaultEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultEmailFormatter"/>
+		<processor class="org.kablink.teaming.module.mail.impl.DefaultEmailPoster" spring-bean-type="internal" spring-bean-name="defaultEmailPoster"/>
+		<processor class="org.kablink.teaming.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
+		<processor class="org.kablink.teaming.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
+		<processor class="org.kablink.teaming.module.workspace.impl.DefaultWorkspaceCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultWorkspaceCoreProcessor"/>
+		<processor class="org.kablink.teaming.module.template.impl.DefaultTemplateCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultTemplateCoreProcessor"/>
+	</processors>
+	
+	<default-mappings>
+		<model-class name="org.kablink.teaming.domain.ProfileBinder">
+			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="org.kablink.teaming.module.profile.impl.DefaultProfileCoreProcessor"/>
+		</model-class>
+		<model-class name="org.kablink.teaming.domain.Folder">
+			<mapping processor-key="processorKey_emailFormatter" processor-class="org.kablink.teaming.module.mail.impl.DefaultEmailFormatter"/>
+			<mapping processor-key="processorKey_emailPoster" processor-class="org.kablink.teaming.module.mail.impl.DefaultEmailPoster"/>
+			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="org.kablink.teaming.module.folder.impl.DefaultFolderCoreProcessor"/>
+			<mapping processor-key="processorKey_binderCoreProcessor_5" processor-class="org.kablink.teaming.module.folder.impl.DefaultFolderCoreProcessor"/>
+		</model-class>
+		<model-class name="org.kablink.teaming.domain.Workspace">
+			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="org.kablink.teaming.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
+		</model-class>
+		<model-class name="org.kablink.teaming.domain.TemplateBinder">
+			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="org.kablink.teaming.module.template.impl.DefaultTemplateCoreProcessor"/>
+		</model-class>
+	</default-mappings>
+</model-processor-mapping>

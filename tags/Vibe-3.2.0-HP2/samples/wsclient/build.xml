@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<project name="samples-wsclient" basedir="." default="build">
+	<property name="project.dir" value="../.." />
+	<import file="${project.dir}/build-common.xml"/>
+	
+	<target name="clean-libraries">
+		<delete dir="lib"/>
+	</target>
+	
+	<target name="clean-all" >
+		<antcall target="clean"/>
+		<antcall target="clean-libraries"/>
+	</target>
+	
+	<target name="copy-libraries">
+		<mkdir dir="lib"/>
+		<!-- Copy Teaming WS client library -->
+		<copy file="${project.dir}/ws-client/kablink-teaming-wsclient.jar" todir="lib"/>
+		<copy file="${project.dir}/util-search/kablink-teaming-util-search.jar" todir="lib"/>
+		<!-- Copy libraries needed by the Teaming WS client library -->
+		<copy todir="lib">
+			<fileset dir="${project.dir}/lib"
+				includes="${libraries.wsclient}" />
+		</copy>
+		<!-- Copy additional libraries needed by the sample -->
+		<copy todir="lib">
+			<fileset dir="${project.dir}/lib">
+				<include name="addressing.jar" />
+				<include name="dom4j.jar" />
+				<include name="commons-httpclient.jar" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="build">
+		<antcall target="compile"/>
+		<antcall target="copy-libraries"/>
+	</target>
+	
+	<target name="clean-build">
+		<antcall target="clean-all"/>
+		<antcall target="build"/>
+	</target>
+</project>
