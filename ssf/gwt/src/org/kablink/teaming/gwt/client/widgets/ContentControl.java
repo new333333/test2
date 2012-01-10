@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
+import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
@@ -51,6 +52,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
@@ -99,6 +101,7 @@ public class ContentControl extends Composite
 		ChangeContextEvent.Handler,
 		GotoUrlEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
+		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowTaskFolderEvent.Handler
@@ -126,6 +129,7 @@ public class ContentControl extends Composite
 		
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
+		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_TASK_FOLDER,
@@ -617,6 +621,11 @@ public class ContentControl extends Composite
 					}
 						
 					case DISCUSSIONS:
+						// Fire the event that will display the Discussion workspace.
+						GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
+						m_contentInGWT = true;
+						break;
+						
 					case GLOBAL_ROOT:
 					case PROFILE_ROOT:
 					case PROJECT_MANAGEMENT:
@@ -829,6 +838,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowDiscussionFolder()
+	
+	/**
+	 * Handles ShowDiscussionWSEvent's received by this class.
+	 * 
+	 * Implements the ShowDiscussionWSEvent.Handler.onShowDiscussionWS() method.
+	 */
+	@Override
+	public void onShowDiscussionWS( ShowDiscussionWSEvent event )
+	{
+		// Display a Discussion Workspace for the given binder id.
+		ViewClient vClient;
+		
+		vClient = new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase discussionWS )
+			{
+				discussionWS.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( discussionWS );
+			}
+		};
+		
+		// Create a DiscussionWSView widget for the selected binder.
+		DiscussionWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+	}
 	
 	/**
 	 * Handles ShowFileFolderEvent's received by this class.
