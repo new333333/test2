@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
-import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPageView;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 

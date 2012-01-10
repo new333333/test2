@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPageView;
+import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.GetInheritedLandingPagePropertiesCmd;
