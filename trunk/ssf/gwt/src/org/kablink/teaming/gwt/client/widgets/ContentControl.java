@@ -43,7 +43,7 @@ import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
+import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPageView;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -929,7 +929,7 @@ public class ContentControl extends Composite
 		};
 		
 		// Create a LandingPage widget for the selected binder.
-		LandingPage.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		LandingPageView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}// end onShowLandingPage()
 	
 	/**

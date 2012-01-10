@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPage;
+import org.kablink.teaming.gwt.client.binderviews.landingpage.LandingPageView;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.GetInheritedLandingPagePropertiesCmd;
@@ -147,11 +147,11 @@ public class PreviewLandingPageDlg extends DlgBox
 						{
 							public void execute()
 							{
-								LandingPage lp;
+								LandingPageView lp;
 								
 								// Create a Landing Page widget from the inherited properties
 								lpData.initLandingPageProperties( lpProperties );
-								lp = new LandingPage( lpData );
+								lp = new LandingPageView( lpData );
 								m_mainPanel.add( lp );
 							}
 						};
@@ -172,7 +172,7 @@ public class PreviewLandingPageDlg extends DlgBox
 	 */
 	public void init( ConfigData lpData )
 	{
-		LandingPage lp;
+		LandingPageView lp;
 		
 		m_mainPanel.clear();
 		
@@ -185,7 +185,7 @@ public class PreviewLandingPageDlg extends DlgBox
 		else
 		{
 			// No
-			lp = new LandingPage( lpData );
+			lp = new LandingPageView( lpData );
 			m_mainPanel.add( lp );
 		}
 	}

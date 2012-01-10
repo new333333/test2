@@ -62,7 +62,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author jwootton
  *
  */
-public class LandingPage extends ViewBase implements ToolPanelReady
+public class LandingPageView extends ViewBase implements ToolPanelReady
 {
 	private BinderInfo m_binderInfo;
 	private ConfigData m_configData;
@@ -73,7 +73,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	/**
 	 * 
 	 */
-	public LandingPage( final BinderInfo binderInfo, final ViewReady viewReady, boolean showDesc, boolean showFooter )
+	public LandingPageView( final BinderInfo binderInfo, final ViewReady viewReady, boolean showDesc, boolean showFooter )
 	{
 		super( viewReady );
 		
@@ -102,7 +102,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	/**
 	 * 
 	 */
-	public LandingPage( final ConfigData configData )
+	public LandingPageView( final ConfigData configData )
 	{
 		super( null );
 		
@@ -284,7 +284,7 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	 */
 	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
 	{
-		LandingPage.createAsync( binderInfo, viewReady, true, true, vClient );
+		LandingPageView.createAsync( binderInfo, viewReady, true, true, vClient );
 	}
 	
 	/**
@@ -296,14 +296,14 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	 */
 	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final boolean showDesc, final boolean showFooter, final ViewClient vClient )
 	{
-		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
+		GWT.runAsync( LandingPageView.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				LandingPage lp;
+				LandingPageView lp;
 				
-				lp = new LandingPage( binderInfo, viewReady, showDesc, showFooter );
+				lp = new LandingPageView( binderInfo, viewReady, showDesc, showFooter );
 				vClient.onSuccess( lp );
 			}
 			
@@ -325,14 +325,14 @@ public class LandingPage extends ViewBase implements ToolPanelReady
 	 */
 	public static void createAsync( final ConfigData configData, final ViewClient vClient )
 	{
-		GWT.runAsync( LandingPage.class, new RunAsyncCallback()
+		GWT.runAsync( LandingPageView.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				LandingPage lp;
+				LandingPageView lp;
 				
-				lp = new LandingPage( configData );
+				lp = new LandingPageView( configData );
 				vClient.onSuccess( lp );
 			}
 			
