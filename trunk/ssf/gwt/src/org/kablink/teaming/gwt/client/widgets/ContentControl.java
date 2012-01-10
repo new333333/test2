@@ -456,6 +456,7 @@ public class ContentControl extends Composite
 			GetViewInfoCmd cmd = new GetViewInfoCmd( url );
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>()
 			{
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -464,6 +465,7 @@ public class ContentControl extends Composite
 						url );
 				}// end onFailure()
 				
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{				
 					// Show the context asynchronously so that we can

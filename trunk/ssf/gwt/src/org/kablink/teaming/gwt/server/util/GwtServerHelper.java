@@ -4985,6 +4985,7 @@ public class GwtServerHelper {
 		case GET_TEAM_MANAGEMENT_INFO:
 		case GET_TEAMS:
 		case GET_TASK_BUNDLE:
+		case GET_TASK_DISPLAY_DATA:
 		case GET_TASK_LINKAGE:
 		case GET_TASK_LIST:
 		case GET_TOOLBAR_ITEMS:

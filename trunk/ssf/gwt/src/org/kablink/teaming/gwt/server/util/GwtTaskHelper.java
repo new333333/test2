@@ -69,9 +69,11 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
@@ -1272,6 +1274,58 @@ public class GwtTaskHelper {
 			reply.setDateDisplay(EventHelper.getDateTimeString(date, allDayEvent));
 		}
 		return reply;
+	}
+	
+	/**
+	 * Returns a TaskDisplayDataRpcResponseData object for the current
+	 * user's view of the specified task folder.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static TaskDisplayDataRpcResponseData getTaskDisplayData(HttpServletRequest request, AllModulesInjected bs, Long binderId) throws GwtTeamingException {
+		try {
+			// Access the information we need from the binder...
+			Long userId = GwtServerHelper.getCurrentUser().getId();
+			FilterType ft = TaskHelper.getTaskFilterType(bs, userId, binderId);
+			ModeType mode = TaskHelper.getTaskModeType(  bs, userId, binderId);
+			UserProperties userProperties = bs.getProfileModule().getUserProperties(userId, binderId);
+			String taskChangeReason = ((String) userProperties.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGE));
+			String taskChangeId     = ((String) userProperties.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_ID    ));
+			Workspace binderWs = BinderHelper.getBinderWorkspace(bs.getBinderModule().getBinder(binderId));
+			boolean showModeSelect = BinderHelper.isBinderUserWorkspace(binderWs);
+			AdaptedPortletURL adaptedUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adaptedUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			adaptedUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binderId));
+			adaptedUrl.setParameter("xxx_operand_xxx", "xxx_option_xxx");	// Place holder -> Patched when used.
+			
+			// ...and use it to construct and return a
+			// ...TaskDisplayDataRpcResponseData object.
+			return
+				new TaskDisplayDataRpcResponseData(
+					ft.name(),
+					mode.name(),
+					(MiscUtil.hasString(taskChangeId) ? Long.parseLong(taskChangeId) : null),
+					taskChangeReason,
+					MiscUtil.hasString(taskChangeReason),
+					showModeSelect,
+					adaptedUrl.toString());
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtTaskHelper.getTaskDisplayData( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+		
 	}
 	
 	/**
