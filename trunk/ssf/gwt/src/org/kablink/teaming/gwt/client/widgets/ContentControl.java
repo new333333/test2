@@ -621,10 +621,23 @@ public class ContentControl extends Composite
 					}
 						
 					case DISCUSSIONS:
-						// Fire the event that will display the Discussion workspace.
-						GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
-						m_contentInGWT = true;
+					{
+						boolean showNew = true;
+						
+						if ( m_isDebugLP )
+						{
+							if ( !Window.confirm( "Show new discussion workspace?" ) )
+								showNew = false;
+						}
+						
+						if ( showNew )
+						{
+							// Fire the event that will display the Discussion workspace.
+							GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+						}
 						break;
+					}
 						
 					case GLOBAL_ROOT:
 					case PROFILE_ROOT:

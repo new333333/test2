@@ -135,6 +135,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		FolderProperties properties;
@@ -179,6 +180,7 @@ public class FolderWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -188,6 +190,7 @@ public class FolderWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -226,12 +229,14 @@ public class FolderWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -324,6 +329,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
+	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		FolderProperties	properties;
@@ -394,9 +400,13 @@ public class FolderWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return m_findCtrl.getFocusWidget();
+		if ( m_findCtrl != null )
+			return m_findCtrl.getFocusWidget();
+		
+		return null;
 	}// end getFocusWidget()
 	
 	
@@ -423,6 +433,7 @@ public class FolderWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -435,6 +446,7 @@ public class FolderWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -620,6 +632,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show" text box.
 	 * We only allow the user to enter numbers.
 	 */
+	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;
