@@ -17,12 +17,27 @@
 /* Start:  Entry menu styles. */
 	.vibe-entryMenuBar       {padding: 3px;}
 
-	.vibe-menuDisabled  {color: silver !important;}
+	.vibe-menuDisabled  {
+		color: silver !important;
+	}
+	.vibe-menuDisabled:hover  {
+		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+		background-color: transparent;
+		border: 1px solid #B8B8B8;
+		font-weight: normal !important;
+		font-size: 12px;
+		padding: 2px 10px  !important;
+		text-decoration:none;	
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+	}
 	
 	.vibe-entryMenuBarItem
 	{	
 		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+		background-color: transparent;
 		border: 1px solid #B8B8B8;
 		font-weight: normal !important;
 		font-size: 12px;
@@ -32,26 +47,7 @@
 		-webkit-border-radius: 15px;
 		cursor: pointer !important;
 	}
-	.vibe-entryMenuBarItem:hover
-	{
-		border: 1px solid #81b2bd;
-		color:#135c8f;
-		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -webkit-gradient(
-			linear,
-			left bottom,
-			left top,
-			color-stop(0.47, #A8D4DD),
-			color-stop(0.53, #D5EDF1),
-			color-stop(1, #C8E4E9));
-		-moz-border-radius: 15px;
-		-webkit-border-radius: 15px;
-		}
-			
+	
 	.vibe-entryMenuPopup     {}
 	.vibe-entryMenuPopupItem {}
 /* End:  Entry menu styles. */
@@ -137,26 +133,8 @@
 		}
 	.vibe-binderViewTools .gwt-MenuBar-horizontal .gwt-MenuBar table td {
 		padding-right: 5px;
-		}
-		
-
-	.vibe-mainMenuControl .gwt-MenuBar .gwt-MenuItem-selected {
-		color:#135c8f !important;
-		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%)!important;
-		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
-		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
-		background-image: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
-		background-image: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
-		background-image: -webkit-gradient(
-			linear,
-			left bottom,
-			left top,
-			color-stop(0.47, #A8D4DD),
-			color-stop(0.53, #D5EDF1),
-			color-stop(1, #C8E4E9)) !important;
-		-moz-border-radius: 2px;
-		-webkit-border-radius: 2px;
 		}	
+
 	.vibe-mainMenuControl
 	{
 		height: 25px;
@@ -171,32 +149,39 @@
 	}
 	
 	/* Start: GWT Vertical Menu styles*/
+	.gwt-PopupPanel {
+/*		background: #3A3E40; */
+		background: #f6f6f6;
+		border: 0px;
+		padding: 6px;
+		-moz-border-radius-bottomleft: 5px;
+		-moz-border-radius-bottomright: 5px;
+		-webkit-border-bottom-left-radius: 5px;
+		-webkit-border-bottom-right-radius: 5px;
+		}
 	.gwt-MenuBarPopup {
-		clip: none !important;
 		box-shadow: 0 2px 4px #505354;
-		margin: 6px 0px;
+		margin: 4px 0px;
+		border-left: 1px solid #ccc;
+		border-right: 1px solid #ccc;
 		}
 	.gwt-MenuBarPopup .menuPopupTopLeft,
 	.gwt-MenuBarPopup .menuPopupTopRight,
-	.gwt-MenuBarPopup .menuPopupBottomCenter,
 	.gwt-MenuBarPopup .menuPopupTopCenter,
 	.gwt-MenuBarPopup .menuPopupMiddleLeft,
 	.gwt-MenuBarPopup .menuPopupMiddleRight,
 	.gwt-MenuBar-vertical {
-		background: #3A3E40;
-		}
+		background: #f6f6f6;
+		}		
+		
+	.gwt-MenuBarPopup .menuPopupBottomCenter,
+	.gwt-MenuBarPopup .menuPopupBottomRight,
 	.gwt-MenuBarPopup .menuPopupBottomLeft {
-		background: #3A3E40;
-		-moz-border-radius-bottomleft: 5px;
-		-webkit-border-bottom-left-radius: 5px;
-		}	
-	.gwt-MenuBarPopup .menuPopupBottomRight {
-		background: #3A3E40;
-		-moz-border-radius-bottomright: 5px;
-		-webkit-border-bottom-right-radius: 5px;
+		background: #f6f6f6;
+		border-bottom: 1px solid #ccc;
 		}	
 	.gwt-MenuBar-vertical .gwt-MenuItem {
-		color: #fafafa;
+		color: #353838;
 		padding: 4px 6px;
 		}
 	.gwt-MenuBar-vertical .gwt-MenuItemSeparator {
@@ -206,15 +191,52 @@
 		height: 0px;
 		border: 0px;
 		margin: 5px 0;
-		border-top: 1px solid #1f1f1f;
-		border-bottom: 1px solid #505354;
+		border-top: 1px solid #e0e0e0;
+		border-bottom: 1px solid #fff;
 		}
 	.gwt-MenuBar .gwt-MenuItem-selected {
-		color: #81b2bd;
-		background-color: #1f1f1f;
+		color: #135c8f;
+		background-color: #cce9ee;
 		-moz-border-radius: 3px;
 		-webkit-border-radius: 3px;
-		}			
+		}		
+		
+	.vibe-mainMenuControl .gwt-MenuBar .gwt-MenuItem-selected {
+		color:#135c8f !important;
+		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%)!important;
+		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.47, #A8D4DD),
+			color-stop(0.53, #D5EDF1),
+			color-stop(1, #C8E4E9)) !important;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+		}	
+		
+	.vibe-entryMenuBar .gwt-MenuItem-selected {
+		border: 1px solid #81b2bd;
+		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.47, #A8D4DD),
+			color-stop(0.53, #D5EDF1),
+			color-stop(1, #C8E4E9));
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+		}
+		
 	/* End: GWT Vertical Menu styles*/
 
 
