@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
@@ -314,7 +315,7 @@ public class TaskListing extends Composite {
 
 		// Is this task listing embedded in a JSP page?
 		m_embeddedInJSP = (null == taskFolderView);
-		if (m_embeddedInJSP){
+		if (isEmbeddedInJSP()){
 			// Yes!  Initialize it based on the values store in the
 			// JSP.
 			initFromJSP();
@@ -365,7 +366,7 @@ public class TaskListing extends Composite {
 	 * 
 	 * @return
 	 */
-	public boolean     getEmbeddedInJSP()         {return m_embeddedInJSP;        }
+	public boolean     isEmbeddedInJSP()          {return m_embeddedInJSP;        }
 	public boolean     getSortDescend()           {return m_sortDescend;          }
 	public boolean     getUpdateCalculatedDates() {return m_updateCalculatedDates;}
 	public FlowPanel   getTaskListingDIV()        {return m_taskListingDIV;       }
@@ -533,7 +534,7 @@ public class TaskListing extends Composite {
 		m_taskFilter = new TaskFilter();
 		
 		// Is this TaskListing embedded in  JSP page?
-		if (m_embeddedInJSP) {
+		if (isEmbeddedInJSP()) {
 			// Yes!  Attach the TaskFilter appropriately.
 			RootPanel taskFilterRoot = RootPanel.get("gwtTaskFilter");		
 			taskFilterRoot.add(m_taskFilter);
@@ -648,23 +649,25 @@ public class TaskListing extends Composite {
 		m_taskToolsWarningDIV.add(button);
 		fp.add(m_taskToolsWarningDIV);
 		
-		// ...create the delete and purge button panel...
-		FlowPanel buttonDIV = new FlowPanel();
-		buttonDIV.addStyleName("gwtTaskTools_ButtonDIV" + displayStyle);
-		m_deleteButton = new TaskButton(
-			m_messages.taskLabelDelete(),
-			m_messages.taskAltDelete(),
-			false,	// false -> Disabled by default.
-			TeamingEvents.TASK_DELETE);
-		m_deleteButton.addStyleName("marginright2px");
-		buttonDIV.add(m_deleteButton);
-		m_purgeButton = new TaskButton(
-			m_messages.taskLabelPurge(),
-			m_messages.taskAltPurge(),
-			false,	// false -> Disabled by default.
-			TeamingEvents.TASK_PURGE);
-		buttonDIV.add(m_purgeButton);
-		fp.add(buttonDIV);
+		if (isEmbeddedInJSP()) {
+			// ...create the delete and purge button panel...
+			FlowPanel buttonDIV = new FlowPanel();
+			buttonDIV.addStyleName("gwtTaskTools_ButtonDIV" + displayStyle);
+			m_deleteButton = new TaskButton(
+				m_messages.taskLabelDelete(),
+				m_messages.taskAltDelete(),
+				false,	// false -> Disabled by default.
+				TeamingEvents.TASK_DELETE);
+			m_deleteButton.addStyleName("marginright2px");
+			buttonDIV.add(m_deleteButton);
+			m_purgeButton = new TaskButton(
+				m_messages.taskLabelPurge(),
+				m_messages.taskAltPurge(),
+				false,	// false -> Disabled by default.
+				TeamingEvents.TASK_PURGE);
+			buttonDIV.add(m_purgeButton);
+			fp.add(buttonDIV);
+		}
 		m_taskToolsDIV.add(fp);
 
 		// ...create a popup menu for the view options...
@@ -759,6 +762,29 @@ public class TaskListing extends Composite {
 			tasksUnits = Unit.PX;
 		}		
 		m_taskListingDIV.getElement().getStyle().setHeight(tasksHeight, tasksUnits);
+	}
+
+	/**
+	 * Enabled/disables the Delete and Purge push buttons.
+	 * 
+	 * @param enableDelete
+	 * @param enablePurge
+	 */
+	public void setDeleteAndPurgeState(boolean enableDelete, boolean enablePurge) {
+		// If the task listing is embedded in a JSP page...
+		if (isEmbeddedInJSP()) {
+			// ...enabled/disable the buttons on its tool bar...
+			getDeleteButton().setEnabled(enableDelete);
+			getPurgeButton().setEnabled( enablePurge );
+		}
+		
+		else {
+			// ...otherwise, enable/disable them on the entry menu.
+			EntryMenuPanel emp = m_taskFolderView.getEntryMenuPanel();
+			if (null != emp) {
+				emp.setDeleteAndPurgeState(enableDelete || enablePurge);
+			}
+		}
 	}
 
 	/**

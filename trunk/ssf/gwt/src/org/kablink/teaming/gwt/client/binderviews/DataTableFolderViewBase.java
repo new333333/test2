@@ -606,19 +606,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
-	 * Scan the defined tool panels for an entry menu panel and returns
-	 * it.
-	 */
-	private EntryMenuPanel getEntryMenuPanel() {
-		for (ToolPanelBase tpb:  getToolPanels()) {
-			if (tpb instanceof EntryMenuPanel) {
-				return ((EntryMenuPanel) tpb);
-			}
-		}
-		return null;
-	}
-	
-	/*
 	 * Scan the defined tool panels for a footer panel and returns it.
 	 */
 	private FooterPanel getFooterPanel() {

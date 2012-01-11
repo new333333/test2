@@ -201,6 +201,21 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		Scheduler.get().scheduleDeferred(doConstructView);
 	}
 
+	/**
+	 * Scan the defined tool panels for an entry menu panel and returns
+	 * it.
+	 * 
+	 * @return
+	 */
+	public EntryMenuPanel getEntryMenuPanel() {
+		for (ToolPanelBase tpb:  getToolPanels()) {
+			if (tpb instanceof EntryMenuPanel) {
+				return ((EntryMenuPanel) tpb);
+			}
+		}
+		return null;
+	}
+	
 	/*
 	 * Initializes various data members for the class.
 	 */
