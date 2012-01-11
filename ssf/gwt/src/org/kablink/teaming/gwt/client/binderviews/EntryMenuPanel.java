@@ -310,7 +310,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// Create a drop down menu for the structured toolbar item...
 		VibeMenuBar	structuredMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
 		structuredMenuBar.addStyleName("vibe-entryMenuPopup");
-		menuBar.addItem(structuredTBI.getTitle(), structuredMenuBar);
+		VibeMenuItem structuredMenuItem = new VibeMenuItem(structuredTBI.getTitle(), structuredMenuBar);
+		structuredMenuItem.addStyleName("vibe-entryMenuBarItem");
+		menuBar.addItem(structuredMenuItem);
 		
 		// ...scan the nested items...
 		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
