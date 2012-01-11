@@ -72,19 +72,19 @@ echo Note: Additional parameters are read in from [db type]-liquibase.properties
 goto end
 
 :updateDatabase
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" update
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" update
 goto end
 
 :generateSqlToUpdateDatabase
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-master.xml" updateSQL > ".\%1-update.sql"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" updateSQL > ".\%1-update.sql"
 goto end
 
 :mark32DatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-3.2.xml" changeLogSync
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.2.xml" changeLogSync
 goto end
 
 :generateSqlToMark32DatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile=".\scripts\changelog\%1-changelog-3.2.xml" changeLogSyncSQL > ".\%1-markasupdated.sql"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.2.xml" changeLogSyncSQL > ".\%1-markasupdated.sql"
 goto end
 
 :exportSchema
