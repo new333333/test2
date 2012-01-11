@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,43 +30,50 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
-package org.kablink.teaming.gwt.client.binderviews;
+package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
+import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLandingPageDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
-import org.kablink.teaming.gwt.client.widgets.LandingPageWidget.LandingPageWidgetClient;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ResizeComposite;
 
 /**
- * This widget is the Landing Page.  It is used to render a landing page configuration.
+ * This class will display the elements found in a landing page.
  * @author jwootton
- *
  */
-public class LandingPageView extends ViewBase implements ToolPanelReady
+public class LandingPageWidget  extends VibeWidget
 {
 	private BinderInfo m_binderInfo;
 	private VibeFlowPanel m_mainPanel;
+
+	
+	/**
+	 * Callback interface to interact with the landing page widget asynchronously after it loads. 
+	 */
+	public interface LandingPageWidgetClient
+	{
+		void onSuccess( LandingPageWidget lpe );
+		void onUnavailable();
+	}
+
+
 	
 	/**
 	 * 
 	 */
-	private LandingPageView( final BinderInfo binderInfo, final ViewReady viewReady )
+	private LandingPageWidget( final BinderInfo binderInfo )
 	{
-		super( viewReady );
-		
 		Scheduler.ScheduledCommand cmd;
 
 		init();
@@ -89,10 +96,8 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	/**
 	 * 
 	 */
-	private LandingPageView( final ConfigData configData )
+	private LandingPageWidget( final ConfigData configData )
 	{
-		super( null );
-		
 		Scheduler.ScheduledCommand cmd;
 		
 		init();
@@ -117,6 +122,8 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	 */
 	private void buildLandingPage( ConfigData configData )
 	{
+		int i;;
+		int numItems;
 		String bgColor;
 		String bgImgUrl;
 		
@@ -126,35 +133,6 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 			return;
 
 		configData.parse();
-		
-		// Tell the base class that we're done constructing the landing
-		// page view.
-		if ( configData.isPreviewMode() == false )
-			super.viewReady();
-
-		String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
-		if ( configData.isPreviewMode() == false && binderId != null )
-		{
-			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
-			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, configData.getHideMasthead(), configData.getHideNavPanel(), false, configData.getHideMenu() );
-			
-			// Add the description to the page.
-			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					// Insert the description as the first element on the landing page.
-					m_mainPanel.insert( tpb, 0 );
-				}
-			} );
-		}
 		
 		// Is a background color specified?
 		bgColor = configData.getBackgroundColor();
@@ -181,47 +159,34 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 				m_mainPanel.getElement().getStyle().setProperty( "backgroundRepeat", bgRepeat );
 			}
 		}
-
-		// Add a landing page widget to the page.
-		LandingPageWidget.createAsync( configData, new LandingPageWidgetClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( LandingPageWidget lpWidget )
-			{
-				// Add the landing page widget to the page.
-				m_mainPanel.add( lpWidget );
-			}
-		} );
-
-		// Add the footer to the page
-		if ( m_binderInfo != null )
-		{
-			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					m_mainPanel.add( tpb );
-				}
-			} );
-		}
 		
-		// Tell the base class that we're done constructing the landing
-		// page view.
-		if ( configData.isPreviewMode() == false )
-			super.viewReady();
+		// Add items to the widget that are defined in the configuration.
+		numItems = configData.size();
+		for (i = 0; i < numItems; ++i)
+		{
+			ConfigItem configItem;
+			
+			// Get the next item in the list.
+			configItem = configData.get( i );
+			if ( configItem != null )
+			{
+				ResizeComposite widget;
+				
+				// Create the appropriate composite based on the given ConfigItem.
+				widget = configItem.createWidget( configData.getLandingPageProperties().getWidgetStyles() );
+				if ( widget != null )
+				{
+					m_mainPanel.add( widget );
+				}
+				else
+				{
+					Label label;
+					
+					label = new Label( "widget: " + configItem.getClass().getName() );
+					m_mainPanel.add( label );
+				}
+			}
+		}
 	}
 	
 	/**
@@ -237,7 +202,6 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 		readConfigurationData();
 	}
 	
-	
 	/**
 	 * Loads the LandingPage split point and returns an instance of it
 	 * via the callback.
@@ -245,24 +209,24 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	 * @param binderInfo
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo binderInfo, final LandingPageWidgetClient lpClient )
 	{
-		GWT.runAsync( LandingPageView.class, new RunAsyncCallback()
+		GWT.runAsync( LandingPageWidget.class, new RunAsyncCallback()
 		{			
-			@Override
-			public void onSuccess()
-			{
-				LandingPageView lp;
-				
-				lp = new LandingPageView( binderInfo, viewReady );
-				vClient.onSuccess( lp );
-			}
-			
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPage() );
-				vClient.onUnavailable();
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPageWidget() );
+				lpClient.onUnavailable();
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				LandingPageWidget lp;
+				
+				lp = new LandingPageWidget( binderInfo );
+				lpClient.onSuccess( lp );
 			}
 		} );
 	}
@@ -274,28 +238,28 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	 * 
 	 * @param vClient
 	 */
-	public static void createAsync( final ConfigData configData, final ViewClient vClient )
+	public static void createAsync( final ConfigData configData, final LandingPageWidgetClient lpClient )
 	{
-		GWT.runAsync( LandingPageView.class, new RunAsyncCallback()
+		GWT.runAsync( LandingPageWidget.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				LandingPageView lp;
+				LandingPageWidget lp;
 				
-				lp = new LandingPageView( configData );
-				vClient.onSuccess( lp );
+				lp = new LandingPageWidget( configData );
+				lpClient.onSuccess( lp );
 			}
 			
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPage() );
-				vClient.onUnavailable();
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPageWidget() );
+				lpClient.onUnavailable();
 			}
 		} );
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -307,7 +271,7 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 		
 		initWidget( m_mainPanel );
 	}
-	
+
 	/**
 	 * Issue an ajax call to read the configuration data for this landing page.
 	 */
@@ -362,14 +326,5 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 				Scheduler.get().scheduleDeferred( cmd );
 			}
 		} );
-	}
-	
-	/**
-	 * Implements the ToolPanelReady.toolPanelReady() method.
-	 */
-	@Override
-	public void toolPanelReady( ToolPanelBase toolPanel )
-	{
-		// Nothing to do.  We don't need to know when tool panels are ready.
 	}
 }
