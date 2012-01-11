@@ -100,12 +100,16 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -180,6 +184,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	protected FileModule getFileModule() {
 		// Can't use IoC due to circular dependency
 		return (FileModule) SpringContextUtil.getBean("fileModule");
+	}
+
+	protected FolderModule getFolderModule() {
+		// Can't use IoC due to circular dependency
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+	protected ProfileModule getProfileModule() {
+		// Can't use IoC due to circular dependency
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}
 
 	protected WorkflowModule getWorkflowModule() {
@@ -2837,6 +2851,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public void incrementFileMajorVersion(DefinableEntity entity, FileAttachment fileAtt) {
+		checkModifyFileAccess(entity);
 		getFileModule().incrementMajorFileVersion(entity, fileAtt);
 		BinderHelper.indexEntity(entity);
 		if (entity instanceof WorkflowControlledEntry) {
@@ -2846,6 +2861,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public void setFileVersionNote(DefinableEntity entity, FileAttachment fileAtt, String text) {
+		checkModifyFileAccess(entity);
 		Description description = new Description(text);
 		getFileModule().modifyFileComment(entity, fileAtt, description);
 		BinderHelper.indexEntity(entity);
@@ -2856,6 +2872,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public void promoteFileVersionCurrent(DefinableEntity entity, VersionAttachment va) {
+		checkModifyFileAccess(entity);
 		if(entity.getParentBinder().isMirrored()) return;
 		getFileModule().revertFileVersion(entity, va);
 		BinderHelper.indexEntity(entity);
@@ -2866,6 +2883,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public void deleteFileVersion(Binder binder, DefinableEntity entity, FileAttachment fileAtt) {
+		checkModifyFileAccess(entity);
 		FilesErrors errors = new FilesErrors();
 		//Delete this version
 		if (fileAtt instanceof VersionAttachment) {
@@ -2890,6 +2908,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status) {
+		checkModifyFileAccess(entity);
 		FileStatus fileStatus = FileStatus.valueOf(status);
 		getFileModule().modifyFileStatus(entity, fa, fileStatus);
 		BinderHelper.indexEntity(entity);
@@ -2903,5 +2922,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		BinderProcessor processor = loadBinderProcessor(binder);
 		return processor.isFolderEmpty(binder);
 	}
+
+	protected void checkModifyFileAccess(DefinableEntity entity) {
+		if (entity instanceof FolderEntry) {
+			getFolderModule().checkAccess((FolderEntry)entity, FolderOperation.modifyEntry);
+		} else if (entity instanceof Principal) {
+			getProfileModule().checkAccess((Principal)entity, ProfileOperation.modifyEntry);
+		} else if (entity instanceof Binder) {
+			checkAccess((Binder)entity, BinderOperation.modifyBinder);
+		} else {
+			throw new AccessControlException();
+		}
+	}
+
 
 }
