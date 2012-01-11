@@ -36,6 +36,8 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
+import org.kablink.teaming.gwt.client.binderviews.ViewBase;
+import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.GetInheritedLandingPagePropertiesCmd;
@@ -78,8 +80,31 @@ public class PreviewLandingPageDlg extends DlgBox
 	
 
 	/**
+	 * Add a LandingPageView object to this dialog.
+	 */
+	private void addLandingPageView( ConfigData lpData )
+	{
+		// Create a Landing Page View from the given landing page configuration data.
+		LandingPageView.createAsync( lpData, new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase landingPage )
+			{
+				m_mainPanel.add( landingPage );
+			}
+		} ); 
+	}
+	
+	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		m_mainPanel = new VibeFlowPanel();
@@ -92,6 +117,7 @@ public class PreviewLandingPageDlg extends DlgBox
 	/**
 	 * Nothing to return
 	 */
+	@Override
 	public Object getDataFromDlg()
 	{
 		// Nothing to do.
@@ -102,6 +128,7 @@ public class PreviewLandingPageDlg extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return null;
@@ -121,6 +148,7 @@ public class PreviewLandingPageDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -133,6 +161,7 @@ public class PreviewLandingPageDlg extends DlgBox
 				 * 
 				 * @param result
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					final LandingPageProperties lpProperties;
@@ -145,14 +174,12 @@ public class PreviewLandingPageDlg extends DlgBox
 
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
-								LandingPageView lp;
-								
 								// Create a Landing Page widget from the inherited properties
 								lpData.initLandingPageProperties( lpProperties );
-								lp = new LandingPageView( lpData );
-								m_mainPanel.add( lp );
+								addLandingPageView( lpData );
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -172,8 +199,6 @@ public class PreviewLandingPageDlg extends DlgBox
 	 */
 	public void init( ConfigData lpData )
 	{
-		LandingPageView lp;
-		
 		m_mainPanel.clear();
 		
 		// Does this landing page inherit its properties?
@@ -185,8 +210,7 @@ public class PreviewLandingPageDlg extends DlgBox
 		else
 		{
 			// No
-			lp = new LandingPageView( lpData );
-			m_mainPanel.add( lp );
+			addLandingPageView( lpData );
 		}
 	}
 }

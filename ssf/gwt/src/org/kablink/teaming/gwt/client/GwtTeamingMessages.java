@@ -447,6 +447,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
+	String codeSplitFailure_LandingPageWidget();
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();

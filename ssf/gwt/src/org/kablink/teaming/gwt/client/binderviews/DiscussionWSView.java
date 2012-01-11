@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
+import org.kablink.teaming.gwt.client.widgets.LandingPageWidget.LandingPageWidgetClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -86,6 +88,7 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 			/**
 			 * 
 			 */
+			@Override
 			public void execute()
 			{
 				// Read the data we need to display for this workspace.
@@ -165,7 +168,7 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 			m_lpPanel.addStyleName( "vibe-discussionWSView_LPPanel" );
 			m_mainPanel.add( m_lpPanel );
 
-			LandingPageView.createAsync( m_binderInfo, null, false, false, new ViewClient()
+			LandingPageWidget.createAsync( m_binderInfo, new LandingPageWidgetClient()
 			{
 				@Override
 				public void onUnavailable()
@@ -174,7 +177,7 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 				}
 				
 				@Override
-				public void onSuccess( ViewBase landingPage )
+				public void onSuccess( LandingPageWidget landingPage )
 				{
 					m_lpPanel.add( landingPage );
 				}
