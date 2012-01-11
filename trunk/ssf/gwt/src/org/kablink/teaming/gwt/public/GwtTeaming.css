@@ -1561,9 +1561,10 @@ body, table td, select
 }
 .mainBreadCrumb_Browser
 {
-	background: url(images/trans50_black.png) repeat;
+	background: url(images/trans50_black.png) repeat transparent !important;
 	border: 0px;
-	padding: 0px;
+	padding: 0px !important;
+	margin-top: 5px;
 	right: 20px;
 	z-index: 351;
 }
@@ -1630,9 +1631,9 @@ body, table td, select
 }
 .searchOptions_Browser
 {
-	background: url(images/trans50_black.png) repeat;
+	background: url(images/trans50_black.png) repeat tranparent !important;
 	border: 0px;
-	padding: 0px;
+	padding: 0px !important;
 	z-index: 351;
 }
 .searchOptionsDlg_AdvancedSearchA
@@ -2805,7 +2806,7 @@ top:100px;
 }
 .gwtTaskTools
 {
-	background-color:#cccccc;
+	background-color:#ededed;
 	display: block;
 	padding:  3px 3px 3px 12px;
 	font-family: Arial,Helvetica,sans-serif;
