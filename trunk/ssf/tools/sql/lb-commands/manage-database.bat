@@ -65,7 +65,7 @@ echo                    which can later be executed to import identical data int
 echo                    another database. This does not scale or handle all data types.
 echo    diffDatabases   Output schema differences between two databases into a change
 echo                    log file which can later be executed to upgrade the schema of
-echo                    the first database to that of the second database. 
+echo                    the first database to that of the second (reference) database. 
 echo                    There are limitations with this function.
 echo.
 echo Note: Additional parameters are read in from [db type]-liquibase.properties file.
