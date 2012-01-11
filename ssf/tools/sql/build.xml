@@ -341,7 +341,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-master.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
 
 	    <updateDatabase
     			logLevel="${lb.log.level}"
@@ -393,7 +393,7 @@
 			
 		<mkdir dir="${sql.output.temp.dir}"/>
 
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-master.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
 
 		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
 
@@ -446,7 +446,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-master.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
 
 	    <changeLogSync
     			logLevel="${lb.log.level}"
@@ -495,7 +495,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-3.2.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.2.xml"/>
 
 	    <changeLogSync
     			logLevel="${lb.log.level}"
@@ -544,7 +544,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-master.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
 
 		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
 
@@ -596,7 +596,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="${changelog.dir}/${database.type}-changelog-3.2.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.2.xml"/>
 
 		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
 
