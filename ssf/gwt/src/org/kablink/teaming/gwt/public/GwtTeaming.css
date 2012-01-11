@@ -1521,7 +1521,7 @@ body, table td, select
 }
 
 /* Style used for the panel that holds the content control. */
-.mainContentControl, .landingPageMainPanel, .vibe-viewBase
+.mainContentControl, .vibe-viewBase
 {
 	position: relative;
 	top: 8px !important;

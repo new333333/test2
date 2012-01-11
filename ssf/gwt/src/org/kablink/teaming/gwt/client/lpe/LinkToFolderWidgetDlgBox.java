@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -128,6 +127,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		LinkToFolderProperties properties;
@@ -172,6 +172,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -181,6 +182,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -219,12 +221,14 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -305,6 +309,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
+	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		String folderId;
@@ -357,6 +362,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -369,6 +375,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -393,9 +400,13 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return m_findCtrl.getFocusWidget();
+		if ( m_findCtrl != null )
+			return m_findCtrl.getFocusWidget();
+		
+		return null;
 	}// end getFocusWidget()
 	
 	
