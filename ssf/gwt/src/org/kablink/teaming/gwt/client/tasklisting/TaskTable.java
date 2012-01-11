@@ -38,7 +38,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveDownEvent;
@@ -136,6 +138,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
+		DeleteSelectedEntriesEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler,
 		TaskDeleteEvent.Handler,
 		TaskHierarchyDisabledEvent.Handler,
 		TaskMoveDownEvent.Handler,
@@ -208,6 +212,8 @@ public class TaskTable extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.TASK_DELETE,
 		TeamingEvents.TASK_HIERARCHY_DISABLED,
 		TeamingEvents.TASK_MOVE_DOWN,
@@ -2618,6 +2624,40 @@ public class TaskTable extends Composite
 	}
 
 	/**
+	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+			// Yes!  Delete the selected tasks.
+			handleTaskDelete();
+		}
+	}
+	
+	/**
+	 * Handles PurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+			// Yes!  Purge the selected tasks.
+			handleTaskPurge();
+		}
+	}
+	
+	/**
 	 * Handles TaskDeleteEvent's received by this class.
 	 * 
 	 * Implements the TaskDeleteEvent.Handler.onTaskDelete() method.
@@ -3982,11 +4022,10 @@ public class TaskTable extends Composite
 		else m_taskListing.showTaskToolsLinkage();
 		
 		// Enabled/disable the buttons as calculated.
-		m_taskListing.getDeleteButton().setEnabled(   enableTrash                        );
 		m_taskListing.getMoveDownButton().setEnabled( moveStates.canMoveDown(),  arrowHint);
 		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft(),  arrowHint);
 		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight(), arrowHint);
 		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp(),    arrowHint);
-		m_taskListing.getPurgeButton().setEnabled(    enablePurge                        );
+		m_taskListing.setDeleteAndPurgeState(enableTrash, enablePurge);
 	}
 }

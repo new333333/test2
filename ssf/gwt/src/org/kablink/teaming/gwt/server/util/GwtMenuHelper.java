@@ -502,7 +502,10 @@ public class GwtMenuHelper {
 				}
 			}
 			
-			else if ((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) || viewType.equals(Definition.VIEW_STYLE_TABLE) || viewType.equals(Definition.VIEW_STYLE_FILE)) &&
+			else if ((viewType.equals(  Definition.VIEW_STYLE_DISCUSSION) ||
+						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
+						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
+						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
 					(!(folder.isMirrored()))) {
 				// Add the Delete and Purge buttons.
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
