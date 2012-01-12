@@ -214,6 +214,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * 
 		 * @param event
 		 */
+		@Override
 		public void onClick(ClickEvent event) {
 			// Are we collapsing the row?
 			if (m_ti.isBinderExpanded()) {
@@ -232,6 +233,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// row.  Can we mark the row as being closed?
 					cmd = new PersistNodeCollapseCmd( m_ti.getBinderInfo().getBinderId() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -239,6 +241,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
+						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							// Yes!  Update the TreeInfo, re-render the
 							// row and change the row's Anchor Image to a
@@ -258,12 +261,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// Yes!  Expand it.
 					cmd = new ExpandVerticalBucketCmd( m_ti.getBucketInfo() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
 						}
 						
+						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							TreeInfo expandedTI;
 							
@@ -292,6 +297,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// Can we mark the row as being opened?
 					PersistNodeExpandCmd cmd = new PersistNodeExpandCmd( m_ti.getBinderInfo().getBinderId() );
 					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -299,6 +305,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
+						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							// Run the 'Get Vertical Node' RPC request
 							// as a scheduled command so the RPC
@@ -313,6 +320,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 									// expansion?
 									cmd = new GetVerticalNodeCmd( m_ti.getBinderInfo().getBinderId() );
 									GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+										@Override
 										public void onFailure(Throwable t) {
 											GwtClientHelper.handleGwtRPCFailure(
 												t,
@@ -320,6 +328,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 												m_ti.getBinderInfo().getBinderId());
 										}
 										
+										@Override
 										public void onSuccess(VibeRpcResponse response) {
 											TreeInfo expandedTI;
 											
@@ -364,6 +373,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * 
 		 * @param me
 		 */
+		@Override
 		public void onMouseOut(MouseOutEvent me) {
 			// Simply remove the hover style.
 			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
@@ -375,6 +385,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * 
 		 * @param me
 		 */
+		@Override
 		public void onMouseOver(MouseOverEvent me) {
 			// Simply add the hover style.
 			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
@@ -502,6 +513,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		Anchor closePBAnchor = new Anchor();
 		closePBAnchor.addStyleName("workspaceTreeControlHeader_closeA");
 		closePBAnchor.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
 				GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.SIMPLE_EXIT));
 			}
@@ -522,6 +534,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
+	@Override
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
 		// Construct an OnSelectBinderInfo for this TreeInfo object.
 		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti, Instigator.SIDEBAR_TREE_SELECT);
@@ -589,15 +602,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			
 			cmd = new GetVerticalActivityStreamsTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
 				}
 
+				@Override
 				public void onSuccess(VibeRpcResponse response) {
-					TreeInfo ti;
-					
 					// ...and put it into effect.
-					ti = (TreeInfo) response.getResponseData();
+					TreeInfo ti = (TreeInfo) response.getResponseData();
 					enterActivityStreamModeAsync(ti, defaultASI);
 				}
 			});
@@ -834,6 +847,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean isInActivityStreamMode() {
 		TreeInfo rootTI = getRootTreeInfo();
 		return ((null != rootTI) && rootTI.isActivityStream());
@@ -873,6 +887,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param selectedBinderId
 	 * @param targetPanel
 	 */
+	@Override
 	public void render(String selectedBinderId, FlowPanel targetPanel) {
 		// Track the Binder that's to be initially selected.
 		m_rootPanel = targetPanel;
@@ -1108,6 +1123,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @param ti
 	 */
+	@Override
 	void selectBinder(TreeInfo ti) {
 		// If this a trash Binder?
 		if (!(ti.getBinderInfo().isBinderTrash())) {
@@ -1162,12 +1178,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Read the TreeInfo for the selected Binder.
 		cmd = new GetVerticalTreeCmd( newRootBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetTree(),
 					newRootBinderId);
 			}
+			
+			@Override
 			public void onSuccess(VibeRpcResponse response)  {
 				TreeInfo rootTI;
 				
@@ -1274,6 +1293,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param selectedBinderId
 	 * @param targetPanel
 	 */
+	@Override
 	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
 		// Simply store the parameter in their appropriate data
 		// members.
@@ -1289,6 +1309,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @param binderId
 	 */
+	@Override
 	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
 		// If the selection is for a Binder's trash...
 		if (binderInfo.isTrash()) {
@@ -1322,6 +1343,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// selected Binder's root workspace?
 				cmd = new GetRootWorkspaceIdCmd( binderId );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
@@ -1329,6 +1351,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 							binderId);
 						selectBinder(targetTI);
 					}
+					
+					@Override
 					public void onSuccess(VibeRpcResponse response)  {
 						String rootWorkspaceId;
 						StringRpcResponseData responseData;

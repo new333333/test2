@@ -698,7 +698,11 @@ public class ContentControl extends Composite
 		}
 		else
 		{
-			// Clear out the content of the iframe
+			// Hide any entry <DIV>'s that are visible...
+			GwtClientHelper.jsHideEntryPopupDiv();
+			GwtClientHelper.jsHideNewPageEntryViewDIV();
+			
+			// ...and clear out the content of the IFRAME.
 			setUrl( "" );
 			clear();
 		}
