@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
+import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
@@ -316,14 +317,14 @@ public class TaskListing extends Composite {
 		// Is this task listing embedded in a JSP page?
 		m_embeddedInJSP = (null == taskFolderView);
 		if (isEmbeddedInJSP()){
-			// Yes!  Initialize it based on the values store in the
+			// Yes!  Initialize it based on the values stored in the
 			// JSP.
 			initFromJSP();
 		}
 		else {
-			// No, it's no embedded in a JSP page!  It must be embedded
-			// in a task folder view!  Store the task folder view and
-			// initialize based on it.
+			// No, it's not embedded in a JSP page!  It must be
+			// embedded in a task folder view!  Store the task folder
+			// view and initialize based on that.
 			m_taskFolderView = taskFolderView;
 			initFromTaskFolderView();
 		}
@@ -533,15 +534,15 @@ public class TaskListing extends Composite {
 		// Create a TaskFilter widget.
 		m_taskFilter = new TaskFilter();
 		
-		// Is this TaskListing embedded in  JSP page?
+		// Is this TaskListing embedded in a JSP page?
 		if (isEmbeddedInJSP()) {
 			// Yes!  Attach the TaskFilter appropriately.
 			RootPanel taskFilterRoot = RootPanel.get("gwtTaskFilter");		
 			taskFilterRoot.add(m_taskFilter);
 		}
 		else {
-			// No, this TaskListing is not embedded in  JSP page!  It
-			// must be embedded in a TaskFolderView.  Attach the
+			// No, this TaskListing is not embedded in a JSP page!  It
+			// must be embedded in a task folder view.  Attach the
 			// TaskFilter appropriately.
 			VibeFlowPanel taskFilterRoot = m_taskFolderView.getGwtTaskFilter();
 			taskFilterRoot.add(m_taskFilter);
@@ -552,10 +553,18 @@ public class TaskListing extends Composite {
 	 * Adds the task listing widgets to the task listing DIV.
 	 */
 	private void populateTaskListingDIV() {
-		// Resize the TaskListing <DIV> to the content panel...
-		resizeNow();
+		// Is the task listing embedded in a JSP?
+		if (isEmbeddedInJSP()) {
+			// Yes!  Resize its <DIV> to the content panel.
+			resizeNow();
+		}
 		
-		// ...and display the tasks in it.
+		// Note that when the task listing is embedded in task folder
+		// view, the <DIV> gets resized AFTER everything has completed
+		// loading.  See TaskFolderView.viewComplete() for where that
+		// happens.
+		
+		// Display the tasks in the task listing.
 		final long start = System.currentTimeMillis();
 		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_binderId, m_filterType, m_mode);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
@@ -647,7 +656,8 @@ public class TaskListing extends Composite {
 		});
 		m_taskToolsWarningDIV.add(button);
 		fp.add(m_taskToolsWarningDIV);
-		
+
+		// ...if the task listing is embedded in a JSP page...
 		if (isEmbeddedInJSP()) {
 			// ...create the delete and purge button panel...
 			FlowPanel buttonDIV = new FlowPanel();
@@ -666,6 +676,9 @@ public class TaskListing extends Composite {
 				TeamingEvents.TASK_PURGE);
 			buttonDIV.add(m_purgeButton);
 			fp.add(buttonDIV);
+			
+			// ...in a task folder view, these buttons are incorporated
+			// ...in the entry menu panel...
 		}
 		m_taskToolsDIV.add(fp);
 
@@ -737,6 +750,12 @@ public class TaskListing extends Composite {
 	}
 	
 	private void resizeNow() {
+		if (isEmbeddedInJSP())
+		     resizeNow_JSP();
+		else resizeNow_View();
+	}
+	
+	private void resizeNow_JSP() {
 		// How tall is the content frame?
 		Document contentDoc = Document.get();
 		int contentHeight = contentDoc.getClientHeight();
@@ -761,6 +780,28 @@ public class TaskListing extends Composite {
 			tasksUnits = Unit.PX;
 		}		
 		m_taskListingDIV.getElement().getStyle().setHeight(tasksHeight, tasksUnits);
+	}
+
+	private void resizeNow_View() {
+		// Get the sizes we need to calculate the height of the <DIV>.
+		FooterPanel fp  = m_taskFolderView.getFooterPanel();
+		int viewHeight	= m_taskFolderView.getOffsetHeight();				// Height of the view.
+		int viewTop		= m_taskFolderView.getAbsoluteTop();				// Absolute top of the view.		
+		int tlDivTop	= (m_taskListingDIV.getAbsoluteTop() - viewTop);	// Top of the task listing relative to the top of the view.		
+		int fpHeight	= ((null == fp) ? 0 : fp.getOffsetHeight());		// Height of the view's footer panel.
+		int totalBelow	= fpHeight;											// Total space on the page below the task listing.
+
+		// What's the optimum height for the task listing so we don't
+		// get a vertical scroll bar?
+		int tlHeight = (((viewHeight - tlDivTop) - totalBelow) - (TaskFolderView.NO_VSCROLL_ADJUST + 10));
+		if (TaskFolderView.MINIMUM_CONTENT_HEIGHT > tlHeight) {
+			// Too small!  Use the minimum even though this will turn
+			// on the vertical scroll bar.
+			tlHeight = TaskFolderView.MINIMUM_CONTENT_HEIGHT;
+		}
+		
+		// Set the height of the taskListing.
+		m_taskListingDIV.setHeight(tlHeight + "px");
 	}
 
 	/**
@@ -872,15 +913,15 @@ public class TaskListing extends Composite {
 		GWT.runAsync(TaskListing.class, new RunAsyncCallback()
 		{			
 			@Override
-			public void onSuccess() {
-				TaskListing taskListing = new TaskListing(taskFolderView);
-				taskListingClient.onSuccess(taskListing);
-			}
-			
-			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_TaskListing() );
 				taskListingClient.onUnavailable();
+			}
+			
+			@Override
+			public void onSuccess() {
+				TaskListing taskListing = new TaskListing(taskFolderView);
+				taskListingClient.onSuccess(taskListing);
 			}
 		});
 	}

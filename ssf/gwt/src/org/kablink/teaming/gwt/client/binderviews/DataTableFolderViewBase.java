@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
-import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
@@ -159,9 +158,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// The following controls whether the display data read from the
 	// server is dumped as part of the content of the view.
 	private final static boolean DUMP_DISPLAY_DATA	= false;
-	
-	private final static int MINIMUM_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
-	private final static int NO_VSCROLL_ADJUST	=  28;	// Height adjustment required so there's no vertical scroll bar by default.
 	
 	// The following are used to construct the style names applied
 	// to the columns and rows of the data table.
@@ -605,18 +601,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		return reply;
 	}
 
-	/*
-	 * Scan the defined tool panels for a footer panel and returns it.
-	 */
-	private FooterPanel getFooterPanel() {
-		for (ToolPanelBase tpb:  getToolPanels()) {
-			if (tpb instanceof FooterPanel) {
-				return ((FooterPanel) tpb);
-			}
-		}
-		return null;
-	}
-	
 	/*
 	 * Various column type detectors.
 	 */
@@ -1242,10 +1226,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// What's the optimum height for the data table so we don't get
 		// a vertical scroll bar?
 		int dataTableHeight = (((viewHeight - dtTop) - totalBelow) - NO_VSCROLL_ADJUST);
-		if (MINIMUM_HEIGHT > dataTableHeight) {
+		if (MINIMUM_CONTENT_HEIGHT > dataTableHeight) {
 			// Too small!  Use the minimum even though this will turn
 			// on the vertical scroll bar.
-			dataTableHeight = MINIMUM_HEIGHT;
+			dataTableHeight = MINIMUM_CONTENT_HEIGHT;
 		}
 		
 		// Set the height of the data table.
