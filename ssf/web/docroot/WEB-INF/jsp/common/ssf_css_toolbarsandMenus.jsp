@@ -154,24 +154,40 @@ li.ss_actions_bar_separator {
 	border-right:none;
 	}
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color: #fff !important;
-	font-size: 11px;
-	padding: 2px 10px;
+	color: #1f1f1f !important;
 	margin-right: 5px;
 	display:block;
-	background-color: #949494;
-	-moz-border-radius:10px 10px 10px 10px;
-	-webkit-border-radius:10px 10px 10px 10px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
+	border: 1px solid #B8B8B8;
+	font-weight: normal !important;
+	font-size: 11px;
+	padding: 2px 6px  !important;
+	text-decoration:none;	
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 	}
 .ss_actions_bar li span {
-	padding:4px 7px;
+	padding: 2px 5px;
 	}
 .ss_actions_bar li a:hover{
-	color: #fff !important;
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
-	background-position: center;
-	-moz-border-radius:10px 10px 10px 10px;
-	-webkit-border-radius:10px 10px 10px 10px;
+	color: #135c8f !important;
+	border: 1px solid #81b2bd;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 	}
 .ss_actions_bar li a.ss_actions_bar_inline, .ss_actions_bar li a.ss_actions_bar_inline:visited  {
 	color:${ss_style_text_color} ;

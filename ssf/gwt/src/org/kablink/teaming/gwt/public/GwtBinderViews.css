@@ -107,7 +107,7 @@
 		.vibe-dataTableEntry-unseenMarker    {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-viewAnchor      {text-decoration: none;}
 		.vibe-dataTableEntry-viewLabel       {}
-		.vibe-dataTableLink-hover            {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLink-hover            {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableLink-hoverHint        {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: 300px; -moz-border-radius: 6px; -webkit-border-radius: 6px; }
 		.vibe-dataTableLink-hoverHintLabel   {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
 		.vibe-dataTablePresence-control      {}
@@ -134,10 +134,9 @@
 			display: block;
 			position: absolute;
 			right: 5px;
-			top: 3px;
-			height: 18px;
+			top: 5px;
+			height: 19px;
 			white-space: nowrap;
-			
 			background-color: #fafafa;
 			border: 1px solid #c4c4c4;
 			-moz-border-radius: 15px;
