@@ -1401,6 +1401,30 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "loadTemplates(Long)");
     	}	        
 	}
+	// return binder level templates
+	public List loadTemplates(final Binder parentBinder, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+			return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	Criteria criteria = session.createCriteria(TemplateBinder.class)
+                 		.add(Expression.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder))
+                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                 		.addOrder(Order.asc("definitionType"))
+                 		.addOrder(Order.asc("templateTitle"));
+	                 	criteria = filterCriteriaForTemplates(criteria);
+	                 	criteria.setCacheable(isBinderQueryCacheable());
+	                 	return criteria.list();
+	                }
+	            }
+	        );
+    	}
+    	finally {
+    		end(begin, "loadTemplates(Long)");
+    	}	        
+	}
+
 	public List loadTemplates(final Long zoneId, final int type) {
 		long begin = System.nanoTime();
 		try {

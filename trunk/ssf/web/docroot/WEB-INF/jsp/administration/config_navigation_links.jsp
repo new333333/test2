@@ -44,10 +44,10 @@
 <ul style="margin-left:-15px;">
 <c:if test="${!empty ssBinderConfig.parentBinder}">
 <c:set var="parentBinder" value="${ssBinderConfig.parentBinder}"/>
-<jsp:useBean id="parentBinder" type="org.kablink.teaming.domain.TemplateBinder" />
+<jsp:useBean id="parentBinder" type="org.kablink.teaming.domain.Binder" />
 <%
 	Stack parentTree = new Stack();
-	while (parentBinder != null) {
+	while (parentBinder != null && parentBinder instanceof org.kablink.teaming.domain.TemplateBinder) {
 		parentTree.push(parentBinder);
 		parentBinder = (org.kablink.teaming.domain.TemplateBinder)parentBinder.getParentBinder();
 	}

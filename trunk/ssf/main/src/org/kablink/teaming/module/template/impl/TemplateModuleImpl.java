@@ -694,6 +694,10 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		//world read
 		return getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
 	}
+	public List<TemplateBinder> getTemplates(Binder binder) {
+		//world read
+		return getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId());
+	}
 	public List<TemplateBinder> getTemplates(int type) {
 		//world read
 		return getCoreDao().loadTemplates( RequestContextHolder.getRequestContext().getZoneId(), type);
