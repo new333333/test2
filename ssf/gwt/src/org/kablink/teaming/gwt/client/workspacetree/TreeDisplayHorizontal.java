@@ -130,6 +130,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		 * 
 		 * @param event
 		 */
+		@Override
 		public void onClick(ClickEvent event) {
 			// Are we collapsing the node?
 			if (m_ti.isBinderExpanded()) {
@@ -151,21 +152,21 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// Yes!  Expand it.
 					cmd = new ExpandHorizontalBucketCmd( m_ti.getBucketInfo() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
 						}
 						
+						@Override
 						public void onSuccess(VibeRpcResponse response) {
-							TreeInfo expandedTI;
-							
 							// Yes!  Mark the node as being opened,
 							// save its new child Binder's list and
 							// re-render it.  We do this asynchronously
 							// so that we release the AJAX request
 							// ASAP.
-							expandedTI = (TreeInfo) response.getResponseData();
+							TreeInfo expandedTI = (TreeInfo) response.getResponseData();
 							doExpandNodeAsync(expandedTI);
 						}
 					});
@@ -179,6 +180,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// TreeInfo for the expansion?
 					cmd = new GetHorizontalNodeCmd( m_ti.getBinderInfo().getBinderId() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -186,15 +188,14 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
+						@Override
 						public void onSuccess(VibeRpcResponse response) {
-							TreeInfo expandedTI;
-							
 							// Yes!  Mark the node as being opened,
 							// save its new child Binder's list and
 							// re-render it.  We do this asynchronously
 							// so that we release the AJAX request
 							// ASAP.
-							expandedTI = (TreeInfo) response.getResponseData();
+							TreeInfo expandedTI = (TreeInfo) response.getResponseData();
 							doExpandNodeAsync(expandedTI);
 						}
 					});
@@ -224,6 +225,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
+	@Override
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
 		return new OnSelectBinderInfo(ti, Instigator.BREADCRUMB_TREE_SELECT);
 	}
@@ -259,6 +261,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		Anchor a = new Anchor();
 		a.addStyleName("breadCrumb_CloseA");
 		a.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
 				closeTree();
 			}
@@ -335,6 +338,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean isInActivityStreamMode() {
 		// Return false since a bread crumb tree is never in activity
 		// stream mode.
@@ -349,6 +353,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 *
 	 * @param rootPanel
 	 */
+	@Override
 	public void render(String selectedBinderId, FlowPanel rootPanel) {
 		// If we're displaying a horizontal popup...
 		if (getTreeMode().isHorizontalPopup()) {
@@ -455,6 +460,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @param ti
 	 */
+	@Override
 	void selectBinder(TreeInfo ti) {
 		closeTree();
 	}
@@ -467,6 +473,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * @param selectedBinderId
 	 * @param targetPanel
 	 */
+	@Override
 	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
 		// These values aren't used by the horizontal tree control.
 	}
@@ -479,6 +486,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @param binderInfo
 	 */
+	@Override
 	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
 		// The context of the horizontal tree control can only be set
 		// during it's instantiation.

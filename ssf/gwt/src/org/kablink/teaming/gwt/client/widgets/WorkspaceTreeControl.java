@@ -196,6 +196,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 			mainPanel.addStyleName("breadCrumb_Browser " + (isBinder ? "breadCrumb_BrowserBinder" : "breadCrumb_BrowserPopup"));
 			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -203,14 +204,12 @@ public class WorkspaceTreeControl extends ResizeComposite
 						selectedBinderId);
 				}
 				
+				@Override
 				public void onSuccess(VibeRpcResponse response)  {
-					List<TreeInfo> tiList;
-					GetHorizontalTreeRpcResponseData responseData;
-					
 					// Asynchronously render the horizontal tree so
 					// that we can release the AJAX request ASAP.
-					responseData = (GetHorizontalTreeRpcResponseData) response.getResponseData();
-					tiList = responseData.getTreeInfo();
+					GetHorizontalTreeRpcResponseData responseData = (GetHorizontalTreeRpcResponseData) response.getResponseData();
+					List<TreeInfo> tiList = responseData.getTreeInfo();
 					renderHTreeAsync(
 						mainPanel,
 						wsTree,
@@ -233,18 +232,19 @@ public class WorkspaceTreeControl extends ResizeComposite
 			mainPanel.addStyleName("workspaceTreeControl");
 			GetVerticalTreeCmd cmd = new GetVerticalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_GetTree(),
 						selectedBinderId);
 				}
+				
+				@Override
 				public void onSuccess(VibeRpcResponse response)  {
-					TreeInfo ti;
-					
 					// Asynchronously render the vertical tree so that
 					// we can release the AJAX request ASAP.
-					ti = (TreeInfo) response.getResponseData();
+					TreeInfo ti = ((TreeInfo) response.getResponseData());
 					renderVTreeAsync(
 						mainPanel,
 						wsTree,
@@ -593,6 +593,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
 			cmd = new GetDefaultActivityStreamCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					// If we couldn't get it, handle the
 					// failure...
@@ -607,11 +608,13 @@ public class WorkspaceTreeControl extends ResizeComposite
 					m_treeDisplay.enterActivityStreamMode(asi);
 				}
 				
+				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					ActivityStreamInfo asi = null;
 					
-					if ( response.getResponseData() != null )
+					if (null != response.getResponseData()) {
 						asi = (ActivityStreamInfo) response.getResponseData();
+					}
 					
 					// If the user doesn't have a default
 					// saved or the default saved is
