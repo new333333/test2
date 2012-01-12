@@ -733,28 +733,43 @@ input.ss_tinyButton,
 a.ss_tinyButton:link, 
 a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
- 	font-size: 11px;
-	background: #949494 none repeat scroll 0 0;
-	color:#FFFFFF !important;
-	margin-right:3px;
-	padding: 2px 10px;
-	text-decoration:none;
-  	cursor: pointer;
+	color: #1f1f1f !important;
+	margin-right: 5px;
+	display:block;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
+	border: 1px solid #B8B8B8 !important;
+	font-weight: normal !important;
+	font-size: 11px;
+	padding: 2px 10px  !important;
+	text-decoration:none;	
   	white-space: nowrap;
-	-moz-border-radius: 10px 10px 10px 10px;
-	-webkit-border-radius: 10px 10px 10px 10px;
+  	cursor: pointer !important;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 	}
 a.ss_tinyButton:focus,
 a.ss_tinyButton:hover {
-  	color: ${ss_linkbutton_link_hover_color};
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: 11px;
-	color: #fff;
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
-	background-position: center;
+	color: #135c8f !important;
+	border: 1px solid #81b2bd !important;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
   	white-space: nowrap;
-	-moz-border-radius:10px 10px 10px 10px;
-	-webkit-border-radius:10px 10px 10px 10px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -1463,9 +1478,9 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	padding-right:4px;
 	}
 tr.ss_attachments_list_primary_file td, tr.ss_attachments_list_regular_file td {
+	font-size: 12px;
 	padding: 5px 10px 5px 0px;
 	white-space: nowrap;
-	font-size: ${ss_style_font_largestprint};
 	}
 tr.ss_attachments_list_primary_file td {
     background-color: #fff;
@@ -3828,8 +3843,8 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
-	color: #333; 
-	padding: 4px 5px 4px 2px; 
+	color: #505354; 
+	padding: 3px 5px 2px 2px; 
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
 	background:url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
@@ -4239,29 +4254,46 @@ div.ss_questionContainer p {padding-right: 30px;}
 div.ss_questionContainer ol {margin: 10px 0px;}
 
 div.ss_questionContainer a.ss_tinyButton {
-	background: #949494 none repeat scroll 0 0;
-	color:#FFFFFF !important;
-  	font-size: 11px;
+
+	color: #1f1f1f !important;
+	margin-right: 5px;
+	display:block;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
+	border: 1px solid #B8B8B8;
+	font-weight: normal !important;
+	font-size: 11px;
+	padding: 2px 10px !important;
 	margin-right: 10px;
-	padding: 2px 10px;
-	text-decoration:none;
-  	cursor: pointer;
+	text-decoration:none;	
   	white-space: nowrap;
-	-moz-border-radius: 10px 10px 10px 10px;
-	-webkit-border-radius: 10px 10px 10px 10px;
+  	cursor: pointer !important;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 	}
 div.ss_questionContainer a.ss_tinyButton:focus,
 div.ss_questionContainer a.ss_tinyButton:hover {
+
   	font-size: 11px;
-	color: #fff;
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
-	background-position: center;
+	color: #135c8f !important;
+	border: 1px solid #81b2bd;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
   	white-space: nowrap;
-	-moz-border-radius:10px 10px 10px 10px;
-	-webkit-border-radius:10px 10px 10px 10px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 }
-
-
 
 table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;
