@@ -283,6 +283,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		Map model = new HashMap();
 		model.put(WebKeys.ERROR_LIST,  request.getParameterValues(WebKeys.ERROR_LIST));
 		Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+		Binder parentBinder = null;
+		if (parentBinderId != null) {
+			//Make sure there is access to the parent binder
+			parentBinder = (Binder)getBinderModule().getBinder(parentBinderId);
+		}
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
 		String path = WebKeys.VIEW_TEMPLATE;
@@ -457,7 +463,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 
-			List<TemplateBinder> configs = getTemplateModule().getTemplates();
+			List<TemplateBinder> configs = new ArrayList<TemplateBinder>();
+			if (parentBinderId == null) {
+				configs = getTemplateModule().getTemplates();
+			} else {
+				configs = getTemplateModule().getTemplates(parentBinder);
+			}
 			model.put(WebKeys.BINDER_CONFIGS, configs);
 		}
 		return new ModelAndView(path, model);

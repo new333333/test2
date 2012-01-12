@@ -1698,10 +1698,15 @@ public class BinderHelper {
 			navigationLinkMap = new HashMap();
 			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
 		}
-    	while (parentConfig != null) {
+    	while (parentConfig != null && parentConfig instanceof TemplateBinder) {
         	Document tree = buildTemplateTreeRoot(bs, parentConfig, helper);
  			navigationLinkMap.put(parentConfig.getId(), tree);
-			parentConfig = (TemplateBinder)parentConfig.getParentBinder();
+ 			if (parentConfig.getParentBinder() instanceof TemplateBinder) {
+ 				parentConfig = (TemplateBinder)parentConfig.getParentBinder();
+ 			} else {
+ 				//This template may be owned by a real folder. If so, stop there.
+ 				break;
+ 			}
 		}
 	}
 	

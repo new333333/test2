@@ -122,6 +122,11 @@ public interface TemplateModule {
  	 * @return
  	 */
 	public List<TemplateBinder> getTemplates();
+ 	/**
+ 	 * Get all binder level templates
+ 	 * @return
+ 	 */
+	public List<TemplateBinder> getTemplates(Binder binder);
 	/**
 	 * Build a document used to export/import templates
 	 * @param template
