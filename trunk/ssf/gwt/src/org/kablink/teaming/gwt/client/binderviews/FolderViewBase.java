@@ -95,6 +95,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	public final static int VIEW_CONTENT_PANEL_INDEX	= 5;
 	public final static int FOOTER_PANEL_INDEX			= 6;
 
+	public final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
+	public final static int NO_VSCROLL_ADJUST			=  28;	// Height adjustment required so there's no vertical scroll bar by default.
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -140,6 +143,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		if ((toolPanels + 1) == m_readyComponents) {	// Count of tool panels plus 1 for the view itself.
 			// ...tell the super class.
 			m_viewReady = true;
+			viewComplete();
 			super.viewReady();
 		}
 	}
@@ -211,6 +215,20 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		for (ToolPanelBase tpb:  getToolPanels()) {
 			if (tpb instanceof EntryMenuPanel) {
 				return ((EntryMenuPanel) tpb);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Scan the defined tool panels for a footer panel and returns it.
+	 * 
+	 * @return
+	 */
+	public FooterPanel getFooterPanel() {
+		for (ToolPanelBase tpb:  getToolPanels()) {
+			if (tpb instanceof FooterPanel) {
+				return ((FooterPanel) tpb);
 			}
 		}
 		return null;
@@ -562,6 +580,18 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		}
 	}
 
+	/**
+	 * Called when everything about the view (tool panels, ...) is
+	 * complete.
+	 * 
+	 * This method is defined for classes that extend this class to
+	 * override so that they can do any processing that they require
+	 * once their a view is complete.
+	 */
+	public void viewComplete() {
+		// Nothing to do.
+	}
+	
 	/**
 	 * Called by classes that extend this base class so that it can
 	 * inform the world that its view is ready to go.

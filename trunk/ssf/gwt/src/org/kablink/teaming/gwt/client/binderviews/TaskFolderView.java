@@ -57,9 +57,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class TaskFolderView extends FolderViewBase {
-	private TaskDisplayDataRpcResponseData	m_taskDisplayData;	//
+	private TaskDisplayDataRpcResponseData	m_taskDisplayData;	// The task display data read from the server.
 	private TaskListing						m_taskListing;		// The TaskList composite.
-	private VibeFlowPanel					m_gwtTaskFilter;	//
+	private VibeFlowPanel					m_gwtTaskFilter;	// The <DIV> that will hold the task filter widget(s). 
 
 	// The following define the indexes into a VibeVerticalPanel of the
 	// addition panel that makes up a task folder view.
@@ -246,6 +246,19 @@ public class TaskFolderView extends FolderViewBase {
 		m_taskListing.resize();
 	}
 
+	/**
+	 * Called when everything about the view (tool panels, ...) is
+	 * complete.
+	 * 
+	 * Overrides the FolderViewBase.viewComplete() method.
+	 */
+	@Override
+	public void viewComplete() {
+		// Tell the task listing to resize itself now that it can
+		// determine how big everything is.
+		m_taskListing.resize();
+	}
+	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the task folder view and perform some operation on it.        */
