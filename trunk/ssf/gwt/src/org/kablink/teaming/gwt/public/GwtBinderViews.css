@@ -34,9 +34,11 @@
 	/* ...End:  Description panel styles. */
 	
 	/* ...Start:  Entry menu panel styles. */
-		.vibe-entryMenuPanel {
+		.vibe-entryMenuPanel
+		{
 			padding: 0px !important;
-			background-color: #ededed; 
+			background-color: #ededed;
+			position: relative; 
 		}
 	/* ...End:  Entry menu panel styles. */
 	
@@ -125,10 +127,26 @@
 	/* ...End:  File folder view styles. */
 	
 	/* ...Start:  Task folder view styles. */
-		.vibe-taskFolderView          {}
-		.vibe-taskFolderVerticalPanel {}
+		.vibe-taskFolderFilterPanel
+		{
+			padding: 0 0 0 5px;
+			border-left: none;
+			display: block;
+			position: absolute;
+			right: 5px;
+			top: 3px;
+			height: 18px;
+			white-space: nowrap;
+			
+			background-color: #fafafa;
+			border: 1px solid #c4c4c4;
+			-moz-border-radius: 15px;
+			-webkit-border-radius: 15px;
+		}
 		.vibe-taskFolderFlowPanel     {}
-	/* ...End:  Task older view styles. */
+		.vibe-taskFolderVerticalPanel {}
+		.vibe-taskFolderView          {}
+/* ...End:  Task older view styles. */
 /* End:  GWT folder view styles. */
 
 
