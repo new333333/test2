@@ -530,6 +530,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			notification.setEnabled(mailConfig.isSendMailEnabled());
  			getNotificationObject().setScheduleInfo(notification);
  		}
+  		zoneConfig.getMailConfig().setOutgoingAttachmentSizeLimit(mailConfig.getOutgoingAttachmentSizeLimit());
+  		zoneConfig.getMailConfig().setOutgoingAttachmentSumLimit(mailConfig.getOutgoingAttachmentSumLimit());
  		//this is being phased out
  		if (posting != null) {
  			posting.setEnabled(posting.isEnabled());
