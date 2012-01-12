@@ -80,6 +80,7 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Reservable;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.TitleException;
@@ -93,6 +94,7 @@ import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.ConvertedFileModule;
@@ -105,6 +107,8 @@ import org.kablink.teaming.module.file.LockedByAnotherUserException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -219,6 +223,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	protected FolderModule getFolderModule() {
 		// Can't use IoC due to circular dependency
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+	protected ProfileModule getProfileModule() {
+		// Can't use IoC due to circular dependency
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}
 
 	protected ConvertedFileModule getConvertedFileModule() {
@@ -1090,6 +1099,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			VersionAttachment va) throws DeleteVersionException {
 		//List<String> beforeVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
 		//		va.getFileItem().getName());
+		
+		if (entity instanceof FolderEntry) {
+			getFolderModule().checkAccess((FolderEntry)entity, FolderOperation.modifyEntry);
+		} else if (entity instanceof Principal) {
+			getProfileModule().checkAccess((Principal)entity, ProfileOperation.modifyEntry);
+		} else {
+			getBinderModule().checkAccess(binder, BinderOperation.modifyBinder);
+		}
 		
 		// Check if the version is the only one remaining for the file. 
 		FileAttachment fa = va.getParentAttachment();
