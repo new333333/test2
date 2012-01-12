@@ -150,38 +150,49 @@
 	
 	/* Start: GWT Vertical Menu styles*/
 	.gwt-PopupPanel {
-/*		background: #3A3E40; */
-		background: #f6f6f6;
+		background: #505354;
+/*		background: #f6f6f6; */
 		border: 0px;
 		padding: 6px;
-		-moz-border-radius-bottomleft: 5px;
-		-moz-border-radius-bottomright: 5px;
-		-webkit-border-bottom-left-radius: 5px;
-		-webkit-border-bottom-right-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		box-shadow: 0 2px 4px #505354;
 		}
 	.gwt-MenuBarPopup {
 		box-shadow: 0 2px 4px #505354;
 		margin: 4px 0px;
-		border-left: 1px solid #ccc;
-		border-right: 1px solid #ccc;
 		}
-	.gwt-MenuBarPopup .menuPopupTopLeft,
-	.gwt-MenuBarPopup .menuPopupTopRight,
 	.gwt-MenuBarPopup .menuPopupTopCenter,
+	.gwt-MenuBarPopup .menuPopupBottomCenter,
 	.gwt-MenuBarPopup .menuPopupMiddleLeft,
 	.gwt-MenuBarPopup .menuPopupMiddleRight,
 	.gwt-MenuBar-vertical {
-		background: #f6f6f6;
-		}		
-		
-	.gwt-MenuBarPopup .menuPopupBottomCenter,
-	.gwt-MenuBarPopup .menuPopupBottomRight,
+		background: #505354;
+/*		background: #f6f6f6; */
+		}			
+	.gwt-MenuBarPopup .menuPopupTopLeft {
+		background: #505354;
+		-moz-border-radius-topleft: 5px;
+		-webkit-border-top-left-radius: 5px;
+		}	
+	.gwt-MenuBarPopup .menuPopupTopRight {
+		background: #505354;
+		-moz-border-radius-topright: 5px;
+		-webkit-border-top-right-radius: 5px;
+		}	
 	.gwt-MenuBarPopup .menuPopupBottomLeft {
-		background: #f6f6f6;
-		border-bottom: 1px solid #ccc;
+		background: #505354;
+		-moz-border-radius-bottomleft: 5px;
+		-webkit-border-bottom-left-radius: 5px;
+		}	
+	.gwt-MenuBarPopup .menuPopupBottomRight {
+		background: #505354;
+		-moz-border-radius-bottomright: 5px;
+		-webkit-border-bottom-right-radius: 5px;
 		}	
 	.gwt-MenuBar-vertical .gwt-MenuItem {
-		color: #353838;
+		color: #fff;
+/*		color: #353838; */
 		padding: 4px 6px;
 		}
 	.gwt-MenuBar-vertical .gwt-MenuItemSeparator {
@@ -191,12 +202,12 @@
 		height: 0px;
 		border: 0px;
 		margin: 5px 0;
-		border-top: 1px solid #e0e0e0;
-		border-bottom: 1px solid #fff;
+		border-top: 1px solid #1f1f1f;
+		border-bottom: 1px solid #626566;
 		}
 	.gwt-MenuBar .gwt-MenuItem-selected {
-		color: #135c8f;
-		background-color: #cce9ee;
+		color: #81b2bd;
+		background-color: #353838;
 		-moz-border-radius: 3px;
 		-webkit-border-radius: 3px;
 		}		
@@ -220,6 +231,7 @@
 		}	
 		
 	.vibe-entryMenuBar .gwt-MenuItem-selected {
+		color: #135c8f !important;
 		border: 1px solid #81b2bd;
 		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
