@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -584,10 +584,7 @@ public class ContentControl extends Composite
 						
 					default:
 						// Something we don't know how to handle!
-						if ( m_isDebugUI )
-						{
-							Window.alert( "ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )" );
-						}
+						GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )" );
 						break;
 					}
 					break;
@@ -649,25 +646,20 @@ public class ContentControl extends Composite
 					
 					default:
 						// Something we don't know how to handle!  
-						if ( m_isDebugUI )
-						{
-							Window.alert( "ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )" );
-						}
+						GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )" );
 						break;
 					}
 					break;
 				
 				default:
 					// Something we don't know how to handle!
-					if ( m_isDebugUI )
-					{
-						Window.alert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
-					}
+					GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
 					break;
 				}
 				break;
 				
 			case ADD_FOLDER_ENTRY:
+			case ADD_PROFILE_ENTRY:
 			case ADVANCED_SEARCH:
 			case BUILD_FILTER:
 				// These aren't handled!  Let things take the default
@@ -676,10 +668,7 @@ public class ContentControl extends Composite
 				
 			default:
 				// Something we don't know how to handle!
-				if ( m_isDebugUI )
-				{
-					Window.alert( "ContentControl.setViewNow( Unhandled ViewType:  " + vt.name() + " )" );
-				}
+				GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled ViewType:  " + vt.name() + " )" );
 				break;
 			}			
 		}
@@ -1006,7 +995,7 @@ public class ContentControl extends Composite
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
 				contentCtrlClient.onUnavailable();
 			}// end onFailure()
 		} );
