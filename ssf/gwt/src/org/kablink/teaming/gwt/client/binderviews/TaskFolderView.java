@@ -33,17 +33,9 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -58,36 +50,21 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Task folder view.
  * 
  * @author drfoster@novell.com
  */
-public class TaskFolderView extends FolderViewBase
-	implements
-	// Event handlers implemented by this class.
-		DeleteSelectedEntriesEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler
-{
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private TaskDisplayDataRpcResponseData	m_taskDisplayData;			//
-	private TaskListing						m_taskListing;				// The TaskList composite.
-	private VibeFlowPanel					m_gwtTaskFilter;			//
+public class TaskFolderView extends FolderViewBase {
+	private TaskDisplayDataRpcResponseData	m_taskDisplayData;	//
+	private TaskListing						m_taskListing;		// The TaskList composite.
+	private VibeFlowPanel					m_gwtTaskFilter;	//
 
 	// The following define the indexes into a VibeVerticalPanel of the
 	// addition panel that makes up a task folder view.
 	private final static int TASK_GRAPHS_PANEL_INDEX	= 3;
 
-	// The following defines the TeamingEvents that are handled by
-	// this class.  See EventHelper.registerEventHandlers() for how
-	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.DELETE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_ENTRIES,
-	};
-	
 	/**
 	 * Constructor method.
 	 * 
@@ -114,11 +91,14 @@ public class TaskFolderView extends FolderViewBase
 	 */
 	@Override
 	public void constructView() {
-//!		...this needs to be implemented...
+		// Create a DIV for the TaskListing to create task filter
+		// widgets in...
 		m_gwtTaskFilter = new VibeFlowPanel();
 		m_gwtTaskFilter.getElement().setId("gwtTaskFilter");
-		getFlowPanel().add(m_gwtTaskFilter);
+		m_gwtTaskFilter.addStyleName("vibe-taskFolderFilterPanel");
+		getEntryMenuPanel().getFlowPanel().add(m_gwtTaskFilter);
 		
+		// ...and construct everything else.
 		loadPart1Async();
 	}
 	
@@ -223,55 +203,6 @@ public class TaskFolderView extends FolderViewBase
 		});
 	}
 
-	/**
-	 * Handles DeleteSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
-//!		...this needs to be implemented...
-	}
-	
-	/**
-	 * Called when the view is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
-		super.onAttach();
-		registerEvents();
-	}
-	
-	/**
-	 * Called when the view is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-	}
-	
-	/**
-	 * Handles PurgeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
-//!		...this needs to be implemented...
-	}
-	
 	/*
 	 * Asynchronously populates the the task view.
 	 */
@@ -289,7 +220,6 @@ public class TaskFolderView extends FolderViewBase
 	 * Synchronously populates the the task view.
 	 */
 	private void populateViewNow() {
-//!		...this needs to be implemented...
 		getFlowPanel().add(m_taskListing);
 		viewReady();
 	}
@@ -313,44 +243,9 @@ public class TaskFolderView extends FolderViewBase
 	 */
 	@Override
 	public void resizeView() {
-		// ...and do what we need to do to resize the task view.
-//!		...this needs to be implemented...
+		m_taskListing.resize();
 	}
 
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				m_registeredEvents,
-				this,
-				m_registeredEventHandlers);
-		}
-	}
-
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
-	}
-	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the task folder view and perform some operation on it.        */

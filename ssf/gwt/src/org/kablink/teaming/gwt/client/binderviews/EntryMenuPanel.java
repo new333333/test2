@@ -95,7 +95,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...store the parameters...
-		m_binderInfo   = binderInfo;
+		m_binderInfo           = binderInfo;
 		m_includeColumnResizer = includeColumnResizer;
 
 		// ...construct and initialize the panel...
@@ -143,6 +143,15 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 */
 	public VibeMenuItem getAddFilesMenuItem() {
 		return m_addFilesMenu;
+	}
+	
+	/**
+	 * Returns the flow panel that contains the menu.
+	 * 
+	 * @return
+	 */
+	public VibeFlowPanel getFlowPanel() {
+		return m_fp;
 	}
 	
 	/*

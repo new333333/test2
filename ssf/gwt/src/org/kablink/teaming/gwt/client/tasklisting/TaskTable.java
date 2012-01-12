@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
@@ -82,6 +83,8 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposi
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
@@ -128,6 +131,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class that implements the Composite that contains the task folder
@@ -149,36 +153,37 @@ public class TaskTable extends Composite
 		TaskPurgeEvent.Handler,
 		TaskQuickFilterEvent.Handler
 {
-	private boolean					m_sortAscending;			//
-	private Column					m_sortColumn;				//
-	private EventHandler			m_assigneeMouseOutEvent;	//
-	private EventHandler			m_assigneeMouseOverEvent;	//
-	private EventHandler			m_cbClickHandler;			//
-	private EventHandler			m_columnClickHandler;		//
-	private EventHandler			m_dueDateClickHandler;		//
-	private EventHandler			m_expanderClickHandler;		//
-	private EventHandler			m_newTaskClickHandler;		//
-	private EventHandler			m_taskOptionClickHandler;	//
-	private EventHandler			m_taskOrderBlurHandler;		//
-	private EventHandler			m_taskOrderClickHandler;	//
-	private EventHandler			m_taskOrderKeyPressHandler;	//
-	private EventHandler			m_taskSeenClickHandler;		//
-	private EventHandler			m_taskViewClickHandler;		//
-	private FlexCellFormatter		m_flexTableCF;				//
-	private FlexTable				m_flexTable;				//
-	private Image 					m_dueDateBusy;				//
-	private int						m_markerSize;				// Calculated size of a marker (e.g., unseen bubble, completed checkmark, ...)
-	private long					m_renderTime;				//
-	private ProcessActiveWidgets	m_processActiveWidgets;		//
-	private RowFormatter			m_flexTableRF;				//
-	private String					m_quickFilter;				//
-	private TaskBundle				m_taskBundle;				//
-	private TaskDueDateDlg			m_dueDateDlg;				//
-	private TaskListing				m_taskListing;				//
-	private TaskPopupMenu			m_newTaskMenu;				//
-	private TaskPopupMenu			m_percentDoneMenu;			//
-	private TaskPopupMenu			m_priorityMenu;				//
-	private TaskPopupMenu			m_statusMenu;				//
+	private boolean						m_sortAscending;			//
+	private Column						m_sortColumn;				//
+	private EventHandler				m_assigneeMouseOutEvent;	//
+	private EventHandler				m_assigneeMouseOverEvent;	//
+	private EventHandler				m_cbClickHandler;			//
+	private EventHandler				m_columnClickHandler;		//
+	private EventHandler				m_dueDateClickHandler;		//
+	private EventHandler				m_expanderClickHandler;		//
+	private EventHandler				m_newTaskClickHandler;		//
+	private EventHandler				m_taskOptionClickHandler;	//
+	private EventHandler				m_taskOrderBlurHandler;		//
+	private EventHandler				m_taskOrderClickHandler;	//
+	private EventHandler				m_taskOrderKeyPressHandler;	//
+	private EventHandler				m_taskSeenClickHandler;		//
+	private EventHandler				m_taskViewClickHandler;		//
+	private FlexCellFormatter			m_flexTableCF;				//
+	private FlexTable					m_flexTable;				//
+	private Image 						m_dueDateBusy;				//
+	private int							m_markerSize;				// Calculated size of a marker (e.g., unseen bubble, completed checkmark, ...)
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private long						m_renderTime;				//
+	private ProcessActiveWidgets		m_processActiveWidgets;		//
+	private RowFormatter				m_flexTableRF;				//
+	private String						m_quickFilter;				//
+	private TaskBundle					m_taskBundle;				//
+	private TaskDueDateDlg				m_dueDateDlg;				//
+	private TaskListing					m_taskListing;				//
+	private TaskPopupMenu				m_newTaskMenu;				//
+	private TaskPopupMenu				m_percentDoneMenu;			//
+	private TaskPopupMenu				m_priorityMenu;				//
+	private TaskPopupMenu				m_statusMenu;				//
 	
 	private       boolean							m_newTaskTable = true;										//
 	private final GwtRpcServiceAsync				m_rpcService   = GwtTeaming.getRpcService();				// 
@@ -576,13 +581,6 @@ public class TaskTable extends Composite
 
 		// ...store the parameters...
 		m_taskListing = taskListing;
-		
-		// ..register the events to be handled by this class...
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
-		
 		
 		// ...initialize the JSNI mouse event handlers...
 		jsInitTaskMouseEventHandlers(this);
@@ -1893,7 +1891,20 @@ public class TaskTable extends Composite
 	private void handleTaskNewTask(TaskListItem task, String newTaskDisposition) {
 		jsSetNewTaskDisposition(newTaskDisposition);
 		jsSetSelectedTaskId(String.valueOf(task.getTask().getTaskId().getEntryId()));
-		GwtClientHelper.jsLaunchToolbarPopupUrl(m_taskBundle.getNewTaskUrl());
+		String newTaskUrl = m_taskBundle.getNewTaskUrl();
+		if (m_taskListing.isEmbeddedInJSP()) {
+			GwtClientHelper.jsLaunchToolbarPopupUrl(newTaskUrl);
+		}
+		else {
+			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+				newTaskUrl,
+				false,	// false -> Not trash.
+				Instigator.GOTO_CONTENT_URL);
+			
+			if (GwtClientHelper.validateOSBI(osbInfo)) {
+				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+			}
+		}
 	}
 	
 	/*
@@ -2624,6 +2635,18 @@ public class TaskTable extends Composite
 	}
 
 	/**
+	 * Called when the task table is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
 	 * Handles DeleteSelectedEntriesEvent's received by this class.
 	 * 
 	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
@@ -2638,6 +2661,19 @@ public class TaskTable extends Composite
 			// Yes!  Delete the selected tasks.
 			handleTaskDelete();
 		}
+	}
+	
+	/**
+	 * Called when the task table is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
 	}
 	
 	/**
@@ -2920,6 +2956,28 @@ public class TaskTable extends Composite
 		});
 	}
 	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
 	/*
 	 * Renders a column of a row based on a task into the TaskTable.
 	 */
@@ -3853,6 +3911,18 @@ public class TaskTable extends Composite
 		TaskSorter.sort(m_taskBundle.getTasks(), comparator);
 	}
 
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
+	}
+	
 	/*
 	 * Makes a GWT RPC call to the server to update the calculated
 	 * dates for the binder and/or task, and any related subtasks.  If
