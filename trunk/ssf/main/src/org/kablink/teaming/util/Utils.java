@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -333,7 +334,14 @@ public class Utils {
 	//Routine to check send mail quota on attachments
 	public static boolean testSendMailAttachmentSize(FileAttachment fAtt) {
 		//Get the quota (if any)
-		Long maxSize = SPropsUtil.getLong("mail.maxAttachmentSize", -1);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");
+		ZoneConfig zoneConfig = coreDao.loadZoneConfig(user.getZoneId());
+		MailConfig mailConfig = zoneConfig.getMailConfig();
+
+		Long maxSize = mailConfig.getOutgoingAttachmentSizeLimit();
+		if (maxSize == null) return true;		//If no value has been set, then any size is OK
+		
 		if (maxSize < 0 || maxSize >= fAtt.getFileItem().getLength()) {
 			return true;
 		} else {
@@ -345,11 +353,19 @@ public class Utils {
 	//  The sum of the attachments must not exceed the limit
 	public static boolean testSendMailAttachmentsSize(Collection<FileAttachment> fileAttachments) {
 		//Get the quota (if any)
-		Long maxSize = SPropsUtil.getLong("mail.maxAttachmentSumSize", -1);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");
+		ZoneConfig zoneConfig = coreDao.loadZoneConfig(user.getZoneId());
+		MailConfig mailConfig = zoneConfig.getMailConfig();
+
 		Long sum = 0L;
 		for (FileAttachment fAtt : fileAttachments) {
 			sum += fAtt.getFileItem().getLength();
 		}
+		
+		Long maxSize = mailConfig.getOutgoingAttachmentSumLimit();
+		if (maxSize == null) return true;		//If no value has been set, then any size is OK
+
 		if (maxSize < 0 || maxSize >= sum) {
 			return true;
 		} else {
