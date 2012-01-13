@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import static org.kablink.util.search.Constants.DOCID_FIELD;
+import static org.kablink.util.search.Constants.ENTRY_ANCESTRY;
+import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
+
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.text.Collator;
@@ -66,6 +70,7 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -92,6 +97,7 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -216,7 +222,9 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
+import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
+import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
 
 /**
@@ -3714,6 +3722,73 @@ public class GwtServerHelper {
 	{
 		Binder binder;
 		ArrayList<TreeInfo> listOfChildBinders;
+    	Map<String, Counter> unseenCounts;
+
+		// Get the count of unseen items in the given binder and sub binders
+		{
+			HashMap options;
+			List binderIds;
+			Date creationDate;
+			String startDate;
+			String now;
+			Criteria crit;
+			Map results;
+	    	List<Map> entries;
+			SeenMap seen;
+			
+	    	unseenCounts = new HashMap();
+	    	
+			options = new HashMap();
+			binderIds = new ArrayList();
+			binderIds.add( binderId );
+		    
+			// Get entries created within last 30 days
+			creationDate = new Date();
+			creationDate.setTime( creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000 );
+			startDate = DateTools.dateToString( creationDate, DateTools.Resolution.SECOND );
+			now = DateTools.dateToString( new Date(), DateTools.Resolution.SECOND );
+			crit = SearchUtils.newEntriesDescendants( binderIds );
+			crit.add( org.kablink.util.search.Restrictions.between( MODIFICATION_DATE_FIELD, startDate, now ) );
+			results = ami.getBinderModule().executeSearchQuery( crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
+	    	entries = (List) results.get( ObjectKeys.SEARCH_ENTRIES );
+
+			// Get the count of unseen entries
+			seen = ami.getProfileModule().getUserSeenMap( null );
+	    	for (Map entry : entries)
+	    	{
+	    		SearchFieldResult entryAncestors;
+				String entryIdString;
+				Iterator itAncestors;
+
+	    		entryAncestors = (SearchFieldResult) entry.get( ENTRY_ANCESTRY );
+				if ( entryAncestors == null )
+					continue;
+				
+				entryIdString = (String) entry.get( DOCID_FIELD );
+				if ( entryIdString == null || ( seen.checkIfSeen( entry ) ) )
+					continue;
+				
+				// Count up the unseen counts for all ancestor binders
+				itAncestors = entryAncestors.getValueSet().iterator();
+				while ( itAncestors.hasNext() )
+				{
+					String binderIdString;
+					Counter cnt;
+
+					binderIdString = (String)itAncestors.next();
+					if ( binderIdString.equals("") )
+						continue;
+					
+					cnt = unseenCounts.get( binderIdString );
+					if ( cnt == null )
+					{
+						cnt = new WorkspaceTreeHelper.Counter();
+						unseenCounts.put( binderIdString, cnt );
+					}
+					cnt.increment();
+				}
+	    	}
+		}
 
 		listOfChildBinders = new ArrayList<TreeInfo>();
 		binder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), binderId );
@@ -3741,13 +3816,38 @@ public class GwtServerHelper {
 						{
 							// Yes
 							treeInfo = buildTreeInfoFromBinder( request, ami, child, expandedBindersList, false, 1 );
+		
+							// Get the binder's description
+							{
+								Description binderDesc;
+								
+								binderDesc = child.getDescription();
+								if ( binderDesc != null )
+								{
+									String desc;
+									
+									desc = binderDesc.getText();
+									if ( desc != null && desc.length() > 0 )
+										treeInfo.getBinderInfo().setBinderDesc( desc );
+								}
+							}
+							
+							// Set the number of unseen entries for this binder
+							{
+								Counter counter;
+								
+								counter = unseenCounts.get( String.valueOf( child.getId() ) );
+								if ( counter != null )
+									treeInfo.getBinderInfo().setNumUnread( counter.getCount() );
+							}
+							
 							listOfChildBinders.add( treeInfo );
 						}
 					}
 				}
 			}
 		}
-
+		
 		// Sort the list of child binders.
 		if ( listOfChildBinders.isEmpty() == false )
 		{

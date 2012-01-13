@@ -54,6 +54,33 @@
 	-webkit-border-radius: 5px;
 }
 
+.childBindersWidget_ListOfWorkspacesPanel_WorkspaceDescPanel, .childBindersWidget_ListOfWorkspacesPanel_FolderDescPanel
+{
+	font-size: 10px;
+	line-height: 13px;
+	padding-left: 1px;
+	padding-right: 2px;
+	padding-bottom: 1px;
+	color: #777;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	font-weight: 500;
+	width: 200px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_unreadLabel, .childBindersWidget_ListOfFoldersPanel_unreadLabel
+{
+	color: #777;
+	font-size: 9px;
+	font-style: normal;
+	white-space: nowrap;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_unreadLabelRed, .childBindersWidget_ListOfFoldersPanel_unreadLabelRed
+{
+	color: red;
+}
+
 .childBindersWidget_MainPanel
 {
 	background-color: #EAEBE8;
