@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1123,7 +1123,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TASK_BUNDLE:
 		{
 			GetTaskBundleCmd gtbCmd = ((GetTaskBundleCmd) cmd);
-			TaskBundle results = getTaskBundle( ri, gtbCmd.getBinderId(), gtbCmd.getFilterType(), gtbCmd.getModeType() );
+			TaskBundle results = getTaskBundle( ri, gtbCmd.isEmbeddedInJSP(), gtbCmd.getBinderId(), gtbCmd.getFilterType(), gtbCmd.getModeType() );
 			TaskBundleRpcResponseData responseData = new TaskBundleRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1149,7 +1149,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TASK_LIST:
 		{
 			GetTaskListCmd gtlCmd = ((GetTaskListCmd) cmd);
-			List<TaskListItem> results = getTaskList( ri, gtlCmd.getZoneUUID(), gtlCmd.getBinderId(), gtlCmd.getFilterType(), gtlCmd.getModeType() );
+			List<TaskListItem> results = getTaskList( ri, gtlCmd.getApplyUsersFilter(), gtlCmd.getZoneUUID(), gtlCmd.getBinderId(), gtlCmd.getFilterType(), gtlCmd.getModeType() );
 			TaskListItemListRpcResponseData responseData = new TaskListItemListRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -3451,11 +3451,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Reads the task information from the specified binder.
 	 */
-	private List<TaskListItem> getTaskList( HttpRequestInfo ri, String zoneUUID, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	private List<TaskListItem> getTaskList( HttpRequestInfo ri, boolean applyUsersFilter, String zoneUUID, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskList()");
 		try {
-			return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, zoneUUID, binderId ), filterType, modeType );
+			return GwtTaskHelper.getTaskList( getRequest( ri ), this, applyUsersFilter, false, GwtTaskHelper.getTaskBinder( this, zoneUUID, binderId ), filterType, modeType );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskList()");
@@ -3465,7 +3465,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Returns a TaskBundle object for the specified binder.
 	 */
-	private TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	private TaskBundle getTaskBundle( HttpRequestInfo ri, boolean embeddedInJSP, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskBundle()");
 		try {
@@ -3473,6 +3473,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				GwtTaskHelper.getTaskBundle(
 					getRequest( ri ),
 					this,
+					(!embeddedInJSP),	// true -> Apply the user's filter directly.  From JSP, it's applied from the options cached by the controller.
+					embeddedInJSP,
 					GwtTaskHelper.getTaskBinder( this, null, binderId ),
 					filterType,
 					modeType );

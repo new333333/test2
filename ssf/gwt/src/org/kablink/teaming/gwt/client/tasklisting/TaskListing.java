@@ -566,7 +566,7 @@ public class TaskListing extends Composite {
 		
 		// Display the tasks in the task listing.
 		final long start = System.currentTimeMillis();
-		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_binderId, m_filterType, m_mode);
+		GetTaskBundleCmd cmd = new GetTaskBundleCmd(isEmbeddedInJSP(), m_binderId, m_filterType, m_mode);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {

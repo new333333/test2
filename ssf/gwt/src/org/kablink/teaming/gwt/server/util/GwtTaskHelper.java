@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+import org.dom4j.Document;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -198,7 +199,7 @@ public class GwtTaskHelper {
 		if (!isFiltered) {
 			User user = GwtServerHelper.getCurrentUser();
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId());
-			isFiltered = (null != BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
+			isFiltered = (null != BinderHelper.getSearchFilter(bs, binder, userFolderProperties, true));
 		}
 		reply.setIsFiltered(isFiltered);
 
@@ -1190,6 +1191,8 @@ public class GwtTaskHelper {
 	 * 
 	 * @param request
 	 * @param bs
+	 * @param applyUsersFilter
+	 * @param embeddedInJSP
 	 * @param binder
 	 * @param filterTypeParam
 	 * @param modeTypeParam
@@ -1198,8 +1201,8 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static List<TaskListItem> getTaskList( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
-		TaskBundle tb = getTaskBundle(request, bs, binder, filterTypeParam, modeTypeParam);
+	public static List<TaskListItem> getTaskList(HttpServletRequest request, AllModulesInjected bs, boolean applyUsersFilter, boolean embeddedInJSP, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+		TaskBundle tb = getTaskBundle(request, bs, applyUsersFilter, embeddedInJSP, binder, filterTypeParam, modeTypeParam);
 		return tb.getTasks();
 	}
 
@@ -1216,7 +1219,7 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, boolean applyUsersFilter, boolean embeddedInJSP, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
 		// Clear any previously stored reason for the tasks being
 		// read.  By the time this is called, TaskListing.java will
 		// have already made use of that information.
@@ -1229,13 +1232,18 @@ public class GwtTaskHelper {
 			getTaskBundleImpl(
 				request,
 				bs,
+				applyUsersFilter,
+				embeddedInJSP,
 				binder,
 				filterTypeParam,
 				modeTypeParam,
 				true);	// true -> Retrieve the TaskBundle on behalf of the client.
 	}
 	
-	private static TaskBundle getTaskBundleImpl(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
+	/*
+	 * Returns the TaskBundle from a task folder.
+	 */
+	private static TaskBundle getTaskBundleImpl(HttpServletRequest request, AllModulesInjected bs, boolean applyUsersFilter, boolean embeddedInJSP, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
 		// Build a base TaskBundle...
 		TaskBundle reply = buildBaseTaskBundle(
 			request,
@@ -1248,6 +1256,8 @@ public class GwtTaskHelper {
 		readTaskList(
 			request,
 			bs,
+			applyUsersFilter,
+			embeddedInJSP,
 			binder,
 			reply,
 			getCollapsedSubtasks(bs, binder.getId()),
@@ -1549,7 +1559,7 @@ public class GwtTaskHelper {
 	 * 
 	 * Apply task linkage, ... as necessary to the list stored.
 	 */
-	private static void readTaskList(HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskBundle tb, List<Long> collapsedSubtasks, boolean clientBundle) throws GwtTeamingException {
+	private static void readTaskList(HttpServletRequest request, AllModulesInjected bs, boolean applyUsersFilter, boolean embeddedInJSP, Binder binder, TaskBundle tb, List<Long> collapsedSubtasks, boolean clientBundle) throws GwtTeamingException {
 		// Create a List<TaskListItem> that we'll fill up with the task
 		// list.
 		List<TaskListItem> taskList = new ArrayList<TaskListItem>();
@@ -1559,6 +1569,8 @@ public class GwtTaskHelper {
 		List<TaskInfo> tasks = readTasks(
 			request,
 			bs,
+			applyUsersFilter,
+			embeddedInJSP,
 			binder,
 			tb.getFilterTypeParam(),
 			tb.getModeTypeParam(),
@@ -1616,7 +1628,7 @@ public class GwtTaskHelper {
 	 * Reads the tasks from the specified binder.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<TaskInfo> readTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
+	private static List<TaskInfo> readTasks(HttpServletRequest request, AllModulesInjected bs, boolean applyUsersFilter, boolean embeddedInJSP, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
 		Map taskEntriesMap;		
 		try {
 			// Setup to read the task entries...
@@ -1624,17 +1636,25 @@ public class GwtTaskHelper {
 			HttpSession session = WebHelper.getRequiredSession(request);
 			
 			options = null;
-			GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
-			if ( optionsObj != null )
-				options = ((Map) optionsObj.getData());
-			
-			if ( options == null )
-			{
-				//!!!drf TaskHelper.findTaskEntries() will save the options in the GwtUISessionData object in the session cache.
+			if (embeddedInJSP) { 
+				GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
+				if (null != optionsObj) {
+					options = ((Map) optionsObj.getData());
+				}
+			}
+			if (null == options) {
 				options = new HashMap();
 			}
 			options.put(ObjectKeys.SEARCH_MAX_HITS, (Integer.MAX_VALUE - 1));
 			options.put(ObjectKeys.SEARCH_OFFSET,   0);
+			if (applyUsersFilter) {
+				Document searchFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+				if (null == searchFilter) {
+					User user = GwtServerHelper.getCurrentUser();
+					UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId());
+					options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties, true));
+				}
+			}
 	
 			// ...and read them.
 			taskEntriesMap = TaskHelper.findTaskEntries(
@@ -2159,6 +2179,8 @@ public class GwtTaskHelper {
 		TaskBundle tb = getTaskBundleImpl(
 			request,
 			bs,
+			true,
+			false,
 			binder,
 			String.valueOf(FilterType.ALL   ),	// We need all the tasks from...
 			String.valueOf(ModeType.PHYSICAL),	// ...the binder for the update.

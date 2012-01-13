@@ -700,7 +700,7 @@ public class GwtViewHelper {
 			// Store the current filter, if any, that the user
 			// currently has selected on this binder.
 			String currentFilter = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER));
-			reply.setCurrentFilter((null == currentFilter) ? "" : currentFilter);
+			reply.setCurrentFilter((null == currentFilter) ? "" : MiscUtil.replace(currentFilter, "+", " "));
 
 			// Store a URL to turn off filtering on the binder.
 			url = new AdaptedPortletURL(request, "ss_forum", true);
