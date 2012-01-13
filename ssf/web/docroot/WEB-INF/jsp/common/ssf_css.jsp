@@ -671,17 +671,29 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	</c:if>
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
-	color: #fff;
+
+	color: #135c8f !important;
     text-align: center !important;
     font-size: 11px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
   	padding: 2px 10px !important;
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
-	background-position: center;
-	border: 0px;
-
+	border: 1px solid #81b2bd;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -711,9 +723,25 @@ input[type="button"].n-button {
 	</c:if>
 	}
 input[type="button"].n-button:hover {
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
-	background-position: center;
+
+
+	color: #135c8f !important;
+	border: 1px solid #81b2bd;
   	padding: 2px 10px !important;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 	}
 
 .n-buttonright {
