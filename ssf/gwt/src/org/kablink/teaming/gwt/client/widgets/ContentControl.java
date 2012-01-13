@@ -482,6 +482,9 @@ public class ContentControl extends Composite
 		{
 			// No, we aren't running the Granite GWT extensions!
 			// Put the change into affect the old way via the URL.
+			if (!m_isAdminContent) {
+				pushContentHistoryUrl(url);
+			}
 			setUrl( url );
 		}
 	}// end setViewFromUrl()
@@ -493,212 +496,219 @@ public class ContentControl extends Composite
 	 * the URL is loaded into the IFRAME instead.
 	 */
 	private void setViewNow( final ViewInfo vi, final String url ) {
-		// Do we have a ViewInfo?
-		m_contentInGWT = false;
-		if ( null != vi )
-		{
-			// What type of view is it?
-			ViewType vt = vi.getViewType();
-			switch ( vt )
+		try {
+			// Do we have a ViewInfo?
+			m_contentInGWT = false;
+			if ( null != vi )
 			{
-			case BINDER:
-				// Are we in UI debug mode?
-				final BinderInfo bi = vi.getBinderInfo();
-				if ( m_isDebugUI )
+				// What type of view is it?
+				ViewType vt = vi.getViewType();
+				switch ( vt )
 				{
-					// Regardless of what's implemented or not, should
-					// we force this binder through its old, JSP flow?
-					//
-					// While writing the GWT based views, I've
-					// continually wanted to go back and look at the
-					// JSP version of what I'm implementing.  This lets
-					// us force a binder, regardless of type, to ALWAYS
-					// go through the JSP display flow.
-					String binderTitle = bi.getBinderTitle().trim().toLowerCase();
-					if (binderTitle.startsWith("jsp-") && binderTitle.endsWith("-jsp")) {
-						// Yes!  Simply break out of the switch.  That
-						// will let it take the default flow.
-						break;
+				case BINDER:
+					// Are we in UI debug mode?
+					final BinderInfo bi = vi.getBinderInfo();
+					if ( m_isDebugUI )
+					{
+						// Regardless of what's implemented or not,
+						// should we force this binder through its old,
+						// JSP flow?
+						//
+						// While writing the GWT based views, I've
+						// continually wanted to go back and look at
+						// the JSP version of what I'm implementing.
+						// This lets us force a binder, regardless of
+						// type, to ALWAYS go through the JSP display
+						// flow.
+						String binderTitle = bi.getBinderTitle().trim().toLowerCase();
+						if (binderTitle.startsWith("jsp-") && binderTitle.endsWith("-jsp")) {
+							// Yes!  Simply break out of the switch.
+							// That will let it take the default flow.
+							break;
+						}
 					}
-				}
-				
-				// Regardless of the type, we'll need an ViewReady to
-				// clean up things after the view is loaded.  Create
-				// one now.
-				ViewReady viewReady = new ViewReady()
-				{
-					@Override
-					public void viewReady()
+					
+					// Regardless of the type, we'll need an ViewReady
+					// to clean up things after the view is loaded.
+					// Create one now.
+					ViewReady viewReady = new ViewReady()
 					{
-						GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
-						GwtTeaming.fireEvent(
-							new ContextChangedEvent(
-								new OnSelectBinderInfo(
-									bi.getBinderId(),
-									url,
-									bi.isBinderTrash(),
-									Instigator.CONTENT_AREA_CHANGED ) ) );
-					}//end viewReady()
-				};
-				
-				// What type of binder is it?
-				BinderType bt = bi.getBinderType();
-				switch ( bt )
-				{
-				case FOLDER:
-					// What type of folder is it?
-					FolderType ft = bi.getFolderType();
-					switch ( ft )
+						@Override
+						public void viewReady()
+						{
+							GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
+							GwtTeaming.fireEvent(
+								new ContextChangedEvent(
+									new OnSelectBinderInfo(
+										bi.getBinderId(),
+										url,
+										bi.isBinderTrash(),
+										Instigator.CONTENT_AREA_CHANGED ) ) );
+						}//end viewReady()
+					};
+					
+					// What type of binder is it?
+					BinderType bt = bi.getBinderType();
+					switch ( bt )
 					{
-					case DISCUSSION:
-						GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( bi, viewReady ) );
-						m_contentInGWT = true;
+					case FOLDER:
+						// What type of folder is it?
+						FolderType ft = bi.getFolderType();
+						switch ( ft )
+						{
+						case DISCUSSION:
+							GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+							break;
+							
+							
+						case FILE:
+							GwtTeaming.fireEvent( new ShowFileFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+							break;
+							
+							
+						case TASK:
+							GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+							break;
+	
+							
+						case BLOG:
+						case CALENDAR:
+						case GUESTBOOK:
+						case MILESTONE:
+						case MINIBLOG:
+						case MIRROREDFILE:
+						case PHOTOALBUM:
+						case SURVEY:
+						case TRASH:
+						case WIKI:
+							// These aren't handled!  Let things take
+							// the default flow.
+							break;
+							
+						default:
+							// Something we don't know how to handle!
+							GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )" );
+							break;
+						}
 						break;
 						
+					case WORKSPACE:
+						// What type of workspace is it?
+						WorkspaceType wt = bi.getWorkspaceType(); 
+						switch ( wt )
+						{
+						case LANDING_PAGE:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new landing page?" ) )
+									showNew = false;
+							}
+							
+							if ( showNew )
+							{
+								GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
+						case DISCUSSIONS:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new discussion workspace?" ) )
+									showNew = false;
+							}
+							
+							if ( showNew )
+							{
+								// Fire the event that will display the Discussion workspace.
+								GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
+						case GLOBAL_ROOT:
+						case PROFILE_ROOT:
+						case PROJECT_MANAGEMENT:
+						case TEAM:
+						case TEAM_ROOT:
+						case TOP:
+						case TRASH:
+						case USER:
+						case WORKSPACE:
+							// These aren't handled!  Let things take 
+							// the default flow.
+							break;
 						
-					case FILE:
-						GwtTeaming.fireEvent( new ShowFileFolderEvent( bi, viewReady ) );
-						m_contentInGWT = true;
+						default:
+							// Something we don't know how to handle!  
+							GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )" );
+							break;
+						}
 						break;
-						
-						
-					case TASK:
-						GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
-						m_contentInGWT = true;
-						break;
-
-						
-					case BLOG:
-					case CALENDAR:
-					case GUESTBOOK:
-					case MILESTONE:
-					case MINIBLOG:
-					case MIRROREDFILE:
-					case PHOTOALBUM:
-					case SURVEY:
-					case TRASH:
-					case WIKI:
-						// These aren't handled!  Let things take the
-						// default flow.
-						break;
-						
+					
 					default:
 						// Something we don't know how to handle!
-						GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )" );
+						GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
 						break;
 					}
 					break;
 					
-				case WORKSPACE:
-					// What type of workspace is it?
-					WorkspaceType wt = bi.getWorkspaceType(); 
-					switch ( wt )
-					{
-					case LANDING_PAGE:
-					{
-						boolean showNew = true;
-						
-						if ( m_isDebugLP )
-						{
-							if ( !Window.confirm( "Show new landing page?" ) )
-								showNew = false;
-						}
-						
-						if ( showNew )
-						{
-							GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
-							m_contentInGWT = true;
-						}
-						break;
-					}
-						
-					case DISCUSSIONS:
-					{
-						boolean showNew = true;
-						
-						if ( m_isDebugLP )
-						{
-							if ( !Window.confirm( "Show new discussion workspace?" ) )
-								showNew = false;
-						}
-						
-						if ( showNew )
-						{
-							// Fire the event that will display the Discussion workspace.
-							GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
-						}
-						break;
-					}
-						
-					case GLOBAL_ROOT:
-					case PROFILE_ROOT:
-					case PROJECT_MANAGEMENT:
-					case TEAM:
-					case TEAM_ROOT:
-					case TOP:
-					case TRASH:
-					case USER:
-					case WORKSPACE:
-						// These aren't handled!  Let things take the 
-						// default flow.
-						break;
-					
-					default:
-						// Something we don't know how to handle!  
-						GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )" );
-						break;
-					}
+				case ADD_FOLDER_ENTRY:
+				case ADD_PROFILE_ENTRY:
+				case ADVANCED_SEARCH:
+				case BUILD_FILTER:
+					// These aren't handled!  Let things take the
+					// default flow.
 					break;
-				
+					
 				default:
 					// Something we don't know how to handle!
-					GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
+					GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled ViewType:  " + vt.name() + " )" );
 					break;
-				}
-				break;
+				}			
+			}
+	
+			// Did we handle the ViewInfo as a view?
+			if ( !m_contentInGWT )
+			{
+				// No!  Load the URL instead and make sure the
+				// ContentControl is showing.
+				setUrl( url );
 				
-			case ADD_FOLDER_ENTRY:
-			case ADD_PROFILE_ENTRY:
-			case ADVANCED_SEARCH:
-			case BUILD_FILTER:
-				// These aren't handled!  Let things take the default
-				// flow.
-				break;
+				// Tell the main content layout panel to not show a GWT
+				// widget it may have.
+				m_mainPage.getMainContentLayoutPanel().showWidget( null );
 				
-			default:
-				// Something we don't know how to handle!
-				GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled ViewType:  " + vt.name() + " )" );
-				break;
-			}			
+				ShowContentControlEvent.fireOne();
+			}
+			else
+			{
+				// Hide any entry <DIV>'s that are visible...
+				GwtClientHelper.jsHideEntryPopupDiv();
+				GwtClientHelper.jsHideNewPageEntryViewDIV();
+				
+				// ...and clear out the content of the IFRAME.
+				setUrl( "" );
+				clear();
+			}
 		}
-
-		// Did we handle the ViewInfo as a view?
-		if ( !m_contentInGWT )
-		{
-			// No!  Load the URL instead and make sure the
-			// ContentControl is showing.
-			setUrl( url );
-			
-			// Tell the main content layout panel to not show a gwt widget it may have.
-			m_mainPage.getMainContentLayoutPanel().showWidget( null );
-			
-			ShowContentControlEvent.fireOne();
+		
+		finally {
+			// Finally, push the URL we just processed on the content
+			// history stack.
+			pushContentHistoryUrl( url );
 		}
-		else
-		{
-			// Hide any entry <DIV>'s that are visible...
-			GwtClientHelper.jsHideEntryPopupDiv();
-			GwtClientHelper.jsHideNewPageEntryViewDIV();
-			
-			// ...and clear out the content of the IFRAME.
-			setUrl( "" );
-			clear();
-		}
-
-		// Finally, push the URL we just processed on the content
-		// history stack.
-		pushContentHistoryUrl( url );
 	}// end setViewNow()
 	
 	/**
