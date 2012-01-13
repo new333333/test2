@@ -33,9 +33,18 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
+import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -48,19 +57,34 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Task folder view.
  * 
  * @author drfoster@novell.com
  */
-public class TaskFolderView extends FolderViewBase {
-	private TaskDisplayDataRpcResponseData	m_taskDisplayData;	// The task display data read from the server.
-	private TaskListing						m_taskListing;		// The TaskList composite.
-	private VibeFlowPanel					m_gwtTaskFilter;	// The <DIV> that will hold the task filter widget(s). 
+public class TaskFolderView extends FolderViewBase
+	implements
+	// Event handlers implemented by this class.
+		InvokeDropBoxEvent.Handler
+{
+	private AddFilesDlg						m_addFilesDlg;				//
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private TaskDisplayDataRpcResponseData	m_taskDisplayData;			// The task display data read from the server.
+	private TaskListing						m_taskListing;				// The TaskList composite.
+	private VibeFlowPanel					m_gwtTaskFilter;			// The <DIV> that will hold the task filter widget(s). 
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.INVOKE_DROPBOX,
+	};
+	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// addition panel that makes up a task folder view.
 	private final static int TASK_GRAPHS_PANEL_INDEX	= 3;
@@ -203,6 +227,77 @@ public class TaskFolderView extends FolderViewBase {
 		});
 	}
 
+	/**
+	 * Called when the task folder view is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the task folder view is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Handles InvokeDropBoxEvent's received by this class.
+	 * 
+	 * Implements the InvokeDropBoxEvent.Handler.onInvokeDropBox() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeDropBox(InvokeDropBoxEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Invoke the add file dialog on the folder.
+			// Have we instantiated an add files dialog yet?
+			if (null == m_addFilesDlg) {
+				// No!  Instantiate one now.
+				AddFilesDlg.createAsync(new AddFilesDlgClient() {			
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(final AddFilesDlg afDlg) {
+						// ...and show it.
+						m_addFilesDlg = afDlg;
+						ScheduledCommand doShow = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								showAddFilesDlgNow();
+							}
+						};
+						Scheduler.get().scheduleDeferred(doShow);
+					}
+				});
+			}
+			
+			else {
+				// Yes, we've instantiated an add files dialog already!
+				// Simply show it.
+				showAddFilesDlgNow();
+			}
+		}
+	}
+	
 	/*
 	 * Asynchronously populates the the task view.
 	 */
@@ -224,6 +319,28 @@ public class TaskFolderView extends FolderViewBase {
 		viewReady();
 	}
 	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
 	/**
 	 * Called from the base class to reset the content of this
 	 * discussion folder view.
@@ -246,6 +363,28 @@ public class TaskFolderView extends FolderViewBase {
 		m_taskListing.resize();
 	}
 
+	/*
+	 * Synchronously shows the add files dialog.
+	 */
+	private void showAddFilesDlgNow() {
+		AddFilesDlg.initAndShow(
+			m_addFilesDlg,
+			getFolderInfo(),
+			getEntryMenuPanel().getAddFilesMenuItem());
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
+	}
+	
 	/**
 	 * Called when everything about the view (tool panels, ...) is
 	 * complete.

@@ -132,7 +132,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public abstract class DataTableFolderViewBase extends FolderViewBase
-	implements ToolPanelReady,
+	implements
 	// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
