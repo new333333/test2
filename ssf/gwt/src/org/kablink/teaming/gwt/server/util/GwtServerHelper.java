@@ -335,6 +335,7 @@ public class GwtServerHelper {
 		 *     0 if adminAction1 == adminAction2; and
 		 *     1 if adminAction1 >  adminAction2.
 		 */
+		@Override
 		public int compare( GwtAdminAction adminAction1, GwtAdminAction adminAction2 )
 		{
 			String s1, s2;
@@ -438,6 +439,7 @@ public class GwtServerHelper {
 		 * 
 		 * @return
 		 */
+		@Override
 		public int compare(SavedSearchInfo ssi1, SavedSearchInfo ssi2) {
 			return MiscUtil.safeSColatedCompare(ssi1.getName(), ssi2.getName());
 		}
@@ -469,6 +471,7 @@ public class GwtServerHelper {
 		 * 
 		 * @return
 		 */
+		@Override
 		public int compare(TeamInfo ti1, TeamInfo ti2) {
 			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
 		}
@@ -497,6 +500,7 @@ public class GwtServerHelper {
 		 * 
 		 * @return
 		 */
+		@Override
 		public int compare(GroupInfo ti1, GroupInfo ti2) {
 			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
 		}
@@ -3704,6 +3708,57 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return a list of child binders for the given binder.
+	 */
+	public static ArrayList<TreeInfo> getListOfChildBinders( HttpServletRequest request, AllModulesInjected ami, String binderId )
+	{
+		Binder binder;
+		ArrayList<TreeInfo> listOfChildBinders;
+
+		listOfChildBinders = new ArrayList<TreeInfo>();
+		binder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), binderId );
+		if ( binder != null )
+		{
+			ArrayList<Long> expandedBindersList;
+			TreeInfo treeInfo;
+			List<Binder> children;
+
+			// This is needed by buildTreeInfoFromBinder()
+			expandedBindersList = new ArrayList<Long>();
+			
+			// Get all of the child binders.
+			children = binder.getBinders();
+			if ( children != null )
+			{
+				for (Binder child : children)
+				{
+					// Has this binder been deleted?
+					if ( child.isDeleted() == false && GwtUIHelper.isBinderPreDeleted( child ) == false )
+					{
+						// No
+						// Does the user have rights to see this binder?
+						if ( ami.getBinderModule().testAccess( binder, BinderOperation.readEntries ) )
+						{
+							// Yes
+							treeInfo = buildTreeInfoFromBinder( request, ami, child, expandedBindersList, false, 1 );
+							listOfChildBinders.add( treeInfo );
+						}
+					}
+				}
+			}
+		}
+
+		// Sort the list of child binders.
+		if ( listOfChildBinders.isEmpty() == false )
+		{
+			Collections.sort( listOfChildBinders, new TreeInfoComparator( true ) );
+		}
+
+		return listOfChildBinders;
+	}
+	
+	
+	/**
 	 * Return login information such as self registration and auto complete.
 	 */
 	public static GwtLoginInfo getLoginInfo( HttpServletRequest request, AllModulesInjected ami )
@@ -4959,6 +5014,7 @@ public class GwtServerHelper {
 		case GET_IM_URL:
 		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
 		case GET_LANDING_PAGE_DATA:
+		case GET_LIST_OF_CHILD_BINDERS:
 		case GET_LIST_OF_FILES:
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:

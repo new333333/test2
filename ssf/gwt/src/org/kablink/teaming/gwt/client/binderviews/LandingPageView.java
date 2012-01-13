@@ -135,9 +135,6 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 		String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
 		if ( configData.isPreviewMode() == false && binderId != null )
 		{
-			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
-			GwtTeaming.getMainPage().handleLandingPageOptions( binderId, configData.getHideMasthead(), configData.getHideNavPanel(), false, configData.getHideMenu() );
-			
 			// Add the description to the page.
 			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
 			{			

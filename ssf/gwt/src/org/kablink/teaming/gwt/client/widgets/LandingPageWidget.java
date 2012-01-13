@@ -122,7 +122,7 @@ public class LandingPageWidget  extends VibeWidget
 	 */
 	private void buildLandingPage( ConfigData configData )
 	{
-		int i;;
+		int i;
 		int numItems;
 		String bgColor;
 		String bgImgUrl;
@@ -133,6 +133,17 @@ public class LandingPageWidget  extends VibeWidget
 			return;
 
 		configData.parse();
+		
+		if ( configData.isPreviewMode() == false )
+		{
+			String binderId;
+			
+			binderId = configData.getBinderId();
+			
+			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
+			if ( binderId != null )
+				GwtTeaming.getMainPage().handleLandingPageOptions( binderId, configData.getHideMasthead(), configData.getHideNavPanel(), false, configData.getHideMenu() );
+		}
 		
 		// Is a background color specified?
 		bgColor = configData.getBackgroundColor();
