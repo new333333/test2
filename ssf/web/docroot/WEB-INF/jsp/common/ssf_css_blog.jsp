@@ -143,7 +143,7 @@ div.ss_blog_sidebar_box {
 	padding: 3px 5px 5px 0px;
 }
 a.ss_displaytag {
-	font-size: ${ss_style_font_smallprint} !important;
+	font-size: ${ss_style_font_smallprint};
 	}
 .ss_blog_sidebar table {
 	background-color: transparent;

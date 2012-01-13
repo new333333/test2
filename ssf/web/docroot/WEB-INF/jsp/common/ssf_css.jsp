@@ -662,8 +662,8 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
-	-moz-border-radius: 10px 10px 10px 10px;
-	-webkit-border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
     text-align: center !important;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -671,7 +671,6 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	</c:if>
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
-
 	color: #135c8f !important;
     text-align: center !important;
     font-size: 11px !important;
@@ -679,7 +678,7 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
     white-space: nowrap !important;
     text-decoration: none !important;
   	padding: 2px 10px !important;
-	border: 1px solid #81b2bd;
+	border: 0px solid #81b2bd;
 	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
@@ -763,7 +762,6 @@ a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
 	color: #1f1f1f !important;
 	margin-right: 5px;
-	display:block;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 	background-color: transparent;
@@ -843,14 +841,19 @@ div.ss_tag_content {
 }
 
 .ss_muted_cloud_tag {
-  color: ${ss_style_muted_tag_color};
-   font-size: 13px;
-   padding-right: 5px;
-   line-height: 17px;
+	color: ${ss_style_muted_tag_color};
+	background-color: #ededed;
+	font-size: 13px;
+	padding-right: 2px 6px;
+	line-height: 17px;
+	border: 1px solid #b8b8b8;
+	padding: 2px 6px;
+	-moz-border-radius: 4px;
+	-web-border-radius: 4px;
 }
 .ss_muted_tag_cloud {
   width: 95%;
-  padding-top: 1px;
+  line-height: 28px;
 }
 
 
@@ -2295,7 +2298,7 @@ div.ss_sidebar_panel_featured {
 	}
 /* titlebar */
 .ss_base_title_bar {
-	background-color: #c4c4c4;
+	background-color: #e0e0e0;
 	color: #333;
 	font-size: ${ss_style_font_normalprint};
 	font-weight: bold;
@@ -3596,14 +3599,39 @@ div.ss_calendarNaviBar {
 }
 
 .ss_calendarNaviBar .ss_hoursSelectorTitle {
-	background-color: #e0e0e0;
-	color: #333333;
-	text-decoration: none;
-	border: 1px solid #FFFFFF;
-	font-size: 12px !important;
+	color: #1f1f1f !important;
+	margin-right: 5px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
+	border: 1px solid #B8B8B8;
+	font-weight: normal !important;
+	font-size: 11px !important;
+	padding: 3px 8px  !important;
+	text-decoration:none;	
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
+
+.ss_calendarNaviBar .ss_hoursSelectorTitle:hover {
+	color: #135c8f !important;
+	border: 1px solid #81b2bd;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+}
+
 
 .ss_calendarNaviBar .ss_calHoursSelectorMenu {
  <c:if test="<%= isIE %>">
@@ -4302,7 +4330,6 @@ div.ss_questionContainer a.ss_tinyButton {
 	}
 div.ss_questionContainer a.ss_tinyButton:focus,
 div.ss_questionContainer a.ss_tinyButton:hover {
-
   	font-size: 11px;
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
