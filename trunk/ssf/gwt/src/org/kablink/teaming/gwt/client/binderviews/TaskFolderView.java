@@ -156,7 +156,7 @@ public class TaskFolderView extends FolderViewBase {
 			@Override
 			public void onFailure(Throwable caught) {
 				// Handle the failure...
-				String error = m_messages.rpcFailure_GetTaskList();
+				String error = m_messages.rpcFailure_GetTaskDisplayData();
 				GwtClientHelper.handleGwtRPCFailure(caught, error);
 			}
 
