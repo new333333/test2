@@ -177,6 +177,7 @@
 	
 	.vibe-discussionWSView_MainPanel
 	{
+		overflow: auto;
 	}
 	
 	.vibe-discussionWSView_TitlePanel

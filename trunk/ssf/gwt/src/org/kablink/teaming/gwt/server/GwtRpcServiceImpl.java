@@ -881,6 +881,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_LIST_OF_CHILD_BINDERS:
+		{
+			GetListOfChildBindersCmd glocbCmd;
+			GetListOfChildBindersRpcResponseData responseData;
+			ArrayList<TreeInfo> listOfChildBinders;
+			
+			glocbCmd = (GetListOfChildBindersCmd) cmd;
+			listOfChildBinders = GwtServerHelper.getListOfChildBinders( req, this, glocbCmd.getBinderId() );
+			responseData = new GetListOfChildBindersRpcResponseData( listOfChildBinders );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_LIST_OF_FILES:
 		{
 			GetListOfFilesCmd glofCmd;

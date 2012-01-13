@@ -338,6 +338,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetHelpUrl();
 	String rpcFailure_GetImUrl();
 	String rpcFailure_GetInheritedLandingPageProperties();
+	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_GetPersonalPreferences();
@@ -428,6 +429,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BreadCrumbPanel();
+	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_DescriptionPanel();
@@ -1270,4 +1272,7 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesDlgFrameTitle();
 	String addFilesDlgHavingTrouble();
 	String addFilesDlgHeader();
+	
+	// Strings used in the "Child binders widget"
+	String workspacesHeader();
 }// end GwtTeamingMessages
