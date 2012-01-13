@@ -172,6 +172,8 @@ public class TeamingServiceClientWithStub {
 		//addDicsussionEntryWithChineseInTitle();
 		
 		//downloadSameFileMultipleTimes();
+		
+		//addBlogEntryWithAttachment();
 	}
 	
 	public static void addMicroBlog() throws Exception {
@@ -631,6 +633,21 @@ public class TeamingServiceClientWithStub {
 	    testEntry.setCreation(ts);
 		long testEntryId = stub.folder_addEntry(null, testEntry, null);
 		System.out.println("Successfully created a discussion entry with ID = " + testEntryId);
+	}
+	
+	public static void addBlogEntryWithAttachment() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		FolderEntry blogEntry = new FolderEntry();
+		blogEntry.setTitle("Blog entry created through web services");
+		blogEntry.setDescription(new Description(1,"This blog entry has a file attachment"));
+		Long blogFolderId = 42L;
+		blogEntry.setParentBinderId(blogFolderId);
+		long blogEntryId = stub.folder_addEntry(null, blogEntry, null);
+		System.out.println("Successfully created a blog entry with ID = " + blogEntryId);
+		String fileName = "test-file.txt";
+		String fileContent = "Let's see if we can upload this file";
+		stub.folder_uploadFileAsByteArray(null, blogEntryId, null, fileName, fileContent.getBytes("UTF-8"));
+		System.out.println("Successfully attached a file to the entry");
 	}
 	
 	public static void checkEntry()  throws Exception {
