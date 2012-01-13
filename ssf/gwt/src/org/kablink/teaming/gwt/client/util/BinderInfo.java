@@ -51,6 +51,8 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private FolderType    m_folderType  = FolderType.NOT_A_FOLDER;			//
 	private String        m_binderId    = "";								//
 	private String        m_binderTitle = "";								//
+	private String		  m_binderDesc	= "";								//
+	private Long		  m_numUnread	= 0L;								// Number of unread entries in this binder and sub binders.
 	private String        m_entityType  = "";								//
 	private WorkspaceType m_wsType      = WorkspaceType.NOT_A_WORKSPACE;	//
 	
@@ -72,6 +74,8 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		BinderInfo reply = new BinderInfo();
 		reply.setBinderId(     m_binderId   );
 		reply.setBinderTitle(  m_binderTitle);
+		reply.setBinderDesc(   m_binderDesc );
+		reply.setNumUnread(	   m_numUnread  );
 		reply.setEntityType(   m_entityType );
 		reply.setBinderType(   m_binderType );
 		reply.setFolderType(   m_folderType );
@@ -91,6 +95,8 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public Long          getBinderIdAsLong() {return Long.parseLong(m_binderId);  }
 	public String        getBinderId()       {return                m_binderId;   }
 	public String        getBinderTitle()    {return                m_binderTitle;}
+	public String		 getBinderDesc()	 {return				m_binderDesc; }
+	public Long			 getNumUnread()		 {return				m_numUnread;  }
 	public String        getEntityType()     {return                m_entityType; }
 	public WorkspaceType getWorkspaceType()  {return                m_wsType;     }
 	
@@ -130,6 +136,14 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		return (BinderType.WORKSPACE == m_binderType);
 	}
 
+	/**
+	 * Stores the description of a Binder.
+	 */
+	public void setBinderDesc( String binderDesc )
+	{
+		m_binderDesc = binderDesc;
+	}
+	
 	/**
 	 * Stores the ID of a Binder.
 	 * 
@@ -203,6 +217,14 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void setIsLibrary(boolean isLibrary) {
 		m_isLibrary = isLibrary;
+	}
+	
+	/**
+	 * Stores the number of unread entries this binder and sub binders have.
+	 */
+	public void setNumUnread( Long numUnread )
+	{
+		m_numUnread = numUnread;
 	}
 	
 	/**

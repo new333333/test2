@@ -55,6 +55,8 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
@@ -164,6 +166,32 @@ public class ChildBindersWidget  extends VibeWidget
 	}
 	
 	/**
+	 * Build a panel to hold the binder's description if the binder has a description
+	 */
+	private VibeFlowPanel buildDescPanel( BinderInfo binderInfo )
+	{
+		VibeFlowPanel descPanel;
+		String desc;
+		
+		descPanel = null;
+		
+		// Does the binder have a description?
+		desc = binderInfo.getBinderDesc();
+		if ( desc != null && desc.length() > 0 )
+		{
+			// Yes
+			// Strip out <p> and </p> to save space
+			desc = desc.replaceAll( "<p>", "" );
+			desc = desc.replaceAll( "</p>", "" );
+			
+			descPanel = new VibeFlowPanel();
+			descPanel.getElement().setInnerHTML( desc );
+		}
+
+		return descPanel;
+	}
+	
+	/**
 	 * Display the given list of child binders using an icon view
 	 */
 	private VibeFlowPanel buildIconListUI( ArrayList<TreeInfo> listOfChildBinders )
@@ -258,6 +286,7 @@ public class ChildBindersWidget  extends VibeWidget
 			int leftOver;
 			int totalAddedToCol;
 			int[] numPerCol;
+			FlexCellFormatter cellFormatter;
 			
 			numPerCol = new int[NUM_COLS];
 			
@@ -283,6 +312,7 @@ public class ChildBindersWidget  extends VibeWidget
 			// Create a table for the folder names to go in.
 			table = new FlexTable();
 			table.addStyleName( "childBindersWidget_ListOfFoldersPanel_Table" );
+			cellFormatter = table.getFlexCellFormatter();
 			panel.add( table );
 			
 			// Go through the list of binders and find the folders with the given type and add their
@@ -298,6 +328,8 @@ public class ChildBindersWidget  extends VibeWidget
 					VibeFlowPanel folderPanel;
 					InlineLabel folderLabel;
 					BinderClickHandler clickHandler;
+					VibeFlowPanel descPanel;
+					Long numUnread;
 					
 					// Yes
 					folderPanel = new VibeFlowPanel();
@@ -308,6 +340,27 @@ public class ChildBindersWidget  extends VibeWidget
 					clickHandler = new BinderClickHandler( binderInfo.getBinderId(), childBinder.getBinderPermalink() );
 					folderLabel.addClickHandler( clickHandler );
 					folderPanel.add( folderLabel );
+
+					// Create a label with the number of unread entries. ie (5 unread)
+					numUnread = binderInfo.getNumUnread();
+					if ( numUnread > 0 )
+					{
+						InlineLabel unreadLabel;
+						
+						unreadLabel = new InlineLabel( " " + GwtTeaming.getMessages().unreadEntries( numUnread ) );
+						unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabel" );
+						unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabelRed" );
+						folderPanel.add( unreadLabel );
+					}
+
+					// Does this workspace have a description?
+					descPanel = buildDescPanel( binderInfo );
+					if ( descPanel != null )
+					{
+						// Yes
+						descPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_FolderDescPanel" );
+						folderPanel.add( descPanel );
+					}
 					
 					// Does the current column already have enough?
 					if ( totalAddedToCol < numPerCol[col] )
@@ -322,6 +375,7 @@ public class ChildBindersWidget  extends VibeWidget
 					}
 					
 					table.setWidget( totalAddedToCol, col, folderPanel );
+					cellFormatter.setVerticalAlignment( totalAddedToCol, col, HasVerticalAlignment.ALIGN_TOP );
 					++totalAddedToCol;
 				}
 			}
@@ -391,6 +445,7 @@ public class ChildBindersWidget  extends VibeWidget
 			int leftOver;
 			int totalAddedToCol;
 			int[] numPerCol;
+			FlexCellFormatter cellFormatter;
 			
 			numPerCol = new int[NUM_COLS];
 			
@@ -416,6 +471,7 @@ public class ChildBindersWidget  extends VibeWidget
 			// Create a table for the workspace names to go in.
 			table = new FlexTable();
 			table.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_Table" );
+			cellFormatter = table.getFlexCellFormatter();
 			panel.add( table );
 			
 			// Go through the list of binders and find the workspaces and add their
@@ -432,7 +488,9 @@ public class ChildBindersWidget  extends VibeWidget
 					InlineLabel workspaceLabel;
 					Image wsImg;
 					VibeFlowPanel wsPanel;
+					VibeFlowPanel descPanel;
 					BinderClickHandler clickHandler;
+					Long numUnread;
 					
 					// Yes
 					wsPanel = new VibeFlowPanel();
@@ -448,6 +506,27 @@ public class ChildBindersWidget  extends VibeWidget
 					workspaceLabel.addClickHandler( clickHandler );
 					wsPanel.add( workspaceLabel );
 					
+					// Create a label with the number of unread entries. ie (5 unread)
+					numUnread = binderInfo.getNumUnread();
+					if ( numUnread > 0 )
+					{
+						InlineLabel unreadLabel;
+
+						unreadLabel = new InlineLabel( " " + GwtTeaming.getMessages().unreadEntries( numUnread ) );
+						unreadLabel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_unreadLabel" );
+						unreadLabel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_unreadLabelRed" );
+						wsPanel.add( unreadLabel );
+					}
+
+					// Does this workspace have a description?
+					descPanel = buildDescPanel( binderInfo );
+					if ( descPanel != null )
+					{
+						// Yes
+						descPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_WorkspaceDescPanel" );
+						wsPanel.add( descPanel );
+					}
+					
 					// Does the current column already have enough?
 					if ( totalAddedToCol < numPerCol[col] )
 					{
@@ -461,6 +540,7 @@ public class ChildBindersWidget  extends VibeWidget
 					}
 					
 					table.setWidget( totalAddedToCol, col, wsPanel );
+					cellFormatter.setVerticalAlignment( totalAddedToCol, col, HasVerticalAlignment.ALIGN_TOP );
 					++totalAddedToCol;
 				}
 			}

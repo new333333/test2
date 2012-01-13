@@ -1276,4 +1276,6 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();
+	String unreadEntries( Long numUnread );
+	
 }// end GwtTeamingMessages

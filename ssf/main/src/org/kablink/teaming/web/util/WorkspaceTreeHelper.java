@@ -1322,9 +1322,9 @@ public class WorkspaceTreeHelper {
      */
      public static class Counter {
     	private long count=0;
-    	protected Counter() {	
+    	public Counter() {	
     	}
-    	protected void increment() {
+    	public void increment() {
     		++count;
     	}
     	public Long getCount() {
