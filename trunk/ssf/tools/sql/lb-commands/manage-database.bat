@@ -1,9 +1,6 @@
 @echo off
 if "%OS%" == "Windows_NT" setlocal
 
-set "WORKING_DIR=%cd%"
-cd "%WORKING_DIR%"
-
 set CLASSPATH=.\lib\mysql-connector.jar;.\lib\ojdbc6.jar;.\lib\jtds.jar
 
 rem Set default log level. Valid values are debug, info, warning, severe, off.
@@ -72,31 +69,31 @@ echo Note: Additional parameters are read in from [db type]-liquibase.properties
 goto end
 
 :updateDatabase
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" update
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" --contexts="%CONTEXTS%" update
 goto end
 
 :generateSqlToUpdateDatabase
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" updateSQL > ".\%1-update.sql"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" --contexts="%CONTEXTS%" updateSQL > ".\%1-update.sql"
 goto end
 
 :mark32DatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.2.xml" changeLogSync
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.2.xml" --contexts="%CONTEXTS%" changeLogSync
 goto end
 
 :generateSqlToMark32DatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.2.xml" changeLogSyncSQL > ".\%1-markasupdated.sql"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.2.xml" --contexts="%CONTEXTS%" changeLogSyncSQL > ".\%1-markasupdated.sql"
 goto end
 
 :exportSchema
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" generateChangeLog > ".\%1-schema-changelog.xml"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" generateChangeLog > ".\%1-schema-changelog.xml"
 goto end
 
 :exportData
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --diffTypes="data" generateChangeLog > ".\%1-data-changelog.xml"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --diffTypes="data" generateChangeLog > ".\%1-data-changelog.xml"
 goto end
 
 :diffDatabases
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --contexts="%CONTEXTS%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" diffChangeLog > ".\%1-diff-changelog.xml"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" diffChangeLog > ".\%1-diff-changelog.xml"
 goto end
 
 :end

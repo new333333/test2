@@ -20,6 +20,7 @@
 	<property name="diff.changelog.temp.dir" value="${temporary.dir}/diff-changelog" />
 	<property name="sql.output.temp.dir" value="${temporary.dir}/sql-output" />
 	<property name="lb.log.level" value="info"/>
+	<property name="lb.contexts" value="schema,data"/>
 	
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
@@ -346,6 +347,7 @@
 	    <updateDatabase
     			logLevel="${lb.log.level}"
 	            changeLogFile="${changelog.file}"
+    	        contexts="${lb.contexts}"
 	            driver="${destination.jdbc.driver}"
 	            url="${destination.jdbc.url}"
 	            username="${destination.jdbc.username}"
@@ -400,6 +402,7 @@
 	    <updateDatabase
     			logLevel="${lb.log.level}"
 	            changeLogFile="${changelog.file}"
+	            contexts="${lb.contexts}"
 	            driver="${destination.jdbc.driver}"
 	            url="${destination.jdbc.url}"
 	            username="${destination.jdbc.username}"
@@ -451,6 +454,7 @@
 	    <changeLogSync
     			logLevel="${lb.log.level}"
 	            changeLogFile="${changelog.file}"
+	            contexts="${lb.contexts}"
 	            driver="${destination.jdbc.driver}"
 	            url="${destination.jdbc.url}"
 	            username="${destination.jdbc.username}"
@@ -500,6 +504,7 @@
 	    <changeLogSync
     			logLevel="${lb.log.level}"
 	            changeLogFile="${changelog.file}"
+	            contexts="${lb.contexts}"
 	            driver="${destination.jdbc.driver}"
 	            url="${destination.jdbc.url}"
 	            username="${destination.jdbc.username}"
@@ -551,6 +556,7 @@
 			<changeLogSync
     			logLevel="${lb.log.level}"
 	            changeLogFile="${changelog.file}"
+    	        contexts="${lb.contexts}"
 	            driver="${destination.jdbc.driver}"
 	            url="${destination.jdbc.url}"
 	            username="${destination.jdbc.username}"
@@ -603,6 +609,7 @@
 			<changeLogSync
     			logLevel="${lb.log.level}"
 	            changeLogFile="${changelog.file}"
+    	        contexts="${lb.contexts}"
 	            driver="${destination.jdbc.driver}"
 	            url="${destination.jdbc.url}"
 	            username="${destination.jdbc.username}"
