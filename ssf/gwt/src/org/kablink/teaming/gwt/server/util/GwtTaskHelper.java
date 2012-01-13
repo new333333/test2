@@ -1303,7 +1303,13 @@ public class GwtTaskHelper {
 			// Access the information we need from the binder...
 			Long userId = GwtServerHelper.getCurrentUser().getId();
 			FilterType ft = TaskHelper.getTaskFilterType(bs, userId, binderId);
+			if (null == ft) {
+				ft = FilterType.ALL;
+			}
 			ModeType mode = TaskHelper.getTaskModeType(  bs, userId, binderId);
+			if (null == mode) {
+				mode = ModeType.PHYSICAL;
+			}
 			UserProperties userProperties = bs.getProfileModule().getUserProperties(userId, binderId);
 			String taskChangeReason = ((String) userProperties.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGE));
 			String taskChangeId     = ((String) userProperties.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_ID    ));
