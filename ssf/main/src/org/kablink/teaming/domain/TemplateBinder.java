@@ -38,6 +38,8 @@ import java.util.List;
 public class TemplateBinder extends Binder {
 	protected Description tDescription;
 	protected String tTitle;
+	protected Long tOwningBinder;
+	
 	public TemplateBinder() {
 		super();
 	}
@@ -100,7 +102,15 @@ public class TemplateBinder extends Binder {
     public void setTemplateTitle(String tTitle) {
     	this.tTitle = tTitle;
     }
-    //we always can inherit
+    
+	public Long getTemplateOwningBinderId() {
+		return tOwningBinder;
+	}
+	public void setTemplateOwningBinderId(Long tOwningBinder) {
+		this.tOwningBinder = tOwningBinder;
+	}
+
+	//we always can inherit
     public boolean isFunctionMembershipInherited() {
        return functionMembershipInherited;
     }

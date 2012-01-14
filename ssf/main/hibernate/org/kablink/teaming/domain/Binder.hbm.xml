@@ -148,10 +148,11 @@
     </subclass>
     <subclass name="org.kablink.teaming.domain.TemplateBinder" discriminator-value="template" dynamic-update="true">
   	  <property name="templateTitle" length="128"/>
-	   <component name="templateDescription">
+	  <component name="templateDescription">
    	   <property name="HDescription" column="tDescription_text" type="org.kablink.teaming.dao.util.SSClobStringType"/>
    	   <property name="HFormat" column="tDescription_format"/>
-   	 </component>
+   	  </component>
+   	  <property name="templateOwningBinderId" index="templateOwningBinderId_Binder"/>
     </subclass>
  
   </class>
