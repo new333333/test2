@@ -125,6 +125,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_FILE_FOLDER,					// Shows a file       folder.
 	SHOW_LANDING_PAGE,					// Shows a landing page.
 	SHOW_TASK_FOLDER,					// Shows a task folder.
+	SHOW_TEAM_WORKSPACE,				// Shows a team workspace.
 	
 	SIDEBAR_HIDE,						// Hides the left navigation panel.
 	SIDEBAR_RELOAD,						// Tells the left navigation panel to reload itself.

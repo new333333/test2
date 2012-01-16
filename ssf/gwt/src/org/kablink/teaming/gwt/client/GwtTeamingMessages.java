@@ -466,6 +466,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TaskFolderView();
 	String codeSplitFailure_TaskGraphsPanel();
 	String codeSplitFailure_TaskListing();
+	String codeSplitFailure_TeamWSView();
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
