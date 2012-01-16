@@ -722,8 +722,6 @@ input[type="button"].n-button {
 	</c:if>
 	}
 input[type="button"].n-button:hover {
-
-
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
   	padding: 2px 10px !important;
@@ -3572,10 +3570,10 @@ div.ss_calendarNaviBar {
 	margin: 0px;
 	padding: 10px;
 	overflow: hidden;
-	-moz-border-radius-topleft: 3px;
-	-moz-border-radius-topright: 3px;
-	-webkit-border-top-left-radius: 3px;
-	-webkit-border-top-right-radius: 3px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
  <c:if test="<%= isIE %>">
 	padding: 0px;
