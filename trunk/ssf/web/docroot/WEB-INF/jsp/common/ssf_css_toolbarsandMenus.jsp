@@ -295,18 +295,15 @@ ul.ss_actions_bar1 li a:hover {
 	background-image: none !important;
 	}
 .ss_actions_bar2 li a:hover {
-	/* background-image: url(<html:imagesPath/>pics/background_actionbar4.gif); */
 	text-decoration:none;
 	}
 .ss_actions_bar3 li a:hover {
-	/* background-color: ${ss_style_background_color_side_panel}; */
 	text-decoration:none;
 	}
 ul.ss_actions_bar4 li {
 	list-style-type:none;
 	}
 div.ss_actions_bar_submenu {
-/* background-color: ${ss_style_background_color_side_panel}; */
 	margin: 0;
 	padding: 5px;
 	text-align:left;
@@ -318,27 +315,23 @@ div.ss_actions_bar_submenu {
 	-webkit-border-radius: 5px;
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar1 {
-  /* background-color: ${ss_toolbar1_dropdown_menu_color}; */
-  	background-color: #414648;
+  	background-color: #505354;
   	background-image: none !important;
   	opacity: 0.95;
-  	border:	1px dotted #333;
   	padding: 0px !important;
  <c:if test="<%= isIE %>">
   	filter: alpha(opacity=95);
  </c:if>
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar2 {
- /* background-color: #E9F1F1; */
-  	background-color: #414648;
+  	background-color: #505354;
   	opacity: 0.95;
  <c:if test="<%= isIE %>">
   	filter: alpha(opacity=95);
  </c:if>
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar3 {
- /* background-color: ${ss_toolbar1_background_color}; */
-  	background-color: #414648;
+  	background-color: #505354;
   	background-image: none;
   	opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -346,8 +339,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
  </c:if>
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar4 {
- /* background-color: ${ss_toolbar1_background_color}; */
-  	background-color: #414648;
+  	background-color: #505354;
  	background-image: none;
   	opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -363,14 +355,14 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
  </c:if>
 	margin-top:0px;
 	margin-left:0px;	
-	background-color: #414648;
+	background-color: #505354;
 	border:none;	
 	padding: 1px 1px;
 	}
 .ss_actions_bar_submenu li  {
 	float:none;
 	border-right-style:none;
-    line-height:18px;
+    line-height: 22px;
 	}
 .ss_actions_bar_submenu ul.ss_actions_bar3 li  {
 	float:none;
@@ -407,7 +399,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 	}
 .ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover, .ss_inline_menu a:hover {
 	color: #81B2BD !important;
-	background-color: #505354;
+	background-color: #353838;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
@@ -784,7 +776,6 @@ div.ss_appConfigMenu ul {
 /* FAMILY TYPES = (10)unspecified (11)blog (12)calendar (13)discussion (14)photo (15)wiki (16)task (17)file */
 
 table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
- 	/* background-color: #72AEB6; */
 	width: 100%;
 	padding: 0px 2px 0px 0px;
 	margin: 0px;
@@ -811,7 +802,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	height:auto;
 }
 .ss_actions_bar13 {
-	font-size: ${ss_style_font_smallprint};
+	font-size: ${ss_style_font_normalprint};
 	font-family: ${ss_style_title_font_family};
 	padding: 0px 3px;
 	}

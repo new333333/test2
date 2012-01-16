@@ -176,7 +176,7 @@ div.ss_header_bar_timestamp {
 	margin-right: 5px;
 }
 .ss_blog_footer {
-	background-color:${ss_blog_footer_color};
+	background-color: #ededed;
 	padding: 2px 4px;
 	margin: 0px;
 	-moz-border-radius: 3px;

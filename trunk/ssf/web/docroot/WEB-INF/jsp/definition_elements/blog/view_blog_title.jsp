@@ -153,12 +153,14 @@
 	    <ssf:param name="newTab" value="1" />
 		</ssf:url>"
  ><ssf:showUser user="${creationPrincipal}"/></a>
-<span> | </span>
+<span style="padding-left: 5px;">
  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${creationDate}" type="both" 
 	 dateStyle="medium" timeStyle="short" /> 
-<span> | </span>
-<ssf:nlt tag="popularity.Comments"/>: ${totalReplyCount}</div>
+</span>
+<span style="padding-left: 5px;">
+<ssf:nlt tag="popularity.Comments"/>: <b>${totalReplyCount}</b></div>
+</span>
 </div>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
