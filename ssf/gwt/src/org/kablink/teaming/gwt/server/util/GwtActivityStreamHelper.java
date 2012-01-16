@@ -862,6 +862,7 @@ public class GwtActivityStreamHelper {
 			case FOLLOWED_PLACE:
 			case MY_FAVORITE:
 			case MY_TEAM:
+			case SPECIFIC_BINDER:
 				// These are valid so long as they both refer to the
 				// same, single binder in their binder ID list. 
 				singleBinder          =
@@ -1876,6 +1877,7 @@ public class GwtActivityStreamHelper {
 		case MY_FAVORITE:
 		case MY_TEAMS:
 		case MY_TEAM:
+		case SPECIFIC_BINDER:
 			// A place of some sort:
 			// 1. The tracked places is used unchanged; and
 			// 2. There are no tracked users.
