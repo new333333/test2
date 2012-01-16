@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
@@ -54,11 +53,11 @@ import com.google.gwt.user.client.Window;
 
 
 /**
- * This widget is the Discussion Workspace.  It is used to display a discussion workspace
+ * This widget is the Team Workspace View.  It is used to display a team workspace
  * @author jwootton
  *
  */
-public class DiscussionWSView extends ViewBase implements ToolPanelReady
+public class TeamWSView extends ViewBase implements ToolPanelReady
 {
 	private BinderInfo m_binderInfo;
 	private VibeFlowPanel m_mainPanel;
@@ -68,12 +67,11 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 	private VibeFlowPanel m_lpPanel;
 	private VibeFlowPanel m_accessoriesPanel;
 	private VibeFlowPanel m_listOfChildrenPanel;
-	private VibeFlowPanel m_footerPanel;
 	
 	/**
 	 * 
 	 */
-	private DiscussionWSView( BinderInfo binderInfo, ViewReady viewReady )
+	private TeamWSView( BinderInfo binderInfo, ViewReady viewReady )
 	{
 		super( viewReady );
 		
@@ -90,17 +88,16 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 	 * 3. Landing page elements
 	 * 4. Accessories
 	 * 5. List of folders/workspaces
-	 * 6. Footer
 	 */
 	private void buildView()
 	{
 		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName( "vibe-discussionWSView_MainPanel" );
+		m_mainPanel.addStyleName( "vibe-teamWSView_MainPanel" );
 		
 		// Add a place for the bread crumb control to live.
 		{
 			m_breadCrumbPanel = new VibeFlowPanel();
-			m_breadCrumbPanel.addStyleName( "vibe-discussionWSView_BreadCrumbPanel" );
+			m_breadCrumbPanel.addStyleName( "vibe-teamWSView_BreadCrumbPanel" );
 			m_mainPanel.add( m_breadCrumbPanel );
 
 			BreadCrumbPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
@@ -120,13 +117,13 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 		}
 
 		m_titlePanel = new VibeFlowPanel();
-		m_titlePanel.addStyleName( "vibe-discussionWSView_TitlePanel" );
+		m_titlePanel.addStyleName( "vibe-teamWSView_TitlePanel" );
 		m_mainPanel.add( m_titlePanel );
 		
 		// Add a place for the description to live.
 		{
 			m_descPanel = new VibeFlowPanel();
-			m_descPanel.addStyleName( "vibe-discussionWSView_DescPanel" );
+			m_descPanel.addStyleName( "vibe-teamWSView_DescPanel" );
 			m_mainPanel.add( m_descPanel );
 			
 			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
@@ -149,7 +146,7 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 		// if there is one.
 		{
 			m_lpPanel = new VibeFlowPanel();
-			m_lpPanel.addStyleName( "vibe-discussionWSView_LPPanel" );
+			m_lpPanel.addStyleName( "vibe-teamWSView_LPPanel" );
 			m_mainPanel.add( m_lpPanel );
 
 			LandingPageWidget.createAsync( m_binderInfo, new LandingPageWidgetClient()
@@ -168,32 +165,10 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 			} );
 		}
 		
-		// Add a place for the accessories.
-		{
-			m_accessoriesPanel = new VibeFlowPanel();
-			m_accessoriesPanel.addStyleName( "vibe-discussionWSView_AccessoriesPanel" );
-			m_mainPanel.add( m_accessoriesPanel );
-			
-			AccessoriesPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase accessories )
-				{
-					m_accessoriesPanel.add( accessories );
-				}
-			});
-		}
-		
 		// Add a place for the ChildBindersWidget
 		{
 			m_listOfChildrenPanel = new VibeFlowPanel();
-			m_listOfChildrenPanel.addStyleName( "vibe-discussionWSView_ListOfChildrenPanel" );
+			m_listOfChildrenPanel.addStyleName( "vibe-teamWSView_ListOfChildrenPanel" );
 			m_mainPanel.add( m_listOfChildrenPanel );
 
 			ChildBindersWidget.createAsync( m_binderInfo, new ChildBindersWidgetClient()
@@ -212,13 +187,13 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 			} );
 		}
 
-		// Add a place for the footer
+		// Add a place for the accessories.
 		{
-			m_footerPanel = new VibeFlowPanel();
-			m_footerPanel.addStyleName( "vibe-discussionWSView_FooterPanel" );
-			m_mainPanel.add( m_footerPanel );
-
-			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			m_accessoriesPanel = new VibeFlowPanel();
+			m_accessoriesPanel.addStyleName( "vibe-teamWSView_AccessoriesPanel" );
+			m_mainPanel.add( m_accessoriesPanel );
+			
+			AccessoriesPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -227,13 +202,13 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 				}
 				
 				@Override
-				public void onSuccess( ToolPanelBase tpb )
+				public void onSuccess( ToolPanelBase accessories )
 				{
-					m_footerPanel.add( tpb );
+					m_accessoriesPanel.add( accessories );
 				}
-			} );
+			});
 		}
-
+		
 		super.viewReady();
 		
 		initWidget( m_mainPanel );
@@ -241,29 +216,28 @@ public class DiscussionWSView extends ViewBase implements ToolPanelReady
 	
 	
 	/**
-	 * Loads the DiscussionWSView split point and returns an instance of it
-	 * via the callback.
+	 * Loads the TeamWSView split point and returns an instance of it via the callback.
 	 *
 	 * @param binderInfo
 	 * @param vClient
 	 */
 	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
 	{
-		GWT.runAsync( DiscussionWSView.class, new RunAsyncCallback()
+		GWT.runAsync( TeamWSView.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_DiscussionWSView() );
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_TeamWSView() );
 				vClient.onUnavailable();
 			}
 
 			@Override
 			public void onSuccess()
 			{
-				DiscussionWSView view;
+				TeamWSView view;
 				
-				view = new DiscussionWSView( binderInfo, viewReady );
+				view = new TeamWSView( binderInfo, viewReady );
 				vClient.onSuccess( view );
 			}
 		} );

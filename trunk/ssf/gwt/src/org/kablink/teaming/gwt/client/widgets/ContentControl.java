@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
+import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -57,6 +58,7 @@ import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -104,7 +106,8 @@ public class ContentControl extends Composite
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
 		ShowLandingPageEvent.Handler,
-		ShowTaskFolderEvent.Handler
+		ShowTaskFolderEvent.Handler,
+		ShowTeamWSEvent.Handler
 {
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
@@ -128,6 +131,7 @@ public class ContentControl extends Composite
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
+		TeamingEvents.SHOW_TEAM_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_TASK_FOLDER,
@@ -637,10 +641,28 @@ public class ContentControl extends Composite
 							break;
 						}
 							
+						case TEAM:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new team workspace?" ) )
+									showNew = false;
+							}
+							
+							if ( showNew )
+							{
+								// Fire the event that will display the Team workspace.
+								GwtTeaming.fireEvent( new ShowTeamWSEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
 						case GLOBAL_ROOT:
 						case PROFILE_ROOT:
 						case PROJECT_MANAGEMENT:
-						case TEAM:
 						case TEAM_ROOT:
 						case TOP:
 						case TRASH:
@@ -973,6 +995,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowTaskFolder()
+	
+	/**
+	 * Handles ShowTeamWSEvent's received by this class.
+	 * 
+	 * Implements the ShowTeamWSEvent.Handler.onShowTeamWS() method.
+	 */
+	@Override
+	public void onShowTeamWS( ShowTeamWSEvent event )
+	{
+		ViewClient vClient;
+		
+		// Display a Team Workspace for the given binder id.
+		vClient = new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase teamWS )
+			{
+				teamWS.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( teamWS );
+			}
+		};
+		
+		// Create a TeamWSView widget for the selected binder.
+		TeamWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+	}
 	
 	/**
 	 * Callback interface to interact with the content control
