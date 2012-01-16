@@ -1235,6 +1235,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		case MY_FAVORITE:
 		case MY_TEAM:
 		case CURRENT_BINDER:
+		case SPECIFIC_BINDER:
 			return true;
 			
 		case FOLLOWED_PERSON:

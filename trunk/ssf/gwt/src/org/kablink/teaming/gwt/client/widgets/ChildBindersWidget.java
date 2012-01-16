@@ -175,9 +175,10 @@ public class ChildBindersWidget  extends VibeWidget
 
 				// Invoke the What's New page on the given binder.
 				asi = new ActivityStreamInfo();
-				asi.setActivityStream( ActivityStream.CURRENT_BINDER );
-				//asi.setBinderId( m_binderId );
-				//asi.setTitle( m_binderTitle );
+				asi.setActivityStream( ActivityStream.SPECIFIC_BINDER );
+				asi.setBinderId( m_binderId );
+				asi.setTitle( m_binderTitle );
+
 				GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ShowSetting.SHOW_UNREAD ) );
 			}
 		}
