@@ -402,6 +402,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTagSortOrder();
 	String rpcFailure_SaveTaskCompleted();
 	String rpcFailure_SaveTaskDueDate();
+	String rpcFailure_SaveTaskGraphState();
 	String rpcFailure_SaveTaskLinkage();
 	String rpcFailure_SaveTaskPriority();
 	String rpcFailure_SaveTaskSort();
@@ -1114,6 +1115,10 @@ public interface GwtTeamingMessages extends Messages
 	String taskConfirmPurge();
 	String taskDebug_times(String taskCount, String readTime, String showTime, String totalTime);
 	String taskFilter_empty();
+	String taskGraphsAltHide();
+	String taskGraphsAltShow();
+	String taskGraphs();
+	String taskGraphsRefresh();
 	String taskHierarchyDisabled();
 	String taskHierarchyDisabled_Filter();
 	String taskHierarchyDisabled_Rights();

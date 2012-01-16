@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
+import org.kablink.teaming.gwt.client.event.TaskListReadyEvent;
 import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
@@ -577,6 +578,8 @@ public class TaskListing extends Composite {
 				// ...and display the error as the task listing.
 				m_taskListingDIV.clear();
 				m_taskListingDIV.add(new InlineLabel(error));
+				
+				GwtTeaming.fireEvent(new TaskListReadyEvent(m_binderId));
 			}
 
 			@Override
@@ -590,6 +593,8 @@ public class TaskListing extends Composite {
 				m_pleaseWaitLabel.setText(m_messages.taskPleaseWait_Rendering());
 				m_taskBundle = taskBundle;
 				showTaskBundle(end - start);
+				
+				GwtTeaming.fireEvent(new TaskListReadyEvent(m_binderId));
 			}			
 		});
 	}
