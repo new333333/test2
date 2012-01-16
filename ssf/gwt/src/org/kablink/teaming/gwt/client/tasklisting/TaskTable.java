@@ -740,7 +740,6 @@ public class TaskTable extends Composite
 				updateCalculatedDatesAsync(null, ti.getTaskId().getBinderId(), entryId);
 			}
 		});
-		
 	}
 	
 	/*

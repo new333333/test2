@@ -50,8 +50,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
+import org.kablink.teaming.gwt.client.tasklisting.TaskProvider;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -68,7 +71,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class TaskFolderView extends FolderViewBase
-	implements
+	implements TaskProvider,
 	// Event handlers implemented by this class.
 		InvokeDropBoxEvent.Handler
 {
@@ -125,6 +128,25 @@ public class TaskFolderView extends FolderViewBase
 		// ...and construct everything else.
 		loadPart1Async();
 	}
+
+	/**
+	 * Returns the task list from the TaskListing.
+	 * 
+	 * Implements the TaskProvider.getTasks() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public List<TaskListItem> getTasks() {
+		List<TaskListItem> reply = null;
+		if (null != m_taskListing) {
+			TaskBundle tb = m_taskListing.getTaskBundle();
+			if (null != tb) {
+				reply = tb.getTasks();
+			}
+		}
+		return reply;
+	}
 	
 	/*
 	 * Asynchronously loads the TaskGraphsPanel.
@@ -143,18 +165,20 @@ public class TaskFolderView extends FolderViewBase
 	 * Synchronously loads the TaskGraphsPanel.
 	 */
 	private void loadPart1Now() {
-		TaskGraphsPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+		GetTaskDisplayDataCmd cmd = new GetTaskDisplayDataCmd(getFolderInfo().getBinderIdAsLong());
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
+			public void onFailure(Throwable caught) {
+				// Handle the failure...
+				String error = m_messages.rpcFailure_GetTaskDisplayData();
+				GwtClientHelper.handleGwtRPCFailure(caught, error);
 			}
-			
+
 			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
+			public void onSuccess(VibeRpcResponse result) {
+				m_taskDisplayData = ((TaskDisplayDataRpcResponseData) result.getResponseData());
 				loadPart2Async();
-			}
+			}			
 		});
 	}
 
@@ -175,20 +199,18 @@ public class TaskFolderView extends FolderViewBase
 	 * Synchronously loads the task display data.
 	 */
 	private void loadPart2Now() {
-		GetTaskDisplayDataCmd cmd = new GetTaskDisplayDataCmd(getFolderInfo().getBinderIdAsLong());
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+		TaskGraphsPanel.createAsync(this, this, m_taskDisplayData.getExpandGraphs(), getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
-			public void onFailure(Throwable caught) {
-				// Handle the failure...
-				String error = m_messages.rpcFailure_GetTaskDisplayData();
-				GwtClientHelper.handleGwtRPCFailure(caught, error);
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
 			}
-
+			
 			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				m_taskDisplayData = ((TaskDisplayDataRpcResponseData) result.getResponseData());
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
 				loadPart3Async();
-			}			
+			}
 		});
 	}
 

@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
@@ -1319,6 +1320,8 @@ public class GwtTaskHelper {
 			adaptedUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			adaptedUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binderId));
 			adaptedUrl.setParameter("xxx_operand_xxx", "xxx_option_xxx");	// Place holder -> Patched when used.
+			String expandGraphsS = ((String) userProperties.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_EXPAND_GRAPHS));
+			boolean expandGraphs = (MiscUtil.hasString(expandGraphsS) ? Boolean.parseBoolean(expandGraphsS) : false);
 			
 			// ...and use it to construct and return a
 			// ...TaskDisplayDataRpcResponseData object.
@@ -1330,6 +1333,7 @@ public class GwtTaskHelper {
 					taskChangeReason,
 					MiscUtil.hasString(taskChangeReason),
 					showModeSelect,
+					expandGraphs,
 					adaptedUrl.toString());
 		}
 		
@@ -1944,6 +1948,30 @@ public class GwtTaskHelper {
 		}
 	}
 
+	/**
+	 * Saves the save of the task graphs on a folder for the current
+	 * user.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param folderId
+	 * @param expandGraphs
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData saveTaskGraphState( HttpServletRequest request, AllModulesInjected bs, Long folderId, boolean expandGraphs) throws GwtTeamingException {
+		try {
+			bs.getProfileModule().setUserProperty(GwtServerHelper.getCurrentUser().getId(), folderId, ObjectKeys.BINDER_PROPERTY_TASK_EXPAND_GRAPHS, String.valueOf(expandGraphs));
+			return new BooleanRpcResponseData(true);
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+	
 	/**
 	 * Stores the TaskLinkage for a task folder.
 	 * 

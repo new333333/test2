@@ -145,7 +145,22 @@
 		.vibe-taskFolderFlowPanel     {}
 		.vibe-taskFolderVerticalPanel {}
 		.vibe-taskFolderView          {}
-/* ...End:  Task older view styles. */
+	/* ...End:  Task older view styles. */
+	
+	/* ...Start:  Task graphs panel styles. */
+		.vibe-taskGraphsGrid            {}
+		.vibe-taskGraphsExpander        {display: block; font-size: 0.75em; font-weight: bold;}
+		.vibe-taskGraphsExpanderA       {text-decoration: none; cursor: pointer;}
+		.vibe-taskGraphsExpanderA-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-taskGraphsExpanderImg     {}
+		.vibe-taskGraphsExpanderLabel   {}
+		.vibe-taskGraphsPanel           {}
+		.vibe-taskGraphsPriorities      {}
+		.vibe-taskGraphsRefresh         {}
+		.vibe-taskGraphsRefreshButton   {}
+		.vibe-taskGraphsStatus          {}
+		.vibe-taskGraphsHidden          {visibility: hidden; display:none;}
+	/* ...End:  Task graphs panel styles. */
 /* End:  GWT folder view styles. */
 
 

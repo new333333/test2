@@ -1621,6 +1621,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_TASK_GRAPH_STATE:
+		{
+			SaveTaskGraphStateCmd stgsCmd = ((SaveTaskGraphStateCmd) cmd);
+			BooleanRpcResponseData responseData = GwtTaskHelper.saveTaskGraphState( getRequest( ri ), this, stgsCmd.getFolderId(), stgsCmd.getExpandGraphs() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case SAVE_TASK_LINKAGE:
 		{
 			SaveTaskLinkageCmd stlCmd = ((SaveTaskLinkageCmd) cmd);
