@@ -81,6 +81,12 @@
 	color: red;
 }
 
+.childBindersWidget_ListOfWorkspacesPanel_unreadLabelRed:hover, .childBindersWidget_ListOfFoldersPanel_unreadLabelRed:hover
+{
+	cursor: pointer;
+}
+
+
 .childBindersWidget_MainPanel
 {
 	background-color: #EAEBE8;

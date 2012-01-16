@@ -3796,53 +3796,65 @@ public class GwtServerHelper {
 		{
 			ArrayList<Long> expandedBindersList;
 			TreeInfo treeInfo;
-			List<Binder> children;
+			List<Map> children;
 
 			// This is needed by buildTreeInfoFromBinder()
 			expandedBindersList = new ArrayList<Long>();
 			
 			// Get all of the child binders.
-			children = binder.getBinders();
+			{
+				Map options;
+				Map searchResults;
+
+				options = new HashMap();
+				options.put( ObjectKeys.SEARCH_SORT_BY, org.kablink.util.search.Constants.SORT_TITLE_FIELD );
+				options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
+				options.put( ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
+				searchResults = ami.getBinderModule().getBinders( binder, options );
+				children = (List)searchResults.get( ObjectKeys.SEARCH_ENTRIES );
+				
+			}
+			
 			if ( children != null )
 			{
-				for (Binder child : children)
+				for (Map child : children)
 				{
-					// Has this binder been deleted?
-					if ( child.isDeleted() == false && GwtUIHelper.isBinderPreDeleted( child ) == false )
+					String childBinderId;
+					Binder childBinder;
+					
+					// Get the next child binder
+					childBinderId = (String) child.get( DOCID_FIELD );
+					childBinder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), childBinderId );
+					
+					if ( childBinder != null )
 					{
-						// No
-						// Does the user have rights to see this binder?
-						if ( ami.getBinderModule().testAccess( binder, BinderOperation.readEntries ) )
+						treeInfo = buildTreeInfoFromBinder( request, ami, childBinder, expandedBindersList, false, 1 );
+	
+						// Get the binder's description
 						{
-							// Yes
-							treeInfo = buildTreeInfoFromBinder( request, ami, child, expandedBindersList, false, 1 );
-		
-							// Get the binder's description
-							{
-								Description binderDesc;
-								
-								binderDesc = child.getDescription();
-								if ( binderDesc != null )
-								{
-									String desc;
-									
-									desc = binderDesc.getText();
-									if ( desc != null && desc.length() > 0 )
-										treeInfo.getBinderInfo().setBinderDesc( desc );
-								}
-							}
+							Description binderDesc;
 							
-							// Set the number of unseen entries for this binder
+							binderDesc = childBinder.getDescription();
+							if ( binderDesc != null )
 							{
-								Counter counter;
+								String desc;
 								
-								counter = unseenCounts.get( String.valueOf( child.getId() ) );
-								if ( counter != null )
-									treeInfo.getBinderInfo().setNumUnread( counter.getCount() );
+								desc = binderDesc.getText();
+								if ( desc != null && desc.length() > 0 )
+									treeInfo.getBinderInfo().setBinderDesc( desc );
 							}
-							
-							listOfChildBinders.add( treeInfo );
 						}
+						
+						// Set the number of unseen entries for this binder
+						{
+							Counter counter;
+							
+							counter = unseenCounts.get( childBinderId );
+							if ( counter != null )
+								treeInfo.getBinderInfo().setNumUnread( counter.getCount() );
+						}
+						
+						listOfChildBinders.add( treeInfo );
 					}
 				}
 			}
