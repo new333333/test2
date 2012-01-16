@@ -113,7 +113,8 @@ public class EntityIndexUtils {
             		Field allTextField = BasicIndexUtils.allTextField(title);
             		doc.add(allTextField);
             	}
-            	Field titleField = new Field(Constants.TITLE_FIELD, title, Field.Store.YES, Field.Index.ANALYZED);
+            	// Bug 740533 - Store original title rather than trimmed one in the title field
+            	Field titleField = new Field(Constants.TITLE_FIELD, entry.getTitle(), Field.Store.YES, Field.Index.ANALYZED);
     	        Field sortTitleField = new Field(Constants.SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	        Field title1Field = new Field(Constants.TITLE1_FIELD, title.substring(0, 1), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	        doc.add(titleField);
