@@ -35,14 +35,18 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
@@ -117,6 +121,65 @@ public class ChildBindersWidget  extends VibeWidget
 				GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
 			}
 			
+		}
+		
+		/**
+		 * 
+		 */
+		@Override
+		public void onClick( ClickEvent event )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					handleClickOnLink();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+
+	
+	/**
+	 * This class is used as the click handler when the user clicks on a binder's unread label.
+	 *
+	 */
+	private class UnreadClickHandler implements ClickHandler
+	{
+		private String m_binderId;
+		private String m_binderTitle;
+		
+		/**
+		 * 
+		 */
+		public UnreadClickHandler( String binderId, String binderTitle )
+		{
+			super();
+			
+			m_binderId = binderId;
+			m_binderTitle = binderTitle;
+		}
+
+		/**
+		 * 
+		 */
+		private void handleClickOnLink()
+		{
+			if ( GwtClientHelper.hasString( m_binderId ) )
+			{
+				ActivityStreamInfo asi;
+
+				// Invoke the What's New page on the given binder.
+				asi = new ActivityStreamInfo();
+				asi.setActivityStream( ActivityStream.CURRENT_BINDER );
+				//asi.setBinderId( m_binderId );
+				//asi.setTitle( m_binderTitle );
+				GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ShowSetting.SHOW_UNREAD ) );
+			}
 		}
 		
 		/**
@@ -321,7 +384,7 @@ public class ChildBindersWidget  extends VibeWidget
 			{
 				BinderInfo binderInfo;
 				
-				// Is this binder a workspace?
+				// Is this binder's type the type we are looking for?
 				binderInfo = childBinder.getBinderInfo();
 				if ( binderInfo.isBinderFolder() && binderInfo.getFolderType() == folderType )
 				{
@@ -346,10 +409,13 @@ public class ChildBindersWidget  extends VibeWidget
 					if ( numUnread > 0 )
 					{
 						InlineLabel unreadLabel;
+						UnreadClickHandler unreadClickHandler;
 						
 						unreadLabel = new InlineLabel( " " + GwtTeaming.getMessages().unreadEntries( numUnread ) );
 						unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabel" );
 						unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabelRed" );
+						unreadClickHandler = new UnreadClickHandler( binderInfo.getBinderId(), binderInfo.getBinderTitle() );
+						unreadLabel.addClickHandler( unreadClickHandler );
 						folderPanel.add( unreadLabel );
 					}
 
@@ -511,10 +577,13 @@ public class ChildBindersWidget  extends VibeWidget
 					if ( numUnread > 0 )
 					{
 						InlineLabel unreadLabel;
+						UnreadClickHandler unreadClickHandler;
 
 						unreadLabel = new InlineLabel( " " + GwtTeaming.getMessages().unreadEntries( numUnread ) );
 						unreadLabel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_unreadLabel" );
 						unreadLabel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_unreadLabelRed" );
+						unreadClickHandler = new UnreadClickHandler( binderInfo.getBinderId(), binderInfo.getBinderTitle() );
+						unreadLabel.addClickHandler( unreadClickHandler );
 						wsPanel.add( unreadLabel );
 					}
 
