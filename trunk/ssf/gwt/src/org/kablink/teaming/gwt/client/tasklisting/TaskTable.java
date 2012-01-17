@@ -4095,6 +4095,6 @@ public class TaskTable extends Composite
 		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft(),  arrowHint);
 		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight(), arrowHint);
 		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp(),    arrowHint);
-		m_taskListing.setDeleteAndPurgeState(enableTrash, enablePurge);
+		m_taskListing.setEntriesSelected(enableTrash || enablePurge);
 	}
 }

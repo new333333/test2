@@ -82,7 +82,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private VibeMenuBar			m_entryMenu;	//
 	private VibeMenuItem		m_addFilesMenu;	//
 	private VibeMenuItem		m_deleteMenu;	//
-	private VibeMenuItem		m_purgeMenu;	//
+	private VibeMenuItem		m_moreMenu;		//
 	
 	/*
 	 * Constructor method.
@@ -233,7 +233,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 				else renderSimpleTBI(    m_entryMenu, perEntryTBI);
 			}
 		}
-		setDeleteAndPurgeState(false);
+		setEntriesSelected(false);
 		
 		// Finally, tell who's using this tool panel that it's ready to
 		// go.
@@ -307,7 +307,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 		switch (simpleTBI.getTeamingEvent()) {
 		case INVOKE_DROPBOX:           m_addFilesMenu = menuItem; break;
 		case DELETE_SELECTED_ENTRIES:  m_deleteMenu   = menuItem; break;
-		case PURGE_SELECTED_ENTRIES:   m_purgeMenu    = menuItem; break;
 		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		menuBar.addItem(menuItem);
@@ -344,6 +343,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 		structuredMenuItem.setHTML(renderStructuredItemHTML(structuredTBI.getTitle()));
 		menuBar.addItem(structuredMenuItem);
 		
+		String structuredName = structuredTBI.getName();
+		if (GwtClientHelper.hasString(structuredName) && structuredName.equals("1_more")) {
+			m_moreMenu = structuredMenuItem;
+		}
+		
 		// ...scan the nested items...
 		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
 			// ...rendering each of them.
@@ -371,13 +375,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 	}
 
 	/**
-	 * Called to enable/disable the delete an purge menu
-	 * items.
+	 * Called to enable/disable the menu items that require something
+	 * to be selected.
 	 * 
 	 * @param enable
 	 */
-	public void setDeleteAndPurgeState(boolean enable) {
+	public void setEntriesSelected(boolean enable) {
 		if (null != m_deleteMenu) {m_deleteMenu.setEnabled(enable); if (enable) m_deleteMenu.removeStyleName("vibe-menuDisabled"); else m_deleteMenu.addStyleName("vibe-menuDisabled");}
-		if (null != m_purgeMenu)  {m_purgeMenu.setEnabled( enable); if (enable) m_purgeMenu.removeStyleName( "vibe-menuDisabled"); else m_purgeMenu.addStyleName( "vibe-menuDisabled");}
+		if (null != m_moreMenu)   {m_moreMenu.setEnabled(  enable); if (enable) m_moreMenu.removeStyleName(  "vibe-menuDisabled"); else m_moreMenu.addStyleName(  "vibe-menuDisabled");}
 	}
 }

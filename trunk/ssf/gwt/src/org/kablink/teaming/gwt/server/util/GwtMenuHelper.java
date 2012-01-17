@@ -501,25 +501,68 @@ public class GwtMenuHelper {
 					}
 				}
 			}
-			
-			else if ((viewType.equals(  Definition.VIEW_STYLE_DISCUSSION) ||
-						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
-						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
-						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for deleting the selected entries.
+	 */
+	private static void constructEntryDeleteItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		// For the view types that support it...
+		if (MiscUtil.hasString(viewType)) {
+			BinderModule bm = bs.getBinderModule();
+			if ((viewType.equals(  Definition.VIEW_STYLE_DISCUSSION) ||
+						viewType.equals(Definition.VIEW_STYLE_TABLE) ||
+						viewType.equals(Definition.VIEW_STYLE_FILE)  ||
+						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
 					(!(folder.isMirrored()))) {
-				// Add the Delete and Purge buttons.
+				// ...and for which the user has rights to do it...
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
+					// ...add a Delete item.
 					ToolbarItem deleteTBI = new ToolbarItem("1_deleteSelected");
 					markTBITitle(deleteTBI, "toolbar.delete");
 					markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
 					entryToolbar.addNestedItem(deleteTBI);
-					
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for miscellaneous operations against
+	 * the selected entries.
+	 */
+	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		// Create a more toolbar item.  We'll added to the entry
+		// toolbar if and only if we add anything to it.
+		boolean addedMoreItems = false;
+		ToolbarItem moreTBI = new ToolbarItem("1_more");
+		markTBITitle(moreTBI, "toolbar.more");
+		
+		// For the view types that support it...
+		if (MiscUtil.hasString(viewType)) {
+			BinderModule bm = bs.getBinderModule();
+			if ((viewType.equals(  Definition.VIEW_STYLE_DISCUSSION) ||
+						viewType.equals(Definition.VIEW_STYLE_TABLE) ||
+						viewType.equals(Definition.VIEW_STYLE_FILE)  ||
+						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
+					(!(folder.isMirrored()))) {
+				// ...and for which the user has rights to do it...
+				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
+					// ...add the Purge item.
+					addedMoreItems = true;
 					ToolbarItem purgeTBI = new ToolbarItem("1_purgeSelected");
 					markTBITitle(purgeTBI, "toolbar.purge");
 					markTBIEvent(purgeTBI, TeamingEvents.PURGE_SELECTED_ENTRIES);
-					entryToolbar.addNestedItem(purgeTBI);
+					moreTBI.addNestedItem(purgeTBI);
 				}
 			}
+		}
+
+		// If we added anything to the more menu...
+		if (addedMoreItems) {
+			// ...add that to the entry menu.
+			entryToolbar.addNestedItem(moreTBI);
 		}
 	}
 	
@@ -1476,6 +1519,13 @@ public class GwtMenuHelper {
 					}
 				}
 			}
+
+			// Constructs the item for deleting the selected entries.
+			constructEntryDeleteItems(entryToolbar, bs, request, viewType, folder);
+
+			// Construct the various items that appear in the more drop
+			// down.
+			constructEntryMoreItems(entryToolbar, bs, request, viewType, folder);
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the folder toolbar.  Return it.

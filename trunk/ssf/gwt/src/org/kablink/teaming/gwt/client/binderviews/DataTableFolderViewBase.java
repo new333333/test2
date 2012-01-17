@@ -502,6 +502,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						selectionModel.setSelected(row, checked);
 					}
 				}
+				
+				// If we have an entry menu...
+				EntryMenuPanel emp = getEntryMenuPanel();
+				if (null != emp) {
+					// ...tell it to update the state of its items that
+					// ...require a selection.
+					emp.setEntriesSelected(checked);
+				}
 			}
 		});
 
@@ -527,8 +535,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// If we have an entry menu...
 				EntryMenuPanel emp = getEntryMenuPanel();
 				if (null != emp) {
-					// ...tell it to update the state of the delete and purge.
-					emp.setDeleteAndPurgeState(checked);
+					// ...tell it to update the state of its items that
+					// ...require a selection.
+					emp.setEntriesSelected(checked);
 				}
 			};
 		});
