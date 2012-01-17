@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,15 +46,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class BinderInfo implements IsSerializable, VibeRpcResponseData {
-	private BinderType    m_binderType  = BinderType.OTHER;					//
-	private boolean       m_isLibrary   = false;							//
-	private FolderType    m_folderType  = FolderType.NOT_A_FOLDER;			//
-	private String        m_binderId    = "";								//
-	private String        m_binderTitle = "";								//
-	private String		  m_binderDesc	= "";								//
-	private Long		  m_numUnread	= 0L;								// Number of unread entries in this binder and sub binders.
-	private String        m_entityType  = "";								//
-	private WorkspaceType m_wsType      = WorkspaceType.NOT_A_WORKSPACE;	//
+	private BinderType    m_binderType         = BinderType.OTHER;				//
+	private boolean       m_binderDescExpanded = true;							//
+	private boolean       m_binderDescHTML     = false;							//
+	private boolean       m_isLibrary          = false;							//
+	private FolderType    m_folderType         = FolderType.NOT_A_FOLDER;		//
+	private String        m_binderId           = "";							//
+	private String        m_binderTitle        = "";							//
+	private String		  m_binderDesc	       = "";							//
+	private Long		  m_numUnread	       = 0L;							// Number of unread entries in this binder and sub binders.
+	private String        m_entityType         = "";							//
+	private WorkspaceType m_wsType             = WorkspaceType.NOT_A_WORKSPACE;	//
 	
 	/**
 	 * Constructor method.
@@ -72,15 +74,17 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public BinderInfo copyBinderInfo() {
 		BinderInfo reply = new BinderInfo();
-		reply.setBinderId(     m_binderId   );
-		reply.setBinderTitle(  m_binderTitle);
-		reply.setBinderDesc(   m_binderDesc );
-		reply.setNumUnread(	   m_numUnread  );
-		reply.setEntityType(   m_entityType );
-		reply.setBinderType(   m_binderType );
-		reply.setFolderType(   m_folderType );
-		reply.setIsLibrary(    m_isLibrary  );
-		reply.setWorkspaceType(m_wsType     );
+		reply.setBinderId(          m_binderId          );
+		reply.setBinderTitle(       m_binderTitle       );
+		reply.setBinderDesc(        m_binderDesc        );
+		reply.setBinderDescExpanded(m_binderDescExpanded);
+		reply.setBinderDescHTML(    m_binderDescHTML    );
+		reply.setNumUnread(	        m_numUnread         );
+		reply.setEntityType(        m_entityType        );
+		reply.setBinderType(        m_binderType        );
+		reply.setFolderType(        m_folderType        );
+		reply.setIsLibrary(         m_isLibrary         );
+		reply.setWorkspaceType(     m_wsType            );
 		return reply;
 	}
 	
@@ -89,16 +93,18 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public BinderType    getBinderType()     {return                m_binderType; }
-	public boolean       isLibrary()         {return                m_isLibrary;  }  
-	public FolderType    getFolderType()     {return                m_folderType; }
-	public Long          getBinderIdAsLong() {return Long.parseLong(m_binderId);  }
-	public String        getBinderId()       {return                m_binderId;   }
-	public String        getBinderTitle()    {return                m_binderTitle;}
-	public String		 getBinderDesc()	 {return				m_binderDesc; }
-	public Long			 getNumUnread()		 {return				m_numUnread;  }
-	public String        getEntityType()     {return                m_entityType; }
-	public WorkspaceType getWorkspaceType()  {return                m_wsType;     }
+	public BinderType    getBinderType()        {return                m_binderType;        }
+	public boolean       isBinderDescExpanded() {return                m_binderDescExpanded;}
+	public boolean       isBinderDescHTML()     {return                m_binderDescHTML;    }
+	public boolean       isLibrary()            {return                m_isLibrary;         }  
+	public FolderType    getFolderType()        {return                m_folderType;        }
+	public Long          getBinderIdAsLong()    {return Long.parseLong(m_binderId);         }
+	public String        getBinderId()          {return                m_binderId;          }
+	public String        getBinderTitle()       {return                m_binderTitle;       }
+	public String		 getBinderDesc()	    {return				   m_binderDesc;        }
+	public Long			 getNumUnread()		    {return				   m_numUnread;         }
+	public String        getEntityType()        {return                m_entityType;        }
+	public WorkspaceType getWorkspaceType()     {return                m_wsType;            }
 	
 	/**
 	 * Returns true of this BinderInfo defines a Folder and false
@@ -210,6 +216,25 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		m_folderType = folderType;
 	}
 
+	/**
+	 * Stores whether the given binder's description is expanded when
+	 * view in a binder's description panel.
+	 * 
+	 * @param binderDescExpanded
+	 */
+	public void setBinderDescExpanded(boolean binderDescExpanded) {
+		m_binderDescExpanded = binderDescExpanded;
+	}
+	
+	/**
+	 * Stores whether the given binder's description is in HTML.
+	 * 
+	 * @param binderDescHTML
+	 */
+	public void setBinderDescHTML(boolean binderDescHTML) {
+		m_binderDescHTML = binderDescHTML;
+	}
+	
 	/**
 	 * Stores whether the given binder is a library.
 	 * 

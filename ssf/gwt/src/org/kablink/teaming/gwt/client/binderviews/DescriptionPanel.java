@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,6 @@ package org.kablink.teaming.gwt.client.binderviews;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderDescriptionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBinderRegionStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -94,8 +92,11 @@ public class DescriptionPanel extends ToolPanelBase {
 		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...initialize the data members...
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
+		m_images              = GwtTeaming.getDataTableImageBundle();
+		m_messages            = GwtTeaming.getMessages();
+		m_description         = binderInfo.getBinderDesc();
+		m_descriptionIsHTML   = binderInfo.isBinderDescHTML();
+		m_descriptionExpanded = binderInfo.isBinderDescExpanded();
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -154,8 +155,7 @@ public class DescriptionPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Asynchronously construct's the contents of the description
-	 * panel.
+	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart1Async() {
 		ScheduledCommand doLoad = new ScheduledCommand() {
@@ -168,50 +168,9 @@ public class DescriptionPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the entry menu panel.
-	 */
-	private void loadPart1Now() {
-		final Long binderId = m_binderInfo.getBinderIdAsLong();
-		GwtClientHelper.executeCommand(
-				new GetBinderDescriptionCmd(binderId),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetBinderDescription(),
-					binderId);
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the description and continue loading.
-				BinderDescriptionRpcResponseData responseData = ((BinderDescriptionRpcResponseData) response.getResponseData());
-				m_description         = responseData.getDescription();
-				m_descriptionIsHTML   = responseData.isDescriptionHTML();
-				m_descriptionExpanded = responseData.isExpanded();
-				loadPart2Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously construct's the contents of the entry menu panel.
-	 */
-	private void loadPart2Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart2Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
 	 * Synchronously construct's the contents of the description panel.
 	 */
-	private void loadPart2Now() {
+	private void loadPart1Now() {
 		// Do we have a description?
 		if (GwtClientHelper.hasString(m_description)) {
 			// Yes!  We need to render it.  Add the initial panel

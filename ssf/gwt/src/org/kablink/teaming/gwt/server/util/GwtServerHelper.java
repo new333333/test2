@@ -154,6 +154,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
@@ -839,7 +840,7 @@ public class GwtServerHelper {
 	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
-		reply.setBinderInfo(getBinderInfo(binder));
+		reply.setBinderInfo(getBinderInfo(request, bs, binder));
 		reply.setBinderTitle(GwtUIHelper.getTreeBinderTitle(binder));
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
@@ -2794,13 +2795,14 @@ public class GwtServerHelper {
 
 	/**
 	 * Returns a BinderInfo describing a binder.
-	 * 
+	 *
+	 * @param request
 	 * @param bs
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public static BinderInfo getBinderInfo(AllModulesInjected bs, String binderId) {
+	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, String binderId) {
 		BinderInfo reply;
 		Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
 		if (null == binder) {
@@ -2808,12 +2810,21 @@ public class GwtServerHelper {
 			reply.setBinderId(binderId);
 		}
 		else {
-			reply = getBinderInfo(binder);
+			reply = getBinderInfo(request, bs, binder);
 		}
 		return reply;
 	}
-	
-	public static BinderInfo getBinderInfo(Binder binder) {
+
+	/**
+	 * Returns a BinderInfo describing a binder.
+	 * 
+	 * @param request
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
+		// Allocate a BinderInfo and store the core binder information.
 		BinderInfo reply = new BinderInfo();
 		                                    reply.setBinderId(     binder.getId()             );
 		                                    reply.setBinderTitle(  binder.getTitle()          );
@@ -2822,6 +2833,37 @@ public class GwtServerHelper {
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
+
+		// If the binder has a description...
+		Description binderDesc = binder.getDescription();
+		if (null != binderDesc) {
+			String desc = binderDesc.getText();
+			if (MiscUtil.hasString(desc)) {
+				// ...store it.
+				int descFmt = binderDesc.getFormat();
+				boolean descIsHTML = (Description.FORMAT_HTML == descFmt); 
+				if (descIsHTML) {
+					desc = MarkupUtil.markupStringReplacement( null, null, request, null, binder, desc, WebKeys.MARKUP_VIEW, false );
+					desc = MarkupUtil.markupSectionsReplacement( desc );
+				}
+				reply.setBinderDesc(    desc      );
+				reply.setBinderDescHTML(descIsHTML);
+			}
+		}
+		
+		try {
+			// Store whether the binder's description should be
+			// expanded in a description tool panel.
+			StringRpcResponseData regionStateRpcData = GwtViewHelper.getBinderRegionState(bs, request, binder.getId(), "descriptionRegion");
+			String regionState = regionStateRpcData.getStringValue();
+			boolean expanded = (MiscUtil.hasString(regionState) ? regionState.equals("expanded") : true);
+			reply.setBinderDescExpanded(expanded);
+		}
+		catch (GwtTeamingException gte) {
+			// Ignore.  The exception has already been logged by
+			// GwtViewHelper.getBinderRegionState().
+		}
+		
 		return reply;
 	}
 	
@@ -3831,21 +3873,6 @@ public class GwtServerHelper {
 					{
 						treeInfo = buildTreeInfoFromBinder( request, ami, childBinder, expandedBindersList, false, 1 );
 	
-						// Get the binder's description
-						{
-							Description binderDesc;
-							
-							binderDesc = childBinder.getDescription();
-							if ( binderDesc != null )
-							{
-								String desc;
-								
-								desc = binderDesc.getText();
-								if ( desc != null && desc.length() > 0 )
-									treeInfo.getBinderInfo().setBinderDesc( desc );
-							}
-						}
-						
 						// Set the number of unseen entries for this binder
 						{
 							Counter counter;
