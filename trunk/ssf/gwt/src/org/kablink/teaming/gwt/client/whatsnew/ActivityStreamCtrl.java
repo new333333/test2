@@ -892,14 +892,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
 					final int x;
 					final int y;
 					
-					x = clickEvent.getClientX();
-					y = clickEvent.getClientY();
 					cmd = new Scheduler.ScheduledCommand()
 					{
 						public void execute()
@@ -909,7 +908,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 							m_showSettingImg2.setVisible( false );
 	
 							// Popup the "show all/show unread" popup menu.
-							m_showSettingPopupMenu.showMenu( x, y );
+							m_showSettingPopupMenu.showRelativeToTarget( m_showSettingImg1 );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
