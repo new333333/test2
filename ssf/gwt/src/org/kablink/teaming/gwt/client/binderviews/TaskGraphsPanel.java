@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -228,7 +228,7 @@ public class TaskGraphsPanel extends ToolPanelBase
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-taskGraphsPanel");
 		initWidget(m_fp);
-		loadPart1Async();
+		renderTaskGraphsAsync();
 	}
 
 	/*
@@ -301,28 +301,6 @@ public class TaskGraphsPanel extends ToolPanelBase
 		});
 	}
 
-	/*
-	 * Asynchronously construct's the contents of the task graphs
-	 * panel.
-	 */
-	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart1Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously construct's the contents of the panel.
-	 */
-	private void loadPart1Now() {
-		// Nothing to do.  We can't actually do anything until we have
-		// a task list available.
-	}
-
 	/**
 	 * Called when the task folder view is attached.
 	 * 
@@ -357,8 +335,11 @@ public class TaskGraphsPanel extends ToolPanelBase
 	 */
 	@Override
 	public void onTaskListReady(TaskListReadyEvent event) {
-		// Simply render the task graphs.
-		renderTaskGraphsAsync();
+		// If the graphs are expanded...
+		if (m_expandGraphs) {
+			// ...simply render them.
+			renderTaskGraphsAsync();
+		}
 	}
 	
 	/*
@@ -399,7 +380,6 @@ public class TaskGraphsPanel extends ToolPanelBase
 		// Create an Anchor for the expander...
 		final Anchor a = new Anchor();
 		a.addStyleName("vibe-taskGraphsExpanderA");
-		a.setTitle(m_expandGraphs ? m_messages.taskGraphsAltHide() : m_messages.taskGraphsAltShow());
 		fp.add(a);
 
 		// ...add a label to it...
@@ -409,10 +389,9 @@ public class TaskGraphsPanel extends ToolPanelBase
 		aE.appendChild(il.getElement());
 
 		// ...add an expand/collapse image to it...
-		ImageResource imgR = (m_expandGraphs ? m_images.collapser() : m_images.expander());
 		final Image img = new Image();
+		setExpanderState(a, img);
 		img.addStyleName("vibe-taskGraphsExpanderImg");
-		img.setUrl(imgR.getSafeUri());
 		img.setHeight("12px");
 		img.setWidth( "12px");
 		img.getElement().setAttribute("align", "absmiddle");
@@ -422,26 +401,25 @@ public class TaskGraphsPanel extends ToolPanelBase
 		a.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// If the graphs are visible...
+				// If the graphs are being expanded...
+				m_expandGraphs = (!m_expandGraphs);
 				if (m_expandGraphs) {
-					// ...hide them...
+					// ...simply render them (again)...
+					renderTaskGraphsAsync();
+				}
+				else {
+					// ...otherwise, hide them...
 					m_priorityPanel.addStyleName("vibe-taskGraphsHidden");
 					m_statusPanel.addStyleName(  "vibe-taskGraphsHidden");
 					m_refreshPanel.addStyleName( "vibe-taskGraphsHidden");
-				}
-				else {
-					// ...otherwise, show them.
-					m_priorityPanel.removeStyleName("vibe-taskGraphsHidden");
-					m_statusPanel.removeStyleName(  "vibe-taskGraphsHidden");
-					m_refreshPanel.removeStyleName( "vibe-taskGraphsHidden");
+					
+					// ...and tell the container that the size of
+					// ...things has changed.
+					panelResized();
 				}
 				
-				// Toggle the state of the expander...
-				m_expandGraphs = (!m_expandGraphs);
-				ImageResource imgR = (m_expandGraphs ? m_images.collapser() : m_images.expander());
-				img.setUrl(imgR.getSafeUri());
-				a.setTitle(m_expandGraphs ? m_messages.taskGraphsAltHide() : m_messages.taskGraphsAltShow());
-				panelResized();
+				// Toggle the state of the expander image...
+				setExpanderState(a, img);
 
 				// ...and save the users setting for the expansion.
 				SaveTaskGraphStateCmd cmd = new SaveTaskGraphStateCmd(m_binderInfo.getBinderIdAsLong(), m_expandGraphs);
@@ -761,7 +739,16 @@ public class TaskGraphsPanel extends ToolPanelBase
 		m_notifyOnReady = true;
 		renderTaskGraphsAsync();
 	}
-	
+
+	/*
+	 * Sets the state of the expander image and anchor.
+	 */
+	private void setExpanderState(Anchor a, Image img) {
+		ImageResource imgR = (m_expandGraphs ? m_images.collapser() : m_images.expander());
+		img.setUrl(imgR.getSafeUri());
+		a.setTitle(m_expandGraphs ? m_messages.taskGraphsAltHide() : m_messages.taskGraphsAltShow());
+	}
+
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
