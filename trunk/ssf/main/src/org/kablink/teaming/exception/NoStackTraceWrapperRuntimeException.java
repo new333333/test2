@@ -37,6 +37,17 @@ import java.io.PrintWriter;
 
 import org.kablink.util.VibeRuntimeException;
 
+/**
+ * This class overrides the default behavior of <code>VibeRuntimeException</code> such that
+ * handling of stack trace is ignored.
+ * 
+ * This wrapper is used to work around the situation where some framework code that we don't have
+ * direct control over attempts to print (big and ugly) stack trace when it is not desirable in
+ * our application.
+ * 
+ * @author jong
+ *
+ */
 public class NoStackTraceWrapperRuntimeException extends VibeRuntimeException {
 
 	private Exception wrappedException;
@@ -66,7 +77,7 @@ public class NoStackTraceWrapperRuntimeException extends VibeRuntimeException {
     }
 
     public void printStackTrace() { 
-    	wrappedException.printStackTrace();
+    	// This is noop!
     }
 
     public void printStackTrace(PrintStream s) {
@@ -101,5 +112,7 @@ public class NoStackTraceWrapperRuntimeException extends VibeRuntimeException {
 			return 500; // Internal Server Error
 	}
 
-    
+	protected Exception getWrappedException() {
+		return wrappedException;
+	}
 }

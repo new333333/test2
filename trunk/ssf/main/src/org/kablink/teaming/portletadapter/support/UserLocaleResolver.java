@@ -39,6 +39,7 @@ import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kablink.teaming.context.request.NoContextUserException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
@@ -67,7 +68,11 @@ public class UserLocaleResolver implements LocaleResolver {
 	private Locale getUserLocale() {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if (rc != null) {
-			User user = rc.getUser();
+			User user = null;
+			try {
+				user = rc.getUser();
+			}
+			catch(NoContextUserException doNotPropogate) {}
 			if (user != null) {
 				return user.getLocale();
 			}

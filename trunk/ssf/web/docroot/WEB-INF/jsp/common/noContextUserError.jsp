@@ -1,3 +1,4 @@
+<%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -30,73 +31,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.exception;
+%><%--
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
+--%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
+--%><%@ page contentType="text/html; charset=UTF-8" %><%--
+--%>
 
-/**
- * This class overrides the default behavior of <code>Exception</code> such that
- * handling of stack trace is ignored.
- * 
- * This wrapper is used to work around the situation where some framework code that we don't have
- * direct control over attempts to print (big and ugly) stack trace when it is not desirable in
- * our application.
- *  
- * @author jong
- *
- */
-public class NoStackTraceWrapperException extends Exception {
+<body class="tundra">
+<script type="text/javascript">
+var ss_error_msg = "<ssf:escapeQuotes>${exception.localizedMessage }</ssf:escapeQuotes>" ;
+var ss_error_code = 1;
+</script>
 
-	private Exception wrappedException;
-	
-	public NoStackTraceWrapperException(Exception wrappedException) {
-		this.wrappedException = wrappedException;
-	}
+<div class="ss_style ss_portlet">
+<h1><spring:message code="exception.codedError.title"/></h1>
 
-    public String getMessage() {
-        return wrappedException.getMessage();
-    }
+<p>${exception.localizedMessage }<br/></p>
 
-    public String getLocalizedMessage() {
-        return wrappedException.getLocalizedMessage();
-    }
+</div>
 
-    public Throwable getCause() {
-        return wrappedException.getCause();
-    }
-
-    public Throwable initCause(Throwable cause) {
-    	return wrappedException.initCause(cause);
-    }
-
-    public String toString() {
-    	return wrappedException.toString();
-    }
-
-    public void printStackTrace() { 
-    	// This is noop!
-    }
-
-    public void printStackTrace(PrintStream s) {
-    	// This is noop!
-    }
-
-    public void printStackTrace(PrintWriter s) { 
-    	// This is noop!
-    }
-
-    public Throwable fillInStackTrace() {
-    	// Don't fill in, since this is merely to wrap a real one.
-    	return this;
-    }
-
-    public StackTraceElement[] getStackTrace() {
-    	return wrappedException.getStackTrace();
-    }
-
-    public void setStackTrace(StackTraceElement[] stackTrace) {
-    	wrappedException.setStackTrace(stackTrace);
-    }
-
-}
+</body>
+</html>
