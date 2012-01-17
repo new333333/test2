@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -124,6 +124,31 @@ public class PopupMenu extends TeamingPopupPanel
 	{
 		m_menu.removeItem( menuItem );
 	}
+
+	/*
+	 * Asynchronously gives the menu the focus.
+	 */
+	private void setMenuFocusAsync()
+	{
+		Command cmd = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				setMenuFocusNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}// end setMenuFocusAsync()
+	
+	/*
+	 * Synchronously gives the menu the focus.
+	 */
+	private void setMenuFocusNow()
+	{
+		// Give the menu bar the focus.
+		m_menu.focus();
+	}// end setMenuFocusNow()
 	
 	/**
 	 * 
@@ -151,13 +176,8 @@ public class PopupMenu extends TeamingPopupPanel
 	 */
 	public void showRelativeToTarget( UIObject target )
 	{
-		int x;
-		int y;
-		
-		x = target.getAbsoluteLeft();
-		y = target.getAbsoluteTop();
-		
-		showMenu( x, y );
+		showRelativeTo(target);
+		setMenuFocusAsync();
 	}
 	
 	/**
@@ -173,12 +193,12 @@ public class PopupMenu extends TeamingPopupPanel
 			/**
 			 * 
 			 */
+			@Override
 			public void setPosition( int offsetWidth, int offsetHeight )
 			{
 				int left;
 				int maxWidth;
 				List<MenuItem> menuItems;
-				Command cmd;
 				
 				// Figure out how wide the menu is.  For some unknown reason calling
 				// m_menu.getAbsoluteWidth() doesn't work.
@@ -199,17 +219,7 @@ public class PopupMenu extends TeamingPopupPanel
 					left = x;
 				
 				setPopupPosition( left, y );
-
-				cmd = new Command()
-				{
-					@Override
-					public void execute()
-					{
-						// Give the menu bar the focus.
-						m_menu.focus();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				setMenuFocusAsync();
 			}
 		};
 		setPopupPositionAndShow( posCallback );
