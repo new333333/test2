@@ -56,6 +56,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * This popup menu is used to display the actions a user can take on a given entry.
@@ -73,8 +74,7 @@ public class ActionsPopupMenu extends PopupMenu
 	private AsyncCallback<VibeRpcResponse> m_checkRightsCallback = null;
 	private List<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
-	private int m_x;
-	private int m_y;
+	private UIObject m_actionsMenuTarget;
 	
 	/**
 	 * 
@@ -191,7 +191,7 @@ public class ActionsPopupMenu extends PopupMenu
 					}
 					
 					// Now that we have validated all the events, show this menu.
-					showMenu( m_x, m_y );
+					showRelativeToTarget( m_actionsMenuTarget );
 				}// end onSuccess()
 			};
 		}
@@ -206,14 +206,13 @@ public class ActionsPopupMenu extends PopupMenu
 	 * Show this menu.  Make an rpc request and see what rights the user has for the given entry.
 	 * Then based on those rights show/hide the appropriate menu items.  Then show the menu.
 	 */
-	public void showActionsMenu( ActivityStreamUIEntry entry, int x, int y )
+	public void showActionsMenu( ActivityStreamUIEntry entry, UIObject target )
 	{
 		// Remember the entry we are dealing with.
 		m_entry = entry;
 		
 		// Remember where we should position this popup menu.
-		m_x = x;
-		m_y = y;
+		m_actionsMenuTarget = target;
 		
 		// Associate the given entry with each menu item.
 		InvokeReplyEvent reply = ((InvokeReplyEvent) m_replyMenuItem.getEvent());

@@ -70,6 +70,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -327,11 +328,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
-					final int x;
-					final int y;
-					
-					x = clickEvent.getClientX();
-					y = clickEvent.getClientY();
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
@@ -347,7 +343,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 							m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
 							
 							// Invoke the Actions menu.
-							invokeActionsMenu( x, y );
+							invokeActionsMenu( m_actionsImg1 );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -702,7 +698,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * 
 	 */
-	private void invokeActionsMenu( int x, int y )
+	private void invokeActionsMenu( UIObject target )
 	{
 		ActionsPopupMenu popupMenu;
 		
@@ -711,7 +707,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( popupMenu != null )
 		{
 			// Show the Actions popup menu.
-			popupMenu.showActionsMenu( this, x, y );
+			popupMenu.showActionsMenu( this, target );
 		}
 	}
 	

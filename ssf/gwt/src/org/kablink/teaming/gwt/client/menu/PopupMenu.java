@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.menu;
 
-import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -43,11 +42,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
@@ -178,50 +174,5 @@ public class PopupMenu extends TeamingPopupPanel
 	{
 		showRelativeTo(target);
 		setMenuFocusAsync();
-	}
-	
-	/**
-	 * 
-	 */
-	public void showMenu( final int x, final int y )
-	{
-		PopupPanel.PositionCallback posCallback;
-
-		// Create a callback that will be called when this menu is shown.
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				int left;
-				int maxWidth;
-				List<MenuItem> menuItems;
-				
-				// Figure out how wide the menu is.  For some unknown reason calling
-				// m_menu.getAbsoluteWidth() doesn't work.
-				maxWidth = 0;
-				menuItems = m_menu.getItems();
-				for (MenuItem menuItem : menuItems)
-				{
-					int width;
-					
-					width = menuItem.getOffsetWidth();
-					if ( width > maxWidth )
-						maxWidth = width;
-				}
-				
-				if ( (x + maxWidth) > Window.getClientWidth() )
-					left = Window.getClientWidth() - maxWidth - 15;
-				else
-					left = x;
-				
-				setPopupPosition( left, y );
-				setMenuFocusAsync();
-			}
-		};
-		setPopupPositionAndShow( posCallback );
 	}
 }
