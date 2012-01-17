@@ -409,7 +409,7 @@ public class AttributesAndParamsOnlyServletRequest implements HttpServletRequest
 	}
 
 	public DispatcherType getDispatcherType() {
-		throw new UnsupportedOperationException();
+		return DispatcherType.REQUEST;
 	}
 
 	public ServletContext getServletContext() {
