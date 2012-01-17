@@ -827,24 +827,23 @@ public class TaskListing extends Composite implements TaskProvider {
 	}
 
 	/**
-	 * Enabled/disables the Delete and Purge push buttons.
+	 * Enabled/disables the the menu items that require a selection.
 	 * 
-	 * @param enableDelete
-	 * @param enablePurge
+	 * @param enable
 	 */
-	public void setDeleteAndPurgeState(boolean enableDelete, boolean enablePurge) {
+	public void setEntriesSelected(boolean enable) {
 		// If the task listing is embedded in a JSP page...
 		if (isEmbeddedInJSP()) {
 			// ...enabled/disable the buttons on its tool bar...
-			getDeleteButton().setEnabled(enableDelete);
-			getPurgeButton().setEnabled( enablePurge );
+			getDeleteButton().setEnabled(enable);
+			getPurgeButton().setEnabled( enable);
 		}
 		
 		else {
 			// ...otherwise, enable/disable them on the entry menu.
 			EntryMenuPanel emp = m_taskFolderView.getEntryMenuPanel();
 			if (null != emp) {
-				emp.setDeleteAndPurgeState(enableDelete || enablePurge);
+				emp.setEntriesSelected(enable);
 			}
 		}
 	}
