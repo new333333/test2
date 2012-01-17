@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.comparator.StringComparator;
+import org.kablink.teaming.context.request.NoContextUserException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
@@ -105,7 +106,11 @@ public class NLT implements ApplicationContextAware {
 	private Locale getLocale() {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(rc != null) {
-			User user = rc.getUser();
+			User user = null;
+			try {
+				user = rc.getUser();
+			}
+			catch(NoContextUserException doNotPropogate) {}
 			if(user != null)
 				return user.getLocale();
 			else

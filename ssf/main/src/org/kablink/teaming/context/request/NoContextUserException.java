@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,73 +30,51 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.exception;
+package org.kablink.teaming.context.request;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.domain.NoUserByTheNameException;
+import org.kablink.teaming.exception.NoStackTraceWrapperRuntimeException;
+
 /**
- * This class overrides the default behavior of <code>Exception</code> such that
- * handling of stack trace is ignored.
+ * This class overrides <code>NoStackTraceWrapperRuntimeException</code> so that
+ * request to print stack trace actually prints <code>toString</code> representation
+ * of this wrapping exception rather than printing nothing.
  * 
- * This wrapper is used to work around the situation where some framework code that we don't have
- * direct control over attempts to print (big and ugly) stack trace when it is not desirable in
- * our application.
- *  
  * @author jong
  *
  */
-public class NoStackTraceWrapperException extends Exception {
+public class NoContextUserException extends NoStackTraceWrapperRuntimeException {
 
-	private Exception wrappedException;
-	
-	public NoStackTraceWrapperException(Exception wrappedException) {
-		this.wrappedException = wrappedException;
+	public NoContextUserException(
+			NoUserByTheIdException wrappedException) {
+		super(wrappedException);
 	}
 
-    public String getMessage() {
-        return wrappedException.getMessage();
-    }
-
-    public String getLocalizedMessage() {
-        return wrappedException.getLocalizedMessage();
-    }
-
-    public Throwable getCause() {
-        return wrappedException.getCause();
-    }
-
-    public Throwable initCause(Throwable cause) {
-    	return wrappedException.initCause(cause);
-    }
-
-    public String toString() {
-    	return wrappedException.toString();
-    }
+	public NoContextUserException(
+			NoUserByTheNameException wrappedException) {
+		super(wrappedException);
+	}
 
     public void printStackTrace() { 
-    	// This is noop!
+    	System.err.print(this.toString());
     }
 
     public void printStackTrace(PrintStream s) {
-    	// This is noop!
+    	s.print(this.toString());
     }
 
     public void printStackTrace(PrintWriter s) { 
-    	// This is noop!
+    	s.print(this.toString());
     }
-
-    public Throwable fillInStackTrace() {
-    	// Don't fill in, since this is merely to wrap a real one.
-    	return this;
-    }
-
-    public StackTraceElement[] getStackTrace() {
-    	return wrappedException.getStackTrace();
-    }
-
-    public void setStackTrace(StackTraceElement[] stackTrace) {
-    	wrappedException.setStackTrace(stackTrace);
+    
+    public String toString() {
+    	String str = super.toString();
+    	str = str.replace(getWrappedException().getClass().getName(), getClass().getName());
+    	return str;
     }
 
 }
