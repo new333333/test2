@@ -50,11 +50,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
-import org.kablink.teaming.gwt.client.tasklisting.TaskProvider;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -71,7 +68,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class TaskFolderView extends FolderViewBase
-	implements TaskProvider,
+	implements
 	// Event handlers implemented by this class.
 		InvokeDropBoxEvent.Handler
 {
@@ -129,27 +126,8 @@ public class TaskFolderView extends FolderViewBase
 		loadPart1Async();
 	}
 
-	/**
-	 * Returns the task list from the TaskListing.
-	 * 
-	 * Implements the TaskProvider.getTasks() method.
-	 * 
-	 * @return
-	 */
-	@Override
-	public List<TaskListItem> getTasks() {
-		List<TaskListItem> reply = null;
-		if (null != m_taskListing) {
-			TaskBundle tb = m_taskListing.getTaskBundle();
-			if (null != tb) {
-				reply = tb.getTasks();
-			}
-		}
-		return reply;
-	}
-	
 	/*
-	 * Asynchronously loads the TaskGraphsPanel.
+	 * Asynchronously loads the task display data.
 	 */
 	private void loadPart1Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -162,7 +140,7 @@ public class TaskFolderView extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously loads the TaskGraphsPanel.
+	 * Synchronously loads the task display data.
 	 */
 	private void loadPart1Now() {
 		GetTaskDisplayDataCmd cmd = new GetTaskDisplayDataCmd(getFolderInfo().getBinderIdAsLong());
@@ -183,7 +161,7 @@ public class TaskFolderView extends FolderViewBase
 	}
 
 	/*
-	 * Asynchronously loads the task display data.
+	 * Asynchronously loads the TaskListing.
 	 */
 	private void loadPart2Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -196,42 +174,10 @@ public class TaskFolderView extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously loads the task display data.
-	 */
-	private void loadPart2Now() {
-		TaskGraphsPanel.createAsync(this, this, m_taskDisplayData.getExpandGraphs(), getFolderInfo(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
-				loadPart3Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the TaskListing.
-	 */
-	private void loadPart3Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart3Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
 	 * Synchronously loads the TaskListing.
 	 */
-	private void loadPart3Now() {
-		// Yes!  Load the task listing's split point.
+	private void loadPart2Now() {
+		// Load the task listing's split point.
 		TaskListing.createAsync(
 				this,
 				new TaskListingClient() {				
@@ -244,6 +190,38 @@ public class TaskFolderView extends FolderViewBase
 			@Override
 			public void onSuccess(TaskListing taskListing) {
 				m_taskListing = taskListing;
+				loadPart3Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the TaskGraphsPanel.
+	 */
+	private void loadPart3Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the TaskGraphsPanel.
+	 */
+	private void loadPart3Now() {
+		TaskGraphsPanel.createAsync(this, m_taskListing, m_taskDisplayData.getExpandGraphs(), getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
 				populateViewAsync();
 			}
 		});

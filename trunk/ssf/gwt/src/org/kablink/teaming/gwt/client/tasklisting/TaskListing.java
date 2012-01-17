@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -90,7 +91,7 @@ import com.google.gwt.user.client.ui.TextBox;
  * 
  * @author drfoster@novell.com
  */
-public class TaskListing extends Composite {
+public class TaskListing extends Composite implements TaskProvider {
 	public static RequestInfo m_requestInfo;			//
 
 	private boolean			m_embeddedInJSP;			// true -> The TaskListing is embedded in a JSP page.  false -> It's embedded in a TaskFolderView.
@@ -398,6 +399,22 @@ public class TaskListing extends Composite {
 	 */
 	public void setTaskBundle(TaskBundle taskBundle) {m_taskBundle = taskBundle;}
 
+	/**
+	 * Returns the task list from the TaskListing.
+	 * 
+	 * Implements the TaskProvider.getTasks() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public List<TaskListItem> getTasks() {
+		List<TaskListItem> reply;
+		if (null == m_taskBundle)
+		     reply = null;
+		else reply = m_taskBundle.getTasks();
+		return reply;
+	}
+	
 	/*
 	 * Called when the user changes the selection in the view menu.
 	 */
