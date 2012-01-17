@@ -4484,7 +4484,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private BinderInfo getBinderInfo( HttpRequestInfo ri, String binderId )
 	{
-		return GwtServerHelper.getBinderInfo( this, binderId );
+		return GwtServerHelper.getBinderInfo( getRequest( ri ), this, binderId );
 	}//end getBinderInfo()
 
 	/**
@@ -4500,7 +4500,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private ViewInfo getViewInfo( HttpRequestInfo ri, GetViewInfoCmd viCmd ) throws GwtTeamingException
 	{
 		return GwtViewHelper.getViewInfo( this, getRequest( ri ), viCmd.getUrl() );
-	}//end getBinderInfo()
+	}//end getViewInfo()
 
 	/**
 	 * Returns the ID of the default view definition of a folder.

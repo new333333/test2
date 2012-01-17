@@ -65,7 +65,6 @@ import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -590,25 +589,17 @@ public class GwtViewHelper {
 	 */
 	public static BinderDescriptionRpcResponseData getBinderDescription(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
 		try {
-			// Access the description information from the binder...
-			Binder	    binder        = bs.getBinderModule().getBinder(binderId);
-			Description binderDesc    = binder.getDescription();
-			int         binderDescFmt = binderDesc.getFormat();
+			// Access the BinderInfo for the binder's description
+			// information...
+			BinderInfo binderInfo = GwtServerHelper.getBinderInfo(request, bs, String.valueOf(binderId));
 
-			// ...access the user's expansion state for the
-			// ...description...
-			StringRpcResponseData regionStateRpcData = getBinderRegionState(bs, request, binderId, "descriptionRegion");
-			String regionState = regionStateRpcData.getStringValue();
-			boolean expanded = (MiscUtil.hasString(regionState) ? regionState.equals("expanded") : true);
-			
-			// ...and use the information to construct and return a
-			// ...BinderDescriptionRpcResponseData object with the
-			// ...binder's description.
+			// ...and use it to construct and return a
+			// ...BinderDescriptionRpcResponseData object.
 			return
 				new BinderDescriptionRpcResponseData(
-					binderDesc.getText(),
-					(Description.FORMAT_HTML == binderDescFmt),
-					expanded);
+					binderInfo.getBinderDesc(),
+					binderInfo.isBinderDescHTML(),
+					binderInfo.isBinderDescExpanded());
 		}
 		
 		catch (Exception e) {
@@ -1818,7 +1809,7 @@ public class GwtViewHelper {
 			if (entityType.equals("user")) {
 				// A user!  Can we access the user?
 				Long entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID);			
-				if (!(initVIFromUser(bs, GwtServerHelper.getUserFromId(bs, entryId), vi))) {
+				if (!(initVIFromUser(request, bs, GwtServerHelper.getUserFromId(bs, entryId), vi))) {
 					m_logger.debug("GwtViewHelper.getViewInfo():  2:Could not determine a view.");
 					return null;
 				}
@@ -1826,7 +1817,7 @@ public class GwtViewHelper {
 			else if (entityType.equals("folder") || entityType.equals("workspace") || entityType.equals("profiles")) {
 				// A folder, workspace or the profiles binder!  Setup
 				// a binder view based on the binder ID.
-				if (!(initVIFromBinderId(bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+				if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
 					m_logger.debug("GwtViewHelper.getViewInfo():  3:Could not determine a view.");
 					return null;
 				}
@@ -1836,7 +1827,7 @@ public class GwtViewHelper {
 		else if (action.equals(WebKeys.ACTION_VIEW_WS_LISTING) || action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
 			// A view workspace or folder listing!  Setup a binder view
 			// based on the binder ID.
-			if (!(initVIFromBinderId(bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+			if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
 				m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
 				return null;
 			}
@@ -1922,10 +1913,10 @@ public class GwtViewHelper {
 	 * Returns true if the ViewInfo was initialized and false
 	 * otherwise.
 	 */
-	private static boolean initVIFromBinderId(AllModulesInjected bs, Map<String, String> nvMap, String binderIdName, ViewInfo vi, boolean checkForTrash) {
+	private static boolean initVIFromBinderId(HttpServletRequest request, AllModulesInjected bs, Map<String, String> nvMap, String binderIdName, ViewInfo vi, boolean checkForTrash) {
 		// Initialize as a binder based on the user's workspace.
 		Long binderId = getQueryParameterLong(nvMap, binderIdName);
-		BinderInfo bi = GwtServerHelper.getBinderInfo(bs, String.valueOf(binderId));
+		BinderInfo bi = GwtServerHelper.getBinderInfo(request, bs, String.valueOf(binderId));
 		if (null == bi) {
 			return false;
 		}
@@ -1952,7 +1943,7 @@ public class GwtViewHelper {
 	 * Returns true if the ViewInfo was initialized and false
 	 * otherwise.
 	 */
-	private static boolean initVIFromUser(AllModulesInjected bs, User user, ViewInfo vi) {
+	private static boolean initVIFromUser(HttpServletRequest request, AllModulesInjected bs, User user, ViewInfo vi) {
 		// Were we given a User object to initialize from?
 		if (null == user) {
 			// No!  Bail.
@@ -1960,7 +1951,7 @@ public class GwtViewHelper {
 		}
 
 		// Initialize as a binder based on the user's workspace.
-		BinderInfo bi = GwtServerHelper.getBinderInfo(bs, String.valueOf(user.getWorkspaceId()));
+		BinderInfo bi = GwtServerHelper.getBinderInfo(request, bs, String.valueOf(user.getWorkspaceId()));
 		if (null == bi) {
 			return false;
 		}

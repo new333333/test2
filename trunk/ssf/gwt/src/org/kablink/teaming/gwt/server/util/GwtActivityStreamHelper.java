@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -982,10 +982,10 @@ public class GwtActivityStreamHelper {
 	 * Builds an TreeInfo object based on a Binder's ID, title, hover
 	 * text and an ActivityStream enumeration value.
 	 */
-	private static TreeInfo buildASTI(AllModulesInjected bs, boolean isBinder, String id, String title, String hover, ActivityStream as) {
+	private static TreeInfo buildASTI(HttpServletRequest request, AllModulesInjected bs, boolean isBinder, String id, String title, String hover, ActivityStream as) {
 		TreeInfo reply = new TreeInfo();
 		if (isBinder && MiscUtil.hasString(id)) {
-			reply.setBinderInfo(GwtServerHelper.getBinderInfo(bs, id));
+			reply.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, id));
 		}
 		
 		reply.setActivityStream(true);
@@ -1353,6 +1353,7 @@ public class GwtActivityStreamHelper {
 				// Yes!  Build a TreeInfo for it.
 				rootASList.add(
 					buildASTI(
+						request,
 						bs,
 						true,
 						binderIdS,
@@ -1388,6 +1389,7 @@ public class GwtActivityStreamHelper {
 						// Yes!  Add an appropriate TreeInfo for it.
 						asIdsList.add(id);					
 						asTIChild = buildASTI(
+							request,
 							bs,
 							true,
 							id,
@@ -1444,6 +1446,7 @@ public class GwtActivityStreamHelper {
 						// Yes!  Add an appropriate TreeInfo for it.
 						asIdsList.add(id);					
 						asTIChild = buildASTI(
+							request,
 							bs,
 							true,
 							id,
@@ -1500,6 +1503,7 @@ public class GwtActivityStreamHelper {
 						// Yes!  Add an appropriate TreeInfo for it.
 						asIdsList.add(id);					
 						asTIChild = buildASTI(
+							request,
 							bs,
 							false,
 							id,
@@ -1556,6 +1560,7 @@ public class GwtActivityStreamHelper {
 						// Yes!  Add an appropriate TreeInfo for it.
 						asIdsList.add(id);					
 						asTIChild = buildASTI(
+							request,
 							bs,
 							true,
 							id,
@@ -1597,6 +1602,7 @@ public class GwtActivityStreamHelper {
 			// We always have a Site Wide.
 			rootASList.add(
 				buildASTI(
+					request,
 					bs,
 					true,
 					null,	// null -> No ID.
