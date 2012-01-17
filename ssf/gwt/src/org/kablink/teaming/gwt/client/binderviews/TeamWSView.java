@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ChildBindersWidget;
-import org.kablink.teaming.gwt.client.widgets.ChildBindersWidget.ChildBindersWidgetClient;
 import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
 import org.kablink.teaming.gwt.client.widgets.LandingPageWidget.LandingPageWidgetClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -172,7 +171,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 			m_listOfChildrenPanel.addStyleName( "vibe-teamWSView_ListOfChildrenPanel" );
 			m_mainPanel.add( m_listOfChildrenPanel );
 
-			ChildBindersWidget.createAsync( m_binderInfo, new ChildBindersWidgetClient()
+			ChildBindersWidget.createAsync( this, m_binderInfo, this, new ToolPanelClient()
 			{
 				@Override
 				public void onUnavailable()
@@ -181,7 +180,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 				}
 				
 				@Override
-				public void onSuccess( ChildBindersWidget cbWidget )
+				public void onSuccess( ToolPanelBase cbWidget )
 				{
 					m_listOfChildrenPanel.add( cbWidget );
 				}

@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersCmd;
@@ -63,6 +65,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RequiresResize;
 
 
 
@@ -70,24 +73,13 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * This class will display a list of the child binders of the given binder.
  * @author jwootton
  */
-public class ChildBindersWidget  extends VibeWidget
+public class ChildBindersWidget extends ToolPanelBase
 {
-	private BinderInfo m_binderInfo;
 	private VibeFlowPanel m_mainPanel;
 	private VibeFlowPanel m_iconListPanel;
 	private final static int NUM_COLS = 3;
 
 	
-	/**
-	 * Callback interface to interact with the ChildBindersWidget asynchronously after it loads. 
-	 */
-	public interface ChildBindersWidgetClient
-	{
-		void onSuccess( ChildBindersWidget lpe );
-		void onUnavailable();
-	}
-	
-
 	/**
 	 * This class is used as the click handler when the user clicks on a binder.
 	 *
@@ -208,8 +200,10 @@ public class ChildBindersWidget  extends VibeWidget
 	/**
 	 * 
 	 */
-	private ChildBindersWidget( final BinderInfo binderInfo )
+	private ChildBindersWidget( RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady )
 	{
+		super( containerResizer, binderInfo, toolPanelReady );
+		
 		Scheduler.ScheduledCommand cmd;
 
 		init();
@@ -223,7 +217,7 @@ public class ChildBindersWidget  extends VibeWidget
 			public void execute()
 			{
 				// Initialize this widget for the given binder.
-				buildUI( binderInfo );
+				buildUI();
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -642,10 +636,8 @@ public class ChildBindersWidget  extends VibeWidget
 	 * 
 	 * @param binderInfo
 	 */
-	private void buildUI( BinderInfo binderInfo )
+	private void buildUI()
 	{
-		m_binderInfo = binderInfo;
-
 		// Read the list of binders that are children of the given binder.
 		getListOfChildBinders();
 	}
@@ -657,7 +649,7 @@ public class ChildBindersWidget  extends VibeWidget
 	 * @param binderInfo
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo binderInfo, final ChildBindersWidgetClient client )
+	public static void createAsync( final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient client )
 	{
 		GWT.runAsync( ChildBindersWidget.class, new RunAsyncCallback()
 		{			
@@ -673,7 +665,7 @@ public class ChildBindersWidget  extends VibeWidget
 			{
 				ChildBindersWidget cbWidget;
 				
-				cbWidget = new ChildBindersWidget( binderInfo );
+				cbWidget = new ChildBindersWidget( containerResizer, binderInfo, toolPanelReady );
 				client.onSuccess( cbWidget );
 			}
 		} );
@@ -901,5 +893,18 @@ public class ChildBindersWidget  extends VibeWidget
 		}
 		
 		return wsImg;
+	}
+
+	/**
+	 * Called from the binder view to allow the panel to do any work required to reset itself.
+	 * 
+	 * Implements ToolPanelBase.resetPanel()
+	 */
+	@Override
+	public void resetPanel()
+	{
+		// Reset the widgets and reload the description.
+		m_mainPanel.clear();
+		buildUI();
 	}
 }
