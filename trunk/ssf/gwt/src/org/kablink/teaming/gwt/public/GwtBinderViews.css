@@ -260,3 +260,7 @@
 		border: 1px solid #949494;
 	}
 /* End:  Size columns dialog  styles. */
+
+/* Start:  Move entries dialog  styles. */
+	.vibe-moveEntriesDlgRootPanel {padding: 6px;}
+/* End:  Move entries dialog  styles. */

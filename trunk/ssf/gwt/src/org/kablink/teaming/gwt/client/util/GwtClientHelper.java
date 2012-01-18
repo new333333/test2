@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -68,7 +68,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 
 /**
  * Helper methods for the GWT UI client code.
@@ -158,7 +157,7 @@ public class GwtClientHelper {
 	public static Image buildImage(ImageResource res, String title) {
 		Image reply = new Image(res);
 		reply.getElement().setAttribute("align", "absmiddle");
-		if (GwtClientHelper.hasString(title)) {
+		if (hasString(title)) {
 			reply.setTitle(title);
 		}
 		return reply;
@@ -653,9 +652,19 @@ public class GwtClientHelper {
 	 * 
 	 * @param url
 	 */
-	public static native void jsLaunchToolbarPopupUrl(String url) /*-{
-		$wnd.ss_toolbarPopupUrl(url, '_blank', '', '');
+	public static native void jsLaunchToolbarPopupUrl(String url, String w, String h) /*-{
+		$wnd.ss_toolbarPopupUrl(url, '_blank', w, h);
 	}-*/;
+	
+	public static void jsLaunchToolbarPopupUrl(String url, int w, int h) {
+		// Always use the initial form of the method.
+		jsLaunchToolbarPopupUrl(url, String.valueOf(w), String.valueOf(h));
+	}
+
+	public static void jsLaunchToolbarPopupUrl(String url) {
+		// Always use the initial form of the method.
+		jsLaunchToolbarPopupUrl(url, "", "");
+	}
 
 	/**
 	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
@@ -1032,7 +1041,7 @@ public class GwtClientHelper {
 	public static boolean validateOSBI(OnSelectBinderInfo osbi, boolean displayError) {
 		// If we the OnSelectBinderInfo doesn't have a permalink to the
 		// binder...
-		if (!(GwtClientHelper.hasString(osbi.getBinderUrl()))) {
+		if (!(hasString(osbi.getBinderUrl()))) {
 			// ...tell the user and return false.
 			if (displayError) {
 				deferredAlert(GwtTeaming.getMessages().cantAccessFolder());

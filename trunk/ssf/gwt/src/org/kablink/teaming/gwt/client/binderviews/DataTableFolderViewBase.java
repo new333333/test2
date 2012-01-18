@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
@@ -1076,8 +1077,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onChangeEntryTypeSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the change.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.changeEntryTypes(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1093,8 +1098,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onCopySelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the copy.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.copyEntries(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1202,8 +1211,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onLockSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the lock.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.lockEntries(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1219,8 +1232,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onMarkReadSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the mark entries read.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.markEntriesRead(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1236,8 +1253,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onMoveSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the move.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.moveEntries(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1366,8 +1387,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onShareSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the share.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.shareEntries(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1383,8 +1408,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onSubscribeSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the subscribe to.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.subscribeToEntries(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1400,8 +1429,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onUnlockSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the unlock.
+			BinderInfo fi = getFolderInfo();
+			BinderViewsHelper.unlockEntries(
+				fi.getBinderIdAsLong(),
+				fi.getFolderType(),
+				getSelectedEntryIds());
 		}
 	}
 	
