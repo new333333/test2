@@ -29,6 +29,7 @@
 				includes="${libraries.restclient}" />
 		</copy>
 		<!-- Copy additional libraries needed by the sample -->
+		<copy file="${project.dir}/util/kablink-teaming-util.jar" todir="lib"/>
 		<copy todir="lib">
 			<fileset dir="${project.dir}/lib">
 				<include name="junit.jar" />
