@@ -262,6 +262,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:
+				// A ChangeEntryTypeSelectedEntriesEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ChangeEntryTypeSelectedEntriesEvent.registerEvent(eventBus, ((ChangeEntryTypeSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CONTEXT_CHANGED:
 				// A ContextChangedEvent!  Can the event handler we
 				// were given handle that?
@@ -295,6 +304,15 @@ public class EventHelper {
 				if (eventHandler instanceof ContributorIdsRequestEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ContributorIdsRequestEvent.registerEvent(eventBus, ((ContributorIdsRequestEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case COPY_SELECTED_ENTRIES:
+				// A CopySelectedEntriesEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof CopySelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CopySelectedEntriesEvent.registerEvent(eventBus, ((CopySelectedEntriesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -559,6 +577,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case LOCK_SELECTED_ENTRIES:
+				// A LockSelectedEntriesEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof LockSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = LockSelectedEntriesEvent.registerEvent(eventBus, ((LockSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case LOGIN:
 				// An LoginEvent!  Can the event handler we were given
 				// handle that?
@@ -622,6 +649,15 @@ public class EventHelper {
 				}
 				break;
 
+			case MARK_READ_SELECTED_ENTRIES:
+				// A MarkReadSelectedEntriesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MarkReadSelectedEntriesEvent.registerEvent(eventBus, ((MarkReadSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case MASTHEAD_HIDE:
 				// A MastheadHideEvent!  Can the event handler we were
 				// given handle that?
@@ -655,6 +691,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = MenuShowEvent.registerEvent( eventBus, ((MenuShowEvent.Handler) eventHandler) );
+				}
+				break;
+			
+			case MOVE_SELECTED_ENTRIES:
+				// A MoveSelectedEntriesEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof MoveSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MoveSelectedEntriesEvent.registerEvent(eventBus, ((MoveSelectedEntriesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -712,6 +757,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SHARE_SELECTED_ENTRIES:
+				// A ShareSelectedEntriesEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ShareSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShareSelectedEntriesEvent.registerEvent(eventBus, ((ShareSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SHOW_CONTENT_CONTROL:
 				// A ShowContentControlEvent!  Can the event handler we
 				// were given handle that?
@@ -808,6 +862,15 @@ public class EventHelper {
 				if (eventHandler instanceof SizeChangedEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = SizeChangedEvent.registerEvent(eventBus, ((SizeChangedEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SUBSCRIBE_SELECTED_ENTRIES:
+				// A SubscribeSelectedEntriesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SubscribeSelectedEntriesEvent.registerEvent(eventBus, ((SubscribeSelectedEntriesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -979,6 +1042,15 @@ public class EventHelper {
 				if (eventHandler instanceof UntrackCurrentBinderEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = UntrackCurrentBinderEvent.registerEvent(eventBus, ((UntrackCurrentBinderEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case UNLOCK_SELECTED_ENTRIES:
+				// A UnlockSelectedEntriesEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof UnlockSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = UnlockSelectedEntriesEvent.registerEvent(eventBus, ((UnlockSelectedEntriesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1292,8 +1364,16 @@ public class EventHelper {
 			case VIEW_WHATS_NEW_IN_BINDER:				hasHandler = (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler);          break;
 			case VIEW_WHATS_UNSEEN_IN_BINDER:			hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);       break;
 			
+			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);break;
+			case COPY_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);           break;
 			case DELETE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);         break;
+			case LOCK_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);           break;
+			case MARK_READ_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);       break;
+			case MOVE_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);           break;
 			case PURGE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);          break;
+			case SHARE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);          break;
+			case SUBSCRIBE_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);      break;
+			case UNLOCK_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);         break;
 			
 			case UNDEFINED:
 				// Ignore.

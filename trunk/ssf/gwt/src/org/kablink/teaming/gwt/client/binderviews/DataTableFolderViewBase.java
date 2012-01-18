@@ -60,14 +60,22 @@ import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
@@ -134,11 +142,19 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements
 	// Event handlers implemented by this class.
+		ChangeEntryTypeSelectedEntriesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
+		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler
+		LockSelectedEntriesEvent.Handler,
+		MarkReadSelectedEntriesEvent.Handler,
+		MoveSelectedEntriesEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler,
+		ShareSelectedEntriesEvent.Handler,
+		SubscribeSelectedEntriesEvent.Handler,
+		UnlockSelectedEntriesEvent.Handler
 {
 	private AddFilesDlg					m_addFilesDlg;				//
 	private boolean						m_fixedLayout;				//
@@ -171,11 +187,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
+		TeamingEvents.LOCK_SELECTED_ENTRIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
+		TeamingEvents.MOVE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
+		TeamingEvents.SHARE_SELECTED_ENTRIES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
 	
 	/*
@@ -1041,6 +1065,40 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
+	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onChangeEntryTypeSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onCopySelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
 	 * Handles InvokeColumnResizerEvent's received by this class.
 	 * 
 	 * Implements the InvokeColumnResizerEvent.Handler.onInvokeColumnResizer() method.
@@ -1129,6 +1187,57 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Simply show it.
 				showAddFilesDlgNow();
 			}
+		}
+	}
+	
+	/**
+	 * Handles LockSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onLockSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles MarkReadSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onMarkReadSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onMoveSelectedEntries():  ...this needs to be implemented...");
 		}
 	}
 	
@@ -1245,6 +1354,57 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		dg.setHeight(dataTableHeight + "px");
 	}
 
+	/**
+	 * Handles ShareSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onShareSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles SubscribeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onSubscribeSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles UnlockSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onUnlockSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
 	/**
 	 * Completes populating the data table view specific content.
 	 */

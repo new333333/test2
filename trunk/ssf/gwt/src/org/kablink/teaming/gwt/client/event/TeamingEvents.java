@@ -166,8 +166,16 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_WHATS_UNSEEN_IN_BINDER,		// Shows the items that are unseen in the current binder.
 	VIEW_WHATS_NEW_IN_BINDER,			// Shows the items that are new    in the current binder.
 	
+	CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,	// Changes the Entry Type of the Selected Entries.
+	COPY_SELECTED_ENTRIES,				// Copies the Selected Entries.
 	DELETE_SELECTED_ENTRIES,			// Deletes the Selected Entries.
+	LOCK_SELECTED_ENTRIES,				// Locks the Selected Entries.
+	MARK_READ_SELECTED_ENTRIES,			// Marks the Selected Entries as Having Been Read.
+	MOVE_SELECTED_ENTRIES,				// Moves the Selected Entries.
 	PURGE_SELECTED_ENTRIES,				// Deletes and Immediately Purges the Selected Entries.
+	SHARE_SELECTED_ENTRIES,				// Shares the Selected Entries.
+	SUBSCRIBE_SELECTED_ENTRIES,			// Subscribes the Current User to the Selected Entries.
+	UNLOCK_SELECTED_ENTRIES,			// Unlocks the Selected Entries.
 		
 	UNDEFINED;							// Undefined event - Should never be fired !!!
 

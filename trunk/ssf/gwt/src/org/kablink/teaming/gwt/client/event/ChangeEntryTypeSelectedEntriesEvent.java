@@ -37,12 +37,12 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The PurgeSelectedEntriesEvent is used to purge the currently
- * selected entries from a folder.
+ * The ChangeEntryTypeSelectedEntriesEvent is used to change the entry
+ * type of the currently selected entries in a folder.
  * 
  * @author drfoster@novell.com
  */
-public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntriesEvent.Handler> {
+public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEntryTypeSelectedEntriesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long m_folderId;	//
@@ -51,13 +51,13 @@ public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntrie
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event);
+		void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public PurgeSelectedEntriesEvent() {
+	public ChangeEntryTypeSelectedEntriesEvent() {
 		super();
 	}
 	
@@ -66,7 +66,7 @@ public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntrie
 	 * 
 	 * @param folderId
 	 */
-	public PurgeSelectedEntriesEvent(Long folderId) {
+	public ChangeEntryTypeSelectedEntriesEvent(Long folderId) {
 		super();
 		m_folderId = folderId;
 	}
@@ -94,7 +94,7 @@ public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntrie
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onPurgeSelectedEntries(this);
+        handler.onChangeEntryTypeSelectedEntries(this);
     }    
 	
 	/**
@@ -119,7 +119,7 @@ public class PurgeSelectedEntriesEvent extends VibeEventBase<PurgeSelectedEntrie
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.PURGE_SELECTED_ENTRIES;
+		return TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES;
 	}
 		
 	/**

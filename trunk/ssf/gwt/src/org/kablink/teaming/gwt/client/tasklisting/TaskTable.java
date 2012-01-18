@@ -39,9 +39,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveDownEvent;
@@ -51,6 +58,7 @@ import org.kablink.teaming.gwt.client.event.TaskMoveUpEvent;
 import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
 import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -142,8 +150,15 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
+		ChangeEntryTypeSelectedEntriesEvent.Handler,
+		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
+		LockSelectedEntriesEvent.Handler,
+		MarkReadSelectedEntriesEvent.Handler,
+		MoveSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler,
+		ShareSelectedEntriesEvent.Handler,
+		SubscribeSelectedEntriesEvent.Handler,
 		TaskDeleteEvent.Handler,
 		TaskHierarchyDisabledEvent.Handler,
 		TaskMoveDownEvent.Handler,
@@ -151,7 +166,8 @@ public class TaskTable extends Composite
 		TaskMoveRightEvent.Handler,
 		TaskMoveUpEvent.Handler,
 		TaskPurgeEvent.Handler,
-		TaskQuickFilterEvent.Handler
+		TaskQuickFilterEvent.Handler,
+		UnlockSelectedEntriesEvent.Handler
 {
 	private boolean						m_sortAscending;			//
 	private Column						m_sortColumn;				//
@@ -217,8 +233,15 @@ public class TaskTable extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
+		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.LOCK_SELECTED_ENTRIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
+		TeamingEvents.MOVE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
+		TeamingEvents.SHARE_SELECTED_ENTRIES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.TASK_DELETE,
 		TeamingEvents.TASK_HIERARCHY_DISABLED,
 		TeamingEvents.TASK_MOVE_DOWN,
@@ -227,6 +250,7 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_MOVE_UP,
 		TeamingEvents.TASK_PURGE,
 		TeamingEvents.TASK_QUICK_FILTER,
+		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
 	
 	/*
@@ -2646,6 +2670,40 @@ public class TaskTable extends Composite
 	}
 	
 	/**
+	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onChangeEntryTypeSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onCopySelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
 	 * Handles DeleteSelectedEntriesEvent's received by this class.
 	 * 
 	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
@@ -2676,6 +2734,57 @@ public class TaskTable extends Composite
 	}
 	
 	/**
+	 * Handles LockSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onLockSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles MarkReadSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onMarkReadSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onMoveSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
 	 * Handles PurgeSelectedEntriesEvent's received by this class.
 	 * 
 	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
@@ -2689,6 +2798,40 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Purge the selected tasks.
 			handleTaskPurge();
+		}
+	}
+	
+	/**
+	 * Handles ShareSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onShareSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles SubscribeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onSubscribeSelectedEntries():  ...this needs to be implemented...");
 		}
 	}
 	
@@ -2788,6 +2931,23 @@ public class TaskTable extends Composite
 		handleTaskQuickFilter(event.getQuickFilter());
 	}
 
+	/**
+	 * Handles UnlockSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+//!			...this needs to be implemented...
+			Window.alert("TaskTable.onUnlockSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
