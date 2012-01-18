@@ -37,18 +37,14 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
-import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
@@ -79,37 +75,117 @@ public class ChildBindersWidget extends ToolPanelBase
 	private VibeFlowPanel m_iconListPanel;
 	private final static int NUM_COLS = 3;
 
-	
+
 	/**
-	 * This class is used as the click handler when the user clicks on a binder.
-	 *
+	 * This class is used to create the ui that displays a binder's name, number of unread
+	 * items and its description.
 	 */
-	private class BinderClickHandler implements ClickHandler
+	private class BinderPanel extends VibeWidget implements ClickHandler
 	{
-		private String m_binderId;
-		private String m_binderUrl;
+		InlineLabel m_unreadLabel;
+		InlineLabel m_binderLabel;
+		BinderInfo m_binderInfo;
+		String m_binderUrl;
 		
 		/**
 		 * 
 		 */
-		public BinderClickHandler( String binderId, String binderUrl )
+		public BinderPanel( BinderInfo binderInfo, String binderUrl, Image img )
 		{
 			super();
 			
-			m_binderId = binderId;
+			m_binderInfo = binderInfo;
 			m_binderUrl = binderUrl;
+			
+			if ( m_binderInfo != null )
+				buildPanel( img );
+		}
+		
+		/**
+		 * Build a panel to hold the binder's description if the binder has a description
+		 */
+		private VibeFlowPanel buildDescPanel()
+		{
+			VibeFlowPanel descPanel;
+			String desc;
+			
+			descPanel = null;
+			
+			// Does the binder have a description?
+			desc = m_binderInfo.getBinderDesc();
+			if ( desc != null && desc.length() > 0 )
+			{
+				// Yes
+				// Strip out <p> and </p> to save space
+				desc = desc.replaceAll( "<p>", "" );
+				desc = desc.replaceAll( "</p>", "" );
+				
+				descPanel = new VibeFlowPanel();
+				descPanel.getElement().setInnerHTML( desc );
+			}
+
+			return descPanel;
+		}
+		
+		/**
+		 * 
+		 */
+		private void buildPanel( Image img )
+		{
+			VibeFlowPanel binderPanel;
+			VibeFlowPanel descPanel;
+			Long numUnread;
+			
+			// Yes
+			binderPanel = new VibeFlowPanel();
+			binderPanel.addStyleName( "childBindersWidget_ListOfFoldersPanel_FolderPanel" );
+
+			// Do we have an image to display?
+			if ( img != null )
+			{
+				// Yes
+				img.getElement().setAttribute( "align", "absmiddle" );
+				binderPanel.add( img );
+			}
+			
+			m_binderLabel = new InlineLabel( m_binderInfo.getBinderTitle() );
+			m_binderLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_folderLabel" );
+			m_binderLabel.addClickHandler( this );
+			binderPanel.add( m_binderLabel );
+
+			// Create a label with the number of unread entries. ie (5 unread)
+			numUnread = m_binderInfo.getNumUnread();
+			if ( numUnread > 0 )
+			{
+				m_unreadLabel = new InlineLabel( " " + GwtTeaming.getMessages().unreadEntries( numUnread ) );
+				m_unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabel" );
+				m_unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabelRed" );
+				m_unreadLabel.addClickHandler( this );
+				binderPanel.add( m_unreadLabel );
+			}
+
+			// Does this workspace have a description?
+			descPanel = buildDescPanel();
+			if ( descPanel != null )
+			{
+				// Yes
+				descPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_FolderDescPanel" );
+				binderPanel.add( descPanel );
+			}
+			
+			initWidget( binderPanel );
 		}
 
 		/**
 		 * 
 		 */
-		private void handleClickOnLink()
+		private void handleClickOnBinder()
 		{
 			if ( GwtClientHelper.hasString( m_binderUrl ) )
 			{
 				OnSelectBinderInfo binderInfo;
 				
-				binderInfo = new OnSelectBinderInfo( m_binderId, m_binderUrl, false, Instigator.UNKNOWN );
+				binderInfo = new OnSelectBinderInfo( m_binderInfo.getBinderId(), m_binderUrl, false, Instigator.UNKNOWN );
 				GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
 			}
 			
@@ -118,60 +194,15 @@ public class ChildBindersWidget extends ToolPanelBase
 		/**
 		 * 
 		 */
-		@Override
-		public void onClick( ClickEvent event )
+		private void handleClickOnUnread()
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			if ( GwtClientHelper.hasString( m_binderInfo.getBinderId() ) )
 			{
-				@Override
-				public void execute()
-				{
-					handleClickOnLink();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-	}
-
-	
-	/**
-	 * This class is used as the click handler when the user clicks on a binder's unread label.
-	 *
-	 */
-	private class UnreadClickHandler implements ClickHandler
-	{
-		private String m_binderId;
-		private String m_binderTitle;
-		
-		/**
-		 * 
-		 */
-		public UnreadClickHandler( String binderId, String binderTitle )
-		{
-			super();
-			
-			m_binderId = binderId;
-			m_binderTitle = binderTitle;
-		}
-
-		/**
-		 * 
-		 */
-		private void handleClickOnLink()
-		{
-			if ( GwtClientHelper.hasString( m_binderId ) )
-			{
-				ActivityStreamInfo asi;
-
-				// Invoke the What's New page on the given binder.
-				asi = new ActivityStreamInfo();
-				asi.setActivityStream( ActivityStream.SPECIFIC_BINDER );
-				asi.setBinderId( m_binderId );
-				asi.setTitle( m_binderTitle );
-
-				GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ShowSetting.SHOW_UNREAD ) );
+				UnreadEntriesDlg dlg;
+				
+				dlg = new UnreadEntriesDlg( null, null, true, true, m_binderLabel.getAbsoluteLeft(), m_binderLabel.getAbsoluteTop() );
+				dlg.init( m_binderInfo );
+				dlg.show();
 			}
 		}
 		
@@ -181,21 +212,44 @@ public class ChildBindersWidget extends ToolPanelBase
 		@Override
 		public void onClick( ClickEvent event )
 		{
-			Scheduler.ScheduledCommand cmd;
+			Scheduler.ScheduledCommand cmd = null;
+			Object src;
 
-			cmd = new Scheduler.ScheduledCommand()
+			src = event.getSource();
+			
+			// Did the user click on the binder name?
+			if ( src == m_binderLabel )
 			{
-				@Override
-				public void execute()
+				// Yes
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					handleClickOnLink();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+					@Override
+					public void execute()
+					{
+						handleClickOnBinder();
+					}
+				};
+			}
+			// Did the user click on "unread"?
+			else if ( src == m_unreadLabel )
+			{
+				// Yes
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						handleClickOnUnread();
+					}
+				};
+			}
+			
+			if ( cmd != null )
+				Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
-
 	
+
 	
 	/**
 	 * 
@@ -221,32 +275,6 @@ public class ChildBindersWidget extends ToolPanelBase
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
-	}
-	
-	/**
-	 * Build a panel to hold the binder's description if the binder has a description
-	 */
-	private VibeFlowPanel buildDescPanel( BinderInfo binderInfo )
-	{
-		VibeFlowPanel descPanel;
-		String desc;
-		
-		descPanel = null;
-		
-		// Does the binder have a description?
-		desc = binderInfo.getBinderDesc();
-		if ( desc != null && desc.length() > 0 )
-		{
-			// Yes
-			// Strip out <p> and </p> to save space
-			desc = desc.replaceAll( "<p>", "" );
-			desc = desc.replaceAll( "</p>", "" );
-			
-			descPanel = new VibeFlowPanel();
-			descPanel.getElement().setInnerHTML( desc );
-		}
-
-		return descPanel;
 	}
 	
 	/**
@@ -383,45 +411,10 @@ public class ChildBindersWidget extends ToolPanelBase
 				binderInfo = childBinder.getBinderInfo();
 				if ( binderInfo.isBinderFolder() && binderInfo.getFolderType() == folderType )
 				{
-					VibeFlowPanel folderPanel;
-					InlineLabel folderLabel;
-					BinderClickHandler clickHandler;
-					VibeFlowPanel descPanel;
-					Long numUnread;
+					BinderPanel binderPanel;
 					
 					// Yes
-					folderPanel = new VibeFlowPanel();
-					folderPanel.addStyleName( "childBindersWidget_ListOfFoldersPanel_FolderPanel" );
-					
-					folderLabel = new InlineLabel( childBinder.getBinderTitle() );
-					folderLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_folderLabel" );
-					clickHandler = new BinderClickHandler( binderInfo.getBinderId(), childBinder.getBinderPermalink() );
-					folderLabel.addClickHandler( clickHandler );
-					folderPanel.add( folderLabel );
-
-					// Create a label with the number of unread entries. ie (5 unread)
-					numUnread = binderInfo.getNumUnread();
-					if ( numUnread > 0 )
-					{
-						InlineLabel unreadLabel;
-						UnreadClickHandler unreadClickHandler;
-						
-						unreadLabel = new InlineLabel( " " + GwtTeaming.getMessages().unreadEntries( numUnread ) );
-						unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabel" );
-						unreadLabel.addStyleName( "childBindersWidget_ListOfFoldersPanel_unreadLabelRed" );
-						unreadClickHandler = new UnreadClickHandler( binderInfo.getBinderId(), binderInfo.getBinderTitle() );
-						unreadLabel.addClickHandler( unreadClickHandler );
-						folderPanel.add( unreadLabel );
-					}
-
-					// Does this workspace have a description?
-					descPanel = buildDescPanel( binderInfo );
-					if ( descPanel != null )
-					{
-						// Yes
-						descPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_FolderDescPanel" );
-						folderPanel.add( descPanel );
-					}
+					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), null );
 					
 					// Does the current column already have enough?
 					if ( totalAddedToCol < numPerCol[col] )
@@ -435,7 +428,7 @@ public class ChildBindersWidget extends ToolPanelBase
 						totalAddedToCol = 0;
 					}
 					
-					table.setWidget( totalAddedToCol, col, folderPanel );
+					table.setWidget( totalAddedToCol, col, binderPanel );
 					cellFormatter.setVerticalAlignment( totalAddedToCol, col, HasVerticalAlignment.ALIGN_TOP );
 					++totalAddedToCol;
 				}
@@ -546,50 +539,12 @@ public class ChildBindersWidget extends ToolPanelBase
 				// Is this binder a workspace?
 				if ( binderInfo.isBinderWorkspace() )
 				{
-					InlineLabel workspaceLabel;
+					BinderPanel binderPanel;
 					Image wsImg;
-					VibeFlowPanel wsPanel;
-					VibeFlowPanel descPanel;
-					BinderClickHandler clickHandler;
-					Long numUnread;
 					
 					// Yes
-					wsPanel = new VibeFlowPanel();
-					wsPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_workspacePanel" );
-					
 					wsImg = getWorkspaceImage( childBinder );
-					wsImg.getElement().setAttribute( "align", "absmiddle" );
-					wsPanel.add( wsImg );
-					
-					workspaceLabel = new InlineLabel( childBinder.getBinderTitle() );
-					workspaceLabel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_workspaceLabel" );
-					clickHandler = new BinderClickHandler( binderInfo.getBinderId(), childBinder.getBinderPermalink() );
-					workspaceLabel.addClickHandler( clickHandler );
-					wsPanel.add( workspaceLabel );
-					
-					// Create a label with the number of unread entries. ie (5 unread)
-					numUnread = binderInfo.getNumUnread();
-					if ( numUnread > 0 )
-					{
-						InlineLabel unreadLabel;
-						UnreadClickHandler unreadClickHandler;
-
-						unreadLabel = new InlineLabel( " " + GwtTeaming.getMessages().unreadEntries( numUnread ) );
-						unreadLabel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_unreadLabel" );
-						unreadLabel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_unreadLabelRed" );
-						unreadClickHandler = new UnreadClickHandler( binderInfo.getBinderId(), binderInfo.getBinderTitle() );
-						unreadLabel.addClickHandler( unreadClickHandler );
-						wsPanel.add( unreadLabel );
-					}
-
-					// Does this workspace have a description?
-					descPanel = buildDescPanel( binderInfo );
-					if ( descPanel != null )
-					{
-						// Yes
-						descPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_WorkspaceDescPanel" );
-						wsPanel.add( descPanel );
-					}
+					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), wsImg );
 					
 					// Does the current column already have enough?
 					if ( totalAddedToCol < numPerCol[col] )
@@ -603,7 +558,7 @@ public class ChildBindersWidget extends ToolPanelBase
 						totalAddedToCol = 0;
 					}
 					
-					table.setWidget( totalAddedToCol, col, wsPanel );
+					table.setWidget( totalAddedToCol, col, binderPanel );
 					cellFormatter.setVerticalAlignment( totalAddedToCol, col, HasVerticalAlignment.ALIGN_TOP );
 					++totalAddedToCol;
 				}

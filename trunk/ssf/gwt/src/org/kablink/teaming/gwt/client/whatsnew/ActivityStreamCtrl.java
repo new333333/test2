@@ -53,7 +53,6 @@ import org.kablink.teaming.gwt.client.event.ViewAllEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewUnreadEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtConstants;
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -107,6 +106,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -171,6 +171,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private TagThisDlg m_tagThisDlg = null;
 	private ShareThisDlg m_shareThisDlg = null;
 	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 
 	// Used to adjust the size and position of things to account for
 	// the padding the footer's style.
@@ -220,6 +221,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		/**
 		 * 
 		 */
+		@Override
 		public void onResize()
 		{
 			super.onResize();
@@ -232,23 +234,19 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ActivityStreamCtrl(
-		GwtMainPage mainPage )
+	private ActivityStreamCtrl( boolean createHeader )
 	{
-		// Register the events to be handled by this class.
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this );
-
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "activityStreamCtrl" );
 		
 		// Create the list that will hold the ui widgets, one for each entry returned by the search.
 		m_searchResultsUIWidgets = new ArrayList<ActivityStreamTopEntry>();
 		
-		// Create the header
-		createHeader( mainPanel );
+		if ( createHeader )
+		{
+			// Create the header
+			createHeader( mainPanel );
+		}
 
 		// Create a panel where the search results will live.
 		createSearchResultsPanel( mainPanel );
@@ -308,6 +306,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							m_searchInProgress = false;
@@ -481,6 +480,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure(Throwable t)
 				{
 					// We don't want to keep checking for changes.
@@ -495,6 +495,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				 * 
 				 * @param result
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					Boolean haveChanges;
@@ -514,6 +515,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 							// Refresh the activity stream.
 							cmd = new Scheduler.ScheduledCommand()
 							{
+								@Override
 								public void execute()
 								{
 									refreshActivityStream();
@@ -654,6 +656,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
 					// Is the activity stream source a binder or person?
@@ -677,6 +680,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
 					m_sourceName.removeStyleName( "activityStreamHover" );
@@ -695,6 +699,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					// Is the activity stream source a binder or person?
@@ -743,6 +748,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		// Add a click handler for the pause button.
 		clickHandler = new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent clickEvent )
 			{
 				// Pause the refreshing of the activity stream.
@@ -762,6 +768,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		// Add a click handler for the resume button.
 		clickHandler = new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent clickEvent )
 			{
 				// Restart the refreshing of the activity stream.
@@ -784,12 +791,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 			// Add a click handler for the refresh button.
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
 
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Issue a request to refresh the activity stream.
@@ -853,6 +862,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
 					m_showSettingPanel.addStyleName( "activityStreamHover" );
@@ -874,6 +884,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
 					m_showSettingPanel.removeStyleName( "activityStreamHover" );
@@ -896,11 +907,10 @@ public class ActivityStreamCtrl extends ResizeComposite
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
-					final int x;
-					final int y;
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							m_showSettingPanel.removeStyleName( "activityStreamHover" );
@@ -1074,6 +1084,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	public void hide()
 	{
+		// Unregister all the events we have registered for.
+		unregisterEvents();
+		
 		cancelCheckForChangesTimer();
 		setVisible( false );
 	}
@@ -1116,6 +1129,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void setPosition( int offsetWidth, int offsetHeight )
 			{
 				int x;
@@ -1290,8 +1304,39 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	/**
+	 * Called when this widget is attached to the document.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+	
+		// Register handlers for all the events we are interested in.
+		registerEvents();
+	}
+	
+	/**
+	 * Called when widget is detached from the document.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+	
+		unregisterEvents();
+	}
+	
+	/**
 	 * This method gets called when the user clicks on the "previous" or "next" image in the search results window.
 	 */
+	@Override
 	public void onClick( ClickEvent clickEvent )
 	{
 		// If there is already a search in progress, ignore the click.
@@ -1347,10 +1392,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public void pauseActivityStream()
 	{
 		// Hide the pause button.
-		m_pauseImg.setVisible( false );
+		if ( m_pauseImg != null )
+			m_pauseImg.setVisible( false );
 		
 		// Show the resume button.
-		m_resumeImg.setVisible( true );
+		if ( m_resumeImg != null )
+			m_resumeImg.setVisible( true );
 
 		cancelCheckForChangesTimer();
 	}
@@ -1378,6 +1425,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				relayoutPageNow();
@@ -1394,14 +1442,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private void relayoutPageNow()
 	{
 		int footerHeight;
-		int headerHeight;
+		int headerHeight = 0;
 		int resultsHeight;
 
 		if ( m_width == 0 || m_height == 0 )
 			return;
 		
 		// Figure out how tall to make the search results panel.
-		headerHeight = m_headerPanel.getOffsetHeight();
+		if ( m_headerPanel != null )
+			headerHeight = m_headerPanel.getOffsetHeight();
 		footerHeight = m_footerPanel.getOffsetHeight();
 		
 		// Set the width and height of the panel that holds the results.  We subtract 10 from
@@ -1410,10 +1459,36 @@ public class ActivityStreamCtrl extends ResizeComposite
 		m_searchResultsPanel.setHeight( String.valueOf( resultsHeight ) + "px" );
 		m_searchResultsPanel.setWidth( String.valueOf( m_width - 10 ) + "px" );
 		
-		m_headerPanel.setWidth( String.valueOf( m_width ) + "px" );
+		if ( m_headerPanel != null )
+			m_headerPanel.setWidth( String.valueOf( m_width ) + "px" );
 		m_footerPanel.setWidth( String.valueOf( m_width-6 ) + "px" );
 	}// end relayoutPageNow()
 
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+										GwtTeaming.getEventBus(),
+										m_registeredEvents,
+										this,
+										m_registeredEventHandlers );
+		}
+	}
 	
 	/**
 	 * Resume the refreshing of the activity stream.
@@ -1421,10 +1496,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public void resumeActivityStream()
 	{
 		// Hide the resume button.
-		m_resumeImg.setVisible( false );
+		if ( m_resumeImg != null )
+			m_resumeImg.setVisible( false );
 		
 		// Show the pause button.
-		m_pauseImg.setVisible( true );
+		if ( m_pauseImg != null )
+			m_pauseImg.setVisible( true );
 
 		startCheckForChangesTimer();
 	}
@@ -1443,6 +1520,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_SaveWhatsNewShowSetting() );
@@ -1451,6 +1529,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			/**
 			 * 
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// Nothing to do.
@@ -1466,7 +1545,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	/**
 	 * Set the activity stream this control is dealing with.
 	 */
-	public void setActivityStream( ActivityStreamInfo activityStreamInfo )
+	public void setActivityStream( ActivityStreamInfo activityStreamInfo, final ShowSetting showSetting )
 	{
 		ActivityStream src;
 		
@@ -1535,6 +1614,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure(Throwable t)
 				{
 					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamParams() );
@@ -1544,18 +1624,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
 					
 					m_activityStreamParams = (ActivityStreamParams) response.getResponseData();
-					m_showSetting = m_activityStreamParams.getShowSetting();
+					
+					if ( showSetting != null )
+						m_showSetting = showSetting;
+					else
+						m_showSetting = m_activityStreamParams.getShowSetting();
 					
 					// Check the appropriate menu item to reflect the show setting.
 					m_showSettingPopupMenu.updateMenu( m_showSetting );
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Now that we have the activity stream parameters, execute the search.
@@ -1598,6 +1684,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 					/**
 					 * 
 					 */
+					@Override
 					public void onFailure(Throwable t)
 					{
 						String msg;
@@ -1612,6 +1699,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 					/**
 					 * 
 					 */
+					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						StringRpcResponseData responseData;
@@ -1663,8 +1751,11 @@ public class ActivityStreamCtrl extends ResizeComposite
 	{
 		String srcName;
 
-		srcName = m_activityStreamInfo.getTitle();
-		m_sourceName.setText( srcName );
+		if ( m_sourceName != null )
+		{
+			srcName = m_activityStreamInfo.getTitle();
+			m_sourceName.setText( srcName );
+		}
 	}
 
 
@@ -1674,6 +1765,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public void show( ShowSetting ss )
 	{
 		Scheduler.ScheduledCommand cmd;
+
+		// Register handlers for all the events we are interested in.
+		registerEvents();
 
 		if ( ShowSetting.UNKNOWN != ss )
 		{
@@ -1687,6 +1781,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				relayoutPage();
@@ -1712,6 +1807,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				int width;
@@ -1774,6 +1870,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 						/**
 						 * 
 						 */
+						@Override
 						public void run()
 						{
 							// Check for changes.
@@ -1790,11 +1887,26 @@ public class ActivityStreamCtrl extends ResizeComposite
 				m_checkForChangesTimer.scheduleRepeating( (seconds * 1000) );
 	
 				// Show the pause button.
-				m_pauseImg.setVisible( true );
+				if ( m_pauseImg != null )
+					m_pauseImg.setVisible( true );
 			}
 		}
 	}
 	
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( (null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty())) )
+		{
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+		}
+	}
 	
 	/**
 	 * Update the mouse over text on the pause image
@@ -1829,7 +1941,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		title += GwtTeaming.getMessages().nextRefresh( text );
 		
-		m_pauseImg.setTitle( title );
+		if ( m_pauseImg != null )
+			m_pauseImg.setTitle( title );
 	}
 	
 	
@@ -1847,7 +1960,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 		else
 			text = "Unknown show setting";
 		
-		m_showSettingLabel.setText( text );
+		if ( m_showSettingLabel != null )
+			m_showSettingLabel.setText( text );
 	}
 
 	/**
@@ -1860,7 +1974,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onActivityStream( ActivityStreamEvent event )
 	{
-		setActivityStream( event.getActivityStreamInfo() );
+		setActivityStream( event.getActivityStreamInfo(), null );
 		show();
 	}// end onActivityStream()
 	
@@ -2034,14 +2148,41 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param mainPage
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final GwtMainPage mainPage, final ActivityStreamCtrlClient asCtrlClient )
+	public static void createAsync( final boolean createHeader, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( mainPage );
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( createHeader );
+				asCtrlClient.onSuccess( asCtrl );
+			}// end onSuccess()
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl() );
+				asCtrlClient.onUnavailable();
+			}// end onFailure()
+		} );
+	}// end createAsync()
+
+	/**
+	 * Loads the ActivityStreamCtrl split point and returns an instance of
+	 * it via the callback.
+	 * 
+	 * @param mainPage
+	 * @param asCtrlClient
+	 */
+	public static void createAsync( final ActivityStreamCtrlClient asCtrlClient )
+	{
+		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( true );
 				asCtrlClient.onSuccess( asCtrl );
 			}// end onSuccess()
 			

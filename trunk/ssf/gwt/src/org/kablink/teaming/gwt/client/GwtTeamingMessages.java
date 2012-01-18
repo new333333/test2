@@ -1296,6 +1296,9 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();
 	String unreadEntries( Long numUnread );
+
+	// Strings used in the "Unread entries" dialog
+	String unreadEntriesDlgHeader();
 	
 	// Strings used in the MoveEntriesDlg.
 	String moveEntriesDlgCaption1();
