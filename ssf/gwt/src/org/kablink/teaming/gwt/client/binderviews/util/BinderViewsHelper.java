@@ -35,19 +35,24 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.MoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.MoveEntriesDlg.MoveEntriesDlgClient;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Helper methods for binder views.
  *
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class BinderViewsHelper {
 	private static MoveEntriesDlg m_moveEntriesDlg;
 	
@@ -97,6 +102,19 @@ public class BinderViewsHelper {
 		Window.alert("BinderViewsHelper.copyEntries():  ...this needs to be implemented...");
 	}
 
+	/*
+	 * Displays a message to the user regarding possibly multiple
+	 * errors. 
+	 */
+	private static void displayMultipleErrors(String baseError, List<String> multiErrors) {
+		StringBuffer msg = new StringBuffer(baseError);
+		for (String error:  multiErrors) {
+			msg.append("\n\t");
+			msg.append(error);
+		}
+		GwtClientHelper.deferredAlert(msg.toString());
+	}
+
 	/**
 	 * Invokes the appropriate UI to lock the entries based on a
 	 * List<Long> of their entry IDs.
@@ -105,15 +123,43 @@ public class BinderViewsHelper {
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void lockEntries(Long folderId, FolderType folderType, List<Long> entryIds) {
+	public static void lockEntries(final Long folderId, final FolderType folderType, final List<Long> entryIds) {
 		// If we weren't given any entry IDs to be locked...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
-		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.lockEntries():  ...this needs to be implemented...");
+
+		// Send a request to lock the entries.
+		LockEntriesCmd cmd = new LockEntriesCmd(folderId, entryIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_LockEntries());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Did everything we ask get locked?
+				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+				List<String> errors = responseData.getErrorList();
+				int count = ((null == errors) ? 0 : errors.size());
+				if (0 < count) {
+					// No!  Tell the user about the problem.
+					displayMultipleErrors(GwtTeaming.getMessages().lockEntriesError(), errors);
+				}
+
+				// If anything was locked...
+				if (count != entryIds.size()) {
+					// ...force the content to refresh just in case its
+					// ...got something displayed that depends on
+					// ...locks.
+					FullUIReloadEvent.fireOne();
+				}
+			}
+		});
 	}
 
 	/**
