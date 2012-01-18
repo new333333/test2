@@ -75,14 +75,14 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * @author drfoster@novell.com
  */
 public class EntryMenuPanel extends ToolPanelBase {
-	private BinderInfo			m_binderInfo;	//
+	private BinderInfo			m_binderInfo;			//
 	private boolean				m_includeColumnResizer;	//
-	private List<ToolbarItem>	m_toolbarIems;	//
-	private VibeFlowPanel		m_fp;			// The panel holding the AccessoryPanel's contents.
-	private VibeMenuBar			m_entryMenu;	//
-	private VibeMenuItem		m_addFilesMenu;	//
-	private VibeMenuItem		m_deleteMenu;	//
-	private VibeMenuItem		m_moreMenu;		//
+	private List<ToolbarItem>	m_toolbarIems;			//
+	private VibeFlowPanel		m_fp;					// The panel holding the AccessoryPanel's contents.
+	private VibeMenuBar			m_entryMenu;			//
+	private VibeMenuItem		m_addFilesMenu;			//
+	private VibeMenuItem		m_deleteMenu;			//
+	private VibeMenuItem		m_moreMenu;				//
 	
 	/*
 	 * Constructor method.
@@ -315,13 +315,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 	/*
 	 * Renders the HTML for a structured menu item.
 	 */
-	private String renderStructuredItemHTML(String itemText) {
+	private String renderStructuredItemHTML(String itemText, boolean enabled) {
 		FlowPanel htmlPanel = new FlowPanel();
 		InlineLabel itemLabel = new InlineLabel(itemText);
 		itemLabel.addStyleName("vibe-mainMenuBar_BoxText");
 		htmlPanel.add(itemLabel);
 
-		Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menuArrow());
+		Image dropDownImg = new Image(enabled ? GwtTeaming.getMainMenuImageBundle().menuArrow() : GwtTeaming.getMainMenuImageBundle().menuArrowGray());
 		dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImg");
 		if (!(GwtClientHelper.jsIsIE())) {
 			dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImgNonIE");
@@ -340,7 +340,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		structuredMenuBar.addStyleName("vibe-entryMenuPopup");
 		VibeMenuItem structuredMenuItem = new VibeMenuItem(structuredTBI.getTitle(), structuredMenuBar);
 		structuredMenuItem.addStyleName("vibe-entryMenuBarItem");
-		structuredMenuItem.setHTML(renderStructuredItemHTML(structuredTBI.getTitle()));
+		structuredMenuItem.setHTML(renderStructuredItemHTML(structuredTBI.getTitle(), true));
 		menuBar.addItem(structuredMenuItem);
 		
 		String structuredName = structuredTBI.getName();
@@ -381,7 +381,30 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * @param enable
 	 */
 	public void setEntriesSelected(boolean enable) {
-		if (null != m_deleteMenu) {m_deleteMenu.setEnabled(enable); if (enable) m_deleteMenu.removeStyleName("vibe-menuDisabled"); else m_deleteMenu.addStyleName("vibe-menuDisabled");}
-		if (null != m_moreMenu)   {m_moreMenu.setEnabled(  enable); if (enable) m_moreMenu.removeStyleName(  "vibe-menuDisabled"); else m_moreMenu.addStyleName(  "vibe-menuDisabled");}
+		// If we have a delete menu item...
+		if (null != m_deleteMenu) {
+			// ...enable disable it.
+			m_deleteMenu.setEnabled(enable);
+			if (enable)
+			     m_deleteMenu.removeStyleName("vibe-menuDisabled");
+			else m_deleteMenu.addStyleName(   "vibe-menuDisabled");
+		}
+
+		// If we have a more menu item...
+		if (null != m_moreMenu) {
+			// ...enable/disable it...
+			m_moreMenu.setEnabled(enable);
+			if (enable)
+			     m_moreMenu.removeStyleName("vibe-menuDisabled");
+			else m_moreMenu.addStyleName(   "vibe-menuDisabled");
+
+			// ...and update its display to reflect the state of the
+			// ...menu item (in particular, the drop down image on the
+			// ...menu.)
+			m_moreMenu.setHTML(
+				renderStructuredItemHTML(
+					m_moreMenu.getText(),
+					enable));
+		}
 	}
 }
