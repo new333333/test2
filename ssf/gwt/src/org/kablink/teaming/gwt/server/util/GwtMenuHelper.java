@@ -86,6 +86,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
@@ -546,42 +547,53 @@ public class GwtMenuHelper {
 	 *		Subscribe...
 	 *		Access Control... (Future)
 	 */
-	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
-		boolean isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(GwtServerHelper.getCurrentUser().getInternalId());
+	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder) {
+		User    user    = GwtServerHelper.getCurrentUser();
+		boolean isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		boolean isVirtualTask;
+		if ((MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_TASK))) {
+			ModeType mode = ListFolderHelper.getFolderModeType(bs, user.getId(), folderId);
+			isVirtualTask = (ModeType.VIRTUAL == mode);
+		}
+		else {
+			isVirtualTask = false;
+		}
 		
 		// Create the more toolbar item...
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
 		markTBITitle(moreTBI, "toolbar.more");
-		entryToolbar.addNestedItem(moreTBI);
 
-		// ...add the copy item...
-		ToolbarItem tbi = new ToolbarItem("1_copySelected");
-		markTBITitle(tbi, "toolbar.copy");
-		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
-
-		// ...if the user is not the Guest user...
-		if (!isGuest) {
-			// ...add the share item...
-			tbi = new ToolbarItem("1_shareSelected");
-			markTBITitle(tbi, "toolbar.shareSelected");
-			markTBIEvent(tbi, TeamingEvents.SHARE_SELECTED_ENTRIES);
+		ToolbarItem tbi;
+		if (!isVirtualTask) {
+			// ...add the copy item...
+			tbi = new ToolbarItem("1_copySelected");
+			markTBITitle(tbi, "toolbar.copy");
+			markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTRIES);
+			moreTBI.addNestedItem(tbi);
+	
+			// ...if the user is not the Guest user...
+			if (!isGuest) {
+				// ...add the share item...
+				tbi = new ToolbarItem("1_shareSelected");
+				markTBITitle(tbi, "toolbar.shareSelected");
+				markTBIEvent(tbi, TeamingEvents.SHARE_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+			}
+	
+			// ...add the move item....
+			tbi = new ToolbarItem("1_moveSelected");
+			markTBITitle(tbi, "toolbar.move");
+			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
 		}
-
-		// ...add the move item....
-		tbi = new ToolbarItem("1_moveSelected");
-		markTBITitle(tbi, "toolbar.move");
-		markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
 		
 		// ...for the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			BinderModule bm = bs.getBinderModule();
-			if ((viewType.equals(  Definition.VIEW_STYLE_DISCUSSION) ||
-						viewType.equals(Definition.VIEW_STYLE_TABLE) ||
-						viewType.equals(Definition.VIEW_STYLE_FILE)  ||
-						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
+			if ((viewType.equals(       Definition.VIEW_STYLE_DISCUSSION) ||
+						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
+						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
+						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
 					(!(folder.isMirrored()))) {
 				// ...and for which the user has rights to do it...
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
@@ -593,44 +605,52 @@ public class GwtMenuHelper {
 				}
 			}
 		}
-		
-		// ...add the lock item....
-		tbi = new ToolbarItem("1_lockSelected");
-		markTBITitle(tbi, "toolbar.lock");
-		markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
-		
-		// ...add the unlock item....
-		tbi = new ToolbarItem("1_unlockSelected");
-		markTBITitle(tbi, "toolbar.unlock");
-		markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
-		
-		// ...if the user is not the Guest user...
-		if (!isGuest) {
-			// ...add the mark read item....
-			tbi = new ToolbarItem("1_markReadSelected");
-			markTBITitle(tbi, "toolbar.markRead");
-			markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+
+		if (!isVirtualTask) {
+			// ...add the lock item....
+			tbi = new ToolbarItem("1_lockSelected");
+			markTBITitle(tbi, "toolbar.lock");
+			markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
+			
+			// ...add the unlock item....
+			tbi = new ToolbarItem("1_unlockSelected");
+			markTBITitle(tbi, "toolbar.unlock");
+			markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...if the user is not the Guest user...
+			if (!isGuest) {
+				// ...add the mark read item....
+				tbi = new ToolbarItem("1_markReadSelected");
+				markTBITitle(tbi, "toolbar.markRead");
+				markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+			}
+			
+			// ...add a separator item...
+			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			
+			// ...add the change entry type item....
+			tbi = new ToolbarItem("1_changeEntryTypeSelected");
+			markTBITitle(tbi, "toolbar.changeEntryType");
+			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...if the user is not the Guest user...
+			if (!isGuest) {
+				// ...add the subscribe item.
+				tbi = new ToolbarItem("1_subscribeSelected");
+				markTBITitle(tbi, "toolbar.menu.subscribeToEntrySelected");
+				markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+			}
 		}
-		
-		// ...add a separator item...
-		moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		
-		// ...add the change entry type item....
-		tbi = new ToolbarItem("1_changeEntryTypeSelected");
-		markTBITitle(tbi, "toolbar.changeEntryType");
-		markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
-		
-		// ...if the user is not the Guest user...
-		if (!isGuest) {
-			// ...add the subscribe item.
-			tbi = new ToolbarItem("1_subscribeSelected");
-			markTBITitle(tbi, "toolbar.menu.subscribeToEntrySelected");
-			markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
+
+		// If we added anything to the more toolbar...
+		if (!(moreTBI.getNestedItemsList().isEmpty())) {
+			// ...and the more toolbar to the entry toolbar.
+			entryToolbar.addNestedItem(moreTBI);
 		}
 	}
 	
@@ -1593,7 +1613,7 @@ public class GwtMenuHelper {
 
 			// Construct the various items that appear in the more drop
 			// down.
-			constructEntryMoreItems(entryToolbar, bs, request, viewType, folder);
+			constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the folder toolbar.  Return it.

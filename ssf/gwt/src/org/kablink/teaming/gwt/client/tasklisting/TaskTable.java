@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
@@ -90,6 +91,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
+import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -2681,8 +2683,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onChangeEntryTypeSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the change.
+			BinderViewsHelper.changeEntryTypes(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	
@@ -2698,8 +2703,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onCopySelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the copy.
+			BinderViewsHelper.copyEntries(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	
@@ -2745,8 +2753,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onLockSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the lock.
+			BinderViewsHelper.lockEntries(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	
@@ -2762,8 +2773,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onMarkReadSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the mark entries read.
+			BinderViewsHelper.markEntriesRead(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	
@@ -2779,8 +2793,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onMoveSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the move.
+			BinderViewsHelper.moveEntries(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	
@@ -2813,8 +2830,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onShareSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the share.
+			BinderViewsHelper.shareEntries(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	
@@ -2830,8 +2850,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onSubscribeSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the subscribe to.
+			BinderViewsHelper.subscribeToEntries(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	
@@ -2943,8 +2966,11 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-//!			...this needs to be implemented...
-			Window.alert("TaskTable.onUnlockSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Invoke the unlock.
+			BinderViewsHelper.unlockEntries(
+				m_taskListing.getBinderId(),
+				FolderType.TASK,
+				getTaskIdsChecked());
 		}
 	}
 	

@@ -457,6 +457,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MainPage();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
+	String codeSplitFailure_MoveEntriesDlg();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_QuickViewDlg();
@@ -1296,4 +1297,11 @@ public interface GwtTeamingMessages extends Messages
 	String workspacesHeader();
 	String unreadEntries( Long numUnread );
 	
+	// Strings used in the MoveEntriesDlg.
+	String moveEntriesDlgCaption1();
+	String moveEntriesDlgCaption2();
+	String moveEntriesDlgCurrentDestination();
+	String moveEntriesDlgCurrentDestinationNone();
+	String moveEntriesDlgHeader();
+	String moveEntriesDlgSelectDestination();
 }// end GwtTeamingMessages
