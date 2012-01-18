@@ -377,6 +377,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
+	String rpcFailure_LockEntries();
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
@@ -1307,4 +1308,7 @@ public interface GwtTeamingMessages extends Messages
 	String moveEntriesDlgCurrentDestinationNone();
 	String moveEntriesDlgHeader();
 	String moveEntriesDlgSelectDestination();
+
+	// String used by the lock selected entries facility.
+	String lockEntriesError();
 }// end GwtTeamingMessages

@@ -70,6 +70,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -81,6 +82,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
@@ -101,6 +103,7 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -111,6 +114,7 @@ import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
 import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
@@ -818,6 +822,22 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns a string that can be used as an entry's title in an
+	 * error message.
+	 */
+	private static String getEntryTitle(AllModulesInjected bs, Long folderId, Long entryId) {
+		String reply;
+		try {
+			FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
+			reply = fe.getTitle();
+		}
+		catch (Exception e) {
+			reply = String.valueOf(entryId);
+		}
+		return reply;
+	}
+	
 	/**
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
@@ -1990,6 +2010,61 @@ public class GwtViewHelper {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Locks the entries.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData lockEntries(AllModulesInjected bs, HttpServletRequest request, Long folderId, List<Long> entryIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any entries to lock?
+			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+				// Yes!  Scan them.
+				for (Long entryId:  entryIds) {
+					try {
+						// Can we lock this entry?
+						bs.getFolderModule().reserveEntry(folderId, entryId);
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String entryTitle = getEntryTitle(bs, folderId, entryId);
+						String messageKey;
+						if      (e instanceof AccessControlException)           messageKey = "lockEntryError.AccssControlException";
+						else if (e instanceof ReservedByAnotherUserException)   messageKey = "lockEntryError.ReservedByAnotherUserException";
+						else if (e instanceof FilesLockedByOtherUsersException) messageKey = "lockEntryError.FilesLockedByOtherUsersException";
+						else                                                    messageKey = "lockEntryError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing an errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.lockEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 	
 	/**

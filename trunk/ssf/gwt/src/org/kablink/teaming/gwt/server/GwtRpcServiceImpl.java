@@ -1364,6 +1364,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
+
+		case LOCK_ENTRIES:
+		{
+			LockEntriesCmd gtlCmd = ((LockEntriesCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, getRequest( ri ), gtlCmd.getFolderId(), gtlCmd.getEntryIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
 		
 		case MARKUP_STRING_REPLACEMENT:
 		{
