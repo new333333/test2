@@ -435,7 +435,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void ActivityStreamCtrl()
 	{
-		ActivityStreamCtrl.createAsync( this, new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
