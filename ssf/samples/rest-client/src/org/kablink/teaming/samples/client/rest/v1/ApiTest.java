@@ -33,6 +33,11 @@
 
 package org.kablink.teaming.samples.client.rest.v1;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 import junit.framework.Assert;
@@ -45,6 +50,7 @@ import org.junit.Test;
 import org.kablink.teaming.client.rest.v1.Api;
 import org.kablink.teaming.client.rest.v1.ApiClient;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.util.FileUtil;
 
 /**
  * @author jong
@@ -79,21 +85,63 @@ public class ApiTest {
 	}
 	
 	@Test
-	public void testReadingFilePropertiesByName() throws Exception {
-		System.out.println("Invoking testReadingFilePropertiesByName");
-		FileProperties fp = api.readFileProperties("folderEntry", 13, "debug5.txt");
-		Assert.assertEquals("debug5.txt", fp.getName());
+	public void testReadFilePropertiesByName() throws Exception {
+		System.out.println("Invoking testReadFilePropertiesByName");
+		long entityId = 13;
+		String fileName = "debug5.txt";
+		FileProperties fp = api.readFileProperties("folderEntry", entityId, fileName);
+		Assert.assertEquals(fileName, fp.getName());
 	}
 	
 	@Test
-	public void testReadingFilePropertiesById() throws Exception {
-		System.out.println("Invoking testReadingFilePropertiesById");
-		FileProperties fp = api.readFileProperties("24e3531933933d270133934991be0011");
-		Assert.assertEquals("test.txt", fp.getName());
+	public void testReadFilePropertiesById() throws Exception {
+		System.out.println("Invoking testReadFilePropertiesById");
+		String fileId = "24e3531933933d270133934991be0011";
+		FileProperties fp = api.readFileProperties(fileId);
+		Assert.assertEquals(fileId, fp.getId());
 	}
 	
 	@Test
-	public void testFileDownload() throws Exception {
+	public void testDownloadFileByName() throws Exception {
+		long entityId = 13;
+		String fileName = "debug5.txt";
+		InputStream is = api.readFile("folderEntry", entityId, fileName);
+		File outFile = new File("/temp/rest/" + fileName);
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
+		FileUtil.copy(is, os);
+		os.close();
+		is.close();
+	}
+	
+	@Test
+	public void testDownloadFileById() throws Exception {
+		String fileId = "24e3531933933d270133934991be0011";
+		InputStream is = api.readFile(fileId);
+		File outFile = new File("/temp/rest/" + fileId);
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
+		FileUtil.copy(is, os);
+		os.close();
+		is.close();
+	}
+	
+	@Test
+	public void testUploadFileByName() throws Exception {
+		long entityId = 13;
+		String fileName = "debug5.txt";
+		File inFile = new File("/temp/rest/" + fileName);
+		api.writeFile("folderEntry", entityId, fileName, inFile);
+	}
+	
+	@Test
+	public void testUploadFileById() throws Exception {
+		String fileId = "24e3531933933d270133934991be0011";
+		String fileName = "debug5.txt";
+		File inFile = new File("/temp/rest/" + fileName);
+		api.writeFile(fileId, inFile);
+	}
+	
+	@Test
+	public void testDownloadFileRepeatedly() throws Exception {
 		System.out.println("Start time: " + new Date());
 		for(int i = 0; i < 2; i++) {
 			//File file = api.readFileAsFile("folderEntry", 749, "catalina.out");
