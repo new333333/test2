@@ -36,12 +36,20 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
@@ -228,9 +236,15 @@ public class EntryMenuPanel extends ToolPanelBase {
 			// Yes!  Scan its nested items..
 			for (ToolbarItem perEntryTBI:  entryTBI.getNestedItemsList()) {
 				// ...rendering each of them.
-				if (perEntryTBI.hasNestedToolbarItems())
-				     renderStructuredTBI(m_entryMenu, perEntryTBI);
-				else renderSimpleTBI(    m_entryMenu, perEntryTBI);
+				if (perEntryTBI.hasNestedToolbarItems()) {
+					renderStructuredTBI(m_entryMenu, perEntryTBI);
+				}
+				else if (perEntryTBI.isSeparator()) {
+					m_entryMenu.addSeparator();
+				}
+				else {
+					renderSimpleTBI(m_entryMenu, perEntryTBI);
+				}
 			}
 		}
 		setEntriesSelected(false);
@@ -289,10 +303,19 @@ public class EntryMenuPanel extends ToolPanelBase {
 					
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
-					default:                       event = EventHelper.createSimpleEvent( simpleEvent); break;
-					case PURGE_SELECTED_ENTRIES:   event = new PurgeSelectedEntriesEvent( folderId   ); break;
-					case DELETE_SELECTED_ENTRIES:  event = new DeleteSelectedEntriesEvent(folderId   ); break;
-					case INVOKE_DROPBOX:           event = new InvokeDropBoxEvent(        folderId   ); break;
+					default:                                  event = EventHelper.createSimpleEvent(          simpleEvent); break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(folderId   ); break;
+					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           folderId   ); break;
+					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         folderId   ); break;
+					case INVOKE_DROPBOX:                      event = new InvokeDropBoxEvent(                 folderId   ); break;
+					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           folderId   ); break;
+					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         folderId   ); break;
+					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       folderId   ); break;
+					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           folderId   ); break;
+					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          folderId   ); break;
+					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          folderId   ); break;
+					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      folderId   ); break;
+			        			        					
 					case UNDEFINED:
 						Window.alert(GwtTeaming.getMessages().eventHandling_NoEntryMenuHandler(simpleEvent.name()));
 						event = null;
@@ -351,9 +374,15 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// ...scan the nested items...
 		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
 			// ...rendering each of them.
-			if (nestedTBI.hasNestedToolbarItems())
-			     renderStructuredTBI(structuredMenuBar, nestedTBI);
-			else renderSimpleTBI(    structuredMenuBar, nestedTBI);
+			if (nestedTBI.hasNestedToolbarItems()) {
+				renderStructuredTBI(structuredMenuBar, nestedTBI);
+			}
+			else if (nestedTBI.isSeparator()) {
+				structuredMenuBar.addSeparator();
+			}
+			else {
+				renderSimpleTBI(structuredMenuBar, nestedTBI);
+			}
 		}
 	}
 	
