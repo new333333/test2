@@ -294,6 +294,59 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/**
+	 * Copies the entries.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param targetFolderId
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData copyEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntryId> entryIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any entries to copy?
+			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+				// Yes!  Scan them.
+				for (EntryId entryId:  entryIds) {
+					try {
+						// Can we copy this entry?
+						bs.getFolderModule().copyEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null);
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String messageKey;
+						if (e instanceof AccessControlException) messageKey = "copyEntryError.AccssControlException";
+						else                                     messageKey = "copyEntryError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing an errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.copyEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Dumps the contents of a ViewInfo object.
 	 */
@@ -2062,6 +2115,59 @@ public class GwtViewHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtViewHelper.lockEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Moves the entries.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param targetFolderId
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData moveEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntryId> entryIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any entries to move?
+			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+				// Yes!  Scan them.
+				for (EntryId entryId:  entryIds) {
+					try {
+						// Can we move this entry?
+						bs.getFolderModule().moveEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null);
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String messageKey;
+						if (e instanceof AccessControlException) messageKey = "moveEntryError.AccssControlException";
+						else                                     messageKey = "moveEntryError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing an errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.moveEntries( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}

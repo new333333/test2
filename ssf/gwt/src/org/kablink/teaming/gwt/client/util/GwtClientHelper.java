@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.Date;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -193,6 +194,22 @@ public class GwtClientHelper {
 			};
 			Scheduler.get().scheduleDeferred(cmd);
 		}
+	}
+
+	/**
+	 * Displays a message to the user regarding possibly multiple
+	 * errors.
+	 * 
+	 * @param baseError
+	 * @param multiErrors
+	 */
+	public static void displayMultipleErrors(String baseError, List<String> multiErrors) {
+		StringBuffer msg = new StringBuffer(baseError);
+		for (String error:  multiErrors) {
+			msg.append("\n\t");
+			msg.append(error);
+		}
+		deferredAlert(msg.toString());
 	}
 
 	/**

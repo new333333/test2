@@ -36,8 +36,8 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.MoveEntriesDlg;
-import org.kablink.teaming.gwt.client.binderviews.MoveEntriesDlg.MoveEntriesDlgClient;
+import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
+import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
@@ -57,7 +57,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
-	private static MoveEntriesDlg m_moveEntriesDlg;
+	private static CopyMoveEntriesDlg m_cmeDlg;	// An instance of a copy/move entries dialog.
 	
 	/*
 	 * Constructor method. 
@@ -98,22 +98,31 @@ public class BinderViewsHelper {
 			// ...bail.
 			return;
 		}
-		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.copyEntries():  ...this needs to be implemented...");
-	}
 
-	/*
-	 * Displays a message to the user regarding possibly multiple
-	 * errors. 
-	 */
-	private static void displayMultipleErrors(String baseError, List<String> multiErrors) {
-		StringBuffer msg = new StringBuffer(baseError);
-		for (String error:  multiErrors) {
-			msg.append("\n\t");
-			msg.append(error);
+		// Have we created a copy/move entries dialog yet?
+		if (null == m_cmeDlg) {
+			// No!  Create one now...
+			CopyMoveEntriesDlg.createAsync(new CopyMoveEntriesDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
+					// ...and run it to copy.
+					m_cmeDlg = cmeDlg;
+					showCMEDlgNow(m_cmeDlg, true, folderType, entryIds);
+				}
+			});
 		}
-		GwtClientHelper.deferredAlert(msg.toString());
+		
+		else {
+			// Yes, we've created a copy/move entries dialog already!
+			// Run it to copy.
+			showCMEDlgNow(m_cmeDlg, true, folderType, entryIds);
+		}
 	}
 
 	/**
@@ -147,7 +156,7 @@ public class BinderViewsHelper {
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
-					displayMultipleErrors(GwtTeaming.getMessages().lockEntriesError(), errors);
+					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().lockEntriesError(), errors);
 				}
 
 				// If anything was locked...
@@ -207,10 +216,10 @@ public class BinderViewsHelper {
 			return;
 		}
 
-		// Have we created a move entries dialog yet?
-		if (null == m_moveEntriesDlg) {
+		// Have we created a copy/move entries dialog yet?
+		if (null == m_cmeDlg) {
 			// No!  Create one now...
-			MoveEntriesDlg.createAsync(new MoveEntriesDlgClient() {
+			CopyMoveEntriesDlg.createAsync(new CopyMoveEntriesDlgClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -218,32 +227,21 @@ public class BinderViewsHelper {
 				}
 				
 				@Override
-				public void onSuccess(MoveEntriesDlg moveEntriesDlg) {
-					// ...and run it with the parameters.
-					m_moveEntriesDlg = moveEntriesDlg;
-					moveEntriesNow(folderType, entryIds);
+				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
+					// ...and run it to move.
+					m_cmeDlg = cmeDlg;
+					showCMEDlgNow(m_cmeDlg, false, folderType, entryIds);
 				}
 			});
 		}
 		
 		else {
-			// Yes, we've created a move entries dialog already!  Run
-			// it with the parameters.
-			moveEntriesNow(folderType, entryIds);
+			// Yes, we've created a copy/move entries dialog already!
+			// Run it to move.
+			showCMEDlgNow(m_cmeDlg, false, folderType, entryIds);
 		}
 	}
 	
-	/*
-	 * Invokes the appropriate UI to move the entries based on a
-	 * List<EntryId> of the entries.
-	 */
-	private static void moveEntriesNow(final FolderType folderType, final List<EntryId> entryIds) {
-		MoveEntriesDlg.initAndShow(
-			m_moveEntriesDlg,
-			folderType,
-			entryIds);
-	}
-
 	/**
 	 * Invokes the appropriate UI to share the entries based on a
 	 * List<EntryId> of the entries.
@@ -260,6 +258,18 @@ public class BinderViewsHelper {
 		
 //!		...this needs to be implemented...
 		Window.alert("BinderViewsHelper.shareEntries():  ...this needs to be implemented...");
+	}
+
+	/*
+	 * Initializes and shows and instance of the copy/move entries
+	 * dialog.
+	 */
+	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final FolderType folderType, final List<EntryId> entryIds) {
+		CopyMoveEntriesDlg.initAndShow(
+			cmeDlg,			// The dialog to show.
+			invokeToCopy,	// true -> Run it do a copy.  false -> Run it to do a move.
+			folderType,		// The type of folder that we're dealing with.
+			entryIds);		// The List<EntryId> to be copied/moved.
 	}
 
 	/**
@@ -311,7 +321,7 @@ public class BinderViewsHelper {
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
-					displayMultipleErrors(GwtTeaming.getMessages().unlockEntriesError(), errors);
+					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().unlockEntriesError(), errors);
 				}
 
 				// If anything was unlocked...

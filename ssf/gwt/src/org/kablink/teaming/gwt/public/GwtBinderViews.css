@@ -247,7 +247,7 @@
 	.vibe-sizeColumnsDlg-scrollLimit   {width: 600px;}
 	.vibe-sizeColumnsDlg-scrollPanel   {overflow-y: hidden; overflow-x: auto; padding: 5px; margin: 5px;}
 	.vibe-sizeColumnsDlg-sizePanel     {}
-	.vibe-sizeColumnsDlg-sizeRB        {marging-top: 0px !important;}
+	.vibe-sizeColumnsDlg-sizeRB        {margin-top: 0px !important;}
 	.vibe-sizeColumnsDlg-sizeSpinner   {}
 	.vibe-sizeColumnsDlg-sizeSpinner .textBox
 	{
@@ -261,6 +261,15 @@
 	}
 /* End:  Size columns dialog  styles. */
 
-/* Start:  Move entries dialog  styles. */
-	.vibe-moveEntriesDlgRootPanel {padding: 6px;}
-/* End:  Move entries dialog  styles. */
+/* Start:  Copy/Move entries dialog  styles. */
+	.vibe-cmeDlg_CaptionLeft  {font-size: 1.1em; font-weight: bold;}
+	.vibe-cmeDlg_CaptionPanel {white-space: nowrap;}
+	.vibe-cmeDlg_CaptionRight {padding-left: 3px;}
+	.vibe-cmeDlg_Dest         {margin-left: 3px;}
+	.vibe-cmeDlg_DestLabel    {}
+	.vibe-cmeDlg_DestPanel    {white-space: nowrap; padding-top: 5px;}
+	.vibe-cmeDlg_FindLabel    {}
+	.vibe-cmeDlg_FindPanel    {padding-top: 5px;}
+	.vibe-cmeDlg_FindWidget   {margin-top: 2px; margin-bottom: 2px;}
+	.vibe-cmeDlg_RootPanel    {padding: 6px;}
+/* End:  Copy/Move entries dialog  styles. */
