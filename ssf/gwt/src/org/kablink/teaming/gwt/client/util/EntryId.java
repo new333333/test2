@@ -35,12 +35,53 @@ package org.kablink.teaming.gwt.client.util;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Class used to bundle a binder ID and task ID to uniquely identify a
- * task with its binder for GWT RPC requests.
+ * Class used to bundle a binder ID and entry ID to uniquely identify
+ * an entry with its binder for GWT RPC requests.
  *  
  * @author drfoster
  */
-public class TaskId extends EntryId implements IsSerializable {
-	// Currently, there are no differences between the base EntryId
-	// class and this one.
+public class EntryId implements IsSerializable {
+	private Long m_binderId;	//
+	private Long m_entryId;		//
+
+	/**
+	 * Constructor method.
+	 * 
+	 * No parameters as per GWT serialization requirements.
+	 */
+	public EntryId() {
+		// Initialize the super class.
+		super();
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param binderId
+	 * @param entryId
+	 */
+	public EntryId(Long binderId, Long entryId) {
+		// Initialize this object...
+		this();
+
+		// ...and store the parameters.
+		setBinderId(binderId);
+		setEntryId( entryId );
+	}
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Long getBinderId() {return m_binderId;}
+	public Long getEntryId()  {return m_entryId; }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setBinderId(Long binderId) {m_binderId = binderId;}
+	public void setEntryId( Long entryId)  {m_entryId  = entryId; }
 }

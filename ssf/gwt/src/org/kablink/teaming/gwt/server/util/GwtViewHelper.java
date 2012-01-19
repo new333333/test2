@@ -94,6 +94,7 @@ import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -2017,14 +2018,13 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param folderId
 	 * @param entryIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData lockEntries(AllModulesInjected bs, HttpServletRequest request, Long folderId, List<Long> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData lockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
@@ -2032,15 +2032,15 @@ public class GwtViewHelper {
 			// Were we given the IDs of any entries to lock?
 			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
 				// Yes!  Scan them.
-				for (Long entryId:  entryIds) {
+				for (EntryId entryId:  entryIds) {
 					try {
 						// Can we lock this entry?
-						bs.getFolderModule().reserveEntry(folderId, entryId);
+						bs.getFolderModule().reserveEntry(entryId.getBinderId(), entryId.getEntryId());
 					}
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = getEntryTitle(bs, folderId, entryId);
+						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 						String messageKey;
 						if      (e instanceof AccessControlException)           messageKey = "lockEntryError.AccssControlException";
 						else if (e instanceof ReservedByAnotherUserException)   messageKey = "lockEntryError.ReservedByAnotherUserException";
@@ -2072,14 +2072,13 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param folderId
 	 * @param entryIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData unlockEntries(AllModulesInjected bs, HttpServletRequest request, Long folderId, List<Long> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData unlockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
@@ -2087,15 +2086,15 @@ public class GwtViewHelper {
 			// Were we given the IDs of any entries to unlock?
 			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
 				// Yes!  Scan them.
-				for (Long entryId:  entryIds) {
+				for (EntryId entryId:  entryIds) {
 					try {
 						// Can we unlock this entry?
-						bs.getFolderModule().unreserveEntry(folderId, entryId);
+						bs.getFolderModule().unreserveEntry(entryId.getBinderId(), entryId.getEntryId());
 					}
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = getEntryTitle(bs, folderId, entryId);
+						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 						String messageKey;
 						if      (e instanceof AccessControlException)         messageKey = "unlockEntryError.AccssControlException";
 						else if (e instanceof ReservedByAnotherUserException) messageKey = "unlockEntryError.ReservedByAnotherUserException";

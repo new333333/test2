@@ -1368,7 +1368,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case LOCK_ENTRIES:
 		{
 			LockEntriesCmd leCmd = ((LockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, getRequest( ri ), leCmd.getFolderId(), leCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, getRequest( ri ), leCmd.getEntryIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1768,7 +1768,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UNLOCK_ENTRIES:
 		{
 			UnlockEntriesCmd uleCmd = ((UnlockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.unlockEntries( this, getRequest( ri ), uleCmd.getFolderId(), uleCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.unlockEntries( this, getRequest( ri ), uleCmd.getEntryIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

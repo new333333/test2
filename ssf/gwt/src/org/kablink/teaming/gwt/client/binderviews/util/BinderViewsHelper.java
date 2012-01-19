@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -67,13 +68,12 @@ public class BinderViewsHelper {
 
 	/**
 	 * Invokes the appropriate UI to change the entry type of the
-	 * entries based on a List<Long> of their entry IDs.
+	 * entries based on a List<EntryId> of the entries.
 	 *
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void changeEntryTypes(Long folderId, FolderType folderType, List<Long> entryIds) {
+	public static void changeEntryTypes(final FolderType folderType, final List<EntryId> entryIds) {
 		// If we weren't given any entry IDs to entries whose types
 		// are to be changed...
 		if ((null == entryIds) || entryIds.isEmpty()) {
@@ -87,13 +87,12 @@ public class BinderViewsHelper {
 
 	/**
 	 * Invokes the appropriate UI to copy the entries based on a
-	 * List<Long> of their entry IDs.
+	 * List<EntryId> of the entries.
 	 *
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void copyEntries(Long folderId, FolderType folderType, List<Long> entryIds) {
+	public static void copyEntries(final FolderType folderType, final List<EntryId> entryIds) {
 		// If we weren't given any entry IDs to be copied...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -118,13 +117,12 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Locks the entries based on a List<Long> of their entry IDs.
+	 * Locks the entries based on a List<EntryId> of their entry IDs.
 	 *
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void lockEntries(final Long folderId, final FolderType folderType, final List<Long> entryIds) {
+	public static void lockEntries(final FolderType folderType, final List<EntryId> entryIds) {
 		// If we weren't given any entry IDs to be locked...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -132,7 +130,7 @@ public class BinderViewsHelper {
 		}
 
 		// Send a request to lock the entries.
-		LockEntriesCmd cmd = new LockEntriesCmd(folderId, entryIds);
+		LockEntriesCmd cmd = new LockEntriesCmd(entryIds);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -166,11 +164,9 @@ public class BinderViewsHelper {
 	/**
 	 * Marks the entries read based on a List<Long> of their entry IDs.
 	 *
-	 * @param folderId
-	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void markEntriesRead(Long folderId, FolderType folderType, List<Long> entryIds) {
+	public static void markEntriesRead(List<Long> entryIds) {
 		// If we weren't given any entry IDs to be marked read...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -199,13 +195,12 @@ public class BinderViewsHelper {
 
 	/**
 	 * Invokes the appropriate UI to move the entries based on a
-	 * List<Long> of their entry IDs.
+	 * List<EntryId> of the entries.
 	 *
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void moveEntries(final Long folderId, final FolderType folderType, final List<Long> entryIds) {
+	public static void moveEntries(final FolderType folderType, final List<EntryId> entryIds) {
 		// If we weren't given any entry IDs to be moved...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -226,7 +221,7 @@ public class BinderViewsHelper {
 				public void onSuccess(MoveEntriesDlg moveEntriesDlg) {
 					// ...and run it with the parameters.
 					m_moveEntriesDlg = moveEntriesDlg;
-					moveEntriesNow(folderId, folderType, entryIds);
+					moveEntriesNow(folderType, entryIds);
 				}
 			});
 		}
@@ -234,31 +229,29 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a move entries dialog already!  Run
 			// it with the parameters.
-			moveEntriesNow(folderId, folderType, entryIds);
+			moveEntriesNow(folderType, entryIds);
 		}
 	}
 	
 	/*
 	 * Invokes the appropriate UI to move the entries based on a
-	 * List<Long> of their entry IDs.
+	 * List<EntryId> of the entries.
 	 */
-	private static void moveEntriesNow(final Long folderId, final FolderType folderType, final List<Long> entryIds) {
+	private static void moveEntriesNow(final FolderType folderType, final List<EntryId> entryIds) {
 		MoveEntriesDlg.initAndShow(
 			m_moveEntriesDlg,
-			folderId,
 			folderType,
 			entryIds);
 	}
 
 	/**
 	 * Invokes the appropriate UI to share the entries based on a
-	 * List<Long> of their entry IDs.
+	 * List<EntryId> of the entries.
 	 *
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void shareEntries(Long folderId, FolderType folderType, List<Long> entryIds) {
+	public static void shareEntries(final FolderType folderType, final List<EntryId> entryIds) {
 		// If we weren't given any entry IDs to be shared...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -271,13 +264,12 @@ public class BinderViewsHelper {
 
 	/**
 	 * Invokes the appropriate UI to subscribe to the entries based on
-	 * a List<Long> of their entry IDs.
+	 * a List<EntryId> of the entries.
 	 *
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void subscribeToEntries(Long folderId, FolderType folderType, List<Long> entryIds) {
+	public static void subscribeToEntries(final FolderType folderType, final List<EntryId> entryIds) {
 		// If we weren't given any entry IDs to be subscribed to...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -289,13 +281,12 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Unlocks the entries based on a List<Long> of their entry IDs.
+	 * Unlocks the entries based on a List<EntryId> of the entries.
 	 *
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void unlockEntries(final Long folderId, final FolderType folderType, final List<Long> entryIds) {
+	public static void unlockEntries(final FolderType folderType, final List<EntryId> entryIds) {
 		// If we weren't given any entry IDs to be unlocked...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -303,7 +294,7 @@ public class BinderViewsHelper {
 		}
 
 		// Send a request to unlock the entries.
-		UnlockEntriesCmd cmd = new UnlockEntriesCmd(folderId, entryIds);
+		UnlockEntriesCmd cmd = new UnlockEntriesCmd(entryIds);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {

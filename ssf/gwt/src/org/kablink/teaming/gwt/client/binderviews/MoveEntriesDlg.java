@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -68,8 +69,7 @@ public class MoveEntriesDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	private FolderType				m_folderType;	// The type of folder that we're currently dealing with.
 	private GwtTeamingImageBundle	m_images;		// Access to Vibe's images.
 	private GwtTeamingMessages		m_messages;		// Access to Vibe's messages.
-	private Long					m_folderId;		// The folder whose entries are being moved.
-	private List<Long>				m_entryIds;		// Current list of entry IDs to be moved.
+	private List<EntryId>			m_entryIds;		// Current list of entry IDs to be moved.
 	private VibeVerticalPanel		m_vp;			// The panel holding the dialog's content.
 
 	/*
@@ -231,11 +231,11 @@ public class MoveEntriesDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Asynchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private static void runDlgAsync(final MoveEntriesDlg moveEntriesDlg, final Long folderId, final FolderType folderType, final List<Long> entryIds) {
+	private static void runDlgAsync(final MoveEntriesDlg moveEntriesDlg, final FolderType folderType, final List<EntryId> entryIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				moveEntriesDlg.runDlgNow(folderId, folderType, entryIds);
+				moveEntriesDlg.runDlgNow(folderType, entryIds);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -245,9 +245,8 @@ public class MoveEntriesDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Synchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private void runDlgNow(Long folderId, FolderType folderType, List<Long> entryIds) {
+	private void runDlgNow(FolderType folderType, List<EntryId> entryIds) {
 		// Store the parameters...
-		m_folderId   = folderId;
 		m_folderType = folderType;
 		m_entryIds   = entryIds;
 
@@ -281,9 +280,8 @@ public class MoveEntriesDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			
 			// initAndShow parameters,
 			final MoveEntriesDlg moveEntriesDlg,
-			final Long folderId,
 			final FolderType folderType,
-			final List<Long> entryIds) {
+			final List<EntryId> entryIds) {
 		GWT.runAsync(MoveEntriesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -306,7 +304,7 @@ public class MoveEntriesDlg extends DlgBox implements EditSuccessfulHandler, Edi
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(moveEntriesDlg, folderId, folderType, entryIds);
+					runDlgAsync(moveEntriesDlg, folderType, entryIds);
 				}
 			}
 		});
@@ -319,18 +317,17 @@ public class MoveEntriesDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @param moveEntriesDlgClient
 	 */
 	public static void createAsync(MoveEntriesDlgClient moveEntriesDlgClient) {
-		doAsyncOperation(moveEntriesDlgClient, null, null, null, null);
+		doAsyncOperation(moveEntriesDlgClient, null, null, null);
 	}
 	
 	/**
 	 * Initializes and shows the move entries dialog.
 	 * 
 	 * @param moveEntriesDlg
-	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void initAndShow(MoveEntriesDlg moveEntriesDlg, Long folderId, FolderType folderType, List<Long> entryIds) {
-		doAsyncOperation(null, moveEntriesDlg, folderId, folderType, entryIds);
+	public static void initAndShow(MoveEntriesDlg moveEntriesDlg, FolderType folderType, List<EntryId> entryIds) {
+		doAsyncOperation(null, moveEntriesDlg, folderType, entryIds);
 	}
 }

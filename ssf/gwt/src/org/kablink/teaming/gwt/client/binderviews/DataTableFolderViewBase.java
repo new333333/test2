@@ -86,6 +86,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -654,6 +655,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private static boolean isColumnTitle(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TITLE);   }
 	private static boolean isColumnView(        String       columnName) {return columnName.equals(ColumnWidth.COLUMN_HTML);    }
 
+	/*
+	 * Given a List<Long> of entry IDs from the current folder, returns
+	 * a corresponding List<EntryId> of them.
+	 */
+	private List<EntryId> getEntryIdListFromEntryIdLongs(List<Long> entryIds) {
+		List<EntryId> reply = new ArrayList<EntryId>();
+		Long folderId = getFolderId();
+		for (Long entryId:  entryIds) {
+			reply.add(new EntryId(folderId, entryId));
+		}
+		return reply;
+	}
+	
 	/**
 	 * Returns a List<Long> of the IDs of the selected rows from the
 	 * table.
@@ -1078,11 +1092,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the change.
-			BinderInfo fi = getFolderInfo();
 			BinderViewsHelper.changeEntryTypes(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+				getFolderInfo().getFolderType(),
+				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
 	
@@ -1099,11 +1111,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the copy.
-			BinderInfo fi = getFolderInfo();
 			BinderViewsHelper.copyEntries(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+				getFolderInfo().getFolderType(),
+				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
 	
@@ -1212,11 +1222,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the lock.
-			BinderInfo fi = getFolderInfo();
 			BinderViewsHelper.lockEntries(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+				getFolderInfo().getFolderType(),
+				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
 	
@@ -1233,11 +1241,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the mark entries read.
-			BinderInfo fi = getFolderInfo();
-			BinderViewsHelper.markEntriesRead(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+			BinderViewsHelper.markEntriesRead(getSelectedEntryIds());
 		}
 	}
 	
@@ -1254,11 +1258,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the move.
-			BinderInfo fi = getFolderInfo();
 			BinderViewsHelper.moveEntries(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+				getFolderInfo().getFolderType(),
+				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
 	
@@ -1388,11 +1390,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the share.
-			BinderInfo fi = getFolderInfo();
 			BinderViewsHelper.shareEntries(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+				getFolderInfo().getFolderType(),
+				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
 	
@@ -1409,11 +1409,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the subscribe to.
-			BinderInfo fi = getFolderInfo();
 			BinderViewsHelper.subscribeToEntries(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+				getFolderInfo().getFolderType(),
+				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
 	
@@ -1430,11 +1428,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the unlock.
-			BinderInfo fi = getFolderInfo();
 			BinderViewsHelper.unlockEntries(
-				fi.getBinderIdAsLong(),
-				fi.getFolderType(),
-				getSelectedEntryIds());
+				getFolderInfo().getFolderType(),
+				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
 	
