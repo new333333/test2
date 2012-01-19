@@ -960,7 +960,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	/**
 	 * 
 	 */
-	public void executeSearch()
+	private void executeSearch()
 	{
 		ActivityStreamDataType asType;
 		
@@ -1084,9 +1084,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	public void hide()
 	{
-		// Unregister all the events we have registered for.
-		unregisterEvents();
-		
 		cancelCheckForChangesTimer();
 		setVisible( false );
 	}
@@ -1316,21 +1313,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	
 		// Register handlers for all the events we are interested in.
 		registerEvents();
-	}
-	
-	/**
-	 * Called when widget is detached from the document.
-	 * 
-	 * Overrides Widget.onDetach()
-	 */
-	@Override
-	public void onDetach()
-	{
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-	
-		unregisterEvents();
 	}
 	
 	/**
@@ -1988,8 +1970,28 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
+		// Unregister all the events we have registered for.
+		unregisterEvents();
+		
 		hide();
 	}// end onActivityStreamExit()
+
+	/**
+	 * Called when widget is detached from the document.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+	
+		unregisterEvents();
+	}
+	
+	/**
 	
 	/**
 	 * Handles InvokeReplyEvent's received by this class.
