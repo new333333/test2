@@ -289,6 +289,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
+	String rpcFailure_CopyEntries();
 	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_EntryDoesNotExist();
@@ -379,6 +380,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_LockEntries();
 	String rpcFailure_markupStringReplacement();
+	String rpcFailure_MoveEntries();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
 	String rpcFailure_PinEntry();
@@ -436,6 +438,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_ContentControl();
+	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_DiscussionWSView();
@@ -459,7 +462,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MainPage();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
-	String codeSplitFailure_MoveEntriesDlg();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_QuickViewDlg();
@@ -1302,13 +1304,27 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the "Unread entries" dialog
 	String unreadEntriesDlgHeader();
 	
-	// Strings used in the MoveEntriesDlg.
+	// Strings used in the CopyMoveEntriesDlg in copy mode.
+	String copyEntriesDlgCaption1();
+	String copyEntriesDlgCaption2();
+	String copyEntriesDlgCurrentDestination();
+	String copyEntriesDlgCurrentDestinationNone();
+	String copyEntriesDlgErrorInvalidSearchResult();
+	String copyEntriesDlgErrorCopyFailures();
+	String copyEntriesDlgHeader();
+	String copyEntriesDlgSelectDestination();
+	String copyEntriesDlgWarningNoSelection();
+
+	// Strings used in the CopyMoveEntriesDlg in move mode.
 	String moveEntriesDlgCaption1();
 	String moveEntriesDlgCaption2();
 	String moveEntriesDlgCurrentDestination();
 	String moveEntriesDlgCurrentDestinationNone();
+	String moveEntriesDlgErrorInvalidSearchResult();
+	String moveEntriesDlgErrorMoveFailures();
 	String moveEntriesDlgHeader();
 	String moveEntriesDlgSelectDestination();
+	String moveEntriesDlgWarningNoSelection();
 
 	// String used by the lock selected entries facility.
 	String lockEntriesError();

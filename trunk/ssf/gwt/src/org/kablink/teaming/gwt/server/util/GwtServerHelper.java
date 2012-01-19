@@ -5100,6 +5100,7 @@ public class GwtServerHelper {
 		case ADD_FAVORITE:
 		case CAN_MODIFY_BINDER:
 		case COLLAPSE_SUBTASKS:
+		case COPY_ENTRIES:
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_TASKS:
 		case EXECUTE_ENHANCED_VIEW_JSP:
@@ -5201,6 +5202,7 @@ public class GwtServerHelper {
 		case IS_PERSON_TRACKED:
 		case IS_SEEN:
 		case LOCK_ENTRIES:
+		case MOVE_ENTRIES:
 		case PERSIST_ACTIVITY_STREAM_SELECTION:
 		case PERSIST_NODE_COLLAPSE:
 		case PERSIST_NODE_EXPAND:

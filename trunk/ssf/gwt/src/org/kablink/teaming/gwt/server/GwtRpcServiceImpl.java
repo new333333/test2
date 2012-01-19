@@ -233,6 +233,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case COPY_ENTRIES:
+		{
+			CopyEntriesCmd ceCmd = ((CopyEntriesCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.copyEntries( this, getRequest( ri ), ceCmd.getTargetFolderId(), ceCmd.getEntryIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case DELETE_FOLDER_ENTRIES:
 		{
 			DeleteFolderEntriesCmd dfeCmd = ((DeleteFolderEntriesCmd) cmd);
@@ -1386,6 +1394,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case MOVE_ENTRIES:
+		{
+			MoveEntriesCmd meCmd = ((MoveEntriesCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.moveEntries( this, getRequest( ri ), meCmd.getTargetFolderId(), meCmd.getEntryIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case PERSIST_ACTIVITY_STREAM_SELECTION:
 		{
 			ActivityStreamInfo asi;
@@ -1893,6 +1909,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case APPLICATION_GROUP:
 		case COMMUNITY_TAGS:
 		case ENTRIES:
+		case FOLDERS:
 		case GROUP:
 		case PERSON:
 		case PERSONAL_TAGS:
@@ -2069,6 +2086,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case APPLICATION_GROUP:
 		case COMMUNITY_TAGS:
 		case ENTRIES:
+		case FOLDERS:
 		case GROUP:
 		case PERSON:
 		case PERSONAL_TAGS:
@@ -2122,8 +2140,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			break;
 
+		case FOLDERS:
 		case PLACES:
-			searchTermFilter.addPlacesFilter( searchText, searchCriteria.getFoldersOnly() );
+			searchTermFilter.addPlacesFilter(
+				searchText,
+				(searchCriteria.getFoldersOnly() || (GwtSearchCriteria.SearchType.FOLDERS == searchCriteria.getSearchType())) );
 			break;
 			
 		case COMMUNITY_TAGS:
@@ -2312,6 +2333,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				break;
 			}
 				
+			case FOLDERS:
 			case PLACES:
 			{
 				List placesEntries;
