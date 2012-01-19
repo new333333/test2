@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -563,7 +564,7 @@ public class MarkupUtil {
 					} else if (vibeFunction.equals("data")) {
 						if (functionArgs.length >= 2) {
 							//Get the data item
-							String dataName = functionArgs[1];
+							String dataName = functionArgs[1].trim();
 							if (def != null) {
 								String dataType = DefinitionHelper.findAttributeType(dataName, def.getDefinition());
 								if ("date".equals(dataType) || "date_time".equals(dataType)) {
@@ -850,8 +851,8 @@ public class MarkupUtil {
 					} else if (vibeFunction.equals("data")) {
 						if (functionArgs.length >= 2) {
 							//Get the data item
-							CustomAttribute dataItem = entity.getCustomAttribute(functionArgs[1]);
-							String dataName = functionArgs[1];
+							CustomAttribute dataItem = entity.getCustomAttribute(functionArgs[1].trim());
+							String dataName = functionArgs[1].trim();
 							String dataType = DefinitionHelper.findAttributeType(dataName, def.getDefinition());
 							if (dataItem != null) {
 								if ("date".equals(dataType) || "date_time".equals(dataType)) {
@@ -870,6 +871,18 @@ public class MarkupUtil {
 									Event e = (Event) dataItem.getValue();
 									if (e != null) {
 										result = eventToString(e.getLogicalStart(), e.getLogicalEnd(), e.isAllDayEvent());
+									}
+								} else if ("radio".equals(dataType)) {
+									String v = dataItem.getValue().toString();
+									result = DefinitionHelper.getCaptionsFromValues(def, dataName, v);
+								} else if ("selectbox".equals(dataType)) {
+									Set<String> valueSet = dataItem.getValueSet();
+									result = "";
+									for (String v : valueSet) {
+										if (!result.equals("") && !v.equals("")) {
+											result = result + ", ";
+										}
+										result = result + DefinitionHelper.getCaptionsFromValues(def, dataName, v);
 									}
 								} else {
 									result = dataItem.getValue().toString();
