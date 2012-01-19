@@ -90,6 +90,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -1292,22 +1293,34 @@ public class TaskTable extends Composite
 	}
 	
 	/*
-	 * Returns a List<Long> of the IDs of the tasks in the TaskTable
+	 * Returns a List<EntryId> of the IDs of the tasks in the TaskTable
 	 * that are currently checked.
 	 */
-	private List<Long> getTaskIdsChecked() {
-		List<Long> reply = new ArrayList<Long>();;
+	private List<EntryId> getTaskIdsChecked() {
+		List<EntryId> reply = new ArrayList<EntryId>();;
 		getTaskIdsCheckedImpl(m_taskBundle.getTasks(), reply);
 		return reply;
 	}
 	
-	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<Long> checkedTaskIds) {
+	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<EntryId> checkedTaskIds) {
 		for (TaskListItem task:  tasks) {
 			if (getUIData(task).isTaskCBChecked()) {
-				checkedTaskIds.add(task.getTask().getTaskId().getEntryId());
+				checkedTaskIds.add(task.getTask().getTaskId());
 			}
 			getTaskIdsCheckedImpl(task.getSubtasks(), checkedTaskIds);
 		}
+	}
+
+	/*
+	 * Returns a List<Long> of just the entry IDs from a List<EntryId>.
+	 */
+	private List<Long> getTaskIdsCheckedAsListLong() {
+		List<EntryId> entryIds = getTaskIdsChecked();
+		List<Long> reply = new ArrayList<Long>();
+		for (EntryId entryId:  entryIds) {
+			reply.add(entryId.getEntryId());
+		}
+		return reply;
 	}
 	
 	/**
@@ -2685,7 +2698,6 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the change.
 			BinderViewsHelper.changeEntryTypes(
-				m_taskListing.getBinderId(),
 				FolderType.TASK,
 				getTaskIdsChecked());
 		}
@@ -2705,7 +2717,6 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the copy.
 			BinderViewsHelper.copyEntries(
-				m_taskListing.getBinderId(),
 				FolderType.TASK,
 				getTaskIdsChecked());
 		}
@@ -2755,7 +2766,6 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the lock.
 			BinderViewsHelper.lockEntries(
-				m_taskListing.getBinderId(),
 				FolderType.TASK,
 				getTaskIdsChecked());
 		}
@@ -2774,10 +2784,7 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(
-				m_taskListing.getBinderId(),
-				FolderType.TASK,
-				getTaskIdsChecked());
+			BinderViewsHelper.markEntriesRead(getTaskIdsCheckedAsListLong());
 		}
 	}
 	
@@ -2795,7 +2802,6 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the move.
 			BinderViewsHelper.moveEntries(
-				m_taskListing.getBinderId(),
 				FolderType.TASK,
 				getTaskIdsChecked());
 		}
@@ -2832,7 +2838,6 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the share.
 			BinderViewsHelper.shareEntries(
-				m_taskListing.getBinderId(),
 				FolderType.TASK,
 				getTaskIdsChecked());
 		}
@@ -2852,7 +2857,6 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the subscribe to.
 			BinderViewsHelper.subscribeToEntries(
-				m_taskListing.getBinderId(),
 				FolderType.TASK,
 				getTaskIdsChecked());
 		}
@@ -2968,7 +2972,6 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the unlock.
 			BinderViewsHelper.unlockEntries(
-				m_taskListing.getBinderId(),
 				FolderType.TASK,
 				getTaskIdsChecked());
 		}
@@ -3121,7 +3124,7 @@ public class TaskTable extends Composite
 				// ...preserve the tasks that are currently checked...
 				List<Long> checkedTaskIds;
 				if (preserveChecks)
-				     checkedTaskIds = getTaskIdsChecked();
+				     checkedTaskIds = getTaskIdsCheckedAsListLong();
 				else checkedTaskIds = null;
 				
 				// ...store the new TaskBundle in the TaskListing...

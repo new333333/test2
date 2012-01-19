@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.EntryId;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'lock entries' command.
@@ -42,8 +44,7 @@ import java.util.List;
  * @author drfoster@novell.com
  */
 public class LockEntriesCmd extends VibeRpcCmd {
-	private List<Long>	m_entryIds;	//
-	private Long 		m_folderId;	//
+	private List<EntryId>	m_entryIds;	//
 	
 	/**
 	 * Constructor method.
@@ -57,13 +58,14 @@ public class LockEntriesCmd extends VibeRpcCmd {
 	
 	/**
 	 * Constructor method.
+	 * 
+	 * @param entryIds
 	 */
-	public LockEntriesCmd(Long folderId, List<Long> entryIds) {
+	public LockEntriesCmd(List<EntryId> entryIds) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setFolderId(folderId);
 		setEntryIds(entryIds);
 	}
 	
@@ -72,16 +74,14 @@ public class LockEntriesCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<Long> getEntryIds() {return m_entryIds;}
-	public Long       getFolderId() {return m_folderId;}
+	public List<EntryId> getEntryIds() {return m_entryIds;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntryIds(List<Long> entryIds) {m_entryIds = entryIds;}
-	public void setFolderId(Long       folderId) {m_folderId = folderId;}
+	public void setEntryIds(List<EntryId> entryIds) {m_entryIds = entryIds;}
 	
 	/**
 	 * Returns the command's enumeration value.
