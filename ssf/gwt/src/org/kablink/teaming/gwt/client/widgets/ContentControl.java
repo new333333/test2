@@ -361,13 +361,12 @@ public class ContentControl extends Composite
 		clear();
 		
 		// Remember the current URL.
-		String url = m_frame.getUrl();
+		String url = getContentHistoryUrl( 0 );
 
 		// Reload the URL.
 		setUrl(         ""  );
 		setViewFromUrl( url );
 	}// end reload()
-	
 	
 	/**
 	 * Set the width and height of this control.

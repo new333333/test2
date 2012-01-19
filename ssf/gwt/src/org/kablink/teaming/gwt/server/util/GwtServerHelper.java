@@ -5236,6 +5236,7 @@ public class GwtServerHelper {
 		case UPDATE_CALCULATED_DATES:
 		case UPDATE_ENTRY_TAGS:
 		case UPDATE_FAVORITES:
+		case UNLOCK_ENTRIES:
 		case UNPIN_ENTRY:
 		case UNTRACK_BINDER:
 		case UNTRACK_PERSON:
