@@ -418,6 +418,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_UnknownCause();
 	String rpcFailure_UnknownException();
+	String rpcFailure_UnlockEntries();
 	String rpcFailure_UnpinEntry();
 	String rpcFailure_UntrackingBinder();
 	String rpcFailure_UntrackingPerson();
@@ -1311,4 +1312,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// String used by the lock selected entries facility.
 	String lockEntriesError();
+
+	// String used by the unlock selected entries facility.
+	String unlockEntriesError();
 }// end GwtTeamingMessages

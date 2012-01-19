@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.binderviews.MoveEntriesDlg.MoveEntriesDlgC
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -116,8 +118,7 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Invokes the appropriate UI to lock the entries based on a
-	 * List<Long> of their entry IDs.
+	 * Locks the entries based on a List<Long> of their entry IDs.
 	 *
 	 * @param folderId
 	 * @param folderType
@@ -163,8 +164,7 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Invokes the appropriate UI to mark the entries read based on a
-	 * List<Long> of their entry IDs.
+	 * Marks the entries read based on a List<Long> of their entry IDs.
 	 *
 	 * @param folderId
 	 * @param folderType
@@ -177,8 +177,24 @@ public class BinderViewsHelper {
 			return;
 		}
 		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.markEntriesRead():  ...this needs to be implemented...");
+		// Send a request to mark the entries read.
+		SetSeenCmd cmd = new SetSeenCmd(entryIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_SetSeen());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Simply force the content to refresh just in case its
+				// got something displayed that depends based on an
+				// entry's read/unread state.
+				FullUIReloadEvent.fireOne();
+			}
+		});
 	}
 
 	/**
@@ -273,21 +289,48 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Invokes the appropriate UI to unlock the entries based on a
-	 * List<Long> of their entry IDs.
+	 * Unlocks the entries based on a List<Long> of their entry IDs.
 	 *
 	 * @param folderId
 	 * @param folderType
 	 * @param entryIds
 	 */
-	public static void unlockEntries(Long folderId, FolderType folderType, List<Long> entryIds) {
+	public static void unlockEntries(final Long folderId, final FolderType folderType, final List<Long> entryIds) {
 		// If we weren't given any entry IDs to be unlocked...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
-		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.unlockEntries():  ...this needs to be implemented...");
+
+		// Send a request to unlock the entries.
+		UnlockEntriesCmd cmd = new UnlockEntriesCmd(folderId, entryIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_UnlockEntries());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Did everything we ask get unlocked?
+				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+				List<String> errors = responseData.getErrorList();
+				int count = ((null == errors) ? 0 : errors.size());
+				if (0 < count) {
+					// No!  Tell the user about the problem.
+					displayMultipleErrors(GwtTeaming.getMessages().unlockEntriesError(), errors);
+				}
+
+				// If anything was unlocked...
+				if (count != entryIds.size()) {
+					// ...force the content to refresh just in case its
+					// ...got something displayed that depends on
+					// ...locks.
+					FullUIReloadEvent.fireOne();
+				}
+			}
+		});
 	}
 }

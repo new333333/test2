@@ -2068,6 +2068,60 @@ public class GwtViewHelper {
 	}
 	
 	/**
+	 * Unlocks the entries.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData unlockEntries(AllModulesInjected bs, HttpServletRequest request, Long folderId, List<Long> entryIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any entries to unlock?
+			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+				// Yes!  Scan them.
+				for (Long entryId:  entryIds) {
+					try {
+						// Can we unlock this entry?
+						bs.getFolderModule().unreserveEntry(folderId, entryId);
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String entryTitle = getEntryTitle(bs, folderId, entryId);
+						String messageKey;
+						if      (e instanceof AccessControlException)         messageKey = "unlockEntryError.AccssControlException";
+						else if (e instanceof ReservedByAnotherUserException) messageKey = "unlockEntryError.ReservedByAnotherUserException";
+						else                                                  messageKey = "unlockEntryError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing an errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.unlockEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
 	 * Stores a region state for the current user on a binder.
 	 * 
 	 * @param bs
