@@ -193,6 +193,9 @@ public class PopupMenu extends TeamingPopupPanel
 			    left = x;
 			    top = y;
 			    
+			    if ( top > Window.getClientHeight() )
+			    	top = Window.getClientHeight();
+			    
 				if ( (left + offsetWidth) > Window.getClientWidth() )
 					left = Window.getClientWidth() - offsetWidth - 25;
 				
