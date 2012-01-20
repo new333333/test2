@@ -38,18 +38,21 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.util.EntryId;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'copy entries' command.
+ * Base class that holds all of the information necessary to execute
+ * the 'copy/move entries' commands.
  * 
  * @author drfoster@novell.com
  */
-public class CopyEntriesCmd extends CopyMoveEntriesCmdBase {
+public abstract class CopyMoveEntriesCmdBase extends VibeRpcCmd {
+	private List<EntryId>	m_entryIds;			//
+	private Long			m_targetFolderId;	//
+	
 	/**
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public CopyEntriesCmd() {
+	public CopyMoveEntriesCmdBase() {
 		// Initialize the super class.
 		super();
 	}
@@ -60,10 +63,30 @@ public class CopyEntriesCmd extends CopyMoveEntriesCmdBase {
 	 * @param targetFolderId
 	 * @param entryIds
 	 */
-	public CopyEntriesCmd(final Long targetFolderId, final List<EntryId> entryIds) {
-		// Initialize the super class.
-		super(targetFolderId, entryIds);
+	public CopyMoveEntriesCmdBase(final Long targetFolderId, final List<EntryId> entryIds) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setEntryIds(      entryIds      );
+		setTargetFolderId(targetFolderId);
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	final public List<EntryId> getEntryIds()       {return m_entryIds;      }
+	final public Long          getTargetFolderId() {return m_targetFolderId;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	final public void setEntryIds(      List<EntryId> entryIds)       {m_entryIds       = entryIds;      }
+	final public void setTargetFolderId(Long          targetFolderId) {m_targetFolderId = targetFolderId;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -73,7 +96,5 @@ public class CopyEntriesCmd extends CopyMoveEntriesCmdBase {
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.COPY_ENTRIES.ordinal();
-	}
+	public abstract int getCmdType();
 }
