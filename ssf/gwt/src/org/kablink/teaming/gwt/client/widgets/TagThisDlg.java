@@ -186,6 +186,7 @@ public class TagThisDlg extends DlgBox
 		/**
 		 * This gets called when the user clicks on delete tag image.
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			deleteTag( m_tagInfo );
@@ -326,6 +327,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * This gets called when the user clicks on the tag name.
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Object source;
@@ -406,6 +408,7 @@ public class TagThisDlg extends DlgBox
 	{
 		ScheduledCommand cmd = new ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				int height;
@@ -475,10 +478,12 @@ public class TagThisDlg extends DlgBox
 			// Add a click handler for the personal rb
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					ScheduledCommand cmd = new ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Set the filter of the Find Control to only search for personal tags.
@@ -500,10 +505,12 @@ public class TagThisDlg extends DlgBox
 			// Add a click handler for the personal rb
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					ScheduledCommand cmd = new ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Set the filter of the Find Control to only search for community tags.
@@ -561,10 +568,12 @@ public class TagThisDlg extends DlgBox
 				// Add a click handler to the "add tag" image.
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						ScheduledCommand cmd = new ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Try to add a new tag.
@@ -612,10 +621,12 @@ public class TagThisDlg extends DlgBox
 				//!!! label.addStyleName( "cursorPointer" );
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						ScheduledCommand cmd = new ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Change the sort order to sort by name
@@ -632,10 +643,12 @@ public class TagThisDlg extends DlgBox
 				//!!! label.addStyleName( "cursorPointer" );
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						ScheduledCommand cmd = new ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Change the sort order to sort by type
@@ -743,6 +756,7 @@ public class TagThisDlg extends DlgBox
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editCanceled()
 	{
 		// Simply return true to allow the dialog to close.
@@ -761,6 +775,7 @@ public class TagThisDlg extends DlgBox
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editSuccessful( Object callbackData )
 	{
 		String tmp;
@@ -894,6 +909,7 @@ public class TagThisDlg extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -904,6 +920,7 @@ public class TagThisDlg extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				m_sortOrder = (TagSortOrder) response.getResponseData();
@@ -1135,6 +1152,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					String entityId;
@@ -1153,6 +1171,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					ArrayList<TagInfo> tags;
@@ -1176,6 +1195,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					String entityId;
@@ -1194,6 +1214,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					ArrayList<Boolean> tagRights;
@@ -1215,6 +1236,7 @@ public class TagThisDlg extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Does the user have rights to do anything?
@@ -1401,6 +1423,7 @@ public class TagThisDlg extends DlgBox
 	/**
 	 * Handles the KeyUpEvent
 	 */
+	@Override
 	public void onKeyUp( KeyUpEvent event )
 	{
         final int keyCode;
@@ -1418,6 +1441,7 @@ public class TagThisDlg extends DlgBox
 
         ScheduledCommand cmd = new ScheduledCommand()
         {
+			@Override
 			public void execute()
 			{
 		        // Did the user press Enter?
@@ -1486,6 +1510,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -1496,6 +1521,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					// Nothing to do.
@@ -1522,6 +1548,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -1532,6 +1559,7 @@ public class TagThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					// Nothing to do.
@@ -1591,6 +1619,7 @@ public class TagThisDlg extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void setPosition( int offsetWidth, int offsetHeight )
 			{
 				int width;
@@ -1603,12 +1632,23 @@ public class TagThisDlg extends DlgBox
 				
 				if ( setPosition )
 				{
+					int y;
+					
 					if ( width > offsetWidth )
 						x = right - width;
 					else
 						x = right - offsetWidth;
+
+					y = top;
+					if ( y > Window.getClientHeight() )
+						y = Window.getClientHeight();
 					
-					setPopupPosition( x, top );
+					if ( (y + offsetHeight) > Window.getClientHeight() )
+					{
+						y -= (offsetHeight + 10);
+					}
+					
+					setPopupPosition( x, y );
 				}
 			}
 		};
@@ -1753,6 +1793,7 @@ public class TagThisDlg extends DlgBox
 					/**
 					 * 
 					 */
+					@Override
 					public void execute()
 					{
 						m_findCtrl.clearText();

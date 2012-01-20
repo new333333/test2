@@ -87,6 +87,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -1204,30 +1205,15 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void showDlg( String title, String entryId, final int right, final int top )
+	public void showDlg( UIObject target, String title, String entryId )
 	{
-		PopupPanel.PositionCallback posCallback;
-		
 		init( title, entryId );
 		
 		hideErrorPanel();
 		showContentPanel();
 		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
-		
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				int x;
-				
-				x = right - offsetWidth;
-				setPopupPosition( x, top );
-			}
-		};
-		setPopupPositionAndShow( posCallback );
+
+		showRelativeToTarget( target );
 	}
 	
 	

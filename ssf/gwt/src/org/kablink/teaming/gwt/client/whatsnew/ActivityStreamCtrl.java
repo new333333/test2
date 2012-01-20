@@ -1127,25 +1127,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 		
 		m_subscribeToEntryDlg.init( entry.getEntryId(), entry.getEntryTitle() );
-
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				int x;
-				int y;
-				
-				x = Window.getClientWidth() - offsetWidth - 75;
-				y = entry.getAbsoluteTop();
-				
-				m_subscribeToEntryDlg.setPopupPosition( x, y );
-			}// end setPosition()
-		};
-		m_subscribeToEntryDlg.setPopupPositionAndShow( posCallback );
+		m_subscribeToEntryDlg.showRelativeToTarget( entry );
 	}
 	
 	
@@ -1192,7 +1174,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void showShareThisDlg( final ActivityStreamUIEntry entry )
 	{
-		m_shareThisDlg.showDlg( entry.getEntryTitle(), entry.getEntryId(), Window.getClientWidth() - 75, entry.getAbsoluteTop() );
+		m_shareThisDlg.showDlg( entry, entry.getEntryTitle(), entry.getEntryId() );
 	}// end showShareThisDlg()
 	
 	
@@ -1231,14 +1213,27 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 	}// end invokeTagThisDlg()
 	
+	/**
+	 * 
+	 */
 	private void invokeTagThisDlgImpl( final ActivityStreamUIEntry entry )
 	{
+		int y;
+		
+		y = entry.getAbsoluteTop();
+		
+		// Sometimes in Firefox getAbsoluteTop() returns the value that would
+		// normally be returned by getOffsetTop()
+		// Make sure the y value is reasonable.
+		if ( y > Window.getClientHeight() )
+			y = Window.getClientHeight();
+
 		TagThisDlg.initAndShow(
-			m_tagThisDlg,
-			entry.getEntryId(),
-			entry.getEntryTitle(),
-			(Window.getClientWidth() - 75),
-			entry.getAbsoluteTop());
+				m_tagThisDlg,
+				entry.getEntryId(),
+				entry.getEntryTitle(),
+				(Window.getClientWidth() - 75),
+				y );
 	}// end invokeTagThisDlgImpl()	
 	
 	/**

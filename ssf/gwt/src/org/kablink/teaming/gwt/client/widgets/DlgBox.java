@@ -44,6 +44,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -51,6 +52,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * 
@@ -595,12 +597,59 @@ public abstract class DlgBox extends PopupPanel
 		}
 	}// end show()
 	
+	/**
+	 * 
+	 */
 	@Override
 	public void show()
 	{
 		// Always use the initial form of the method.
 		show( false );
 	}// end show()
+	
+	/**
+	 * 
+	 */
+	public void showRelativeToTarget( final UIObject target )
+	{
+		PopupPanel.PositionCallback posCallback;
+		
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				int x;
+				int y;
+				
+				x = target.getAbsoluteLeft() + target.getOffsetWidth();
+				if ( x > Window.getClientWidth() )
+					x = Window.getClientWidth();
+				
+				if ( (x + offsetWidth) > Window.getClientWidth() )
+					x -= (offsetWidth + 75);
+				
+				y = target.getAbsoluteTop();
+				
+				// Sometimes in Firefox getAbsoluteTop() returns the value that would
+				// normally be returned by getOffsetTop()
+				// Make sure the y value is reasonable.
+				if ( y > Window.getClientHeight() )
+					y = Window.getClientHeight();
+				
+				if ( (y + offsetHeight) > Window.getClientHeight() )
+				{
+					y -= (offsetHeight + 10);
+				}
+				
+				setPopupPosition( x, y );
+			}
+		};
+		setPopupPositionAndShow( posCallback );
+	}
 	
 	
 	/**
