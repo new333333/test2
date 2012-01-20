@@ -51,10 +51,15 @@ import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.EventValidationListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEntryEventsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.Agent;
+import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.UIObject;
 
@@ -166,32 +171,80 @@ public class ActionsPopupMenu extends PopupMenu
 				}// end onFailure()
 
 				@Override
-				public void onSuccess( VibeRpcResponse result )
+				public void onSuccess( final VibeRpcResponse result )
 				{
-					EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
-					List<EventValidation> eventValidations = responseData.getEventValidationListResults();
+					Scheduler.ScheduledCommand cmd;
 					
-					for( EventValidation nextValidation : eventValidations )
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						if ( nextValidation.isValid() == false )
+						@Override
+						public void execute()
 						{
-							TeamingEvents event;
+							EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
+							List<EventValidation> eventValidations = responseData.getEventValidationListResults();
+							AgentBase agent;
+							String userAgent;
 							
-							event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
+							for( EventValidation nextValidation : eventValidations )
+							{
+								if ( nextValidation.isValid() == false )
+								{
+									TeamingEvents event;
+									
+									event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
+									
+									if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
+										m_replyMenuItem.setVisible( false );
+									else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
+										m_subscribeMenuItem.setVisible( false );
+									else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
+										m_shareMenuItem.setVisible( false );
+									else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
+										m_tagMenuItem.setVisible( false );
+								}
+							}
 							
-							if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
-								m_replyMenuItem.setVisible( false );
-							else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
-								m_subscribeMenuItem.setVisible( false );
-							else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
-								m_shareMenuItem.setVisible( false );
-							else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
-								m_tagMenuItem.setVisible( false );
+							// Now that we have validated all the events, show this menu.
+							// Are we running in Firefox?
+							agent = GWT.create( Agent.class );
+							userAgent = agent.getAgentName();
+							if ( userAgent != null && userAgent.equalsIgnoreCase( "gecko1_8" ) )
+							{
+								FlowPanel panel;
+								int x;
+								int y;
+								int scrollTop = 0;
+
+								// Yes
+								x = m_actionsMenuTarget.getAbsoluteLeft();
+								y = m_actionsMenuTarget.getAbsoluteTop() + m_actionsMenuTarget.getOffsetHeight();
+
+								// Get the panel the menu will be displayed in.
+								panel = m_entry.getActivityStreamCtrl().getSearchResultsPanel();
+								if ( panel != null )
+								{
+									scrollTop = panel.getElement().getScrollTop(); 
+								}
+
+								// Show the menu.
+								showMenu( x, y );
+								
+								// If the menu is being displayed in a <div> that has
+								// been scrolled, Firefox resets the scroll position to 0.
+								// We need to restore the scroll position.
+								if ( panel != null )
+								{
+									panel.getElement().setScrollTop( scrollTop );
+								}
+							}
+							else
+							{
+								// No
+								showRelativeToTarget( m_actionsMenuTarget );
+							}
 						}
-					}
-					
-					// Now that we have validated all the events, show this menu.
-					showRelativeToTarget( m_actionsMenuTarget );
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}// end onSuccess()
 			};
 		}

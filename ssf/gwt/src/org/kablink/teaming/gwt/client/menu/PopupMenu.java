@@ -42,8 +42,10 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
@@ -170,9 +172,50 @@ public class PopupMenu extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void showRelativeToTarget( UIObject target )
+	public void showMenu( final int x, final int y )
 	{
-		showRelativeTo(target);
+		PopupPanel.PositionCallback posCallback;
+
+		// Create a callback that will be called when this menu is shown.
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+			    int windowTop;
+			    int windowBottom;
+			    int left;
+			    int top;
+				
+			    left = x;
+			    top = y;
+			    
+				if ( (left + offsetWidth) > Window.getClientWidth() )
+					left = Window.getClientWidth() - offsetWidth - 25;
+				
+				windowTop = Window.getScrollTop();
+			    windowBottom = windowTop + Window.getClientHeight();
+
+			    // Calculate how far over the bottom 
+				if ( (top + offsetHeight) > windowBottom )
+					top -= offsetHeight;
+				
+				setPopupPosition( left, top );
+				setMenuFocusAsync();
+			}
+		};
+		setPopupPositionAndShow( posCallback );
+	}
+	
+	/**
+	 * 
+	 */
+	public void showRelativeToTarget( final UIObject target )
+	{
+		showRelativeTo( target );
 		setMenuFocusAsync();
 	}
 }
