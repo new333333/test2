@@ -2814,7 +2814,22 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public void reloadContentPanel()
 	{
-		m_contentCtrl.reload();
+		// Is the Activity Stream visible?
+		if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible() )
+		{
+			ActivityStreamInfo asi;
+			
+			// Yes
+			// Get the activity stream currently being used.
+			asi = m_activityStreamCtrl.getActivityStreamInfo();
+			
+			// Refresh the activity stream.
+			GwtTeaming.fireEvent( new ActivityStreamEvent( asi ) );
+		}
+		else
+		{
+			m_contentCtrl.reload();
+		}
 	}// end reloadContentPanel()
 	
 	/**

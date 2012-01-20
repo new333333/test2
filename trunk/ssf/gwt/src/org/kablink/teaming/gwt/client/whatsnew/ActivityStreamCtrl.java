@@ -103,7 +103,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -1028,6 +1027,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	
 	
 	/**
+	 * Return the ActivityStreamInfo object we are currently using.
+	 */
+	public ActivityStreamInfo getActivityStreamInfo()
+	{
+		return m_activityStreamInfo;
+	}
+	
+	/**
 	 * Return the id of the binder that is the source of the activity stream
 	 */
 	private String getActivityStreamSourceBinderId()
@@ -1119,8 +1126,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void invokeSubscribeToEntryDlg( final ActivityStreamUIEntry entry )
 	{
-		PopupPanel.PositionCallback posCallback;
-		
 		if ( m_subscribeToEntryDlg == null )
 		{
 			m_subscribeToEntryDlg = new SubscribeToEntryDlg( false, true, 0, 0 );
