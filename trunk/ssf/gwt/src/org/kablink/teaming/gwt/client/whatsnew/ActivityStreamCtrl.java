@@ -165,7 +165,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	// We will NOT create new ui widgets every time we get a new page of results.
 	private ArrayList<ActivityStreamTopEntry> m_searchResultsUIWidgets;
 	// This menu is used to display an Actions menu for an item in the list.
-	private static ActionsPopupMenu m_actionsPopupMenu = null;
+	private ActionsPopupMenu m_actionsPopupMenu = null;
 	private ShowSettingPopupMenu m_showSettingPopupMenu = null;
 	private SubscribeToEntryDlg m_subscribeToEntryDlg = null;
 	private TagThisDlg m_tagThisDlg = null;
@@ -1021,7 +1021,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	/**
 	 * Return the Actions menu that is used with items in the list.
 	 */
-	public static ActionsPopupMenu getActionsMenu()
+	public ActionsPopupMenu getActionsMenu()
 	{
 		return m_actionsPopupMenu;
 	}
@@ -1044,6 +1044,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 		return binderId;
 	}
 	
+	/**
+	 * 
+	 */
+	public FlowPanel getSearchResultsPanel()
+	{
+		return m_searchResultsPanel;
+	}
 	
 	/**
 	 * Return the selected object.  The calling method will need to typecast the return value.

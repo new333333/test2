@@ -148,6 +148,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		{
 			onSuccessHandler = new EditSuccessfulHandler()
 			{
+				@Override
 				@SuppressWarnings("unchecked")
 				public boolean editSuccessful( Object replyData )
 				{
@@ -181,6 +182,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			/**
 			 * 
 			 */
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -190,6 +192,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						handleClickOnAuthor( ((Widget)src).getElement());
@@ -325,6 +328,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			// Add a click handler for the Actions image.
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -334,6 +338,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Hide the actions2 image.
@@ -373,6 +378,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			// Add a click handler for the "unread" image.
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -382,6 +388,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Mark this entry as read.
@@ -650,6 +657,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure(Throwable t)
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -661,6 +669,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -669,6 +678,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							
@@ -703,7 +713,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		ActionsPopupMenu popupMenu;
 		
 		// Show the Actions popup menu.
-		popupMenu = ActivityStreamCtrl.getActionsMenu();
+		popupMenu = m_activityStreamCtrl.getActionsMenu();
 		if ( popupMenu != null )
 		{
 			// Show the Actions popup menu.
@@ -781,6 +791,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						// Update the ui to reflect the fact that this entry is now read.
@@ -825,6 +836,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						// Update the ui to reflect the fact that this entry is now read.
@@ -840,6 +852,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * 
 	 */
+	@Override
 	public void onClick( ClickEvent event )
 	{
 		final Object src;
@@ -851,6 +864,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					if ( src == m_title )
@@ -867,6 +881,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Remove the mouse-over style from the given label. 
 	 */
+	@Override
 	public void onMouseOut( MouseOutEvent event )
 	{
 		Object src;
@@ -894,6 +909,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Add the mouse-over style to the given label. 
 	 */
+	@Override
 	public void onMouseOver( MouseOverEvent event )
 	{
 		Object src;
@@ -943,6 +959,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						// Add the reply to the top entry.
