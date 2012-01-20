@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -50,6 +49,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.CopyEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.CopyMoveEntriesCmdBase;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MoveEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -77,22 +77,22 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
- * Implements Vibe's move entries dialog.
+ * Implements Vibe's copy/move entries dialog.
  *  
  * @author drfoster@novell.com
  */
 public class CopyMoveEntriesDlg extends DlgBox
-	implements EditSuccessfulHandler, EditCanceledHandler,
+	implements EditSuccessfulHandler,
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private boolean						m_doCopy;					// true -> The dialog is doing a copy.  false -> It's doing a move.
-	private FindCtrl					m_findControl;				//
-	private GwtFolder					m_selectedFolder;			//
+	private FindCtrl					m_findControl;				// The search widget.
+	private GwtFolder					m_currentDest;				// Tracks the last destination used.  If a new folder isn't selected, this will be used.
+	private GwtFolder					m_selectedFolder;			// The currently selected folder returned by the search widget.
 	private GwtTeamingImageBundle		m_images;					// Access to Vibe's images.
 	private List<EntryId>				m_entryIds;					// Current list of entry IDs to be moved.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private String						m_currentDest;				//
 	private VibeVerticalPanel			m_vp;						// The panel holding the dialog's content.
 
 	// The following manage the strings used by the dialog.  The map is
@@ -107,6 +107,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		ERROR_INVALID_SEARCH,
 		ERROR_OP_FAILURE,
 		HEADER,
+		RPC_FAILURE,
 		SELECT_DEST,
 		WARNING_NO_DEST,
 	}
@@ -130,16 +131,16 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private CopyMoveEntriesDlg() {
 		// Initialize the superclass...
 		super(false, true);
-
+		
 		// ...initialize everything else...
 		m_images = GwtTeaming.getImageBundle();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			"",		// No caption.  It's set appropriately when the dialog runs.
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Create callback data.  Unused. 
+			"",							// No caption yet.  It's set appropriately when the dialog runs.
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCancledHandler.
+			null);						// Create callback data.  Unused. 
 	}
 
 	/*
@@ -151,51 +152,51 @@ public class CopyMoveEntriesDlg extends DlgBox
 	}
 
 	/*
-	 * Asynchronously performs the entry copy.
+	 * Asynchronously performs the copy/move of the entries.
 	 */
-	private void copyEntriesAsync() {
+	private void copyMoveEntriesAsync(final CopyMoveEntriesCmdBase cmd, final GwtFolder target) {
 		ScheduledCommand doCopy = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				copyEntriesNow();
+				copyMoveEntriesNow(cmd, target);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doCopy);
 	}
 	
 	/*
-	 * Synchronously performs the entry copy.
+	 * Synchronously performs the copy/move of the entries.
 	 */
-	private void copyEntriesNow() {
-		// Send a request to copy the entries.
-		CopyEntriesCmd cmd = new CopyEntriesCmd(Long.parseLong(m_selectedFolder.getFolderId()), m_entryIds);
+	private void copyMoveEntriesNow(final CopyMoveEntriesCmdBase cmd, final GwtFolder target) {
+		// Send a request to copy/move the entries.
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_CopyEntries());
+					m_strMap.get(StringIds.RPC_FAILURE));
 			}
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Did everything we ask get copied?
+				// Did everything we ask get copied/moved?
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
 				List<String> errors = responseData.getErrorList();
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
-					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().copyEntriesDlgErrorCopyFailures(), errors);
+					GwtClientHelper.displayMultipleErrors(m_strMap.get(StringIds.ERROR_OP_FAILURE), errors);
 				}
 
-				// If anything was copied...
+				// If anything was copied/moved...
 				if (count != m_entryIds.size()) {
 					// ...force the content to refreshed to reflect
-					// ...what was copied.
+					// ...what was copied/moved.
 					FullUIReloadEvent.fireOne();
 				}
 				
 				// Finally, close the dialog.
+				m_currentDest = target;
 				hide();
 			}
 		});
@@ -220,21 +221,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 	}
 
 	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
-		return true;
-	}
-	
-	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
 	 * 
@@ -248,7 +234,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Has the user selected a folder yet?
-		if (null == m_selectedFolder) {
+		if ((null == m_selectedFolder) && (null == m_currentDest)) {
 			// No!  They must before they can press OK.
 			GwtClientHelper.deferredAlert(m_strMap.get(StringIds.WARNING_NO_DEST));
 		}
@@ -256,9 +242,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 		else {
 			// Yes, the user has selected a destination folder!  Start
 			// the copy/move.
+			GwtFolder target = ((null == m_selectedFolder) ? m_currentDest : m_selectedFolder);
+			Long targetFolderId = Long.parseLong(target.getFolderId());
+			CopyMoveEntriesCmdBase cmd;
 			if (m_doCopy)
-			     copyEntriesAsync();
-			else moveEntriesAsync();
+			     cmd = new CopyEntriesCmd(targetFolderId, m_entryIds);
+			else cmd = new MoveEntriesCmd(targetFolderId, m_entryIds);
+			copyMoveEntriesAsync(cmd, target);
 		}
 		
 		// Return false.  We'll close the dialog manually if/when the
@@ -309,6 +299,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			m_strMap.put(StringIds.ERROR_INVALID_SEARCH, messages.copyEntriesDlgErrorInvalidSearchResult());
 			m_strMap.put(StringIds.ERROR_OP_FAILURE,     messages.copyEntriesDlgErrorCopyFailures());
 			m_strMap.put(StringIds.HEADER,               messages.copyEntriesDlgHeader());
+			m_strMap.put(StringIds.RPC_FAILURE,          messages.rpcFailure_CopyEntries());
 			m_strMap.put(StringIds.SELECT_DEST,          messages.copyEntriesDlgSelectDestination());
 			m_strMap.put(StringIds.WARNING_NO_DEST,      messages.copyEntriesDlgWarningNoSelection());
 		}
@@ -321,6 +312,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			m_strMap.put(StringIds.ERROR_INVALID_SEARCH, messages.moveEntriesDlgErrorInvalidSearchResult());
 			m_strMap.put(StringIds.ERROR_OP_FAILURE,     messages.moveEntriesDlgErrorMoveFailures());
 			m_strMap.put(StringIds.HEADER,               messages.moveEntriesDlgHeader());
+			m_strMap.put(StringIds.RPC_FAILURE,          messages.rpcFailure_MoveEntries());
 			m_strMap.put(StringIds.SELECT_DEST,          messages.moveEntriesDlgSelectDestination());
 			m_strMap.put(StringIds.WARNING_NO_DEST,      messages.moveEntriesDlgWarningNoSelection());
 		}
@@ -356,57 +348,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 				m_findControl.addStyleName("vibe-cmeDlg_FindWidget");
 				
 				populateDlgAsync();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously performs the entry move.
-	 */
-	private void moveEntriesAsync() {
-		ScheduledCommand doMove = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				moveEntriesNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doMove);
-	}
-	
-	/*
-	 * Synchronously performs the entry move.
-	 */
-	private void moveEntriesNow() {
-		// Send a request to move the entries.
-		MoveEntriesCmd cmd = new MoveEntriesCmd(Long.parseLong(m_selectedFolder.getFolderId()), m_entryIds);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_MoveEntries());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Did everything we ask get moved?
-				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> errors = responseData.getErrorList();
-				int count = ((null == errors) ? 0 : errors.size());
-				if (0 < count) {
-					// No!  Tell the user about the problem.
-					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().moveEntriesDlgErrorMoveFailures(), errors);
-				}
-
-				// If anything was moved...
-				if (count != m_entryIds.size()) {
-					// ...force the content to refreshed to reflect
-					// ...what was moved.
-					FullUIReloadEvent.fireOne();
-				}
-				
-				// Finally, close the dialog.
-				hide();
 			}
 		});
 	}
@@ -519,10 +460,15 @@ public class CopyMoveEntriesDlg extends DlgBox
 		il.addStyleName("vibe-cmeDlg_DestLabel");
 		il.setWordWrap(false);
 		fp.add(il);
-		String destStr = (GwtClientHelper.hasString(m_currentDest) ? m_currentDest : m_strMap.get(StringIds.CURRENT_DEST_NONE));
-		il = new InlineLabel(destStr);
+		il = new InlineLabel((null != m_currentDest) ? m_currentDest.getFolderName() : m_strMap.get(StringIds.CURRENT_DEST_NONE));
 		il.addStyleName("vibe-cmeDlg_Dest");
 		il.setWordWrap(false);
+		if (null != m_currentDest) {
+			String pName = m_currentDest.getParentBinderName();
+			if (GwtClientHelper.hasString(pName)) {
+				il.setTitle(pName);
+			}
+		}
 		fp.add(il);
 
 		// ...and finally, show the dialog.
