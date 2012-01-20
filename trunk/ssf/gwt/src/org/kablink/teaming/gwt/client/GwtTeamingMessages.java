@@ -1311,7 +1311,10 @@ public interface GwtTeamingMessages extends Messages
 	String copyEntriesDlgCurrentDestinationNone();
 	String copyEntriesDlgErrorInvalidSearchResult();
 	String copyEntriesDlgErrorCopyFailures();
+	String copyEntriesDlgErrorTargetInSourceAll();
+	String copyEntriesDlgErrorTargetInSourceSome();
 	String copyEntriesDlgHeader();
+	String copyEntriesDlgProgress(int done, int total);
 	String copyEntriesDlgSelectDestination();
 	String copyEntriesDlgWarningNoSelection();
 
@@ -1322,7 +1325,10 @@ public interface GwtTeamingMessages extends Messages
 	String moveEntriesDlgCurrentDestinationNone();
 	String moveEntriesDlgErrorInvalidSearchResult();
 	String moveEntriesDlgErrorMoveFailures();
+	String moveEntriesDlgErrorTargetInSourceAll();
+	String moveEntriesDlgErrorTargetInSourceSome();
 	String moveEntriesDlgHeader();
+	String moveEntriesDlgProgress(int done, int total);
 	String moveEntriesDlgSelectDestination();
 	String moveEntriesDlgWarningNoSelection();
 

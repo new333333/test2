@@ -262,14 +262,17 @@
 /* End:  Size columns dialog  styles. */
 
 /* Start:  Copy/Move entries dialog  styles. */
-	.vibe-cmeDlg_CaptionLeft  {font-size: 1.1em; font-weight: bold;}
-	.vibe-cmeDlg_CaptionPanel {white-space: nowrap;}
-	.vibe-cmeDlg_CaptionRight {padding-left: 3px;}
-	.vibe-cmeDlg_Dest         {margin-left: 3px;}
-	.vibe-cmeDlg_DestLabel    {}
-	.vibe-cmeDlg_DestPanel    {white-space: nowrap; padding-top: 5px;}
-	.vibe-cmeDlg_FindLabel    {}
-	.vibe-cmeDlg_FindPanel    {padding-top: 5px;}
-	.vibe-cmeDlg_FindWidget   {margin-top: 2px; margin-bottom: 2px;}
-	.vibe-cmeDlg_RootPanel    {padding: 6px;}
+	.vibe-cmeDlg_CaptionLeft     {font-size: 1.1em; font-weight: bold;}
+	.vibe-cmeDlg_CaptionPanel    {white-space: nowrap;}
+	.vibe-cmeDlg_CaptionRight    {padding-left: 3px;}
+	.vibe-cmeDlg_Dest            {margin-left: 3px;}
+	.vibe-cmeDlg_DestLabel       {}
+	.vibe-cmeDlg_DestPanel       {white-space: nowrap; padding-top: 5px;}
+	.vibe-cmeDlg_FindLabel       {}
+	.vibe-cmeDlg_FindPanel       {padding-top: 5px;}
+	.vibe-cmeDlg_FindWidget      {margin-top: 2px; margin-bottom: 2px;}
+	.vibe-cmdDlg_ProgressLabel   {margin-left: 3px;}
+	.vibe-cmeDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold; padding-top: 10px;}
+	.vibe-cmdDlg_ProgressSpinner {}
+	.vibe-cmeDlg_RootPanel       {padding: 6px;}
 /* End:  Copy/Move entries dialog  styles. */
