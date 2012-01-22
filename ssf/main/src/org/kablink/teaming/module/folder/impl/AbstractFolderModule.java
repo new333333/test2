@@ -355,13 +355,22 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return folder;
 
 	}
+	protected Folder loadFolderStrict(Long folderId)  {
+		Folder folder = loadFolder(folderId);
+		if (folder.isPreDeleted()) throw new NoBinderByTheIdException(folderId);
+		return folder;
+	}
 	protected FolderEntry loadEntry(Long folderId, Long entryId) {
 		//folderId may be null
         FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, RequestContextHolder.getRequestContext().getZoneId());             
 		if (entry.isDeleted() || entry.getParentBinder().isDeleted()) throw new NoFolderEntryByTheIdException(entryId);
 		return entry;
 	}
-	          
+	protected FolderEntry loadEntryStrict(Long folderId, Long entryId) {
+		FolderEntry entry = loadEntry(folderId, entryId);
+		if (entry.isPreDeleted() || entry.getParentFolder().isPreDeleted()) throw new NoFolderEntryByTheIdException(entryId);
+		return entry;		
+	}          
 	    
 	protected FolderCoreProcessor loadProcessor(Folder folder) {
         // This is nothing but a dispatcher to an appropriate processor. 
@@ -416,7 +425,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	long begin = System.nanoTime();
     	aeCount.incrementAndGet();
 
-        Folder folder = loadFolder(folderId);
+        Folder folder = loadFolderStrict(folderId);
         checkAccess(folder, FolderOperation.addEntry);
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
@@ -495,7 +504,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
     	long begin = System.nanoTime();
     	meCount.incrementAndGet();
-        FolderEntry entry = loadEntry(folderId, entryId);   	
+        FolderEntry entry = loadEntryStrict(folderId, entryId);   	
 		try {
 			checkAccess(entry, FolderOperation.modifyEntry);
 		} catch (AccessControlException e) {
