@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.util.SPropsUtil;
 
 import com.bradmcevoy.common.Path;
 import com.bradmcevoy.http.Resource;
@@ -51,6 +52,22 @@ public class WebdavResourceFactory implements ResourceFactory {
 
 	private Log log = LogFactory.getLog(getClass());
 	
+	private boolean allowDirectoryBrowsing;
+	private long maxAgeSecondsRoot;
+	private long maxAgeSecondsDav;
+	private long maxAgeSecondsWorkspace;
+	private long maxAgeSecondsFolder;
+	private long maxAgeSecondsFile;
+	
+	public WebdavResourceFactory() {
+		allowDirectoryBrowsing = SPropsUtil.getBoolean("webdav2.allow.directory.browsing", true);
+		maxAgeSecondsRoot = SPropsUtil.getLong("webdav2.max.age.seconds.root", 31536000);
+		maxAgeSecondsDav = SPropsUtil.getLong("webdav2.max.age.seconds.root", 86400);
+		maxAgeSecondsWorkspace = SPropsUtil.getLong("webdav2.max.age.seconds.root", 10);
+		maxAgeSecondsFolder = SPropsUtil.getLong("webdav2.max.age.seconds.root", 10);
+		maxAgeSecondsFile = SPropsUtil.getLong("webdav2.max.age.seconds.root", 10);
+	}
+
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.ResourceFactory#getResource(java.lang.String, java.lang.String)
 	 */
@@ -61,22 +78,22 @@ public class WebdavResourceFactory implements ResourceFactory {
 		Path p = Path.path(path);
 		
 		if(p.isRoot()) {
-			return new RootResource();
+			return new RootResource(this);
 		}
 		else if(p.getFirst().equals("dav")) {
 			if(p.getLength() == 1) {
-				return new DavResource();
+				return new DavResource(this);
 			}
 			else {
 				Object obj = resolvePath(p);
 				if(obj instanceof FileAttachment) {
-					return new FileResource((FileAttachment)obj);
+					return new FileResource(this, (FileAttachment)obj);
 				}
 				else if(obj instanceof Folder) {
-					return new FolderResource((Folder)obj);
+					return new FolderResource(this, (Folder)obj);
 				}
 				else if(obj instanceof Workspace) {
-					return new WorkspaceResource((Workspace)obj);
+					return new WorkspaceResource(this, (Workspace)obj);
 				}
 				else {
 					return null;
@@ -88,7 +105,37 @@ public class WebdavResourceFactory implements ResourceFactory {
 		}
 	}
 
+	/**
+	 * Whether to allow generation of a listing of the contents of a binder via GET.
+	 * If allowed, user can easily browse the contents of a binder using a browser.
+	 *
+	 * @return
+	 */
+	public boolean isAllowDirectoryBrowsing() {
+		return allowDirectoryBrowsing;
+	}
+
+	public long getMaxAgeSecondsRoot() {
+		return maxAgeSecondsRoot;
+	}
+
+	public long getMaxAgeSecondsDav() {
+		return maxAgeSecondsDav;
+	}
+
+	public long getMaxAgeSecondsWorkspace() {
+		return maxAgeSecondsWorkspace;
+	}
+
+	public long getMaxAgeSecondsFolder() {
+		return maxAgeSecondsFolder;
+	}
+
+	public long getMaxAgeSecondsFile() {
+		return maxAgeSecondsFile;
+	}
+
 	protected Object resolvePath(Path path) {
-		return null;
+		return null; // $$$
 	}
 }
