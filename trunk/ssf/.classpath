@@ -169,5 +169,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/liquibase-hibernate.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/liquibase.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
