@@ -45,19 +45,19 @@ import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
  *
  */
 public interface Api {
-	public FileProperties writeFile(String entityType, long entityId, String filename, File file);
+	public FileProperties writeFile(String entityType, long entityId, String filename, File inFile);
 	
 	public FileProperties writeFile(String entityType, long entityId, String filename, InputStream file);
 	
-	public FileProperties writeFile(String fileId, File file);
+	public FileProperties writeFile(String fileId, File inFile);
 	
 	public FileProperties writeFile(String fileId, InputStream file, String mimeType);
 		
-	public FileProperties writeFile(String entityType, long entityId, String filename, File file, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
+	public FileProperties writeFile(String entityType, long entityId, String filename, File inFile, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
 	
 	public FileProperties writeFile(String entityType, long entityId, String filename, InputStream file, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
 	
-	public FileProperties writeFile(String fileId, File file, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
+	public FileProperties writeFile(String fileId, File inFile, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
 	
 	public FileProperties writeFile(String fileId, InputStream file, String mimeType, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
 	
