@@ -37,15 +37,19 @@ import java.util.Date;
 
 import org.kablink.teaming.domain.Workspace;
 
+import com.bradmcevoy.http.PropFindableResource;
+
 /**
  * @author jong
  *
  */
-public class WorkspaceResource extends WebdavResource {
+public class WorkspaceResource extends WebdavResource implements PropFindableResource {
 
+	private WebdavResourceFactory factory;
 	private Workspace ws;
 	
-	public WorkspaceResource(Workspace ws) {
+	public WorkspaceResource(WebdavResourceFactory factory, Workspace ws) {
+		this.factory = factory;
 		this.ws = ws;
 	}
 
@@ -71,5 +75,13 @@ public class WorkspaceResource extends WebdavResource {
 	@Override
 	public Date getModifiedDate() {
 		return ws.getModification().getDate();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
+	 */
+	@Override
+	public Date getCreateDate() {
+		return ws.getCreation().getDate();
 	}
 }

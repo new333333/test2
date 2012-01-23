@@ -33,24 +33,39 @@
 
 package org.kablink.teaming.webdav;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.util.ReleaseInfo;
 
+import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.Resource;
+import com.bradmcevoy.http.exceptions.BadRequestException;
+import com.bradmcevoy.http.exceptions.NotAuthorizedException;
+import com.bradmcevoy.http.exceptions.NotFoundException;
 
 /**
  * @author jong
  *
  */
-public class DavResource extends WebdavResource implements PropFindableResource, CollectionResource {
+public class DavResource extends WebdavResource implements PropFindableResource, CollectionResource, GetableResource {
 
 	static final String ID = "dav";
+	
+	private WebdavResourceFactory factory;
+	
+	public DavResource(WebdavResourceFactory factory) {
+		this.factory = factory;
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getUniqueId()
@@ -92,7 +107,7 @@ public class DavResource extends WebdavResource implements PropFindableResource,
 	public Resource child(String childName) {
 		Workspace topWS = getWorkspaceModule().getTopWorkspace();
 		if(topWS.getTitle().equals(childName))
-			return new WorkspaceResource(topWS);
+			return new WorkspaceResource(factory, topWS);
 		else
 			return null;
 	}
@@ -104,8 +119,42 @@ public class DavResource extends WebdavResource implements PropFindableResource,
 	public List<? extends Resource> getChildren() {
 		Workspace topWS = getWorkspaceModule().getTopWorkspace();
 		List<Resource> list = new ArrayList<Resource>();
-		list.add(new WorkspaceResource(topWS));
+		list.add(new WorkspaceResource(factory, topWS));
 		return list;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#sendContent(java.io.OutputStream, com.bradmcevoy.http.Range, java.util.Map, java.lang.String)
+	 */
+	@Override
+	public void sendContent(OutputStream out, Range range,
+			Map<String, String> params, String contentType) throws IOException,
+			NotAuthorizedException, BadRequestException, NotFoundException {
+		// $$$
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
+	 */
+	@Override
+	public Long getMaxAgeSeconds(Auth auth) {
+		return factory.getMaxAgeSecondsDav();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getContentType(java.lang.String)
+	 */
+	@Override
+	public String getContentType(String accepts) {
+		return TEXT_HTML;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getContentLength()
+	 */
+	@Override
+	public Long getContentLength() {
+		return null;
 	}
 
 }

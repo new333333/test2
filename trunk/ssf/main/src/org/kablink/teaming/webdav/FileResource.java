@@ -37,15 +37,19 @@ import java.util.Date;
 
 import org.kablink.teaming.domain.FileAttachment;
 
+import com.bradmcevoy.http.PropFindableResource;
+
 /**
  * @author jong
  *
  */
-public class FileResource extends WebdavResource {
+public class FileResource extends WebdavResource implements PropFindableResource {
 
+	private WebdavResourceFactory factory;
 	private FileAttachment fa;
 	
-	public FileResource(FileAttachment fa) {
+	public FileResource(WebdavResourceFactory factory, FileAttachment fa) {
+		this.factory = factory;
 		this.fa = fa;
 	}
 
@@ -71,5 +75,13 @@ public class FileResource extends WebdavResource {
 	@Override
 	public Date getModifiedDate() {
 		return fa.getModification().getDate();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
+	 */
+	@Override
+	public Date getCreateDate() {
+		return fa.getCreation().getDate();
 	}
 }

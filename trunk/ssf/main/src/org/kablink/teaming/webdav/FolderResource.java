@@ -37,15 +37,19 @@ import java.util.Date;
 
 import org.kablink.teaming.domain.Folder;
 
+import com.bradmcevoy.http.PropFindableResource;
+
 /**
  * @author jong
  *
  */
-public class FolderResource extends WebdavResource {
+public class FolderResource extends WebdavResource implements PropFindableResource {
 
+	private WebdavResourceFactory factory;
 	private Folder folder;
 	
-	public FolderResource(Folder folder) {
+	public FolderResource(WebdavResourceFactory factory, Folder folder) {
+		this.factory = factory;
 		this.folder = folder;
 	}
 
@@ -71,5 +75,13 @@ public class FolderResource extends WebdavResource {
 	@Override
 	public Date getModifiedDate() {
 		return folder.getModification().getDate();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
+	 */
+	@Override
+	public Date getCreateDate() {
+		return folder.getCreation().getDate();
 	}
 }

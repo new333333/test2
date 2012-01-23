@@ -49,6 +49,8 @@ import com.bradmcevoy.http.Request.Method;
  */
 public abstract class WebdavResource implements Resource {
 	
+	protected static final String TEXT_HTML = "text/html";
+	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#authenticate(java.lang.String, java.lang.String)
 	 */
