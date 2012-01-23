@@ -48,6 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
@@ -82,6 +83,8 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
@@ -890,6 +893,74 @@ public class GwtViewHelper {
 			reply = String.valueOf(entryId);
 		}
 		return reply;
+	}
+
+	/**
+	 * Returns the collected entry types defined for a collection of binders.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param entryId
+	 * @param binderIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static EntryTypesRpcResponseData getEntryTypes(AllModulesInjected bs, HttpServletRequest request, EntryId entryId, List<Long> binderIds) throws GwtTeamingException {
+		try {
+			// Allocate an EntryTypesRpcResponseData to track the entry
+			// types for the requested binders.
+			EntryTypesRpcResponseData reply = new EntryTypesRpcResponseData();
+			
+			// Scan the binder's whose entry types are being requested.
+			for (Long binderId:  binderIds) {
+				// Scan this binder's entry definitions...
+				SortedMap<String, Definition> binderDefs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.FOLDER_ENTRY);
+				for (String defKey:  binderDefs.keySet()) {
+					// ...adding an EntryType for each unique one to
+					// ...the reply.
+					Definition binderDef = binderDefs.get(defKey);
+					String defId = binderDef.getId();
+					if (!(reply.isEntryTypeInList(defId))) {
+						boolean localDef = ((-1) != binderDef.getBinderId());
+						EntryType et = new EntryType(defId, defKey, localDef);
+						reply.addEntryType(et);
+					}
+				}
+			}
+
+			// Was the entry type of a specific entry requested?
+			if (null != entryId) {
+				// Yes!  Get its definition ID...
+				FolderEntry fe = bs.getFolderModule().getEntry(entryId.getBinderId(), entryId.getEntryId());
+				String feDefId = fe.getEntryDefId();
+				
+				// ...can the definition IDs we found...
+				for (EntryType et:  reply.getEntryTypes()) {
+					// ...and when one matches...
+					if (feDefId.equals(et.getDefId())) {
+						// ...use its EntryType for the requested entry.
+						reply.setEntryType(et);
+						break;
+					}
+				}
+			}
+
+			// If we get here, reply refers to the
+			// EntryTypesRpcResponseData of the entry types for the
+			// requested binders.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getEntryTypes( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 	
 	/**

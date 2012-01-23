@@ -607,6 +607,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ENTRY_TYPES:
+		{
+			GetEntryTypesCmd getCmd = ((GetEntryTypesCmd) cmd);
+			EntryTypesRpcResponseData result = GwtViewHelper.getEntryTypes( this, getRequest( ri ), getCmd.getEntryId(), getCmd.getBinderIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_EXECUTE_JSP_URL:
 		{
 			GetExecuteJspUrlCmd gejuCmd;
