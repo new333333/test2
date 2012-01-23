@@ -30,43 +30,25 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.webdav;
 
-import java.util.Date;
-import java.util.List;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.http.Auth;
-import com.bradmcevoy.http.CollectionResource;
-import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Request;
-import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.Resource;
+import com.bradmcevoy.http.Request.Method;
 
 /**
  * @author jong
  *
  */
-public class SubRootResource implements PropFindableResource {
-
-	private static final String ID = "webdav";
+public abstract class WebdavResource implements Resource {
 	
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getUniqueId()
-	 */
-	@Override
-	public String getUniqueId() {
-		return ID;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return ID;
-	}
-
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#authenticate(java.lang.String, java.lang.String)
 	 */
@@ -92,14 +74,6 @@ public class SubRootResource implements PropFindableResource {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
-	 */
-	@Override
-	public Date getModifiedDate() {
-		return new Date(); // $$$
-	}
-
-	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#checkRedirect(com.bradmcevoy.http.Request)
 	 */
 	@Override
@@ -107,12 +81,19 @@ public class SubRootResource implements PropFindableResource {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
-	 */
-	@Override
-	public Date getCreateDate() {
-		return new Date(); // $$$
+	protected WorkspaceModule getWorkspaceModule () {
+		return (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
 	}
 
+	protected FolderModule getFolderModule () {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+	protected BinderModule getBinderModule () {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+
+	protected FileModule getFileModule () {
+		return (FileModule) SpringContextUtil.getBean("fileModule");
+	}
 }

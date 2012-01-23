@@ -33,10 +33,43 @@
 
 package org.kablink.teaming.webdav;
 
+import java.util.Date;
+
+import org.kablink.teaming.domain.Workspace;
+
 /**
  * @author jong
  *
  */
-public class WorkspaceResource {
+public class WorkspaceResource extends WebdavResource {
 
+	private Workspace ws;
+	
+	public WorkspaceResource(Workspace ws) {
+		this.ws = ws;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#getUniqueId()
+	 */
+	@Override
+	public String getUniqueId() {
+		return ws.getEntityIdentifier().toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#getName()
+	 */
+	@Override
+	public String getName() {
+		return ws.getTitle();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
+	 */
+	@Override
+	public Date getModifiedDate() {
+		return ws.getModification().getDate();
+	}
 }

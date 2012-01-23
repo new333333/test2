@@ -33,10 +33,43 @@
 
 package org.kablink.teaming.webdav;
 
+import java.util.Date;
+
+import org.kablink.teaming.domain.Folder;
+
 /**
  * @author jong
  *
  */
-public class FolderResource {
+public class FolderResource extends WebdavResource {
 
+	private Folder folder;
+	
+	public FolderResource(Folder folder) {
+		this.folder = folder;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#getUniqueId()
+	 */
+	@Override
+	public String getUniqueId() {
+		return folder.getEntityIdentifier().toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#getName()
+	 */
+	@Override
+	public String getName() {
+		return folder.getTitle();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
+	 */
+	@Override
+	public Date getModifiedDate() {
+		return folder.getModification().getDate();
+	}
 }

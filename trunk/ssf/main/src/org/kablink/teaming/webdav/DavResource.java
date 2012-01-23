@@ -33,28 +33,31 @@
 
 package org.kablink.teaming.webdav;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.util.ReleaseInfo;
+
+import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.Resource;
 
 /**
  * @author jong
  *
  */
-public class FileResource extends WebdavResource {
+public class DavResource extends WebdavResource implements PropFindableResource, CollectionResource {
 
-	private FileAttachment fa;
+	static final String ID = "dav";
 	
-	public FileResource(FileAttachment fa) {
-		this.fa = fa;
-	}
-
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getUniqueId()
 	 */
 	@Override
 	public String getUniqueId() {
-		return "fa:" + fa.getId();
+		return ID;
 	}
 
 	/* (non-Javadoc)
@@ -62,14 +65,47 @@ public class FileResource extends WebdavResource {
 	 */
 	@Override
 	public String getName() {
-		return fa.getFileItem().getName();
+		return ID;
 	}
+
 
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return fa.getModification().getDate();
+		return getCreateDate();
 	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
+	 */
+	@Override
+	public Date getCreateDate() {
+		return ReleaseInfo.getBuildDate(); // This is as good as any other random date
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
+	 */
+	@Override
+	public Resource child(String childName) {
+		Workspace topWS = getWorkspaceModule().getTopWorkspace();
+		if(topWS.getTitle().equals(childName))
+			return new WorkspaceResource(topWS);
+		else
+			return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CollectionResource#getChildren()
+	 */
+	@Override
+	public List<? extends Resource> getChildren() {
+		Workspace topWS = getWorkspaceModule().getTopWorkspace();
+		List<Resource> list = new ArrayList<Resource>();
+		list.add(new WorkspaceResource(topWS));
+		return list;
+	}
+
 }
