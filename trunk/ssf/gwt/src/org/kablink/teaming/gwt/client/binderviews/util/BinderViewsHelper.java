@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg;
+import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg.ChangeEntryTypesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -61,6 +63,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
+	private static ChangeEntryTypesDlg	m_cetDlg;	// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg	m_cmeDlg;	// An instance of a copy/move entries dialog.
 	private static EmailNotificationDlg	m_enDlg;	// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntryId>. 
 	
@@ -86,10 +89,46 @@ public class BinderViewsHelper {
 			return;
 		}
 		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.changeEntryTypes():  ...this needs to be implemented...");
+		// Have we instantiated a change entry types dialog yet?
+		if (null == m_cetDlg) {
+			// No!  Instantiate one now.
+			ChangeEntryTypesDlg.createAsync(new ChangeEntryTypesDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ChangeEntryTypesDlg cetDlg) {
+					// ...and show it.
+					m_cetDlg = cetDlg;
+					ScheduledCommand doSubscribe = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							changeEntryTypesNow(entryIds);
+						}
+					};
+					Scheduler.get().scheduleDeferred(doSubscribe);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated a change entry types dialog
+			// already!  Simply show it.
+			changeEntryTypesNow(entryIds);
+		}
 	}
 
+	/*
+	 * Synchronously invokes the appropriate UI to change the entry
+	 * type of the entries based on a List<EntryId> of the entries.
+	 */
+	private static void changeEntryTypesNow(List<EntryId> entryIds) {
+		ChangeEntryTypesDlg.initAndShow(m_cetDlg, entryIds);
+	}
+	
 	/**
 	 * Invokes the appropriate UI to copy the entries based on a
 	 * List<EntryId> of the entries.

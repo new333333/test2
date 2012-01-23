@@ -102,6 +102,20 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Adds a Long to a List<Long> if it's not already there.
+	 * 
+	 * @param lList
+	 * @param l
+	 */
+	public static void addLongToListLongIfUnique(List<Long> lList, Long l) {
+		// If the List<Long> doesn't contain the Long...
+		if (!(lList.contains(l))) {
+			// ...add it.
+			lList.add(l);
+		}
+	}
+	
+	/**
 	 * Appends a <br /> to the HTML of a Widget.
 	 * 
 	 * @param w

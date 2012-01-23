@@ -309,6 +309,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetClipboardUsersFromList();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetEmailNotificationInfo();
+	String rpcFailure_GetEntryTypes();
 	String rpcFailure_getExecuteJspUrl();
 	String rpcFailure_GetFileFolderEntries();
 	String rpcFailure_GetFileUrl();
@@ -435,6 +436,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BreadCrumbPanel();
+	String codeSplitFailure_ChangeEntryTypesDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_ContentControl();
@@ -1340,4 +1342,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// String used by the unlock selected entries facility.
 	String unlockEntriesError();
+	
+	// Strings used by ChangeEntryTypesDlg.
+	String changeEntryTypesHeader();
 }// end GwtTeamingMessages

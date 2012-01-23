@@ -276,3 +276,7 @@
 	.vibe-cmdDlg_ProgressSpinner {}
 	.vibe-cmeDlg_RootPanel       {padding: 6px;}
 /* End:  Copy/Move entries dialog  styles. */
+
+/* Start:  Change entry types dialog  styles. */
+	.vibe-changeEntryTypesRootPanel {padding: 6px;}
+/* End:  Change entry types dialog  styles. */
