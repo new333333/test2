@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,9 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetEmailNotificationInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveEmailNotificationInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -71,18 +72,25 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private BinderInfo								m_binderInfo;				// The binder the dialog is running against.
+public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandler {
+	private BinderInfo								m_binderInfo;				// The binder the dialog is running against.  null -> Entry subscription mode.
 	private CheckBox								m_footerCB;					//
 	private EmailNotificationInfoRpcResponseData	m_emailNotificationInfo;	//
 	private GwtTeamingMainMenuImageBundle			m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
+	private List<EntryId>							m_entryIds;					// List<EntryId> of entry subscriptions.  null -> Binder email notification mode.
 	private ListBox									m_digestList;				//
 	private ListBox									m_msgList;					//
 	private ListBox									m_msgNoAttList;				//
 	private ListBox									m_textList;					//
 	private VerticalPanel							m_vp;						//
 
+	// The following are used as the values for the non-email address
+	// values put in to the email address list box.
+	private final static String EMA_VALUE_CLEAR_SUBSCRIPTION	= "";
+	private final static String EMA_VALUE_MAKE_SELECTION		= "";
+	private final static String EMA_VALUE_NO_CHANGES			= "*no-change*";
+	
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
 	 */
@@ -130,9 +138,9 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.mainMenuEmailNotificationDlgHeader(),
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Create callback data.  Unused. 
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			null);						// Create callback data.  Unused. 
 	}
 
 	/*
@@ -160,8 +168,14 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		ListBox emaBox = new ListBox(true);
 		emaBox.addStyleName("vibe-emailNotifDlg_SectionList " + emaBoxStyle);
 	    emaBox.setVisibleItemCount(4);
-	    emaBox.addItem(m_messages.mainMenuEmailNotificationDlgMakeSelection(), "");
-	    emaBox.setItemSelected(0, emaList.isEmpty());
+	    if (isEntrySubscriptions()) {
+	    	emaBox.addItem(m_messages.mainMenuEmailNotificationDlgNoChanges(),              EMA_VALUE_NO_CHANGES        );
+	    	emaBox.addItem(m_messages.mainMenuEmailNotificationDlgClearEntrySubscription(), EMA_VALUE_CLEAR_SUBSCRIPTION);
+	    }
+	    else {
+	    	emaBox.addItem(m_messages.mainMenuEmailNotificationDlgMakeSelection(), EMA_VALUE_MAKE_SELECTION);
+	    }
+    	emaBox.setItemSelected(0, emaList.isEmpty());
 	    for (EmailAddressInfo emi:  m_emailNotificationInfo.getEmailAddresses()) {
 	    	String emiA = emi.getAddress();
 	    	emaBox.addItem(emiA, emi.getType());
@@ -214,20 +228,6 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	}
 
 	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
-		return true;
-	}
-	
-	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
 	 * 
@@ -238,6 +238,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Start saving the contents of the dialog and return false.
 		// We'll keep the dialog open until the save is successful, at
@@ -274,21 +275,71 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	/*
 	 * Adds the selected email addresses from a ListBox to a
 	 * List<String>.
+	 * 
+	 * Returns true if the selections made are valid and false
+	 * otherwise.  If false is returned, the user will have been
+	 * informed about the problem.
 	 */
-	private void getSelectedEMAs(List<String> emaTypeList, ListBox emaBox) {
-		// Scan the 2nd and later items in the ListBox (we don't use
-		// the first as that's the '--make a selection--' item.)
-		int c = emaBox.getItemCount();
-		for (int i = 1; i < c; i += 1) {
+	private boolean getSelectedEMAs(List<String> emaTypeList, ListBox emaBox) {
+		boolean	builtInSelected = false;
+		int		selCount        = 0;
+		int		c               = emaBox.getItemCount();
+		for (int i = 0; i < c; i += 1) {
 			// Is this item selected?
 			if (emaBox.isItemSelected(i)) {
-				// Yes!  Add its type (i.e., its value) to the
+				// Yes!  Count it.
+				selCount += 1;
+				
+				// Is this one of the built-in (i.e.,
+				// '--make a selection--', ...) items?
+				String itemValue = emaBox.getValue(i);
+				boolean isBuiltIn = ((0 == i) || ((1 == i) && isEntrySubscriptions()));
+				if (isBuiltIn) {
+					// Yes!  We only add those that will involve a
+					// change on the server to the list.
+					builtInSelected = true;
+					if (itemValue.equals(EMA_VALUE_MAKE_SELECTION) ||
+							itemValue.equals(EMA_VALUE_CLEAR_SUBSCRIPTION)) {
+						continue;
+					}
+				}
+				
+				// Add its type (i.e., its value) to the
 				// List<String>.
-				emaTypeList.add(emaBox.getValue(i));
+				emaTypeList.add(itemValue);
 			}
 		}
+
+		// Did the user select more than one item that includes at
+		// least one of the built-in items?
+		if (builtInSelected && (1 < selCount)) {
+			// Yes!  That doesn't make sense.  Tell them about the
+			// problem and return false.
+			GwtClientHelper.deferredAlert(m_messages.mainMenuEmailNotificationDlgErrorSelection());
+			return false;
+		}
+		
+		// If we get here, the selections from this ListBox were valid.
+		// Return true.
+		return true;
 	}
 
+	/*
+	 * Returns false if the dialog is running in entry subscription
+	 * mode or true if it's running in binder email notification mode.
+	 */
+	private boolean isBinderEmailNotifications() {
+		return (null != m_binderInfo);
+	}
+	
+	/*
+	 * Returns true if the dialog is running in entry subscription mode
+	 * or false if it's running in binder email notification mode.
+	 */
+	private boolean isEntrySubscriptions() {
+		return (null != m_entryIds);
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -306,9 +357,11 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
-		GwtClientHelper.executeCommand(
-				new GetEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong()),
-				new AsyncCallback<VibeRpcResponse>() {
+		GetEmailNotificationInfoCmd geniCmd;
+		if (isEntrySubscriptions())
+		     geniCmd = new GetEmailNotificationInfoCmd();
+		else geniCmd = new GetEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
+		GwtClientHelper.executeCommand(geniCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -370,13 +423,16 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		}
 		m_vp.add(fp);
 		
-		// ...create the widgets for the digest selection...
-		m_digestList = buildEMAListWidgets(
-			"vibe-emailNotifDlg_DigestPanel",
-			m_messages.mainMenuEmailNotificationDlgDigest(),
-			"vibe-emailNotifDlg_Digest",
-			m_emailNotificationInfo.getDigestAddresses(),
-			"vibe-emailNotifDlg_DigestList");
+		// ...if we're in binder email notification mode...
+		if (isBinderEmailNotifications()) {
+			// ...create the widgets for the digest selection...
+			m_digestList = buildEMAListWidgets(
+				"vibe-emailNotifDlg_DigestPanel",
+				m_messages.mainMenuEmailNotificationDlgDigest(),
+				"vibe-emailNotifDlg_Digest",
+				m_emailNotificationInfo.getDigestAddresses(),
+				"vibe-emailNotifDlg_DigestList");
+		}
 		
 		// ...create the widgets for the individual messages
 		// ...selection...
@@ -402,34 +458,37 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			m_messages.mainMenuEmailNotificationDlgTextMessaging(),
 			"vibe-emailNotifDlg_Text",
 			m_emailNotificationInfo.getTextAddresses(),
-			"vibe-emailNotifDlg_TextList");
-		
-		// ...finally, create the widgets for the override presets
-		// ...checkbox and label.
-		fp = new FlowPanel();
-		fp.addStyleName("vibe-emailNotifDlg_FooterPanel");
-		m_footerCB = new CheckBox();
-		m_footerCB.addStyleName("vibe-emailNotifDlg_FooterCheck");
-		m_footerCB.setValue(m_emailNotificationInfo.getOverridePresets());
-		fp.add(m_footerCB);
-		il = new InlineLabel(m_messages.mainMenuEmailNotificationDlgOverride());
-		il.addStyleName("vibe-emailNotifDlg_FooterLabel");
-		il.setWordWrap(false);
-		fp.add(il);
-		final String overrideHelpUrl = m_emailNotificationInfo.getOverrideHelpUrl();
-		if (GwtClientHelper.hasString(overrideHelpUrl)) {
-			Image img = new Image(m_images.help());
-			img.addStyleName("vibe-emailNotifDlg_FooterHelp");
-			img.setTitle(m_messages.mainMenuEmailNotificationDlgAltHelpOverride());
-			img.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					Window.open(overrideHelpUrl, "teaming_help_window", "resizeable,scrollbar");
-				}
-			});
-			fp.add(img);
+			"vibe-emailNotifDlg_TextList" + (isBinderEmailNotifications() ? "" : " vibe-emailNotifDlg_TextListBottom"));
+
+		// ...finally, if we're in binder email notification mode...
+		if (isBinderEmailNotifications()) {
+			// ...create the widgets for the override presets checkbox
+			// ...label.
+			fp = new FlowPanel();
+			fp.addStyleName("vibe-emailNotifDlg_FooterPanel");
+			m_footerCB = new CheckBox();
+			m_footerCB.addStyleName("vibe-emailNotifDlg_FooterCheck");
+			m_footerCB.setValue(m_emailNotificationInfo.getOverridePresets());
+			fp.add(m_footerCB);
+			il = new InlineLabel(m_messages.mainMenuEmailNotificationDlgOverride());
+			il.addStyleName("vibe-emailNotifDlg_FooterLabel");
+			il.setWordWrap(false);
+			fp.add(il);
+			final String overrideHelpUrl = m_emailNotificationInfo.getOverrideHelpUrl();
+			if (GwtClientHelper.hasString(overrideHelpUrl)) {
+				Image img = new Image(m_images.help());
+				img.addStyleName("vibe-emailNotifDlg_FooterHelp");
+				img.setTitle(m_messages.mainMenuEmailNotificationDlgAltHelpOverride());
+				img.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						Window.open(overrideHelpUrl, "teaming_help_window", "resizeable,scrollbar");
+					}
+				});
+				fp.add(img);
+			}
+			m_vp.add(fp);
 		}
-		m_vp.add(fp);
 		
 		// Show the dialog (perhaps again) so that it can be positioned
 		// correctly based on its new content.
@@ -440,11 +499,11 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Asynchronously runs the given instance of the email notification
 	 * dialog.
 	 */
-	private static void runDlgAsync(final EmailNotificationDlg enDlg, final BinderInfo bi) {
+	private static void runDlgAsync(final EmailNotificationDlg enDlg, final BinderInfo bi, final List<EntryId> entryIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				enDlg.runDlgNow(bi);
+				enDlg.runDlgNow(bi, entryIds);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -454,9 +513,10 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Synchronously runs the given instance of the email notification
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo bi) {
-		// Store the parameter...
-		m_binderInfo = bi;
+	private void runDlgNow(BinderInfo bi, List<EntryId> entryIds) {
+		// Store the parameters...
+		m_binderInfo = bi;			// null -> Entry subscription mode.
+		m_entryIds   = entryIds;	// null -> Binder email notification mode.
 
 		// ...and display a reading message, start populating the
 		// ...dialog and show it.
@@ -483,17 +543,20 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	private void saveEmailNotificationInfoNow() {
 		// Create a save command with the contents of the dialog.
-		SaveEmailNotificationInfoCmd saveCmd = new SaveEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
-		saveCmd.setOverridePresets(m_footerCB.getValue());
-		getSelectedEMAs(saveCmd.getDigestAddressTypes(),   m_digestList  );
-		getSelectedEMAs(saveCmd.getMsgAddressTypes(),      m_msgList     );
-		getSelectedEMAs(saveCmd.getMsgNoAttAddressTypes(), m_msgNoAttList);
-		getSelectedEMAs(saveCmd.getTextAddressTypes(),     m_textList    );
+		SaveEmailNotificationInfoCmd seniCmd;
+		if (isEntrySubscriptions())
+		     seniCmd = new SaveEmailNotificationInfoCmd(m_entryIds);
+		else seniCmd = new SaveEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
+		if (!(getSelectedEMAs(seniCmd.getMsgAddressTypes(),      m_msgList     ))) return;
+		if (!(getSelectedEMAs(seniCmd.getMsgNoAttAddressTypes(), m_msgNoAttList))) return;
+		if (!(getSelectedEMAs(seniCmd.getTextAddressTypes(),     m_textList    ))) return;
+		if (isBinderEmailNotifications()) {
+			seniCmd.setOverridePresets(m_footerCB.getValue());
+			if (!(getSelectedEMAs(seniCmd.getDigestAddressTypes(), m_digestList))) return;
+		}
 
 		// Can we perform the save?
-		GwtClientHelper.executeCommand(
-				saveCmd,
-				new AsyncCallback<VibeRpcResponse>() {
+		GwtClientHelper.executeCommand(seniCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -535,8 +598,9 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			final EmailNotificationDlgClient enDlgClient,
 			
 			// initAndShow parameters,
-			final EmailNotificationDlg enDlg,
-			final BinderInfo bi) {
+			final EmailNotificationDlg	enDlg,
+			final BinderInfo			bi,
+			final List<EntryId>			entryIds) {
 		GWT.runAsync(EmailNotificationDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -559,7 +623,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(enDlg, bi);
+					runDlgAsync(enDlg, bi, entryIds);
 				}
 			}
 		});
@@ -572,7 +636,14 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param enDlgClient
 	 */
 	public static void createAsync(EmailNotificationDlgClient enDlgClient) {
-		doAsyncOperation(enDlgClient, null, null);
+		doAsyncOperation(enDlgClient, null, null, null);
+	}
+	
+	/*
+	 * Initializes and shows the email notification dialog.
+	 */
+	private static void initAndShowImpl(EmailNotificationDlg enDlg, BinderInfo bi, List<EntryId> entryIds) {
+		doAsyncOperation(null, enDlg, bi, entryIds);
 	}
 	
 	/**
@@ -582,6 +653,34 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param bi
 	 */
 	public static void initAndShow(EmailNotificationDlg enDlg, BinderInfo bi) {
-		doAsyncOperation(null, enDlg, bi);
+		// Always use the implementation form of the method.
+		initAndShowImpl(enDlg, bi, ((List<EntryId>) null));
 	}
+	
+	/**
+	 * Initializes and shows the email notification dialog for entry
+	 * subscriptions.
+	 * 
+	 * @param enDlg
+	 * @param entryIds
+	 */
+	public static void initAndShow(EmailNotificationDlg enDlg, List<EntryId> entryIds) {
+		// Always use the implementation form of the method.
+		initAndShowImpl(enDlg, null, entryIds);
+	}
+	
+	/**
+	 * Initializes and shows the email notification dialog for entry
+	 * subscriptions.
+	 * 
+	 * @param enDlg
+	 * @param entryId
+	 */
+	public static void initAndShow(EmailNotificationDlg enDlg, EntryId entryId) {
+		// Always use the implementation form of the method.
+		List<EntryId> entryIds = new ArrayList<EntryId>();
+		entryIds.add(entryId);
+		initAndShowImpl(enDlg, null, entryIds);
+	}
+	
 }

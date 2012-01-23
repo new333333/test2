@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,13 +43,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EmailAddress;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData.EmailAddressInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -114,43 +117,47 @@ public class GwtEmailHelper {
 				}
 			}
 
-			// Does the user have any subscriptions set on this binder?
-			BinderModule bm = bs.getBinderModule();
-			Binder binder = bm.getBinder(binderId);
-			Subscription sub = bm.getSubscription(binder);
-			if (null != sub) {
-				// Yes!  Analyze them.
-				Map<Integer, String[]> subStyles     = sub.getStyles();
-				Map<String,  String>   currentStyles = new HashMap<String, String>();
-				for (int i = 1; i < STYLES; i += 1) {
-					String[] types = subStyles.get(Integer.valueOf(i));
-					if (null == types) {
-						continue;
-					}
-					
-					if (0 == types.length) {
-						currentStyles.put(String.valueOf(i), "x");
-					}
-					
-					else {
-						for (int j = 0; j < types.length; j += 1) {
-							currentStyles.put(i + types[j], "x");
+			// We're we given a binder ID?
+			if (null != binderId) {
+				// Yes!  Does the user have any subscriptions set on
+				// this binder?
+				BinderModule bm = bs.getBinderModule();
+				Binder binder = bm.getBinder(binderId);
+				Subscription sub = bm.getSubscription(binder);
+				if (null != sub) {
+					// Yes!  Analyze them.
+					Map<Integer, String[]> subStyles     = sub.getStyles();
+					Map<String,  String>   currentStyles = new HashMap<String, String>();
+					for (int i = 1; i < STYLES; i += 1) {
+						String[] types = subStyles.get(Integer.valueOf(i));
+						if (null == types) {
+							continue;
+						}
+						
+						if (0 == types.length) {
+							currentStyles.put(String.valueOf(i), "x");
+						}
+						
+						else {
+							for (int j = 0; j < types.length; j += 1) {
+								currentStyles.put(i + types[j], "x");
+							}
 						}
 					}
+					
+					// Apply the user's subscription settings to the
+					// response data that we're going to return.
+					List<EmailAddressInfo> eaiList = reply.getEmailAddresses();
+					for (EmailAddressInfo eai:  eaiList) {
+						String ea = eai.getAddress();
+						String t = eai.getType();
+						if (MiscUtil.hasString(currentStyles.get(DIGEST_STYLE    + t))) reply.addDigestAddress(  ea);
+						if (MiscUtil.hasString(currentStyles.get(MSG_STYLE       + t))) reply.addMsgAddress(     ea);
+						if (MiscUtil.hasString(currentStyles.get(MSG_NOATT_STYLE + t))) reply.addMsgNoAttAddress(ea);
+						if (MiscUtil.hasString(currentStyles.get(TEXT_STYLE      + t))) reply.addTextAddress(    ea);
+					}
+					reply.setOverridePresets(MiscUtil.hasString(currentStyles.get(String.valueOf(OVERRIDE_STYLE))));
 				}
-				
-				// Apply the user's subscription settings to the response
-				// data that we're going to return.
-				List<EmailAddressInfo> eaiList = reply.getEmailAddresses();
-				for (EmailAddressInfo eai:  eaiList) {
-					String ea = eai.getAddress();
-					String t = eai.getType();
-					if (MiscUtil.hasString(currentStyles.get(DIGEST_STYLE    + t))) reply.addDigestAddress(  ea);
-					if (MiscUtil.hasString(currentStyles.get(MSG_STYLE       + t))) reply.addMsgAddress(     ea);
-					if (MiscUtil.hasString(currentStyles.get(MSG_NOATT_STYLE + t))) reply.addMsgNoAttAddress(ea);
-					if (MiscUtil.hasString(currentStyles.get(TEXT_STYLE      + t))) reply.addTextAddress(    ea);
-				}
-				reply.setOverridePresets(MiscUtil.hasString(currentStyles.get(String.valueOf(OVERRIDE_STYLE))));
 			}
 			
 			
@@ -187,23 +194,24 @@ public class GwtEmailHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static BooleanRpcResponseData saveEmailNotificationInfo(
-		AllModulesInjected bs,						//
-		HttpServletRequest request,					//
-		Long               binderId,				//
-		boolean            overridePresets,			//
-		List<String>       digestAddressTypes,		//
-		List<String>       msgAddressTypes,			//
-		List<String>       msgNoAttAddressTypes,	//
-		List<String>       textAddressTypes)		//
+		AllModulesInjected	bs,						//
+		HttpServletRequest	request,				//
+		Long				binderId,				// null -> Entry subscription mode.
+		List<EntryId>		entryIds,				// null -> Binder email notification mode.
+		boolean				overridePresets,		//
+		List<String>		digestAddressTypes,		//
+		List<String>		msgAddressTypes,		//
+		List<String>		msgNoAttAddressTypes,	//
+		List<String>		textAddressTypes)		//
 			throws GwtTeamingException {
 		try {
 			// Allocate a map to hold the new subscription information.
-			Map<Integer, String[]> styles = new HashMap<Integer, String[]>();
+			Map<Integer, String[]> saveStyles = new HashMap<Integer, String[]>();
 			
 			// If the override checkbox was checked...
 			if (overridePresets) {
 				// ...add that to the styles map.
-				styles.put(Subscription.DISABLE_ALL_NOTIFICATIONS, null);
+				saveStyles.put(Subscription.DISABLE_ALL_NOTIFICATIONS, null);
 			}
 			
 			// Scan the possible styles.
@@ -225,12 +233,62 @@ public class GwtEmailHelper {
 				}
 				
 				// Yes, add them to the styles map.
-				styles.put(Integer.valueOf(i), address);
+				saveStyles.put(Integer.valueOf(i), address);
+			}
+
+			// Are we saving email notification settings on a binder?
+			if (null != binderId) {
+				// Yes!  Save the new styles map as the user's
+				// subscription information on that binder.
+				bs.getBinderModule().setSubscription(binderId, saveStyles);
 			}
 			
-			// Finally, save the new styles map as the users subscription
-			// information.
-			bs.getBinderModule().setSubscription(binderId, styles);
+			else {
+				// No, we aren't saving email notification settings on
+				// a binder!  We must be saving them for entries.  Scan
+				// the entries.
+				FolderModule fm = bs.getFolderModule();
+				for (EntryId entryId:  entryIds) {
+					// Access the entry and subscriptions we're working
+					// on.
+					Long         bId   = entryId.getBinderId();
+					Long         eId   = entryId.getEntryId();
+					FolderEntry  fe    = fm.getEntry(bId, eId);
+					Subscription feSub = fm.getSubscription(fe);
+					
+					// Scan the email addresses we need to save for
+					// this entry.
+					Map<Integer, String[]> entryStyles = new HashMap<Integer, String[]>();
+					for (Integer key:  saveStyles.keySet()) {
+						// Is this email address saying don't change
+						// what's currently there for this user on this
+						// entry?
+						String[] emas = saveStyles.get(key);
+						if ((null != emas) && (1 == emas.length) && ("*no-change*".equals(emas[0]))) {
+							// Yes!  If the user has anything there,
+							// use it, otherwise, don't use anything.
+							if ((null != feSub) && feSub.hasStyle(key))
+								 entryStyles.put(key, feSub.getEmailTypes(key));
+							else entryStyles.put(key, new String[0]);
+						}
+						else {
+							// No, this isn't an email address saying
+							// don't change what's currently there!
+							// Use what we were given.
+							entryStyles.put(key, emas);
+						}
+							
+					}
+					
+					// When we get here, entryStyles contains the
+					// appropriate settings for this entry for the
+					// user.  Save it.
+					fm.setSubscription(bId, eId, entryStyles);
+				}
+			}
+			
+			// Regardless of what happened, if we get here, we always
+			// return true.
 			return new BooleanRpcResponseData(Boolean.TRUE);
 		}
 		

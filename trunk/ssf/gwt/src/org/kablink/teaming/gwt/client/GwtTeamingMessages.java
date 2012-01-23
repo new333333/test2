@@ -582,11 +582,14 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuEmailNotificationDlgAltHelpAll();
 	String mainMenuEmailNotificationDlgAltHelpOverride();
 	String mainMenuEmailNotificationDlgBanner();
+	String mainMenuEmailNotificationDlgClearEntrySubscription();
 	String mainMenuEmailNotificationDlgDigest();
+	String mainMenuEmailNotificationDlgErrorSelection();
 	String mainMenuEmailNotificationDlgHeader();
 	String mainMenuEmailNotificationDlgIndividualMessages();
 	String mainMenuEmailNotificationDlgIndividualMessagesNoAttachments();
 	String mainMenuEmailNotificationDlgMakeSelection();
+	String mainMenuEmailNotificationDlgNoChanges();
 	String mainMenuEmailNotificationDlgOverride();
 	String mainMenuEmailNotificationDlgReading();
 	String mainMenuEmailNotificationDlgTextMessaging();

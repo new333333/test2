@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -87,7 +86,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author phurley@novell.com
  */
-public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
+public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHandler {
 	private final static String IDBASE				= "folderColumn_";	// Base ID for rows in the folder columns Grid.
 	private final static String IDTAIL_CHECKBOX		= "_cb";			// Used for constructing the ID of a row's checkbox.
 	private final static String IDTAIL_RADIO		= "_rb";			// Used for constructing the ID of a row's radio button.
@@ -133,9 +132,9 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		// ...and create the main dialog panels.
 		createAllDlgContent(
 			m_messages.folderColumnsDlgHeader(),
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Data passed via global data members.
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			null);						// Data passed via global data members.
 	}
 	
 	/**
@@ -236,6 +235,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			//Add a button to restore factory defaults
 			m_folderDefaultBtn = new Button(m_messages.folderColumnsRestoreDefaults());
 			m_folderDefaultBtn.addClickHandler(new ClickHandler() {
+				@Override
 				public void onClick(ClickEvent event) {
 					//Go restore the defaults
 					AsyncCallback<VibeRpcResponse> rpcSaveCallback;
@@ -243,6 +243,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 						/**
 						 * 
 						 */
+						@Override
 						public void onFailure( Throwable t )
 						{
 							GwtClientHelper.handleGwtRPCFailure(
@@ -253,12 +254,14 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 						/**
 						 * 
 						 */
+						@Override
 						public void onSuccess( VibeRpcResponse response ) {
 							GetBinderPermalinkCmd cmd;
 							
 							cmd = new GetBinderPermalinkCmd( m_binderId );
 							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 							{
+								@Override
 								public void onFailure( Throwable t ) {
 									GwtClientHelper.handleGwtRPCFailure(
 										t,
@@ -266,6 +269,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 										m_binderId );
 								}//end onFailure()
 								
+								@Override
 								public void onSuccess( VibeRpcResponse response )
 								{
 									String binderUrl;
@@ -306,21 +310,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	
 	
 	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
-		return true;
-	}
-
-	
-	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
 	 * 
@@ -331,6 +320,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Save the new folder column info
 		@SuppressWarnings("unchecked")
@@ -570,6 +560,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * Inner class that implements the move down command.
 	 */
 	private class DoMoveDown implements Command {
+		@Override
 		public void execute() {
 			// If the table is empty...
 			if (0 == m_folderColumnsListCount) {
@@ -606,6 +597,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * Inner class that implements the move up command.
 	 */
 	private class DoMoveUp implements Command {
+		@Override
 		public void execute() {
 			// If the table is empty...
 			if (0 == m_folderColumnsListCount) {

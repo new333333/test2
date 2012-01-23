@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
+import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
@@ -48,6 +50,8 @@ import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -57,7 +61,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
-	private static CopyMoveEntriesDlg m_cmeDlg;	// An instance of a copy/move entries dialog.
+	private static CopyMoveEntriesDlg	m_cmeDlg;	// An instance of a copy/move entries dialog.
+	private static EmailNotificationDlg	m_enDlg;	// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntryId>. 
 	
 	/*
 	 * Constructor method. 
@@ -286,10 +291,46 @@ public class BinderViewsHelper {
 			return;
 		}
 		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.subscribeToEntries():  ...this needs to be implemented...");
+		// Have we instantiated an email notification dialog yet?
+		if (null == m_enDlg) {
+			// No!  Instantiate one now.
+			EmailNotificationDlg.createAsync(new EmailNotificationDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final EmailNotificationDlg enDlg) {
+					// ...and show it.
+					m_enDlg = enDlg;
+					ScheduledCommand doSubscribe = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							subscribeToEntriesNow(entryIds);
+						}
+					};
+					Scheduler.get().scheduleDeferred(doSubscribe);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated an email notification dialog
+			// already!  Simply show it.
+			subscribeToEntriesNow(entryIds);
+		}
 	}
 
+	/*
+	 * Synchronously invokes the appropriate UI to subscribe to the
+	 * entries based on a List<EntryId> of the entries.
+	 */
+	private static void subscribeToEntriesNow(List<EntryId> entryIds) {
+		EmailNotificationDlg.initAndShow(m_enDlg, entryIds);
+	}
+	
 	/**
 	 * Unlocks the entries based on a List<EntryId> of the entries.
 	 *
