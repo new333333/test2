@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.EntryId;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'save email notification information' command.
@@ -43,11 +45,12 @@ import java.util.List;
  */
 public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	private boolean			m_overridePresets;		// true -> These settings override the presets.  false -> They don't.
+	private List<EntryId>	m_entryIds;				// List of EntryId's when running in entry subscription mode.
 	private List<String>	m_digestAddressTypes;	// List of email address types used for digests,                                 if any.
 	private List<String>	m_msgAddressTypes;		// List of email address types used for individual messages,                     if any.
 	private List<String>	m_msgNoAttAddressTypes;	// List of email address types used for individual messages without attachments, if any.
 	private List<String>	m_textAddressTypes;		// List of email address types used for text messaging,                          if any.
-	private Long			m_binderId;				//
+	private Long			m_binderId;				// ID of the binder email notifications are being set on when not running in entry subscription mode.
 	
 	/**
 	 * Constructor method.
@@ -77,28 +80,41 @@ public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	}
 
 	/**
+	 * Constructor method.
+	 * 
+	 * @param entryIds
+	 */
+	public SaveEmailNotificationInfoCmd(List<EntryId> entryIds) {
+		// Initialize the super class and save the parameter.
+		this();
+		setEntryIds(entryIds);
+	}
+
+	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public boolean      getOverridePresets()      {return m_overridePresets;     }
-	public List<String> getDigestAddressTypes()   {return m_digestAddressTypes;  }
-	public List<String> getMsgAddressTypes()      {return m_msgAddressTypes;     }
-	public List<String> getMsgNoAttAddressTypes() {return m_msgNoAttAddressTypes;}
-	public List<String> getTextAddressTypes()     {return m_textAddressTypes;    }
-	public Long         getBinderId()             {return m_binderId;            }
+	public boolean       getOverridePresets()      {return m_overridePresets;     }
+	public List<EntryId> getEntryIds()             {return m_entryIds;            }
+	public List<String>  getDigestAddressTypes()   {return m_digestAddressTypes;  }
+	public List<String>  getMsgAddressTypes()      {return m_msgAddressTypes;     }
+	public List<String>  getMsgNoAttAddressTypes() {return m_msgNoAttAddressTypes;}
+	public List<String>  getTextAddressTypes()     {return m_textAddressTypes;    }
+	public Long          getBinderId()             {return m_binderId;            }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param binderId
 	 */
-	public void setOverridePresets(     boolean      overridePresets)      {m_overridePresets      = overridePresets;     }
-	public void setDigestAddressTypes(  List<String> digestAddressTypes)   {m_digestAddressTypes   = digestAddressTypes;  }
-	public void setMsgAddressTypes(     List<String> msgAddressTypes)      {m_msgAddressTypes      = msgAddressTypes;     }
-	public void setMsgNoAttAddressTypes(List<String> msgNoAttAddressTypes) {m_msgNoAttAddressTypes = msgNoAttAddressTypes;}
-	public void setTextAddressTypes(    List<String> textAddressTypes)     {m_textAddressTypes     = textAddressTypes;    }
-	public void setBinderId(            Long         binderId)             {m_binderId             = binderId;            }
+	public void setEntryIds(            List<EntryId> entryIds)             {m_entryIds             = entryIds;            }
+	public void setOverridePresets(     boolean       overridePresets)      {m_overridePresets      = overridePresets;     }
+	public void setDigestAddressTypes(  List<String>  digestAddressTypes)   {m_digestAddressTypes   = digestAddressTypes;  }
+	public void setMsgAddressTypes(     List<String>  msgAddressTypes)      {m_msgAddressTypes      = msgAddressTypes;     }
+	public void setMsgNoAttAddressTypes(List<String>  msgNoAttAddressTypes) {m_msgNoAttAddressTypes = msgNoAttAddressTypes;}
+	public void setTextAddressTypes(    List<String>  textAddressTypes)     {m_textAddressTypes     = textAddressTypes;    }
+	public void setBinderId(            Long          binderId)             {m_binderId             = binderId;            }
 	
 	/**
 	 * Adds an email address to a list of email addresses.

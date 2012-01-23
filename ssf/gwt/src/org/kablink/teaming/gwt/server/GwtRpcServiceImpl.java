@@ -1584,7 +1584,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			BooleanRpcResponseData result = GwtEmailHelper.saveEmailNotificationInfo(
 				this,
 				getRequest( ri ),
-				seniCmd.getBinderId(),
+				seniCmd.getBinderId(),	// null -> Entry subscription mode.
+				seniCmd.getEntryIds(),	// null -> Binder email notification mode.
 				seniCmd.getOverridePresets(),
 				seniCmd.getDigestAddressTypes(),
 				seniCmd.getMsgAddressTypes(),

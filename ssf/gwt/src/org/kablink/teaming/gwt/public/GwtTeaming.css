@@ -3402,6 +3402,7 @@ td.datePickerMonth {
 	.vibe-emailNotifDlg_SectionList      {}
 	.vibe-emailNotifDlg_Text             {}
 	.vibe-emailNotifDlg_TextList         {}
+	.vibe-emailNotifDlg_TextListBottom   {margin-bottom: 10px;}
 	.vibe-emailNotifDlg_TextPanel        {display: block; white-space: nowrap; margin-top: 15px;}
 /* End:  Email notification dialog styles. */
 

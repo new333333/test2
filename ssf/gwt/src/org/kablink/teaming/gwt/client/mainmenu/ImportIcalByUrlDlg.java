@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.Map;
 import java.util.Set;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -67,7 +66,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
+public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler {
 	private BinderInfo			m_folderInfo;	// The folder the dialog is running against.
 	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
 	private String				m_importType;	// Type of import (calendar or task) being performed.  Used to patch strings used for both types.
@@ -121,7 +120,7 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 		createAllDlgContent(
 			m_messages.mainMenuImportIcalByUrlDlgHeader("TBD"),	// Will be updated later during the construction process.
 			this,												// The dialog's EditSuccessfulHandler.
-			this,												// The dialog's EditCanceledHandler.
+			getSimpleCanceledHandler(),							// The dialog's EditCanceledHandler.
 			null);												// Create callback data.  Unused. 
 	}
 
@@ -143,20 +142,6 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	}
 
 	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
-		return true;
-	}
-	
-	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
 	 * 
@@ -167,6 +152,7 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler,
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Do we have a URL to import?
 		String url = m_url.getValue();
