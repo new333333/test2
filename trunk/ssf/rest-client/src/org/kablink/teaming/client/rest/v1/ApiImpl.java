@@ -34,26 +34,21 @@
 package org.kablink.teaming.client.rest.v1;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.Date;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * @author jong
@@ -71,8 +66,8 @@ public class ApiImpl implements Api {
 	}
 	
 	@Override
-	public FileProperties writeFile(String entityType, long entityId, String filename, File file) {
-		return writeFileContent(entityType, entityId, filename, file, null, null, null, null, null);
+	public FileProperties writeFile(String entityType, long entityId, String filename, File inFile) {
+		return writeFileContent(entityType, entityId, filename, inFile, null, null, null, null, null);
 	}
 	
 	@Override
@@ -81,9 +76,9 @@ public class ApiImpl implements Api {
 	}
 	
 	@Override
-	public FileProperties writeFile(String fileId, File file) {
-		String mt = new MimetypesFileTypeMap().getContentType(file.getName());
-		return writeFileContent(fileId, file, mt, null, null, null, null, null);
+	public FileProperties writeFile(String fileId, File inFile) {
+		String mt = new MimetypesFileTypeMap().getContentType(inFile.getName());
+		return writeFileContent(fileId, inFile, mt, null, null, null, null, null);
 	}
 	
 	@Override
@@ -93,10 +88,10 @@ public class ApiImpl implements Api {
 	
 	@Override
 	public FileProperties writeFile(String entityType, long entityId,
-			String filename, File file, String dataName, Date modDate,
+			String filename, File inFile, String dataName, Date modDate,
 			Integer lastVersionNumber, Integer lastMajorVersionNumber,
 			Integer lastMinorVersionNumber) {
-		return writeFileContent(entityType, entityId, filename, file, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+		return writeFileContent(entityType, entityId, filename, inFile, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	}
 
 	@Override
@@ -108,11 +103,11 @@ public class ApiImpl implements Api {
 	}
 
 	@Override
-	public FileProperties writeFile(String fileId, File file, String dataName,
+	public FileProperties writeFile(String fileId, File inFile, String dataName,
 			Date modDate, Integer lastVersionNumber,
 			Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
-		String mt = new MimetypesFileTypeMap().getContentType(file.getName());
-		return writeFileContent(fileId, file, mt, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+		String mt = new MimetypesFileTypeMap().getContentType(inFile.getName());
+		return writeFileContent(fileId, inFile, mt, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	}
 
 	@Override

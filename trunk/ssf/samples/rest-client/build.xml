@@ -60,7 +60,7 @@
 			<!--<formatter type="xml"/>-->
 
 			<!-- Single test -->
-			<test name="org.kablink.teaming.samples.client.rest.v1.ApiTest" />
+			<!--<test name="org.kablink.teaming.samples.client.rest.v1.ApiTest" />-->
 			
 			<!-- Multiple tests -->
 			<batchtest>
