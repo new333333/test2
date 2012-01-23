@@ -33,6 +33,13 @@
 
 package org.kablink.teaming.webdav;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Workspace;
+
+import com.bradmcevoy.common.Path;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.ResourceFactory;
 
@@ -42,17 +49,46 @@ import com.bradmcevoy.http.ResourceFactory;
  */
 public class WebdavResourceFactory implements ResourceFactory {
 
+	private Log log = LogFactory.getLog(getClass());
+	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.ResourceFactory#getResource(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Resource getResource(String host, String path) {
-		if(path.equals("/"))
+		log.debug("getResource: " + path);
+		
+		Path p = Path.path(path);
+		
+		if(p.isRoot()) {
 			return new RootResource();
-		else if(path.equals("/webdav"))
-			return new SubRootResource();
-		else
+		}
+		else if(p.getFirst().equals("dav")) {
+			if(p.getLength() == 1) {
+				return new DavResource();
+			}
+			else {
+				Object obj = resolvePath(p);
+				if(obj instanceof FileAttachment) {
+					return new FileResource((FileAttachment)obj);
+				}
+				else if(obj instanceof Folder) {
+					return new FolderResource((Folder)obj);
+				}
+				else if(obj instanceof Workspace) {
+					return new WorkspaceResource((Workspace)obj);
+				}
+				else {
+					return null;
+				}
+			}
+		}
+		else {
 			return null;
+		}
 	}
 
+	protected Object resolvePath(Path path) {
+		return null;
+	}
 }

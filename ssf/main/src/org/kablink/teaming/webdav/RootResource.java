@@ -33,21 +33,21 @@
 
 package org.kablink.teaming.webdav;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.bradmcevoy.http.Auth;
+import org.kablink.teaming.util.ReleaseInfo;
+
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.PropFindableResource;
-import com.bradmcevoy.http.Request;
-import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.Resource;
 
 /**
  * @author jong
  *
  */
-public class RootResource implements PropFindableResource {
+public class RootResource extends WebdavResource implements PropFindableResource, CollectionResource {
 
 	private static final String ID = "root";
 	
@@ -68,43 +68,11 @@ public class RootResource implements PropFindableResource {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#authenticate(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Object authenticate(String user, String password) {
-		return "";
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#authorise(com.bradmcevoy.http.Request, com.bradmcevoy.http.Request.Method, com.bradmcevoy.http.Auth)
-	 */
-	@Override
-	public boolean authorise(Request request, Method method, Auth auth) {
-		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getRealm()
-	 */
-	@Override
-	public String getRealm() {
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return new Date(); // $$$
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#checkRedirect(com.bradmcevoy.http.Request)
-	 */
-	@Override
-	public String checkRedirect(Request request) {
-		return null;
+		return getCreateDate();
 	}
 
 	/* (non-Javadoc)
@@ -112,7 +80,28 @@ public class RootResource implements PropFindableResource {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return new Date(); // $$$
+		return ReleaseInfo.getBuildDate(); // This is as good as any other random date
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
+	 */
+	@Override
+	public Resource child(String childName) {
+		if(DavResource.ID.equals(childName))
+			return new DavResource();
+		else
+			return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CollectionResource#getChildren()
+	 */
+	@Override
+	public List<? extends Resource> getChildren() {
+		List<Resource> list = new ArrayList<Resource>();
+		list.add(new DavResource());
+		return list;
 	}
 
 }
