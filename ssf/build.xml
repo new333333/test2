@@ -136,6 +136,7 @@
 		<ant dir="simple-url" target="clean" inheritAll="false"/>		
 		<ant dir="mobile" target="clean" inheritAll="false"/>		
 		<ant dir="rest" target="clean" inheritAll="false"/>		
+		<ant dir="vibe-root" target="clean" inheritAll="false"/>		
 	</target>
 
 	<target name="compile" depends="init">
@@ -224,6 +225,8 @@
 		<ant dir="mobile" target="war" inheritall="false"/>
 
 		<ant dir="rest" target="war" inheritall="false"/>
+
+		<ant dir="vibe-root" target="war" inheritall="false"/>
 	</target>
 
 	<target name="deploy" depends="init">
@@ -267,6 +270,8 @@
 		<ant dir="mobile" target="deploy" inheritall="false"/>
 		
 		<ant dir="rest" target="deploy" inheritall="false"/>
+		
+		<ant dir="vibe-root" target="deploy" inheritall="false"/>
 	</target>
 
 	<target name="java2html" depends="init">
