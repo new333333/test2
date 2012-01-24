@@ -76,6 +76,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -2766,6 +2767,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			final Map options) {
 		final Binder top = loadBinder(binderId);
 		checkAccess(top, BinderOperation.deleteBinder);
+		List<Long> ids = new ArrayList();// maintain order, bottom up
 		Map params = new HashMap();
 		params.put("deleted", Boolean.FALSE);
 		// get list of ids, so don't have to load large trees all at once
@@ -2776,7 +2778,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								+ "%' and deleted=:deleted order by x.binderKey.sortKey desc",
 						params);
 		// convert to list of ids
-		List<Long> ids = new ArrayList();// maintain order, bottom up
 		for (Object row[] : objs) {
 			ids.add((Long) row[0]);
 		}

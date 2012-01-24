@@ -110,8 +110,9 @@ public interface CoreDao {
     public Binder loadBinder(Long binderId, Long zoneId);
 	public List<Tag> loadCommunityTagsByEntity(EntityIdentifier entityId);
     public List<TemplateBinder> loadTemplates(Long zoneId);
-    public List<TemplateBinder> loadTemplates(Binder parentBinder, Long zoneId);
+    public List<TemplateBinder> loadTemplates(Binder binder, Long zoneId, boolean includeAncestors);
     public List<TemplateBinder> loadTemplates(Long zoneId, int type);
+    public List<TemplateBinder> loadTemplates(Binder binder, Long zoneId, int type, boolean includeAncestors);
 	public Dashboard loadDashboard(String id, Long zoneId);
 	public Definition loadDefinition(String defId, Long zoneId);   
 	public Definition loadDefinitionByName(Binder binder, String name, Long zoneId);

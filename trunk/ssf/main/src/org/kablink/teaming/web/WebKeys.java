@@ -346,6 +346,7 @@ public class WebKeys {
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";
 	public static final String ACTION_ENTRY_ACL_REPORT = "view_entry_acl_report";
 	public static final String ACTION_MANAGE_DEFINITIONS = "manage_definitions";
+	public static final String ACTION_MANAGE_TEMPLATES = "configure_configuration";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
@@ -796,6 +797,7 @@ public class WebKeys {
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String CONFIG_FALLBACK_JSP="ssConfigJsp";
+    public static final String CONFIGURE_CONFIGURATION_LOCAL="ssConfigureConfigurationLocal";
     public static final String CREATE_FILE_NAME_FORM_ELEMENT="createFileName_";
     public static final String CREATE_FILE_TYPE_FORM_ELEMENT="createFileType_";
     public static final String CSS_THEME="ssCssTheme";

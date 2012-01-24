@@ -1723,6 +1723,16 @@ public class ListFolderHelper {
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.definition_builder_designers"), url, qualifiers);
 		}
 		
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration)) {
+			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_TEMPLATES);
+			url.setParameter(WebKeys.URL_BINDER_PARENT_ID, forumId);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.template_builder_local"), url, qualifiers);
+		}
+		
 		//Delete binder
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteBinder)) {
 			adminMenuCreated=true;

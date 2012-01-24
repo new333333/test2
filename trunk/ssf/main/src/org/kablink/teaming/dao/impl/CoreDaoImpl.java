@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
@@ -1387,6 +1388,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		                public Object doInHibernate(Session session) throws HibernateException {
 		                 	Criteria criteria = session.createCriteria(TemplateBinder.class)
 	                 		.add(Expression.isNull("parentBinder"))
+	                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID))
 	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                 		.addOrder(Order.asc("definitionType"))
 	                 		.addOrder(Order.asc("templateTitle"));
@@ -1402,29 +1404,92 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	// return binder level templates
-	public List loadTemplates(final Binder parentBinder, final Long zoneId) {
-		long begin = System.nanoTime();
-		try {
-			return (List)getHibernateTemplate().execute(
-	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
-	                 	Criteria criteria = session.createCriteria(TemplateBinder.class)
-                 		.add(Expression.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder))
-                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-                 		.addOrder(Order.asc("definitionType"))
-                 		.addOrder(Order.asc("templateTitle"));
-	                 	criteria = filterCriteriaForTemplates(criteria);
-	                 	criteria.setCacheable(isBinderQueryCacheable());
-	                 	return criteria.list();
-	                }
-	            }
-	        );
-    	}
-    	finally {
-    		end(begin, "loadTemplates(Long)");
-    	}	        
+	public List loadTemplates(final Binder binder, final Long zoneId, boolean includeAncestors) {
+		if (includeAncestors) {
+			//This request is for a list of templates from this binder and all of its ancestor binders
+			Map<String,Binder> templates = new TreeMap<String,Binder>();
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				final Binder tb = parentBinder;
+				List<TemplateBinder> templateBinders = loadTemplates(tb, zoneId, false);
+				for (Binder b : templateBinders) {
+					templates.put(b.getTitle().toLowerCase(), b);					
+				}
+				parentBinder = parentBinder.getParentBinder();
+			}
+			List results = new ArrayList();
+			for (String title : (Set<String>)templates.keySet()) {
+				results.add(templates.get(title));
+			}
+			return results;
+		} else {
+			//Just return a list of the local templates owned by this binder
+			long begin = System.nanoTime();
+			try {
+				return (List)getHibernateTemplate().execute(
+		            new HibernateCallback() {
+		                public Object doInHibernate(Session session) throws HibernateException {
+		                 	Criteria criteria = session.createCriteria(TemplateBinder.class)
+	                 		.add(Expression.eq(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID, binder.getId()))
+	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+	                 		.addOrder(Order.asc("definitionType"))
+	                 		.addOrder(Order.asc("templateTitle"));
+		                 	criteria = filterCriteriaForTemplates(criteria);
+		                 	criteria.setCacheable(isBinderQueryCacheable());
+		                 	return criteria.list();
+		                }
+		            }
+		        );
+	    	}
+	    	finally {
+	    		end(begin, "loadTemplates(Long)");
+	    	}	  
+		}
 	}
 
+	public List<TemplateBinder> loadTemplates(final Binder binder, final Long zoneId, final int type, boolean includeAncestors) {
+		if (includeAncestors) {
+			//This request is for a list of templates from this binder and all of its ancestor binders
+			Map<String,Binder> templates = new TreeMap<String,Binder>();
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				final Binder tb = parentBinder;
+				List<TemplateBinder> templateBinders = loadTemplates(tb, zoneId, type, false);
+				for (Binder b : templateBinders) {
+					templates.put(b.getTitle().toLowerCase(), b);					
+				}
+				parentBinder = parentBinder.getParentBinder();
+			}
+			List results = new ArrayList();
+			for (String title : (Set<String>)templates.keySet()) {
+				results.add(templates.get(title));
+			}
+			return results;
+		} else {
+			long begin = System.nanoTime();
+			try {
+				return (List)getHibernateTemplate().execute(
+			            new HibernateCallback() {
+			                public Object doInHibernate(Session session) throws HibernateException {
+			                	Criteria criteria = session.createCriteria(TemplateBinder.class)
+		                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
+		                 		.add(Expression.eq(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID, binder.getId()))
+		                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+		                 		.add(Expression.eq("definitionType", type))
+		                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE));
+			                 	criteria = filterCriteriaForTemplates(criteria);
+			                 	criteria.setCacheable(isBinderQueryCacheable());
+			                 	return criteria.list();
+			                }
+			            }
+			        );
+	    	}
+	    	finally {
+	    		end(begin, "loadTemplates(Long,int)");
+	    	}	
+		}
+	}
+	
 	public List loadTemplates(final Long zoneId, final int type) {
 		long begin = System.nanoTime();
 		try {
@@ -1433,6 +1498,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		                public Object doInHibernate(Session session) throws HibernateException {
 		                	Criteria criteria = session.createCriteria(TemplateBinder.class)
 	                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
+	                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID))
 	                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
 	                 		.add(Expression.eq("definitionType", type))
 	                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE));

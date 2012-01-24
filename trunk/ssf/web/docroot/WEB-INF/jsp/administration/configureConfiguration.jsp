@@ -85,7 +85,12 @@ String cTreeName = renderResponse.getNamespace() + "_cTree";
 
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
-	var params = {binderId:id};
+	<c:if test="${!ssConfigureConfigurationLocal}">
+	  var params = {binderId:id};
+	</c:if>
+	<c:if test="${ssConfigureConfigurationLocal}">
+	  var params = {binderParentId:"${binderParentId}", binderId:id};
+	</c:if>
 	self.location.href = ss_buildAdapterUrl(ss_AjaxBaseUrl, params, action);
 	return false;
 } 
@@ -94,13 +99,19 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar5 ss_actions_bar" />
 <br/>
-<div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span></div>
+
+<c:if test="${!ssConfigureConfigurationLocal}">
+<div style="padding-top: 10px; padding-bottom: 2px;">
+  <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span>
+</div>
 <ul class="ss_square">
 <c:forEach var="bconfig" items="${ssBinderConfigs}">
 <jsp:useBean id="bconfig" type="org.kablink.teaming.domain.TemplateBinder"/>
 	<c:if test="${bconfig.reserved}">
-	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
-	<ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
+	<li>
+	  <a class="ss_bold ss_style ss_title_link" href="javascript:" 
+	    onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
+	    <ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty bconfig.templateDescription.text}">
 		- <c:out value='<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>' escapeXml="false" />
 		</c:if>
@@ -109,12 +120,26 @@ function <%=cTreeName%>_showId(id, obj, action) {
 
 </c:forEach>
 </ul>
-<div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span></div>
+</c:if>
+
+<c:if test="${!ssConfigureConfigurationLocal}">
+<div style="padding-top: 10px; padding-bottom: 2px;">
+  <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span>
+</div>
+</c:if>
+<c:if test="${ssConfigureConfigurationLocal}">
+<div style="padding-top: 10px; padding-bottom: 2px;">
+  <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.localTemplates"/></span>
+</div>
+</c:if>
 <ul class="ss_square">
 <c:forEach var="cconfig" items="${ssBinderConfigs}">
 <jsp:useBean id="cconfig" type="org.kablink.teaming.domain.TemplateBinder"/>
 	<c:if test="${!cconfig.reserved}">
-	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
+	<li>
+	  <a class="ss_bold ss_style ss_title_link" 
+	    href="javascript:" 
+	    onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${cconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty cconfig.templateDescription.text}">
 		- <c:out value='<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>' escapeXml="false" />
@@ -143,7 +168,8 @@ function <%=cTreeName%>_showId(id, obj, action) {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
 		  onClick='self.location.href="<ssf:url action="configure_configuration" 
-			actionUrl="false"/>";return false;'/>
+			actionUrl="false"><ssf:param 
+			name="binderParentId" value="${binderParentId}"/></ssf:url>";return false;'/>
 <script type="text/javascript">
 document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>
@@ -256,7 +282,8 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 </script>
 <div class="ss_formBreak" align="left"/>
 <form method="post" action="<ssf:url><ssf:param 
-		name="action" value="configure_configuration"/></ssf:url>" >
+		name="action" value="configure_configuration"/><ssf:param 
+		name="binderParentId" value="${binderParentId}"/></ssf:url>" >
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onclick="return handleCloseBtn();">
 </div>
@@ -268,7 +295,8 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 
 <form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
 		name="operation" value="${ssOperation}"/><ssf:param 
-		name="binderId" value="${ssBinderConfig.id}"/></ssf:url>" >
+		name="binderId" value="${ssBinderConfig.id}"/><ssf:param 
+		name="binderParentId" value="${binderParentId}"/></ssf:url>" >
 
 <h3><ssf:nlt tag="administration.configure_cfg.existing"/></h3>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">

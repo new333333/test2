@@ -67,7 +67,8 @@
 <c:if test="${ssOperation == 'import'}">
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" action="configure_configuration" 
-			actionUrl="true" ><ssf:param name="operation" value="import"/></ssf:url>">
+			actionUrl="true" ><ssf:param name="operation" value="import"/><ssf:param 
+			name="binderParentId" value="${binderParentId}"/></ssf:url>">
 
 <div class="margintop2">&nbsp;</div>
 
@@ -107,7 +108,8 @@
 
 <form class="ss_style ss_form" method="post" 
 		  action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
-		  name="operation" value="reset"/></ssf:url>" 
+		  name="operation" value="reset"/><ssf:param 
+		  name="binderParentId" value="${binderParentId}"/></ssf:url>" 
 		  name="${renderResponse.namespace}fm">
 
 <span>
