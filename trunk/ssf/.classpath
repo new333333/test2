@@ -171,5 +171,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
