@@ -123,6 +123,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_DISCUSSION_FOLDER,				// Shows a discussion folder.
 	SHOW_DISCUSSION_WORKSPACE,			// Shows a discussion workspace.
 	SHOW_FILE_FOLDER,					// Shows a file       folder.
+	SHOW_GENERIC_WORKSPACE,				// Shows a generic workspace.
 	SHOW_LANDING_PAGE,					// Shows a landing page.
 	SHOW_TASK_FOLDER,					// Shows a task folder.
 	SHOW_TEAM_WORKSPACE,				// Shows a team workspace.

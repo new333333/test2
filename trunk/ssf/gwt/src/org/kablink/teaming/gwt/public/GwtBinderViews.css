@@ -189,19 +189,19 @@
 
 
 /* Start:  GWT workspace view styles. */
-	.vibe-discussionWSView_AccessoriesPanel, ..vibe-teamWSView_AccessoriesPanel
+	.vibe-discussionWSView_AccessoriesPanel, .vibe-teamWSView_AccessoriesPanel, .vibe-genericWSView_AccessoriesPanel
 	{
 	}
 	
-	.vibe-discussionWSView_BreadCrumbPanel, .vibe-teamWSView_BreadCrumbPanel
+	.vibe-discussionWSView_BreadCrumbPanel, .vibe-teamWSView_BreadCrumbPanel, .vibe-genericWSView_BreadCrumbPanel
 	{
 	}
 	
-	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel
+	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel
 	{
 	}
 
-	.vibe-discussionWSView_FooterPanel
+	.vibe-discussionWSView_FooterPanel, .vibe-genericWSView_FooterPanel
 	{
 	}
 	
@@ -218,7 +218,7 @@
 	{
 	}
 	
-	.vibe-discussionWSView_MainPanel, .vibe-teamWSView_MainPanel
+	.vibe-discussionWSView_MainPanel, .vibe-teamWSView_MainPanel, .vibe-genericWSView_MainPanel
 	{
 		overflow: auto;
 	}
