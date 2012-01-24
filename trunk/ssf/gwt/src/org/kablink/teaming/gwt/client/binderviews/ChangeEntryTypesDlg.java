@@ -37,14 +37,16 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.ChangeEntryTypesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryTypesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -55,6 +57,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 
 
@@ -65,11 +69,13 @@ import com.google.gwt.user.client.ui.Panel;
  */
 //@SuppressWarnings("unused")
 public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler {
-	private EntryType			m_entryType;	// The EntryType of an individual item, if all that was requested.
-	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
-	private List<EntryId>		m_entryIds;		// Current list of entry IDs whose entry types are to be changed.
-	private List<EntryType>		m_entryTypes;	// List<EntryType> for the binder's referred to by m_entryIds.
-	private VibeVerticalPanel	m_vp;			// The panel holding the dialog's content.
+	private EntryType			m_baseEntryType;	// The EntryType of an individual item, if all that was requested.
+	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
+	private ListBox				m_entryTypeLB;		// The list of entry types the user can choose from.
+	private List<EntryId>		m_entryIds;			// Current list of entry IDs whose entry types are to be changed.
+	private List<EntryType>		m_entryTypes;		// List<EntryType> for the binder's referred to by m_entryIds.
+	private String				m_baseEntryTitle;	// The title of an individual item, if all that was requested.
+	private VibeFlowPanel		m_fp;				// The panel holding the dialog's content.
 
 	/*
 	 * Class constructor.
@@ -87,7 +93,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			m_messages.changeEntryTypesHeader(),
+			"",							// The actual header will be supplied when the dialog is populated.
 			this,						// The dialog's EditSuccessfulHandler.
 			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
 			null);						// Create callback data.  Unused. 
@@ -123,8 +129,42 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Synchronously performs the change entry types.
 	 */
 	private void changeEntryTypesNow() {
-//!		...this needs to be implemented...
-		hide();
+		// Has the user selected something other than the 'select an
+		// entry type' option?
+		int selIndex = m_entryTypeLB.getSelectedIndex();
+		if (0 == selIndex) {
+			// No!  Tell them they must and bail.
+			GwtClientHelper.deferredAlert(m_messages.changeEntryTypesDlgErrorNoSelection());
+			return;
+		}
+		
+		// Can we perform the change?
+		String defId = m_entryTypeLB.getValue(selIndex);
+		ChangeEntryTypesCmd cetCmd = new ChangeEntryTypesCmd(defId, m_entryIds);
+		GwtClientHelper.executeCommand(cetCmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_ChangeEntryTypes());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Perhaps!  Did we get any errors back?
+				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+				List<String> changeErrors = responseData.getErrorList();
+				if ((null != changeErrors) && (!(changeErrors.isEmpty()))) {
+					// Yes!  Display them to the user.
+					GwtClientHelper.displayMultipleErrors(
+						m_messages.changeEntryTypesDlgErrorChangeFailures(),
+						changeErrors);
+				}
+				
+				// Simply close the dialog.
+				hide();
+			}
+		});
 	}
 	
 	/**
@@ -138,11 +178,10 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		// Create create an return a vertical panel to hold the
-		// dialog's content.
-		m_vp = new VibeVerticalPanel();
-		m_vp.addStyleName("vibe-changeEntryTypesRootPanel");
-		return m_vp;
+		// Create and return a panel to hold the dialog's content.
+		m_fp = new VibeFlowPanel();
+		m_fp.addStyleName("vibe-changeEntryTypesRootPanel");
+		return m_fp;
 	}
 
 	/**
@@ -232,8 +271,9 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 			public void onSuccess(VibeRpcResponse response) {
 				// ...and use them to run the dialog.
 				EntryTypesRpcResponseData etResponse = ((EntryTypesRpcResponseData) response.getResponseData());
-				m_entryType  = etResponse.getEntryType();
-				m_entryTypes = etResponse.getEntryTypes();
+				m_baseEntryType  = etResponse.getBaseEntryType();
+				m_baseEntryTitle = etResponse.getBaseEntryTitle();
+				m_entryTypes     = etResponse.getEntryTypes();
 				populateDlgAsync();
 			}
 		});
@@ -256,22 +296,60 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
+		// Set an appropriate title for the dialog.
+		setCaption(
+			GwtClientHelper.hasString(m_baseEntryTitle) ?
+				m_messages.changeEntryTypesDlgHeaderFor(m_baseEntryTitle) :
+				m_messages.changeEntryTypesDlgHeader());
+		
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
-		m_vp.clear();
-		
-//!		...this needs to be implemented...
-		m_vp.add(new InlineLabel("...this needs to be implemented..."));
-		m_vp.add(new InlineLabel("- - - - -"));
-		if (null != m_entryType) {
-			m_vp.add(new InlineLabel("id:" + m_entryType.getDefId() + ", key:" + m_entryType.getDefKey() + ", local:" + m_entryType.isLocalDef()));
-			m_vp.add(new InlineLabel("- - - - -"));
+		m_fp.clear();
+
+		// If we have a base entry type...
+		InlineLabel il;
+		VibeFlowPanel fp;
+		if (null != m_baseEntryType) {
+			// ...display it at the top of the dialog...
+			fp = new VibeFlowPanel();
+			fp.addStyleName("vibe-changeEntryTypesCurPanel");
+			il = new InlineLabel(m_messages.changeEntryTypesDlgCurrent());
+			il.addStyleName("vibe-changeEntryTypesCurLabel");
+			il.setWordWrap(false);
+			fp.add(il);
+			il = new InlineLabel(m_baseEntryType.getDefKey());
+			il.addStyleName("vibe-changeEntryTypesCurDef");
+			il.setWordWrap(false);
+			fp.add(il);
+			m_fp.add(fp);
 		}
+
+		// ...add the <SELECT> for the new entry type...
+		il = new InlineLabel(m_messages.changeEntryTypesDlgNew());
+		il.addStyleName("vibe-changeEntryTypesNewLabel");
+		il.setWordWrap(false);
+		m_fp.add(il);
+		m_entryTypeLB = new ListBox();
+		m_entryTypeLB.addStyleName("vibe-changeEntryTypesNewSelect");
+		m_fp.add(m_entryTypeLB);
+		m_entryTypeLB.addItem(m_messages.changeEntryTypesDlgSelect(), "");
 		for (EntryType et:  m_entryTypes) {
-			m_vp.add(new InlineLabel("id:" + et.getDefId() + ", key:" + et.getDefKey() + ", local:" + et.isLocalDef()));
+			m_entryTypeLB.addItem(et.getDefKey(), et.getDefId());
 		}
-		m_vp.add(new InlineLabel("- - - - -"));
-		m_vp.add(new InlineLabel("...this needs to be implemented..."));
+		m_entryTypeLB.setSelectedIndex(0);
+
+		// ...add a note about new/removed data elements...
+		Label l = new Label(m_messages.changeEntryTypesDlgNote());
+		l.addStyleName("vibe-changeEntryTypesNote");
+		m_fp.add(l);
+
+		// ...add a hint about local definitions...
+		l = new Label(m_messages.changeEntryTypesDlgLocal());
+		l.addStyleName("vibe-changeEntryTypesFooter");
+		l.setWordWrap(false);
+		m_fp.add(l);
+
+		// ...and show the dialog.
 		show(true);
 	}
 	
@@ -294,8 +372,14 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * dialog.
 	 */
 	private void runDlgNow(List<EntryId> entryIds) {
-		// Store the parameter and populate the dialog.
+		// Store the parameter...
 		m_entryIds = entryIds;
+		
+		// ...initialize any other data members...
+		m_baseEntryType  = null;
+		m_baseEntryTitle = null;
+		
+		// ...and populate the dialog.
 		loadPart1Async();
 	}
 

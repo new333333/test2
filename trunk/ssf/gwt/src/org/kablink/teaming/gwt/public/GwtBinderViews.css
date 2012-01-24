@@ -278,5 +278,12 @@
 /* End:  Copy/Move entries dialog  styles. */
 
 /* Start:  Change entry types dialog  styles. */
-	.vibe-changeEntryTypesRootPanel {padding: 6px;}
+	.vibe-changeEntryTypesCurDef     {margin-left: 2px;}
+	.vibe-changeEntryTypesCurLabel   {}
+	.vibe-changeEntryTypesCurPanel   {white-space: none; padding-bottom: 8px;}
+	.vibe-changeEntryTypesFooter     {padding-top: 10px;}
+	.vibe-changeEntryTypesNote       {width: 600px; padding-top: 10px;}
+	.vibe-changeEntryTypesNewLabel   {font-weight: bold;}
+	.vibe-changeEntryTypesNewSelect  {padding-left: 2px;}
+	.vibe-changeEntryTypesRootPanel  {padding: 6px;}
 /* End:  Change entry types dialog  styles. */

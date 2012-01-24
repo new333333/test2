@@ -225,6 +225,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CHANGE_ENTRY_TYPES:
+		{
+			ChangeEntryTypesCmd cetCmd = ((ChangeEntryTypesCmd) cmd);
+			ErrorListRpcResponseData result = GwtViewHelper.changeEntryTypes( this, getRequest( ri ), cetCmd.getDefId(), cetCmd.getEntryIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case COLLAPSE_SUBTASKS:
 		{
 			CollapseSubtasksCmd csCmd = ((CollapseSubtasksCmd) cmd);

@@ -44,8 +44,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class EntryTypesRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private EntryType		m_entryType;	// EntryType for EntryId pass in the get request.
-	private List<EntryType>	m_entryTypes;	// The List<EntryType> defined for a collection of binders.
+	private EntryType		m_baseEntryType;		// EntryType for EntryId passed in the get request.
+	private List<EntryType>	m_entryTypes;		// The List<EntryType> defined for a collection of binders.
+	private String			m_baseEntryTitle;	// The title of the entry passed in the get request.
 	
 	/**
 	 * Inner class used to represent an entry type.
@@ -116,16 +117,18 @@ public class EntryTypesRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * 
 	 * @return
 	 */
-	public EntryType       getEntryType()  {return m_entryType; }
-	public List<EntryType> getEntryTypes() {return m_entryTypes;}
+	public EntryType       getBaseEntryType()  {return m_baseEntryType; }
+	public String          getBaseEntryTitle() {return m_baseEntryTitle;}
+	public List<EntryType> getEntryTypes()     {return m_entryTypes;    }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntryType( EntryType       entryType)  {m_entryType  = entryType; }
-	public void setEntryTypes(List<EntryType> entryTypes) {m_entryTypes = entryTypes;}
+	public void setBaseEntryType( EntryType       baseEntryType)  {m_baseEntryType  = baseEntryType; }
+	public void setBaseEntryTitle(String          baseEntryTitle) {m_baseEntryTitle = baseEntryTitle;}
+	public void setEntryTypes(    List<EntryType> entryTypes)     {m_entryTypes     = entryTypes;    }
 
 	/**
 	 * Adds an EntryType to a List<EntryType>.

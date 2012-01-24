@@ -5099,6 +5099,7 @@ public class GwtServerHelper {
 		// The following commands do not require XSS checks.
 		case ADD_FAVORITE:
 		case CAN_MODIFY_BINDER:
+		case CHANGE_ENTRY_TYPES:
 		case COLLAPSE_SUBTASKS:
 		case COPY_ENTRIES:
 		case DELETE_FOLDER_ENTRIES:

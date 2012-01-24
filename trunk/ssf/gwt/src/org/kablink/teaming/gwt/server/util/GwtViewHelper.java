@@ -298,6 +298,60 @@ public class GwtViewHelper {
 	}
 	
 	/**
+	 * Change the entry types for a collection of entries.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param defId
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData changeEntryTypes(AllModulesInjected bs, HttpServletRequest request, String defId, List<EntryId> entryIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			
+			// Were we given the IDs of any entries to change their
+			// entry types and the entry type to change them to?
+			if ((null != entryIds) && (!(entryIds.isEmpty())) && MiscUtil.hasString(defId)) {
+				// Yes!  Scan them.
+				FolderModule fm = bs.getFolderModule();
+				for (EntryId entryId:  entryIds) {
+					try {
+						// Can we change this entry's entry type?
+						fm.changeEntryType(entryId.getEntryId(), defId);
+					}
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String messageKey;
+						if (e instanceof AccessControlException) messageKey = "changeEntryTypeError.AccssControlException";
+						else                                     messageKey = "changeEntryTypeError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.changeEntryTypes( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
 	 * Copies the entries.
 	 * 
 	 * @param bs
@@ -335,7 +389,7 @@ public class GwtViewHelper {
 			}
 
 			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing an errors we
+			// ErrorListRpcResponseData containing any errors we
 			// encountered.  Return it.
 			return reply;
 		}
@@ -941,7 +995,8 @@ public class GwtViewHelper {
 					// ...and when one matches...
 					if (feDefId.equals(et.getDefId())) {
 						// ...use its EntryType for the requested entry.
-						reply.setEntryType(et);
+						reply.setBaseEntryType( et           );
+						reply.setBaseEntryTitle(fe.getTitle());
 						break;
 					}
 				}
@@ -2176,7 +2231,7 @@ public class GwtViewHelper {
 			}
 
 			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing an errors we
+			// ErrorListRpcResponseData containing any errors we
 			// encountered.  Return it.
 			return reply;
 		}
@@ -2229,7 +2284,7 @@ public class GwtViewHelper {
 			}
 
 			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing an errors we
+			// ErrorListRpcResponseData containing any errors we
 			// encountered.  Return it.
 			return reply;
 		}
@@ -2282,7 +2337,7 @@ public class GwtViewHelper {
 			}
 
 			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing an errors we
+			// ErrorListRpcResponseData containing any errors we
 			// encountered.  Return it.
 			return reply;
 		}
