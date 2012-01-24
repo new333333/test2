@@ -1622,6 +1622,13 @@ body, table td, select
 	font-size: large !important;
 	margin-top: 0px !important;
 }
+.breadCrumb_TrashLabel
+{
+	color: #135C8F;
+	font-size: large;
+	margin-top: 0px;
+	margin-right: 8px;
+}
 
 /* Styles for the search options. */
 .searchOptions

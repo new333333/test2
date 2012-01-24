@@ -178,7 +178,12 @@
 		.vibe-taskGraphsStatus2         {background-color:#70AE55;}
 		.vibe-taskGraphsStatus3         {background-color:#995DB2;}
 		.vibe-taskGraphsStatusBar       {width: 300px;}
-/* ...End:  Task graphs panel styles. */
+	/* ...End:  Task graphs panel styles. */
+	
+	/* ...Start:  Trash view styles. */
+		.vibe-trashDataTable {}
+		.vibe-trashFlowPanel {}
+	/* ...End:  trash view styles. */
 /* End:  GWT folder view styles. */
 
 

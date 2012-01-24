@@ -1041,7 +1041,6 @@ public class GwtViewHelper {
 	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, 
 			Long folderId, FolderType folderType, Boolean includeConfigurationInfo) throws GwtTeamingException {
 		try {
-			Folder			folder               = ((Folder) bs.getBinderModule().getBinder(folderId));
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			
@@ -1051,7 +1050,8 @@ public class GwtViewHelper {
 			List columnsAll = new ArrayList();
 
 			// Are we showing the trash on this folder?
-			if (FolderType.TRASH == folderType) {
+			boolean isTrash = (FolderType.TRASH == folderType);
+			if (isTrash) {
 				// Yes!  The columns in a trash view are not
 				// configurable.  Use the default trash columns.
 				columnNames = getColumnsLHMFromAS(TrashHelper.trashColumns);
@@ -1060,7 +1060,8 @@ public class GwtViewHelper {
 			else {
 				// No, we aren't showing the trash on this folder!  Are
 				// there user defined columns on this folder?
-				columnNames = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
+				Folder folder = ((Folder) bs.getBinderModule().getBinder(folderId));
+				columnNames   = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
 				if (null == columnNames) {
 					// No!  Are there defaults stored on the binder?
 					columnNames = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS));
@@ -1196,9 +1197,9 @@ public class GwtViewHelper {
 			fixupFCs(fcList);
 			
 
-			if (includeConfigurationInfo) {
+			if (includeConfigurationInfo && (!isTrash)) {
 				//Build a list of all possible columns
-				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
+				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(((Folder) bs.getBinderModule().getBinder(folderId)));
 				for (Definition def :  entryDefs.values()) {
 					@SuppressWarnings("unused")
 					org.dom4j.Document defDoc = def.getDefinition();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -363,15 +363,27 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		
 		// ...create a Grid for the content...
 		List<TreeInfo> rootTIList = getRootTreeInfoList();
-		int count = rootTIList.size();;
-		Grid contentGrid = createGrid(1, count, "breadCrumb_Content " + (getTreeMode().isHorizontalBinder() ? "breadCrumb_ContentBinder" : "breadCrumb_ContentPopup"));
+		int count = rootTIList.size();
+		boolean trash = isTrash();
+		Grid contentGrid = createGrid(
+			1,
+			(trash ? (count + 1) : count),
+			("breadCrumb_Content " +
+				(getTreeMode().isHorizontalBinder() ?
+					"breadCrumb_ContentBinder"      :
+					"breadCrumb_ContentPopup")));
+		if (trash) {
+			Label trashLabel = new Label(getMessages().treeTrash());
+			trashLabel.addStyleName("breadCrumb_TrashLabel");
+			contentGrid.setWidget(0, 0, trashLabel);
+		}
 
 		// ...scan the TreeInfo's...
 		for (int i = 0; i < count; i += 1) {
 			// ...display each into the content Grid...
 			Grid nodeGrid = createGrid(1, 2, "breadCrumb_ContentNode");
 			nodeGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, "0");
-			contentGrid.setWidget(0, i, nodeGrid);
+			contentGrid.setWidget(0, (trash ? (i + 1) : i), nodeGrid);
 			TreeInfo ti = rootTIList.get(i);
 			ti.setRootTail((i + 1) == count);
 			renderNode(ti, nodeGrid);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -89,10 +89,11 @@ public class WorkspaceTreeControl extends ResizeComposite
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {	
-	private GwtMainPage m_mainPage;
-	private Long m_selectedBinderId;
-	private TreeDisplayBase m_treeDisplay;
-	private TreeMode m_tm;
+	private boolean			m_isTrash;			//
+	private GwtMainPage		m_mainPage;			//
+	private Long			m_selectedBinderId;	//
+	private TreeDisplayBase	m_treeDisplay;		//
+	private TreeMode 		m_tm;				//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -174,13 +175,14 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
+	private WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, final boolean isTrash, TreeMode tm) {
 		// Initialize the super class...
 		super();
 		
 		// ...save the parameters...
 		m_mainPage         = mainPage;
 		m_selectedBinderId = Long.parseLong(selectedBinderId);
+		m_isTrash          = (isTrash && (TreeMode.HORIZONTAL_BINDER == tm));
 		m_tm               = tm;
 
 		// ...and initialize everything else.
@@ -358,6 +360,16 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 */
 	public boolean isSidebarTree() {
 		return (getTreeMode().isVertical());
+	}
+	
+	/**
+	 * Returns true if we're rendering a tree for a trash view and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isTrash() {
+		return m_isTrash;
 	}
 	
 	/**
@@ -671,11 +683,11 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * @param mode
 	 * @param wsTreeCtrlClient
 	 */
-	public static void createAsync(final GwtMainPage mainPage, final String selectedBinderId, final TreeMode mode, final WorkspaceTreeControlClient wsTreeCtrlClient) {
+	public static void createAsync(final GwtMainPage mainPage, final String selectedBinderId, final boolean isTrash, final TreeMode mode, final WorkspaceTreeControlClient wsTreeCtrlClient) {
 		GWT.runAsync(WorkspaceTreeControl.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				WorkspaceTreeControl wsTreeCtrl = new WorkspaceTreeControl(mainPage, selectedBinderId, mode);
+				WorkspaceTreeControl wsTreeCtrl = new WorkspaceTreeControl(mainPage, selectedBinderId, isTrash, mode);
 				wsTreeCtrlClient.onSuccess(wsTreeCtrl);
 			}
 			

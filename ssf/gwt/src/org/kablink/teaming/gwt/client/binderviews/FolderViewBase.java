@@ -59,6 +59,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Folder view base calls.  All folder views should be based off this
@@ -77,6 +79,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public abstract class FolderViewBase extends ViewBase implements ToolPanelReady {
 	private BinderInfo							m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
 	private boolean								m_allowColumnSizing;	// true -> Add the column sizing entry menu item.  false -> Don't.
+	private boolean								m_trash;				// true -> We're viewing the trash on a binder.  false -> We're not.
 	private boolean								m_viewReady;			// Set true once the view and all its components are ready.
 	private FolderDisplayDataRpcResponseData	m_folderDisplayData;	// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
 	private int									m_readyComponents;		// Tracks items as they become ready.
@@ -113,6 +116,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		m_styleBase         = ((GwtClientHelper.hasString(styleBase) ? styleBase : "vibe-folderView"));
 		m_allowColumnSizing = allowColumnSizing;
 		
+		// ...initialize any other data members...
+		m_trash = m_folderInfo.isBinderTrash();
+		
 		// ...create the main content panels and initialize the
 		// ...composite...
 		initWidget(constructInitialContent());
@@ -128,10 +134,20 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	final public BinderInfo                       getFolderInfo()        {return m_folderInfo;                    }	// The binder being viewed.
+	final public boolean                          isTrash()              {return m_trash;                         } //
 	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;             }	//
 	final public List<ToolPanelBase>              getToolPanels()        {return m_toolPanels;                    }	//
 	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();}	//
 	final public VibeFlowPanel                    getFlowPanel()         {return m_flowPanel;                     }	// Flow panel holding the view's content (no toolbars, ...)
+
+	/*
+	 * Returns a Widget to use for tool panels that aren't used.
+	 */
+	private Widget buildToolPanelPlaceholder() {
+		InlineLabel reply = new InlineLabel();
+		reply.removeStyleName("gwt-InlineLabel");
+		return reply;
+	}
 	
 	/*
 	 * Checks how many items are ready and once everything is, calls
@@ -254,6 +270,16 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		m_verticalPanel.insert(tpb, tpIndex);
 	}
 	
+	/**
+	 * Inserts a tool panel place holder into the view.
+	 * 
+	 * @param tpb
+	 * @param tpIndex
+	 */
+	final public void insertToolPanelPlaceholder(int tpIndex) {
+		m_verticalPanel.insert(buildToolPanelPlaceholder(), tpIndex);
+	}
+	
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
@@ -296,6 +322,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the AccessoriesPanel.
 	 */
 	private void loadPart2Async() {
+		// For a trash view...
+		if (isTrash()) {
+			// ...we don't show the accessories.
+			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
+			loadPart3Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -332,6 +366,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart3Async() {
+		// For a trash view...
+		if (isTrash()) {
+			// ...we don't show the description.
+			insertToolPanelPlaceholder(DESCRIPTION_PANEL_INDEX);
+			loadPart4Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -368,6 +410,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart4Async() {
+		// For a trash view...
+		if (isTrash()) {
+			// ...we don't show the filters.
+			insertToolPanelPlaceholder(FILTER_PANEL_INDEX);
+			loadPart5Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -508,6 +558,11 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 				// Store the core folder display data and tell the view
 				// to construct itself.
 				m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
+				if (isTrash()) {
+					// For trash views, we ignore the column widths on
+					// the folder.
+					m_folderDisplayData.setFolderColumnWidths(null);
+				}
 				constructViewAsync();
 			}
 		});

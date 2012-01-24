@@ -30,67 +30,108 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.event;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import org.kablink.teaming.gwt.client.util.FolderType;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'get folder toolbar items' command.
+ * The TrashPurgeAllEvent is used to purge all the entries from the
+ * trash.
  * 
  * @author drfoster@novell.com
  */
-public class GetFolderToolbarItemsCmd extends VibeRpcCmd {
-	private FolderType	m_folderType;	//
-	private Long 		m_folderId;		//
+public class TrashPurgeAllEvent extends VibeEventBase<TrashPurgeAllEvent.Handler> {
+    public static Type<Handler> TYPE = new Type<Handler>();
+    
+    public Long m_binderId;	//
+
+	/**
+	 * Handler interface for this event.
+	 */
+	public interface Handler extends EventHandler {
+		void onTrashPurgeAll(TrashPurgeAllEvent event);
+	}
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * Class constructor.
 	 */
-	public GetFolderToolbarItemsCmd() {
+	public TrashPurgeAllEvent() {
 		super();
 	}
 	
 	/**
-	 * Constructor method.
-	 *
-	 * @param folderId
+	 * Class constructor.
+	 * 
+	 * @param binderId
 	 */
-	public GetFolderToolbarItemsCmd(Long folderId, FolderType folderType) {
+	public TrashPurgeAllEvent(Long binderId) {
 		this();
-		
-		setFolderId(  folderId  );
-		setFolderType(folderType);
+		m_binderId = binderId;
 	}
-	
+
 	/**
-	 * Get'er methods.
+	 * Get'er method.
 	 * 
 	 * @return
 	 */
-	public FolderType getFolderType() {return m_folderType;}
-	public Long       getFolderId()   {return m_folderId;  }
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setFolderType(FolderType folderType) {m_folderType = folderType;}
-	public void setFolderId(  Long       folderId)   {m_folderId   = folderId;  }
+	public Long getBinderId() {return m_binderId;}
 	
 	/**
-	 * Returns the command's enumeration value.
+	 * Set'er method.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * @param binderId
+	 */
+	public void setBinderId(Long binderId) {m_binderId = binderId;}
+	
+	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements GwtEvent.dispatch()
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onTrashPurgeAll(this);
+    }
+	
+	/**
+	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
+	 * 
+	 * @return
+	 */
+    @Override
+    public Type<Handler> getAssociatedType() {
+        return TYPE;
+    }
+    
+	/**
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
+	 * 
+	 * Implements VibeBaseEvent.getEventEnum()
 	 * 
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_FOLDER_TOOLBAR_ITEMS.ordinal();
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.TRASH_PURGE_ALL;
+	}
+		
+	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
+	 * 
+	 * @param eventBus
+	 * @param handler
+	 * 
+	 * @return
+	 */
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 }

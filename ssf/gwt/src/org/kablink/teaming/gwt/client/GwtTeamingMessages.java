@@ -476,6 +476,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TaskListing();
 	String codeSplitFailure_TeamWSView();
 	String codeSplitFailure_TinyMCEDlg();
+	String codeSplitFailure_TrashView();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WorkspaceTreeControl();
@@ -696,6 +697,7 @@ public interface GwtTeamingMessages extends Messages
 	String treeCloseActivityStreamsHint();
 	String treeCloseBreadCrumbs();
 	String treeSiteWide();
+	String treeTrash();
 	
 	// Strings used in the "Add File Attachment" dialog.
 	String addFileAttachmentDlgHeader();

@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
+import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -86,7 +87,6 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
-import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
@@ -782,6 +782,31 @@ public class GwtMenuHelper {
 			}
 			displayStylesTBI.addNestedItem(sortByTBI);
 		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for trash views.
+	 */
+	private static void constructEntryTrashItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
+		ToolbarItem trashTBI = new ToolbarItem("1_trashRestore");
+		markTBITitle(trashTBI, "toolbar.menu.trash.restore");
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES);
+		entryToolbar.addNestedItem(trashTBI);
+		
+		trashTBI = new ToolbarItem("2_trashPurge");
+		markTBITitle(trashTBI, "toolbar.menu.trash.purge");
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_PURGE_SELECTED_ENTRIES);
+		entryToolbar.addNestedItem(trashTBI);
+		
+		trashTBI = new ToolbarItem("3_trashRestoreAll");
+		markTBITitle(trashTBI, "toolbar.menu.trash.restoreAll");
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_RESTORE_ALL);
+		entryToolbar.addNestedItem(trashTBI);
+		
+		trashTBI = new ToolbarItem("4_trashPurgeAll");
+		markTBITitle(trashTBI, "toolbar.menu.trash.purgeAll");
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_PURGE_ALL);
+		entryToolbar.addNestedItem(trashTBI);
 	}
 	
 	/*
@@ -1573,10 +1598,11 @@ public class GwtMenuHelper {
 	 * @param bs
 	 * @param request
 	 * @param folderId
+	 * @param folderType
 	 * 
 	 * @return
 	 */
-	public static List<ToolbarItem> getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long folderId) {
+	public static List<ToolbarItem> getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType) {
 		SimpleProfiler.start("GwtMenuHelper.getFolderToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
@@ -1585,42 +1611,52 @@ public class GwtMenuHelper {
 			ToolbarItem entryToolbar = new ToolbarItem(WebKeys.ENTRY_TOOLBAR);
 			reply.add(entryToolbar);
 
-			// Can the user can add entries to the folder?
-			FolderModule fm			= bs.getFolderModule();
-			Folder       folder		= fm.getFolder(folderId);
-			String       viewType	= DefinitionUtils.getViewType(folder);
-			boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry); 
-			if (addAllowed) {				
-				// Yes!  Add the necessary 'add entry' items.
-				constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
+			// Are we returning the toolbar items for a trash view?
+			if (FolderType.TRASH == folderType) {
+				// Yes!  Construct the items for viewing the trash.
+				constructEntryTrashItems(entryToolbar, bs, request, bs.getBinderModule().getBinder(folderId));
 			}
-
-			// Can we determine the folder's view type?
-			if (MiscUtil.hasString(viewType)) {
-				// Yes!  Is it a blog or photo album?
-				if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
-					// Yes!  Add the necessary 'sort by' items. 
-					constructEntrySortByItems(entryToolbar, bs, request, viewType, folder);
+			
+			else {
+				// No, we aren't returning the toolbar items for a
+				// trash view!  Can the user can add entries to the
+				// folder?
+				FolderModule fm			= bs.getFolderModule();
+				Folder       folder		= fm.getFolder(folderId);
+				String       viewType	= DefinitionUtils.getViewType(folder);
+				boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry); 
+				if (addAllowed) {				
+					// Yes!  Add the necessary 'add entry' items.
+					constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
 				}
-
-				// Can the user add entries to the folder and are applets
-				// supported?
-				if (addAllowed && SsfsUtil.supportApplets(request)) {
-					// Yes!  Is it other than a mini-blog or a mirrored
-					// file that can't be written to?
-					if ((!(viewType.equals(Definition.VIEW_STYLE_MINIBLOG))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
-						// Yes!  The the 'drop box' item.
-						constructEntryDropBoxItem(entryToolbar, bs, request, viewType, folder);
+	
+				// Can we determine the folder's view type?
+				if (MiscUtil.hasString(viewType)) {
+					// Yes!  Is it a blog or photo album?
+					if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+						// Yes!  Add the necessary 'sort by' items. 
+						constructEntrySortByItems(entryToolbar, bs, request, viewType, folder);
+					}
+	
+					// Can the user add entries to the folder and are applets
+					// supported?
+					if (addAllowed && SsfsUtil.supportApplets(request)) {
+						// Yes!  Is it other than a mini-blog or a mirrored
+						// file that can't be written to?
+						if ((!(viewType.equals(Definition.VIEW_STYLE_MINIBLOG))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
+							// Yes!  The the 'drop box' item.
+							constructEntryDropBoxItem(entryToolbar, bs, request, viewType, folder);
+						}
 					}
 				}
+	
+				// Constructs the item for deleting the selected entries.
+				constructEntryDeleteItems(entryToolbar, bs, request, viewType, folder);
+	
+				// Construct the various items that appear in the more drop
+				// down.
+				constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
 			}
-
-			// Constructs the item for deleting the selected entries.
-			constructEntryDeleteItems(entryToolbar, bs, request, viewType, folder);
-
-			// Construct the various items that appear in the more drop
-			// down.
-			constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the folder toolbar.  Return it.

@@ -829,6 +829,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_TRASH:
+				// A ShowTrashEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof ShowTrashEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowTrashEvent.registerEvent(eventBus, ((ShowTrashEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SIDEBAR_HIDE:
 				// A SidebarHideEvent!  Can the event handler we were
 				// given handle that?
@@ -1015,6 +1024,42 @@ public class EventHelper {
 				if (eventHandler instanceof TrackCurrentBinderEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = TrackCurrentBinderEvent.registerEvent(eventBus, ((TrackCurrentBinderEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TRASH_PURGE_ALL:
+				// A TrashPurgeAllEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TrashPurgeAllEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TrashPurgeAllEvent.registerEvent(eventBus, ((TrashPurgeAllEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TRASH_PURGE_SELECTED_ENTRIES:
+				// A TrashPurgeSelectedEntriesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof TrashPurgeSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TrashPurgeSelectedEntriesEvent.registerEvent(eventBus, ((TrashPurgeSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TRASH_RESTORE_ALL:
+				// A TrashRestoreAllEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof TrashRestoreAllEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TrashRestoreAllEvent.registerEvent(eventBus, ((TrashRestoreAllEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case TRASH_RESTORE_SELECTED_ENTRIES:
+				// A TrashRestoreSelectedEntriesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof TrashRestoreSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = TrashRestoreSelectedEntriesEvent.registerEvent(eventBus, ((TrashRestoreSelectedEntriesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1324,6 +1369,7 @@ public class EventHelper {
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
 			case SHOW_TEAM_WORKSPACE:					hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		   break;
+			case SHOW_TRASH:						    hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		               break;
 			
 			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;
 			case SIDEBAR_RELOAD:                    	hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);                 break;
@@ -1346,6 +1392,11 @@ public class EventHelper {
 			case TASK_SET_PRIORITY:                 	hasHandler = (eventHandler instanceof TaskSetPriorityEvent.Handler);               break;
 			case TASK_SET_STATUS:                   	hasHandler = (eventHandler instanceof TaskSetStatusEvent.Handler);                 break;
 			case TASK_VIEW:                         	hasHandler = (eventHandler instanceof TaskViewEvent.Handler);                      break;
+			
+			case TRASH_PURGE_ALL:                       hasHandler = (eventHandler instanceof TrashPurgeAllEvent.Handler);                 break;
+			case TRASH_PURGE_SELECTED_ENTRIES:          hasHandler = (eventHandler instanceof TrashPurgeSelectedEntriesEvent.Handler);     break;
+			case TRASH_RESTORE_ALL:                     hasHandler = (eventHandler instanceof TrashRestoreAllEvent.Handler);               break;
+			case TRASH_RESTORE_SELECTED_ENTRIES:        hasHandler = (eventHandler instanceof TrashRestoreSelectedEntriesEvent.Handler);   break;
 			
 			case TREE_NODE_COLLAPSED:                   hasHandler = (eventHandler instanceof TreeNodeCollapsedEvent.Handler);             break;
 			case TREE_NODE_EXPANDED:                    hasHandler = (eventHandler instanceof TreeNodeExpandedEvent.Handler);              break;

@@ -126,6 +126,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_LANDING_PAGE,					// Shows a landing page.
 	SHOW_TASK_FOLDER,					// Shows a task folder.
 	SHOW_TEAM_WORKSPACE,				// Shows a team workspace.
+	SHOW_TRASH,							// Shows a trash view.
 	
 	SIDEBAR_HIDE,						// Hides the left navigation panel.
 	SIDEBAR_RELOAD,						// Tells the left navigation panel to reload itself.
@@ -148,6 +149,11 @@ public enum TeamingEvents implements IsSerializable {
 	TASK_SET_PRIORITY,					// Sets a Task's Priority.
 	TASK_SET_STATUS,					// Sets a Task's Status.
 	TASK_VIEW,							// Sets a Task's View.
+
+	TRASH_PURGE_ALL,					// Purges everything in the trash.
+	TRASH_PURGE_SELECTED_ENTRIES,		// Purges the selected entries in the trash.
+	TRASH_RESTORE_ALL,					// Restores everything in the trash.
+	TRASH_RESTORE_SELECTED_ENTRIES,		// Restores the selected entries in the trash.
 	
 	TREE_NODE_COLLAPSED,				// Fired when the node in a tree is collapsed.
 	TREE_NODE_EXPANDED,					// Fired when the node in a tree is expanded.

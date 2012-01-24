@@ -309,7 +309,7 @@ public class BinderViewsHelper {
 		url.append("&multipleEntryIds=" + EntryId.getMultipleEntryIdsParam(entryIds)   );
 
 		// ...and launch it.
-		GwtClientHelper.jsLaunchToolbarPopupUrl(url.toString(), 1024, 768);
+		GwtClientHelper.jsLaunchToolbarPopupUrl(url.toString(), 800, 650);
 	}
 
 	/*
