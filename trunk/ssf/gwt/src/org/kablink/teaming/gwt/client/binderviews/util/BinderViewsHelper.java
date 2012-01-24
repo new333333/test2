@@ -54,7 +54,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -299,9 +298,18 @@ public class BinderViewsHelper {
 			// ...bail.
 			return;
 		}
-		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.shareEntries():  ...this needs to be implemented...");
+
+		// Generate the URL to launch the JSP code to do sharing...
+		// http://10.0.1.202:8080/ssf/a/do?p_name=ss_forum&p_action=0&operation=share_this_binder&binderId=18822&action=__ajax_relevance&entryId=9323&vibe_url=1
+		StringBuffer url = new StringBuffer(GwtClientHelper.getRequestInfo().getBaseVibeUrl());
+		url.append("&operation=share_this_binder");
+		url.append("&action=__ajax_relevance");
+		url.append("&binderId="         + String.valueOf(entryIds.get(0).getBinderId()));
+		url.append("&entryId="          + String.valueOf(entryIds.get(0).getEntryId()) );
+		url.append("&multipleEntryIds=" + EntryId.getMultipleEntryIdsParam(entryIds)   );
+
+		// ...and launch it.
+		GwtClientHelper.jsLaunchToolbarPopupUrl(url.toString(), 1024, 768);
 	}
 
 	/*

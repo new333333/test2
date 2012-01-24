@@ -80,8 +80,18 @@ import org.springframework.web.multipart.MultipartFile;
 public final class MiscUtil
 {
 	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
-
 	
+	public static class IdPair {
+		public Long m_binderId;
+		public Long m_entryId;
+		
+		public IdPair(Long binderId, Long entryId) {
+			super();
+			m_binderId = binderId;
+			m_entryId  = entryId;
+		}
+	}
+
 	/**
 	 * Class constructor that prevents this class from being instantiated.
 	 */
@@ -927,5 +937,28 @@ public final class MiscUtil
 		else {
 			return s;
 		}
+	}
+	
+	/**
+	 * Returns a List<IdPair> of the binder ID/entry ID pairs stored in
+	 * a multiple entry ID string.
+	 * 
+	 * @param multipleEntryIds
+	 * 
+	 * @return
+	 */
+	public static List<IdPair> getIdPairsFromMultipleEntryIds( String multipleEntryIds )
+	{
+		List<IdPair> reply = new ArrayList<IdPair>();
+		if ( MiscUtil.hasString( multipleEntryIds ) )
+		{
+			String[] meIds = multipleEntryIds.split( "," );
+			for ( String meId:  meIds )
+			{
+				String[] eId = meId.split( ":" );
+				reply.add(new IdPair(Long.parseLong(eId[0]), Long.parseLong(eId[1])));
+			}
+		}
+		return reply;
 	}
 }// end MiscUtil
