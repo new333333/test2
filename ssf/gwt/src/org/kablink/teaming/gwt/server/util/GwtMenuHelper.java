@@ -127,6 +127,7 @@ public class GwtMenuHelper {
 	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
 	private final static String MANAGE_DEFINITIONS		= "manageDefinitions";
+	private final static String MANAGE_TEMPLATES		= "manageTemplates";
 	private final static String MANUAL_SYNC				= "manualSync";
 	private final static String MOBILE_UI				= "mobileUI";
 	private final static String MODIFY					= "modify";
@@ -986,6 +987,25 @@ public class GwtMenuHelper {
 			actionTBI = new ToolbarItem(MANAGE_DEFINITIONS);
 			markTBIPopup(actionTBI                                               );
 			markTBITitle(actionTBI, "administration.definition_builder_designers");
+			markTBIUrl(  actionTBI, url                                          );
+			
+			configTBI.addNestedItem(actionTBI);
+		}
+		
+		// Does the user have rights to manage the templates on this
+		// binder?
+		if ((isFolder || isWorkspace) && bm.testAccess(binder, BinderOperation.manageConfiguration)) {
+			// Yes!  Add the ToolbarItem for it.
+			adminMenuCreated  =
+			configMenuCreated = true;
+
+			url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MANAGE_TEMPLATES);
+			url.setParameter(WebKeys.URL_BINDER_PARENT_ID,   binderIdS                );
+			
+			actionTBI = new ToolbarItem(MANAGE_TEMPLATES);
+			markTBIPopup(actionTBI                                               );
+			markTBITitle(actionTBI, "administration.template_builder_local"      );
 			markTBIUrl(  actionTBI, url                                          );
 			
 			configTBI.addNestedItem(actionTBI);

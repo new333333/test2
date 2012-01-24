@@ -98,7 +98,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			if (WebKeys.OPERATION_ADD.equals(operation)) {
-				//adding top level config
+				Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+				Binder parentBinder = null;
+				if (parentBinderId != null) {
+					//Make sure there is access to the parent binder
+					parentBinder = (Binder)getBinderModule().getBinder(parentBinderId);
+				}
+				//adding a new template
 				Integer type = PortletRequestUtils.getIntParameter(request, "definitionType");
 				if (type == null)  return;
 				if (type == -1) {
@@ -115,7 +121,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 							//This binder cannot be turned into a tempalte
 							response.setRenderParameter(WebKeys.ERROR_LIST, errors);
 						} else {
-							TemplateBinder template = getTemplateModule().addTemplateFromBinder(binderId);
+							TemplateBinder template = getTemplateModule().addTemplateFromBinder(parentBinder, binderId);
 							if (template == null) {
 								errors[0] = NLT.get("error.binderCannotBeUsedAsTemplate");
 								response.setRenderParameter(WebKeys.ERROR_LIST, errors);
@@ -132,7 +138,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(sVal));
 					sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
 					if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal);
-					Long configId = getTemplateModule().addTemplate(type, updates).getId();
+					Long configId = getTemplateModule().addTemplate(parentBinder, type, updates).getId();
 					TemplateBinder config = getTemplateModule().getTemplate(configId);
 					//	redirect to modify binder
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
@@ -289,6 +295,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			//Make sure there is access to the parent binder
 			parentBinder = (Binder)getBinderModule().getBinder(parentBinderId);
 		}
+		model.put(WebKeys.CONFIGURE_CONFIGURATION_LOCAL, false);
+		if (parentBinderId != null) {
+			model.put(WebKeys.CONFIGURE_CONFIGURATION_LOCAL, true);
+			model.put(WebKeys.URL_BINDER_PARENT_ID, String.valueOf(parentBinderId));
+		}
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
 		String path = WebKeys.VIEW_TEMPLATE;
@@ -313,6 +324,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+				if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+					reloadUrl.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+				}
 				request.setAttribute("ssReloadUrl", reloadUrl.toString());			
 				return new ModelAndView("administration/reload_current");
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
@@ -341,6 +355,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+				if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+					reloadUrl.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+				}
 				model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 				model.put(WebKeys.DEFINITION_ENTRY, config);
 				BinderHelper.setupStandardBeans(this, request, response, model, configId);
@@ -435,30 +452,48 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 			url.setParameter("definitionType", String.valueOf(Definition.FOLDER_VIEW));
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.folder"), url, qualifiers);
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 			url.setParameter("definitionType", String.valueOf(Definition.WORKSPACE_VIEW));
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.workspace"), url, qualifiers);
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 			url.setParameter("definitionType", "-1");
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenuItem("1_add", "", NLT.get("administration.configure_cfg.clone"), url, qualifiers);
 			
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RESET);
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenu("3_reload", NLT.get("administration.toolbar.reset"), url);
 			
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_IMPORT);
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenu("4_import", NLT.get("administration.toolbar.import"), url);
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_EXPORT);
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenu("5_export", NLT.get("administration.toolbar.export"), url);
 			
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
@@ -495,6 +530,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+				if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+					url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+				}
 				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url, qualifiersBlock);
 			} else {
 				//	must be workspace
@@ -502,6 +540,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+				if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+					url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+				}
 				toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspaceTemplate"), url, qualifiersBlock);
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
@@ -515,6 +556,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.delete_template"), url, qualifiers);		
 
 			//Modify config
@@ -522,6 +566,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_TEMPLATE);
 			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_template"), url, qualifiersBlock);		
 			//export config
 			String webUrl  = WebUrlUtil.getServletRootURL(request) + "templateDownload?id_" + configId.toString() + "=on";
@@ -549,6 +596,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			}
 			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), url, qualifiersBlock);
 
 		}
