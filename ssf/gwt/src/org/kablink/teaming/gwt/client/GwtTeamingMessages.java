@@ -287,6 +287,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddFavoriteLimitExceeded();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
+	String rpcFailure_ChangeEntryTypes();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
@@ -1344,5 +1345,13 @@ public interface GwtTeamingMessages extends Messages
 	String unlockEntriesError();
 	
 	// Strings used by ChangeEntryTypesDlg.
-	String changeEntryTypesHeader();
+	String changeEntryTypesDlgCurrent();
+	String changeEntryTypesDlgErrorChangeFailures();
+	String changeEntryTypesDlgErrorNoSelection();
+	String changeEntryTypesDlgHeader();
+	String changeEntryTypesDlgHeaderFor(String title);
+	String changeEntryTypesDlgLocal();
+	String changeEntryTypesDlgNew();
+	String changeEntryTypesDlgNote();
+	String changeEntryTypesDlgSelect();
 }// end GwtTeamingMessages
