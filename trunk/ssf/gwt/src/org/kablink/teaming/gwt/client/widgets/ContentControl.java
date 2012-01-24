@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
+import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -57,6 +58,7 @@ import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -107,8 +109,11 @@ public class ContentControl extends Composite
 		ShowFileFolderEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowTaskFolderEvent.Handler,
-		ShowTeamWSEvent.Handler
+		ShowTeamWSEvent.Handler,
+		ShowTrashEvent.Handler
 {
+	private final static boolean SHOW_NEW_TRASH	= false;	// 20120124:DRF - Allows me to turn this off until I get it all working.
+	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -131,10 +136,11 @@ public class ContentControl extends Composite
 		// Show events.
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
-		TeamingEvents.SHOW_TEAM_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_TASK_FOLDER,
+		TeamingEvents.SHOW_TEAM_WORKSPACE,
+		TeamingEvents.SHOW_TRASH,
 	};
 
 	// Maximum number of URLs tracked in the content history stack.
@@ -577,6 +583,14 @@ public class ContentControl extends Composite
 							break;
 	
 							
+						case TRASH:
+							if (SHOW_NEW_TRASH) {
+								GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+	
+							
 						case BLOG:
 						case CALENDAR:
 						case GUESTBOOK:
@@ -585,7 +599,6 @@ public class ContentControl extends Composite
 						case MIRROREDFILE:
 						case PHOTOALBUM:
 						case SURVEY:
-						case TRASH:
 						case WIKI:
 							// These aren't handled!  Let things take
 							// the default flow.
@@ -659,12 +672,19 @@ public class ContentControl extends Composite
 							break;
 						}
 							
+						case TRASH:
+							if (SHOW_NEW_TRASH) {
+								GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+	
+							
 						case GLOBAL_ROOT:
 						case PROFILE_ROOT:
 						case PROJECT_MANAGEMENT:
 						case TEAM_ROOT:
 						case TOP:
-						case TRASH:
 						case USER:
 						case WORKSPACE:
 							// These aren't handled!  Let things take 
@@ -1025,6 +1045,37 @@ public class ContentControl extends Composite
 		// Create a TeamWSView widget for the selected binder.
 		TeamWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}
+	
+	/**
+	 * Handles ShowTrashEvent's received by this class.
+	 * 
+	 * Implements the ShowTrashEvent.Handler.onShowTrash() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowTrash( final ShowTrashEvent event )
+	{
+		// Create a TrashView widget for the selected binder.
+		TrashView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase tView )
+			{
+				tView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( tView );
+			}// end onSuccess()
+		});
+	}// end onShowTrash()
 	
 	/**
 	 * Callback interface to interact with the content control

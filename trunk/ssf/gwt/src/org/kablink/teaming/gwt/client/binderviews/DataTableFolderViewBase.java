@@ -459,7 +459,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String folderStyles) {
 		// Initialize the super class...
-		super(folderInfo, viewReady, "vibe-dataTableFolder", true);
+		super(folderInfo, viewReady, "vibe-dataTableFolder", (!(folderInfo.isBinderTrash())));
 
 		// ...and initialize any other data members.
 		initDataMembers(folderStyles);
@@ -954,7 +954,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private void loadFolderColumnsNow() {
 		final Long folderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderColumnsCmd(folderId, getFolderInfo().getFolderType()),
+				new GetFolderColumnsCmd(folderId, (isTrash() ? FolderType.TRASH : getFolderInfo().getFolderType())),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
