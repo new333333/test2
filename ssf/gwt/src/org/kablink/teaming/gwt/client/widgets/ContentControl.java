@@ -39,6 +39,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
+import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
@@ -56,6 +57,7 @@ import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowGenericWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
@@ -107,6 +109,7 @@ public class ContentControl extends Composite
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
+		ShowGenericWSEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowTaskFolderEvent.Handler,
 		ShowTeamWSEvent.Handler,
@@ -137,6 +140,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
+		TeamingEvents.SHOW_GENERIC_WORKSPACE,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_TASK_FOLDER,
 		TeamingEvents.SHOW_TEAM_WORKSPACE,
@@ -672,6 +676,25 @@ public class ContentControl extends Composite
 							break;
 						}
 							
+						case WORKSPACE:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new generic workspace?" ) )
+									showNew = false;
+							}
+							
+							if ( showNew )
+							{
+								// Fire the event that will display the generic workspace.
+								GwtTeaming.fireEvent( new ShowGenericWSEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
 						case TRASH:
 							if (SHOW_NEW_TRASH) {
 								GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
@@ -686,7 +709,6 @@ public class ContentControl extends Composite
 						case TEAM_ROOT:
 						case TOP:
 						case USER:
-						case WORKSPACE:
 							// These aren't handled!  Let things take 
 							// the default flow.
 							break;
@@ -952,6 +974,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowFileFolder()
+	
+	/**
+	 * Handles ShowGenericWSEvent's received by this class.
+	 * 
+	 * Implements the ShowGenericWSEvent.Handler.onShowTeamWS() method.
+	 */
+	@Override
+	public void onShowGenericWS( ShowGenericWSEvent event )
+	{
+		ViewClient vClient;
+		
+		// Display a Generic Workspace for the given binder id.
+		vClient = new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase genericWS )
+			{
+				genericWS.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( genericWS );
+			}
+		};
+		
+		// Create a GenericWSView widget for the selected binder.
+		GenericWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+	}
 	
 	/**
 	 * Handles ShowLandingPageEvent's received by this class.

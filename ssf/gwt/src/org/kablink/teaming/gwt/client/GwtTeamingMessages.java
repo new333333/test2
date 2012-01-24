@@ -455,6 +455,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_FolderOptionsDlg();
 	String codeSplitFailure_FolderColumnsDlg();
 	String codeSplitFailure_FooterPanel();
+	String codeSplitFailure_GenericWSView();
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_LandingPage();
