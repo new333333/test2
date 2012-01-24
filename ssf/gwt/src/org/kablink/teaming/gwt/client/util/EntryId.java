@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -84,4 +86,24 @@ public class EntryId implements IsSerializable {
 	 */
 	public void setBinderId(Long binderId) {m_binderId = binderId;}
 	public void setEntryId( Long entryId)  {m_entryId  = entryId; }
+	
+	/**
+	 * Returns a string that can be used to pass a List<EntryId> as a
+	 * parameter on a URL.
+	 * 
+	 * @param entryIds
+	 * 
+	 * @return
+	 */
+	public static String getMultipleEntryIdsParam(List<EntryId> entryIds) {
+		StringBuffer reply = new StringBuffer("");
+		boolean firstId  = true;
+		for (EntryId entryId:  entryIds) {
+			if (firstId)
+			     firstId = false;
+			else reply.append(",");
+			reply.append(String.valueOf(entryId.getBinderId()) + ":" + String.valueOf(entryId.getEntryId()));
+		}
+		return reply.toString();
+	}
 }
