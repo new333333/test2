@@ -102,8 +102,10 @@
 		.vibe-dataTableCustom-event-end      {}
 		.vibe-dataTableCustom-event-duration {}
 		.vibe-dataTableCustom-string         {}
+		.vibe-dataTableEntity-Marker         {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-download        {border: 0px solid #666666; background: url(images/move_down.gif); background-repeat: no-repeat; background-position:  left center; padding-left: 15px; padding-right: 0px; line-height: 11px;}
 		.vibe-dataTableEntry-title           {cursor: pointer; color: #135c8f !important; padding: 2px;}
+		.vibe-dataTableEntry-titleNoLink     {color: #353838 !important; padding: 2px;}
 		.vibe-dataTableEntry-unseenMarker    {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-viewAnchor      {text-decoration: none;}
 		.vibe-dataTableEntry-viewLabel       {}

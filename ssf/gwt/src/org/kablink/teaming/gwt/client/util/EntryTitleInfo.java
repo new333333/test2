@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,9 +41,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class EntryTitleInfo implements IsSerializable {
+	private boolean m_trash;		//
 	private boolean	m_seen;			//
 	private Long	m_entryId;		//
 	private String	m_description;	//
+	private String  m_entityType;	//
 	private String  m_title;		//
 
 	/**
@@ -61,8 +63,10 @@ public class EntryTitleInfo implements IsSerializable {
 	 * @return
 	 */
 	public boolean getSeen()        {return m_seen;       }
+	public boolean getTrash()       {return m_trash;      }
 	public Long    getEntryId()     {return m_entryId;    }
 	public String  getDescription() {return m_description;}
+	public String  getEntityType()  {return m_entityType; }
 	public String  getTitle()       {return m_title;      }
 	
 	/**
@@ -71,24 +75,30 @@ public class EntryTitleInfo implements IsSerializable {
 	 * @param
 	 */
 	public void setSeen(       boolean seen)        {m_seen        = seen;       }
+	public void setTrash(      boolean trash)       {m_trash       = trash;      }
 	public void setEntryId(    Long    entryId)     {m_entryId     = entryId;    }
 	public void setDescription(String  description) {m_description = description;}
+	public void setEntityType( String  entityType)  {m_entityType  = entityType; }
 	public void setTitle(      String  title)       {m_title       = title;      }
 	
 	/**
 	 * Constructs an EntryTitleInfo from the parameters.
 	 *
 	 * @param seen
+	 * @param trash
+	 * @param entityType
 	 * @param title
 	 * @param description
 	 * 
 	 * @return
 	 */
-	public static EntryTitleInfo construct(Long entryId, boolean seen, String title, String description) {
+	public static EntryTitleInfo construct(Long entryId, boolean seen, boolean trash, String entityType, String title, String description) {
 		EntryTitleInfo reply = new EntryTitleInfo();
 		
 		reply.setEntryId(    entryId    );
 		reply.setSeen(       seen       );
+		reply.setTrash(      trash      );
+		reply.setEntityType( entityType );
 		reply.setTitle(      title      );
 		reply.setDescription(description);
 		

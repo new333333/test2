@@ -76,6 +76,10 @@ import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.TrashPurgeAllEvent;
+import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
+import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
@@ -156,6 +160,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		PurgeSelectedEntriesEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
+		TrashPurgeAllEvent.Handler,
+		TrashPurgeSelectedEntriesEvent.Handler,
+		TrashRestoreAllEvent.Handler,
+		TrashRestoreSelectedEntriesEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler
 {
 	private AddFilesDlg					m_addFilesDlg;				//
@@ -201,6 +209,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
+		TeamingEvents.TRASH_PURGE_ALL,
+		TeamingEvents.TRASH_PURGE_SELECTED_ENTRIES,
+		TeamingEvents.TRASH_RESTORE_ALL,
+		TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
 	
@@ -236,7 +248,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			final Range range = display.getVisibleRange();
 			final int rowsRequested = range.getLength();
 			GwtClientHelper.executeCommand(
-					new GetFolderRowsCmd(folderId, getFolderInfo().getFolderType(), m_folderColumnsList, range.getStart(), rowsRequested),
+					new GetFolderRowsCmd(
+						folderId,
+						(isTrash()           ?
+							FolderType.TRASH :
+							getFolderInfo().getFolderType()),
+						m_folderColumnsList,
+						range.getStart(),
+						rowsRequested),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -697,10 +716,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	
 	/*
 	 * Initializes various data members for the class.
-	 * 
-	 * Note:  Except for the select and pin columns, the values for the
-	 *    column width were extracted from the implementation of
-	 *    folder_view_common2.jsp.
 	 */
 	private void initDataMembers(String folderStyles) {
 		// Store the parameters...
@@ -724,6 +739,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Initializes any additional data members required when using a
 	 * fixed table layout.
+	 * 
+	 * Note:  Except for the select and pin columns, the values for the
+	 *    column width were extracted from the implementation of
+	 *    folder_view_common2.jsp or view_trash.jsp.
 	 */
 	private void initDataMembersFixed() {
 		// The following defines the default width that will be used for
@@ -731,18 +750,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		m_defaultColumnWidth = new ColumnWidth(20);
 
 		// Add the widths for predefined column names...
-		m_columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
-		m_columnWidths.put(ColumnWidth.COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
-		m_columnWidths.put(ColumnWidth.COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
-		m_columnWidths.put(ColumnWidth.COLUMN_DOWNLOAD, new ColumnWidth( 8));
-		m_columnWidths.put(ColumnWidth.COLUMN_HTML,     new ColumnWidth(10));
-		m_columnWidths.put(ColumnWidth.COLUMN_LOCATION, new ColumnWidth(30));
-		m_columnWidths.put(ColumnWidth.COLUMN_NUMBER,   new ColumnWidth( 5));
-		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
-		m_columnWidths.put(ColumnWidth.COLUMN_SIZE,     new ColumnWidth( 8));
-		m_columnWidths.put(ColumnWidth.COLUMN_STATE,    new ColumnWidth( 8));
-		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
-		m_columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(28));
+		boolean isTrash = isTrash();
+		m_columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(isTrash ? 20 : 24));	// Unless otherwise specified...
+		m_columnWidths.put(ColumnWidth.COLUMN_COMMENTS, new ColumnWidth(                8));	// ...the widths default to...
+		m_columnWidths.put(ColumnWidth.COLUMN_DATE,     new ColumnWidth(               20));	// ...be a percentage value.
+		m_columnWidths.put(ColumnWidth.COLUMN_DOWNLOAD, new ColumnWidth(                8));
+		m_columnWidths.put(ColumnWidth.COLUMN_HTML,     new ColumnWidth(               10));
+		m_columnWidths.put(ColumnWidth.COLUMN_LOCATION, new ColumnWidth(               30));
+		m_columnWidths.put(ColumnWidth.COLUMN_NUMBER,   new ColumnWidth(                5));
+		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(               10));
+		m_columnWidths.put(ColumnWidth.COLUMN_SIZE,     new ColumnWidth(                8));
+		m_columnWidths.put(ColumnWidth.COLUMN_STATE,    new ColumnWidth(                8));
+		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(               10));
+		m_columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(isTrash ? 27 : 28));
 
 		// ...and then add the widths for everything else.
 		m_columnWidths.put(ColumnWidth.COLUMN_SELECT,   new ColumnWidth(40, Unit.PX));
@@ -954,7 +974,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private void loadFolderColumnsNow() {
 		final Long folderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderColumnsCmd(folderId, (isTrash() ? FolderType.TRASH : getFolderInfo().getFolderType())),
+				new GetFolderColumnsCmd(
+					folderId,
+					(isTrash()           ?
+						FolderType.TRASH :
+						getFolderInfo().getFolderType())),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1412,6 +1436,78 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.subscribeToEntries(
 				getFolderInfo().getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
+		}
+	}
+	
+	/**
+	 * Handles TrashPurgeAllEvent's received by this class.
+	 * 
+	 * Implements the TrashPurgeAllEvent.Handler.onTrashPurgeAll() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTrashPurgeAll(TrashPurgeAllEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getBinderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Asynchronously restore the selected entries.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onTrashPurgeAll():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles TrashPurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the TrashPurgeSelectedEntriesEvent.Handler.onTrashPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTrashPurgeSelectedEntries(TrashPurgeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getBinderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Asynchronously restore the selected entries.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onTrashPurgeSelectedEntries():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles TrashRestoreAllEvent's received by this class.
+	 * 
+	 * Implements the TrashRestoreAllEvent.Handler.onTrashRestoreAll() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTrashRestoreAll(TrashRestoreAllEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getBinderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Asynchronously restore the selected entries.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onTrashRestoreAll():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles TrashRestoreSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the TrashRestoreSelectedEntriesEvent.Handler.onTrashRestoreSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onTrashRestoreSelectedEntries(TrashRestoreSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getBinderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Asynchronously restore the selected entries.
+//!			...this needs to be implemented...
+			Window.alert("DataTableFolderViewBase.onTrashRestoreSelectedEntries():  ...this needs to be implemented...");
 		}
 	}
 	

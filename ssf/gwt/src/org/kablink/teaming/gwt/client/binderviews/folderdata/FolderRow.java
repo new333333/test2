@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate information about a row of data from a
  * folder.
@@ -66,6 +65,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, PrincipalInfo>			m_rowPrincipals;	// A map of column names to PrincipalInfo's        possibly stored for a column.
 	private Map<String, ViewFileInfo>			m_rowViewFiles;		// A map of column names to ViewFileInfo's         possibly stored for a column.
 	private Map<String, String>					m_rowStrings;		// A map of column names to String values          possible stored for a column.
+	private String								m_entityType;		// The type of entity this row represents (entry, folder or workspace.)
 	
 	/**
 	 * Constructor method.
@@ -81,15 +81,17 @@ public class FolderRow implements IsSerializable {
 	 * Constructor method.
 	 * 
 	 * @param entryId
+	 * @param entityType
 	 * @param columns
 	 */
-	public FolderRow(Long entryId, List<FolderColumn> columns) {
+	public FolderRow(Long entryId, String entityType, List<FolderColumn> columns) {
 		// Initialize the class...
 		this();
 
 		// ...and store the parameters.
-		m_entryId = entryId;
-		m_columns = columns;
+		m_entryId    = entryId;
+		m_entityType = entityType;
+		m_columns    = columns;
 	}
 
 	/**
@@ -110,6 +112,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, PrincipalInfo>        getRowPrincipalsMap()        {validateMapPrincipals(); return m_rowPrincipals;   }
 	public Map<String, ViewFileInfo>         getRowViewFilesMap()         {validateMapViews();      return m_rowViewFiles;    }
 	public Map<String, String>               getRowStringsMap()           {validateMapStrings();    return m_rowStrings;      }
+	public String                            getEntityType()              {                         return m_entityType;      }
 
 	/**
 	 * Set'er methods.

@@ -225,6 +225,7 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
+import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -4479,6 +4480,56 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static Object getValueFromEntryMap(Map em, String key) {
+		// Is one of the trash fields being requested?
+		if (key.startsWith(Constants.PRE_DELETED_FIELD)) {
+			// Yes!  Is it a request for who moved the item to the
+			// trash?
+			if (key.equals(Constants.PRE_DELETED_BY_ID_FIELD)) {
+				// Yes!  Do we have an ID?
+				Object v = em.get(key);
+				if (null != v) {
+					// Yes!  Can we obtain the matching user?
+					try {
+						String deletedById  = v.toString();
+						List deletedByUsers = ResolveIds.getPrincipals(deletedById, false);
+						User deletedByUser  = ((User) deletedByUsers.get(0));
+						if (null != deletedByUser) {
+							// Yes!  Return it.
+							return deletedByUser;
+						}
+					}
+					catch (Exception e) {/* Ignore. */}
+				}
+				
+				// No ID or we couldn't obtain the matching user.
+				// Return their title, if there.
+				key = Constants.PRE_DELETED_BY_TITLE_FIELD;
+			}
+			
+			// No, it isn't a request for who moved the item to the
+			// trash!  Is it a request for when the item was moved
+			// there?
+			else if (key.equals(Constants.PRE_DELETED_WHEN_FIELD)) {
+				// Yes!  Is the raw date for when there?
+				Object v = em.get(Constants.PRE_DELETED_WHEN_FIELD + "_raw");
+				if (null != v) {
+					// Yes!  Return it.
+					Date deletedWhen = ((Date) v);
+					return deletedWhen;
+				}
+
+				try {
+					v = em.get(key);
+					long l = Long.parseLong((String) v);
+					Date deletedWhen = new Date(l);
+					return deletedWhen;
+				}
+				catch (Exception e) {/* Ignore. */}
+			}
+		}
+
+		// If we get here, we didn't handle this as a trash field.
+		// Simply return what's there.
 		return em.get(key);
 	}
 
