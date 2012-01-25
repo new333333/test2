@@ -572,9 +572,9 @@ public class GwtViewHelper {
 	 * 
 	 * Note:  The algorithm used in this method for columns whose names
 	 *    contain multiple parts was reverse engineered from that used
-	 *    by folder_view_common2.jsp.
+	 *    by folder_view_common2.jsp or view_trash.jsp.
 	 */
-	private static void fixupFCs(List<FolderColumn> fcList) {
+	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash) {
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("author"))   {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
@@ -598,10 +598,12 @@ public class GwtViewHelper {
 				if (colName.contains(",")) {
 					String[] temp = colName.split(",");
 					if (4 <= temp.length) {
-						defId      = temp[0];
-						eleType    = temp[1];
-						eleName    = temp[2];
-						//Since the caption may have commas in it, we need to get everything past the third comma
+						defId   = temp[0];
+						eleType = temp[1];
+						eleName = temp[2];
+						
+						// Since the caption may have commas in it, we
+						// need to get everything past the third comma.
 						eleCaption = colName.substring(colName.indexOf(",")+1);
 						eleCaption = eleCaption.substring(eleCaption.indexOf(",")+1);
 						eleCaption = eleCaption.substring(eleCaption.indexOf(",")+1);
@@ -631,8 +633,16 @@ public class GwtViewHelper {
 					// in a single value!  Just use the name for the
 					// search and sort keys.
 					fc.setColumnSearchKey(colName);
-					fc.setColumnEleName(colName);	//If not a custom attribute, the element name is the colName
+					fc.setColumnEleName(  colName);	//If not a custom attribute, the element name is the colName
 				}
+			}
+
+			// If we're dealing with a trash view...
+			if (isTrash) {
+				// ...some of the fields are managed using a different search key. 
+				if      (colName.equals("author"))   {fc.setColumnSearchKey(Constants.PRE_DELETED_BY_ID_FIELD); fc.setColumnSortKey("");}
+				else if (colName.equals("date"))     {fc.setColumnSearchKey(Constants.PRE_DELETED_WHEN_FIELD);  fc.setColumnSortKey("");}
+				else if (colName.equals("location")) {fc.setColumnSearchKey(Constants.PRE_DELETED_FROM_FIELD);  fc.setColumnSortKey("");}
 			}
 		}
 	}
@@ -1023,7 +1033,7 @@ public class GwtViewHelper {
 	 * as a FolderColumnsRpcResponseData.
 	 * 
 	 * The algorithm used in this method was reverse engineered from
-	 * that used by folder_view_common2.jsp.
+	 * that used by folder_view_common2.jsp or view_trash.jsp.
 	 * 
 	 * @param bs
 	 * @param request
@@ -1050,16 +1060,19 @@ public class GwtViewHelper {
 			List columnsAll = new ArrayList();
 
 			// Are we showing the trash on this folder?
+			String baseNameKey;
 			boolean isTrash = (FolderType.TRASH == folderType);
 			if (isTrash) {
 				// Yes!  The columns in a trash view are not
 				// configurable.  Use the default trash columns.
+				baseNameKey = "trash.column.";
 				columnNames = getColumnsLHMFromAS(TrashHelper.trashColumns);
 			}
 			
 			else {
 				// No, we aren't showing the trash on this folder!  Are
 				// there user defined columns on this folder?
+				baseNameKey   = "folder.column.";
 				Folder folder = ((Folder) bs.getBinderModule().getBinder(folderId));
 				columnNames   = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
 				if (null == columnNames) {
@@ -1166,9 +1179,9 @@ public class GwtViewHelper {
 					String colTitleDefault = "";
 					if (!MiscUtil.hasString(fc.getColumnDefId())) {
 						colTitleDefault = NLT.get(
-							("folder.column." + colName),	// Key to find the resource.
-							colName,						// Default if not defined.
-							true);							// true -> Silent.  Don't generate an error if undefined.
+							(baseNameKey + colName),	// Key to find the resource.
+							colName,					// Default if not defined.
+							true);						// true -> Silent.  Don't generate an error if undefined.
 					} else {
 						colTitleDefault = fc.getColumnDefaultTitle();
 					}
@@ -1194,7 +1207,7 @@ public class GwtViewHelper {
 
 			// Walk the List<FolderColumn>'s performing fixups on each
 			// as necessary.
-			fixupFCs(fcList);
+			fixupFCs(fcList, isTrash);
 			
 
 			if (includeConfigurationInfo && (!isTrash)) {
@@ -1239,9 +1252,9 @@ public class GwtViewHelper {
 								String colTitleDefault = (String)((Map)me.getValue()).get("caption");
 								if (!(MiscUtil.hasString(fc.getColumnDefId()))) {
 									colTitleDefault = NLT.get(
-										("folder.column." + colName),	// Key to find the resource.
-										colTitleDefault,				// Default if not defined.
-										true);							// true -> Silent.  Don't generate an error if undefined.
+										(baseNameKey + colName),	// Key to find the resource.
+										colTitleDefault,			// Default if not defined.
+										true);						// true -> Silent.  Don't generate an error if undefined.
 								}
 								fc.setColumnDefaultTitle(colTitleDefault);
 								String colTitle = (String) columnTitles.get(colName);
@@ -1345,14 +1358,18 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
 		try {
-			Folder			folder               = ((Folder) bs.getBinderModule().getBinder(folderId));
+			Binder          binder               = bs.getBinderModule().getBinder(folderId);
+			Folder			folder               = ((binder instanceof Folder) ? ((Folder) binder) : null);
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
-			
+
 			// Setup the current search filter the user has selected
 			// on the folder.
-			Map options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
+			Map options;
+			if (null != folder)
+			     options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
+			else options = new HashMap();
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
@@ -1363,8 +1380,9 @@ public class GwtViewHelper {
 
 			// Read the entries based on the search.
 			Map searchResults;
-			if (FolderType.TRASH == folderType)
-			     searchResults = TrashHelper.getTrashEntries(bs, new HashMap<String,Object>(), folder, options);
+			boolean isTrash = (FolderType.TRASH == folderType);
+			if (isTrash)
+			     searchResults = TrashHelper.getTrashEntries(bs, binder, options);
 			else searchResults = bs.getFolderModule().getEntries(folderId, options);
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
@@ -1399,7 +1417,8 @@ public class GwtViewHelper {
 				collectContributorIds(entryMap, contributorIds);
 				
 				// Creating a FolderRow for each entry.
-				FolderRow fr = new FolderRow(entryId, folderColumns);
+				String entityType = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
+				FolderRow fr = new FolderRow(entryId, entityType, folderColumns);
 				if (pinnedEntryIds.contains(entryId)) {
 					fr.setPinned(true);
 				}
@@ -1444,6 +1463,8 @@ public class GwtViewHelper {
 									// EntryTitleInfo for it.
 									EntryTitleInfo eti = new EntryTitleInfo();
 									eti.setSeen(seenMap.checkIfSeen(entryMap));
+									eti.setTrash(isTrash);
+									eti.setEntityType(entityType);
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntryId(entryId);
 									eti.setDescription(getEntryDescriptionFromMap(request, entryMap));
@@ -2420,7 +2441,7 @@ public class GwtViewHelper {
 	 * Generates a value for a custom column in a row.
 	 * 
 	 * The algorithm used in this method was reverse engineered from
-	 * that used by folder_view_common2.jsp.
+	 * that used by folder_view_common2.jsp or view_trash.jsp.
 	 */
 	@SuppressWarnings("unchecked")
 	private static void setValueForCustomColumn(AllModulesInjected bs, Map entryMap, FolderRow fr, FolderColumn fc) throws ParseException {

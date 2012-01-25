@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -48,6 +50,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -272,12 +275,37 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			return;
 		}
 
-		// If the entry has not been seen...
+		// If we're dealing with an item in the trash...
 		String entryIdS = String.valueOf(eti.getEntryId());
 		VibeFlowPanel fp = new VibeFlowPanel();
 		boolean entryUnseen = (!(eti.getSeen()));
-		if (entryUnseen) {
-			// ...add a widget so the user can mark it so.
+		boolean isTrash     = eti.getTrash();
+		String entityType   = eti.getEntityType();
+		if (isTrash) {
+			// ...and we know what type of item it is...
+			if (null != entityType) {
+				// ...we need to display an image next to it...
+				GwtTeamingMessages                 messages = GwtTeaming.getMessages(); 
+				GwtTeamingWorkspaceTreeImageBundle images   = GwtTeaming.getWorkspaceTreeImageBundle();
+				ImageResource                      entityImage;
+				String                             entityAlt;
+				if      (entityType.equals("folderEntry")) {entityImage = images.folder_entry();     entityAlt = messages.treeAltEntry();    }
+				else if (entityType.equals("folder"))      {entityImage = images.folder();           entityAlt = messages.treeAltFolder();   }
+				else if (entityType.equals("workspace"))   {entityImage = images.folder_workspace(); entityAlt = messages.treeAltWorkspace();}
+				else                                       {entityImage = null;                      entityAlt = null;                       }
+				if (null != entityImage) {
+					Image i = GwtClientHelper.buildImage(entityImage, entityAlt);
+					i.addStyleName("vibe-dataTableEntity-Marker");
+					fp.add(i);
+				}
+			}
+		}
+		
+		// ...otherwise, if the entry has not been seen...
+		else if (entryUnseen) {
+			// ...add a widget so the user can mark it so.  (Note that
+			// ...we don't mess with the unread bubble when viewing the
+			// ...trash)...
 			Image i = GwtClientHelper.buildImage(GwtTeaming.getDataTableImageBundle().unread(), GwtTeaming.getMessages().vibeDataTable_Alt_Unread());
 			i.addStyleName("vibe-dataTableEntry-unseenMarker");
 			Element iE = i.getElement();
@@ -287,13 +315,15 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 
 		// ...add the title link...
+		boolean titleIsLink = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
 		InlineLabel titleLabel = new InlineLabel(eti.getTitle());
-		titleLabel.addStyleName("vibe-dataTableEntry-title");
-		if (entryUnseen) {
+		titleLabel.addStyleName(titleIsLink ? "vibe-dataTableEntry-title" : "vibe-dataTableEntry-titleNoLink");
+		if ((!isTrash) && entryUnseen) {
 			titleLabel.addStyleName("bold");
 		}
 		Element elE = titleLabel.getElement(); 
-		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL);
+		String widgetAttr = (titleIsLink ? VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL : VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK);
+		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, widgetAttr);
 		elE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
 		fp.add(titleLabel);
 		

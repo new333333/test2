@@ -693,6 +693,9 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuViewsWhatsUnreadInWorkspace();
 
 	// Strings used in the workspace tree control.
+	String treeAltEntry();
+	String treeAltFolder();
+	String treeAltWorkspace();
 	String treeBucketHover( String firstPart, String lastPart );
 	String treeCloseActivityStreams();
 	String treeCloseActivityStreamsHint();
