@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
+	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+	<script type="text/javascript" src="../../utils/mctabs.js"></script>
+	<script type="text/javascript" src="../../utils/form_utils.js"></script>
+	<script type="text/javascript" src="../../utils/validate.js"></script>
+	<script type="text/javascript" src="../../utils/editable_selects.js"></script>
+	<script type="text/javascript" src="jscripts/functions.js"></script>
+	<link href="css/ss_youtube.css" rel="stylesheet" type="text/css" />
+	<base target="_self" />
+	<title>{#ss_youtube.desc}</title>
+</head>
+<body id="ss_youtube">
+    <form onsubmit="insertAction();return false;" action="#"> 
+
+		<div class="panel_wrapper">
+			<div id="general_panel" class="panel current">
+				<fieldset>
+					<legend>{#ss_youtube.desc}</legend>
+						
+					<div id="urlForm" width="100%">
+					<table class="properties" width="95%">
+		                <tr>
+						      <td class="column1"><label id="srclabel2" for="src">{#ss_youtube.youTubeUrl}</label></td>
+							  <td ><input id="youTubeUrl" name="youTubeUrl" 
+								  type="text" value="" class="textbox" style="width:300px;"/></td> 
+						      </td> 
+						      <td >&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="column1"><label id="widthlabel" for="width">{#ss_youtube.dimensions}</label></td>
+							<td nowrap="nowrap">
+								<input name="width" type="text" id="width" 
+								  value="425" size="5" maxlength="5" class="size" onchange="changeHeight();" /> px 
+								<input name="height" type="text" id="height" style="margin-left:20px;"
+								  value="344" size="5" maxlength="5" class="size" onchange="changeWidth();" /> px
+							</td>
+						</tr>
+					</table>
+					</div>
+				</fieldset>
+
+			</div>
+
+		<div class="mceActionPanel">
+			<div style="float: left">
+				<input type="button" id="insert" name="insert" value="{#insert}" onclick="ss_insertYouTube();" />
+			</div>
+
+			<div style="float: right">
+				<input type="button" id="cancel" name="cancel" value="{#cancel}" onclick="cancelAction();" />
+			</div>
+		</div>
+    </form>
+</body> 
+</html> 
