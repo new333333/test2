@@ -1025,13 +1025,13 @@ public class GwtMenuHelper {
 			configMenuCreated = true;
 
 			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MANAGE_TEMPLATES);
-			url.setParameter(WebKeys.URL_BINDER_PARENT_ID,   binderIdS                );
+			url.setParameter(WebKeys.ACTION,               WebKeys.ACTION_MANAGE_TEMPLATES);
+			url.setParameter(WebKeys.URL_BINDER_PARENT_ID, binderIdS                      );
 			
 			actionTBI = new ToolbarItem(MANAGE_TEMPLATES);
-			markTBIPopup(actionTBI                                               );
-			markTBITitle(actionTBI, "administration.template_builder_local"      );
-			markTBIUrl(  actionTBI, url                                          );
+			markTBIPopup(actionTBI                                         );
+			markTBITitle(actionTBI, "administration.template_builder_local");
+			markTBIUrl(  actionTBI, url                                    );
 			
 			configTBI.addNestedItem(actionTBI);
 		}
