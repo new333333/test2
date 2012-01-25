@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
+import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
@@ -59,6 +60,7 @@ import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowGenericWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
+import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
@@ -113,6 +115,7 @@ public class ContentControl extends Composite
 		ShowFileFolderEvent.Handler,
 		ShowGenericWSEvent.Handler,
 		ShowGlobalWSEvent.Handler,
+		ShowHomeWSEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowTaskFolderEvent.Handler,
 		ShowTeamRootWSEvent.Handler,
@@ -146,6 +149,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_GENERIC_WORKSPACE,
 		TeamingEvents.SHOW_GLOBAL_WORKSPACE,
+		TeamingEvents.SHOW_HOME_WORKSPACE,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_TASK_FOLDER,
 		TeamingEvents.SHOW_TEAM_ROOT_WORKSPACE,
@@ -747,9 +751,27 @@ public class ContentControl extends Composite
 							break;
 						}
 
+						case TOP:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new home workspace?" ) )
+									showNew = false;
+							}
+							
+							if ( showNew )
+							{
+								// Fire the event that will display the home (top) workspace.
+								GwtTeaming.fireEvent( new ShowHomeWSEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
 						case PROFILE_ROOT:
 						case PROJECT_MANAGEMENT:
-						case TOP:
 						case USER:
 							// These aren't handled!  Let things take 
 							// the default flow.
@@ -1051,7 +1073,7 @@ public class ContentControl extends Composite
 	/**
 	 * Handles ShowGlobalWSEvent's received by this class.
 	 * 
-	 * Implements the ShowGlobalWSEvent.Handler.onShowTeamWS() method.
+	 * Implements the ShowGlobalWSEvent.Handler.onShowGlobalWS() method.
 	 */
 	@Override
 	public void onShowGlobalWS( ShowGlobalWSEvent event )
@@ -1077,6 +1099,37 @@ public class ContentControl extends Composite
 		
 		// Create a GenericWSView widget for the selected binder.
 		GenericWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+	}
+	
+	/**
+	 * Handles ShowHomeWSEvent's received by this class.
+	 * 
+	 * Implements the ShowHomeWSEvent.Handler.onShowHomeWS() method.
+	 */
+	@Override
+	public void onShowHomeWS( ShowHomeWSEvent event )
+	{
+		ViewClient vClient;
+		
+		// Display a Generic Workspace for the given binder id.
+		vClient = new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase homeWS )
+			{
+				homeWS.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( homeWS );
+			}
+		};
+		
+		// Create a HomeWSView widget for the selected binder.
+		HomeWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}
 	
 	/**

@@ -820,6 +820,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_HOME_WORKSPACE:
+				// A ShowHomeWSEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShowHomeWSEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowHomeWSEvent.registerEvent( eventBus, ((ShowHomeWSEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case SHOW_LANDING_PAGE:
 				// A ShowLandingPageEvent!  Can the event handler we
 				// were given handle that?
@@ -1395,6 +1404,7 @@ public class EventHelper {
 			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
 			case SHOW_GENERIC_WORKSPACE:				hasHandler = (eventHandler instanceof ShowGenericWSEvent.Handler);			   	   break;
 			case SHOW_GLOBAL_WORKSPACE:					hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	   break;
+			case SHOW_HOME_WORKSPACE:					hasHandler = (eventHandler instanceof ShowHomeWSEvent.Handler);			   	   	   break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
 			case SHOW_TEAM_ROOT_WORKSPACE:				hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	   break;

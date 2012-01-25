@@ -199,11 +199,11 @@
 	{
 	}
 	
-	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel
+	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel, .vibe-homeWSView_DescPanel
 	{
 	}
 
-	.vibe-discussionWSView_FooterPanel, .vibe-genericWSView_FooterPanel
+	.vibe-discussionWSView_FooterPanel, .vibe-genericWSView_FooterPanel, .vibe-homeWSView_FooterPanel
 	{
 	}
 	
@@ -216,11 +216,11 @@
 		margin-top: 8px;
 	}
 	
-	.vibe-discussionWSView_LPPanel, .vibe-teamWSView_LPPanel
+	.vibe-discussionWSView_LPPanel, .vibe-teamWSView_LPPanel, .vibe-homeWSView_LPPanel
 	{
 	}
 	
-	.vibe-discussionWSView_MainPanel, .vibe-teamWSView_MainPanel, .vibe-genericWSView_MainPanel
+	.vibe-discussionWSView_MainPanel, .vibe-teamWSView_MainPanel, .vibe-genericWSView_MainPanel, .vibe-homeWSView_MainPanel
 	{
 		overflow: auto;
 	}
