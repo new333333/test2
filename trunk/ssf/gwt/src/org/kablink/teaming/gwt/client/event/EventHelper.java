@@ -811,6 +811,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_GLOBAL_WORKSPACE:
+				// A ShowGlobalWSEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShowGlobalWSEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowGlobalWSEvent.registerEvent( eventBus, ((ShowGlobalWSEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case SHOW_LANDING_PAGE:
 				// A ShowLandingPageEvent!  Can the event handler we
 				// were given handle that?
@@ -826,6 +835,15 @@ public class EventHelper {
 				if (eventHandler instanceof ShowTaskFolderEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ShowTaskFolderEvent.registerEvent(eventBus, ((ShowTaskFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SHOW_TEAM_ROOT_WORKSPACE:
+				// A ShowTeamRootWSEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShowTeamRootWSEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowTeamRootWSEvent.registerEvent( eventBus, ((ShowTeamRootWSEvent.Handler) eventHandler) );
 				}
 				break;
 			
@@ -1376,8 +1394,10 @@ public class EventHelper {
 			case SHOW_DISCUSSION_WORKSPACE:				hasHandler = (eventHandler instanceof ShowDiscussionWSEvent.Handler);			   break;
 			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
 			case SHOW_GENERIC_WORKSPACE:				hasHandler = (eventHandler instanceof ShowGenericWSEvent.Handler);			   	   break;
+			case SHOW_GLOBAL_WORKSPACE:					hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	   break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
+			case SHOW_TEAM_ROOT_WORKSPACE:				hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	   break;
 			case SHOW_TEAM_WORKSPACE:					hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		   break;
 			case SHOW_TRASH:						    hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		               break;
 			
