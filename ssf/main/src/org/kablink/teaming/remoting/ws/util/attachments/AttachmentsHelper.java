@@ -50,7 +50,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.remoting.ws.RemotingException;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.util.FileUtil;

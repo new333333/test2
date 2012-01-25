@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -82,7 +80,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Tag;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -115,7 +112,6 @@ import org.kablink.teaming.module.shared.EntryBuilder;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.shared.XmlUtils;
-import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.relevance.RelevanceManager;
 import org.kablink.teaming.relevance.Relevance;
@@ -219,14 +215,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	public void setRssModule(RssModule rssModule) {
 		this.rssModule = rssModule;
-	}
-	
-	private TemplateModule templateModule;
-	protected TemplateModule getTemplateModule() {
-		return templateModule;
-	}
-	public void setTemplateModule(TemplateModule templateModule) {
-		this.templateModule = templateModule;
 	}
 	
 	private TransactionTemplate transactionTemplate;
@@ -646,12 +634,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
    			}
    		}
-   		Boolean library = null;
-		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))
-			library = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
-		if(library != null) {
-			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, library);
-		}
  	}
     //***********************************************************************************************************
     //no transaction    
@@ -1327,8 +1309,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (options != null) ctx.putAll(options);
     	copyBinder_setCtx(source, destination, ctx);
      	final Binder binder = copyBinder_create(source, ctx);
-     	makeBinderTitleUniqueInParent(binder, destination);		//Make sure there is no other binder with the same name in the parent.
-     	copyBinder_adjustForMirroredFolder(binder, destination);
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
@@ -1367,34 +1347,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		   return null;
 	   }
 
-   }
-   // no transaction
-   protected Binder copyBinder_adjustForMirroredFolder(Binder newBinder, Binder destinationParent) {
-	   if(newBinder.isMirrored()) {
-		   // This means the source binder being copied is a mirrored folder.
-		   // Also, in the current implementation, the destination parent can never be a mirrored folder,
-		   // that is, we do not support copying of a binder of any type into a mirrored folder.
-		   // Consequently, we want the copy of the mirrored folder to be a regular file folder.
-		   // Since the copy and the original will be of two different types of folders, there are certain 
-		   // attributes of the source that we can't maintain on the copy.
-		   newBinder.setMirrored(false);
-		   newBinder.setResourceDriverName(null);
-		   newBinder.setResourcePath(null);
-		   newBinder.setDefinitions(null);
-		   newBinder.setWorkflowAssociations(null);
-		   Definition libraryFolderDef = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
-		   if(libraryFolderDef != null)
-			   newBinder.setEntryDef(libraryFolderDef);
-		   TemplateBinder libraryTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
-		   if(libraryTemplate != null) {
-			   if(!newBinder.isDefinitionsInherited()) {
-				   newBinder.setDefinitions(libraryTemplate.getDefinitions());
-				   newBinder.setWorkflowAssociations(libraryTemplate.getWorkflowAssociations());
-			   }
-			   newBinder.setIconName(libraryTemplate.getIconName());
-		   }
-	   }
-	   return newBinder;
    }
    //inside write transaction    
    protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map ctx) {  
@@ -1444,36 +1396,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		getCoreDao().flush(); //get updates out 
 		//entries should be indexed already
     	indexBinder(binder, false, false, null); 
-    }
-    
-    //Make sure binder title is unique
-    //If it is not unique, then change it to be unique by adding "(n)" to the name
-    protected void makeBinderTitleUniqueInParent(Binder binder, Binder parent) {
-    	List<Binder> subBinders = parent.getBinders();
-    	Set<String> binderTitles = new HashSet<String>();
-    	for (Binder b : subBinders) {
-    		binderTitles.add(b.getTitle().toLowerCase());
-    	}
-    	String title = binder.getTitle();
-    	int maxTries = 100;
-    	Pattern p = Pattern.compile("(^.*\\()([0-9]+)\\)$");
-    	while (binderTitles.contains(title.toLowerCase())) {
-    		//There is another binder with this title. Try the next title higher
-    		Matcher m = p.matcher(title);
-    		if (m.find()) {
-    			String t1 = m.group(1);
-    			String n = m.group(2);
-    			Integer n2 = Integer.valueOf(n) + 1;
-    			title = t1 + String.valueOf(n2) + ")";		//Rebuild the title with the (number) incremented
-    		} else {
-    			title = title + "(2)";
-    		}
-    		if (--maxTries <= 0) break;
-    	}
-    	if (!title.equals(binder.getTitle())) {
-    		//There was a conflict, so update the title and the normalized title
-    		binder.setTitle(title);
-    	}
     }
 
     //********************************************************************************************************
@@ -2113,7 +2035,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void setFileAgingDates(Binder binder) {
     	//Nothing to be done here. It is all done in FolderCoreProcessor
     }
-   	
+    
     //Routine to see if this binder is empty
     public boolean isFolderEmpty(final Binder binder) {
     	return true;

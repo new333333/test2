@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -588,7 +588,7 @@ public class BinderHelper {
 		}
 	}
 	
-	public static Document getSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties, boolean unescapeName) {
+	public static Document getSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties) {
 		convertV1Filters(bs, userFolderProperties);  //make sure converted
 		//Determine the Search Filter
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
@@ -602,9 +602,6 @@ public class BinderHelper {
 				searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
 			}
 			if (searchFilters != null) {
-				if (unescapeName) {
-					searchFilterName = MiscUtil.replace(searchFilterName, "+", " ");
-				}
 				String searchFilterStr = (String)searchFilters.get(searchFilterName);
 				if (Validator.isNotNull(searchFilterStr)) {
 					try {
@@ -619,9 +616,6 @@ public class BinderHelper {
 			}
 		}		
 		return searchFilter;
-	}
-	public static Document getSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties) {
-		return getSearchFilter(bs, binder, userFolderProperties, false);
 	}
 	public static Map convertV1Filters(AllModulesInjected bs, UserProperties userFolderProperties) {
 		//see if any v1 filters to convert. 
@@ -674,7 +668,7 @@ public class BinderHelper {
 	public static String setupMobileFrontPageBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, String view) {
         User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request)) {
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 	    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
 	    	if(ex != null) {
@@ -695,7 +689,6 @@ public class BinderHelper {
 			}
 		}
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		if (userProperties == null) userProperties = new HashMap();
 		Long binderId = user.getWorkspaceId();
 		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
 		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
@@ -736,7 +729,6 @@ public class BinderHelper {
 		}
       	//Get the total records found by the search
       	Integer totalRecords = (Integer)model.get(WebKeys.SEARCH_TOTAL_HITS);
-      	if (totalRecords == null) totalRecords = 0;
       	//Get the records returned (which may be more than the page size)
       	if (totalRecords.intValue() < pageStart) {
       		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
@@ -1596,28 +1588,6 @@ public class BinderHelper {
 	}
 	
 	/**
-	 * Determines whether a binder is a task.
-	 * 
-	 * @param binder
-	 * 
-	 * @return
-	 */
-	static public boolean isBinderTask(Binder binder) {
-		boolean isTask = (EntityIdentifier.EntityType.folder == binder.getEntityType());
-		if (isTask) {
-			String dFamily = "";
-			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
-			if (familyProperty != null) {
-				dFamily = familyProperty.attributeValue("value", "");
-				if (null != dFamily) {
-					isTask = dFamily.equalsIgnoreCase("task");
-				}
-			}
-		}
-		return isTask;
-	}
-	
-	/**
 	 * Determines whether a binder is a Wiki.
 	 * 
 	 * @param binder
@@ -1704,15 +1674,10 @@ public class BinderHelper {
 			navigationLinkMap = new HashMap();
 			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
 		}
-    	while (parentConfig != null && parentConfig instanceof TemplateBinder) {
+    	while (parentConfig != null) {
         	Document tree = buildTemplateTreeRoot(bs, parentConfig, helper);
  			navigationLinkMap.put(parentConfig.getId(), tree);
- 			if (parentConfig.getParentBinder() instanceof TemplateBinder) {
- 				parentConfig = (TemplateBinder)parentConfig.getParentBinder();
- 			} else {
- 				//This template may be owned by a real folder. If so, stop there.
- 				break;
- 			}
+			parentConfig = (TemplateBinder)parentConfig.getParentBinder();
 		}
 	}
 	
@@ -2106,32 +2071,24 @@ public class BinderHelper {
 			this.action = action;
 			this.page = page;
 		}
-		@Override
 		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_TEMPLATE) {return true;}
 			return false;
 		}
-		@Override
 		public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
 			TemplateBinder config = (TemplateBinder)source;
 			return !config.getBinders().isEmpty();
 		}
 	
-		@Override
 		public String getAction(int type, Object source) {
 			return action;
 		}
-		@Override
 		public String getURL(int type, Object source) {return null;}
-		@Override
 		public String getDisplayOnly(int type, Object source) {
 			return "false";
 		}
-		@Override
 		public String getTreeNameKey() {return null;}
-		@Override
 		public String getPage() {return page;}
-		@Override
 		public void customize(AllModulesInjected bs, Object source, int type, Element element) {};
 		
 	}
@@ -3983,7 +3940,6 @@ public class BinderHelper {
 			return this.user;
 		}
 		
-		@Override
 		public int compareTo(Object o) {
 			Person p = (Person) o;
 			int result = this.getCount() < p.getCount() ? 1 : 0;
@@ -4013,7 +3969,6 @@ public class BinderHelper {
 			return this.id;
 		}
 		
-		@Override
 		public int compareTo(Object o) {
 			Place p = (Place) o;
 			int result = this.getCount() < p.getCount() ? 1 : 0;
@@ -4382,7 +4337,7 @@ public class BinderHelper {
 	public static void saveFolderColumnSettings(AllModulesInjected bs, ActionRequest request, 
 			ActionResponse response, Long binderId) {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
-		@SuppressWarnings("unused")
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		Map formData = request.getParameterMap();
 		Map columns = new LinkedHashMap();
@@ -4410,31 +4365,7 @@ public class BinderHelper {
 		}
 		
 		//See if this request was to set the folder default
-		boolean folderDefault = formData.containsKey("setFolderDefaultColumns");
-		
-		//Save the column settings
-		saveFolderColumnSettings(bs, binderId, columns, columnsText, columnOrder, folderDefault);
-	}
-	
-	/**
-	 * Saves the folder columns configuration on the specified binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param columns		// column name, "on" or "". If "on", then the columns is shown
-	 * @param columnsText	// column name, column title or null. If null, the default title is shown
-	 * @param columnsOrder	//String of column names separated by "|"
-	 * @param isDefault		//true if this is the default for the binder
-	 * 
-	 * @return
-	 */
-	public static void saveFolderColumnSettings(AllModulesInjected bs, Long binderId, 
-			Map columns, Map columnsText, String columnOrder, boolean folderDefault) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = bs.getBinderModule().getBinder(binderId);
-		
-		//See if this request was to set the folder default
-		if (folderDefault || binder instanceof TemplateBinder) {
+		if (formData.containsKey("setFolderDefaultColumns") || binder instanceof TemplateBinder) {
 			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);

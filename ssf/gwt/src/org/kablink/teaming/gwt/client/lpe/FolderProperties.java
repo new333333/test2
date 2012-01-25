@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
@@ -41,7 +40,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -56,27 +54,15 @@ public class FolderProperties
 	private boolean m_showTitle;
 	private boolean m_showDesc;
 	private boolean m_showEntriesOpened;
-	private boolean m_showEntryAuthor;
-	private boolean m_showEntryDate;
-	private boolean m_sortEntriesByTitle;
 	private int m_numEntriesToBeShown;
-	private int m_numRepliesToShow;
 	private String m_folderId;
 	private String m_folderName;
-	private String m_folderDesc;
 	private String m_parentBinderName;	// Name of the binder the folder is found in.
 	private String m_zoneUUID;
 	private String m_viewFolderUrl;
 	private AsyncCallback<VibeRpcResponse> m_folderCallback;
-	private GetterCallback<Boolean> m_getterCallback;
+	private boolean m_rpcInProgress;
 	
-	// The following data members are used to define the width and height of the view.
-	private int m_width;
-	private Style.Unit m_widthUnits;
-	private int m_height;
-	private Style.Unit m_heightUnits;
-	private Style.Overflow m_overflow;
-
 	/**
 	 * 
 	 */
@@ -85,26 +71,13 @@ public class FolderProperties
 		m_showTitle = false;
 		m_showDesc = false;
 		m_showEntriesOpened = false;
-		m_showEntryAuthor = false;
-		m_showEntryDate = false;
-		m_sortEntriesByTitle = false;
 		m_numEntriesToBeShown = 0;
-		m_numRepliesToShow = 0;
 		m_folderId = null;
 		m_folderName = null;
-		m_folderDesc = null;
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_viewFolderUrl = null;
-		m_getterCallback = null;
 		
-		// Default the width and height to 100%
-		m_width = 100;
-		m_widthUnits = Style.Unit.PCT;
-		m_height = 100;
-		m_heightUnits = Style.Unit.PCT;
-		m_overflow = Style.Overflow.HIDDEN;
-
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -117,10 +90,7 @@ public class FolderProperties
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetFolder(),
 					m_folderId );
-
-				// Inform the callback that the rpc request failed.
-				if ( m_getterCallback != null )
-					m_getterCallback.returnValue( Boolean.FALSE );
+				m_rpcInProgress = false;
 			}// end onFailure()
 	
 			/**
@@ -136,16 +106,14 @@ public class FolderProperties
 				if ( gwtFolder != null )
 				{
 					setFolderName( gwtFolder.getFolderName() );
-					setFolderDesc( gwtFolder.getFolderDesc() );
 					setParentBinderName( gwtFolder.getParentBinderName() );
 					setViewFolderUrl( gwtFolder.getViewFolderUrl() );
 				}
 				
-				// Inform the callback that the rpc request finished.
-				if ( m_getterCallback != null )
-					m_getterCallback.returnValue( Boolean.TRUE );
+				m_rpcInProgress = false;
 			}// end onSuccess()
 		};
+		m_rpcInProgress = false;
 	}// end FolderProperties()
 	
 	
@@ -170,24 +138,13 @@ public class FolderProperties
 			}
 			
 			m_folderId = newFolderId;
-			m_zoneUUID = folderProps.getZoneUUID();
 			m_folderName = folderProps.getFolderName();
-			m_folderDesc = folderProps.getFolderDesc();
 			m_parentBinderName = folderProps.getParentBinderName();
 			m_showTitle = folderProps.getShowTitleValue();
 			m_showDesc = folderProps.getShowDescValue();
 			m_showEntriesOpened = folderProps.getShowEntriesOpenedValue();
-			m_showEntryAuthor = folderProps.getShowEntryAuthor();
-			m_showEntryDate = folderProps.getShowEntryDate();
-			m_sortEntriesByTitle = folderProps.getSortEntriesByTitle();
 			m_numEntriesToBeShown = folderProps.getNumEntriesToBeShownValue();
-			m_numRepliesToShow = folderProps.getNumRepliesToShow();
 			m_viewFolderUrl = folderProps.getViewFolderUrl();
-			m_width = folderProps.getWidth();
-			m_widthUnits = folderProps.getWidthUnits();
-			m_height = folderProps.getHeight();
-			m_heightUnits = folderProps.getHeightUnits();
-			m_overflow = folderProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -218,30 +175,7 @@ public class FolderProperties
 		if ( m_showEntriesOpened )
 			str += "showEntriesOpened=1,";
 
-		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown );
-
-		// Add the width
-		str += ",width=" + String.valueOf( m_width );
-		if ( m_widthUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
-		// Add the height
-		str += ",height=" + String.valueOf( m_height );
-		if ( m_heightUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
-		// Add overflow
-		str += ",overflow=";
-		if ( m_overflow == Style.Overflow.AUTO )
-			str += "auto";
-		else
-			str += "hidden";
-
-		str += ";";
+		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown ) + ";";
 
 		return str;
 	}// end createConfigString()
@@ -250,7 +184,7 @@ public class FolderProperties
 	/**
 	 * Issue an ajax request to get the folder's name from the server.
 	 */
-	public void getDataFromServer( GetterCallback<Boolean> callback )
+	public void getDataFromServer()
 	{
 		// Do we have a folder id?
 		if ( m_folderId != null )
@@ -258,19 +192,10 @@ public class FolderProperties
 			GetFolderCmd cmd;
 			
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
-			m_getterCallback = callback;
+			m_rpcInProgress = true;
 			cmd = new GetFolderCmd( m_zoneUUID, m_folderId );
 			GwtClientHelper.executeCommand( cmd, m_folderCallback );
 		}
-	}
-	
-	
-	/**
-	 * Return the folder's description.
-	 */
-	public String getFolderDesc()
-	{
-		return m_folderDesc;
 	}
 	
 	
@@ -293,22 +218,6 @@ public class FolderProperties
 	
 	
 	/**
-	 * Return the value of height.
-	 */
-	public int getHeight()
-	{
-		return m_height;
-	}
-	
-	/**
-	 * Return the height units
-	 */
-	public Style.Unit getHeightUnits()
-	{
-		return m_heightUnits;
-	}
-	
-	/**
 	 * Return the "number of entries to be shown" property.
 	 */
 	public int getNumEntriesToBeShownValue()
@@ -316,22 +225,6 @@ public class FolderProperties
 		return m_numEntriesToBeShown;
 	}// end getNumEntriesToBeShownValue()
 	
-	
-	/**
-	 * Return the number of replies that should be shown if folder entries are displayed open.
-	 */
-	public int getNumRepliesToShow()
-	{
-		return m_numRepliesToShow;
-	}
-	
-	/**
-	 * Return the value of overflow.
-	 */
-	public Style.Overflow getOverflow()
-	{
-		return m_overflow;
-	}
 	
 	/**
 	 * Return the name of the binder the folder lives in.
@@ -359,21 +252,6 @@ public class FolderProperties
 		return m_showEntriesOpened;
 	}// end getShowEntriesOpenedValue()
 	
-	/**
-	 * Return the property that indicates whether to show the entry's author
-	 */
-	public boolean getShowEntryAuthor()
-	{
-		return m_showEntryAuthor;
-	}
-	
-	/**
-	 * Return the property that indicates whether to show the entry's date.
-	 */
-	public boolean getShowEntryDate()
-	{
-		return m_showEntryDate;
-	}
 	
 	/**
 	 * Return the "show title" property.
@@ -382,14 +260,6 @@ public class FolderProperties
 	{
 		return m_showTitle;
 	}// end getShowTitleValue()
-	
-	/**
-	 * 
-	 */
-	public boolean getSortEntriesByTitle()
-	{
-		return m_sortEntriesByTitle;
-	}
 	
 	
 	/**
@@ -402,22 +272,6 @@ public class FolderProperties
 	
 	
 	/**
-	 * Return the value of width.
-	 */
-	public int getWidth()
-	{
-		return m_width;
-	}
-	
-	/**
-	 * Return the width units
-	 */
-	public Style.Unit getWidthUnits()
-	{
-		return m_widthUnits;
-	}
-	
-	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
@@ -427,12 +281,12 @@ public class FolderProperties
 	
 	
 	/**
-	 * 
+	 * Return whether an rpc call is in progress.
 	 */
-	public void setFolderDesc( String folderDesc )
+	public boolean isRpcInProgress()
 	{
-		m_folderDesc = folderDesc;
-	}
+		return m_rpcInProgress;
+	}// end isRpcInProgress()
 	
 	
 	/**
@@ -446,7 +300,6 @@ public class FolderProperties
 			// Yes
 			// Since we are changing the folder id clear out the folder name and the name of the parent binder.
 			m_folderName = "???";
-			m_folderDesc = "???";
 			m_parentBinderName = "???";
 		}
 		
@@ -464,22 +317,6 @@ public class FolderProperties
 	
 	
 	/**
-	 * 
-	 */
-	public void setHeight( int height )
-	{
-		m_height = height;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHeightUnits( Style.Unit units )
-	{
-		m_heightUnits = units;
-	}
-	
-	/**
 	 * Set the "number of entries to be shown" property.
 	 */
 	public void setNumEntriesToBeShownValue( int numEntries )
@@ -487,21 +324,6 @@ public class FolderProperties
 		m_numEntriesToBeShown = numEntries;
 	}// end setNumEntriesToBeShownValue()
 	
-	/**
-	 * 
-	 */
-	public void setNumRepliesToShow( int numReplies )
-	{
-		m_numRepliesToShow = numReplies;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setOverflow( Style.Overflow overflow )
-	{
-		m_overflow = overflow;
-	}
 	
 	/**
 	 * 
@@ -529,21 +351,6 @@ public class FolderProperties
 		m_showEntriesOpened = showEntriesOpened;
 	}// end setShowEntriesOpenedValue()
 	
-	/**
-	 * Set the property that indicates whether to show the entry's author
-	 */
-	public void setShowEntryAuthor( boolean show )
-	{
-		m_showEntryAuthor = show;
-	}
-	
-	/**
-	 * Set the property that indicates whether to show the entry's date.
-	 */
-	public void setShowEntryDate( boolean show )
-	{
-		m_showEntryDate = show;
-	}
 	
 	/**
 	 * 
@@ -552,14 +359,6 @@ public class FolderProperties
 	{
 		m_showTitle = showTitle;
 	}// end setShowBorder()
-	
-	/**
-	 * 
-	 */
-	public void setSortEntriesByTitle( boolean sort )
-	{
-		m_sortEntriesByTitle = sort;
-	}
 
 
 	/**
@@ -570,22 +369,6 @@ public class FolderProperties
 		m_viewFolderUrl = url;
 	}// end setViewFolderUrl()
 	
-	
-	/**
-	 * 
-	 */
-	public void setWidth( int width )
-	{
-		m_width = width;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setWidthUnits( Style.Unit units )
-	{
-		m_widthUnits = units;
-	}
 	
 	/**
 	 * 

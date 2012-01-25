@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -69,8 +69,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ResizeComposite;
 
 
 /**
@@ -78,7 +78,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * 
  * @author drfoster@novell.com
  */
-public class WorkspaceTreeControl extends ResizeComposite
+public class WorkspaceTreeControl extends Composite
 	implements
 	// Event handlers implemented by this class.
 		ActivityStreamEnterEvent.Handler,
@@ -89,11 +89,9 @@ public class WorkspaceTreeControl extends ResizeComposite
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {	
-	private boolean			m_isTrash;			//
-	private GwtMainPage		m_mainPage;			//
-	private Long			m_selectedBinderId;	//
-	private TreeDisplayBase	m_treeDisplay;		//
-	private TreeMode 		m_tm;				//
+	private GwtMainPage m_mainPage;
+	private TreeDisplayBase m_treeDisplay;
+	private TreeMode m_tm;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -116,55 +114,12 @@ public class WorkspaceTreeControl extends ResizeComposite
 	/**
 	 * The mode this WorkspaceTreeControl is running in.
 	 * 
-	 * HORIZONTAL_BINDER:  Typically used in the Vibe bread crumbs embedded in a folder view.
-	 * HORIZONTAL_POPUP:   Typically used in the Vibe bread crumbs drop down from the main menu.
-	 * VERTICAL:           Typically used in the Vibe sidebar. 
+	 * HORIZONTAL:  Typically used in the Teaming bread crumbs.
+	 * VERTICAL:    Typically used in the Teaming sidebar. 
 	 */
 	public enum TreeMode {
-		HORIZONTAL_BINDER,
-		HORIZONTAL_POPUP,
-		VERTICAL;
-		
-		/**
-		 * Returns true if we'redisplaying a horizontal tree and false
-		 * otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isHorizontal() {
-			return (isHorizontalBinder() || isHorizontalPopup());
-		}
-		
-		/**
-		 * Returns true if we'redisplaying a horizontal binder tree and
-		 * false otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isHorizontalBinder() {
-			return (TreeMode.HORIZONTAL_BINDER == this);
-		}
-		
-		/**
-		 * Returns true if we'redisplaying a horizontal popup tree and 
-		 * false otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isHorizontalPopup() {
-			return (TreeMode.HORIZONTAL_POPUP == this);
-		}
-		
-		/**
-		 * Returns true if we'redisplaying a vertical tree and false
-		 * otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isVertical() {
-			return (TreeMode.VERTICAL == this);
-		}
-		
+		HORIZONTAL,
+		VERTICAL,
 	}
 	
 	/*
@@ -175,30 +130,20 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, final boolean isTrash, TreeMode tm) {
-		// Initialize the super class...
-		super();
-		
-		// ...save the parameters...
-		m_mainPage         = mainPage;
-		m_selectedBinderId = Long.parseLong(selectedBinderId);
-		m_isTrash          = (isTrash && (TreeMode.HORIZONTAL_BINDER == tm));
-		m_tm               = tm;
+	private WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
+		// Save the parameters.
+		m_mainPage = mainPage;
+		m_tm       = tm;
 
-		// ...and initialize everything else.
 		final WorkspaceTreeControl wsTree = this;
-		final VibeFlowPanel mainPanel = new VibeFlowPanel();
-
-		// What type of tree are we constructing?
+		final FlowPanel mainPanel = new FlowPanel();
+		
 		switch (m_tm) {
-		case HORIZONTAL_BINDER:
-		case HORIZONTAL_POPUP:
+		case HORIZONTAL:
 		{
-			boolean isBinder = (TreeMode.HORIZONTAL_BINDER == m_tm);
-			mainPanel.addStyleName("breadCrumb_Browser " + (isBinder ? "breadCrumb_BrowserBinder" : "breadCrumb_BrowserPopup"));
+			mainPanel.addStyleName("breadCrumb_Browser");
 			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -206,12 +151,14 @@ public class WorkspaceTreeControl extends ResizeComposite
 						selectedBinderId);
 				}
 				
-				@Override
 				public void onSuccess(VibeRpcResponse response)  {
+					List<TreeInfo> tiList;
+					GetHorizontalTreeRpcResponseData responseData;
+					
 					// Asynchronously render the horizontal tree so
 					// that we can release the AJAX request ASAP.
-					GetHorizontalTreeRpcResponseData responseData = (GetHorizontalTreeRpcResponseData) response.getResponseData();
-					List<TreeInfo> tiList = responseData.getTreeInfo();
+					responseData = (GetHorizontalTreeRpcResponseData) response.getResponseData();
+					tiList = responseData.getTreeInfo();
 					renderHTreeAsync(
 						mainPanel,
 						wsTree,
@@ -234,19 +181,18 @@ public class WorkspaceTreeControl extends ResizeComposite
 			mainPanel.addStyleName("workspaceTreeControl");
 			GetVerticalTreeCmd cmd = new GetVerticalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_GetTree(),
 						selectedBinderId);
 				}
-				
-				@Override
 				public void onSuccess(VibeRpcResponse response)  {
+					TreeInfo ti;
+					
 					// Asynchronously render the vertical tree so that
 					// we can release the AJAX request ASAP.
-					TreeInfo ti = ((TreeInfo) response.getResponseData());
+					ti = (TreeInfo) response.getResponseData();
 					renderVTreeAsync(
 						mainPanel,
 						wsTree,
@@ -315,31 +261,13 @@ public class WorkspaceTreeControl extends ResizeComposite
 	}
 
 	/**
-	 * Returns the ID of the binder this tree control was built from.
-	 * 
-	 * @return
-	 */
-	public Long getSelectedBinderId() {
-		return m_selectedBinderId;
-	}
-	
-	/**
-	 * Returns the TreeMode of the workspace tree being hosted.
-	 * 
-	 * @return
-	 */
-	public TreeMode getTreeMode() {
-		return m_tm;
-	}
-	
-	/**
 	 * Returns true if the WorkspaceTreeControl is a bread crumb tree
 	 * and false otherwise.
 	 * 
 	 * @return
 	 */
 	public boolean isBreadcrumbTree() {
-		return (getTreeMode().isHorizontalPopup());
+		return (TreeMode.HORIZONTAL == m_tm);
 	}
 	
 	/**
@@ -359,17 +287,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * @return
 	 */
 	public boolean isSidebarTree() {
-		return (getTreeMode().isVertical());
-	}
-	
-	/**
-	 * Returns true if we're rendering a tree for a trash view and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isTrash() {
-		return m_isTrash;
+		return (TreeMode.VERTICAL == m_tm);
 	}
 	
 	/**
@@ -439,10 +357,6 @@ public class WorkspaceTreeControl extends ResizeComposite
 		if (isSidebarTree()) {
 			OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
-				if (getRequestInfo().forceSidebarReload()) {
-					osbInfo.setForceSidebarReload(true);
-					getRequestInfo().clearSidebarReload();
-				}
 				Instigator instigator = osbInfo.getInstigator();
 				if ((Instigator.SIDEBAR_TREE_SELECT  != instigator) ||
 				    (Instigator.FORCE_SIDEBAR_RELOAD == instigator) ||
@@ -605,7 +519,6 @@ public class WorkspaceTreeControl extends ResizeComposite
 			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
 			cmd = new GetDefaultActivityStreamCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
 				public void onFailure(Throwable t) {
 					// If we couldn't get it, handle the
 					// failure...
@@ -620,13 +533,11 @@ public class WorkspaceTreeControl extends ResizeComposite
 					m_treeDisplay.enterActivityStreamMode(asi);
 				}
 				
-				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					ActivityStreamInfo asi = null;
 					
-					if (null != response.getResponseData()) {
+					if ( response.getResponseData() != null )
 						asi = (ActivityStreamInfo) response.getResponseData();
-					}
 					
 					// If the user doesn't have a default
 					// saved or the default saved is
@@ -683,11 +594,12 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * @param mode
 	 * @param wsTreeCtrlClient
 	 */
-	public static void createAsync(final GwtMainPage mainPage, final String selectedBinderId, final boolean isTrash, final TreeMode mode, final WorkspaceTreeControlClient wsTreeCtrlClient) {
-		GWT.runAsync(WorkspaceTreeControl.class, new RunAsyncCallback() {			
+	public static void createAsync(final GwtMainPage mainPage, final String selectedBinderId, final TreeMode mode, final WorkspaceTreeControlClient wsTreeCtrlClient) {
+		GWT.runAsync(WorkspaceTreeControl.class, new RunAsyncCallback()
+		{			
 			@Override
 			public void onSuccess() {
-				WorkspaceTreeControl wsTreeCtrl = new WorkspaceTreeControl(mainPage, selectedBinderId, isTrash, mode);
+				WorkspaceTreeControl wsTreeCtrl = new WorkspaceTreeControl(mainPage, selectedBinderId, mode);
 				wsTreeCtrlClient.onSuccess(wsTreeCtrl);
 			}
 			

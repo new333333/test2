@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -88,54 +87,20 @@ public class TableDropWidget extends DropWidget
 	
 
 	/**
-	 * Create a widget for every child defined in TableRowConfig and add the children
-	 * to the given row.
-	 */
-	private void addChildWidgetsFromConfigToRow( TableRowConfig tableRowConfigData, int row )
-	{
-		// Is the given row valid?
-		if ( row < m_flexTable.getRowCount() )
-		{
-			int col;
-			
-			// Yes
-			// Get the items that belong in this row.
-			for (col = 0; col < m_flexTable.getCellCount( row ) && col < tableRowConfigData.numItems(); ++col)
-			{
-				ConfigItem configItem;
-				
-				// Get the next item that should go in this row.
-				configItem = tableRowConfigData.get( col );
-				
-				// A TableRowConfig should only hold TableColConfig items.
-				if ( configItem instanceof TableColConfig )
-				{
-					addChildWidgetsFromConfigToCell( configItem, row, col );
-				}
-				else
-				{
-					Window.alert( "Invalid landing page configuration: TableRowConfig contains something other than a TableColConfig." );
-				}
-			}
-		}
-	}
-	
-	
-	/**
 	 * Create a widget for every child defined in TableColConfig and add the children to
 	 * the given col in the table.
 	 */
-	private void addChildWidgetsFromConfigToCell( ConfigItem configData, int row, int col )
+	private void addChildWidgetsFromConfigToCell( ConfigItem configData, int col )
 	{
 		// Is the given col valid?
-		if ( col < m_flexTable.getCellCount( row ) )
+		if ( col < m_flexTable.getCellCount( 0 ) )
 		{
 			int i;
 			DropZone dropZone;
 			
 			// Yes
 			// Get the DropZone used in the given col.
-			dropZone = (DropZone) m_flexTable.getWidget( row, col );
+			dropZone = (DropZone) m_flexTable.getWidget( 0, col );
 
 			if ( dropZone != null )
 			{
@@ -154,17 +119,16 @@ public class TableDropWidget extends DropWidget
 						configItem = tableColConfig.get( i );
 						
 						// Create the appropriate DropWidget based on the configuration data.
-						dropWidget = configItem.createDropWidget( m_lpe );
+						dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
 						
 						// Add the widget to the col's drop zone.
-						if ( dropWidget != null )
-							dropZone.addWidgetToDropZone( dropWidget );
+						dropZone.addWidgetToDropZone( dropWidget );
 					}
 				}
 				else
 				{
 					// Create the appropriate DropWidget based on the configuration data.
-					dropWidget = configData.createDropWidget( m_lpe );
+					dropWidget = DropWidget.createDropWidget( m_lpe, configData );
 					
 					// Add the widget to the col's drop zone.
 					dropZone.addWidgetToDropZone( dropWidget );
@@ -180,9 +144,9 @@ public class TableDropWidget extends DropWidget
 	public void addChildWidgetsFromConfigToTable( TableConfig configData )
 	{
 		int i;
-		int row;
+		int col;
 		
-		row = 0;
+		col = 0;
 		for (i = 0; i < configData.numItems(); ++i)
 		{
 			ConfigItem configItem;
@@ -190,20 +154,18 @@ public class TableDropWidget extends DropWidget
 			// Get the next ConfigItem.
 			configItem = configData.get( i );
 			
-			// A TableConfig can only hold TableRowConfig items.
-			if ( configItem instanceof TableRowConfig )
+			// A TableConfig can only hold TableColConfig items.
+			if ( configItem instanceof TableColConfig )
 			{
-				addChildWidgetsFromConfigToRow( (TableRowConfig)configItem, row );
-				++row;
+				addChildWidgetsFromConfigToCell( configItem, col );
+				++col;
 			}
 			else
 			{
-				Window.alert( "Invalid landing page configuration: Table contains something other than a TableRowConfig." );
-				
-				// In theory a TableRowConfig should be the only item contained by a TableConfig object.
+				// In theory a TableColConfig should be the only item contained by a TableConfig object.
 				// However, the old landing page editor created invalid configuration data
 				// where a tableStart did not contain a tableCol element.
-				addChildWidgetsFromConfigToCell( configItem, row, 0 );
+				addChildWidgetsFromConfigToCell( configItem, col );
 			}
 		}
 	}// end addChildWidgetsFromConfigToTable()
@@ -215,86 +177,72 @@ public class TableDropWidget extends DropWidget
 	 */
 	public void adjustTableHeight()
 	{
-		int row;
-		int col;
+		int maxHeight = 0;
+		int i;
 		int numColumns;
-		int numRows;
 		Widget widget;
 		
-		numRows = m_flexTable.getRowCount();
-		
+		numColumns = m_flexTable.getCellCount( 0 );
+
 		// Make the height of all the drop zones in this table 100%
-		for (row = 0; row < numRows; ++row )
+		for (i = 0; i < numColumns; ++i)
 		{
-			numColumns = m_flexTable.getCellCount( row );
-
-			for (col = 0; col < numColumns; ++col)
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
 			{
-				// Get the DropZone for this cell.
-				widget = m_flexTable.getWidget( row, col );
+				DropZone dropZone;
 				
-				// Is this widget a DropZone
-				if ( widget instanceof DropZone )
-				{
-					DropZone dropZone;
-					
-					// Yes, set the height of the drop zone.
-					dropZone = (DropZone) widget;
-					dropZone.setHeight( "100%" );
-				}
+				// Yes, set the height of the drop zone.
+				dropZone = (DropZone) widget;
+				dropZone.setHeight( "100%" );
 			}
-		}
+		}// end for()
 
-		for (row = 0; row < numRows; ++row)
+		// Calculate the height of the DropZone found in each cell.
+		for (i = 0; i < numColumns; ++i)
 		{
-			int maxHeight;
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
 			
-			maxHeight = 0;
-			numColumns = m_flexTable.getCellCount( row );
-
-			// Calculate the height of the DropZone found in each cell.
-			for (col = 0; col < numColumns; ++col)
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
 			{
-				// Get the DropZone for this cell.
-				widget = m_flexTable.getWidget( row, col );
+				DropZone dropZone;
+				int height;
 				
-				// Is this widget a DropZone
-				if ( widget instanceof DropZone )
-				{
-					DropZone dropZone;
-					int height;
-					
-					// Yes, tell the drop zone to adjust the height of all its table widgets
-					dropZone = (DropZone) widget;
-					height = dropZone.adjustHeightOfAllTableWidgets();
-					
-					// Do we have a new tallest cell?
-					if ( height > maxHeight )
-						maxHeight = height;
-				}
+				// Yes, tell the drop zone to adjust the height of all its table widgets
+				dropZone = (DropZone) widget;
+				height = dropZone.adjustHeightOfAllTableWidgets();
+				
+				// Do we have a new tallest cell?
+				if ( height > maxHeight )
+					maxHeight = height;
 			}
+		}// end for()
+		
+		// Make the minimum height 50 pixels.
+		if ( maxHeight < 50 )
+			maxHeight = 50;
+		
+		// Make all of the drop zones the same height
+		for (i = 0; i < numColumns; ++i)
+		{
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
 			
-			// Make the minimum height 50 pixels.
-			if ( maxHeight < 50 )
-				maxHeight = 50;
-			
-			// Make all of the drop zones the same height
-			for (col = 0; col < numColumns; ++col)
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
 			{
-				// Get the DropZone for this cell.
-				widget = m_flexTable.getWidget( row, col );
+				DropZone dropZone;
 				
-				// Is this widget a DropZone
-				if ( widget instanceof DropZone )
-				{
-					DropZone dropZone;
-					
-					// Yes, set the height of the drop zone.
-					dropZone = (DropZone) widget;
-					dropZone.setHeight( String.valueOf( maxHeight ) + "px" );
-				}
+				// Yes, set the height of the drop zone.
+				dropZone = (DropZone) widget;
+				dropZone.setHeight( String.valueOf( maxHeight ) + "px" );
 			}
-		}
+		}// end for()
 	}// end adjustTableHeight()
 	
 	
@@ -303,50 +251,42 @@ public class TableDropWidget extends DropWidget
 	 */
 	public boolean containsDropZone( DropZone dropZone )
 	{
-		int row;
+		int i;
 		int numColumns;
-		int numRows;
-		
-		numRows = m_flexTable.getRowCount();
 
-		for (row = 0; row < numRows; ++row)
+		numColumns = m_flexTable.getCellCount( 0 );
+
+		// For every cell, check to see if that cell holds the given DropZone
+		for (i = 0; i < numColumns; ++i)
 		{
-			int col;
+			Widget widget;
 
-			numColumns = m_flexTable.getCellCount( row );
-	
-			// For every cell, check to see if that cell holds the given DropZone
-			for (col = 0; col < numColumns; ++col)
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
 			{
-				Widget widget;
-	
-				// Get the DropZone for this cell.
-				widget = m_flexTable.getWidget( row, col );
+				DropZone nextDropZone;
 				
-				// Is this widget a DropZone
-				if ( widget instanceof DropZone )
+				// Yes
+				nextDropZone = (DropZone) widget;
+				
+				// Is this the DropZone we are looking for?
+				if ( dropZone == nextDropZone )
 				{
-					DropZone nextDropZone;
-					
 					// Yes
-					nextDropZone = (DropZone) widget;
-					
-					// Is this the DropZone we are looking for?
-					if ( dropZone == nextDropZone )
-					{
-						// Yes
-						return true;
-					}
-					
-					// Does this drop zone contain the given drop zone?
-					if ( nextDropZone.containsDropZone( dropZone ) )
-					{
-						// Yes
-						return true;
-					}
+					return true;
 				}
-			}// end for()
-		}
+				
+				// Does this drop zone contain the given drop zone?
+				if ( nextDropZone.containsDropZone( dropZone ) )
+				{
+					// Yes
+					return true;
+				}
+			}
+		}// end for()
 
 		// If we get here, we don't hold the given drop zone.
 		return false;
@@ -362,66 +302,54 @@ public class TableDropWidget extends DropWidget
 		ArrayList<DropWidget> childWidgets;
 		DropWidget nextWidget;
 		Widget widget;
-		int row;
-		int numRows;
+		int i;
+		int numColumns;
 		
 		// Get the configuration string for the properties of this table.
 		configStr = m_properties.createConfigString();
 		
-		numRows = m_flexTable.getRowCount();
-		
-		for (row = 0; row < numRows; ++row)
-		{
-			int col;
-			int numColumns;
+		numColumns = m_flexTable.getCellCount( 0 );
 
-			configStr += "tableRow;";
+		// For every cell, get the widgets that live in that cell.
+		for (i = 0; i < numColumns; ++i)
+		{
+			ColWidthUnit units;
 			
-			numColumns = m_flexTable.getCellCount( row );
-	
-			// For every cell, get the widgets that live in that cell.
-			for (col = 0; col < numColumns; ++col)
+			configStr += "tableCol";
+			configStr += ",colWidth=" + m_properties.getColWidth( i );
+			units = m_properties.getColWidthUnit( i );
+			configStr += ",widthUnits=" + String.valueOf( units.getValue() ) + ";";
+			
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
 			{
-				ColWidthUnit units;
+				DropZone dropZone;
 				
-				configStr += "tableCol";
-				configStr += ",colWidth=" + m_properties.getColWidth( col );
-				units = m_properties.getColWidthUnit( col );
-				configStr += ",widthUnits=" + String.valueOf( units.getValue() ) + ";";
+				// Yes, get all the widgets that live in this DropZone.
+				dropZone = (DropZone) widget;
+				childWidgets = dropZone.getWidgets();
 				
-				// Get the DropZone for this cell.
-				widget = m_flexTable.getWidget( row, col );
-				
-				// Is this widget a DropZone
-				if ( widget instanceof DropZone )
+				// Spin through the list of child widgets and get the configuration string from each one.
+				if ( childWidgets != null )
 				{
-					DropZone dropZone;
+					int j;
 					
-					// Yes, get all the widgets that live in this DropZone.
-					dropZone = (DropZone) widget;
-					childWidgets = dropZone.getWidgets();
-					
-					// Spin through the list of child widgets and get the configuration string from each one.
-					if ( childWidgets != null )
+					for (j = 0; j < childWidgets.size(); ++j)
 					{
-						int j;
+						String nextConfigStr;
 						
-						for (j = 0; j < childWidgets.size(); ++j)
-						{
-							String nextConfigStr;
-							
-							// Append the configuration string for the next widget.
-							nextWidget = childWidgets.get( j );
-							nextConfigStr = nextWidget.createConfigString();
-							configStr += nextConfigStr;
-						}
+						// Append the configuration string for the next widget.
+						nextWidget = childWidgets.get( j );
+						nextConfigStr = nextWidget.createConfigString();
+						configStr += nextConfigStr;
 					}
 				}
 			}
+		}// end for()
 
-			configStr += "tableRowEnd;";
-		}
-		
 		configStr += "tableEnd;";
 		
 		return configStr;
@@ -513,40 +441,32 @@ public class TableDropWidget extends DropWidget
 	 */
 	public void setParentDropZone( DropZone dropZone )
 	{
-		int row;
-		int numRows;
+		int i;
+		int numColumns;
 
 		super.setParentDropZone( dropZone );
 		
-		numRows = m_flexTable.getRowCount();
-		
-		for (row = 0; row < numRows; ++row)
-		{
-			int col;
-			int numColumns;
+		numColumns = m_flexTable.getCellCount( 0 );
 
-			numColumns = m_flexTable.getCellCount( row );
-	
-			// For every cell, tell the DropZone in that cell who its parent DropZone is.
-			for (col = 0; col < numColumns; ++col)
+		// For every cell, tell the DropZone in that cell who its parent DropZone is.
+		for (i = 0; i < numColumns; ++i)
+		{
+			Widget widget;
+
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
 			{
-				Widget widget;
-	
-				// Get the DropZone for this cell.
-				widget = m_flexTable.getWidget( row, col );
+				DropZone nextDropZone;
 				
-				// Is this widget a DropZone
-				if ( widget instanceof DropZone )
-				{
-					DropZone nextDropZone;
-					
-					// Yes
-					nextDropZone = (DropZone) widget;
-					nextDropZone.setParentDropZone( dropZone );
-					
-				}
-			}// end for()
-		}
+				// Yes
+				nextDropZone = (DropZone) widget;
+				nextDropZone.setParentDropZone( dropZone );
+				
+			}
+		}// end for()
 	}
 	
 	
@@ -557,159 +477,111 @@ public class TableDropWidget extends DropWidget
 	{
 		int i;
 		int numColumns;
-		int numRows;
-		int row;
 		CellFormatter cellFormatter;
 		
 		// Save the properties that were passed to us.
 		if ( props instanceof PropertiesObj )
 			m_properties.copy( (PropertiesObj) props );
 		
-		numRows = m_properties.getNumRowsInt();
 		numColumns = m_properties.getNumColumnsInt();
 		
 		// Have we already created a FlexTable?
 		if ( m_flexTable == null )
 		{
-			int col;
-			
 			// No
 			m_flexTable = new FlexTable();
-			m_flexTable.setCellSpacing( 0 );
 			m_flexTable.addStyleName( "lpeTable" );
 			m_flexTable.setWidth( "100%" );
 			
 			m_mainPanel.add( m_flexTable );
 			
-			// Add the appropriate number of rows and cols to the table.
-			for (row = 0; row < numRows; ++row)
+			// Add 1 row to the table.
+			m_flexTable.insertRow( 0 );
+			
+			// Add the appropriate number of columns to the table.
+			for (i = 0; i < numColumns; ++i)
 			{
-				m_flexTable.insertRow( 0 );
+				DropZone	dropZone;
 				
-				// Add the appropriate number of columns to the row.
-				for (col = 0; col < numColumns; ++col)
-				{
-					DropZone	dropZone;
-					
-					m_flexTable.addCell( 0 );
-					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-					dropZone.setParentDropZone( getParentDropZone() );
-					m_flexTable.setWidget( 0, col, dropZone );
-				}
+				m_flexTable.addCell( 0 );
+				dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+				dropZone.setParentDropZone( getParentDropZone() );
+				m_flexTable.setWidget( 0, i, dropZone );
 			}
 		}
 		else
 		{
-			// Do we need to remove rows from the existing table?
-			if ( numRows < m_flexTable.getRowCount() )
+			// Do we need to remove columns from the existing table?
+			if ( numColumns < m_flexTable.getCellCount( 0 ) )
 			{
-				// Yes
-				while ( numRows < m_flexTable.getRowCount() )
+				// Yes.
+				while ( numColumns < m_flexTable.getCellCount( 0 ) )
 				{
-					m_flexTable.removeRow( 0 );
+					m_flexTable.removeCell( 0, m_flexTable.getCellCount( 0 )-1 );
 				}
 			}
-			// Do we need to add rows to the existing table?
-			else if ( numRows > m_flexTable.getRowCount() )
+			// Do we need to add columns to the existing table?
+			else if ( numColumns > m_flexTable.getCellCount( 0 ) )
 			{
 				// Yes
-				while ( numRows > m_flexTable.getRowCount() )
+				while( numColumns > m_flexTable.getCellCount( 0 ) )
 				{
-					int col;
+					DropZone dropZone;
 					
-					m_flexTable.insertRow( 0 );
-					
-					// Add the appropriate number of columns to the row.
-					for (col = 0; col < numColumns; ++col)
-					{
-						DropZone	dropZone;
-						
-						m_flexTable.addCell( 0 );
-						dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-						dropZone.setParentDropZone( getParentDropZone() );
-						m_flexTable.setWidget( 0, col, dropZone );
-					}
-				}
-			}
-			
-			// Adjust the number of columns in each row as needed.
-			for (row = 0; row < m_flexTable.getRowCount(); ++row)
-			{
-				// Do we need to delete columns from this row?
-				if ( numColumns < m_flexTable.getCellCount( row ) )
-				{
-					// Yes.
-					while ( numColumns < m_flexTable.getCellCount( row ) )
-					{
-						m_flexTable.removeCell( row, m_flexTable.getCellCount( row )-1 );
-					}
-				}
-				// Do we need to add columns to this row?
-				else if ( numColumns > m_flexTable.getCellCount( row ) )
-				{
-					// Yes
-					while( numColumns > m_flexTable.getCellCount( row ) )
-					{
-						DropZone dropZone;
-						
-						m_flexTable.addCell( row );
-						dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-						dropZone.setParentDropZone( getParentDropZone() );
-						m_flexTable.setWidget( row, m_flexTable.getCellCount( row )-1, dropZone );
-					}
+					m_flexTable.addCell( 0 );
+					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+					dropZone.setParentDropZone( getParentDropZone() );
+					m_flexTable.setWidget( 0, m_flexTable.getCellCount( 0 )-1, dropZone );
 				}
 			}
 		}
 		
-		// Set the width of each column.
-		for (row = 0; row < m_flexTable.getRowCount(); ++row)
+		int width;
+		String widthStr;
+		
+		cellFormatter = m_flexTable.getFlexCellFormatter();
+		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
 		{
-			cellFormatter = m_flexTable.getFlexCellFormatter();
-			for (i = 0; i < m_flexTable.getCellCount( row ); ++i )
+			ColWidthUnit unit;
+			Element tdElement;
+			
+			// Get the width unit for this column.
+			unit = m_properties.getColWidthUnit( i );
+			
+			// Get the width of this column.
+			widthStr = m_properties.getColWidth( i );
+			
+			// Are we dealing with percentage?
+			if ( unit == ColWidthUnit.PERCENTAGE )
 			{
-				ColWidthUnit unit;
-				Element tdElement;
-				int width;
-				String widthStr;
-				
-				// Get the width unit for this column.
-				unit = m_properties.getColWidthUnit( i );
-				
-				// Get the width of this column.
-				widthStr = m_properties.getColWidth( i );
-				
-				// Are we dealing with percentage?
-				if ( unit == ColWidthUnit.PERCENTAGE )
+				// Yes
+				try
 				{
-					// Yes
-					try
-					{
-						width = Integer.parseInt( widthStr );
-					}
-					catch (Exception ex)
-					{
-						// Error parsing the width, default to 25%
-						width = 25;
-					}
-					
-					// IE does not allow a width of 0%.  If the width is 0 set it to 1.
-					if ( width == 0 )
-						width = 1;
-					
-					widthStr = String.valueOf( width );
+					width = Integer.parseInt( widthStr );
+				}
+				catch (Exception ex)
+				{
+					// Error parsing the width, default to 25%
+					width = 25;
 				}
 				
-				widthStr = widthStr + unit.getHtmlUnit();
-
-				// IE chokes if we call cellFormatter.setWidth(...) and pass in "*" for the width.
-				// That is why we call tdElement.setAttribute(...)
-				//cellFormatter.setWidth( 0, i, widthStr );
-				tdElement = cellFormatter.getElement( row, i );
-				tdElement.setAttribute( "width", widthStr );
+				// IE does not allow a width of 0%.  If the width is 0 set it to 1.
+				if ( width == 0 )
+					width = 1;
 				
-				// Set the vertical alignment of this cell to "top".
-				cellFormatter.setVerticalAlignment( row, i, HasVerticalAlignment.ALIGN_TOP );
+				widthStr = String.valueOf( width );
 			}
+			
+			widthStr = widthStr + unit.getHtmlUnit();
+
+			// IE chokes if we call cellFormatter.setWidth(...) and pass in "*" for the width.
+			// That is why we call tdElement.setAttribute(...)
+			//cellFormatter.setWidth( 0, i, widthStr );
+			tdElement = cellFormatter.getElement( 0, i );
+			tdElement.setAttribute( "width", widthStr );
+			
+			// Set the vertical alignment of this cell to "top".
+			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
 		}
 	}// end updateWidget()
 	

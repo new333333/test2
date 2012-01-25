@@ -87,8 +87,7 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </c:if>
 <form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
 		name="operation" value="modify_template"/><ssf:param 
-		name="binderId" value="${ssBinderConfig.id}"/><ssf:param 
-		name="binderParentId" value="${binderParentId}"/></ssf:url>" 
+		name="binderId" value="${ssBinderConfig.id}"/></ssf:url>" 
 		onSubmit="return ss_checkForm(this, '${ssBinderConfig.id}');">
 
 <div class="ss_buttonBarRight">
@@ -156,8 +155,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" 
     id="${renderResponse.namespace}fm" method="post" 
     action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
-		name="operation" value="add"/><ssf:param 
-		name="binderParentId" value="${binderParentId}"/></ssf:url>" >
+		name="operation" value="add"/></ssf:url>" >
 <input type="hidden" name="definitionType" value="-1"/>
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
@@ -191,8 +189,7 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 
 
 <form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
-		name="operation" value="add"/><ssf:param 
-		name="binderParentId" value="${binderParentId}"/></ssf:url>" 
+		name="operation" value="add"/></ssf:url>" 
 		onSubmit="return ss_checkForm(this);">
 <input type="hidden" name="definitionType" value="${definitionType}"/>
 <div class="ss_buttonBarRight">

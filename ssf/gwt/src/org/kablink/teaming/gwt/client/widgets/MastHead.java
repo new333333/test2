@@ -40,7 +40,6 @@ import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
-import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -116,7 +115,7 @@ public class MastHead extends Composite
 	public MastHead( RequestInfo requestInfo )
 	{
 		Scheduler.ScheduledCommand cmd;
-		final boolean beta = true;
+		final boolean beta = false;
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -201,7 +200,7 @@ public class MastHead extends Composite
 					 */
 					public void onClick( ClickEvent event )
 					{
-						m_popupMenu.showRelativeToTarget( panel );
+						m_popupMenu.showRelativeTo( panel );
 					}
 				};
 
@@ -754,8 +753,6 @@ public class MastHead extends Composite
 	public void onMastheadHide( MastheadHideEvent event )
 	{
 		setVisible( false );
-		
-		SizeChangedEvent.fireOne();
 	}// end onMastheadHide()
 	
 	/**
@@ -769,7 +766,5 @@ public class MastHead extends Composite
 	public void onMastheadShow( MastheadShowEvent event )
 	{
 		setVisible( true );
-		
-		SizeChangedEvent.fireOne();
 	}// end onMastheadShow()	
 }// end MastHead

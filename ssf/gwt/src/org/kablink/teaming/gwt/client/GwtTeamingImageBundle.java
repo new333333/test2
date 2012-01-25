@@ -331,10 +331,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource presenceUnknown16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/preview10.jpg")
-	public ImageResource preview10();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/arrow_left.png")
 	public ImageResource previous16();
 
@@ -367,14 +363,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource resumeActivityStream();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Widgets/sizingArrows.png")
-	public ImageResource sizingArrows();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Widgets/sizingArrowsGray.gif")
-	public ImageResource sizingArrowsGray();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/spacer_1px.png")
 	public ImageResource spacer1px();
 
@@ -400,66 +388,5 @@ public interface GwtTeamingImageBundle extends ClientBundle
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
-	public ImageResource warningIcon16();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/workspaceLarge.png")
-	public ImageResource workspaceImgLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_blog_large.gif")
-	public ImageResource blogFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_calendar_large.png")
-	public ImageResource calendarFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_discussion_large.gif")
-	public ImageResource discussionFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_file_large.gif")
-	public ImageResource fileFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_guestbook_large.gif")
-	public ImageResource guestbookFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_milestone_large.gif")
-	public ImageResource milestoneFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_miniblog_large.gif")
-	public ImageResource miniblogFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_mirrored_large.png")
-	public ImageResource mirroredFileFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_photo_large.png")
-	public ImageResource photoAlbumFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_survey_large.png")
-	public ImageResource surveyFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_task_large.gif")
-	public ImageResource taskFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_trash_large.png")
-	public ImageResource trashFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_wiki_large.gif")
-	public ImageResource wikiFolderLarge();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_generic_large.gif")
-	public ImageResource genericFolderLarge();
-	
+	public ImageResource warningIcon16();	
 }// end GwtTeamingImageBundle

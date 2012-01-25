@@ -40,7 +40,11 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * 
  * @author drfoster@novell.com
  */
-public class SaveTaskSortCmd extends SaveFolderSortCmd {
+public class SaveTaskSortCmd extends VibeRpcCmd {
+	private boolean m_sortAscending;
+	private Long m_binderId;
+	private String m_sortKey;
+	
 	/**
 	 * Class constructor.
 	 * 
@@ -48,7 +52,6 @@ public class SaveTaskSortCmd extends SaveFolderSortCmd {
 	 * constructor.
 	 */
 	public SaveTaskSortCmd() {
-		// Initialize the super class.
 		super();		
 	}
 
@@ -60,14 +63,25 @@ public class SaveTaskSortCmd extends SaveFolderSortCmd {
 	 * @param sortAscending
 	 */
 	public SaveTaskSortCmd(Long binderId, String sortKey, boolean sortAscending) {
-		// Initialize the super class.
-		super(binderId, sortKey, sortAscending);		
+		this();		
+		m_binderId      = binderId;
+		m_sortKey       = sortKey;
+		m_sortAscending = sortAscending;
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean getSortAscending() {return m_sortAscending;}	
+	public Long    getBinderId()      {return m_binderId;     }	
+	public String  getSortKey()       {return m_sortKey;      }	
 	
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Overrides SaveFolderSortCmd.getCmdType()
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
 	 * @return
 	 */

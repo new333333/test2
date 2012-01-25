@@ -65,19 +65,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				posting.setEnabled(PortletRequestUtils.getBooleanParameter(request, "postenabled", false));
 			}
 			mailConfig.setSimpleUrlPostingEnabled(PortletRequestUtils.getBooleanParameter(request, "simplepostenabled", false));
-			Long outgoingAttachmentSizeLimit = PortletRequestUtils.getLongParameter(request, "outgoingAttachmentSizeLimit");
-			Long outgoingAttachmentSumLimit = PortletRequestUtils.getLongParameter(request, "outgoingAttachmentSumLimit");
-			if (outgoingAttachmentSizeLimit != null) {
-				//Translate to actual bytes
-				outgoingAttachmentSizeLimit = outgoingAttachmentSizeLimit * 1024;
-			}
-			if (outgoingAttachmentSumLimit != null) {
-				//Translate to actual bytes
-				outgoingAttachmentSumLimit = outgoingAttachmentSumLimit * 1024;
-			}
-			mailConfig.setOutgoingAttachmentSizeLimit(outgoingAttachmentSizeLimit);
-			mailConfig.setOutgoingAttachmentSumLimit(outgoingAttachmentSumLimit);
-			
+
 			int pos =0;
 			Map updates = new HashMap();
 			while (true) {

@@ -33,12 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-
 <c:if test="${empty isDashboard}">
-	<% // We need the following <div> in order for the calendar to work on a landing page on IE. %>
-	<% // I have no idea why %>
-	<div style="visibility: hidden;">ie hack</div>
-	
 	<script type="text/javascript">
 		<% //needs its own script section to endure loaded before accessed below %>
  		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");

@@ -1,8 +1,12 @@
 package org.kablink.teaming.lucene.analyzer;
 
+import java.io.IOException;
+
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.util.ArrayUtil;
 import org.apache.lucene.util.AttributeSource;
 
 /**
@@ -21,12 +25,6 @@ import org.apache.lucene.util.AttributeSource;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import java.io.IOException;
-
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.util.ArrayUtil;
-import org.apache.lucene.util.RamUsageEstimator;
 
 /**
  * This class converts alphabetic, numeric, and symbolic Unicode characters
@@ -67,13 +65,14 @@ public class VibeASCIIFoldingFilter extends TokenFilter {
   public VibeASCIIFoldingFilter(TokenStream input, boolean inAdditionToOriginal)
   {
     super(input);
+    termAtt = (TermAttribute) addAttribute(TermAttribute.class);
     this.inAdditionToOriginal = inAdditionToOriginal;
     this.posIncrAtt = (PositionIncrementAttribute) addAttribute(PositionIncrementAttribute.class);
   }
 
   private char[] output = new char[512];
   private int outputPos;
-  private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+  private TermAttribute termAtt;
   
   private AttributeSource.State current;
   
@@ -81,20 +80,19 @@ public class VibeASCIIFoldingFilter extends TokenFilter {
   
   private boolean inAdditionToOriginal;
 
-  @Override
   public boolean incrementToken() throws IOException {
 	  if(inAdditionToOriginal) {
 		  if(outputPos > 0) {
 			  restoreState(current);
-			  termAtt.copyBuffer(output, 0, outputPos);
+			  termAtt.setTermBuffer(output, 0, outputPos);
 			  posIncrAtt.setPositionIncrement(0);
 			  outputPos = 0;
 			  return true;
 		  }
 		  else { // no saved ascii version token
 			  if(input.incrementToken()) {
-			      final char[] inputBuffer = termAtt.buffer();
-			      final int inputLength = termAtt.length();
+			      final char[] inputBuffer = termAtt.termBuffer();
+			      final int inputLength = termAtt.termLength();
 			
 			      for(int i = 0 ; i < inputLength ; ++i) {
 			        final char c = inputBuffer[i];
@@ -120,15 +118,15 @@ public class VibeASCIIFoldingFilter extends TokenFilter {
 	  }
 	  else { // in place of original
 	    if (input.incrementToken()) {
-	      final char[] buffer = termAtt.buffer();
-	      final int length = termAtt.length();
+	      final char[] buffer = termAtt.termBuffer();
+	      final int length = termAtt.termLength();
 	
 	      for(int i = 0 ; i < length ; ++i) {
 	        final char c = buffer[i];
 	        if (c >= '\u0080')
 	        {
 	          foldToASCII(buffer, length);
-	          termAtt.copyBuffer(output, 0, outputPos);
+	          termAtt.setTermBuffer(output, 0, outputPos);
 	          break;
 	        }
 	      }
@@ -157,30 +155,15 @@ public class VibeASCIIFoldingFilter extends TokenFilter {
    */
   public void foldToASCII(char[] input, int length)
   {
-	// Worst-case length required:
+
     final int maxSizeNeeded = 4 * length;
     if (output.length < maxSizeNeeded) {
-        output = new char[ArrayUtil.oversize(maxSizeNeeded, RamUsageEstimator.NUM_BYTES_CHAR)];
+      output = new char[ArrayUtil.getNextSize(maxSizeNeeded)];
     }
 
-    outputPos = foldToASCII(input, 0, output, 0, length);
-  }
+    outputPos = 0;
 
-  /**
-   * Converts characters above ASCII to their ASCII equivalents.  For example,
-   * accents are removed from accented characters.
-   * @param input     The characters to fold
-   * @param inputPos  Index of the first character to fold
-   * @param output    The result of the folding. Should be of size >= {@code length * 4}.
-   * @param outputPos Index of output where to put the result of the folding
-   * @param length    The number of characters to fold
-   * @return length of output
-   * @lucene.internal
-   */
-  public static final int foldToASCII(char input[], int inputPos, char output[], int outputPos, int length)
-  {
-    final int end = inputPos + length;
-    for (int pos = inputPos; pos < end ; ++pos) {
+    for (int pos = 0 ; pos < length ; ++pos) {
       final char c = input[pos];
 
 
@@ -2101,6 +2084,5 @@ public class VibeASCIIFoldingFilter extends TokenFilter {
         }
       }
     }
-    return outputPos;
   }
 }

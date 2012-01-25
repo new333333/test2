@@ -48,8 +48,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class HttpRequestInfo implements IsSerializable {
 	private transient Object m_requestObj;
-	private transient Object m_responseObj;
-	private transient Object m_servletContext;
 	private           String m_userLoginId;	// The login ID of the user the client thinks we are dealing with.
 	
 	/**
@@ -85,11 +83,7 @@ public class HttpRequestInfo implements IsSerializable {
 	 * Get'er/Set'er methods.
 	 */
 	public Object getRequestObj()                    {return m_requestObj;        }
-	public Object getResponseObj()					 {return m_responseObj;       }
-	public Object getServletContext()				 {return m_servletContext;    }
 	public String getUserLoginId()                   {return m_userLoginId;       }
 	public void   setRequestObj( Object requestObj ) {m_requestObj  = requestObj; }
-	public void   setResponseObj( Object responseObj ) {m_responseObj = responseObj; }
-	public void   setServletContext( Object servletContext ) {m_servletContext = servletContext;}
 	public void   setUserLoginId(String userLoginId) {m_userLoginId = userLoginId;}	
 }

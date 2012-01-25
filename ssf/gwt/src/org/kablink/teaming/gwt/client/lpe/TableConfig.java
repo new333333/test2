@@ -35,10 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.widgets.TableWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 import com.google.gwt.http.client.URL;
 
 /**
@@ -55,24 +51,19 @@ public class TableConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public TableConfig( String configStr, String landingPageStyle )
+	public TableConfig( String configStr )
 	{
 		int i;
 		int numCols;
-		int numRows;
 		int width;
 		String[] propsStr;
 		boolean valid;
 		
 		m_properties = new TableProperties();
 		m_configItems = new ArrayList<ConfigItem>();
-		setLandingPageStyle( landingPageStyle );
 
-		// Split the string "tableStart,showBorder=n,rows=n,cols=n,colWidths=xxxx" into its parts.
+		// Split the string "tableStart,showBorder=n,cols=n,colWidths=xxxx" into its parts.
 		propsStr = configStr.split( "[,;]" );
-		
-		// Default to 1 row in the table.
-		numRows = 1;
 		
 		// Get the table properties
 		if ( propsStr != null )
@@ -86,18 +77,6 @@ public class TableConfig extends ConfigItem
 				{
 					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
 						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
-					else if ( results2[0].equalsIgnoreCase( "rows" ) )
-					{
-						try
-						{
-							numRows = Integer.parseInt( URL.decodeComponent( results2[1] ) );
-						}
-						catch (Exception ex)
-						{
-							// Nothing to do.  This is here to handle the case when the data is
-							// not properly url encoded.
-						}
-					}
 					else if ( results2[0].equalsIgnoreCase( "cols" ) )
 					{
 						numCols = 0;
@@ -200,8 +179,6 @@ public class TableConfig extends ConfigItem
 				m_properties.setColWidthUnit( i, ColWidthUnit.PERCENTAGE );
 			}
 		}
-		
-		m_properties.setNumRows( numRows );
 	}// end TableConfig()
 	
 	
@@ -212,26 +189,6 @@ public class TableConfig extends ConfigItem
 	{
 		m_configItems.add( configItem );
 	}// end addChild()
-	
-	
-	/**
-	 * Create a widget that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		TableWidget tableWidget;
-		
-		tableWidget = new TableWidget( this, widgetStyles );
-		return tableWidget;
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public TableDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new TableDropWidget( lpe, this );
-	}
 	
 	
 	/**

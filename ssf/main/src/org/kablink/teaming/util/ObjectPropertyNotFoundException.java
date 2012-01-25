@@ -32,13 +32,11 @@
  */
 package org.kablink.teaming.util;
 
-import org.kablink.util.VibeRuntimeException;
-
 /**
  *
  * @author Jong Kim
  */
-public class ObjectPropertyNotFoundException extends VibeRuntimeException {
+public class ObjectPropertyNotFoundException extends RuntimeException {
     public ObjectPropertyNotFoundException() {
         super();
     }
@@ -51,11 +49,4 @@ public class ObjectPropertyNotFoundException extends VibeRuntimeException {
     public ObjectPropertyNotFoundException(Throwable cause) {
         super(cause);
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
-	}
 }

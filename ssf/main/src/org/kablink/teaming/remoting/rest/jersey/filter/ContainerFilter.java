@@ -120,8 +120,7 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 		// so that the thread of execution can share a single Hibernate session. 
 		if(SessionUtil.sessionActive())
 			logger.warn("We've got an active Hibernate session for " + request.toString());
-		else 
-			SessionUtil.sessionStartup();
+		SessionUtil.sessionStartup();
 	}
 	
 	private void teardownHibernateSession(ContainerRequest request) {

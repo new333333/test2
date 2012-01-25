@@ -39,11 +39,6 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
-import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
-import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
-import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultFolderDefinitionIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -289,34 +284,18 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-		// If we have a folder option selected, put it into effect.
+		// If we have a folder option selected...
 		ToolbarItem tbi = ((ToolbarItem) callbackData);
-		TeamingEvents event = tbi.getTeamingEvent();
-		if (TeamingEvents.UNDEFINED == event) {
-			String url = tbi.getUrl();
-			if (GwtClientHelper.hasString(url)) {
-				String jsString = tbi.getQualifierValue("onClick");
-				if (GwtClientHelper.hasString(jsString)) {
-					GwtClientHelper.jsEvalString(url, jsString);
-				}
-				else {
-					GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
-				}
+		String url = tbi.getUrl();
+		if (GwtClientHelper.hasString(url)) {
+			// ...put it into effect.
+			String jsString = tbi.getQualifierValue("onClick");
+			if (GwtClientHelper.hasString(jsString)) {
+				GwtClientHelper.jsEvalString(url, jsString);
 			}
-		}
-		
-		else {
-			VibeEventBase<?> vibeEvent;
-			String importType = tbi.getName();
-			switch (event) {			
-			case INVOKE_CONFIGURE_COLUMNS:  vibeEvent = new InvokeConfigureColumnsEvent();         break;
-			case INVOKE_IMPORT_ICAL_FILE:   vibeEvent = new InvokeImportIcalFileEvent(importType); break;
-			case INVOKE_IMPORT_ICAL_URL:    vibeEvent = new InvokeImportIcalUrlEvent( importType); break;			
-			default:
-				Window.alert(m_messages.mainMenuFolderOptionsUnexpectedEvent(event.name()));
-				return true;
+			else {
+				GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
 			}
-			GwtTeaming.fireEvent(vibeEvent);
 		}
 		
 		// Return true to close the dialog.

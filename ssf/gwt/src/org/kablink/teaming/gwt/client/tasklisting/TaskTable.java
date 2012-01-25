@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,18 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveDownEvent;
@@ -59,7 +48,6 @@ import org.kablink.teaming.gwt.client.event.TaskMoveUpEvent;
 import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
 import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -90,12 +78,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
-import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
-import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
@@ -122,6 +106,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -142,7 +127,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class that implements the Composite that contains the task folder
@@ -153,15 +137,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
-		ChangeEntryTypeSelectedEntriesEvent.Handler,
-		CopySelectedEntriesEvent.Handler,
-		DeleteSelectedEntriesEvent.Handler,
-		LockSelectedEntriesEvent.Handler,
-		MarkReadSelectedEntriesEvent.Handler,
-		MoveSelectedEntriesEvent.Handler,
-		PurgeSelectedEntriesEvent.Handler,
-		ShareSelectedEntriesEvent.Handler,
-		SubscribeSelectedEntriesEvent.Handler,
 		TaskDeleteEvent.Handler,
 		TaskHierarchyDisabledEvent.Handler,
 		TaskMoveDownEvent.Handler,
@@ -169,40 +144,38 @@ public class TaskTable extends Composite
 		TaskMoveRightEvent.Handler,
 		TaskMoveUpEvent.Handler,
 		TaskPurgeEvent.Handler,
-		TaskQuickFilterEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler
+		TaskQuickFilterEvent.Handler
 {
-	private boolean						m_sortAscending;			//
-	private Column						m_sortColumn;				//
-	private EventHandler				m_assigneeMouseOutEvent;	//
-	private EventHandler				m_assigneeMouseOverEvent;	//
-	private EventHandler				m_cbClickHandler;			//
-	private EventHandler				m_columnClickHandler;		//
-	private EventHandler				m_dueDateClickHandler;		//
-	private EventHandler				m_expanderClickHandler;		//
-	private EventHandler				m_newTaskClickHandler;		//
-	private EventHandler				m_taskOptionClickHandler;	//
-	private EventHandler				m_taskOrderBlurHandler;		//
-	private EventHandler				m_taskOrderClickHandler;	//
-	private EventHandler				m_taskOrderKeyPressHandler;	//
-	private EventHandler				m_taskSeenClickHandler;		//
-	private EventHandler				m_taskViewClickHandler;		//
-	private FlexCellFormatter			m_flexTableCF;				//
-	private FlexTable					m_flexTable;				//
-	private Image 						m_dueDateBusy;				//
-	private int							m_markerSize;				// Calculated size of a marker (e.g., unseen bubble, completed checkmark, ...)
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private long						m_renderTime;				//
-	private ProcessActiveWidgets		m_processActiveWidgets;		//
-	private RowFormatter				m_flexTableRF;				//
-	private String						m_quickFilter;				//
-	private TaskBundle					m_taskBundle;				//
-	private TaskDueDateDlg				m_dueDateDlg;				//
-	private TaskListing					m_taskListing;				//
-	private TaskPopupMenu				m_newTaskMenu;				//
-	private TaskPopupMenu				m_percentDoneMenu;			//
-	private TaskPopupMenu				m_priorityMenu;				//
-	private TaskPopupMenu				m_statusMenu;				//
+	private boolean					m_sortAscending;			//
+	private Column					m_sortColumn;				//
+	private EventHandler			m_assigneeMouseOutEvent;	//
+	private EventHandler			m_assigneeMouseOverEvent;	//
+	private EventHandler			m_cbClickHandler;			//
+	private EventHandler			m_columnClickHandler;		//
+	private EventHandler			m_dueDateClickHandler;		//
+	private EventHandler			m_expanderClickHandler;		//
+	private EventHandler			m_newTaskClickHandler;		//
+	private EventHandler			m_taskOptionClickHandler;	//
+	private EventHandler			m_taskOrderBlurHandler;		//
+	private EventHandler			m_taskOrderClickHandler;	//
+	private EventHandler			m_taskOrderKeyPressHandler;	//
+	private EventHandler			m_taskSeenClickHandler;		//
+	private EventHandler			m_taskViewClickHandler;		//
+	private FlexCellFormatter		m_flexTableCF;				//
+	private FlexTable				m_flexTable;				//
+	private Image 					m_dueDateBusy;				//
+	private int						m_markerSize;				// Calculated size of a marker (e.g., unseen bubble, completed checkmark, ...)
+	private long					m_renderTime;				//
+	private ProcessActiveWidgets	m_processActiveWidgets;		//
+	private RowFormatter			m_flexTableRF;				//
+	private String					m_quickFilter;				//
+	private TaskBundle				m_taskBundle;				//
+	private TaskDueDateDlg			m_dueDateDlg;				//
+	private TaskListing				m_taskListing;				//
+	private TaskPopupMenu			m_newTaskMenu;				//
+	private TaskPopupMenu			m_percentDoneMenu;			//
+	private TaskPopupMenu			m_priorityMenu;				//
+	private TaskPopupMenu			m_statusMenu;				//
 	
 	private       boolean							m_newTaskTable = true;										//
 	private final GwtRpcServiceAsync				m_rpcService   = GwtTeaming.getRpcService();				// 
@@ -236,15 +209,6 @@ public class TaskTable extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
-		TeamingEvents.COPY_SELECTED_ENTRIES,
-		TeamingEvents.DELETE_SELECTED_ENTRIES,
-		TeamingEvents.LOCK_SELECTED_ENTRIES,
-		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
-		TeamingEvents.MOVE_SELECTED_ENTRIES,
-		TeamingEvents.PURGE_SELECTED_ENTRIES,
-		TeamingEvents.SHARE_SELECTED_ENTRIES,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.TASK_DELETE,
 		TeamingEvents.TASK_HIERARCHY_DISABLED,
 		TeamingEvents.TASK_MOVE_DOWN,
@@ -253,7 +217,6 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_MOVE_UP,
 		TeamingEvents.TASK_PURGE,
 		TeamingEvents.TASK_QUICK_FILTER,
-		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
 	
 	/*
@@ -609,6 +572,13 @@ public class TaskTable extends Composite
 		// ...store the parameters...
 		m_taskListing = taskListing;
 		
+		// ..register the events to be handled by this class...
+		EventHelper.registerEventHandlers(
+			GwtTeaming.getEventBus(),
+			m_registeredEvents,
+			this);
+		
+		
 		// ...initialize the JSNI mouse event handlers...
 		jsInitTaskMouseEventHandlers(this);
 		
@@ -767,6 +737,7 @@ public class TaskTable extends Composite
 				updateCalculatedDatesAsync(null, ti.getTaskId().getBinderId(), entryId);
 			}
 		});
+		
 	}
 	
 	/*
@@ -910,6 +881,22 @@ public class TaskTable extends Composite
 	}
 
 	/*
+	 * Returns a base Image widget.
+	 */
+	private Image buildImage(ImageResource res, String title) {
+		Image reply = new Image(res);
+		reply.getElement().setAttribute("align", "absmiddle");
+		if (GwtClientHelper.hasString(title)) {
+			reply.setTitle(title);
+		}
+		return reply;
+	}
+	
+	private Image buildImage(ImageResource res) {
+		return buildImage(res, null);
+	}
+
+	/*
 	 * Builds and adds Widgets for a 'More...' link (when there are
 	 * more than the number of AssignmentInfo's we display at a time)
 	 * to a VerticalPanel.
@@ -1020,7 +1007,7 @@ public class TaskTable extends Composite
 		if (null == selectedOption) {
 			selectedOption = taskOptions.get(0);
 		}
-		Image img = GwtClientHelper.buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
+		Image img = buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
 		final Element imgElement = img.getElement();
 		if      (taskMenu == m_priorityMenu)    uid.setTaskPriorityImage(   img);
 		else if (taskMenu == m_statusMenu)      uid.setTaskStatusImage(     img);
@@ -1033,7 +1020,7 @@ public class TaskTable extends Composite
 			Anchor  a  = buildAnchor(anchorStyle);
 			Element aE = a.getElement();
 			aE.appendChild(imgElement);
-			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
+			aE.appendChild(buildImage(m_images.menu()).getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntryId()));
 			aE.setAttribute(ATTR_OPTION_MENU, taskMenu.getTaskEventEnum().toString());
 			EventWrapper.addHandler(a, m_taskOptionClickHandler);
@@ -1293,34 +1280,22 @@ public class TaskTable extends Composite
 	}
 	
 	/*
-	 * Returns a List<EntryId> of the IDs of the tasks in the TaskTable
+	 * Returns a List<Long> of the IDs of the tasks in the TaskTable
 	 * that are currently checked.
 	 */
-	private List<EntryId> getTaskIdsChecked() {
-		List<EntryId> reply = new ArrayList<EntryId>();;
+	private List<Long> getTaskIdsChecked() {
+		List<Long> reply = new ArrayList<Long>();;
 		getTaskIdsCheckedImpl(m_taskBundle.getTasks(), reply);
 		return reply;
 	}
 	
-	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<EntryId> checkedTaskIds) {
+	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<Long> checkedTaskIds) {
 		for (TaskListItem task:  tasks) {
 			if (getUIData(task).isTaskCBChecked()) {
-				checkedTaskIds.add(task.getTask().getTaskId());
+				checkedTaskIds.add(task.getTask().getTaskId().getEntryId());
 			}
 			getTaskIdsCheckedImpl(task.getSubtasks(), checkedTaskIds);
 		}
-	}
-
-	/*
-	 * Returns a List<Long> of just the entry IDs from a List<EntryId>.
-	 */
-	private List<Long> getTaskIdsCheckedAsListLong() {
-		List<EntryId> entryIds = getTaskIdsChecked();
-		List<Long> reply = new ArrayList<Long>();
-		for (EntryId entryId:  entryIds) {
-			reply.add(entryId.getEntryId());
-		}
-		return reply;
 	}
 	
 	/**
@@ -1929,20 +1904,7 @@ public class TaskTable extends Composite
 	private void handleTaskNewTask(TaskListItem task, String newTaskDisposition) {
 		jsSetNewTaskDisposition(newTaskDisposition);
 		jsSetSelectedTaskId(String.valueOf(task.getTask().getTaskId().getEntryId()));
-		String newTaskUrl = m_taskBundle.getNewTaskUrl();
-		if (m_taskListing.isEmbeddedInJSP()) {
-			GwtClientHelper.jsLaunchToolbarPopupUrl(newTaskUrl);
-		}
-		else {
-			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-				newTaskUrl,
-				false,	// false -> Not trash.
-				Instigator.GOTO_CONTENT_URL);
-			
-			if (GwtClientHelper.validateOSBI(osbInfo)) {
-				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
-			}
-		}
+		GwtClientHelper.jsLaunchToolbarPopupUrl(m_taskBundle.getNewTaskUrl());
 	}
 	
 	/*
@@ -2663,7 +2625,7 @@ public class TaskTable extends Composite
 		if (m_sortColumn == col) {
 			// Yes!  Add the appropriate directional arrow
 			// (i.e., ^/v)...
-			Image i = GwtClientHelper.buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
+			Image i = buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
 			i.addStyleName("gwtTaskList_sortImage");
 			a.getElement().appendChild(i.getElement());
 			
@@ -2672,196 +2634,6 @@ public class TaskTable extends Composite
 		}
 	}
 
-	/**
-	 * Called when the task table is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
-		super.onAttach();
-		registerEvents();
-	}
-	
-	/**
-	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the change.
-			BinderViewsHelper.changeEntryTypes(
-				FolderType.TASK,
-				getTaskIdsChecked());
-		}
-	}
-	
-	/**
-	 * Handles CopySelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the copy.
-			BinderViewsHelper.copyEntries(
-				FolderType.TASK,
-				getTaskIdsChecked());
-		}
-	}
-	
-	/**
-	 * Handles DeleteSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Delete the selected tasks.
-			handleTaskDelete();
-		}
-	}
-	
-	/**
-	 * Called when the task table is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-	}
-	
-	/**
-	 * Handles LockSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the lock.
-			BinderViewsHelper.lockEntries(
-				FolderType.TASK,
-				getTaskIdsChecked());
-		}
-	}
-	
-	/**
-	 * Handles MarkReadSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(getTaskIdsCheckedAsListLong());
-		}
-	}
-	
-	/**
-	 * Handles MoveSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the move.
-			BinderViewsHelper.moveEntries(
-				FolderType.TASK,
-				getTaskIdsChecked());
-		}
-	}
-	
-	/**
-	 * Handles PurgeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Purge the selected tasks.
-			handleTaskPurge();
-		}
-	}
-	
-	/**
-	 * Handles ShareSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the share.
-			BinderViewsHelper.shareEntries(
-				FolderType.TASK,
-				getTaskIdsChecked());
-		}
-	}
-	
-	/**
-	 * Handles SubscribeSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the subscribe to.
-			BinderViewsHelper.subscribeToEntries(
-				FolderType.TASK,
-				getTaskIdsChecked());
-		}
-	}
-	
 	/**
 	 * Handles TaskDeleteEvent's received by this class.
 	 * 
@@ -2958,25 +2730,6 @@ public class TaskTable extends Composite
 		handleTaskQuickFilter(event.getQuickFilter());
 	}
 
-	/**
-	 * Handles UnlockSelectedEntriesEvent's received by this class.
-	 * 
-	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the unlock.
-			BinderViewsHelper.unlockEntries(
-				FolderType.TASK,
-				getTaskIdsChecked());
-		}
-	}
-	
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
@@ -3093,7 +2846,7 @@ public class TaskTable extends Composite
 	}
 	
 	private void refreshTaskTableNow(final ProcessActive pa, final boolean preserveChecks, final boolean persistLinkage) {
-		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_taskListing.isEmbeddedInJSP(), m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode());
+		GetTaskBundleCmd cmd = new GetTaskBundleCmd(m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode());
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -3124,7 +2877,7 @@ public class TaskTable extends Composite
 				// ...preserve the tasks that are currently checked...
 				List<Long> checkedTaskIds;
 				if (preserveChecks)
-				     checkedTaskIds = getTaskIdsCheckedAsListLong();
+				     checkedTaskIds = getTaskIdsChecked();
 				else checkedTaskIds = null;
 				
 				// ...store the new TaskBundle in the TaskListing...
@@ -3144,28 +2897,6 @@ public class TaskTable extends Composite
 		});
 	}
 	
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				m_registeredEvents,
-				this,
-				m_registeredEventHandlers);
-		}
-	}
-
 	/*
 	 * Renders a column of a row based on a task into the TaskTable.
 	 */
@@ -3292,7 +3023,7 @@ public class TaskTable extends Composite
 			Anchor a = buildAnchor();
 			Element aE = a.getElement();
 			aE.appendChild(il.getElement());
-			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
+			aE.appendChild(buildImage(m_images.menu()).getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(ti.getTaskId().getEntryId()));
 			EventWrapper.addHandler(a, m_dueDateClickHandler);
 			dueDateWidget = a;
@@ -3338,7 +3069,7 @@ public class TaskTable extends Composite
 			String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
 			menuElement.setAttribute(ATTR_ENTRY_ID, entryId);
 			EventWrapper.addHandler(menuAnchor, m_newTaskClickHandler);
-			Image newTaskMenuImg = GwtClientHelper.buildImage(m_images.newTaskButton1());
+			Image newTaskMenuImg = buildImage(m_images.newTaskButton1());
 			getUIData(task).setTaskNewTaskMenuImage(newTaskMenuImg);
 			menuElement.appendChild(newTaskMenuImg.getElement());
 			m_flexTable.setWidget(row, newTaskMenuIndex, menuAnchor);
@@ -3468,7 +3199,7 @@ public class TaskTable extends Composite
 		fp.add(cb);
 		if (0 < task.getSubtasks().size()) {
 			Anchor a = buildAnchor();
-			Image  i = GwtClientHelper.buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
+			Image  i = buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
 			Element aE = a.getElement();
 			aE.appendChild(i.getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, entryId);
@@ -3539,13 +3270,13 @@ public class TaskTable extends Composite
 		if (ti.isTaskClosed()) {
 			taStyles        += " gwtTaskList_task-strike_Inner";
 			namePanelStyles += " gwtTaskList_task-strike_Outer";
-			Image i          = GwtClientHelper.buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
+			Image i          = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
 			marker           = i;
 		}
 		else if (ti.isTaskUnseen()) {
 			Anchor a = buildAnchor();
 			uid.setTaskUnseenAnchor(a);
-			Image i = GwtClientHelper.buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
+			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
 			Element aE = a.getElement();
 			aE.appendChild(i.getElement());
 			aE.setAttribute(ATTR_ENTRY_ID, entryId);
@@ -4100,18 +3831,6 @@ public class TaskTable extends Composite
 	}
 
 	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
-	}
-	
-	/*
 	 * Makes a GWT RPC call to the server to update the calculated
 	 * dates for the binder and/or task, and any related subtasks.  If
 	 * the RPC call succeeds any modified end dates will be reflected
@@ -4280,10 +3999,11 @@ public class TaskTable extends Composite
 		else m_taskListing.showTaskToolsLinkage();
 		
 		// Enabled/disable the buttons as calculated.
+		m_taskListing.getDeleteButton().setEnabled(   enableTrash                        );
 		m_taskListing.getMoveDownButton().setEnabled( moveStates.canMoveDown(),  arrowHint);
 		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft(),  arrowHint);
 		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight(), arrowHint);
 		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp(),    arrowHint);
-		m_taskListing.setEntriesSelected(enableTrash || enablePurge);
+		m_taskListing.getPurgeButton().setEnabled(    enablePurge                        );
 	}
 }

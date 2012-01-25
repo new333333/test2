@@ -65,13 +65,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class TableWidgetDlgBox extends DlgBox
 	implements ChangeHandler, KeyPressHandler
 {
-	private TextBox m_numRowsCtrl = null;
-	private CheckBox m_showBorderCkBox = null;
-	private ListBox m_numColsCtrl = null;
-	private ArrayList<TextBox> m_colWidths = null;
+	private CheckBox		m_showBorderCkBox = null;
+	private ListBox		m_numColsCtrl = null;
+	private ArrayList<TextBox>	m_colWidths = null;
 	private ArrayList<ListBox> m_colWidthUnits = null;
-	private VerticalPanel m_mainPanel = null;
-	private FlexTable m_table = null;
+	private VerticalPanel	m_mainPanel = null;
+	private FlexTable		m_table = null;
 	
 	/**
 	 * 
@@ -106,11 +105,8 @@ public class TableWidgetDlgBox extends DlgBox
 		{
 			for (i = 0; i < m_colWidths.size(); ++i)
 			{
-				// Remove the row 3.
-				// Row 0, contains the "Show border" checkbox
-				// Row 1, contains the "Number of rows" controls
-				// Row 2, contains the "Number of columns" controls.
-				m_table.removeRow( 3 );
+				// Remove the 2nd row.  Row 0, contains the "Show border" checkbox and Row 1, contains the "Number of columns" controls.
+				m_table.removeRow( 2 );
 			}
 			
 			m_colWidths.clear();
@@ -128,14 +124,14 @@ public class TableWidgetDlgBox extends DlgBox
 
 			// Add the label, "Column X width:"
 			label = new Label( GwtTeaming.getMessages().columnXWidth( i+1 ) );
-			m_table.setWidget( i+3, 0, label );
+			m_table.setWidget( i+2, 0, label );
 			
 			txtBox = new TextBox();
 			txtBox.setVisibleLength( 3 );
 			colWidth = properties.getColWidth( i );
 			txtBox.setValue( colWidth );
 			txtBox.addKeyPressHandler( this );
-			m_table.setWidget( i+3, 1, txtBox );
+			m_table.setWidget( i+2, 1, txtBox );
 			
 			// Remember this TextBox
 			m_colWidths.add( i, txtBox );
@@ -151,7 +147,7 @@ public class TableWidgetDlgBox extends DlgBox
 				listBox.setSelectedIndex( 1 );
 			else
 				listBox.setSelectedIndex( 0 );
-			m_table.setWidget( i+3, 2, listBox );
+			m_table.setWidget( i+2, 2, listBox );
 			
 			// Remember this ListBox
 			m_colWidthUnits.add( i, listBox );
@@ -183,18 +179,10 @@ public class TableWidgetDlgBox extends DlgBox
 		// Add a checkbox for "Show border"
 		m_showBorderCkBox = new CheckBox( GwtTeaming.getMessages().showBorder() );
 		m_table.setWidget( 0, 0, m_showBorderCkBox );
-		
-		// Add a label and textbox control for "Number of rows:"
-		label = new Label( GwtTeaming.getMessages().numRows() );
-		m_table.setWidget( 1, 0, label );
-		m_numRowsCtrl = new TextBox();
-		m_numRowsCtrl.setVisibleLength( 2 );
-		m_numRowsCtrl.addKeyPressHandler( this );
-		m_table.setWidget( 1, 1, m_numRowsCtrl );
 
 		// Add label and select control for "Number of columns:".
 		label = new Label( GwtTeaming.getMessages().numColumns() );
-		m_table.setWidget( 2, 0, label );
+		m_table.setWidget( 1, 0, label );
 		m_numColsCtrl = new ListBox( false );
 		m_numColsCtrl.setVisibleItemCount( 1 );
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._1(), "1" );
@@ -208,7 +196,7 @@ public class TableWidgetDlgBox extends DlgBox
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._9(), "9" );
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._10(), "10" );
 		m_numColsCtrl.addChangeHandler( this );
-		m_table.setWidget( 2, 1, m_numColsCtrl );
+		m_table.setWidget( 1, 1, m_numColsCtrl );
 		
 		m_mainPanel.add( m_table );
 		
@@ -326,7 +314,6 @@ public class TableWidgetDlgBox extends DlgBox
 	public PropertiesObj getDataFromDlg()
 	{
 		TableProperties	properties;
-		int numRows;
 		int numColumns;
 		int i;
 		int totalPercentageWidth = 0;
@@ -335,16 +322,6 @@ public class TableWidgetDlgBox extends DlgBox
 		
 		// Save away the "show border" value.
 		properties.setShowBorder( getShowBorderValue() );
-		
-		// Save away number of rows
-		numRows = getNumRows();
-		if ( numRows == 0 )
-		{
-			// Tell the user that the number of rows must be greater than 0.
-			Window.alert( GwtTeaming.getMessages().invalidNumberOfRows() );
-			return null;
-		}
-		properties.setNumRows( numRows );
 		
 		// Save away the "number of columns" value.
 		numColumns = getNumColumns();
@@ -464,24 +441,6 @@ public class TableWidgetDlgBox extends DlgBox
 	
 	
 	/**
-	 * Return the number of rows from the control in the dialog.
-	 */
-	public int getNumRows()
-	{
-		String numStr;
-		int numRows;
-		
-		numRows = 0;
-		numStr = m_numRowsCtrl.getText();
-		
-		if ( numStr != null && numStr.length() > 0 )
-		{
-			numRows = Integer.parseInt( numStr );
-		}
-		
-		return numRows; 
-	}
-	/**
 	 * Return true if the "show border" checkbox is checked.
 	 */
 	public boolean getShowBorderValue()
@@ -500,7 +459,6 @@ public class TableWidgetDlgBox extends DlgBox
 		properties = (TableProperties) props;
 
 		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
-		m_numRowsCtrl.setText( properties.getNumRowsStr() );
 		m_numColsCtrl.setSelectedIndex( properties.getNumColumnsInt() - 1 );
 
 		// Add a "Column width" text box for every column.
@@ -524,7 +482,7 @@ public class TableWidgetDlgBox extends DlgBox
 	
 	
 	/**
-	 * This method gets called when the user types in the "number of rows" or the "column width" text box.
+	 * This method gets called when the user types in the "column width" text box.
 	 * We only allow the user to enter numbers.
 	 */
 	public void onKeyPress( KeyPressEvent event )
@@ -541,28 +499,24 @@ public class TableWidgetDlgBox extends DlgBox
     	else
     		txtBox = null;
 
-    	if ( txtBox != m_numRowsCtrl )
-    	{
-	        // Allow the user to enter '*'.  That is a valid column width.
-	        if ( event.getCharCode() == '*' )
-	        {
-	        	// Remove any characters from the text box.
-	        	if ( txtBox != null )
-	        	{
-	        		txtBox.setValue( "*" );
-	        		txtBox.cancelKey();
-	        		
-	        		danceWidthUnits( txtBox );
-	        	}
-	
-	        	return;
-	        }
-    	}
+        // Allow the user to enter '*'.  That is a valid column width.
+        if ( event.getCharCode() == '*' )
+        {
+        	// Remove any characters from the text box.
+        	if ( txtBox != null )
+        	{
+        		txtBox.setValue( "*" );
+        		txtBox.cancelKey();
+        		
+        		danceWidthUnits( txtBox );
+        	}
+
+        	return;
+        }
         
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
-        // Only let the user enter a valid digit.
         if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
@@ -575,24 +529,21 @@ public class TableWidgetDlgBox extends DlgBox
         		txtBox.cancelKey();
         	}
         }
-
-        if ( txtBox != m_numRowsCtrl )
+        
+        cmd = new Scheduler.RepeatingCommand()
         {
-	        cmd = new Scheduler.RepeatingCommand()
-	        {
-	        	/**
-	        	 * 
-	        	 */
-				@Override
-				public boolean execute()
-				{
-			        danceWidthUnits( txtBox );
-			        
-			        return false;
-				}
-			};
-			Scheduler.get().scheduleFixedPeriod( cmd, 250 );
-        }
+        	/**
+        	 * 
+        	 */
+			@Override
+			public boolean execute()
+			{
+		        danceWidthUnits( txtBox );
+		        
+		        return false;
+			}
+		};
+		Scheduler.get().scheduleFixedPeriod( cmd, 250 );
 	}
 	
 }// end TableWidgetDlgBox

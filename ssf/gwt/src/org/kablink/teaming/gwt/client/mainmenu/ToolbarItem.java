@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -60,9 +61,6 @@ public class ToolbarItem implements IsSerializable {
 	// The Client*Parameter's can only be specified and used
 	// on the client side.
 	private transient ClientEventParameter  m_clientEventParameter;					// Optional parameter for the TeamingEvents.
-	
-	// The name used for a separator toolbar item.
-	public final static String SEPARATOR_NAME	= "999_separator";
 
 	/**
 	 * Inner class used to track name/value pairs.
@@ -78,18 +76,6 @@ public class ToolbarItem implements IsSerializable {
 		 */
 		public NameValuePair() {
 			// Nothing to do.
-		}
-
-		/**
-		 * Constructor method.
-		 * 
-		 * @param name
-		 * @param value
-		 */
-		public NameValuePair(String name, String value) {
-			this();
-			m_name  = name;
-			m_value = value;
 		}
 
 		/**
@@ -119,41 +105,12 @@ public class ToolbarItem implements IsSerializable {
 	}
 
 	/**
-	 * Constructor method.
-	 * 
-	 * @param name
-	 */
-	public ToolbarItem(String name) {
-		this();
-		setName(name);
-	}
-
-	/**
 	 * Adds a nested toolbar item to this one.
 	 *  
 	 * @param tmi
 	 */
 	public void addNestedItem(ToolbarItem tmi) {
-		if (null != tmi) {
-			m_nestedItemsAL.add(tmi);
-		}
-	}
-	
-	/**
-	 * Adds a the ToolbarItem's from a List<ToolbarItem> as nested
-	 * items to a ToolbarItem.
-	 * 
-	 * @param tmiList
-	 */
-	public void addNestedItems(List<ToolbarItem> tmiList) {
-		// If the list is not empty...
-		if ((null != tmiList) && (!(tmiList.isEmpty()))) {
-			// ...scan the items in the list...
-			for (ToolbarItem tmi:  tmiList) {
-				// ...adding each.
-				m_nestedItemsAL.add(tmi);
-			}
-		}
+		m_nestedItemsAL.add(tmi);
 	}
 
 	/**
@@ -172,18 +129,12 @@ public class ToolbarItem implements IsSerializable {
 	 * @param value
 	 */
 	public void addQualifier(String name, String value) {
-		addQualifier(new NameValuePair(name, value));
+		NameValuePair nvp = new NameValuePair();
+		nvp.setName(name);
+		nvp.setValue(value);
+		addQualifier(nvp);
 	}
 
-	/**
-	 * Constructs and returns a separator toobar item.
-	 * 
-	 * @return
-	 */
-	public static ToolbarItem constructSeparatorTBI() {
-		return new ToolbarItem(SEPARATOR_NAME);
-	}
-	
 	/**
 	 * Returns the name of the toolbar item.
 	 * 
@@ -203,17 +154,17 @@ public class ToolbarItem implements IsSerializable {
 	}
 
 	/**
-	 * Returns a nested toolbar item based on its name.
-	 *
-	 * @param tbiList
+	 * Returns nested toolbar item based on its name.
+	 * 
 	 * @param name
 	 * 
 	 * @return
 	 */
-	public static ToolbarItem getNestedToolbarItem(List<ToolbarItem> tbiList, String name) {
+	public ToolbarItem getNestedToolbarItem(String name) {
 		name = ((null == name) ? "" : name.toLowerCase());
 		boolean noName = (0 == name.length());
-		for (ToolbarItem tbi:  tbiList) {
+		for (Iterator<ToolbarItem> tbiIT = m_nestedItemsAL.iterator(); tbiIT.hasNext(); ) {
+			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
 			tbName = ((null == tbName) ? "" : tbName.toLowerCase());
 			boolean noTBName = (0 == tbName.length());
@@ -224,17 +175,13 @@ public class ToolbarItem implements IsSerializable {
 		return null;
 	}
 	
-	public ToolbarItem getNestedToolbarItem(String name) {
-		// Always use the initial form of the method.
-		return getNestedToolbarItem(m_nestedItemsAL, name);
-	}
-	
 	/*
 	 * Returns the name/value pair for a qualifier based on its name.
 	 */
 	private NameValuePair getQualifier(String name) {
 		name = name.toLowerCase();
-		for (NameValuePair nvp:  m_qualifiersAL) {
+		for (Iterator<NameValuePair> qIT = m_qualifiersAL.iterator(); qIT.hasNext(); ) {
+			NameValuePair nvp = qIT.next();
 			String nvpName = nvp.getName().toLowerCase();
 			if (nvpName.endsWith(name)) {
 				return nvp;
@@ -315,16 +262,6 @@ public class ToolbarItem implements IsSerializable {
 	
 	public boolean hasNestedToolbarItems() {
 		return hasNestedToolbarItems(1);
-	}
-
-	/**
-	 * Returns true if this is a separator item and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isSeparator() {
-		String name = getName();
-		return ((null != name) && name.equals(SEPARATOR_NAME));
 	}
 	
 	/**

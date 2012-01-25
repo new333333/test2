@@ -268,7 +268,6 @@ public class WebServiceClientUtil {
 	    sb.append("<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\" xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\">\r\n");
 	    sb.append("<transport name=\"http\" pivot=\"java:org.apache.axis.transport.http.CommonsHTTPSender\" />\r\n");
 	    sb.append("<globalConfiguration >\r\n");
-	    //sb.append("<parameter name=\"dotNetSoapEncFix\" value=\"true\"/>\r\n");
 	    sb.append("<requestFlow >\r\n");
 	    sb.append("<handler type=\"java:org.apache.ws.axis.security.WSDoAllSender\" >\r\n");
 	    sb.append("<parameter name=\"action\" value=\"UsernameToken\"/>\r\n");

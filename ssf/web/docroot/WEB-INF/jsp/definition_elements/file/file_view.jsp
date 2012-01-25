@@ -84,7 +84,7 @@
 <%
 	ss_entryAttributesSeen.put("title"+ssDefinitionEntry.getId().toString(), true);
 %>
-      <table cellspacing="0" cellpadding="0" style="margin-left: 5px; margin-top: 10px">
+      <table cellspacing="0" cellpadding="0" style="margin-left: 5px;">
       <tr>
         <td <c:if test="${!empty selection.fileItem.description.text}">rowspan="2" valign="top" </c:if> >
           <div class="ss_thumbnail_tiny ss_thumbnail_standalone">

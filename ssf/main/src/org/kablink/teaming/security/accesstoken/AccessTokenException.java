@@ -32,9 +32,7 @@
  */
 package org.kablink.teaming.security.accesstoken;
 
-import org.kablink.util.VibeRuntimeException;
-
-public class AccessTokenException extends VibeRuntimeException {
+public class AccessTokenException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -44,14 +42,6 @@ public class AccessTokenException extends VibeRuntimeException {
 	
 	public AccessTokenException(String msg) {
 		super(msg);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 403; // Forbidden
 	}
 
 }

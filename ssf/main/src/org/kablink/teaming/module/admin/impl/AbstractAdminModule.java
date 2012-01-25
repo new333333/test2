@@ -530,8 +530,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			notification.setEnabled(mailConfig.isSendMailEnabled());
  			getNotificationObject().setScheduleInfo(notification);
  		}
-  		zoneConfig.getMailConfig().setOutgoingAttachmentSizeLimit(mailConfig.getOutgoingAttachmentSizeLimit());
-  		zoneConfig.getMailConfig().setOutgoingAttachmentSumLimit(mailConfig.getOutgoingAttachmentSumLimit());
  		//this is being phased out
  		if (posting != null) {
  			posting.setEnabled(posting.isEnabled());
@@ -655,8 +653,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	   	long zoneId = RequestContextHolder.getRequestContext().getZoneId();
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
  		if (info != null) {
-			getFileVersionAgingObject().setScheduleInfo(info);
-			getFileVersionAgingObject().enable(Boolean.TRUE, zoneId);
+ 			getFileVersionAgingObject().setScheduleInfo(info);
+ 			getFileVersionAgingObject().enable(Boolean.TRUE, zoneId);
  		}
   	}
 
@@ -837,7 +835,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	if (doCheckAccess) {
     		checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	}
-		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		
 		//get list of current readers to compare for indexing

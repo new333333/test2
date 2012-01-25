@@ -209,9 +209,6 @@ td.rightend
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 	}
-.ss_form_element {
-	padding-top: 10px;
-}
 .tab_form .ss_form_wrap {
 	border-top-width: 0px;
 	border-right-width: 0px;

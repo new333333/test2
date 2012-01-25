@@ -289,8 +289,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		}
 		return config;
 	 }
-	//add template
-	 public TemplateBinder addTemplate(Binder localBinderParent, int type, Map updates) {
+	//add top level template
+	 public TemplateBinder addTemplate(int type, Map updates) {
 	    checkAccess(TemplateOperation.manageTemplate);
 		TemplateBinder template = new TemplateBinder();
 		String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
@@ -300,11 +300,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 if (Validator.isNull(name)) {
 				 throw new IllegalArgumentException(NLT.get("general.required.name"));
 			 }
-		}
-		if (localBinderParent != null) {
-			//This is a local template. Store the parent binder id
-			template.setTemplateOwningBinderId(localBinderParent.getId());
-		}
+		 }
 		template.setName(name);
 		if (!validateTemplateName(null, name)) throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
 		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
@@ -501,23 +497,19 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			} catch (Exception ex) {};
 		 return false;
 	 }
-	   public TemplateBinder addTemplateFromBinder(Binder localParentBinder, Long binderId) throws AccessControlException, WriteFilesException {
+	   public TemplateBinder addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
 		   checkAccess(TemplateOperation.manageTemplate);
 		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 		   Binder binder = (Binder)getCoreDao().loadBinder(binderId, zoneId);
-		   TemplateBinder config = templateFromBinder(localParentBinder, null, binder);
+		   TemplateBinder config = templateFromBinder(null, binder);
 		   return config;
 		}
-		protected TemplateBinder templateFromBinder(Binder localParentBinder, TemplateBinder parent, Binder binder) {
+		protected TemplateBinder templateFromBinder(TemplateBinder parent, Binder binder) {
 			//get binder setup
 			if (binder.getDefinitionType() == null) {
 				getDefinitionModule().setDefaultBinderDefinition(binder);
 			}	
 			TemplateBinder config = new TemplateBinder(binder);
-			if (localParentBinder != null) {
-				//This is a local template, set the parentBinder id
-				config.setTemplateOwningBinderId(localParentBinder.getId());
-			}
 			if (parent == null) {
 				//need a name				   
 				String name = config.getName();
@@ -556,7 +548,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			}
 			List<Binder> children = binder.getBinders();    
 			for (Binder child: children) {
-				templateFromBinder(localParentBinder, config, child);	    	
+				templateFromBinder(config, child);	    	
 			}
 			return config;
 			
@@ -702,16 +694,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		//world read
 		return getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
 	}
-	public List<TemplateBinder> getTemplates(Binder binder) {
-		//world read
-		return getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), false);
-	}
 	public List<TemplateBinder> getTemplates(int type) {
 		//world read
 		return getCoreDao().loadTemplates( RequestContextHolder.getRequestContext().getZoneId(), type);
-	}
-	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors) {
-		return getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), type, includeAncestors);
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves

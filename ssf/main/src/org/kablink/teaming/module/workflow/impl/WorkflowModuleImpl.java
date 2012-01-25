@@ -94,7 +94,6 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
-import org.kablink.util.VibeRuntimeException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -347,9 +346,24 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    			} else {
 	    				nodesMap.remove(stateName);
 	    			}	
-
-    				// 	remove any old timers for this node; timers are now done in Vibe code
-    				removeTimer(context, stateNode, "onElapsedTime");
+    				Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='transitionOnElapsedTime']");
+    				if (timer != null) {
+    					String toState = DefinitionUtils.getPropertyValue(timer, "toState");
+    					long total = 0;
+    					//	get days and convert to minutes
+    					String val=DefinitionUtils.getPropertyValue(timer, "days");
+    					if (!Validator.isNull(val)) total += Long.parseLong(val)*24*60;
+    				
+    					val=DefinitionUtils.getPropertyValue(timer, "hours");
+    					if (!Validator.isNull(val)) total += Long.parseLong(val)*60;				    	
+    				
+    					val=DefinitionUtils.getPropertyValue(timer, "mins");
+	    					if (!Validator.isNull(val)) total += Long.parseLong(val);
+    					addTimer(context, stateNode, "onElapsedTime", String.valueOf(total) + " minutes", toState);
+    				} else {
+    					// 	remove any old timers for this node
+    					removeTimer(context, stateNode, "onElapsedTime");
+    				}
 	    		}
 	    	}
 		
@@ -929,7 +943,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         // in this method.
 		return (EntryProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(EntryProcessor.PROCESSOR_KEY));			
 	}
-	class TimerException extends VibeRuntimeException {
+	class TimerException extends RuntimeException {
 		protected Entry entry;
 		protected WorkflowState state;
 		protected String message;
@@ -937,13 +951,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			this.entry = entry;
 			this.state = state;
 			this.message = message;
-		}
-		/* (non-Javadoc)
-		 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-		 */
-		@Override
-		public int getHttpStatusCode() {
-			return 500; // Internal Server Error
 		}
 		
 	}

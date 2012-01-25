@@ -54,23 +54,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class EnhancedViewProperties
 	implements PropertiesObj
 {
-	// This enum defines the different possible displays an enhanced view can display
-	public enum EnhancedViewType
-	{
-		DISPLAY_CALENDAR,
-		DISPLAY_ENTRY,
-		DISPLAY_FULL_ENTRY,
-		DISPLAY_LIST_OF_RECENT_ENTRIES,
-		DISPLAY_RECENT_ENTRIES,
-		DISPLAY_SORTED_LIST_RECENT_ENTRIES,
-		DISPLAY_SORTED_LIST_FILES,
-		DISPLAY_SURVEY,
-		DISPLAY_TASK_FOLDER,
-		UNKNOWN
-	}
-
 	private String	 m_jspName;
-	private EnhancedViewType m_viewType;
 
 	// The following data members are relevant when the enhanced view requires a folder to be selected.
 	private boolean m_showTitle;
@@ -94,7 +78,6 @@ public class EnhancedViewProperties
 	private Style.Unit m_widthUnits;
 	private int m_height;
 	private Style.Unit m_heightUnits;
-	private Style.Overflow m_overflow;
 	
 	/**
 	 * 
@@ -102,7 +85,6 @@ public class EnhancedViewProperties
 	public EnhancedViewProperties()
 	{
 		m_jspName = null;
-		m_viewType = EnhancedViewType.UNKNOWN;
 		m_showTitle = false;
 		m_folderId = null;
 		m_folderName = null;
@@ -118,7 +100,6 @@ public class EnhancedViewProperties
 		m_widthUnits = Style.Unit.PCT;
 		m_height = 100;
 		m_heightUnits = Style.Unit.PCT;
-		m_overflow = Style.Overflow.HIDDEN;
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
@@ -224,7 +205,6 @@ public class EnhancedViewProperties
 				m_zoneUUID = null;
 			}
 			
-			m_zoneUUID = evProps.getZoneUUID();
 			m_entryId = newEntryId;
 			m_entryName = evProps.getEntryName();
 			m_folderId = newFolderId;
@@ -236,7 +216,6 @@ public class EnhancedViewProperties
 			m_widthUnits = evProps.getWidthUnits();
 			m_height = evProps.getHeight();
 			m_heightUnits = evProps.getHeightUnits();
-			m_overflow = evProps.getOverflow();
 		}
 	}
 	
@@ -291,13 +270,6 @@ public class EnhancedViewProperties
 		else
 			str += "px";
 		
-		// Add overflow
-		str += ",overflow=";
-		if ( m_overflow == Style.Overflow.AUTO )
-			str += "auto";
-		else
-			str += "hidden";
-
 		str += ";";
 		
 		return str;
@@ -403,14 +375,6 @@ public class EnhancedViewProperties
 	
 	
 	/**
-	 * Return the value of overflow.
-	 */
-	public Style.Overflow getOverflow()
-	{
-		return m_overflow;
-	}
-	
-	/**
 	 * Return the name of the binder the folder lives in.
 	 */
 	public String getParentBinderName()
@@ -442,15 +406,6 @@ public class EnhancedViewProperties
 	public Style.Unit getWidthUnits()
 	{
 		return m_widthUnits;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public EnhancedViewType getViewType()
-	{
-		return m_viewType;
 	}
 	
 	
@@ -540,30 +495,6 @@ public class EnhancedViewProperties
 	public void setJspName( String name )
 	{
 		m_jspName = name;
-		
-		if ( m_jspName != null )
-		{
-			if ( m_jspName.equalsIgnoreCase( "landing_page_entry.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_ENTRY;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_full_entry.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_FULL_ENTRY;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_RECENT_ENTRIES;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_LIST_OF_RECENT_ENTRIES;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list_sorted.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_RECENT_ENTRIES;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list_sorted_files.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_FILES;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_calendar.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_CALENDAR;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_task_folder.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_TASK_FOLDER;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_survey.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_SURVEY;
-			else
-				m_viewType = EnhancedViewType.UNKNOWN;
-		}
 	}
 
 
@@ -575,14 +506,6 @@ public class EnhancedViewProperties
 		m_numEntriesToBeShown = numEntries;
 	}
 	
-	
-	/**
-	 * 
-	 */
-	public void setOverflow( Style.Overflow overflow )
-	{
-		m_overflow = overflow;
-	}
 	
 	/**
 	 * 

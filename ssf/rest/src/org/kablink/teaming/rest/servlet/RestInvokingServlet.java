@@ -50,7 +50,7 @@ public class RestInvokingServlet extends GenericServlet {
 	public void service(ServletRequest req, ServletResponse res)
 			throws ServletException, IOException {
 		initInternal();
-		ssfRestDispatcher.forward(req, res);
+		ssfRestDispatcher.include(req, res);
 	}
 
 	private void initInternal() {

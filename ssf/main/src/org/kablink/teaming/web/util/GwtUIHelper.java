@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.web.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,7 +80,7 @@ import org.springframework.web.portlet.ModelAndView;
  */
 public class GwtUIHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
-
+	
 	// Used to write a flag to the session cache regarding the state
 	// of the GWT UI.
 	private final static String GWT_UI_ENABLED_FLAG = "gwtUIEnabled";
@@ -90,7 +89,7 @@ public class GwtUIHelper {
 	// based UI.
 	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN = SPropsUtil.getBoolean("activity.stream.on.login",  true);
 	
-	// String used to recognize an '&' formatted URL vs. a '/'
+	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	
@@ -106,6 +105,7 @@ public class GwtUIHelper {
 	private final static String[] CACHED_TOOLBARS = new String[] {
 		WebKeys.CALENDAR_IMPORT_TOOLBAR,
 		WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,
+		WebKeys.FOLDER_ACTIONS_TOOLBAR,
 		WebKeys.FOLDER_TOOLBAR,
 		WebKeys.FOLDER_VIEWS_TOOLBAR,
 		WebKeys.GWT_MISC_TOOLBAR,
@@ -144,18 +144,16 @@ public class GwtUIHelper {
 	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
 	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
 
-	/**
-	 * Inner class used by addTrackBinderToToolbar() to assist in
-	 * building the toolbar items to support tracking.
-	 */
-	public static class TrackInfo {
-		public String m_event;
-		public String m_resourceKey;
-		public String m_tbName;
+	// Inner class used exclusively by addTrackBinderToToolbar() to
+	// assist in building the toolbar items to support tracking.
+	private static class TrackInfo {
+		String m_event;
+		String m_resourceKey;
+		String m_tbName;
 		
 		TrackInfo(String tbName, String event, String resourceKey) {
-			m_tbName      = tbName;
-			m_event       = event;
+			m_tbName = tbName;
+			m_event  = event;
 			m_resourceKey = resourceKey;
 		}
 	}
@@ -396,13 +394,74 @@ public class GwtUIHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void addTrackBinderToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
-		// Get a List<TrackInfo> that describes what track operations
-		// we'll need in the menu.
-		List<TrackInfo> tiList = getTrackInfoList(bs, binder);
+		// Construct an ArrayList to hold TrackInfo objects that
+		// describe what track operations we'll need in the menu.
+		ArrayList<TrackInfo> tiList = new ArrayList<TrackInfo>();
+
+		// What do we know about this binder?
+		Long binderId = binder.getId();
+		boolean binderIsWorkspace     = (binder instanceof Workspace);
+		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(binder);
+		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
+		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
+		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);
+
+		// Build TrackInfo objects for the toolbar items we need to add
+		// for tracking (or untracking) whatever we're looking at.
+		if (binderTracked) {
+			if (personTracked) {
+				// User workspace:  Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else {
+				if (binderIsUserWorkspace) {
+					// User workspace:  Tracked / Person:  Not Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("trackPerson", "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
+				}
+				else if (binderIsWorkspace) {
+					// Workspace:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
+				}
+				else if (binderIsCalendar) {
+					// Calendar:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisCalendarNot"));				
+				}
+				else {
+					// Folder:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisFolderNot"));				
+				}
+			}
+		}
+		else {
+			if (personTracked) {
+				// User workspace:  Not Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else if (binderIsUserWorkspace) {
+				// User workspace:  Not Tracked / Person:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
+			}
+			else if (binderIsWorkspace) {
+				// Workspace:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
+			}
+			else if (binderIsCalendar) {
+				// Calendar:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisCalendar"));				
+			}
+			else {
+				// Folder:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisFolder"));				
+			}
+		}
 
 		// Scan the TrackInfo objects we generated...
-		for (TrackInfo ti:  tiList) {
+		for (Iterator<TrackInfo> tiIT = tiList.iterator(); tiIT.hasNext(); ) {
 			// ...adding a toolbar item for each.
+			TrackInfo ti = tiIT.next();
 			addEventToToolbar(tb, ti.m_tbName, ti.m_event, NLT.get(ti.m_resourceKey));
 		}
 	}
@@ -488,7 +547,7 @@ public class GwtUIHelper {
 		// UI is active.  Is it?
 		if (isGwtUIActive(request)) {
 			// Yes!  Add an about toolbar item.
-			addAboutToToolbar(bs, request, model, gwtMiscToolbar);
+			addAboutToToolbar( bs, request, model, gwtMiscToolbar);
 			
 			// Do we have a binder and are we running as other than
 			// guest?
@@ -511,18 +570,13 @@ public class GwtUIHelper {
 		}
 	}
 
-	/**
+	/*
 	 * Generates the appropriate resource key for the given binder.
 	 * 
 	 * Note:  The logic for which key is based on the logic from
 	 *        sidebar_track2.jsp.
-	 *        
-	 * @param binder
-	 * @param keyBase
-	 * 
-	 * @return
 	 */
-	public static String buildRelevanceKey(Binder binder, String keyBase) {
+	private static String buildRelevanceKey(Binder binder, String keyBase) {
 		String relevanceKey = keyBase;
 		switch (binder.getEntityType()) {
 		case workspace:
@@ -574,12 +628,6 @@ public class GwtUIHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void cacheToolbarBeansImpl(HttpServletRequest hRequest, Map model) {
-		/// If the Granite GWT extensions are enabled...
-		if (isGraniteGwtEnabled()) {
-			// ...we don't cache the toolbar beans.  Bail.
-			return;
-		}
-		
 		// If we don't have an HttpServletRequest...
 		if (null == hRequest) {
 			// ...bail.
@@ -865,82 +913,6 @@ public class GwtUIHelper {
 	private static boolean hasRefererUrl(PortletRequest pRequest) {
 		return (0 < getRefererUrl(pRequest).length());
 	}
-
-	/**
-	 * Returns a List<TrackInfo> of how a binder is being tracked.
-	 * 
-	 * @param bs
-	 * @param binder
-	 * 
-	 * @return
-	 */
-	public static List<TrackInfo> getTrackInfoList(AllModulesInjected bs, Binder binder) {
-		// Construct an ArrayList to hold TrackInfo objects that
-		// describe what track operations we'll need in the menu.
-		List<TrackInfo> tiList = new ArrayList<TrackInfo>();
-
-		// What do we know about this binder?
-		Long binderId = binder.getId();
-		boolean binderIsWorkspace     = (binder instanceof Workspace);
-		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(binder);
-		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
-		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
-		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);
-
-		// Build TrackInfo objects for the toolbar items we need to add
-		// for tracking (or untracking) whatever we're looking at.
-		if (binderTracked) {
-			if (personTracked) {
-				// User workspace:  Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
-			}
-			else {
-				if (binderIsUserWorkspace) {
-					// User workspace:  Tracked / Person:  Not Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-					tiList.add(new TrackInfo("trackPerson", "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
-				}
-				else if (binderIsWorkspace) {
-					// Workspace:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisWorkspaceNot"));				
-				}
-				else if (binderIsCalendar) {
-					// Calendar:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisCalendarNot"));				
-				}
-				else {
-					// Folder:  Tracked.
-					tiList.add(new TrackInfo("track",       "UNTRACK_CURRENT_BINDER", "relevance.trackThisFolderNot"));				
-				}
-			}
-		}
-		else {
-			if (personTracked) {
-				// User workspace:  Not Tracked / Person:  Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
-				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_CURRENT_PERSON", "relevance.trackThisPersonNot"));				
-			}
-			else if (binderIsUserWorkspace) {
-				// User workspace:  Not Tracked / Person:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisPerson"));				
-			}
-			else if (binderIsWorkspace) {
-				// Workspace:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisWorkspace"));				
-			}
-			else if (binderIsCalendar) {
-				// Calendar:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisCalendar"));				
-			}
-			else {
-				// Folder:  Not Tracked.
-				tiList.add(    new TrackInfo("track",       "TRACK_CURRENT_BINDER",   "relevance.trackThisFolder"));				
-			}
-		}
-		
-		return tiList;
-	}
 	
 	/**
 	 * Returns s User from it's ID guarding against any exceptions.  If
@@ -1014,16 +986,6 @@ public class GwtUIHelper {
 	public static boolean isCurrentUserGuest() {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
-	}
-
-	/**
-	 * Returns true if the Granite GWT extensions are enabled and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isGraniteGwtEnabled() {
-		return SPropsUtil.getBoolean("granite.gwt.enabled", false);
 	}
 	
 	/**
@@ -1108,46 +1070,18 @@ public class GwtUIHelper {
 		return sessionCaptive.booleanValue();
 	}
 
-	/**
-	 * Returns true if the Vibe UI is in landing page debug mode and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeDebugLP()
-	{
-		return SPropsUtil.getBoolean( "ssf.lp.debug.enabled", false );
-	}
-	
-	/**
-	 * Returns true if the Vibe UI is in debug mode and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeUiDebug() {
-		return SPropsUtil.getBoolean("ssf.ui.debug.enabled", false);
-	}
-	
 	/*
 	 * Returns true if a request is a Vibe root URL or refers to a Vibe
 	 * root URL and returns false otherwise.
 	 */
 	private static boolean isVibeRootRequest(PortletRequest pRequest) {
 		// Is the base request a Vibe root URL?
-		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBE_ROOT_FLAG, "");
+		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBEONPREM_ROOT_FLAG, "");
 		boolean reply = MiscUtil.hasString(urlParam);
-		if (!(reply)) {
-			urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED, "");
-			reply = MiscUtil.hasString(urlParam);
-		}
 		if (!(reply)) {
 			// No!  Does the request refer to a Vibe root URL?
 			urlParam = getRefererUrl(pRequest);
-			reply = (0 < urlParam.indexOf(WebKeys.URL_VIBE_ROOT_FLAG));
-			if (!reply) {
-				reply = (0 < urlParam.indexOf(WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED));
-			}
+			reply = (0 < urlParam.indexOf(WebKeys.URL_VIBEONPREM_ROOT_FLAG));
 		}
 		
 		// If we get here, reply is true if the request is a Vibe root
@@ -1156,13 +1090,9 @@ public class GwtUIHelper {
 		return reply;
 	}
 	
-	/**
+	/*
 	 * Takes a Binder permalink and does what's necessary to bring up
 	 * the trash on that Binder.
-	 * 
-	 * @param binderPermalink
-	 * 
-	 * @return
 	 */
 	public static String getTrashPermalink(String binderPermalink) {
 		return appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
@@ -1309,14 +1239,7 @@ public class GwtUIHelper {
 		// Put out the flag indicating whether the UI should be in
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
-		model.put(WebKeys.VIBE_UI_DEBUG, isVibeUiDebug());
-		
-		// Put out the flag indicating whether the landing page is in debug mode.
-		model.put( WebKeys.VIBE_LP_DEBUG, isVibeDebugLP() );
-		
-		// Put out the flag indicating whether the new GWT UI features
-		// for Granite should be enabled.
-		model.put(WebKeys.VIBE_GRANITE_GWT_ENABLED, isGraniteGwtEnabled());
+		model.put(WebKeys.VIBE_UI_DEBUG, SPropsUtil.getBoolean("ssf.ui.debug.enabled", false));
 		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
@@ -1346,12 +1269,6 @@ public class GwtUIHelper {
 			isCapable = BrowserSniffer.is_TinyMCECapable( hRequest, unsupportedUserAgents );
 			model.put( "isTinyMCECapable", Boolean.toString( isCapable ) );
 		}
-		
-		// Add the language code the tinyMCE editor will use.  It is different from the
-		// language is running in in the following way.  If the user is running
-		// Traditional Chinese the language code will be "tw".  If the user is running
-		// Simplified Chinese the language code will be "zh".
-		model.put( "tinyMCELang", getTinyMCELanguage() );
 
 		// Put out the name of the product (Novell or Kablink Vibe)
 		// that's running.
@@ -1362,7 +1279,7 @@ public class GwtUIHelper {
 		model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
 
 		// Put out the ID of the top Vibe workspace.
-		String topWSId = getTopWSIdSafely(bs);
+		String topWSId = GwtUIHelper.getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
 		
 		// Put out a true/false indicator as to the state of the
@@ -1378,32 +1295,6 @@ public class GwtUIHelper {
 		loginDisallowed = SPropsUtil.getBoolean( "form.login.auth.disallowed", false );
 		model.put( WebKeys.IS_FORM_LOGIN_ALLOWED,  !loginDisallowed );
 	}
-	
-	/**
-	 * Return the language the tinyMCE editor should use.  The language is different from the
-	 * language the user is running in in the following way.  If the user is running
-	 * Traditional Chinese the language code will be "tw".  If the user is running
-	 * Simplified Chinese the language code will be "zh".
-	 */
-	public static String getTinyMCELanguage()
-	{
-		String langCode;
-		String country;
-		User user;
-		
-		user = RequestContextHolder.getRequestContext().getUser();
-		
-		langCode = user.getLocale().getLanguage();
-
-		country = user.getLocale().getCountry();
-		if ( country != null && country.equalsIgnoreCase( "tw" ) )
-			langCode = "tw";
-		else if ( country != null && country.equalsIgnoreCase( "cn" ) )
-			langCode = "zh";
-		
-		return langCode;
-	}
-	
 	
 	/**
 	 * Given a binder, returns the string to display for it in a

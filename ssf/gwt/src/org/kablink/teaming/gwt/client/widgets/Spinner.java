@@ -122,7 +122,7 @@ public class Spinner {
 
 	private List<SpinnerListener> spinnerListeners = new ArrayList<SpinnerListener>();
 	private int step, minStep, maxStep, initialSpeed = 7;
-	private double value, min, max;
+	private long value, min, max;
 	private boolean increment;
 	private boolean constrained;
 	private boolean enabled = true;
@@ -210,7 +210,7 @@ public class Spinner {
 	 * @param value
 	 *            initial value
 	 */
-	public Spinner(SpinnerListener spinner, double value) {
+	public Spinner(SpinnerListener spinner, long value) {
 		this(spinner, value, 0, 0, 1, 99, false);
 	}
 
@@ -224,7 +224,7 @@ public class Spinner {
 	 * @param max
 	 *            max value
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max) {
+	public Spinner(SpinnerListener spinner, long value, long min, long max) {
 		this(spinner, value, min, max, 1, 99, true);
 	}
 
@@ -242,7 +242,7 @@ public class Spinner {
 	 * @param maxStep
 	 *            max value for stepping
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max,
+	public Spinner(SpinnerListener spinner, long value, long min, long max,
 			int minStep, int maxStep) {
 		this(spinner, value, min, max, minStep, maxStep, true);
 	}
@@ -263,7 +263,7 @@ public class Spinner {
 	 * @param constrained
 	 *            determines if min and max value will take effect
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max,
+	public Spinner(SpinnerListener spinner, long value, long min, long max,
 			int minStep, int maxStep, boolean constrained) {
 		this(spinner, value, min, max, minStep, maxStep, constrained,
 				(SpinnerResources) GWT.create(SpinnerResources.class));
@@ -287,7 +287,7 @@ public class Spinner {
 	 * @param images
 	 *            the arrows images
 	 */
-	public Spinner(SpinnerListener spinner, double value, double min, double max,
+	public Spinner(SpinnerListener spinner, long value, long min, long max,
 			int minStep, int maxStep, boolean constrained,
 			SpinnerResources images) {
 		super();
@@ -339,7 +339,7 @@ public class Spinner {
 	/**
 	 * @return the maximum value
 	 */
-	public double getMax() {
+	public long getMax() {
 		return max;
 	}
 
@@ -353,7 +353,7 @@ public class Spinner {
 	/**
 	 * @return the minimum value
 	 */
-	public double getMin() {
+	public long getMin() {
 		return min;
 	}
 
@@ -367,7 +367,7 @@ public class Spinner {
 	/**
 	 * @return the current value
 	 */
-	public double getValue() {
+	public long getValue() {
 		return value;
 	}
 
@@ -427,10 +427,10 @@ public class Spinner {
 	 *            the maximum value. Will not have any effect if constrained is
 	 *            set to false
 	 */
-	public void setMax(double max) {
+	public void setMax(long max) {
 		this.max = max;
 	}
-	
+
 	/**
 	 * @param maxStep
 	 *            the maximum step for this spinner
@@ -444,7 +444,7 @@ public class Spinner {
 	 *            the minimum value. Will not have any effect if constrained is
 	 *            set to false
 	 */
-	public void setMin(double min) {
+	public void setMin(long min) {
 		this.min = min;
 	}
 
@@ -462,13 +462,13 @@ public class Spinner {
 	 * @param fireEvent
 	 *            fires value changed event if set to true
 	 */
-	public void setValue(double value, boolean fireEvent) {
+	public void setValue(long value, boolean fireEvent) {
 		this.value = value;
 		if (fireEvent) {
 			fireOnValueChanged();
 		}
 	}
-	
+
 	/**
 	 * Decreases the current value of the spinner by subtracting current step
 	 */

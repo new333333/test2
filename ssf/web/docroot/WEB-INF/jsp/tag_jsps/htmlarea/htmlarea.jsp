@@ -243,7 +243,6 @@ var ss_wikiLinkUrl = "<ssf:url
     action="__ajax_request">
 	  <ssf:param name="operation" value="wikilink_form" />
 	  <ssf:param name="binderId" value="${wikiLinkBinderId}" />
-	  <ssf:param name="originalBinderId" value="${wikiLinkBinderId}" />
     </ssf:url>";
 var ss_youTubeUrl = "<ssf:url 
     adapter="true" 

@@ -34,9 +34,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 
-import org.kablink.teaming.gwt.client.widgets.HtmlWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
+import com.google.gwt.http.client.URL;
 
 
 
@@ -48,17 +46,15 @@ import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 public class HtmlConfig extends ConfigItem
 {
 	private HtmlProperties	m_properties;
-	private String m_binderId;
 	
 	/**
 	 * 
 	 */
-	public HtmlConfig( String configStr, String binderId )
+	public HtmlConfig( String configStr )
 	{
 		String[] results;
 		
 		m_properties = new HtmlProperties();
-		m_binderId = binderId;
 		
 		// Split the configuration data into its parts.
 		results = configStr.split( "[,;]" );
@@ -100,32 +96,6 @@ public class HtmlConfig extends ConfigItem
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
-	}
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new HtmlWidget( this );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public HtmlDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new HtmlDropWidget( lpe, this );
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
 	}
 	
 	

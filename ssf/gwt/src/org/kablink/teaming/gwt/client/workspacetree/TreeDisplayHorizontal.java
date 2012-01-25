@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,12 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.workspacetree;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
-import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
-import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -73,8 +72,6 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  *
  */
 public class TreeDisplayHorizontal extends TreeDisplayBase {
-	private final static String GRID_DEPTH_ATTRIBUTE	= "n-depth";
-	
 	/*
 	 * Inner class that implements clicking on the various tree
 	 * expansion widgets.
@@ -115,14 +112,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		 * Synchronously expands the current node.
 		 */
 		private void doExpandNodeNow(TreeInfo expandedTI) {
-			// Expand the node...
 			m_expanderImg.setResource(getImages().tree_closer());
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
 			reRenderNode(m_ti, m_nodeGrid);
-			
-			// ...and tell everybody that it's been expanded.
-			GwtTeaming.fireEventAsync(new TreeNodeExpandedEvent(getSelectedBinderId(), getTreeMode()));
 		}
 		
 		/**
@@ -130,17 +123,13 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		 * 
 		 * @param event
 		 */
-		@Override
 		public void onClick(ClickEvent event) {
 			// Are we collapsing the node?
 			if (m_ti.isBinderExpanded()) {
-				// Yes!  Mark it as being closed and re-render it...
+				// Yes!  Mark it as being closed and re-render it.
 				m_expanderImg.setResource(getImages().tree_opener());
 				m_ti.setBinderExpanded(false);
 				reRenderNode(m_ti, m_nodeGrid);
-				
-				// ...and tell everybody that it's been collapsed.
-				GwtTeaming.fireEventAsync(new TreeNodeCollapsedEvent(getSelectedBinderId(), getTreeMode()));
 			}
 				
 			else {
@@ -152,21 +141,21 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// Yes!  Expand it.
 					cmd = new ExpandHorizontalBucketCmd( m_ti.getBucketInfo() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
 						}
 						
-						@Override
 						public void onSuccess(VibeRpcResponse response) {
+							TreeInfo expandedTI;
+							
 							// Yes!  Mark the node as being opened,
 							// save its new child Binder's list and
 							// re-render it.  We do this asynchronously
 							// so that we release the AJAX request
 							// ASAP.
-							TreeInfo expandedTI = (TreeInfo) response.getResponseData();
+							expandedTI = (TreeInfo) response.getResponseData();
 							doExpandNodeAsync(expandedTI);
 						}
 					});
@@ -180,7 +169,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// TreeInfo for the expansion?
 					cmd = new GetHorizontalNodeCmd( m_ti.getBinderInfo().getBinderId() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -188,14 +176,15 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
-						@Override
 						public void onSuccess(VibeRpcResponse response) {
+							TreeInfo expandedTI;
+							
 							// Yes!  Mark the node as being opened,
 							// save its new child Binder's list and
 							// re-render it.  We do this asynchronously
 							// so that we release the AJAX request
 							// ASAP.
-							TreeInfo expandedTI = (TreeInfo) response.getResponseData();
+							expandedTI = (TreeInfo) response.getResponseData();
 							doExpandNodeAsync(expandedTI);
 						}
 					});
@@ -211,7 +200,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * @param rootTIList
 	 */
 	public TreeDisplayHorizontal(WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
-		// Initialize the super class.
+		// Simply construct the super class.
 		super(wsTree, rootTIList);
 	}
 
@@ -225,7 +214,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
-	@Override
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
 		return new OnSelectBinderInfo(ti, Instigator.BREADCRUMB_TREE_SELECT);
 	}
@@ -261,7 +249,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		Anchor a = new Anchor();
 		a.addStyleName("breadCrumb_CloseA");
 		a.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				closeTree();
 			}
@@ -296,21 +283,14 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		return reply;
 	}
 
-	/*
-	 * Returns the widget to use as a TreeInfo selector's label.
-	 */
-	private Widget getSelectorLabel(TreeInfo ti, boolean rootNode) {
+	private Widget getSelectorLabel(TreeInfo ti) {
 		Widget reply;
 		
 		// Is this item a bucket?
-		String baseLabelStyle = "breadCrumb_ContentNode_Anchor";
-		if (rootNode && ti.isRootTail() && getTreeMode().isHorizontalBinder()) {
-			baseLabelStyle += (" breadCrumb_ContentNode_AnchorTail");
-		}
 		if (ti.isBucket()) {
 			// Yes!  Generate the appropriate widgets. 
 			FlowPanel selectorPanel = new FlowPanel();
-			selectorPanel.addStyleName(baseLabelStyle + " cursorDefault gwtUI_nowrap");
+			selectorPanel.addStyleName("breadCrumb_ContentNode_Anchor cursorDefault gwtUI_nowrap");
 			selectorPanel.add(buildBucketPartLabel(ti.getPreBucketTitle() + "\u00A0"));
 			selectorPanel.add(buildBucketRangeImage());
 			selectorPanel.add(buildBucketPartLabel("\u00A0" + ti.getPostBucketTitle()));
@@ -321,7 +301,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			// No, it's not a bucket!  Generate a simply Label for it.
 			Label selectorLabel = new Label(ti.getBinderTitle());
 			selectorLabel.setWordWrap(false);
-			selectorLabel.addStyleName(baseLabelStyle + " cursorPointer");
+			selectorLabel.addStyleName("breadCrumb_ContentNode_Anchor cursorPointer");
 			reply = selectorLabel;
 		}
 
@@ -338,7 +318,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
-	@Override
 	public boolean isInActivityStreamMode() {
 		// Return false since a bread crumb tree is never in activity
 		// stream mode.
@@ -353,40 +332,21 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 *
 	 * @param rootPanel
 	 */
-	@Override
 	public void render(String selectedBinderId, FlowPanel rootPanel) {
-		// If we're displaying a horizontal popup...
-		if (getTreeMode().isHorizontalPopup()) {
-			// ...add a close button to the top of the panel...
-			rootPanel.add(createClosePanel());
-		}
+		// Add the close button to the top of the panel...
+		rootPanel.add(createClosePanel());
 		
 		// ...create a Grid for the content...
 		List<TreeInfo> rootTIList = getRootTreeInfoList();
-		int count = rootTIList.size();
-		boolean trash = isTrash();
-		Grid contentGrid = createGrid(
-			1,
-			(trash ? (count + 1) : count),
-			("breadCrumb_Content " +
-				(getTreeMode().isHorizontalBinder() ?
-					"breadCrumb_ContentBinder"      :
-					"breadCrumb_ContentPopup")));
-		if (trash) {
-			Label trashLabel = new Label(getMessages().treeTrash());
-			trashLabel.addStyleName("breadCrumb_TrashLabel");
-			contentGrid.setWidget(0, 0, trashLabel);
-		}
+		int count = rootTIList.size();;
+		Grid contentGrid = createGrid(1, count, "breadCrumb_Content");
 
 		// ...scan the TreeInfo's...
 		for (int i = 0; i < count; i += 1) {
 			// ...display each into the content Grid...
 			Grid nodeGrid = createGrid(1, 2, "breadCrumb_ContentNode");
-			nodeGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, "0");
-			contentGrid.setWidget(0, (trash ? (i + 1) : i), nodeGrid);
-			TreeInfo ti = rootTIList.get(i);
-			ti.setRootTail((i + 1) == count);
-			renderNode(ti, nodeGrid);
+			contentGrid.setWidget(0, i, nodeGrid);
+			renderNode(rootTIList.get(i), nodeGrid);
 		}
 		
 		// ...and add the content Grid to the root panel.
@@ -423,8 +383,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		}
 		
 		// Generate the widgets to select the Binder.
-		int depth = Integer.parseInt(nodeGrid.getElement().getAttribute(GRID_DEPTH_ATTRIBUTE));
-		Widget selectorLabel = getSelectorLabel(ti, (0 == depth));
+		Widget selectorLabel = getSelectorLabel(ti);
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorLabel.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
@@ -446,12 +405,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			vp.setSpacing(0);
 			vp.add(w);
 			nodeGrid.setWidget(0, 1, vp);
-			for (TreeInfo tii:  ti.getChildBindersList()) {
+			for (Iterator<TreeInfo> tii = ti.getChildBindersList().iterator(); tii.hasNext(); ) {
 				Grid expansionGrid = createGrid(1, 2, "breadCrumb_ContentNode");
-				expansionGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, String.valueOf(depth + 1));
 				vp.add(expansionGrid);
-				tii.setRootTail(false);	// Nested node -> Can never be a root tail.
-				renderNode(tii, expansionGrid);
+				renderNode(tii.next(), expansionGrid);
 			}
 		}
 	}
@@ -472,7 +429,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @param ti
 	 */
-	@Override
 	void selectBinder(TreeInfo ti) {
 		closeTree();
 	}
@@ -485,7 +441,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * @param selectedBinderId
 	 * @param targetPanel
 	 */
-	@Override
 	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
 		// These values aren't used by the horizontal tree control.
 	}
@@ -498,7 +453,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * @param binderInfo
 	 */
-	@Override
 	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
 		// The context of the horizontal tree control can only be set
 		// during it's instantiation.

@@ -32,13 +32,11 @@
  */
 package org.kablink.teaming.util;
 
-import org.kablink.util.VibeRuntimeException;
-
 /**
  *
  * @author Jong Kim
  */
-public class InvokeException extends VibeRuntimeException {
+public class InvokeException extends RuntimeException {
     public InvokeException() {
         super();
     }
@@ -51,11 +49,4 @@ public class InvokeException extends VibeRuntimeException {
     public InvokeException(Throwable cause) {
         super(cause);
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
-	}
 }

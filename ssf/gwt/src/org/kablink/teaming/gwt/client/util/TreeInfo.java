@@ -78,10 +78,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	// bucket of Binder's.
 	private BucketInfo m_bucketInfo;
 
-	// Used on the client side only by the binder bread crumb tree to
-	// facilitate styling the different nodes along the binder's path.
-	private transient boolean m_rootTail;
-	
 	// Used on the client side only by the sidebar tree to cache the
 	// Image object used for the binder.  It uses this to hold a
 	// Binder's original image while it displays a spinning wheel
@@ -641,19 +637,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
-	 * Returns true if this TreeInfo is a 'root tail' node and false
-	 * otherwise.
-	 * 
-	 * See the comments by the definition of m_rootTail for how this is
-	 * used.
-	 * 
-	 * @return
-	 */
-	public boolean isRootTail() {
-		return m_rootTail;
-	}
-	
-	/**
 	 * Stores whether this TreeInfo object represents an Activity
 	 * Stream or not.
 	 * 
@@ -790,28 +773,14 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
-	 * Stores a List<TreeInfo> of the Binder's contained in the BInder
-	 * corresponding to this TreeInfo.
-	 * 
-	 * @param childBindersList
+	 * Stores an ArrayList<TreeInfo> of the Binder's contained in the
+	 * Binder corresponding to this TreeInfo.
 	 */
 	public void setChildBindersList(List<TreeInfo> childBindersList) {
 		m_childBindersAL = childBindersList;
 		updateChildBindersCount();
 	}
 
-	/**
-	 * Stores whether a TreeInfo is a root tail or not.
-	 * 
-	 * See the comments by the definition of m_rootTail for how this is
-	 * used.
-	 * 
-	 * @param rootTail
-	 */
-	public void setRootTail(boolean rootTail) {
-		m_rootTail = rootTail;
-	}
-	
 	/**
 	 * Updates the m_binderChildren data member based on what's
 	 * currently contained in the m_childBindersAL ArrayList.

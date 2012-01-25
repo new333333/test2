@@ -79,7 +79,6 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.ws.ElementBuilder;
 import org.kablink.teaming.module.definition.ws.ElementBuilderUtil;
-import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
@@ -755,15 +754,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return (FileAttachment) att;
 	}
 	
-	protected byte[] getFileVersionAsByteArray(Binder binder, DefinableEntity entity, String fileVersionId) {
-		VersionAttachment va = getVersionAttachment(entity, fileVersionId);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		getFileModule().readFile(binder, entity, va, baos);
-		return baos.toByteArray();
-	}
-	
-	protected VersionAttachment getVersionAttachment(DefinableEntity entry, String fileVersionId) 
-	throws NoFileVersionByTheIdException {
+	protected VersionAttachment getVersionAttachment(DefinableEntity entry, String fileVersionId) {
 		VersionAttachment fileVer;
 		for (Attachment attachment : entry.getAttachments()) {
 			if (attachment instanceof FileAttachment) {
@@ -773,6 +764,13 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			}
 		}
 		throw new NoFileVersionByTheIdException(fileVersionId);
+	}
+	
+	protected byte[] getFileVersionAsByteArray(Binder binder, DefinableEntity entity, String fileVersionId) {
+		VersionAttachment va = getVersionAttachment(entity, fileVersionId);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		getFileModule().readFile(binder, entity, va, baos);
+		return baos.toByteArray();
 	}
 	
 	/*

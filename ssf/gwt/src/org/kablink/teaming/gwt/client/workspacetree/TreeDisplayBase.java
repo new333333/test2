@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,7 +47,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
-import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -94,7 +93,6 @@ public abstract class TreeDisplayBase {
 		 * 
 		 * @param event
 		 */
-		@Override
 		public void onClick(ClickEvent event) {
 			// Is the item is a bucket?
 			if (m_ti.isBucket()) {
@@ -137,10 +135,7 @@ public abstract class TreeDisplayBase {
 	 * @param rootTI
 	 */
 	public TreeDisplayBase(WorkspaceTreeControl wsTree, TreeInfo rootTI) {
-		// Initialize the super class...
-		super();
-		
-		// ...and store the parameters.
+		// Simply store the parameters.
 		m_wsTree = wsTree;
 		m_rootTI = rootTI;
 	}
@@ -148,16 +143,12 @@ public abstract class TreeDisplayBase {
 	/**
 	 * Constructor method.  (2 of 2)
 	 *
-	 * @param tm
 	 * @param wsTree
 	 * @param rootTIList
 	 */
 	public TreeDisplayBase(WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
-		// Initialize the super class...
-		super();
-		
-		// ...and store the parameters.
-		m_wsTree     = wsTree;
+		// Simply store the parameters.
+		m_wsTree = wsTree;
 		m_rootTIList = rootTIList;
 	}
 
@@ -304,24 +295,6 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
-	 * Returns the ID of the binder this tree control was built from.
-	 * 
-	 * @return
-	 */
-	Long getSelectedBinderId() {
-		return m_wsTree.getSelectedBinderId();
-	}
-	
-	/**
-	 * Returns the TreeMode being displayed.
-	 * 
-	 * @return
-	 */
-	TreeMode getTreeMode() {
-		return m_wsTree.getTreeMode();
-	}
-
-	/**
 	 * Returns the root List<TreeInfo>, if that's what we're
 	 * displaying.
 	 *  
@@ -339,17 +312,7 @@ public abstract class TreeDisplayBase {
 	GwtRpcServiceAsync getRpcService() {
 		return GwtTeaming.getRpcService();
 	}
-
-	/**
-	 * Returns true if the tree is displaying for a trash view and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean isTrash() {
-		return m_wsTree.isTrash();
-	}
-	
+		
 	/**
 	 * Called to reset the main menu context to that previously loaded.
 	 */

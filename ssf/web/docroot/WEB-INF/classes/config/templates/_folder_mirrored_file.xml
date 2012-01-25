@@ -5,7 +5,7 @@
   <attribute name="templateDescription" type="description">__template_folder_mirrored_file_description</attribute>
   <attribute name="title" type="string">__template_folder_mirrored_file</attribute>
   <attribute name="description" type="description"></attribute>
-  <attribute name="iconName" type="string">/icons/folder_mirrored.png</attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_file_library.gif</attribute>
   <attribute name="name" type="string">_folder_mirrored_file</attribute>
   <property name="library">true</property>
   <property name="mirrored">true</property>

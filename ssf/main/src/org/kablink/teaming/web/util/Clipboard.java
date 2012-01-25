@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,21 +40,16 @@ import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
-
 /**
- * A Clipboard object contains a list of maps of user IDs, folder IDs
- * or entry IDs.
- *  
- * Since this is shared in the session, and multiple browser instances
- * share a session, need to synchronize access.
+ * @author hurley
+ *
+ * A Clipboard object contains a list of maps of user ids, folder ids or entry ids. 
+ * Since this is shared in the session, and multiple brower instances share a session, need
+ * to synchronize access
  * 
- * @author phurley@novell.com
  */
-@SuppressWarnings("unchecked")
 public class Clipboard {
 	private Map clipboard = null;
    	
@@ -63,37 +58,16 @@ public class Clipboard {
    	public final static String ENTRIES = "ss_muster_entries";
    	public final static String USERS = "ss_muster_users";
 	
-	private Clipboard(PortletRequest pRequest, HttpServletRequest hRequest) {
-		HttpSession hs;
-		PortletSession ps;
-		if (null != pRequest) {
-			hs = null;
-			ps = WebHelper.getRequiredPortletSession(pRequest);
-			clipboard = ((Map) ps.getAttribute(ObjectKeys.SESSION_CLIPBOARD, PortletSession.APPLICATION_SCOPE));
-		}
-		else {
-			ps = null;
-			hs = WebHelper.getRequiredSession(hRequest);
-			clipboard = ((Map) hs.getAttribute(ObjectKeys.SESSION_CLIPBOARD));
-		}
-		
+	public Clipboard(PortletRequest request) {
+		PortletSession ps = WebHelper.getRequiredPortletSession(request);
+		clipboard = (Map) ps.getAttribute(ObjectKeys.SESSION_CLIPBOARD, PortletSession.APPLICATION_SCOPE);
 		if (clipboard == null) {
 			clipboard = new HashMap(3);
 			clipboard.put(BINDERS, new HashSet());
 			clipboard.put(ENTRIES, new HashSet());
 			clipboard.put(USERS, new HashSet());
-			if (null != ps)
-				 ps.setAttribute(ObjectKeys.SESSION_CLIPBOARD, clipboard, PortletSession.APPLICATION_SCOPE);
-			else hs.setAttribute(ObjectKeys.SESSION_CLIPBOARD, clipboard                                  );
+			ps.setAttribute(ObjectKeys.SESSION_CLIPBOARD, clipboard, PortletSession.APPLICATION_SCOPE);
 		}
-	}
-	
-	public Clipboard(PortletRequest pRequest) {
-		this(pRequest, null);
-	}
-	
-	public Clipboard(HttpServletRequest hRequest) {
-		this(null, hRequest);
 	}
 	
 	public synchronized void add(String musterClass, Collection ids) {
@@ -120,4 +94,6 @@ public class Clipboard {
 		Set result = (Set)clipboard.get(musterClass);
 		result.clear();		
 	}
+
+	
 }

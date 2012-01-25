@@ -69,12 +69,9 @@ import org.kablink.teaming.client.ws.model.GroupBrief;
 import org.kablink.teaming.client.ws.model.GroupCollection;
 import org.kablink.teaming.client.ws.model.Principal;
 import org.kablink.teaming.client.ws.model.Tag;
-import org.kablink.teaming.client.ws.model.TeamBrief;
 import org.kablink.teaming.client.ws.model.TeamCollection;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
-import org.kablink.teaming.client.ws.model.TrashBrief;
-import org.kablink.teaming.client.ws.model.TrashCollection;
 import org.kablink.teaming.client.ws.model.User;
 import org.kablink.teaming.client.ws.model.ReleaseInfo;
 import org.kablink.teaming.client.ws.model.ZoneConfig;
@@ -448,7 +445,25 @@ public abstract class WSClientBase {
 		System.out.println("Size: " + febs.length);
 		if(febs != null) {
 			for(FolderEntryBrief feb:febs) {
-				printFolderEntryBrief(feb);
+				System.out.println();
+				System.out.println("ID: " + feb.getId());
+				System.out.println("Modification date: " + feb.getModification().getDate().getTime().toString());
+				System.out.println("Definition ID: " + feb.getDefinitionId());
+				System.out.println("Doc Level: " + feb.getDocLevel());
+				System.out.println("Doc Number: " + feb.getDocNumber());
+				System.out.println("Title: " + feb.getTitle());
+				System.out.println("Family: " + feb.getFamily());
+				System.out.println("Href: " + feb.getHref());
+				System.out.println("Permalink: " + feb.getPermaLink());
+				String[] fileNames = feb.getFileNames();
+				if(fileNames != null) {
+					System.out.println("Number of files: " + fileNames.length);
+					for(String fileName:fileNames)
+						System.out.println("    File: " + fileName);
+				}
+				else {
+					System.out.println("No files");
+				}
 			}
 		}
 	}
@@ -485,19 +500,9 @@ public abstract class WSClientBase {
 		printGroupCollection(gc);
 	}
 	
-	void fetchAndPrintTemplateC(String serviceName, String operation, Object[] args) throws Exception {
+	void fetchAndPrintTC(String serviceName, String operation, Object[] args) throws Exception {
 		TemplateCollection tc = (TemplateCollection) fetch(serviceName, operation, args);
 		printTemplateCollection(tc);
-	}
-	
-	void fetchAndPrintTeamC(String serviceName, String operation, Object[] args) throws Exception {
-		TeamCollection tc = (TeamCollection) fetch(serviceName, operation, args);
-		printTeamCollection(tc);
-	}
-	
-	void fetchAndPrintTRC(String serviceName, String operation, Object[] args) throws Exception {
-		TrashCollection tc = (TrashCollection) fetch(serviceName, operation, args);
-		printTrashCollection(tc);
 	}
 	
 	void fetchAndPrintACK(String serviceName, String operation, Object[] args, String filename) throws Exception {
@@ -681,54 +686,6 @@ public abstract class WSClientBase {
 		}
 	}
 	
-	void printTeamCollection(TeamCollection tc) {
-		TeamBrief[] fb = tc.getTeams();
-		System.out.println("Number of teams: " + fb.length);
-		for(int i = 0; i < fb.length; i++) {
-			System.out.println();
-			System.out.println("Team " + i + " id: " + fb[i].getId());
-			System.out.println("Team " + i + " title: " + fb[i].getTitle());
-			System.out.println("Team " + i + " family: " + fb[i].getFamily());
-			System.out.println("Team " + i + " definitionType: " + fb[i].getDefinitionType());
-		}
-	}
-	
-	void printTrashCollection(TrashCollection tc) {
-		TrashBrief[] fb = tc.getTrashEntries();
-		System.out.println("Number of trash entries: " + fb.length);
-		for(int i = 0; i < fb.length; i++) {
-			System.out.println();
-			System.out.println("Trash entry " + i + " isBinder: " + fb[i].isBinder());
-			System.out.println("Trash entry " + i + " isFolderEntry: " + fb[i].isFolderEntry());
-			System.out.println("Trash entry " + i + " binderBrief: ");
-			printBinderBrief(fb[i].getBinderBrief());
-			System.out.println("Trash entry " + i + " folderEntryBrief: ");
-			printFolderEntryBrief(fb[i].getFolderEntryBrief());
-		}
-	}
-	
-	void printFolderEntryBrief(FolderEntryBrief feb) {
-		System.out.println();
-		System.out.println("ID: " + feb.getId());
-		System.out.println("Modification date: " + feb.getModification().getDate().getTime().toString());
-		System.out.println("Definition ID: " + feb.getDefinitionId());
-		System.out.println("Doc Level: " + feb.getDocLevel());
-		System.out.println("Doc Number: " + feb.getDocNumber());
-		System.out.println("Title: " + feb.getTitle());
-		System.out.println("Family: " + feb.getFamily());
-		System.out.println("Href: " + feb.getHref());
-		System.out.println("Permalink: " + feb.getPermaLink());
-		String[] fileNames = feb.getFileNames();
-		if(fileNames != null) {
-			System.out.println("Number of files: " + fileNames.length);
-			for(String fileName:fileNames)
-				System.out.println("    File: " + fileName);
-		}
-		else {
-			System.out.println("No files");
-		}		
-	}
-	
 	void printDefinableEntityArray(Object array) {
 		if(array != null) {
 			if(array instanceof User[]) {
@@ -758,19 +715,14 @@ public abstract class WSClientBase {
 	}
 	
 	void printBinderBrief(BinderBrief bb) {
-		if(bb != null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("id=").append(bb.getId())
-			.append(", title=").append(bb.getTitle())
-			.append(", family=").append(bb.getFamily())
-			.append(", library=").append(bb.getLibrary())
-			.append(", definitionType=").append(bb.getDefinitionType())
-			.append(", path=").append(bb.getPath());
-			System.out.println(sb.toString());
-		}
-		else {
-			System.out.println(bb);
-		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("id=").append(bb.getId())
+		.append(", title=").append(bb.getTitle())
+		.append(", family=").append(bb.getFamily())
+		.append(", library=").append(bb.getLibrary())
+		.append(", definitionType=").append(bb.getDefinitionType())
+		.append(", path=").append(bb.getPath());
+		System.out.println(sb.toString());
 	}
 	
 	void printPrimitiveArray(Object array) {

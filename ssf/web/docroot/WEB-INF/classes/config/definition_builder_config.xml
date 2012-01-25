@@ -1322,9 +1322,6 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-
-<!--
-  Note: conferencing support has been discontinued
 	<item name="profileConferencingID" caption="__conferencingID" type="data" dataType="id" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
@@ -1355,8 +1352,6 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>		
--->
-
 	<item name="profileTimeZone" caption="__timeZone" type="data" dataType="timeZone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
 		<properties>
@@ -2115,6 +2110,8 @@
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
 			<option name="profilePresence" initial="true" />
+			<option name="profileConferencingID" initial="true" />
+			<option name="profileConferencingPwd" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
 				<exclude name="attachFiles"/>
@@ -2183,6 +2180,8 @@
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
 			<option name="profilePresence" initial="true" />
+			<option name="profileConferencingID" initial="true" />
+			<option name="profileConferencingPwd" initial="true" />
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 		</options>
 		<jsps>
@@ -4103,16 +4102,12 @@
 	</item>
 	<item name="transitionOnElapsedTime" caption="__transition_on_elapsed_time" type="transition" >
 		<properties>
-			<property name="days" caption="__transition_on_calendar_days" type="text" 
-				characterMask="^[0-9]*$" characterLength="10" />
-			<property name="businessdays" caption="__transition_on_business_days" type="text" 
+			<property name="days" caption="__transition_on_days" type="text" 
 				characterMask="^[0-9]*$" characterLength="10" />
 			<property name="hours" caption="__transition_on_hours" type="text"
 				characterMask="^[0-9]*$" characterLength="10" />
 			<property name="mins" caption="__transition_on_mins" type="text"
-				characterMask="^[0-9]*$" characterLength="10" >
-				<help>ihelp.workflow.elapsed_time_sum</help>
-			</property>
+				characterMask="^[0-9]*$" characterLength="10" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>

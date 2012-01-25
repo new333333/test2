@@ -55,7 +55,7 @@ import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 
 
-public abstract class AbstractAllModulesInjected implements AllModulesInjected {
+public class AbstractAllModulesInjected implements AllModulesInjected {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 

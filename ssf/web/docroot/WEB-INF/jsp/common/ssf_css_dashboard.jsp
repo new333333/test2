@@ -613,7 +613,7 @@ div.item-sub a {
 	font-weight: 400;
 	font-family: Arial, Helvetica, sans-serif;
 	color:#5691A6 !important;
-	font-size:1.3em;
+	font-size:18px;
 	}
 .wg-comment .ss_entryContent .ss_link_7 span {
 	color:#135c8f !important;

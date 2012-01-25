@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.Date;
-import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -47,28 +46,21 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * Helper methods for the GWT UI client code.
@@ -99,31 +91,6 @@ public class GwtClientHelper {
 	 */
 	private GwtClientHelper() {
 		// Inhibits this class from being instantiated.
-	}
-
-	/**
-	 * Adds a Long to a List<Long> if it's not already there.
-	 * 
-	 * @param lList
-	 * @param l
-	 */
-	public static void addLongToListLongIfUnique(List<Long> lList, Long l) {
-		// If the List<Long> doesn't contain the Long...
-		if (!(lList.contains(l))) {
-			// ...add it.
-			lList.add(l);
-		}
-	}
-	
-	/**
-	 * Appends a <br /> to the HTML of a Widget.
-	 * 
-	 * @param w
-	 */
-	public static void appendBR(Widget w) {
-		Element wE = w.getElement();
-		String html = wE.getInnerHTML();
-		wE.setInnerHTML(html + "<br />");
 	}
 	
 	/**
@@ -164,36 +131,6 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Returns a base Image widget.
-	 * 
-	 * @param res
-	 * @param title
-	 */
-	public static Image buildImage(ImageResource res, String title) {
-		Image reply = new Image(res);
-		reply.getElement().setAttribute("align", "absmiddle");
-		if (hasString(title)) {
-			reply.setTitle(title);
-		}
-		return reply;
-	}
-	
-	public static Image buildImage(ImageResource res) {
-		return buildImage(res, null);
-	}
-
-	/**
-	 * If we're in debug UI mode, displays an alert.
-	 * 
-	 * @param msg
-	 */
-	public static void debugAlert(String msg) {
-		if (isDebugUI()) {
-			deferredAlert(msg);
-		}
-	}
-	
-	/**
 	 * Displays a messages in an 'deferred' alert box.
 	 * 
 	 * @param msg
@@ -201,29 +138,12 @@ public class GwtClientHelper {
 	public static void deferredAlert(final String msg) {
 		if (hasString(msg)) {
 			ScheduledCommand cmd = new ScheduledCommand() {
-				@Override
 				public void execute() {
 					Window.alert(msg);
 				}
 			};
 			Scheduler.get().scheduleDeferred(cmd);
 		}
-	}
-
-	/**
-	 * Displays a message to the user regarding possibly multiple
-	 * errors.
-	 * 
-	 * @param baseError
-	 * @param multiErrors
-	 */
-	public static void displayMultipleErrors(String baseError, List<String> multiErrors) {
-		StringBuffer msg = new StringBuffer(baseError);
-		for (String error:  multiErrors) {
-			msg.append("\n\t");
-			msg.append(error);
-		}
-		deferredAlert(msg.toString());
 	}
 
 	/**
@@ -401,11 +321,6 @@ public class GwtClientHelper {
 		handleGwtRPCFailure(t, errorMessage, new String[]{patch});
 	}
 	
-	public static void handleGwtRPCFailure(Throwable t, String errorMessage, Long patch) {
-		// Always use the initial form of the method.
-		handleGwtRPCFailure(t, errorMessage, new String[]{String.valueOf(patch)});
-	}
-	
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage) {
 		// Always use the initial form of the method.
 		handleGwtRPCFailure(t, errorMessage, ((String[]) null));
@@ -459,22 +374,6 @@ public class GwtClientHelper {
 	}	
 
 	/**
-	 * Returns true if the UI is in debug mode for the landing page
-	 * 
-	 * @return
-	 */
-	public static boolean isDebugLP()
-	{
-		RequestInfo ri = getRequestInfo();
-		if (null == ri)
-		{
-			return false;
-		}
-		
-		return ri.isDebugLP();
-	}
-	
-	/**
 	 * Returns true if the UI is in debug mode and false otherwise.
 	 * 
 	 * @return
@@ -485,17 +384,6 @@ public class GwtClientHelper {
 			return false;
 		}
 		return ri.isDebugUI();
-	}
-	
-	/**
-	 * Return whether the Granite GWT enhancements should enabled or
-	 * not.
-	 * 
-	 * @return
-	 */
-	public boolean isGraniteGwtEnabled() {
-		RequestInfo ri = getRequestInfo();
-		return ((null == ri) ? false : ri.isGraniteGwtEnabled());
 	}
 	
 	/**
@@ -538,13 +426,13 @@ public class GwtClientHelper {
 	public static native String jsBuildTagSearchUrl(String tag) /*-{
 		// Find the base tag search result URL...
 		var searchUrl;
-	   	                      try {searchUrl =             ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
-		if (searchUrl == "") {try {searchUrl = self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-		if (searchUrl == "") {try {searchUrl = self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-		if (searchUrl == "") {try {searchUrl =    $wnd.top.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+	   	                      try {searchUrl =                           ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
+		if (searchUrl == "") {try {searchUrl =               self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl =               self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl = $wnd.top.gwtContentIframe.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
 
 		// ...and return it with the tag patched in.
-		searchUrl = $wnd.top.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
+		searchUrl = $wnd.top.gwtContentIframe.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
 		return searchUrl;
 	}-*/;
 	
@@ -593,24 +481,6 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Returns the binder ID from the content IFRAME.
-	 * 
-	 * @return
-	 */
-	public static native String jsGetContentBinderId() /*-{
-		return $wnd.top.gwtContentIframe.ss_binderId;
-	}-*/;
-	
-	/**
-	 * Returns the contributor IDs from the content IFRAME.
-	 * 
-	 * @return
-	 */
-	public static native String jsGetContentContributorIds() /*-{
-		return $wnd.top.gwtContentIframe.ss_clipboardIdsAsJSString;
-	}-*/;
-	
-	/**
 	 * Returns the left position of the content <IFRAME>'s <DIV>.
 	 * 
 	 * @return
@@ -641,6 +511,24 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
+	 * Returns true if the GWT simple search form is available and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static native boolean jsHasSimpleSearchForm() /*-{
+		var reply = false;
+		var contentIFrame = $wnd.top.gwtContentIframe;
+		if (null != contentIFrame) {
+			var contentDoc = contentIFrame.document;
+			if (null != contentDoc) {
+				reply = (null != contentDoc.getElementById("gwtSimpleSearchForm"));
+			}
+		}
+		return reply;
+	}-*/;
+	
+	/**
 	 * Hides the popup entry iframe div if one exists.
 	 */
 	public static native void jsHideEntryPopupDiv() /*-{
@@ -668,6 +556,17 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Invokes a simple search on the given string.
+	 * 
+	 * @param searchForThis
+	 */
+	public static native void jsInvokeSimpleSearch(String searchFor) /*-{
+		var contentDoc = $wnd.top.gwtContentIframe.document;
+		contentDoc.getElementById("gwtSimpleSearchText").value = searchFor;
+		contentDoc.getElementById("gwtSimpleSearchForm").submit();
+	}-*/;
+	
+	/**
 	 * Returns true if we're running in any flavor of IE and false
 	 * otherwise.
 	 * 
@@ -683,19 +582,9 @@ public class GwtClientHelper {
 	 * 
 	 * @param url
 	 */
-	public static native void jsLaunchToolbarPopupUrl(String url, String w, String h) /*-{
-		$wnd.ss_toolbarPopupUrl(url, '_blank', w, h);
+	public static native void jsLaunchToolbarPopupUrl(String url) /*-{
+		$wnd.ss_toolbarPopupUrl(url, '_blank', '', '');
 	}-*/;
-	
-	public static void jsLaunchToolbarPopupUrl(String url, int w, int h) {
-		// Always use the initial form of the method.
-		jsLaunchToolbarPopupUrl(url, String.valueOf(w), String.valueOf(h));
-	}
-
-	public static void jsLaunchToolbarPopupUrl(String url) {
-		// Always use the initial form of the method.
-		jsLaunchToolbarPopupUrl(url, "", "");
-	}
 
 	/**
 	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
@@ -708,10 +597,6 @@ public class GwtClientHelper {
 	 */
 	public static native void jsLaunchUrlInWindow(String url, String windowName, int windowHeight, int windowWidth) /*-{
 		$wnd.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
-	}-*/;
-	
-	public static native void jsLaunchUrlInWindow(String url, String windowName) /*-{
-		$wnd.top.ss_openUrlInWindow({href: url}, windowName);
 	}-*/;
 
 	/**
@@ -789,7 +674,7 @@ public class GwtClientHelper {
 	 * @param url
 	 */
 	public static native void jsShowForumEntry(String entryUrl) /*-{
-		$wnd.top.ss_showForumEntry(entryUrl);
+		$wnd.top.gwtContentIframe.ss_showForumEntry(entryUrl);
 	}-*/;
 	
 	/**
@@ -809,17 +694,6 @@ public class GwtClientHelper {
 		return s1.localeCompare(s2);
 	}-*/;
 
-	/**
-	 * Sets a TeamingPopupPanel to use one-way-corner animation to
-	 * open.
-	 * 
-	 * @param popup
-	 */
-	public static void oneWayCornerPopup(TeamingPopupPanel popup) {
-		popup.setAnimationEnabled(true);
-		popup.setAnimationTypeToOneWayCorner();
-	}
-	
 	/**
 	 * Removes all the child Node's from a DOM Element.
 	 *  
@@ -913,62 +787,6 @@ public class GwtClientHelper {
 	}
 	
 	/**
-	 * Set the background color if specified in the WidgetStyles.
-	 */
-	public static void setElementBackgroundColor( Element element, String color )
-	{
-		if ( element != null && color != null && color.length() > 0 )
-		{
-			Style style;
-
-			style = element.getStyle();
-			style.setBackgroundColor( color );
-		}
-	}
-	
-	/**
-	 * Set the border width and color if specified in the WidgetStyles
-	 */
-	public static void setElementBorderStyles( Element element, WidgetStyles widgetStyles )
-	{
-		if ( element != null )
-		{
-			String width;
-			String color;
-			Style style;
-			
-			style = element.getStyle();
-			
-			width = widgetStyles.getBorderWidth();
-			if ( width != null && width.length() > 0 )
-			{
-				style.setBorderWidth( Double.valueOf( width ), Unit.PX );
-			}
-			
-			color = widgetStyles.getBorderColor();
-			if ( color != null && color.length() > 0 )
-			{
-				style.setBorderColor( color );
-			}
-		}
-	}
-	
-	/**
-	 * Set the text color if one is specified in the WidgetStyles.
-	 */
-	public static void setElementTextColor( Element element, String color )
-	{
-		if ( element != null && color != null && color.length() > 0 )
-		{
-			Style style;
-			
-			style = element.getStyle();
-			
-			style.setColor( color );
-		}
-	}
-	
-	/**
 	 * Replaces all occurrences of oldSub with newSub in s.
 	 * 
 	 * The implementation was copied from StringUtil.replace().
@@ -1033,7 +851,6 @@ public class GwtClientHelper {
 
 			// ...and when the popup closes...
 			popup.addCloseHandler(new CloseHandler<PopupPanel>() {
-				@Override
 				public void onClose(CloseEvent<PopupPanel> event) {
 					// ...remove it.
 					bodyElement.removeClassName(scrollClass);
@@ -1049,16 +866,6 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Simulates a click event on the given element.
-	 * 
-	 * @param e
-	 */
-	public static void simulateElementClick(Element e) {
-		NativeEvent clickEvent = Document.get().createClickEvent(1, 0, 0, 0, 0, false, false, false, false);
-		e.dispatchEvent(clickEvent);
-	}
-	
-	/**
 	 * Validates we have a URL in an OnSelectBinderInfo object.
 	 * 
 	 * Optionally displays an error if there isn't and returns false.
@@ -1072,7 +879,7 @@ public class GwtClientHelper {
 	public static boolean validateOSBI(OnSelectBinderInfo osbi, boolean displayError) {
 		// If we the OnSelectBinderInfo doesn't have a permalink to the
 		// binder...
-		if (!(hasString(osbi.getBinderUrl()))) {
+		if (!(GwtClientHelper.hasString(osbi.getBinderUrl()))) {
 			// ...tell the user and return false.
 			if (displayError) {
 				deferredAlert(GwtTeaming.getMessages().cantAccessFolder());

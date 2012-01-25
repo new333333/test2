@@ -44,8 +44,6 @@ public class GetEntryCmd extends VibeRpcCmd
 {
 	private String m_zoneUUId;
 	private String m_entryId;
-	private int m_numRepliesToGet;
-	private boolean m_getFileAttachments;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -53,10 +51,6 @@ public class GetEntryCmd extends VibeRpcCmd
 	public GetEntryCmd()
 	{
 		super();
-		m_zoneUUId = null;
-		m_entryId = null;
-		m_numRepliesToGet = 0;
-		m_getFileAttachments = false;
 	}
 	
 	/**
@@ -67,19 +61,6 @@ public class GetEntryCmd extends VibeRpcCmd
 		this();
 		m_zoneUUId = zoneUUId;
 		m_entryId = entryId;
-		m_numRepliesToGet = 0;
-		m_getFileAttachments = false;
-	}
-	
-	/**
-	 * 
-	 */
-	public GetEntryCmd( String zoneUUId, String entryId, int numRepliesToGet )
-	{
-		this();
-		m_zoneUUId = zoneUUId;
-		m_entryId = entryId;
-		m_numRepliesToGet = numRepliesToGet;
 	}
 	
 	/**
@@ -88,22 +69,6 @@ public class GetEntryCmd extends VibeRpcCmd
 	public String getEntryId()
 	{
 		return m_entryId;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getFileAttachmentsValue()
-	{
-		return m_getFileAttachments;
-	}
-	
-	/**
-	 * Return the number of replies we should read for the given entry.
-	 */
-	public int getNumReplies()
-	{
-		return m_numRepliesToGet;
 	}
 	
 	/**

@@ -34,80 +34,64 @@ package org.kablink.teaming.lucene.analyzer;
 
 import java.io.IOException;
 
+import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-import org.apache.lucene.util.AttributeSource;
 import org.kablink.util.StringUtil;
 
 public class TokenDecomposingFilter extends TokenFilter {
 
-	//private Token[] tokens;
-	private AttributeSource.State[] savedStates;
+	private Token[] tokens;
 	private int index;
 	
-	private final TermAttribute termAtt = addAttribute(TermAttribute.class);
-	private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
-	private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
-
 	public TokenDecomposingFilter(TokenStream input) {
 		super(input);
 	}
 
-	public boolean incrementToken()
-    throws IOException {
-		AttributeSource.State state;
-		if(savedStates != null && index < savedStates.length) {
+	public Token next() throws IOException {
+		Token t;
+		if(tokens != null && index < tokens.length) {
 			// We have decomposed tokens and haven't returned them all yet.
-			state = savedStates[index++];
-			if(index == savedStates.length) {
+			t = tokens[index++];
+			if(index == tokens.length) {
 				// The token being returned is the last one in the set of decomposed
 				// tokens we save.
-				savedStates = null;
+				tokens = null;
 				index = 0;
 			}
-			restoreState(state);
-			return true;
+			return t;
 		}
 		else {
 			// We don't have decomposed tokens. Let's get the next regular token.
-			if(input.incrementToken()) {
-				state = captureState(); // Save current state, i.e., original token.
+			t = input.next();
+			if(t != null) {
 				// Get a list of decomposed tokens from the original token.
-				savedStates = getDecomposedTokens();
+				tokens = getDecomposedTokens(t);
 				index = 0;
-				// Return the original by restoring the saved state.
-				restoreState(state);
-				return true;
+				// Return the original
+				return t;
 			}
 			else {
-				return false; // No more token
+				// No more token
+				return null;
 			}
 		}
 	}
-
-	private AttributeSource.State[] getDecomposedTokens() {
-		AttributeSource.State[] dStates = null;
-		String term = termAtt.term();
+	
+	private Token[] getDecomposedTokens(Token token) {
+		Token[] dTokens = null;
+		String term = token.termText();
 		String[] dTerms = StringUtil.split(term, ".");
 		if(dTerms != null && dTerms.length > 1) {
-			dStates = new AttributeSource.State[dTerms.length];
+			dTokens = new Token[dTerms.length];
 			for(int i=0; i<dTerms.length; i++) {
 				// All of the decomposed tokens share the same location and character
 				// offsets as the original token. Purely from technical point of view,
 				// this is not correct, and can use re-design in a future release.
-				
-				// Use current buffer (attributes) to hold the state of each decomposed token temporarily.
-				termAtt.setTermBuffer(dTerms[i]);
-				posIncrAtt.setPositionIncrement(0);
-				
-				// Copy current state into the array element. The state of current buffer will be
-				// taken care of by the caller.
-				dStates[i] = captureState();
+				dTokens[i] = new Token(dTerms[i], token.startOffset(), token.endOffset());
+				dTokens[i].setPositionIncrement(0);
 			}
 		}
-		return dStates;
+		return dTokens;
 	}
 }

@@ -105,7 +105,7 @@
 					<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
 				</c:if>
 
-				<c:if test="${empty ssDefinitionEntry.resourceDriver && !empty resourceDrivers}" >
+				<c:if test="${ssBinderIsEmpty && empty ssDefinitionEntry.resourceDriver && !empty resourceDrivers}" >
 					<span class="ss_errorLabel"><ssf:nlt tag="folder.resource.driver.select"/></span>
 					<br>
 					<br>
@@ -123,7 +123,7 @@
 				</c:if>				
 				<br/>
 	
-				<c:if test="${!empty resourceDrivers}" >
+				<c:if test="${ssBinderIsEmpty && !empty resourceDrivers}" >
 				  <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
 				  <c:if test="${!empty ssDefinitionEntry.resourceDriver}">
 				    <span>${resourceRootPath}</span><br/>

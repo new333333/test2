@@ -4,6 +4,7 @@
 
 
 /* Collaboration Branding colors - darkest is gray1 */
+
 .gray1 { color: #1f1f1f !important;}
 .gray2 { color: #353838 !important;}
 .gray3 { color: #505354 !important;}
@@ -17,14 +18,15 @@
 .displayBlock       { display: block;        }
 .displayInline      { display: inline;       }
 .displayInlineBlock { display: inline-block; }
-
-.vibe-verticalScroll {overflow-y: auto;}
 	
 /* Styles used with the activity stream control */
 .activityStreamCtrl
 {
-	top: 8px !important;
 	background: #fff;
+	position: absolute;
+	left: 246px;
+	top: 8px;
+	z-index: 100;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -839,12 +841,6 @@ body, table td, select
 	width: 41px;
 }
 
-.lpePreviewImg
-{
-	cursor: pointer;
-	margin-right: 5px;
-}
-
 .lpeEditImg
 {
 	cursor: pointer;
@@ -932,10 +928,6 @@ body, table td, select
 	margin-left: .5em;
 	margin-right: .5em;
 	white-space: nowrap;
-}
-.findSearchResultItemWidget a
-{
-	font-size: .75em !important;
 }
 .findSearchResultItemWidget span.gwt-InlineLabel
 {
@@ -1475,7 +1467,6 @@ body, table td, select
 .lpeTable
 {
 	border: 0px;
-	border-collapse: collapse !important;
 }
 
 /* Styles used for a drop zone found in a table. */
@@ -1521,21 +1512,21 @@ body, table td, select
 }
 
 /* Style used for the panel that holds the content control. */
-.mainContentControl, .vibe-viewBase
+.mainContentControl
 {
-	position: relative;
-	top: 8px !important;
+	left: 246px;
+	position: absolute;
+	top: 8px;
 	background-color:#fff;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
-.mainContentControl iframe.gwt-Frame
-{
+.mainContentControl iframe.gwt-Frame {
 	border-width: 0px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-}
+	}
 
 /* Style used for the content panel in Teaming's main page. */
 .mainContentPanel
@@ -1546,8 +1537,9 @@ body, table td, select
 /* Style used for the WorkspaceTree control found in Teaming's main page. */
 .mainWorkspaceTreeControl
 {
-	left: 8px !important;
-	top:  8px !important;
+	left: 8px;
+	position: absolute;
+	top: 8px;
 	z-index: 100;
 }
 
@@ -1561,23 +1553,16 @@ body, table td, select
 }
 .mainBreadCrumb_Browser
 {
-	background: url(images/trans50_black.png) repeat transparent !important;
+	background: url(images/trans70_black.png) repeat;
 	border: 0px;
-	padding: 0px !important;
-	margin-top: 5px;
+	padding: 0px;
 	right: 20px;
 	z-index: 351;
 }
 .breadCrumb_Browser
 {
-}
-.breadCrumb_BrowserBinder
-{
-}
-.breadCrumb_BrowserPopup
-{
 	background-color: #f6f6f6;
-	margin: 0 6px 6px;
+	margin: 0 5px 5px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
@@ -1595,12 +1580,6 @@ body, table td, select
 {
 	color: #FFFFFF;
 	font-size: .85em;
-}
-.breadCrumb_ContentBinder
-{
-}
-.breadCrumb_ContentPopup
-{
 	margin: 0px 20px;
 }
 .breadCrumb_ContentNode
@@ -1614,35 +1593,242 @@ body, table td, select
 }
 .breadCrumb_ContentNode_Anchor
 {
-	margin-top: 3px;
+	margin-top: 2px;
 	margin-right: 15px;
 }
-.breadCrumb_ContentNode_AnchorTail
-{
-	font-size: large !important;
-	margin-top: 0px !important;
-}
-.breadCrumb_TrashLabel
-{
-	color: #135C8F;
-	font-size: large;
-	margin-top: 0px;
-	margin-right: 8px;
-}
 
-/* Styles for the search options. */
-.searchOptions
+/* Styles used by the MainMenuControl. */
+.mainMenuButton
+{
+	display: inline-block;
+	height: 20px;
+	margin-left: 3px;
+	overflow: hidden;
+	padding: 0px;
+	text-align: center;
+	top: 2px;
+	width: 28px;
+	z-index: 310;
+}
+.mainMenuButton_Group
+{
+	display: inline;
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.05em;
+	padding-left: 6px;
+	padding-right: 1em;
+}
+.mainMenuButton_WidgetAnchor
+{
+	cursor: pointer;
+}
+.mainMenuButton_WidgetImage
+{
+	margin-top: 2px;
+}
+.mainMenuContent
+{
+	display: inline;
+	margin: 0px;
+	padding: 0px;
+}
+.mainMenuControl
+{
+	background: transparent url(images/main_menu_bg.png) repeat-x scroll 0 0;
+	height: 20px;
+	left: 0;
+	padding: 2px 0 4px;
+	position: relative;
+	top: 0;
+	white-space: nowrap;
+	width: 100%;
+	z-index: 300;
+}
+.mainMenuBar_BoxA
+{
+	cursor: pointer;
+	text-decoration: none;
+}
+.mainMenuBar_BoxDropDownImg
+{
+	vertical-align: middle;
+}
+.mainMenuBar_BoxDropDownImgNonIE
+{
+	margin-left: 5px;
+}
+.mainMenuBar_BoxHover
+{
+	color: #135c8f !important; /* black */
+	background: url(images/teal_slice.png) repeat-x;
+	background-position: center;
+}
+.mainMenuBar_BoxImg
+{
+	vertical-align: middle;
+}
+.mainMenuBar_BoxImgNonIE
+{
+	margin-right: 2px;
+}
+.mainMenuBar_BoxPanel
+{
+	border-left: 1px solid white;
+	color: #414648; /* dark grey */
+	font-size: 0.73em;
+	font-weight: normal;
+	padding: 3px 6px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+.mainMenuBar_BoxPanelOpen
+{
+	background: #81b2bd url(images/slice_blend_teal_27.png) repeat-x;
+	border-left: 1px solid white;
+	color: #fff;
+	font-size: 0.73em;
+	font-weight: normal;
+	padding: 3px 8px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+.mainMenuBar_BoxPanelIE
+{
+	display: inline;
+}
+.mainMenuBar_BoxPanelNonIE
+{
+	display: inline-block;
+}
+.mainMenuBar_BoxText
+{
+	vertical-align: middle;
+}
+.mainMenuPopup_Glass
+{
+	background-color: #000;
+	filter: alpha(opacity=0);
+	opacity: 0.0;
+	z-index: 350;
+}
+.mainMenuPopup
+{
+	background-color: #3a3e40;
+	text-align: left;
+	top: 0px; 
+	/* width: 200px; */
+}
+.mainMenuPopup_Bottom
+{
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+	padding-top: 5px;
+}
+.mainMenuPopup_Core
+{
+	border: 0px;
+	padding: 0px;
+	z-index: 351;
+}
+.mainMenuPopup_Item
+{ 
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	padding: 0.4em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.mainMenuPopup_ItemA
+{
+}
+.mainMenuPopup_ItemHover
+{
+	background: none repeat scroll 0 0 #505354;
+	color: #81B2BD !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+.mainMenuPopup_ItemSpacer, .popupMenuItemSeparator 
+{
+	border-top: 1px solid #353838;
+	border-bottom: 1px solid #505354;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+.mainMenuPopup_ItemPanel
+{
+}
+.mainMenuPopup_ItemText
+{
+	color: #fff;
+	cursor: pointer;
+	display: inline;
+	font-size: 1em;
+	margin: 0px;
+	padding: 2px 5px;
+}
+.mainMenuSearch_ButtonAnchor
+{
+	cursor: pointer;
+	margin: 2px;
+	vertical-align: top;
+}
+.mainMenuSearch_ButtonImage
+{
+	margin: 2px;
+	vertical-align: top;
+}
+.mainMenuSearch_Input
+{
+	font-size: 10px;
+	padding: 3px 0 0 3px;
+	vertical-align: middle;
+	width: 140px;
+	background-color: transparent;
+	border: 0px;
+}
+.mainMenuSearch_Panel
+{
+	padding: 0 0 0 5px;
+	border-left: none;
+	display: block;
+	position: absolute;
+	right: 45px;
+	top: 2px;
+	height: 18px;
+	white-space: nowrap;
+	
+	background-color: #fafafa;
+	border: 1px solid #c4c4c4;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+
+	
+}
+.mainMenuSearchOptions
 {
 	padding: 5px 10px 15px;
 	overflow: auto;
 }
-.searchOptions_Browser
+.mainMenuSearchOptions_Browser
 {
-	background: url(images/trans50_black.png) repeat tranparent !important;
+	background: url(images/trans70_black.png) repeat;
 	border: 0px;
-	padding: 0px !important;
+	padding: 0px;
 	z-index: 351;
 }
+.mainMenuSearchOptions_Button
+{
+	padding: 1px;
+	border-left: none;
+	display: block;
+	position: absolute;
+	right: 10px;
+	top: 1px;
+	white-space: nowrap;
+}
+
+/* Styles for the search options dialog. */
 .searchOptionsDlg_AdvancedSearchA
 {
 	cursor: pointer;
@@ -1676,7 +1862,7 @@ body, table td, select
 	color: #333 !important;
 	font-size: .85em;
 	background-color: #f6f6f6;
-	margin: 0 6px 6px;
+	margin: 0 5px 5px;
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
@@ -1781,74 +1967,6 @@ body, table td, select
 }
 .folderOptionsDlg_SectionHeaderRow
 {
-}
-
-/* Styles for the folder column configuration dialog. */
-.folderColumnsDlg
-{
-	z-index: 351;
-}
-.folderColumnsDlg_ScrollPanel
-{
-	width: 700px;
-	height: 450px;
-}
-.folderColumnsDlg_Radio
-{
-	margin-left: 5px;
-}
-.folderColumnsDlg_Grid
-{
-	margin: 8px 8px 4px 8px;
-	width: 660px;
-}
-.folderColumnsDlg_GridCell_0
-{
-	width: 25px;
-}
-.folderColumnsDlg_GridCell_1
-{
-	width: 280px;
-}
-.folderColumnsDlg_GridCell_0and1
-{
-	width: 305px;
-}
-.folderColumnsDlg_GridCell_2
-{
-	width: 200px;
-}
-.folderColumnsDlg_GridCell_3
-{
-	width: 155px;
-}
-.folderColumnsDlg_Label
-{
-	color: #414648; /* dark grey */
-	line-height: 1.1em; 
-	margin-right: 5px;
-	padding: 0.2em 0.5em 0.3em; 
-	white-space: nowrap;
-}
-.folderColumnsDlg_MenuItem
-{
-}
-.folderColumnsDlg_SectionHeader
-{
-	font-size: 1em;
-	font-weight: bold;
-	padding-top: 8px;
-	padding-bottom: 5px;
-}
-.folderColumnsDlg_SectionHeaderCell
-{
-}
-.folderColumnsDlg_SectionHeaderRow
-{
-}
-.folderColumnsDlg_OptionsGrid
-{
-	margin: 10px 0px;
 }
 
 /* Styles for the manage saved searches dialog. */
@@ -2318,71 +2436,28 @@ body, table td, select
 	margin-left: 0.5em;
 }
 
-.teamingDlgBoxFooter .gwt-Button {
-	color:#fff;
- 	font-size: 11px;
-    font-family: Arial, sans-serif !important;
-	background: #949494 none repeat scroll 0 0;
-	margin-right:3px;
-	padding: 2px 10px;
-	text-decoration:none;
-  	cursor: pointer;
-  	white-space: nowrap;
-	border: 0px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-    text-align: center !important;
-	}
-.teamingDlgBoxFooter .gwt-Button:hover {
-	color: #135c8f !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
-	border: 0px;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-}
-
 .gwt-Button {
-	color: #1f1f1f;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 11px;
-	padding: 2px 10px  !important;
-	margin: 0;
-	margin-right: 3px;
-	text-decoration:none;	
-	cursor: pointer !important;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+  margin: 0;
+  border: 0px;
+  padding: 2px 10px;
+  margin-right: 3px;
+  text-decoration: none;
+  font-size: 11px;
+  cursor: pointer;
+  background: #949494;
 }
-.gwt-Button:hover {
-	border: 1px solid #81b2bd;
-	}
 .gwt-Button:active {
   border: 0px inset #ccc;
+}
+.gwt-Button:hover {
+  border-color: #9cf #69e #69e #7af;
 }
 .gwt-Button[disabled] {
   cursor: default;
   color: #888;
-  border: 1px outset #ccc !important;
 }
 .gwt-Button[disabled]:hover {
-  border: 1px outset #ccc !important;
+  border: 1px outset #ccc;
 }
 
 .gwt-RadioButton label {
@@ -2453,11 +2528,6 @@ body, table td, select
 	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
-}
-
-.teamingDlgBoxHeader:hover
-{
-	cursor: move;
 }
 
 /* Used by GwtClientHelper.setGridColSpan() to hide a cell in a Grid. */
@@ -2748,6 +2818,44 @@ top:100px;
 	vertical-align: middle;
 	}
 
+.popupMenu
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background-color: #3A3E40;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 400;
+}
+
+.popupMenuTopPanel, .popupMenuBottomPanel
+{
+	padding-top: 5px;
+}
+
+.popupMenuItem
+{
+	color: #FFFFFF;
+	cursor: pointer;
+	line-height: 1.1em; 
+	padding: 0.4em 0.75em 0.5em; 
+	white-space: nowrap;
+}
+
+.popupMenuItem_Hover
+{
+	background: none repeat scroll 0 0 #505354;
+	color: #81B2BD !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.popupMenuItemImg
+{
+	margin-right: 5px;
+}
+
 /* Styles for the task disposition dialog. */
 .taskDispositionDlg
 {
@@ -2824,11 +2932,10 @@ top:100px;
 	border: none !important;
 	background-color: transparent !important;
 	padding: 1px 0 !important;
-	vertical-align: middle;
 }
 .gwtTaskFilter_inputBlur
 {
-	color: graytext;
+	color: graytext !important;
 }
 .gwtTaskFilter_inputFocus
 {
@@ -2856,13 +2963,17 @@ top:100px;
 }
 .gwtTaskTools
 {
-	background-color:#ededed;
+	background-color:#cccccc;
 	display: block;
 	padding:  3px 3px 3px 12px;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 1.25em;
 	position: relative; 
 	white-space: nowrap;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 .gwtTaskTools_ButtonDIV
 {
@@ -3362,64 +3473,6 @@ td.datePickerMonth {
 	padding: 0 5px;
 	color: #1f1f1f;
 	}
-	
-.vibe-aboutBox {z-index: 1001;}
-
-/* Start:  Cliboard dialog styles. */
-	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
-	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
-	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
-	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
-	.vibe-cbDlg_Label           {}
-	.vibe-cbDlg_MenuBar         {}
-	.vibe-cbDlg_MenuItem        {}
-	.vibe-cbDlg_ReadingPanel    {}
-	.vibe-cbDlg_ReadingLabel    {vertical-align: top; margin-left: 5px;}
-	.vibe-cbDlg_SelectAll       {}
-	.vibe-cbDlg_SelectPanel     {margin-left: 30px; margin-top: 10px; white-space: nowrap;}
-	.vibe-cbDlg_ScrollPanel     {}
-	.vibe-cbDlg_ScrollPanelLimt {height: 150px;}
-/* End:  Cliboard dialog styles. */
-
-/* Start:  Email notification dialog styles. */
-	.vibe-emailNotifDlg_BannerHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_BannerHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-emailNotifDlg_BannerLabel      {}
-	.vibe-emailNotifDlg_BannerPanel      {display: block; white-space: nowrap;}
-	.vibe-emailNotifDlg_Content          {margin: 20px 10px 10px 20px;}
-	.vibe-emailNotifDlg_FooterCheck      {}
-	.vibe-emailNotifDlg_FooterHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_FooterHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-emailNotifDlg_FooterLabel      {}
-	.vibe-emailNotifDlg_FooterPanel      {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
-	.vibe-emailNotifDlg_Digest           {}
-	.vibe-emailNotifDlg_DigestList       {}
-	.vibe-emailNotifDlg_DigestPanel      {display: block; white-space: nowrap; margin-top: 15px;}
-	.vibe-emailNotifDlg_Label            {}
-	.vibe-emailNotifDlg_Msg              {}
-	.vibe-emailNotifDlg_MsgList          {}
-	.vibe-emailNotifDlg_MsgPanel         {display: block; white-space: nowrap; margin-top: 15px;}
-	.vibe-emailNotifDlg_MsgNoAtt         {}
-	.vibe-emailNotifDlg_MsgNoAttList     {}
-	.vibe-emailNotifDlg_MsgNoAttPanel    {display: block; white-space: nowrap; margin-top: 15px;}
-	.vibe-emailNotifDlg_ReadingPanel     {}
-	.vibe-emailNotifDlg_ReadingLabel     {vertical-align: top; margin-left: 5px;}
-	.vibe-emailNotifDlg_SectionLabel     {font-weight: bold; margin-top: 20px;}
-	.vibe-emailNotifDlg_SectionList      {}
-	.vibe-emailNotifDlg_Text             {}
-	.vibe-emailNotifDlg_TextList         {}
-	.vibe-emailNotifDlg_TextListBottom   {margin-bottom: 10px;}
-	.vibe-emailNotifDlg_TextPanel        {display: block; white-space: nowrap; margin-top: 15px;}
-/* End:  Email notification dialog styles. */
-
-/* Start:  Import iCal dialogs styles. */
-	.vibe-importIcalDlg_Content {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-importIcalDlg_Hint    {margin: 8px 0px 8px 0px; font-size: 11px !important; color: #cccccc;}
-	.vibe-importIcalDlg_Input   {width: 250px;}
-	.vibe-importIcalDlg_Label   {}
-	.vibe-importIcalDlg_Panel   {}
-/* End:  Import iCal dialogs styles. */
 
 /* The following styles are used with an object list table. */
 .oltHeader
@@ -3463,20 +3516,5 @@ td.datePickerMonth {
 {
 	border-bottom: 1px solid #BBBBB9;
 }
+
 /* End of styles used with an object list table */
-
-
-.vibeGlassPanel
-{
-	background-color: #000;
-	bottom: 0;
-	filter: alpha(opacity=50);
-	left: 0;
-	opacity: 0.5;
-	overflow: hidden;
-	position: absolute;
-	right: 0;
-	top: 0;
-	z-index: 1000;
-}
-

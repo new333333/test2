@@ -45,8 +45,6 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class TrackCurrentBinderEvent extends VibeEventBase<TrackCurrentBinderEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
-    
-    private boolean m_forceUIReload;
 
 	/**
 	 * Handler interface for this event.
@@ -60,18 +58,6 @@ public class TrackCurrentBinderEvent extends VibeEventBase<TrackCurrentBinderEve
 	 */
 	public TrackCurrentBinderEvent() {
 		super();
-		
-		m_forceUIReload = true;
-	}
-	
-	/**
-	 * 
-	 */
-	public TrackCurrentBinderEvent( boolean forceUIReload )
-	{
-		super();
-		
-		m_forceUIReload = forceUIReload;
 	}
 	
 	/**
@@ -118,14 +104,6 @@ public class TrackCurrentBinderEvent extends VibeEventBase<TrackCurrentBinderEve
 		return TeamingEvents.TRACK_CURRENT_BINDER;
 	}
 		
-	/**
-	 * 
-	 */
-	public boolean getForceUIReload()
-	{
-		return m_forceUIReload;
-	}
-	
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

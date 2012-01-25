@@ -36,19 +36,20 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
-import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -56,12 +57,12 @@ import com.google.gwt.user.client.ui.Panel;
  * 
  * @author drfoster@novell.com
  */
-public class ContextMenuItem extends VibeMenuItem {
-	/*
-	 * Enumeration used to specify the type of content a context menu
-	 * item's command contains.
-	 */
-	private enum CommandType {
+public class ContextMenuItem {
+	private boolean m_hideEntryView;				// true -> Hides any open entry view when the menu item is triggered.  false -> It doesn't.	
+	private MenuBarPopupBase m_contextMenu;			// The menu containing    this context based menu item.
+	private MenuPopupAnchor m_contextMenuAnchor;	// The anchor created for this context based menu item.
+	
+	private enum ClickHandlerType {
 		TEAMING_EVENT,
 		JAVASCRIPT_STRING,
 		URL_IN_POPUP_NO_FORM,
@@ -72,134 +73,143 @@ public class ContextMenuItem extends VibeMenuItem {
 	}
 	
 	/*
-	 * Inner class that handles selecting the menu items.
+	 * Inner class that handles clicks on the menu items.
 	 */
-	private static class ContextItemCommand implements Command {
-		private boolean			m_hideEntryView;	
-		private CommandType 	m_type = CommandType.UNDEFINED;
-		private FormPanel 		m_fp;
-		private int				m_popupHeight;
-		private int				m_popupWidth;
-		private String			m_onClickJS;
-		private String			m_url;
-		private TeamingEvents	m_teamingEvent;
+	private class ContextItemClickHandler implements ClickHandler {
+		private ClickHandlerType m_type = ClickHandlerType.UNDEFINED;
+		private FormPanel m_fp;
+		private int m_popupHeight;
+		private int m_popupWidth;
+		private String m_id;
+		private String m_onClickJS;
+		private String m_url;
+		private TeamingEvents m_teamingEvent;
+		@SuppressWarnings("unused")
+		private ClientEventParameter m_clientEventParameter;
 		
 		/**
-		 * Constructor method.
+		 * Class constructor.
 		 *
-		 * @param hideEntryView
+		 * @param id
 		 * @param url
 		 */
-		ContextItemCommand(boolean hideEntryView, String url) {
-			// Store the type of command...
-			m_type = CommandType.URL_IN_CONTENT_FRAME;
+		ContextItemClickHandler(String id, String url) {
+			// Store the type of click handler...
+			m_type = ClickHandlerType.URL_IN_CONTENT_FRAME;
 			
 			// ...and the parameters.
-			m_hideEntryView = hideEntryView;
-			m_url           = url;
+			m_id  = id;
+			m_url = url;
 		}
 		
 		/**
-		 * Constructor method.
+		 * Class constructor.
 		 *
-		 * @param hideEntryView
+		 * @param id
 		 * @param url
 		 * @param popupHeight
 		 * @param popupWidth
 		 */
-		ContextItemCommand(boolean hideEntryView, String url, int popupHeight, int popupWidth) {
-			// Store the type of command...
-			m_type = CommandType.URL_IN_POPUP_NO_FORM;
+		ContextItemClickHandler(String id, String url, int popupHeight, int popupWidth) {
+			// Store the type of click handler...
+			m_type = ClickHandlerType.URL_IN_POPUP_NO_FORM;
 			
 			// ...and the parameters.
-			m_hideEntryView = hideEntryView;
-			m_url           = url;
-			m_popupHeight   = popupHeight;
-			m_popupWidth    = popupWidth;
+			m_id          = id;
+			m_url         = url;
+			m_popupHeight = popupHeight;
+			m_popupWidth  = popupWidth;
 		}
 		
 		/**
-		 * Constructor method.
+		 * Class constructor.
 		 *
-		 * @param hideEntryView
+		 * @param id
 		 * @param fp
 		 * @param popupHeight
 		 * @param popupWidth
 		 */
-		ContextItemCommand(boolean hideEntryView, FormPanel fp, int popupHeight, int popupWidth) {
-			// Store the type of command...
-			m_type = CommandType.URL_IN_POPUP_WITH_FORM;
+		ContextItemClickHandler(String id, FormPanel fp, int popupHeight, int popupWidth) {
+			// Store the type of click handler...
+			m_type = ClickHandlerType.URL_IN_POPUP_WITH_FORM;
 			
 			// ...and the parameters.
-			m_hideEntryView = hideEntryView;
-			m_fp            = fp;
-			m_popupHeight   = popupHeight;
-			m_popupWidth    = popupWidth;
+			m_id          = id;
+			m_fp          = fp;
+			m_popupHeight = popupHeight;
+			m_popupWidth  = popupWidth;
 		}
 		
 		/**
-		 * Constructor method.
+		 * Class constructor.
 		 *
-		 * @param hideEntryView
+		 * @param id
 		 * @param url
 		 * @param onClickJS
 		 */
-		ContextItemCommand(boolean hideEntryView, String url, String onClickJS) {
-			// Store the type of command...
-			m_type = CommandType.JAVASCRIPT_STRING;
+		ContextItemClickHandler(String id, String url, String onClickJS) {
+			// Store the type of click handler...
+			m_type = ClickHandlerType.JAVASCRIPT_STRING;
 			
 			// ...and the parameters.
-			m_hideEntryView = hideEntryView;
-			m_url           = url;
-			m_onClickJS     = onClickJS;
+			m_id        = id;
+			m_url       = url;
+			m_onClickJS = onClickJS;
 		}
 		
 		/**
-		 * Constructor method.
+		 * Class constructor.
 		 *
-		 * @param hideEntryView
+		 * @param id
 		 * @param url
 		 * @param teamingEvent
 		 * @param clientEventParameter
 		 */
-		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, ClientEventParameter clientEventParameter) {
-			// Store the type of command...
-			m_type = CommandType.TEAMING_EVENT;
+		ContextItemClickHandler(String id, String url, TeamingEvents teamingEvent, ClientEventParameter clientEventParameter) {
+			// Store the type of click handler...
+			m_type = ClickHandlerType.TEAMING_EVENT;
 			
 			// ...and the parameters.
-			m_hideEntryView = hideEntryView;
-			m_url           = url;
-			m_teamingEvent  = teamingEvent;
+			m_id                   = id;
+			m_url                  = url;
+			m_teamingEvent         = teamingEvent;
+			m_clientEventParameter = clientEventParameter;
 		}
 		
 		/**
-		 * Constructor method.
+		 * Class constructor.
 		 *
-		 * @param hideEntryView
+		 * @param id
 		 * @param url
 		 * @param teamingEvent
 		 */
 		@SuppressWarnings("unused")
-		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent) {
-			// Always use one of the initial forms of the constructor.
-			this(hideEntryView, url, teamingEvent, null);
+		ContextItemClickHandler(String id, String url, TeamingEvents teamingEvent) {
+			// Always use the initial form of the constructor.
+			this(id, url, teamingEvent, null);
 		}
 		
 		/**
-		 * Called when the user selects on a menu item.
+		 * Called when the user clicks on a team management command.
 		 * 
-		 * Implements the Command.execute() method.
+		 * @param event
 		 */
-		@Override
-		public void execute() {
-			// If requested to do so...
+		public void onClick(ClickEvent event) {
+			// Remove the selection from the menu item...
+			Element menuItemElement = Document.get().getElementById(m_id);
+			menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+			
+			// ...hide the menu...
+			m_contextMenu.hide();
+			
+			// ...if requested to do so...
 			if (m_hideEntryView) {
 				// ...hide any entry view...
 				GwtClientHelper.jsHideNewPageEntryViewDIV();
 			}
 
-			// ...and perform the request based on the type of command
-			// ...constructed.
+			// ...and perform the request based on the type of click
+			// ...handler was constructed from.
 			switch (m_type) {
 			case JAVASCRIPT_STRING:
 				GwtClientHelper.jsEvalString(m_url, m_onClickJS);
@@ -211,21 +221,11 @@ public class ContextMenuItem extends VibeMenuItem {
 					GwtTeaming.fireEvent(new GotoPermalinkUrlEvent(m_url));
 					break;
 
-				case INVOKE_SEND_EMAIL_TO_TEAM:
-					GwtTeaming.fireEvent(new InvokeSendEmailToTeamEvent(m_url));
-					break;
-					
 				case EDIT_CURRENT_BINDER_BRANDING:
-				case INVOKE_ABOUT:
-				case INVOKE_CLIPBOARD:
-				case INVOKE_CONFIGURE_COLUMNS:
-				case INVOKE_EMAIL_NOTIFICATION:
 				case TRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_PERSON:
 				case VIEW_CURRENT_BINDER_TEAM_MEMBERS:
-				case VIEW_WHATS_NEW_IN_BINDER:
-				case VIEW_WHATS_UNSEEN_IN_BINDER:
 					EventHelper.fireSimpleEvent(m_teamingEvent);
 					break;
 					
@@ -254,7 +254,7 @@ public class ContextMenuItem extends VibeMenuItem {
 	}
 
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
 	 * @param contextMenu
 	 * @param idBase
@@ -262,13 +262,30 @@ public class ContextMenuItem extends VibeMenuItem {
 	 * @param hideEntryView
 	 */
 	public ContextMenuItem(MenuBarPopupBase contextMenu, String idBase, ToolbarItem tbi, boolean hideEntryView) {
-		super(
-			getTBILabelAsHTML(tbi),
-			true,	// true -> Text is HTML.
-			createCommand(
-				hideEntryView,
-				getTBIId(idBase, tbi),
-				tbi));
+		// Store the parameters we keep class global.
+		m_contextMenu = contextMenu;
+		m_hideEntryView = hideEntryView;
+		
+		// If we don't have an menu item...
+		if (null == tbi) {
+			// ...bail.
+			return;
+		}
+		
+		// What should we use for the label for the anchor?
+		String label = tbi.getTitle();
+		if (!(GwtClientHelper.hasString(label))) {
+			label = tbi.getName();
+		}
+		
+		// Finally, create the anchor for the menu item.
+		String id = (idBase + tbi.getName());
+		ContextItemClickHandler clicker = createClickHandler(id, tbi);
+		m_contextMenuAnchor = new MenuPopupAnchor(
+			id,
+			label,
+			tbi.getQualifierValue("title"),
+			clicker);
 	}
 	
 	public ContextMenuItem(MenuBarPopupBase contextMenu, String idBase, ToolbarItem tbi) {
@@ -278,10 +295,10 @@ public class ContextMenuItem extends VibeMenuItem {
 	}
 
 	/*
-	 * Creates a command based on a toolbar item.
+	 * Creates a click handler based on a toolbar item.
 	 */
-	private static ContextItemCommand createCommand(boolean hideEntryView, String id, ToolbarItem tbi) {
-		ContextItemCommand reply;
+	private ContextItemClickHandler createClickHandler(String id, ToolbarItem tbi) {
+		ContextItemClickHandler reply;
 		String url = tbi.getUrl();
 		TeamingEvents te = tbi.getTeamingEvent();
 		ClientEventParameter cep = tbi.getClientEventParameter();
@@ -290,41 +307,43 @@ public class ContextMenuItem extends VibeMenuItem {
 			// JavaScript string?
 			String jsString = tbi.getQualifierValue("onclick");
 			if (GwtClientHelper.hasString(jsString)) {
-				// Yes!  Generate the appropriate command for it.
-				reply = new ContextItemCommand(hideEntryView, url, jsString);
+				// Yes!  Generate the appropriate click handler for it.
+				reply = new ContextItemClickHandler(id, url, jsString);
 			}
 			
 			// No, it isn't based on a JavaScript string!  Is is to
 			// open a URL in a popup window?
 			else if (GwtClientHelper.bFromS(tbi.getQualifierValue("popup"))) {
-				// Yes!  Generate the appropriate command for it.
-				reply = createPopupCommand(hideEntryView, id, url, tbi);
+				// Yes!  Generate the appropriate click handler for it.
+				reply = createPopupClickHandler(id, url, tbi);
 			}
 			
 			else {
 				// No, it isn't to open a URL in a popup window either!
 				// The only option left is to launch the URL in the content
-				// pane.  Generate the appropriate command for it.
-				reply = new ContextItemCommand(hideEntryView, url);
+				// pane.  Generate the appropriate click handler for it.
+				reply = new ContextItemClickHandler(id, url);
 			}
 		}
 		
 		else {
-			// It's based on an event!  Generate the appropriate
-			// command for it.
-			reply = new ContextItemCommand(hideEntryView, url, te, cep);
+			// It's based on an event!  Generate the appropriate click
+			// handler for it.
+			reply = new ContextItemClickHandler(id, url, te, cep);
 		}
 
-		// If we get here, reply refers to the appropriate command
-		// for the toolbar item.  Return it.
+		// If we get here, reply refers to the appropriate click
+		// handler for the toolbar item.  Return it.
 		return reply;
 	}
 
 	/*
-	 * Creates a command that requires opening a popup window
+	 * Creates a click handler that requires opening a popup window
 	 * based on a toolbar item.
 	 */
-	private static ContextItemCommand createPopupCommand(boolean hideEntryView, String id, String url, ToolbarItem tbi) {
+	private ContextItemClickHandler createPopupClickHandler(String id, String url, ToolbarItem tbi) {
+		ContextItemClickHandler reply;
+		
 		// What's the dimensions for the popup window?
 		int popupHeight = GwtClientHelper.iFromS(tbi.getQualifierValue("popupHeight"), Window.getClientHeight());
 		int popupWidth  = GwtClientHelper.iFromS(tbi.getQualifierValue("popupWidth"),  Window.getClientWidth());
@@ -332,7 +351,6 @@ public class ContextMenuItem extends VibeMenuItem {
 		// Are we supposed to open the popup window using a submitted form?
 		int hiCount = 0;
 		boolean popupFromForm = GwtClientHelper.bFromS(tbi.getQualifierValue("popup.fromForm"));
-		ContextItemCommand reply;
 		if (popupFromForm) {
 			// Possibly!  We'll only do so if we're going to have more
 			// than one hidden input of data to pass through it.
@@ -370,50 +388,27 @@ public class ContextMenuItem extends VibeMenuItem {
 				hiPanel.add(hInput);
 			}
 			
-			// ...and create the command.
-			reply = new ContextItemCommand(hideEntryView, fp, popupHeight, popupWidth);
+			// ...and create the click handler.
+			reply = new ContextItemClickHandler(id, fp, popupHeight, popupWidth);
 		}
 		
 		else {
 			// No, we don't need to use submitted form!  Generate the
-			// appropriate command.
-			reply = new ContextItemCommand(hideEntryView, url, popupHeight, popupWidth);
+			// appropriate click handler.
+			reply = new ContextItemClickHandler(id, url, popupHeight, popupWidth);
 		}
 		
-		// If we get here, reply refers to the appropriate command for
-		// the toolbar item.  Return it.
+		// If we get here, reply refers to the appropriate click
+		// handler for the toolbar item.  Return it.
 		return reply;
 	}
-
-	/*
-	 * Returns the ID to use for the ContextMenuItem based on a
-	 * ToolbarItem.
+	
+	/**
+	 * Returns the widget constructed for this menu item.
+	 * 
+	 * @return
 	 */
-	private static String getTBIId(String idBase, ToolbarItem tbi) {
-		return (idBase + tbi.getName());
-	}
-
-	/*
-	 * Returns the label for the ContextMenuItem based on a
-	 * ToolbarItem.
-	 */
-	private static String getTBILabelAsHTML(ToolbarItem tbi) {
-		// Determine the string for the label...
-		String label = tbi.getTitle();
-		if (!(GwtClientHelper.hasString(label))) {
-			label = tbi.getName();
-		}
-		
-		// ...create a FlowPanel to hold it...
-		FlowPanel mpaLabelPanel = new FlowPanel();
-		mpaLabelPanel.addStyleName("vibe-mainMenuPopup_Item");
-		Label mpaLabel = new Label(label);
-		mpaLabel.addStyleName("vibe-mainMenuPopup_ItemText");
-		mpaLabelPanel.add(mpaLabel);
-
-		// ...and return its HTML content.
-		FlowPanel htmlPanel = new FlowPanel();
-		htmlPanel.add(mpaLabelPanel);
-		return htmlPanel.getElement().getInnerHTML();
+	public Widget getWidget() {
+		return m_contextMenuAnchor;
 	}
 }

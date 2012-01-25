@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1665,7 +1665,7 @@ public class ListFolderHelper {
 		}
 
 		//Copy binder
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.copyBinder)) {
+		if (!folder.isMirrored() && bs.getBinderModule().testAccess(folder, BinderOperation.copyBinder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
@@ -1721,16 +1721,6 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.definition_builder_designers"), url, qualifiers);
-		}
-		
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration)) {
-			adminMenuCreated=true;
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_TEMPLATES);
-			url.setParameter(WebKeys.URL_BINDER_PARENT_ID, forumId);
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.template_builder_local"), url, qualifiers);
 		}
 		
 		//Delete binder
@@ -2428,30 +2418,6 @@ public class ListFolderHelper {
 	public static ModeType getFolderModeType(AllModulesInjected bs, Long userId, Long binderId) {
 		UserProperties userProps = bs.getProfileModule().getUserProperties(userId, binderId);
 		return ((ModeType) userProps.getProperty(WebKeys.FOLDER_MODE_PREF));
-	}
-
-	/**
-	 * Returns true if a folder holds events that user is currently
-	 * viewing in 'Virtual' mode and false otherwise.
-	 * 
-	 * @param bs
-	 * @param user
-	 * @param viewType
-	 * @param folderId
-	 * 
-	 * @return
-	 */
-	public static boolean isVirtualEventFolder(AllModulesInjected bs, User user, String viewType, Long folderId) {
-		boolean reply;
-		if ((MiscUtil.hasString(viewType) &&
-				(viewType.equals(Definition.VIEW_STYLE_TASK) || viewType.equals(Definition.VIEW_STYLE_CALENDAR)))) {
-			ModeType mode = ListFolderHelper.getFolderModeType(bs, user.getId(), folderId);
-			reply = (ModeType.VIRTUAL == mode);
-		}
-		else {
-			reply = false;
-		}
-		return reply;
 	}
 	
 	/**

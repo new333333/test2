@@ -33,11 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.FolderWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
 
 
@@ -53,12 +48,11 @@ public class FolderConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public FolderConfig( String configStr, String style )
+	public FolderConfig( String configStr )
 	{
 		String[] results;
 		
 		m_properties = new FolderProperties();
-		setLandingPageStyle( style );
 		
 		// Split the configuration data into its parts.  ie folderId=xxx showTitle=x showFolderDescription=1 showEntriesOpened=1 entriesToShow
 		results = configStr.split( "[,;]" );
@@ -99,118 +93,6 @@ public class FolderConfig extends ConfigItem
 						}
 						m_properties.setNumEntriesToBeShownValue( numToShow );
 					}
-					else if ( results2[0].equalsIgnoreCase( "width" ) )
-					{
-						String value;
-						
-						// The string looks like, width=nn% or width=nnpx
-						value = results2[1];
-						if ( value != null )
-						{
-							int index;
-							
-							// Is the width using %?
-							index = value.indexOf( "%" );
-							if ( index != -1 )
-							{
-								// Yes
-								m_properties.setWidthUnits( Style.Unit.PCT );
-							}
-							else
-							{
-								// Is the width using px?
-								index = value.indexOf( "px" );
-								if ( index != -1 )
-								{
-									// Yes
-									m_properties.setWidthUnits( Style.Unit.PX );
-								}
-							}
-							
-							// Did we find the units?
-							if ( index != -1 )
-							{
-								String numValue;
-								int width;
-								
-								// Yes
-								numValue = value.substring( 0, index );
-								try
-								{
-									width = Integer.parseInt( numValue );
-									m_properties.setWidth( width );
-								}
-								catch (Exception ex)
-								{
-									// Nothing to do.  This is here to handle the case when the data is
-									// not properly url encoded or an invalid number string was entered.
-								}
-							}
-						}
-					}
-					else if ( results2[0].equalsIgnoreCase( "height" ) )
-					{
-						String value;
-						
-						// The string looks like, height=nn% or height=nnpx
-						value = results2[1];
-						if ( value != null )
-						{
-							int index;
-							
-							// Is the height using %?
-							index = value.indexOf( "%" );
-							if ( index != -1 )
-							{
-								// Yes
-								m_properties.setHeightUnits( Style.Unit.PCT );
-							}
-							else
-							{
-								// Is the height using px?
-								index = value.indexOf( "px" );
-								if ( index != -1 )
-								{
-									// Yes
-									m_properties.setHeightUnits( Style.Unit.PX );
-								}
-							}
-							
-							// Did we find the units?
-							if ( index != -1 )
-							{
-								String numValue;
-								int height;
-								
-								// Yes
-								numValue = value.substring( 0, index );
-								try
-								{
-									height = Integer.parseInt( numValue );
-									m_properties.setHeight( height );
-								}
-								catch (Exception ex)
-								{
-									// Nothing to do.  This is here to handle the case when the data is
-									// not properly url encoded or an invalid number string was entered.
-								}
-							}
-						}
-					}
-					else if ( results2[0].equalsIgnoreCase( "overflow" ) )
-					{
-						String value;
-						
-						// The string looks like, overflow=auto or overflow=hidden
-						value = results2[1];
-						if ( value != null )
-						{
-							if ( value.equalsIgnoreCase( "auto" ) )
-								m_properties.setOverflow( Style.Overflow.AUTO );
-							else if ( value.equalsIgnoreCase( "hidden" ) )
-								m_properties.setOverflow( Style.Overflow.HIDDEN );
-						}
-					}
 				}
 			}
 		}
@@ -224,23 +106,6 @@ public class FolderConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new FolderWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public FolderDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new FolderDropWidget( lpe, this );
-	}
 	
 	
 	/**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.safehtml.shared.SafeHtml;
 
 
 /**
@@ -50,9 +51,6 @@ public interface GwtTeamingMessages extends Messages
 	String searchEntireSiteLabel();
 	String searchCurrentFolderWorkspaceLabel();
 
-	// Strings used in the "Preview landing page" dialog.
-	String previewLandingPageDlgHeader();
-	
 	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspAssocEntry();
 	String customJspAssocFolder();
@@ -130,7 +128,6 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltLinkURL();
 	String lpeAltList();
 	String lpeAltMoveElement();
-	String lpeAltPreviewLandingPage();
 	String lpeAltEnhancedView();
 	String lpeAltTable();
 	String lpeAltUtilityElement();
@@ -182,10 +179,8 @@ public interface GwtTeamingMessages extends Messages
 	String columnXWidth( int colNum );
 	String emptyColumnWidth( int colNum );
 	String invalidColumnWidth( int colNum );
-	String invalidNumberOfRows();
 	String invalidTotalTableWidth();
 	String numColumns();
-	String numRows();
 	String tableProperties();
 	
 	// String used in the "IFrame" widget properties dialog.
@@ -225,7 +220,6 @@ public interface GwtTeamingMessages extends Messages
 	String missingRequestInfo();
 	String ok();
 	String oneMomentPlease();
-	String overflowLabel();
 	String percent();
 	String send();
 	String showBorder();
@@ -287,15 +281,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddFavoriteLimitExceeded();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
-	String rpcFailure_ChangeEntryTypes();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
-	String rpcFailure_CopyEntries();
-	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_EntryDoesNotExist();
-	String rpcFailure_executeCustomJsp();
-	String rpcFailure_executeEnhancedViewJsp();
 	String rpcFailure_ExpandBucket();
 	String rpcFailure_ExpandSubtasks();
 	String rpcFailure_FolderDoesNotExist();
@@ -303,27 +292,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
-	String rpcFailure_GetBinderDescription();
-	String rpcFailure_GetBinderFilters();
-	String rpcFailure_GetClipboardTeamUsers();
-	String rpcFailure_GetClipboardUsers();
-	String rpcFailure_GetClipboardUsersFromList();
-	String rpcFailure_GetDownloadFileUrl();
-	String rpcFailure_GetEmailNotificationInfo();
-	String rpcFailure_GetEntryTypes();
-	String rpcFailure_getExecuteJspUrl();
-	String rpcFailure_GetFileFolderEntries();
-	String rpcFailure_GetFileUrl();
-	String rpcFailure_GetFolderColumns();
-	String rpcFailure_GetFolderDisplayData();
-	String rpcFailure_GetFolderEntries();
-	String rpcFailure_GetFolderRows();
-	String rpcFailure_GetFolderToolbarItems();
-	String rpcFailure_GetFooterToolbarItems();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetListOfAttachments();
-	String rpcFailure_GetBinderAccessories();
-	String rpcFailure_GetBinderAccessory();
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();
@@ -338,10 +308,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetGroupMembership();
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
-	String rpcFailure_GetHelpUrl();
 	String rpcFailure_GetImUrl();
-	String rpcFailure_GetInheritedLandingPageProperties();
-	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_GetPersonalPreferences();
@@ -353,14 +320,12 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
 	String rpcFailure_GetSelfRegInfo();
-	String rpcFailure_GetShareBinderPageUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
 	String rpcFailure_GetTags();
 	String rpcFailure_GetTagRights();
 	String rpcFailure_GetTagSortOrder();
-	String rpcFailure_GetTaskDisplayData();
 	String rpcFailure_GetTaskLinkage();
 	String rpcFailure_GetTaskList();
 	String rpcFailure_GetTeamManagement();
@@ -374,32 +339,19 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserWorkspaceUrl();
-	String rpcFailure_GetViewFileUrl();
 	String rpcFailure_GetViewFolderEntryUrl();
-	String rpcFailure_GetViewInfo();
-	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
-	String rpcFailure_LockEntries();
 	String rpcFailure_markupStringReplacement();
-	String rpcFailure_MoveEntries();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
-	String rpcFailure_PinEntry();
-	String rpcFailure_PurgeFolderEntries();
 	String rpcFailure_PurgeTasks();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
-	String rpcFailure_SaveBinderRegionState();
-	String rpcFailure_SaveClipboardUsers();
-	String rpcFailure_SaveColumnWidths();
-	String rpcFailure_SaveEmailNotificationInfo();
 	String rpcFailure_SaveFileSyncAppConfiguration();
-	String rpcFailure_SaveFolderColumns();
-	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
@@ -407,7 +359,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTagSortOrder();
 	String rpcFailure_SaveTaskCompleted();
 	String rpcFailure_SaveTaskDueDate();
-	String rpcFailure_SaveTaskGraphState();
 	String rpcFailure_SaveTaskLinkage();
 	String rpcFailure_SaveTaskPriority();
 	String rpcFailure_SaveTaskSort();
@@ -422,8 +373,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_UnknownCause();
 	String rpcFailure_UnknownException();
-	String rpcFailure_UnlockEntries();
-	String rpcFailure_UnpinEntry();
 	String rpcFailure_UntrackingBinder();
 	String rpcFailure_UntrackingPerson();
 	String rpcFailure_UpdateCalculatedDatesBinder();
@@ -431,36 +380,16 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UpdateFavorites();
 
 	// Strings used to describe various split point load failures.
-	String codeSplitFailure_AccessoriesPanel();
 	String codeSplitFailure_ActivityStreamCtrl();
-	String codeSplitFailure_AddFilesDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
-	String codeSplitFailure_BreadCrumbPanel();
-	String codeSplitFailure_ChangeEntryTypesDlg();
-	String codeSplitFailure_ChildBindersWidget();
-	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_ContentControl();
-	String codeSplitFailure_CopyMoveEntriesDlg();
-	String codeSplitFailure_DescriptionPanel();
-	String codeSplitFailure_DiscussionFolderView();
-	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_EditBrandingDlg();
-	String codeSplitFailure_EmailNotificationDlg();
-	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
-	String codeSplitFailure_FilterPanel();
-	String codeSplitFailure_FileFolderView();
 	String codeSplitFailure_FindCtrl();
 	String codeSplitFailure_FolderOptionsDlg();
-	String codeSplitFailure_FolderColumnsDlg();
-	String codeSplitFailure_FooterPanel();
-	String codeSplitFailure_GenericWSView();
-	String codeSplitFailure_ImportIcalByFileDlg();
-	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
-	String codeSplitFailure_LandingPageWidget();
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
@@ -470,21 +399,15 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
-	String codeSplitFailure_SizeColumnsDlg();
 	String codeSplitFailure_TagThisDlg();
-	String codeSplitFailure_TaskFolderView();
-	String codeSplitFailure_TaskGraphsPanel();
 	String codeSplitFailure_TaskListing();
-	String codeSplitFailure_TeamWSView();
 	String codeSplitFailure_TinyMCEDlg();
-	String codeSplitFailure_TrashView();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WorkspaceTreeControl();
 	
 	// Strings used to describe various event handling errors.
 	String eventHandling_NoContextMenuEventHandler(String eventName                  );
-	String eventHandling_NoEntryMenuHandler(       String eventName                  );
 	String eventHandling_NoEventHandlerDefined(    String eventName, String className);
 	String eventHandling_NonSimpleEvent(           String eventName, String className);
 	String eventHandling_UnhandledEvent(           String eventName, String className);
@@ -576,29 +499,6 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarViews();
 	String mainMenuBarWhatsNew();
 	String mainMenuBarWorkspace();
-	String mainMenuClipboardDlgAddPeople();
-	String mainMenuClipboardDlgAddTeam();
-	String mainMenuClipboardDlgClearAll();
-	String mainMenuClipboardDlgDelete();
-	String mainMenuClipboardDlgEmpty();
-	String mainMenuClipboardDlgHeader();
-	String mainMenuClipboardDlgReading();
-	String mainMenuClipboardDlgSelectAll();
-	String mainMenuEmailNotificationDlgAltHelpAll();
-	String mainMenuEmailNotificationDlgAltHelpOverride();
-	String mainMenuEmailNotificationDlgBanner();
-	String mainMenuEmailNotificationDlgClearEntrySubscription();
-	String mainMenuEmailNotificationDlgDigest();
-	String mainMenuEmailNotificationDlgErrorSelection();
-	String mainMenuEmailNotificationDlgHeader();
-	String mainMenuEmailNotificationDlgIndividualMessages();
-	String mainMenuEmailNotificationDlgIndividualMessagesNoAttachments();
-	String mainMenuEmailNotificationDlgMakeSelection();
-	String mainMenuEmailNotificationDlgNoChanges();
-	String mainMenuEmailNotificationDlgOverride();
-	String mainMenuEmailNotificationDlgReading();
-	String mainMenuEmailNotificationDlgTextMessaging();
-	String mainMenuErrorNoContributorsToEmail();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
 	String mainMenuFavoritesDlgMoveDown();
@@ -613,30 +513,9 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgImportCalendar();
 	String mainMenuFolderOptionsDlgImportTask();
 	String mainMenuFolderOptionsNoOptions();
-	String mainMenuFolderOptionsUnexpectedEvent(String eventName);
-	String mainMenuImportIcalByFileDlgErrorBogusJSONData(String jsonData);
-	String mainMenuImportIcalByFileDlgErrorFailed(String detail);
-	String mainMenuImportIcalByFileDlgErrorNoFile();
-	String mainMenuImportIcalByFileDlgErrorParse(String detail);
-	String mainMenuImportIcalByFileDlgHeader(String importType);
-	String mainMenuImportIcalByFileDlgHint();
-	String mainMenuImportIcalByFileDlgSuccess(String added, String modified);
-	String mainMenuImportIcalByUrlDlgErrorFailed(String detail);
-	String mainMenuImportIcalByUrlDlgErrorNoUrl();
-	String mainMenuImportIcalByUrlDlgErrorParse(String detail);
-	String mainMenuImportIcalByUrlDlgErrorUnknown();
-	String mainMenuImportIcalByUrlDlgErrorUrl(String detail);
-	String mainMenuImportIcalByUrlDlgHeader(String importType);
-	String mainMenuImportIcalByUrlDlgHintCalendar();
-	String mainMenuImportIcalByUrlDlgHintTask();
-	String mainMenuImportIcalByUrlDlgSuccess(String added, String modified);
-	String mainMenuImportIcalTypeError();
-	String mainMenuImportIcalTypeCalendar();
-	String mainMenuImportIcalTypeTask();
 	String mainMenuManageEditTeam();
 	String mainMenuManageEmailTeam();
 	String mainMenuManageFolderOptions();
-	String mainMenuManageFolderColumns();
 	String mainMenuManageSavedSearchesDlgDeleteSearch();
 	String mainMenuManageSavedSearchesDlgErrorSearchDuplicate();
 	String mainMenuManageSavedSearchesDlgErrorSearchHasInvalidData();
@@ -698,7 +577,6 @@ public interface GwtTeamingMessages extends Messages
 	String treeCloseActivityStreamsHint();
 	String treeCloseBreadCrumbs();
 	String treeSiteWide();
-	String treeTrash();
 	
 	// Strings used in the "Add File Attachment" dialog.
 	String addFileAttachmentDlgHeader();
@@ -1130,22 +1008,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskConfirmPurge();
 	String taskDebug_times(String taskCount, String readTime, String showTime, String totalTime);
 	String taskFilter_empty();
-	String taskGraphsAltHide();
-	String taskGraphsAltShow();
-	String taskGraphs();
-	String taskGraphsPriority();
-	String taskGraphsPriorityCritical(String percent, String count);
-	String taskGraphsPriorityHigh(String percent, String count);
-	String taskGraphsPriorityLeast(String percent, String count);
-	String taskGraphsPriorityLow(String percent, String count);
-	String taskGraphsPriorityMedium(String percent, String count);
-	String taskGraphsPriorityNone(String percent, String count);
-	String taskGraphsRefresh();
-	String taskGraphsStatus();
-	String taskGraphsStatusCanceled(String percent, String count);
-	String taskGraphsStatusCompleted(String percent, String count);
-	String taskGraphsStatusInProcess(String percent, String count);
-	String taskGraphsStatusNeedsAction(String percent, String count);
 	String taskHierarchyDisabled();
 	String taskHierarchyDisabled_Filter();
 	String taskHierarchyDisabled_Rights();
@@ -1194,9 +1056,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskViewAssignedTasks();
 	String taskViewFromFolder();
 	
-	// Strings used by the discussion folder.
-	String discussionFolder_Empty();
-
 	// Strings used in the Landing Page Properties Dialog
 	String landingPagePropertiesDlgHeader();
 	String backgroundRepeatLabel();
@@ -1204,16 +1063,6 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundRepeatX();
 	String backgroundRepeatY();
 	String backgroundNoRepeat();
-	String borderColorLabel();
-	String borderWidthLabel();
-	String contentTextColorLabel();
-	String headerBackgroundColorLabel();
-	String headerTextColorLabel();
-	String inheritPropertiesLabel();
-	String invalidBorderColor( String color );
-	String invalidContentTextColor( String color );
-	String invalidHeaderBgColor( String color );
-	String invalidHeaderTextColor( String color );
 
 	// Strings used in the Novell Desktop App dialog (File Sync)
 	String fileSyncAppAutoUpdateUrlLabel();
@@ -1223,138 +1072,4 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppOff();
 	String fileSyncAppOn();
 	String fileSyncAppOnOffLabel();
-
-	// Strings used by the filter bar in the various binder views.
-	String vibeBinderFilter_Alt_Filters();
-	String vibeBinderFilter_Filter();
-	String vibeBinderFilter_Filters();
-	String vibeBinderFilter_None();
-	
-	// Strings used by the footer in the various binder views.
-	String vibeBinderFooter_AtomUrl();
-	String vibeBinderFooter_EmailAddresses();
-	String vibeBinderFooter_EmailAddressesHint();
-	String vibeBinderFooter_iCalUrl();
-	String vibeBinderFooter_iCalUrlHint();
-	String vibeBinderFooter_KeyHeader();
-	String vibeBinderFooter_KeyFooter();
-	String vibeBinderFooter_Permalink();
-	String vibeBinderFooter_PermalinkHint();
-	String vibeBinderFooter_RSSUrl();
-	String vibeBinderFooter_RSSUrlHint();
-	String vibeBinderFooter_WebDAVUrl();
-	String vibeBinderFooter_WebDAVUrlHint();
-	
-	// Strings used in the Folder Columns dialog
-	String folderColumnsDlgHeader();
-	String folderColumnsDlgFolderColumn();
-	String folderColumnsDlgFolderCustomLabel();
-	String folderColumnsDlgFolderOrder();
-	String folderColumnsRestoreDefaults();
-	String folderColumnsNoOptions();
-	String folderColumnsSetAsDefault();
-	String folderColumnsUnexpectedEvent(String eventName);
-	
-	// Strings used by various widgets of the Vibe Data table.
-	String vibeDataTable_Alt_CollapseDescription();
-	String vibeDataTable_Alt_ColumnResizer();
-	String vibeDataTable_Alt_ExpandDescription();
-	String vibeDataTable_Alt_Unread();
-	String vibeDataTable_Alt_PinEntry();
-	String vibeDataTable_Alt_PinHeader();
-	String vibeDataTable_Alt_StarGold();
-	String vibeDataTable_Alt_StarGray();
-	String vibeDataTable_Alt_UnpinEntry();
-	String vibeDataTable_Alt_View();
-	String vibeDataTable_Confirm_Delete();
-	String vibeDataTable_Confirm_Purge();
-	String vibeDataTable_Download();
-	String vibeDataTable_Event_AllDay();
-	String vibeDataTable_Event_End();
-	String vibeDataTable_Event_Duration(String days);
-	String vibeDataTable_Event_Start();
-	String vibeDataTable_Pin();
-	String vibeDataTable_Select();
-	String vibeDataTable_View();
-	
-	// String used in the Landing Page
-	String nowFollowingBinder();
-	String utilityElementAdminPage();
-	String utilityElementFollowWorkspace();
-	String utilityElementLogIn();
-	String utilityElementMyWorkspace();
-	String utilityElementShareWorkspace();
-
-	// Strings used in the TaskFolderWidget
-	String taskFolderWidget_assignedTo();
-	String taskFolderWidget_dueDate();
-	String taskFolderWidget_percentDone();
-	String taskFolderWidget_priority();
-	String taskFolderWidget_status();
-
-	// Strings used in the SizeColumnsDlg.
-	String sizeColumnsDlgDefaultRB(String def);
-	String sizeColumnsDlgFixedRB();
-	String sizeColumnsDlgFlowRB();
-	String sizeColumnsDlgHeader();
-	String sizeColumnsDlgUnitPercentRB();
-	String sizeColumnsDlgUnitPixelRB();
-	String sizeColumnsDlgWarnPercents();
-	
-	// Strings used in the AddFilesDlg.
-	String addFilesDlgFrameTitle();
-	String addFilesDlgHavingTrouble();
-	String addFilesDlgHeader();
-	
-	// Strings used in the "Child binders widget"
-	String workspacesHeader();
-	String unreadEntries( Long numUnread );
-
-	// Strings used in the "Unread entries" dialog
-	String unreadEntriesDlgHeader();
-	
-	// Strings used in the CopyMoveEntriesDlg in copy mode.
-	String copyEntriesDlgCaption1();
-	String copyEntriesDlgCaption2();
-	String copyEntriesDlgCurrentDestination();
-	String copyEntriesDlgCurrentDestinationNone();
-	String copyEntriesDlgErrorInvalidSearchResult();
-	String copyEntriesDlgErrorCopyFailures();
-	String copyEntriesDlgErrorTargetInSourceAll();
-	String copyEntriesDlgErrorTargetInSourceSome();
-	String copyEntriesDlgHeader();
-	String copyEntriesDlgProgress(int done, int total);
-	String copyEntriesDlgSelectDestination();
-	String copyEntriesDlgWarningNoSelection();
-
-	// Strings used in the CopyMoveEntriesDlg in move mode.
-	String moveEntriesDlgCaption1();
-	String moveEntriesDlgCaption2();
-	String moveEntriesDlgCurrentDestination();
-	String moveEntriesDlgCurrentDestinationNone();
-	String moveEntriesDlgErrorInvalidSearchResult();
-	String moveEntriesDlgErrorMoveFailures();
-	String moveEntriesDlgErrorTargetInSourceAll();
-	String moveEntriesDlgErrorTargetInSourceSome();
-	String moveEntriesDlgHeader();
-	String moveEntriesDlgProgress(int done, int total);
-	String moveEntriesDlgSelectDestination();
-	String moveEntriesDlgWarningNoSelection();
-
-	// String used by the lock selected entries facility.
-	String lockEntriesError();
-
-	// String used by the unlock selected entries facility.
-	String unlockEntriesError();
-	
-	// Strings used by ChangeEntryTypesDlg.
-	String changeEntryTypesDlgCurrent();
-	String changeEntryTypesDlgErrorChangeFailures();
-	String changeEntryTypesDlgErrorNoSelection();
-	String changeEntryTypesDlgHeader();
-	String changeEntryTypesDlgHeaderFor(String title);
-	String changeEntryTypesDlgLocal();
-	String changeEntryTypesDlgNew();
-	String changeEntryTypesDlgNote();
-	String changeEntryTypesDlgSelect();
 }// end GwtTeamingMessages

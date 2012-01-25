@@ -855,16 +855,6 @@ public class WorkspaceTreeHelper {
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			toolbar.addToolbarMenuItem("1_administration", "configuration", NLT.get("administration.definition_builder_designers"), url, qualifiers);
 		}
-		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration)) {
-			adminMenuCreated=true;
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_TEMPLATES);
-			url.setParameter(WebKeys.URL_BINDER_PARENT_ID, forumId);
-			toolbar.addToolbarMenuItem("1_administration", "configuration", NLT.get("administration.template_builder_local"), url, qualifiers);
-		}
-		
 		//Delete
 		if (!workspace.isReserved()) {
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.deleteBinder)) {
@@ -1332,9 +1322,9 @@ public class WorkspaceTreeHelper {
      */
      public static class Counter {
     	private long count=0;
-    	public Counter() {	
+    	protected Counter() {	
     	}
-    	public void increment() {
+    	protected void increment() {
     		++count;
     	}
     	public Long getCount() {

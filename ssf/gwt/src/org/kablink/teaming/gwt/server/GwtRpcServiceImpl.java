@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,19 +40,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
@@ -70,7 +65,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
-import org.kablink.teaming.gwt.client.GwtAttachment;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
@@ -91,10 +85,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.lpe.ConfigData;
-import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -132,19 +123,16 @@ import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.util.ViewFileInfo;
-import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
-import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
-import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
-import org.kablink.teaming.gwt.server.util.GwtViewHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -158,7 +146,6 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -188,7 +175,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Execute the given command.
 	 */
-	@Override
 	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException
 	{
 		VibeRpcResponse response = null;
@@ -225,34 +211,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case CHANGE_ENTRY_TYPES:
-		{
-			ChangeEntryTypesCmd cetCmd = ((ChangeEntryTypesCmd) cmd);
-			ErrorListRpcResponseData result = GwtViewHelper.changeEntryTypes( this, getRequest( ri ), cetCmd.getDefId(), cetCmd.getEntryIds() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
 		case COLLAPSE_SUBTASKS:
 		{
 			CollapseSubtasksCmd csCmd = ((CollapseSubtasksCmd) cmd);
 			Boolean result = collapseSubtasks( ri, csCmd.getBinderId(), csCmd.getEntryId() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
-			return response;
-		}
-		
-		case COPY_ENTRIES:
-		{
-			CopyEntriesCmd ceCmd = ((CopyEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.copyEntries( this, getRequest( ri ), ceCmd.getTargetFolderId(), ceCmd.getEntryIds() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case DELETE_FOLDER_ENTRIES:
-		{
-			DeleteFolderEntriesCmd dfeCmd = ((DeleteFolderEntriesCmd) cmd);
-			Boolean result = GwtServerHelper.deleteFolderEntries( this, getRequest( ri ), dfeCmd.getBinderId(), dfeCmd.getEntryIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
@@ -262,46 +224,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
 			Boolean result = deleteTasks( ri, dtCmd.getTaskIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
-			return response;
-		}
-		
-		case EXECUTE_ENHANCED_VIEW_JSP:
-		{
-			HttpServletResponse resp;
-			ServletContext servletContext;
-			ExecuteEnhancedViewJspCmd eevjCmd;
-			String jspPath;
-			String result;
-			
-			resp = getResponse( ri );
-			servletContext = getServletContext( ri );
-			eevjCmd = (ExecuteEnhancedViewJspCmd) cmd;
-
-			// Construct the full path to the jsp
-			jspPath = "/WEB-INF/jsp/landing_page_enhanced_views/" + eevjCmd.getJspName();
-			
-			result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, eevjCmd.getBinderId(), jspPath, eevjCmd.getConfigStr() );
-			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
-			return response;
-		}
-		
-		case EXECUTE_LANDING_PAGE_CUSTOM_JSP:
-		{
-			HttpServletResponse resp;
-			ServletContext servletContext;
-			ExecuteLandingPageCustomJspCmd elpjCmd;
-			String jspPath;
-			String result;
-			
-			resp = getResponse( ri );
-			servletContext = getServletContext( ri );
-			elpjCmd = (ExecuteLandingPageCustomJspCmd) cmd;
-
-			// Construct the full path to the jsp
-			jspPath = "/WEB-INF/jsp/custom_jsps/" + elpjCmd.getJspName();
-			
-			result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, elpjCmd.getBinderId(), jspPath, elpjCmd.getConfigStr() );
-			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
 			return response;
 		}
 		
@@ -387,7 +309,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			StringRpcResponseData responseData;
 			
 			gamuCmd = (GetAddMeetingUrlCmd) cmd;
-			result = GwtServerHelper.getAddMeetingUrl( this, getRequest( ri ), gamuCmd.getBinderId() );
+			result = getAddMeetingUrl( ri, gamuCmd.getBinderId() );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -417,26 +339,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_BINDER_DESCRIPTION:
-		{
-			GetBinderDescriptionCmd gbdCmd = ((GetBinderDescriptionCmd) cmd);
-			BinderDescriptionRpcResponseData responseData = GwtViewHelper.getBinderDescription(
-				this,
-				getRequest( ri ),
-				gbdCmd.getBinderId() );
-			return new VibeRpcResponse( responseData );
-		}
-		
-		case GET_BINDER_FILTERS:
-		{
-			GetBinderFiltersCmd gbfCmd = ((GetBinderFiltersCmd) cmd);
-			BinderFiltersRpcResponseData responseData = GwtViewHelper.getBinderFilters(
-				this,
-				getRequest( ri ),
-				gbfCmd.getBinderId() );
-			return new VibeRpcResponse( responseData );
-		}
-		
 		case GET_BINDER_INFO:
 		{
 			BinderInfo binderInfo;
@@ -445,24 +347,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			binderId = ((GetBinderInfoCmd) cmd).getBinderId();
 			binderInfo = getBinderInfo( ri, binderId );
 			response = new VibeRpcResponse( binderInfo );
-			return response;
-		}
-		
-		case GET_BINDER_REGION_STATE:
-		{
-			GetBinderRegionStateCmd gbrsCmd = ((GetBinderRegionStateCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.getBinderRegionState(
-				this,
-				getRequest( ri ),
-				gbrsCmd.getBinderId(),
-				gbrsCmd.getRegionId() );
-			return new VibeRpcResponse( responseData );
-		}
-		
-		case GET_VIEW_INFO:
-		{
-			ViewInfo vi = getViewInfo( ri, ((GetViewInfoCmd) cmd) );
-			response = new VibeRpcResponse( vi );
 			return response;
 		}
 		
@@ -489,42 +373,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = getBinderTags( ri, gbtCmd.getBinderId() );
 			responseData = new GetTagsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_CLIPBOARD_TEAM_USERS:
-		{
-			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardTeamUsers( this, getRequest( ri ), gctuCmd.getBinderId() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case GET_CLIPBOARD_USERS:
-		{
-			@SuppressWarnings("unused")
-			GetClipboardUsersCmd gcuCmd = ((GetClipboardUsersCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsers( this, getRequest( ri ) );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case GET_CLIPBOARD_USERS_FROM_LIST:
-		{
-			GetClipboardUsersFromListCmd gcuflCmd = ((GetClipboardUsersFromListCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsersFromList( this, getRequest( ri ), gcuflCmd.getBinderId(), gcuflCmd.getUserIds() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case GET_COLUMN_WIDTHS:
-		{
-			GetColumnWidthsCmd gcwCmd = ((GetColumnWidthsCmd) cmd);
-			ColumnWidthsRpcResponseData result = GwtViewHelper.getColumnWidths(
-				this,
-				getRequest( ri ),
-				gcwCmd.getFolderId() );
-			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -574,30 +422,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_DOWNLOAD_FILE_URL:
-		{
-			GetDownloadFileUrlCmd gdfuCmd = ((GetDownloadFileUrlCmd) cmd);
-			String result = getDownloadFileUrl( ri, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
-			StringRpcResponseData responseData = new StringRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_EMAIL_NOTIFICATION_INFORMATION:
-		{
-			GetEmailNotificationInfoCmd geniCmd = ((GetEmailNotificationInfoCmd) cmd);
-			EmailNotificationInfoRpcResponseData result = GwtEmailHelper.getEmailNotificationInfo( this, getRequest( ri ), geniCmd.getBinderId() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
 		case GET_ENTRY:
 		{
 			GetEntryCmd geCmd;
 			GwtFolderEntry result;
 			
 			geCmd = (GetEntryCmd) cmd;
-			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId(), geCmd.getNumReplies(), geCmd.getFileAttachmentsValue() );
+			result = getEntry( ri, geCmd.getZoneUUId(), geCmd.getEntryId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -612,28 +443,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = getEntryTags( ri, getCmd.getEntryId() );
 			responseData = new GetTagsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_ENTRY_TYPES:
-		{
-			GetEntryTypesCmd getCmd = ((GetEntryTypesCmd) cmd);
-			EntryTypesRpcResponseData result = GwtViewHelper.getEntryTypes( this, getRequest( ri ), getCmd.getEntryId(), getCmd.getBinderIds() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case GET_EXECUTE_JSP_URL:
-		{
-			GetExecuteJspUrlCmd gejuCmd;
-			StringRpcResponseData responseData;
-			String result;
-			
-			gejuCmd = (GetExecuteJspUrlCmd) cmd;
-			result = GwtServerHelper.getExecuteJspUrl( getRequest( ri ), gejuCmd.getBinderId(), gejuCmd.getJspName() );
-			responseData = new StringRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
-			
 			return response;
 		}
 		
@@ -682,25 +491,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
-
-
+		
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		{
 			GwtFileSyncAppConfiguration fileSyncAppConfiguration; 
 
 			fileSyncAppConfiguration = GwtServerHelper.getFileSyncAppConfiguration( this );
 			response = new VibeRpcResponse( fileSyncAppConfiguration );
-			return response;
-		}
-		
-		case GET_FILE_URL:
-		{
-			GetFileUrlCmd gfuCmd;
-			String url;
-			
-			gfuCmd = (GetFileUrlCmd) cmd;
-			url = GwtServerHelper.getFileUrl( this, getRequest( ri ), gfuCmd.getBinderId(), gfuCmd.getFileName() );
-			response = new VibeRpcResponse( new StringRpcResponseData( url ) );
 			return response;
 		}
 
@@ -712,81 +509,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gfCmd = (GetFolderCmd) cmd;
 			result = getFolder( ri, gfCmd.getZoneUUId(), gfCmd.getFolderId() );
 			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case GET_FOLDER_COLUMNS:
-		{
-			GetFolderColumnsCmd gfcCmd = ((GetFolderColumnsCmd) cmd);
-			FolderColumnsRpcResponseData responseData = GwtViewHelper.getFolderColumns(
-				this,
-				getRequest( ri ),
-				gfcCmd.getFolderId(),
-				gfcCmd.getFolderType(),
-				gfcCmd.isIncludeConfigurationInfo() );
-			return new VibeRpcResponse( responseData );
-		}
-		
-		case GET_FOLDER_DISPLAY_DATA:
-		{
-			GetFolderDisplayDataCmd gfddCmd = ((GetFolderDisplayDataCmd) cmd);
-			FolderDisplayDataRpcResponseData responseData = GwtViewHelper.getFolderDisplayData(
-				this,
-				getRequest( ri ),
-				gfddCmd.getFolderId() );
-			return new VibeRpcResponse( responseData );
-		}
-		
-		case GET_FOLDER_ENTRIES:
-		{
-			GetFolderEntriesRpcResponseData responseData;
-			GetFolderEntriesCmd gfeCmd;
-			ArrayList<GwtFolderEntry> result;
-			
-			gfeCmd = (GetFolderEntriesCmd) cmd;
-			result = getFolderEntries( ri, gfeCmd.getZoneUUID(), gfeCmd.getFolderId(), gfeCmd.getNumEntries(), gfeCmd.getNumReplies(), gfeCmd.getFileAttachmentsValue() );
-			responseData = new GetFolderEntriesRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_FOLDER_ROWS:
-		{
-			GetFolderRowsCmd gfrCmd = ((GetFolderRowsCmd) cmd);
-			FolderRowsRpcResponseData responseData = GwtViewHelper.getFolderRows(
-				this,
-				getRequest( ri ),
-				gfrCmd.getFolderId(),
-				gfrCmd.getFolderType(),
-				gfrCmd.getFolderColumns(),
-				gfrCmd.getStart(),
-				gfrCmd.getLength() );
-			return new VibeRpcResponse( responseData );
-		}
-		
-		case GET_FOLDER_TOOLBAR_ITEMS:
-		{
-			GetFolderToolbarItemsCmd gftiCmd;
-			List<ToolbarItem> result;
-			GetToolbarItemsRpcResponseData responseData;
-			
-			gftiCmd = ((GetFolderToolbarItemsCmd) cmd);
-		    result = GwtMenuHelper.getFolderToolbarItems( this, getRequest( ri ), gftiCmd.getFolderId(), gftiCmd.getFolderType() );
-			responseData = new GetToolbarItemsRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_FOOTER_TOOLBAR_ITEMS:
-		{
-			GetFooterToolbarItemsCmd gftiCmd;
-			List<ToolbarItem> result;
-			GetToolbarItemsRpcResponseData responseData;
-			
-			gftiCmd = ((GetFooterToolbarItemsCmd) cmd);
-		    result = GwtMenuHelper.getFooterToolbarItems( this, getRequest( ri ), gftiCmd.getBinderId() );
-			responseData = new GetToolbarItemsRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -819,13 +541,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			responseData = new GetGroupsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
-		}
-		
-		case GET_HELP_URL:
-		{
-			GetHelpUrlCmd ghuCmd = ((GetHelpUrlCmd) cmd);
-			String helpUrl = MiscUtil.getHelpUrl(ghuCmd.getGuideName(), ghuCmd.getPageId(), ghuCmd.getSectionId());
-			return new VibeRpcResponse( new StringRpcResponseData( helpUrl ));
 		}
 		
 		case GET_HORIZONTAL_NODE:
@@ -865,74 +580,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
-		{
-			GetInheritedLandingPagePropertiesCmd gilppCmd;
-			LandingPageProperties lpProperties;
-			
-			gilppCmd = (GetInheritedLandingPagePropertiesCmd) cmd;
-			lpProperties = GwtServerHelper.getInheritedLandingPageProperties( this, gilppCmd.getBinderId(), getRequest( ri ) );
-			response = new VibeRpcResponse( lpProperties );
-			return response;
-		}
-		
-		case GET_JSP_HTML:
-		{
-			HttpServletResponse resp;
-			ServletContext servletContext;
-			
-			resp = getResponse( ri );
-			servletContext = getServletContext( ri );
-			GetJspHtmlCmd gjhCmd = ((GetJspHtmlCmd) cmd);
-			JspHtmlRpcResponseData responseData = GwtViewHelper.getJspHtml(
-				this,
-				req,
-				resp,
-				servletContext,
-				gjhCmd.getJspType(),
-				gjhCmd.getModel() );
-			return new VibeRpcResponse( responseData );
-		}
-		
-		case GET_LANDING_PAGE_DATA:
-		{
-			GetLandingPageDataCmd glpdCmd;
-			ConfigData lpConfigData;
-			
-			glpdCmd = (GetLandingPageDataCmd) cmd;
-			lpConfigData = GwtServerHelper.getLandingPageData( req, this, glpdCmd.getBinderId() );
-			response = new VibeRpcResponse( lpConfigData );
-			return response;
-		}
-		
-		case GET_LIST_OF_CHILD_BINDERS:
-		{
-			GetListOfChildBindersCmd glocbCmd;
-			GetListOfChildBindersRpcResponseData responseData;
-			ArrayList<TreeInfo> listOfChildBinders;
-			
-			glocbCmd = (GetListOfChildBindersCmd) cmd;
-			listOfChildBinders = GwtServerHelper.getListOfChildBinders( req, this, glocbCmd.getBinderId() );
-			responseData = new GetListOfChildBindersRpcResponseData( listOfChildBinders );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_LIST_OF_FILES:
-		{
-			GetListOfFilesCmd glofCmd;
-			GetListOfFilesRpcResponseData responseData;
-			ArrayList<GwtAttachment> listOfFiles;
-			
-			// Get a list of files from the given folder.
-			glofCmd = (GetListOfFilesCmd) cmd;
-			listOfFiles = getListOfFiles( ri, glofCmd.getZoneUUID(), glofCmd.getFolderId(), glofCmd.getNumFiles() );
-			responseData = new GetListOfFilesRpcResponseData( listOfFiles );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-	
-
 		case GET_LOGIN_INFO:
 		{
 			GwtLoginInfo loginInfo;
@@ -1047,9 +694,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GetRecentPlacesRpcResponseData responseData;
 			List<RecentPlaceInfo> result;
-			if (GwtUIHelper.isGraniteGwtEnabled())
-			     result = GwtMenuHelper.getRecentPlaces(            this, getRequest( ri ), ((GetRecentPlacesCmd) cmd).getBinderId() );
-			else result = GwtServerHelper.getRecentPlacesFromCache( this, getRequest( ri )                                           );
+			
+			result = getRecentPlaces( ri );
 			responseData = new GetRecentPlacesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1079,19 +725,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
-		case GET_SHARE_BINDER_PAGE_URL:
-		{
-			GetShareBinderPageUrlCmd gsbpuCmd;
-			String url;
-			StringRpcResponseData responseData;
-			
-			gsbpuCmd = (GetShareBinderPageUrlCmd) cmd;
-			url = getShareBinderPageUrl( ri, gsbpuCmd.getBinderId() );
-			responseData = new StringRpcResponseData( url );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case GET_SITE_ADMIN_URL:
 		{
 			String url;
@@ -1160,16 +793,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TASK_BUNDLE:
 		{
 			GetTaskBundleCmd gtbCmd = ((GetTaskBundleCmd) cmd);
-			TaskBundle results = getTaskBundle( ri, gtbCmd.isEmbeddedInJSP(), gtbCmd.getBinderId(), gtbCmd.getFilterType(), gtbCmd.getModeType() );
+			TaskBundle results = getTaskBundle( ri, gtbCmd.getBinderId(), gtbCmd.getFilterType(), gtbCmd.getModeType() );
 			TaskBundleRpcResponseData responseData = new TaskBundleRpcResponseData( results );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_TASK_DISPLAY_DATA:
-		{
-			GetTaskDisplayDataCmd gtddCmd = ((GetTaskDisplayDataCmd) cmd);
-			TaskDisplayDataRpcResponseData responseData = GwtTaskHelper.getTaskDisplayData( getRequest( ri ), this, gtddCmd.getBinderId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1186,7 +811,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TASK_LIST:
 		{
 			GetTaskListCmd gtlCmd = ((GetTaskListCmd) cmd);
-			List<TaskListItem> results = getTaskList( ri, gtlCmd.getApplyUsersFilter(), gtlCmd.getZoneUUID(), gtlCmd.getBinderId(), gtlCmd.getFilterType(), gtlCmd.getModeType() );
+			List<TaskListItem> results = getTaskList( ri, gtlCmd.getBinderId(), gtlCmd.getFilterType(), gtlCmd.getModeType() );
 			TaskListItemListRpcResponseData responseData = new TaskListItemListRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1207,7 +832,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TeamManagementInfo result;
 			
 			gtmiCmd = (GetTeamManagementInfoCmd) cmd;
-			result = GwtMenuHelper.getTeamManagementInfo( this, getRequest( ri ), gtmiCmd.getBinderId() );
+			result = getTeamManagementInfo( ri, gtmiCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1224,17 +849,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
-		
 		case GET_TOOLBAR_ITEMS:
 		{
 			GetToolbarItemsCmd gtiCmd;
 			List<ToolbarItem> result;
 			GetToolbarItemsRpcResponseData responseData;
 			
-			gtiCmd = ((GetToolbarItemsCmd) cmd);
-			if (GwtUIHelper.isGraniteGwtEnabled())
-			     result = GwtMenuHelper.getToolbarItems( this,    getRequest( ri ), gtiCmd.getBinderId() );
-			else result =               getToolbarItemsFromCache( getRequest( ri ), gtiCmd.getBinderId() );
+			gtiCmd = (GetToolbarItemsCmd) cmd;
+			result = getToolbarItems( ri, gtiCmd.getBinderId() );
 			responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1317,15 +939,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_VIEW_FILE_URL:
-		{
-			GetViewFileUrlCmd gvfuCmd = ((GetViewFileUrlCmd) cmd);
-			String result = getViewFileUrl( ri, gvfuCmd.getViewFileInfo() );
-			StringRpcResponseData responseData = new StringRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case GET_VIEW_FOLDER_ENTRY_URL:
 		{
 			Long binderId;
@@ -1352,14 +965,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
-		case IMPORT_ICAL_BY_URL:
-		{
-			ImportIcalByUrlCmd iiUrlCmd = ((ImportIcalByUrlCmd) cmd);
-			ImportIcalByUrlRpcResponseData result = GwtServerHelper.importIcalByUrl( this, getRequest( ri ), iiUrlCmd.getFolderId(), iiUrlCmd.getUrl() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
 		case IS_ALL_USERS_GROUP:
 		{
 			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
@@ -1388,14 +993,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
-
-		case LOCK_ENTRIES:
-		{
-			LockEntriesCmd leCmd = ((LockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, getRequest( ri ), leCmd.getEntryIds() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
 		
 		case MARKUP_STRING_REPLACEMENT:
 		{
@@ -1406,14 +1003,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			String newHtml = markupStringReplacement( ri, binderId, html, type );
 			StringRpcResponseData responseData = new StringRpcResponseData( newHtml );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case MOVE_ENTRIES:
-		{
-			MoveEntriesCmd meCmd = ((MoveEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.moveEntries( this, getRequest( ri ), meCmd.getTargetFolderId(), meCmd.getEntryIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1454,22 +1043,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = persistNodeExpand( ri,pneCmd.getBinderId() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case PIN_ENTRY:
-		{
-			PinEntryCmd peCmd = ((PinEntryCmd) cmd);
-			Boolean result = GwtServerHelper.pinEntry( this, getRequest( ri ), peCmd.getFolderId(), peCmd.getEntryId() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
-			return response;
-		}
-		
-		case PURGE_FOLDER_ENTRIES:
-		{
-			PurgeFolderEntriesCmd pfeCmd = ((PurgeFolderEntriesCmd) cmd);
-			Boolean result = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getBinderId(), pfeCmd.getEntryIds() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
 		
@@ -1549,18 +1122,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_BINDER_REGION_STATE:
-		{
-			SaveBinderRegionStateCmd sbrsCmd = ((SaveBinderRegionStateCmd) cmd);
-			BooleanRpcResponseData responseData = GwtViewHelper.saveBinderRegionState(
-				this,
-				getRequest( ri ),
-				sbrsCmd.getBinderId(),
-				sbrsCmd.getRegionId(),
-				sbrsCmd.getRegionState() );
-			return new VibeRpcResponse( responseData );
-		}
-		
 		case SAVE_BRANDING:
 		{
 			BooleanRpcResponseData responseData;
@@ -1574,43 +1135,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_CLIPBOARD_USERS:
-		{
-			SaveClipboardUsersCmd scuCmd = ((SaveClipboardUsersCmd) cmd);
-			BooleanRpcResponseData result = GwtServerHelper.saveClipboardUsers( this, getRequest( ri ), scuCmd.getClipboardUserList() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case SAVE_COLUMN_WIDTHS:
-		{
-			SaveColumnWidthsCmd scwCmd = ((SaveColumnWidthsCmd) cmd);
-			BooleanRpcResponseData result = GwtViewHelper.saveColumnWidths(
-				this,
-				getRequest( ri ),
-				scwCmd.getFolderId(),
-				scwCmd.getColumnWidths() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case SAVE_EMAIL_NOTIFICATION_INFORMATION:
-		{
-			SaveEmailNotificationInfoCmd seniCmd = ((SaveEmailNotificationInfoCmd) cmd);
-			BooleanRpcResponseData result = GwtEmailHelper.saveEmailNotificationInfo(
-				this,
-				getRequest( ri ),
-				seniCmd.getBinderId(),	// null -> Entry subscription mode.
-				seniCmd.getEntryIds(),	// null -> Binder email notification mode.
-				seniCmd.getOverridePresets(),
-				seniCmd.getDigestAddressTypes(),
-				seniCmd.getMsgAddressTypes(),
-				seniCmd.getMsgNoAttAddressTypes(),
-				seniCmd.getTextAddressTypes() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
 		{
 			SaveFileSyncAppConfigurationCmd sfsacCmd;
@@ -1619,22 +1143,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			sfsacCmd = ((SaveFileSyncAppConfigurationCmd) cmd);
 			result = GwtServerHelper.saveFileSyncAppConfiguration( this, sfsacCmd.getFileSyncAppConfiguration() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
-			return response;
-		}
-		
-		case SAVE_FOLDER_COLUMNS:
-		{
-			SaveFolderColumnsCmd sfcCmd = ((SaveFolderColumnsCmd) cmd);
-			Boolean result = saveFolderColumns( ri, sfcCmd.getFolderId(), sfcCmd.getFolderColumns(), sfcCmd.isFolderColumnsDefault() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
-			return response;
-		}
-		
-		case SAVE_FOLDER_SORT:
-		{
-			SaveFolderSortCmd sfsCmd = ((SaveFolderSortCmd) cmd);
-			Boolean result = saveFolderSort( ri, sfsCmd.getBinderId(), sfsCmd.getSortKey(), sfsCmd.getSortAscending() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
 		
@@ -1662,14 +1170,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_TASK_GRAPH_STATE:
-		{
-			SaveTaskGraphStateCmd stgsCmd = ((SaveTaskGraphStateCmd) cmd);
-			BooleanRpcResponseData responseData = GwtTaskHelper.saveTaskGraphState( getRequest( ri ), this, stgsCmd.getFolderId(), stgsCmd.getExpandGraphs() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case SAVE_TASK_LINKAGE:
 		{
 			SaveTaskLinkageCmd stlCmd = ((SaveTaskLinkageCmd) cmd);
@@ -1689,7 +1189,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_TASK_SORT:
 		{
 			SaveTaskSortCmd stsCmd = ((SaveTaskSortCmd) cmd);
-			Boolean result = saveFolderSort( ri, stsCmd.getBinderId(), stsCmd.getSortKey(), stsCmd.getSortAscending() );
+			Boolean result = saveTaskSort( ri, stsCmd.getBinderId(), stsCmd.getSortKey(), stsCmd.getSortAscending() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
@@ -1798,14 +1298,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
-		case UNLOCK_ENTRIES:
-		{
-			UnlockEntriesCmd uleCmd = ((UnlockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.unlockEntries( this, getRequest( ri ), uleCmd.getEntryIds() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case UPDATE_CALCULATED_DATES:
 		{
 			UpdateCalculatedDatesCmd ucdCmd = ((UpdateCalculatedDatesCmd) cmd);
@@ -1851,14 +1343,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = updateFavorites( ri, ufCmd.getFavoritesList() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case UNPIN_ENTRY:
-		{
-			UnpinEntryCmd upeCmd = ((UnpinEntryCmd) cmd);
-			Boolean result = GwtServerHelper.unpinEntry( this, getRequest( ri ), upeCmd.getFolderId(), upeCmd.getEntryId() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		
@@ -1926,7 +1410,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case APPLICATION_GROUP:
 		case COMMUNITY_TAGS:
 		case ENTRIES:
-		case FOLDERS:
 		case GROUP:
 		case PERSON:
 		case PERSONAL_TAGS:
@@ -2103,7 +1586,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case APPLICATION_GROUP:
 		case COMMUNITY_TAGS:
 		case ENTRIES:
-		case FOLDERS:
 		case GROUP:
 		case PERSON:
 		case PERSONAL_TAGS:
@@ -2157,11 +1639,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			break;
 
-		case FOLDERS:
 		case PLACES:
-			searchTermFilter.addPlacesFilter(
-				searchText,
-				(searchCriteria.getFoldersOnly() || (GwtSearchCriteria.SearchType.FOLDERS == searchCriteria.getSearchType())) );
+			searchTermFilter.addPlacesFilter( searchText, searchCriteria.getFoldersOnly() );
 			break;
 			
 		case COMMUNITY_TAGS:
@@ -2350,7 +1829,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				break;
 			}
 				
-			case FOLDERS:
 			case PLACES:
 			{
 				List placesEntries;
@@ -2626,35 +2104,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
-	 * Return a download file URL that can be used to download an
-	 * entry's file.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param entryId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	private String getDownloadFileUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		try
-		{
-			FolderEntry entry = getFolderModule().getEntry( null, entryId );
-			Set<FileAttachment> atts = entry.getFileAttachments(); 
-			String reply;
-			if ( !atts.isEmpty() )
-				 reply = WebUrlUtil.getFileUrl( getRequest( ri ), WebKeys.ACTION_READ_FILE, atts.iterator().next(), false, true );
-			else reply = null;
-			return reply;
-		}
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}		
-	}// end getDownloadFileUrl()
-	
-	/**
 	 * Return an Entry object for the given zone and entry id
 	 * 
 	 * @param ri
@@ -2665,8 +2114,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	@SuppressWarnings("unchecked")
-	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, int numRepliesToGet, boolean getFileAttachments ) throws GwtTeamingException
+	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
 		FolderEntry entry = null;
@@ -2710,26 +2158,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String url;
 				
 				folderEntry.setEntryName( entry.getTitle() );
-				
-				// Get the entry's description
-				{
-					Description desc;
-					
-					desc = entry.getDescription();
-					if ( desc != null )
-					{
-						String descStr;
-						
-						descStr = desc.getText();
-						
-						// Perform any fixups needed on the entry's description
-						descStr = markupStringReplacement( ri, entry, descStr, "view" );
-						
-						folderEntry.setEntryDesc( descStr );
-					}
-				}
-
-				parentBinderId = null;
+			
 				parentBinder = entry.getParentBinder();
 				if ( parentBinder != null )
 				{
@@ -2739,147 +2168,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 				
 				// Create a url that can be used to view this entry.
-				url = getViewFolderEntryUrl( ri, parentBinderId, entryIdL );
+				url = PermaLinkUtil.getPermalink( getRequest( ri ), entry );
 				folderEntry.setViewEntryUrl( url );
-				
-				// Get the entry's author information
-				{
-					Long authorId;
-					
-					authorId = entry.getOwnerId();
-					if ( authorId != null )
-					{
-						// Get the author's name
-						{
-							String authorName;
-							String authorIdS;
-							ArrayList<String> authorIdList;
-							List resolvedList;
-							
-							authorIdS = authorId.toString();
-							folderEntry.setAuthorId( authorIdS );
-	
-							// Does the user have rights to see the name of the author?
-							authorIdList = new ArrayList<String>();
-							authorIdList.add( authorIdS );
-							resolvedList = ResolveIds.getPrincipals( authorIdList );
-							if ( resolvedList != null && resolvedList.isEmpty() == false )
-							{
-								User author;
-								
-								// Yes
-								author = (User) resolvedList.get( 0 );
-								authorName = author.getTitle();
-							}
-							else
-							{
-								// No
-								authorName = NLT.get( "user.redacted.title" );
-							}
-							
-							folderEntry.setAuthor( authorName );
-						}
-						
-						// Get the author's workspace id
-						{
-							SortedSet<Principal> authorPrincipals;
-							ArrayList<Long> authorIds;
-
-							authorIds = new ArrayList<Long>();
-							authorIds.add( authorId );
-							authorPrincipals = getProfileModule().getPrincipals( authorIds );
-							
-							if ( authorPrincipals != null && authorPrincipals.isEmpty() == false )
-							{
-								Principal authorPrincipal;
-								
-								authorPrincipal = authorPrincipals.first();
-								if ( authorPrincipal != null )
-								{
-									Long workspaceId;
-									
-									workspaceId = authorPrincipal.getWorkspaceId();
-									if ( workspaceId != null )
-										folderEntry.setAuthorWorkspaceId( workspaceId.toString() );
-								}
-							}
-						}
-					}
-				}
-				
-				// Get the entry's modification date
-				{
-					Date date;
-					String dateStr;
-					
-					date = entry.getLastActivity();
-					dateStr = GwtServerHelper.getDateTimeString( date );
-					
-					folderEntry.setModificationDate( dateStr );
-				}
-				
-				// Do we need to get the ids of any replies to this entry?
-				if ( numRepliesToGet > 0 )
-				{
-					Map replies;
-					
-					// Get the replies to this entry.
-					replies = folderModule.getEntryTree( parentBinderId, entryIdL, false );
-					if ( replies != null )
-					{
-						List<FolderEntry> replyList;
-
-						replyList = (List<FolderEntry>) replies.get( ObjectKeys.FOLDER_ENTRY_DESCENDANTS );
-						if ( replyList != null && replyList.size() > 0 )
-						{
-							int i;
-							
-							for (i = 0; i < replyList.size() && i < numRepliesToGet; ++i)
-							{
-								FolderEntry replyEntry;
-								Long replyId;
-							
-								// Get the next reply entry.
-								replyEntry = replyList.get( i );
-								replyId = replyEntry.getId();
-								if ( replyId != null )
-									folderEntry.addReplyId( replyId.toString() );
-							}
-						}
-					}
-				}
-				
-				// Do we need to get file attachment information?
-				if ( getFileAttachments )
-				{
-					Set<Attachment> attachments;
-					
-					// Yes
-					attachments = entry.getAttachments();
-			    	for (Iterator iter=attachments.iterator(); iter.hasNext();)
-			    	{
-				    	Attachment att;
-				    	
-			    		att = (Attachment)iter.next();
-			    		if ( att instanceof FileAttachment )
-			    		{
-					    	FileAttachment fatt;
-					    	GwtAttachment gwtAttachment;
-					    	String fileUrl;
-
-					    	gwtAttachment = new GwtAttachment();
-					    	
-					    	fatt = (FileAttachment) att;
-					    	
-					    	gwtAttachment.setFileName( fatt.getFileItem().getName() );
-					    	
-					    	fileUrl = WebUrlUtil.getFileUrl( getRequest( ri ), WebKeys.ACTION_READ_FILE, fatt, false, true );
-					    	gwtAttachment.setViewFileUrl( fileUrl );
-					    	
-					    	folderEntry.addAttachment( gwtAttachment );
-			    		}
-			    	}
-				}
 			}
 		}
 		catch (Exception e)
@@ -2891,21 +2181,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return folderEntry;
 	}// end getEntry()
 	
-	
-	/**
-	 * Return a view file URL that can be used to view an entry's file
-	 * as HTML.
-	 * 
-	 * @param ri
-	 * @param vfi
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	private String getViewFileUrl( HttpRequestInfo ri, ViewFileInfo vfi ) throws GwtTeamingException {
-		return GwtServerHelper.getViewFileUrl( getRequest( ri ), vfi );
-	}// end getViewFileUrl()
 	
 	/**
 	 * Return a base view folder entry URL that can be used directly in the
@@ -3055,7 +2330,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( binder != null )
 			{
 				String url;
-				Description desc;
 
 				folder.setFolderName( MiscUtil.hasString( folderTitle ) ? folderTitle : binder.getTitle() );
 			
@@ -3066,19 +2340,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				// Create a url that can be used to view this folder.
 				url = PermaLinkUtil.getPermalink( request, binder );
 				folder.setViewFolderUrl( url );
-				
-				desc = binder.getDescription();
-				if ( desc != null )
-				{
-					String descStr;
-					
-					descStr = desc.getText();
-					
-					// Perform any fixups needed on the entry's description
-					descStr = markupStringReplacementImpl( request, folderId, descStr, "view" );
-					
-					folder.setFolderDesc( descStr );
-				}
 			}
 		}
 		catch (Exception e)
@@ -3089,90 +2350,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return folder;
 	}// end getFolder()
 	
-	
-	/**
-	 * Return a list of the first n entries in the given folder.
-	 * 
-	 * @throws GwtTeamingException 
-	 */
-	@SuppressWarnings("unchecked")
-	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String zoneUUID, String folderId, int numEntriesToRead, int numReplies, boolean getFileAttachments ) throws GwtTeamingException
-	{
-		ArrayList<GwtFolderEntry> entries;
-		
-		entries = new ArrayList<GwtFolderEntry>();
-		
-		try
-		{
-			ZoneInfo zoneInfo;
-			String zoneInfoId;
-			Long folderIdL;
-			FolderModule folderModule;
-			Map options;
-			Map searchResults;
-			List<Map> folderEntries;
-			int totalEntries;
-			
-			// Get the id of the zone we are running in.
-			zoneInfo = MiscUtil.getCurrentZone();
-			zoneInfoId = zoneInfo.getId();
-			if ( zoneInfoId == null )
-				zoneInfoId = "";
-
-			folderModule = getFolderModule();
-
-			folderIdL = new Long( folderId );
-			
-			// Are we looking for a folder that was imported from another zone?
-			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
-			{
-				// Yes, get the folder id for the folder in this zone.
-				folderIdL = getBinderModule().getZoneBinderId( folderIdL, zoneUUID, EntityType.folder.name() );
-			}
-
-			// Get the ids of the first n entries in the given folder.
-			options = new HashMap();
-			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE );
-			options.put( ObjectKeys.SEARCH_SORT_BY, Constants.LASTACTIVITY_FIELD );
-			options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf( numEntriesToRead ) );
-			searchResults = folderModule.getEntries( folderIdL, options );
-			
-			// Scan the entries we read
-			folderEntries = (List<Map>) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
-			totalEntries = 0;
-			for (Map entryMap: folderEntries)
-			{
-				GwtFolderEntry folderEntry;
-				String entryId;
-
-				// Have we reached the max number of entries to return?
-				if ( totalEntries >= numEntriesToRead )
-					break;
-				
-				// Get the entry id
-				entryId = (String) entryMap.get( Constants.DOCID_FIELD );
-				
-				try
-				{
-					// Get a GwtFolderEntry from the given entry id.
-					folderEntry = getEntry( ri, null, entryId, numReplies, getFileAttachments );
-					entries.add( folderEntry );
-					
-					++totalEntries;
-				}
-				catch (Exception e)
-				{
-					// Nothing to do.
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			throw GwtServerHelper.getGwtTeamingException( e );
-		}
-		
-		return entries;
-	}
 	
 	/*
 	 * Return a GwtUser object for the given user id
@@ -3333,22 +2510,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getRequest()
 	
 	/**
-	 * Return the HttpServletResponse from an HttpRequestInfo object.
-	 */
-	private static HttpServletResponse getResponse( HttpRequestInfo ri )
-	{
-		return (HttpServletResponse) ri.getResponseObj();
-	}
-	
-	/**
-	 * Return the ServletContext from an HttpRequestInfo object.
-	 */
-	private static ServletContext getServletContext( HttpRequestInfo ri )
-	{
-		return (ServletContext) ri.getServletContext();
-	}
-	
-	/**
 	 * Return a GwtPersonalPreferences object that holds the personal preferences for the logged in user.
 	 * 
 	 * @param ri
@@ -3474,20 +2635,40 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getSiteAdministrationUrl()
 	
 	/**
-	 * Return the url needed to invoke the "Share binder" page.
+	 * Return the URL needed to invoke the start/schedule meeting dialog.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	private String getShareBinderPageUrl( HttpRequestInfo ri, String binderId )
+	private String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
-		AdaptedPortletURL url;
-		
-		url = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
-		url.setParameter( WebKeys.ACTION, "__ajax_relevance" );
-		url.setParameter( WebKeys.URL_OPERATION, "share_this_binder" );
-		url.setParameter( WebKeys.URL_BINDER_ID, binderId );
-		
-		return url.toString();
-	}
-	
+		AdaptedPortletURL adapterUrl;
+
+		// ...store the team meeting URL.
+		adapterUrl = new AdaptedPortletURL( getRequest(ri), "ss_forum", true );
+		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
+		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+
+		if (GwtServerHelper.getWorkspaceType(GwtUIHelper.getBinderSafely(getBinderModule(), binderId)) == WorkspaceType.USER) {
+			// This is a User Workspace so add the owner in and don't append team members
+			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+			if (p != null) {
+				Long id = p.getId();
+				String [] ids = new String[1];
+				ids[0] = id.toString();
+				adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, ids);
+			}
+			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.FALSE.toString() );
+		} else {
+			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+	    }
+
+		return adapterUrl.toString();
+	}// end getAddMeetingUrl()
 	
 	/**
 	 * Return a GwtBrandingData object for the home workspace.
@@ -3527,11 +2708,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Reads the task information from the specified binder.
 	 */
-	private List<TaskListItem> getTaskList( HttpRequestInfo ri, boolean applyUsersFilter, String zoneUUID, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	private List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskList()");
 		try {
-			return GwtTaskHelper.getTaskList( getRequest( ri ), this, applyUsersFilter, false, GwtTaskHelper.getTaskBinder( this, zoneUUID, binderId ), filterType, modeType );
+			return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), filterType, modeType );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskList()");
@@ -3541,7 +2722,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Returns a TaskBundle object for the specified binder.
 	 */
-	private TaskBundle getTaskBundle( HttpRequestInfo ri, boolean embeddedInJSP, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	private TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskBundle()");
 		try {
@@ -3549,9 +2730,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				GwtTaskHelper.getTaskBundle(
 					getRequest( ri ),
 					this,
-					(!embeddedInJSP),	// true -> Apply the user's filter directly.  From JSP, it's applied from the options cached by the controller.
-					embeddedInJSP,
-					GwtTaskHelper.getTaskBinder( this, null, binderId ),
+					GwtTaskHelper.getTaskBinder( this, binderId ),
 					filterType,
 					modeType );
 		}
@@ -3567,7 +2746,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		SimpleProfiler.start("GwtRpcServiceImpl.getTaskLinkage()");
 		try {
-			return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, null, binderId ) );
+			return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskLinkage()");
@@ -3580,7 +2759,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.removeTaskLinkage()");
 		try {
-			return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, null, binderId ) );
+			return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.removeTaskLinkage()");
@@ -3629,7 +2808,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskLinkage()");
 		try {
-			return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, null, binderId ), taskLinkage );
+			return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskLinkage()");
@@ -3650,29 +2829,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 	
 	/*
-	 * Save a folders sort options on the specified binder.
+	 * Save a task folder sort options on the specified binder.
 	 */
-	private Boolean saveFolderColumns( HttpRequestInfo ri, String binderId, List<FolderColumn> fcList, 
-			Boolean isDefault ) throws GwtTeamingException {
-		SimpleProfiler.start("GwtRpcServiceImpl.saveFolderColumns()");
+	private Boolean saveTaskSort( HttpRequestInfo ri, Long binderId, String sortKey, boolean sortAscending ) throws GwtTeamingException {
+		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskSort()");
 		try {
-			return GwtServerHelper.saveFolderColumns( this, binderId, fcList, isDefault );
+			return GwtTaskHelper.saveTaskSort( this, binderId, sortKey, sortAscending );
 		}
 		finally {
-			SimpleProfiler.stop("GwtRpcServiceImpl.saveFolderSort()");
-		}
-	}
-	
-	/*
-	 * Save a folders sort options on the specified binder.
-	 */
-	private Boolean saveFolderSort( HttpRequestInfo ri, Long binderId, String sortKey, boolean sortAscending ) throws GwtTeamingException {
-		SimpleProfiler.start("GwtRpcServiceImpl.saveFolderSort()");
-		try {
-			return GwtServerHelper.saveFolderSort( this, binderId, sortKey, sortAscending );
-		}
-		finally {
-			SimpleProfiler.stop("GwtRpcServiceImpl.saveFolderSort()");
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskSort()");
 		}
 	}
 	
@@ -3700,7 +2865,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private Map<Long, TaskDate> updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.updateCalculatedDates()");
 		try {
-			return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, null, binderId ), entryId );
+			return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.updateCalculatedDates()");
@@ -4229,16 +3394,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private String markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type ) throws GwtTeamingException
 	{
-		return markupStringReplacementImpl( getRequest( ri ), binderId, html, type );
-	}
-	
-	
-	/*
-	 * Parse the given html and replace any markup with the appropriate url.  For example,
-	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-	 */
-	private String markupStringReplacementImpl( HttpServletRequest request, String binderId, String html, String type ) throws GwtTeamingException
-	{
 		String newHtml;
 		
 		newHtml = "";
@@ -4260,35 +3415,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 					// Parse the given html and replace any markup with the appropriate url.  For example,
 					// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-					newHtml = MarkupUtil.markupStringReplacement( null, null, request, null, binder, html, type );
+					newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, binder, html, type );
 				}
-			}
-			catch (Exception e)
-			{
-				throw GwtServerHelper.getGwtTeamingException( e );
-			}
-		}
-		
-		return newHtml;
-	}
-	
-	
-	/*
-	 * Parse the given html and replace any markup with the appropriate url.  For example,
-	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-	 */
-	private String markupStringReplacement( HttpRequestInfo ri, FolderEntry entry, String html, String type ) throws GwtTeamingException
-	{
-		String newHtml;
-		
-		newHtml = "";
-		if ( html != null && html.length() > 0 )
-		{
-			try
-			{
-				// Parse the given html and replace any markup with the appropriate url.  For example,
-				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-				newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, entry, html, type );
 			}
 			catch (Exception e)
 			{
@@ -4539,23 +3667,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private BinderInfo getBinderInfo( HttpRequestInfo ri, String binderId )
 	{
-		return GwtServerHelper.getBinderInfo( getRequest( ri ), this, binderId );
+		return GwtServerHelper.getBinderInfo( this, binderId );
 	}//end getBinderInfo()
-
-	/**
-	 * Returns a ViewInfo used to control folder views based on a URL.
-	 *
-	 * @param ri
-	 * @param viCmd
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	private ViewInfo getViewInfo( HttpRequestInfo ri, GetViewInfoCmd viCmd ) throws GwtTeamingException
-	{
-		return GwtViewHelper.getViewInfo( this, getRequest( ri ), viCmd.getUrl() );
-	}//end getViewInfo()
 
 	/**
 	 * Returns the ID of the default view definition of a folder.
@@ -4797,6 +3910,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getPresenceInfo
 
 	/**
+	 * Returns information about the recent place the current user has
+	 * visited.
+	 * 
+	 * @param ri
+	 * 
+	 * @return
+	 */
+	private List<RecentPlaceInfo> getRecentPlaces( HttpRequestInfo ri )
+	{
+		return GwtServerHelper.getRecentPlaces( getRequest( ri ), this );
+	}// end getRecentPlaces()
+	
+	/**
 	 * Returns information about the saved search the current user has
 	 * defined.
 	 * 
@@ -4808,55 +3934,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.getSavedSearches( this );
 	}// end getSavedSearches()
-	
-	
-	/**
-	 * Return a list of files from the given folder.
-	 */
-	private ArrayList<GwtAttachment> getListOfFiles( HttpRequestInfo ri, String zoneUUID, String folderId, int numFiles ) throws GwtTeamingException
-	{
-		ArrayList<GwtAttachment> listOfFiles;
-		ArrayList<GwtFolderEntry> entries;
-		
-		listOfFiles = new ArrayList<GwtAttachment>();
-		
-		// Get a list of the first n entries in the folder.
-		entries = getFolderEntries( ri, zoneUUID, folderId, numFiles, 0, true );
-		if ( entries != null )
-		{
-			for (GwtFolderEntry entry: entries)
-			{
-				ArrayList<GwtAttachment> files;
-				
-				// Get the files attached to this entry
-				files = entry.getFiles();
-				if ( files != null )
-				{
-					for (GwtAttachment file: files)
-					{
-						// Have we reached the max number of files to return?
-						if ( listOfFiles.size() >= numFiles )
-						{
-							// Yes
-							break;
-						}
-						
-						// Add this file to the list.
-						listOfFiles.add( file );
-					}
-				}
-				
-				// Have we reached the max number of files to return?
-				if ( listOfFiles.size() >= numFiles )
-				{
-					// Yes
-					break;
-				}
-			}
-		}
-		
-		return listOfFiles;
-	}
 	
 	
 	/**
@@ -4882,47 +3959,44 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<ToolbarItem> getToolbarItemsFromCache( HttpServletRequest request, String binderId )
+	private List<ToolbarItem> getToolbarItems( HttpRequestInfo ri, String binderId )
 	{
-		/// If the Granite GWT extensions are enabled...
-		if (GwtUIHelper.isGraniteGwtEnabled()) {
-			// ...something's wrong as this should never be called in
-			// ...that scenario.
-			m_logger.warn("GwtRpcServiceImpl.getToolbarItemsFromCache( *Internal Error* ):  Should never be called when the Granite GWT extensions are enabled.");
+		// Construct an ArrayList<ToolbarItem> to hold the toolbar
+		// items.
+		ArrayList<ToolbarItem> tmiList = new ArrayList<ToolbarItem>();
+
+		// If we can't access the HttpSession...
+		HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+		if (null == hSession) {
+			// ...we can't access the cached toolbar beans to build the
+			// ...toolbar items from.  Bail.
+			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access the current HttpSession' )");
+			return tmiList;
 		}
-		
-		// Construct a List<ToolbarItem> to hold the toolbar items.
-		List<ToolbarItem> tmiList = new ArrayList<ToolbarItem>();
 
 		// If we can't access the cached toolbar beans... 
-		HttpSession hSession = request.getSession();
 		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
 		Map<String, Map> tbMaps = ((null == tabsObj) ? null : ((Map<String, Map>) tabsObj.getData()));
 		if (null == tbMaps) {
 			// ...we can't build any toolbar items.  Bail.
-			m_logger.debug("GwtRpcServiceImpl.getToolbarItemsFromCache( 'Could not access any cached toolbars' )");
+			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access any cached toolbars' )");
 			return tmiList;
 		}
 		
 		// Scan the toolbars...
-		m_logger.debug("GwtRpcServiceImpl.getToolbarItemsFromCache():");
+		m_logger.debug("GwtRpcServiceImpl.getToolbarItems():");
 		Set<String> tbKeySet = tbMaps.keySet();
-		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); )
-		{
+		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
 			// ...constructing a ToolbarItem for each.
 			String tbKey = tbKeyIT.next();
-			tmiList.add(
-				buildToolbarItemFromToolbarCache(
-					"...",
-					tbKey,
-					tbMaps.get( tbKey ) ) );
+			tmiList.add(buildToolbarItemFromToolbar("...", tbKey, tbMaps.get(tbKey)));
 		}
 
 		// If we get here, tmiList refers to the
 		// List<ToolbarItem>'s to construct the GWT UI based toolbar
 		// from.  Return it.
 		return tmiList;
-	}// end getToolbarItemsFromCache()
+	}
 
 	/**
 	 * Returns a List<TopRankedInfo> of the top ranked items from the
@@ -5081,14 +4155,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Constructs a ToolbarItem based on a toolbar.
 	 */
 	@SuppressWarnings("unchecked")
-	private static ToolbarItem buildToolbarItemFromToolbarCache( String traceStart, String tbKey, Map tbMap )
-	{
+	private ToolbarItem buildToolbarItemFromToolbar(String traceStart, String tbKey, Map tbMap) {
 		// Log the name of the toolbar that we're building a toolbar
 		// item for...
 		m_logger.debug(traceStart + ":toolbar=" + tbKey);
 
 		// ...and create its toolbar item.
-		ToolbarItem toolbarItem = new ToolbarItem(tbKey);
+		ToolbarItem toolbarItem = new ToolbarItem();
+		toolbarItem.setName(tbKey);
 
 		// Scan the items in this toolbar's map.
 		Set kSet = tbMap.keySet();
@@ -5128,7 +4202,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				else {
 					// No, it's not a map of qualifiers!  Construct a
 					// nested toolbar item for it.
-					toolbarItem.addNestedItem(buildToolbarItemFromToolbarCache((traceStart + "..."), k, ((Map) o)));
+					toolbarItem.addNestedItem(buildToolbarItemFromToolbar((traceStart + "..."), k, ((Map) o)));
 				}
 			}
 			
@@ -5168,7 +4242,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		// If we get here, toolbarItem refers to the ToolbarItem for
 		// this toolbar.  Return it.
 		return toolbarItem;
-	}// end buildToolbarItemFromToolbarCache()
+	}
 
 	/*
 	 * Get the subscription data for the given entry id.
@@ -5181,6 +4255,83 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return subscriptionData;
 	}
+	
+	/**
+	 * Returns a TeamManagementInfo object regarding the current user's
+	 * team management capabilities.
+	 * 
+	 * @param ri
+	 * @binderId
+	 * 
+	 * @return
+	 */
+	private TeamManagementInfo getTeamManagementInfo( HttpRequestInfo ri, String binderId )
+	{
+		TeamManagementInfo tmi;
+		User user;
+		
+		// Construct a base TeamManagementInfo object.
+		tmi = new TeamManagementInfo();
+		
+		// Is the current user the guest user?
+		user = GwtServerHelper.getCurrentUser();
+		if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) )
+		{
+			Binder binder;
+			
+			// No!  Is the binder other than the profiles container?
+			binder = GwtUIHelper.getBinderSafely( getBinderModule(), binderId );
+			if ( ( null != binder ) && ( EntityIdentifier.EntityType.profiles != binder.getEntityType() ) )
+			{
+				AdaptedPortletURL adapterUrl;
+				HttpServletRequest request = getRequest( ri ); 
+			
+				// Yes!  Then the user is allowed to view team membership.
+				tmi.setViewAllowed( true );
+	
+				// If the user can manage the team...
+				if ( getBinderModule().testAccess( binder, BinderOperation.manageTeamMembers ) )
+				{
+					// ...store the team management URL...
+					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
+					tmi.setManageUrl( adapterUrl.toString() );
+				}
+	
+				// ...if the user can send mail to the team...
+				if ( MiscUtil.hasString( user.getEmailAddress() ) )
+				{
+					// ...store the send mail URL...
+					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+					tmi.setSendMailUrl( adapterUrl.toString() );
+				}
+	
+				// ...if the user can start a team meeting...
+				if ( getConferencingModule().isEnabled())
+				{
+					CustomAttribute ca = user.getCustomAttribute("conferencingID");
+					if (ca != null && MiscUtil.hasString((String)ca.getValue())) {		
+						// ...store the team meeting URL.
+						try {
+							tmi.setTeamMeetingUrl( getAddMeetingUrl(ri, binderId) );
+						} catch (GwtTeamingException e) {
+							// Nothing to do...
+						}
+					}
+				}
+			}
+		}
+
+		// If we get here, tmi refers to a TeamManagementInfo object
+		// containing the user's team management capabilities.  Return
+		// it.
+		return tmi;
+	}//end getTeamManagementInfo()
 	
 	/*
 	 * Add a reply to the given entry.  Return an object that can be used by the What's New page.

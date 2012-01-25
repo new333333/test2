@@ -230,6 +230,18 @@ public class FolderUtils {
 		return ((binder instanceof Folder) && ((Folder) binder).isMirrored());
 	}
 	
+	public static String findRepositoryName(Definition def, String elementName) {
+		Document doc = def.getDefinition();
+		Element root = doc.getRootElement();
+		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
+		if(formItem == null)
+			return null;
+		Element itemElem = (Element) formItem.selectSingleNode("//item[@name='" + elementName + "' and @type='data']");
+		if(itemElem == null)
+			return null;
+		return getStorageValueFromItemElem(itemElem);
+	}
+	
 	/**
 	 * Creates a new folder entry with an attachment file.
 	 * 
@@ -364,7 +376,24 @@ public class FolderUtils {
 
 	private static String getDefinitionElementNameForNonMirroredFile(Definition definition) 
 	throws ConfigurationException {
-		Element item = getDefinitionItemForNonMirroredFile(definition.getDefinition());
+		Document defDoc = definition.getDefinition();
+		Element root = defDoc.getRootElement();
+		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
+		Element item = null;
+		Iterator itItems = formItem.selectNodes("//item").iterator();
+		while (itItems.hasNext()) {
+			//Look for the first file-related element that matches the criteria
+			Element itemEle = (Element) itItems.next();
+			String itemName = itemEle.attributeValue("name");
+			if (ITEM_NAMES.containsKey(itemName)) {
+				String repositoryName = getStorageValueFromItemElem(itemEle);				
+				if(!repositoryName.equals(ObjectKeys.FI_ADAPTER)) {
+					item = itemEle;
+					break;
+				}
+			}
+		}
+		
 		if(item != null) {
 			Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 			String elementName = nameProperty.attributeValue("value");
@@ -387,27 +416,6 @@ public class FolderUtils {
 			// configured to use a regular repository.
 			throw new ConfigurationException("errorcode.no.element.regular.file", new String[]{definition.getName()});
 		}
-	}
-
-
-	public static Element getDefinitionItemForNonMirroredFile(Document defDoc) {
-		Element root = defDoc.getRootElement();
-		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
-		Element item = null;
-		Iterator itItems = formItem.selectNodes("//item").iterator();
-		while (itItems.hasNext()) {
-			//Look for the first file-related element that matches the criteria
-			Element itemEle = (Element) itItems.next();
-			String itemName = itemEle.attributeValue("name");
-			if (ITEM_NAMES.containsKey(itemName)) {
-				String repositoryName = getStorageValueFromItemElem(itemEle);				
-				if(!repositoryName.equals(ObjectKeys.FI_ADAPTER)) {
-					item = itemEle;
-					break;
-				}
-			}
-		}
-		return item; // This may be null
 	}
 
 	private static String[] getDefinitionElementNameForMirroredFile(Definition definition) 
@@ -480,9 +488,9 @@ public class FolderUtils {
 	}
 	
 	private static Definition getFolderEntryDefinition(Folder folder) {
-		Definition def = folder.getDefaultEntryDef();
-		if(def == null) {
-			def = folder.getDefaultFileEntryDef();
+		Definition def = folder.getDefaultFileEntryDef();
+		if (def == null) {
+			def = folder.getDefaultEntryDef();
 		}
 		if(def == null)
 			def = getZoneWideDefaultFolderEntryDefinition();

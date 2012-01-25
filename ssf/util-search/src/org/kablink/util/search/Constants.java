@@ -134,7 +134,6 @@ public class Constants {
 	public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
 	public static final String CREATED_WITH_DEFINITION_FIELD = "_createdWithDef";
 	public static final String ENTRY_DEFINITIONS_FIELD = "_entryDefs";
-	public static final String PRINCIPAL_FIELD = "_principal";
 	public static final String TITLE_FIELD = "title"; // all definable entities
 	public static final String SORT_TITLE_FIELD = "_sortTitle"; // all definable entities
 	public static final String BINDER_SORT_TITLE_FIELD = "_bsortTitle"; // binders only

@@ -44,7 +44,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dom4j.Element;
-import org.kablink.teaming.context.request.NoContextUserException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
@@ -187,17 +186,11 @@ public class XSSCheck implements StringCheck {
 		
 		if (!checkOnly && (mode.equals(MODE_TRUSTED_DISALLOW) || mode.equals(MODE_TRUSTED_STRIP))) {
 			if (RequestContextHolder.getRequestContext() != null) {
-				User user = null;
-				try {
-					user = RequestContextHolder.getRequestContext().getUser();
-				}
-				catch(NoContextUserException doNotPropogate) {}
-				if(user != null) {
-					if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
-						return input; // match found on user list
-					if(!Collections.disjoint(user.computeGroupNames(), getTrustedGroupNames(user.getZoneId())))
-						return input; // match found on group list
-				}
+				User user = RequestContextHolder.getRequestContext().getUser();
+				if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
+					return input; // match found on user list
+				if(!Collections.disjoint(user.computeGroupNames(), getTrustedGroupNames(user.getZoneId())))
+					return input; // match found on group list
 			}
 		}
 		

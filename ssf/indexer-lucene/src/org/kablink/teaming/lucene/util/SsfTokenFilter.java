@@ -33,11 +33,9 @@
 package org.kablink.teaming.lucene.util;
 
 import java.io.IOException;
+import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.util.AttributeSource;
 
 
 /**
@@ -49,7 +47,7 @@ import org.apache.lucene.util.AttributeSource;
  */
 public class SsfTokenFilter extends TokenFilter
 {
-  private AttributeSource.State _lowercaseToken;
+  private Token _lowercaseToken;
   
   // Lucene allows the same field to be added multiple times to a document.  When 
   // this happens, we need to separate the fields so a phrase search won't match 
@@ -57,9 +55,6 @@ public class SsfTokenFilter extends TokenFilter
   // to add an empty location before each new field.
   private boolean _newField;
   
-  private CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-  private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
-
   public SsfTokenFilter(TokenStream input)
   {
     super(input);
@@ -71,76 +66,69 @@ public class SsfTokenFilter extends TokenFilter
    * Returns each token found as well as a lowercase version of the token if the original token contains any uppercase characters.
    * The lowercase version of the token is stored in the same position as the original. 
    */
-  @Override
-  public boolean incrementToken() throws IOException {
-	    // If an alternate version exists...
-	    if (_lowercaseToken != null)
-	    {
-	      // We'll return it.
-	      restoreState(_lowercaseToken);
-	      
-	      // And signal that we've already returned it.
-	      _lowercaseToken = null;
+  public Token next() throws IOException
+  {
+    Token t;
+    
+    // If an alternate version exists...
+    if (_lowercaseToken != null)
+    {
+      // We'll return it.
+      t = _lowercaseToken;
+      
+      // And signal that we've already returned it.
+      _lowercaseToken = null;
 
-	      return true;
-	    }
-	    
-	    // If there isn't an alternative token, we'll get the next one.
-		  if(input.incrementToken()) {
-			    // get a lowercase version
-			    _lowercaseToken = getLowercaseToken();
-			    
-			    if (_newField)
-			    {
-			    	posIncrAtt.setPositionIncrement(2);
-			    	
-			    	// Done for this field
-			    	_newField = false;
-			    }
-			    // This returns the original.
-			    return true;
-		  }
-		  else {
-			  return false;
-		  }
+      return t;
+    }
+    
+    // If there isn't an alternative token, we'll get the next one.
+    Token token = input.next();
+    
+    // No more...
+    if (token == null)
+    {
+      // We're done
+      return null;
+    }
+
+
+    // get a lowercase version
+    _lowercaseToken = getLowercaseToken(token);
+    
+    if (_newField)
+    {
+    	token.setPositionIncrement(2);
+    	
+    	// Done for this field
+    	_newField = false;
+    }
+    // Return the original.
+    return token;
   }
 
   // Get a lowercase instance of a token
   // @param token Token to process
   // @return lowercase version of <tt>token</tt>, or <tt>null</tt> if <tt>token</tt> has no uppercase chars. 
-  private AttributeSource.State getLowercaseToken()
+  private Token getLowercaseToken(Token token)
   {
-	  AttributeSource.State origToken = null;;
-	  
-      char termBuffer[] = termAtt.buffer();
-      final int length = termAtt.length();
-      char c;
-      for(int i = 0; i < length; i++) {
-          c = termBuffer[i];    
-          if (Character.isUpperCase(c))
-          {
-        	  // We encountered a upper case character, which means that we will be generating a lower case token.
-        	  if(origToken == null) {
-        		  // Save original token temporarily if not done already so.
-        		  origToken = captureState();
-        	  }
-        	  termBuffer[i] = Character.toLowerCase(c);
-          }
+    Token newToken;
+    String term = token.termText();
+    char c;
+    
+    for (int i=0; i < term.length(); ++i)
+    {
+      c = term.charAt(i);
+      
+      if (Character.isUpperCase(c))
+      {
+        newToken = new Token(term.toLowerCase(), token.startOffset(), token.endOffset());
+        newToken.setPositionIncrement(0);
+        
+        return newToken;
       }
-      if(origToken != null) {
-    	  // We have a lower-case version of the token. 
-    	  // It should be at the same position as the original one.
-    	  posIncrAtt.setPositionIncrement(0);
-    	  // Capture it into a state that we can return.
-    	  AttributeSource.State lowercaseToken = captureState();
-    	  // Restore original token.
-    	  restoreState(origToken);
-    	  return lowercaseToken;
-      }
-      else {
-    	  // We don't have a lower-case version of the token.
-    	  return null;
-      }
+    }
+    
+    return (Token)null;
   }
-
 }

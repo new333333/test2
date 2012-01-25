@@ -76,7 +76,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -648,7 +647,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 
-		// save library flag here since it will be changed to the new value during modifyBinder() call
+		// save library flag
 		boolean oldLibrary = binder.isLibrary();
 		boolean oldUnique = binder.isUniqueTitles();
 
@@ -708,8 +707,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								query.close();
 							}
 						}
-						// Unnecessary since the new value was stored into the binder during modifyBinder() call
-						//binder.setLibrary(newLibrary);
+						binder.setLibrary(newLibrary);
 						return null;
 					}
 				});
@@ -1163,10 +1161,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
+		// We don't allow copying of a mirrored folder as the starting point.
+		if(source.isMirrored())
+			throw new NotSupportedException("errorcode.notsupported.copyBinder", new String[] {source.getPathName()});
 		Binder destinationParent = loadBinder(toId);
-    	// We don't allow (more precisely, don't support yet) copying of a binder into a mirrored folder.
-    	if(destinationParent.isMirrored())
-    		throw new NotSupportedException("errorcode.notsupported.copyBinder.mirroredDestination", new String[] {destinationParent.getPathName()});
+		// We don't allow copying of a binder into a mirrored folder.
+		if(destinationParent.isMirrored())
+			throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destinationParent.getPathName()});
 		//See if there is enough quota to do this
 		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destinationParent)) {
 			if (source.getEntityType().equals(EntityType.folder)) {
@@ -1198,6 +1199,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
+			// Skip the child if it is a mirrored folder.
+			if(child.isMirrored()) {
+				logger.info("Skipping source binder '" + child.getPathName() + "' because it is a mirrored folder.");
+				continue;
+			}
 			// If the binder is not in the trash...
 			if (!(TrashHelper.isBinderPredeleted(child))) {
 				// ...recursively copy that too.
@@ -2767,7 +2773,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			final Map options) {
 		final Binder top = loadBinder(binderId);
 		checkAccess(top, BinderOperation.deleteBinder);
-		List<Long> ids = new ArrayList();// maintain order, bottom up
 		Map params = new HashMap();
 		params.put("deleted", Boolean.FALSE);
 		// get list of ids, so don't have to load large trees all at once
@@ -2778,6 +2783,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								+ "%' and deleted=:deleted order by x.binderKey.sortKey desc",
 						params);
 		// convert to list of ids
+		List<Long> ids = new ArrayList();// maintain order, bottom up
 		for (Object row[] : objs) {
 			ids.add((Long) row[0]);
 		}
@@ -2935,6 +2941,4 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			throw new AccessControlException();
 		}
 	}
-
-
 }

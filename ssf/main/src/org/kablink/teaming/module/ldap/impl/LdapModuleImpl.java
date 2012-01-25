@@ -882,10 +882,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						dn = bd.getNameInNamespace();
 					}
 					mods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-
-					// We never want to change a user's name in Teaming.  Remove the "name" attribute
-					// from the list of attributes to be written to the db.
-					mods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
 				}
 				finally
 				{

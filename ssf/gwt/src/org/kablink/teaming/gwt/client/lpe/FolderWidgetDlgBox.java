@@ -44,14 +44,13 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -84,7 +83,6 @@ public class FolderWidgetDlgBox extends DlgBox
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private SizeCtrl m_sizeCtrl = null;
 	private CheckBox m_showTitleCkBox = null;
 	private CheckBox m_showDescCkBox = null;
 	private CheckBox m_showEntriesOpenedCkBox = null;
@@ -135,7 +133,6 @@ public class FolderWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		FolderProperties properties;
@@ -180,7 +177,6 @@ public class FolderWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -190,7 +186,6 @@ public class FolderWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -229,14 +224,12 @@ public class FolderWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
-					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
-							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -290,10 +283,6 @@ public class FolderWidgetDlgBox extends DlgBox
 		table.setWidget( 0, 1, m_numEntriesToShowTxtBox );
 		mainPanel.add( table );
 		
-		// Add the width and height controls
-		m_sizeCtrl = new SizeCtrl();
-		mainPanel.add( m_sizeCtrl );
-
 		// Add a checkbox for "Show title"
 		table = new FlexTable();
 		table.setCellSpacing( 0 );
@@ -329,7 +318,6 @@ public class FolderWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		FolderProperties	properties;
@@ -360,39 +348,6 @@ public class FolderWidgetDlgBox extends DlgBox
 		// Save away the number of entries to show.
 		properties.setNumEntriesToBeShownValue( getNumEntriesToShowValue() );
 		
-		// Get the width and height values
-		{
-			int width;
-			int height;
-			Style.Unit units;
-			
-			// Get the width
-			width = getWidth();
-			units = getWidthUnits();
-			if ( width == 0 )
-			{
-				// Default to 100%
-				width = 100;
-				units = Style.Unit.PCT;
-			}
-			properties.setWidth( width );
-			properties.setWidthUnits( units );
-			
-			// Get the height
-			height = getHeight();
-			units = getHeightUnits();
-			if ( height == 0 )
-			{
-				// Default to 100%
-				height = 100;
-				units = Style.Unit.PCT;
-			}
-
-			properties.setHeight( height );
-			properties.setHeightUnits( units );
-			properties.setOverflow( getOverflow() );
-		}
-
 		return properties;
 	}// end getDataFromDlg()
 	
@@ -400,13 +355,9 @@ public class FolderWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
-		if ( m_findCtrl != null )
-			return m_findCtrl.getFocusWidget();
-		
-		return null;
+		return m_findCtrl.getFocusWidget();
 	}// end getFocusWidget()
 	
 	
@@ -433,7 +384,6 @@ public class FolderWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -446,7 +396,6 @@ public class FolderWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -465,23 +414,6 @@ public class FolderWidgetDlgBox extends DlgBox
 
 		cmd = new GetFolderCmd( null, folderId );
 		GwtClientHelper.executeCommand( cmd, callback );
-	}
-	
-
-	/**
-	 * 
-	 */
-	private int getHeight()
-	{
-		return m_sizeCtrl.getHeight();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getHeightUnits()
-	{
-		return m_sizeCtrl.getHeightUnits();
 	}
 	
 
@@ -512,14 +444,6 @@ public class FolderWidgetDlgBox extends DlgBox
 	
 	
 	/**
-	 * 
-	 */
-	private Style.Overflow getOverflow()
-	{
-		return m_sizeCtrl.getOverflow();
-	}
-
-	/**
 	 * Return true if the "show the folder description" checkbox is checked.
 	 */
 	public boolean getShowDescValue()
@@ -546,23 +470,6 @@ public class FolderWidgetDlgBox extends DlgBox
 	}// end getShowTitleValue()
 	
 	
-	/**
-	 * 
-	 */
-	private int getWidth()
-	{
-		return m_sizeCtrl.getWidth();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getWidthUnits()
-	{
-		return m_sizeCtrl.getWidthUnits();
-	}
-	
-
 	/**
 	 * 
 	 */
@@ -610,9 +517,6 @@ public class FolderWidgetDlgBox extends DlgBox
 		// Show the edit button.
 		m_editBtn.setVisible( true );
 		
-		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
-
 		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
 		m_showDescCkBox.setValue( properties.getShowDescValue() );
 		m_showEntriesOpenedCkBox.setValue( properties.getShowEntriesOpenedValue() );
@@ -632,7 +536,6 @@ public class FolderWidgetDlgBox extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show" text box.
 	 * We only allow the user to enter numbers.
 	 */
-	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;

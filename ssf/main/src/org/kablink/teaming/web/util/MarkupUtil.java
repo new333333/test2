@@ -42,7 +42,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -100,59 +99,57 @@ public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
 	// Fix for bug 727558, uploadImagePattern was changed to be case insensitive.  In IE, the tinyMCE editor is adding <IMG instead of the normal <img
-	// the Pattern.CASE_INSENSITIVE parameter was added to all the Patter.compile() calls.  Some of these calls
-	// already had this parameter.
 	protected final static Pattern uploadImagePattern = Pattern.compile("(<img[^>]*\\ssrc\\s*=\\s*\"[^{}\"]*viewType=ss_viewUploadFile[^>]*>)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern urlSrcPattern = Pattern.compile("\\ssrc\\s*=\\s*\"([^{}\"]*)\"", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern urlSrcPattern = Pattern.compile("\\ssrc\\s*=\\s*\"([^{}\"]*)\"");
 	protected final static String uploadImageViewTypePattern = "viewType=ss_viewUploadFile(&amp%3b)?";
 	
-	protected final static Pattern fileIdPattern = Pattern.compile("fileId=([^\\&\"]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern binderIdPattern = Pattern.compile("binderId=([^\\&\"]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern entryIdPattern = Pattern.compile("entryId=([^\\&\"]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern entityTypePattern = Pattern.compile("entityType=([^\\&\"]*)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern fileIdPattern = Pattern.compile("fileId=([^\\&\"]*)");
+	protected final static Pattern binderIdPattern = Pattern.compile("binderId=([^\\&\"]*)");
+	protected final static Pattern entryIdPattern = Pattern.compile("entryId=([^\\&\"]*)");
+	protected final static Pattern entityTypePattern = Pattern.compile("entityType=([^\\&\"]*)");
 	
-	protected final static Pattern v1AttachmentUrlPattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^>]*viewType=ss_viewAttachmentFile[^>]*>)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern readFileImagePattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^>]*/readFile/[^>]*>)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern readFilePathPattern = Pattern.compile("/readFile/[^\"]*", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class\\s*=\\s*\"\\s*ss_addimage_att\\s*\"[^>]*>)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern v1AttachmentUrlPattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
+	protected final static Pattern readFileImagePattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^>]*/readFile/[^>]*>)");
+	protected final static Pattern readFilePathPattern = Pattern.compile("/readFile/[^\"]*");
+	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class\\s*=\\s*\"\\s*ss_addimage_att\\s*\"[^>]*>)");
 	
 	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"*\\s*ss_icecore_link\\s*\"*[^>]*>)(.*)", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
-	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel\\s*=\\s*\"([^\"]*)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel\\s*=\\s*\"([^\"]*)");
 	protected final static Pattern iceCoreLinkAPattern = Pattern.compile("</a>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
 	
 	protected final static Pattern youtubeLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"\\s*ss_youtube_link\\s*\"[^>]*>)([^<]*)</a>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
-	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)");
 	
-	protected final static Pattern permaLinkUrlPattern = Pattern.compile("(href\\s*=\\s*[\"']https?://[^\\s\"'>]*/ssf/a/c/[^\\s\"'>]*/action/view_permalink/[^\\s\"'>]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern permaLinkHrefPattern = Pattern.compile("(href\\s*=\\s*[\"'])https?://[^\\s]*/ssf/a/c/[^\\s]*/action/view_permalink/[^\\s\"']*", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern permaLinkEntityTypePattern = Pattern.compile("/entityType/([^\\s\"'/]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern permaLinkEntryIdPattern = Pattern.compile("/entryId/([0-9]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern permaLinkEntryTitlePattern = Pattern.compile("/title/([^\\s/]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern permaLinkBinderIdPattern = Pattern.compile("/binderId/([0-9]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern permaLinkZoneUUIDPattern = Pattern.compile("/zoneUUID/([^\\s\"'/]*)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern permaLinkUrlPattern = Pattern.compile("(href\\s*=\\s*[\"']https?://[^\\s\"'>]*/ssf/a/c/[^\\s\"'>]*/action/view_permalink/[^\\s\"'>]*)");
+	protected final static Pattern permaLinkHrefPattern = Pattern.compile("(href\\s*=\\s*[\"'])https?://[^\\s]*/ssf/a/c/[^\\s]*/action/view_permalink/[^\\s\"']*");
+	protected final static Pattern permaLinkEntityTypePattern = Pattern.compile("/entityType/([^\\s\"'/]*)");
+	protected final static Pattern permaLinkEntryIdPattern = Pattern.compile("/entryId/([0-9]*)");
+	protected final static Pattern permaLinkEntryTitlePattern = Pattern.compile("/title/([^\\s/]*)");
+	protected final static Pattern permaLinkBinderIdPattern = Pattern.compile("/binderId/([0-9]*)");
+	protected final static Pattern permaLinkZoneUUIDPattern = Pattern.compile("/zoneUUID/([^\\s\"'/]*)");
 
-	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlBinderPattern = Pattern.compile("binderId=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlBinderPattern2 = Pattern.compile("binderId%3d([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlZoneUUIDPattern = Pattern.compile("zoneUUID=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlZoneUUIDPattern2 = Pattern.compile("zoneUUID%3d([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlTitlePattern = Pattern.compile("title=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlTitlePattern2 = Pattern.compile("title%3d([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlTextPattern2 = Pattern.compile("text%3d(.*)$", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern youtubeUrlPattern = Pattern.compile("(\\{\\{youtubeUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
+	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
+	protected final static Pattern titleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
+	protected final static Pattern titleUrlBinderPattern = Pattern.compile("binderId=([^\\s]*)");
+	protected final static Pattern titleUrlBinderPattern2 = Pattern.compile("binderId%3d([^\\s]*)");
+	protected final static Pattern titleUrlZoneUUIDPattern = Pattern.compile("zoneUUID=([^\\s]*)");
+	protected final static Pattern titleUrlZoneUUIDPattern2 = Pattern.compile("zoneUUID%3d([^\\s]*)");
+	protected final static Pattern titleUrlTitlePattern = Pattern.compile("title=([^\\s]*)");
+	protected final static Pattern titleUrlTitlePattern2 = Pattern.compile("title%3d([^\\s]*)");
+	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$");
+	protected final static Pattern titleUrlTextPattern2 = Pattern.compile("text%3d(.*)$");
+	protected final static Pattern youtubeUrlPattern = Pattern.compile("(\\{\\{youtubeUrl: ([^\\}]*)\\}\\})");
+	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url=([^\\s]*)");
+	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width=([^\\s]*)");
+	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height=([^\\s]*)");
+	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
-	protected final static Pattern sectionPattern =Pattern.compile("(<p>)?(==[=]*)([^=]+)(==[=]*)(</p>)?", Pattern.CASE_INSENSITIVE );	// See comments below regarding Bugzilla 692804.
-	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern sectionPattern =Pattern.compile("(<p>)?(==[=]*)([^=]+)(==[=]*)(</p>)?");	// See comments below regarding Bugzilla 692804.
+	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$");
 	protected static Integer youtubeDivId = 0;
 
-	protected final static Pattern vibeFunctionPattern = Pattern.compile("(\\{\\{vibe:([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern vibeFunctionPattern = Pattern.compile("(\\{\\{vibe:([^\\}]*)\\}\\})");
 
 	private static BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 	private static FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
@@ -564,7 +561,7 @@ public class MarkupUtil {
 					} else if (vibeFunction.equals("data")) {
 						if (functionArgs.length >= 2) {
 							//Get the data item
-							String dataName = functionArgs[1].trim();
+							String dataName = functionArgs[1];
 							if (def != null) {
 								String dataType = DefinitionHelper.findAttributeType(dataName, def.getDefinition());
 								if ("date".equals(dataType) || "date_time".equals(dataType)) {
@@ -851,8 +848,8 @@ public class MarkupUtil {
 					} else if (vibeFunction.equals("data")) {
 						if (functionArgs.length >= 2) {
 							//Get the data item
-							CustomAttribute dataItem = entity.getCustomAttribute(functionArgs[1].trim());
-							String dataName = functionArgs[1].trim();
+							CustomAttribute dataItem = entity.getCustomAttribute(functionArgs[1]);
+							String dataName = functionArgs[1];
 							String dataType = DefinitionHelper.findAttributeType(dataName, def.getDefinition());
 							if (dataItem != null) {
 								if ("date".equals(dataType) || "date_time".equals(dataType)) {
@@ -871,18 +868,6 @@ public class MarkupUtil {
 									Event e = (Event) dataItem.getValue();
 									if (e != null) {
 										result = eventToString(e.getLogicalStart(), e.getLogicalEnd(), e.isAllDayEvent());
-									}
-								} else if ("radio".equals(dataType)) {
-									String v = dataItem.getValue().toString();
-									result = DefinitionHelper.getCaptionsFromValues(def, dataName, v);
-								} else if ("selectbox".equals(dataType)) {
-									Set<String> valueSet = dataItem.getValueSet();
-									result = "";
-									for (String v : valueSet) {
-										if (!result.equals("") && !v.equals("")) {
-											result = result + ", ";
-										}
-										result = result + DefinitionHelper.getCaptionsFromValues(def, dataName, v);
 									}
 								} else {
 									result = dataItem.getValue().toString();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,10 +41,9 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class GetTaskBundleCmd extends VibeRpcCmd {
-	private boolean	m_embeddedInJSP;	//
-	private Long	m_binderId;			//
-	private String	m_filterType;		//
-	private String	m_modeType;			//
+	private Long m_binderId;
+	private String m_filterType;
+	private String m_modeType;
 	
 	/**
 	 * Class constructor.
@@ -53,27 +52,22 @@ public class GetTaskBundleCmd extends VibeRpcCmd {
 	 * constructor.
 	 */
 	public GetTaskBundleCmd() {
-		// Simply initialize the super class.
 		super();		
 	}
 
 	/**
 	 * Class constructor.
-	 *
-	 * @param embeddedInJSP
+	 * 
 	 * @param binderId
 	 * @param filterType
 	 * @param modeType
 	 */
-	public GetTaskBundleCmd(final boolean embeddedInJSP, final Long binderId, final String filterType, final String modeType) {
-		// Initialize this object...
+	public GetTaskBundleCmd(Long binderId, String filterType, String modeType) {
 		this();
-
-		// ...and store the parameters.
-		setEmbeddedInJSP(embeddedInJSP);
-		setBinderId(     binderId     );
-		setFilterType(   filterType   );
-		setModeType(     modeType     );
+		
+		m_binderId   = binderId;
+		m_filterType = filterType;
+		m_modeType   = modeType;
 	}
 	
 	/**
@@ -81,20 +75,9 @@ public class GetTaskBundleCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean isEmbeddedInJSP() {return m_embeddedInJSP;}
-	public Long    getBinderId()     {return m_binderId;     }	
-	public String  getFilterType()   {return m_filterType;   }	
-	public String  getModeType()     {return m_modeType;     }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setEmbeddedInJSP(final boolean embeddedInJSP) {m_embeddedInJSP = embeddedInJSP;}
-	public void setBinderId(     final Long    binderId)      {m_binderId      = binderId;     }
-	public void setFilterType(   final String  filterType)    {m_filterType    = filterType;   }
-	public void setModeType(     final String  modeType)      {m_modeType      = modeType;     }
+	public Long   getBinderId()   {return m_binderId;  }	
+	public String getFilterType() {return m_filterType;}	
+	public String getModeType()   {return m_modeType;  }	
 	
 	/**
 	 * Returns the command's enumeration value.

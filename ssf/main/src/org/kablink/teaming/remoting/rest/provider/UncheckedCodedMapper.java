@@ -32,17 +32,17 @@
  */
 package org.kablink.teaming.remoting.rest.provider;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 @Provider
 public class UncheckedCodedMapper implements ExceptionMapper<UncheckedCodedException> {
 	public Response toResponse(UncheckedCodedException ex) {
-		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getLocalizedMessage())).build();
+		return Response.status(ex.getHttpStatusCode()).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
 	}
 
 }

@@ -115,6 +115,7 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.security.AccessControlException;
@@ -1712,9 +1713,9 @@ public class ExportHelper {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
 			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (AccessControlException e) {
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			EntryDataErrors errors = e.getErrors();
@@ -1724,7 +1725,7 @@ public class ExportHelper {
 				c++;
 			}
 			reportMap.put(errors, c);
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		}
 	}
 
@@ -1775,7 +1776,7 @@ public class ExportHelper {
 					entryIdMap.remove(entryId);
 					folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 				}
-				throw new RuntimeException(e);
+				throw new RemotingException(e);
 			}
 			// workflows
 			if(logger.isDebugEnabled())
@@ -1822,7 +1823,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
@@ -1831,7 +1832,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		}
 	}
 
@@ -1879,7 +1880,7 @@ public class ExportHelper {
 					entryIdMap.remove(entryId);
 					folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 				}
-				throw new RuntimeException(e);
+				throw new RemotingException(e);
 			}
 
 			// workflows
@@ -1917,7 +1918,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
@@ -1926,7 +1927,7 @@ public class ExportHelper {
 				entryIdMap.remove(entryId);
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 			}
-			throw new RuntimeException(e);
+			throw new RemotingException(e);
 		}
 	}
 

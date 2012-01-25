@@ -80,7 +80,6 @@
     <security:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
         <security:intercept-url pattern="/ws/**" filters="none" />
         <security:intercept-url pattern="/rss/**" filters="none" />
-        <security:intercept-url pattern="/atom/**" filters="none" />
         <security:intercept-url pattern="/ical/**" filters="none" />
         <security:intercept-url pattern="/ext/**" filters="none" />
         <security:intercept-url pattern="/help/**" filters="none" />

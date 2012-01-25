@@ -37,9 +37,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
-import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -57,7 +55,6 @@ public class ListWidgetDlgBox extends DlgBox
 {
 	private CheckBox		m_showBorderCkBox = null;
 	private TextBox		m_titleTxtBox = null;
-	private SizeCtrl m_sizeCtrl = null;
 	
 	/**
 	 * 
@@ -102,12 +99,6 @@ public class ListWidgetDlgBox extends DlgBox
 		table.setWidget( 0, 1, m_titleTxtBox );
 		mainPanel.add( table );
 		
-		// Add the width and height controls
-		{
-			m_sizeCtrl = new SizeCtrl();
-			mainPanel.add( m_sizeCtrl );
-		}
-
 		// Add a checkbox for "Show border"
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
@@ -136,39 +127,6 @@ public class ListWidgetDlgBox extends DlgBox
 		// Save away the title.
 		properties.setTitle( getTitleValue() );
 		
-		// Get the width and height values
-		{
-			int width;
-			int height;
-			Style.Unit units;
-			
-			// Get the width
-			width = getWidth();
-			units = getWidthUnits();
-			if ( width == 0 )
-			{
-				// Default to 100%
-				width = 100;
-				units = Style.Unit.PCT;
-			}
-			properties.setWidth( width );
-			properties.setWidthUnits( units );
-			
-			// Get the height
-			height = getHeight();
-			units = getHeightUnits();
-			if ( height == 0 )
-			{
-				// Default to 100%
-				height = 100;
-				units = Style.Unit.PCT;
-			}
-			
-			properties.setHeight( height );
-			properties.setHeightUnits( units );
-			properties.setOverflow( getOverflow() );
-		}
-
 		return properties;
 	}// end getDataFromDlg()
 	
@@ -182,30 +140,6 @@ public class ListWidgetDlgBox extends DlgBox
 	}// end getFocusWidget()
 	
 	
-	/**
-	 * 
-	 */
-	private int getHeight()
-	{
-		return m_sizeCtrl.getHeight();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getHeightUnits()
-	{
-		return m_sizeCtrl.getHeightUnits();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Overflow getOverflow()
-	{
-		return m_sizeCtrl.getOverflow();
-	}
-
 	/**
 	 * Return true if the "show border" checkbox is checked.
 	 */
@@ -225,23 +159,6 @@ public class ListWidgetDlgBox extends DlgBox
 	
 
 	/**
-	 * 
-	 */
-	private int getWidth()
-	{
-		return m_sizeCtrl.getWidth();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getWidthUnits()
-	{
-		return m_sizeCtrl.getWidthUnits();
-	}
-	
-
-	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
 	public void init( PropertiesObj props )
@@ -252,9 +169,6 @@ public class ListWidgetDlgBox extends DlgBox
 
 		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
 		m_titleTxtBox.setText( properties.getTitle() );
-
-		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
-
 	}// end init()
+	
 }// end ListWidgetDlgBox

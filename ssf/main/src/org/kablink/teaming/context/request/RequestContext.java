@@ -38,8 +38,6 @@ import java.util.Map;
 
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
-import org.kablink.teaming.domain.NoUserByTheIdException;
-import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.security.accesstoken.AccessToken;
@@ -256,42 +254,34 @@ public class RequestContext {
 		this.zoneName = user.getParentBinder().getRoot().getName(); // there might be more efficient way of getting the same info than doing this...
     }
     
-	private User fetchUser() throws NoContextUserException {
-		try {
-			User u;
-			if(userId != null) {
-				if(zoneId != null) {
-					u = getProfileDao().loadUserDeadOrAlive(userId, zoneId);
-				}
-				else if(zoneName != null) {
-					u = getProfileDao().loadUser(userId, zoneName);					
-				}
-				else {
-					throw new IllegalStateException("Either zone id or zone name must be specified first");
-				}
+	private User fetchUser() {
+		User u;
+		if(userId != null) {
+			if(zoneId != null) {
+				u = getProfileDao().loadUserDeadOrAlive(userId, zoneId);
 			}
-			else if(userName != null) {
-				if(zoneId != null) {
-					u = getProfileDao().findUserByName(userName, zoneId);
-				}
-				else if(zoneName != null) {
-					u = getProfileDao().findUserByName(userName, zoneName);					
-				}
-				else {
-					throw new IllegalStateException("Either zone id or zone name must be specified first");
-				}				
+			else if(zoneName != null) {
+				u = getProfileDao().loadUser(userId, zoneName);					
 			}
 			else {
-				throw new IllegalStateException("Either user id or user name must be specified first");				
+				throw new IllegalStateException("Either zone id or zone name must be specified first");
 			}
-			return u;
 		}
-		catch(NoUserByTheIdException e) {
-			throw new NoContextUserException(e);
+		else if(userName != null) {
+			if(zoneId != null) {
+				u = getProfileDao().findUserByName(userName, zoneId);
+			}
+			else if(zoneName != null) {
+				u = getProfileDao().findUserByName(userName, zoneName);					
+			}
+			else {
+				throw new IllegalStateException("Either zone id or zone name must be specified first");
+			}				
 		}
-		catch(NoUserByTheNameException e) {
-			throw new NoContextUserException(e);			
+		else {
+			throw new IllegalStateException("Either user id or user name must be specified first");				
 		}
+		return u;
 	}
 
 	private static ProfileDao getProfileDao() {

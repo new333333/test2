@@ -96,7 +96,7 @@ public class GenerateCreateTablesUnconstrained {
 		
 		BufferedReader in = new BufferedReader(new FileReader(inputFile));
 		//list of tables and columns to convert
-		Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile().getParentFile(), "table_column_types"));
+		Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile(), "table_column_types"));
 		File createUnconstrainedTablesFile = new File(inputFile.getParentFile(), "internal/create-unconstrained-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
 		File addConstraintsFile = new File(inputFile.getParentFile(), "internal/add-constraints-" + tableGroupName + "-" + databaseTypeStr + ".sql");	
 		File dropConstraintsFile = new File(inputFile.getParentFile(), "internal/drop-constraints-" + tableGroupName + "-" + databaseTypeStr + ".sql");
@@ -252,7 +252,7 @@ public class GenerateCreateTablesUnconstrained {
 		
 		BufferedReader in = new BufferedReader(new FileReader(inputFile));
 		//list of tables and columns to convert
-		Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile().getParentFile(), "table_column_types"));
+		Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile(), "table_column_types"));
 		File updateTablesFile = new File(inputFile.getParentFile(), "internal/update-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
 		if(databaseTypeStr.equals("oracle")) {
 			File createSynonymsFile = new File(inputFile.getParentFile(), "internal/create-synonyms-" + tableGroupName + "-" + databaseTypeStr + ".sql");

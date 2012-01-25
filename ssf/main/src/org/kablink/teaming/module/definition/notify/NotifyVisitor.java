@@ -251,15 +251,5 @@ public class NotifyVisitor {
 		}
 		return result;
 	}
-	
-	public boolean isAttachmentOverQuota(FileAttachment att) {
-		boolean result =  Utils.testSendMailAttachmentSize(att);
-		return !result;
-	}
-
-	public boolean isAttachmentsOverQuota(Set<FileAttachment> atts) {
-		boolean result = Utils.testSendMailAttachmentsSize(atts);
-		return !result;
-	}
 
 }

@@ -91,7 +91,7 @@ public interface TemplateModule {
 	 * @return
    	 * @throws AccessControlException
 	 */
-	public TemplateBinder addTemplate(Binder localBinderParent, int type, Map updates) throws AccessControlException;
+	public TemplateBinder addTemplate(int type, Map updates) throws AccessControlException;
 	/**
 	 * Create a new template from an existing template
 	 * @param parentId
@@ -108,7 +108,7 @@ public interface TemplateModule {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public TemplateBinder addTemplateFromBinder(Binder parentBinder, Long binderId) throws AccessControlException, WriteFilesException;
+	public TemplateBinder addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;
 	public void modifyTemplate(Long id, Map updates) throws AccessControlException;
     /**
      * Get a template
@@ -122,11 +122,6 @@ public interface TemplateModule {
  	 * @return
  	 */
 	public List<TemplateBinder> getTemplates();
- 	/**
- 	 * Get all binder level templates
- 	 * @return
- 	 */
-	public List<TemplateBinder> getTemplates(Binder binder);
 	/**
 	 * Build a document used to export/import templates
 	 * @param template
@@ -139,7 +134,6 @@ public interface TemplateModule {
 	 * @return
 	 */
 	public List<TemplateBinder> getTemplates(int type);
-	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors);
 
 	public boolean updateDefaultTemplates(Long topId, boolean replace);
 	

@@ -143,7 +143,7 @@ div.ss_blog_sidebar_box {
 	padding: 3px 5px 5px 0px;
 }
 a.ss_displaytag {
-	font-size: ${ss_style_font_smallprint};
+	font-size: ${ss_style_font_smallprint} !important;
 	}
 .ss_blog_sidebar table {
 	background-color: transparent;
@@ -176,7 +176,7 @@ div.ss_header_bar_timestamp {
 	margin-right: 5px;
 }
 .ss_blog_footer {
-	background-color: #ededed;
+	background-color:${ss_blog_footer_color};
 	padding: 2px 4px;
 	margin: 0px;
 	-moz-border-radius: 3px;

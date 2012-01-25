@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.UtilityElementWidget;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
-
 /**
  * This class represents the configuration data for a Utility Element
  * @author jwootton
@@ -49,12 +45,11 @@ public class UtilityElementConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public UtilityElementConfig( String configStr, String binderId )
+	public UtilityElementConfig( String configStr )
 	{
 		String[] results;
 		
 		m_properties = new UtilityElementProperties();
-		m_properties.setBinderId( binderId );
 		
 		// Split the configuration data into its parts.  ie element=xxx
 		results = configStr.split( "[,;]" );
@@ -103,23 +98,6 @@ public class UtilityElementConfig extends ConfigItem
 	{
 		// Nothing to do.
 	}// end addChild()
-	
-	
-	/**
-	 * Create a composite that can be used on any page.
-	 */
-	public VibeWidget createWidget( WidgetStyles widgetStyles )
-	{
-		return new UtilityElementWidget( this, widgetStyles );
-	}
-	
-	/**
-	 * Create a DropWidget that can be used in the landing page editor.
-	 */
-	public UtilityElementDropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		return new UtilityElementDropWidget( lpe, this );
-	}
 	
 	
 	/**

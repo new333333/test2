@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -80,11 +80,9 @@ import org.kablink.util.Validator;
 
 public class LoginFilter  implements Filter {
 
-	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
-	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
@@ -240,7 +238,6 @@ public class LoginFilter  implements Filter {
 		return url;
 	}
 	
-	@Override
 	public void destroy() {
 	}
 
@@ -331,8 +328,8 @@ public class LoginFilter  implements Filter {
 		String reply = getWorkspaceURLImpl(req);
 		if (MiscUtil.hasString(reply)) {
 			if (0 < reply.indexOf("/do?"))
-			     reply += ("?" + WebKeys.URL_VIBE_ROOT_FLAG + "=1");
-			else reply += ("/" + WebKeys.URL_VIBE_ROOT_FLAG + "/1");
+			     reply += ("?" + WebKeys.URL_VIBEONPREM_ROOT_FLAG + "=1");
+			else reply += ("/" + WebKeys.URL_VIBEONPREM_ROOT_FLAG + "/1");
 		}
 		return reply;
 	}
@@ -351,7 +348,6 @@ public class LoginFilter  implements Filter {
 			//This user is logged in. Look for a default home page
 			try {
 				String url = (String)RunasTemplate.runas(new RunasCallback() {
-					@Override
 					public Object doAs() {
 						//See if this binder exists and is accessible. 
 						//  If not, go to the user workspace page instead
@@ -373,7 +369,6 @@ public class LoginFilter  implements Filter {
 				final Long binderId = homePageConfig.getDefaultHomePageId();
 				try {
 					return (String) RunasTemplate.runas(new RunasCallback() {
-						@Override
 						public Object doAs() {
 							//See if this binder exists and is accessible. 
 							//  If not, go to the user workspace page instead
@@ -393,7 +388,6 @@ public class LoginFilter  implements Filter {
 		}
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
-			@Override
 			public Object doAs() {
 				return PermaLinkUtil.getUserPermalink(req, userId, GwtUIHelper.isActivityStreamOnLogin());
 			}
@@ -408,7 +402,6 @@ public class LoginFilter  implements Filter {
 			userId = WebHelper.getRequiredUserId(req).toString();
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
-			@Override
 			public Object doAs() {
 				return WebUrlUtil.getWapLandingPage(req, userId);
 			}
@@ -482,19 +475,22 @@ public class LoginFilter  implements Filter {
 	 * Look at the url in the request and determine if it should be converted to a permalink.
 	 * The url needs to be converted to a permalink if the action parameter equals
 	 * "view_ws_listing" or "view_folder_listing" or "view_profile_listing" or "view_folder_entry" or "view_profile_entry"
-	 * and the url does NOT have the parameter "vibe_url"
+	 * and the url does NOT have the parameter "vibeonprem"
 	 */
 	private boolean shouldUrlBeConvertedToAPermalink( HttpServletRequest req )
 	{
-		// Does the URL have the "vibe_url" parameter.
-		if (MiscUtil.hasString( req.getParameter( WebKeys.URL_VIBE_URL_FLAG )) ||
-			MiscUtil.hasString( req.getParameter( WebKeys.URL_VIBEONPREM_URL_FLAG_DEPRECATED )))
+		String action;
+		String param;
+		
+		// Does the url have the "vibeonprem" parameter.
+		param = req.getParameter( WebKeys.URL_VIBEONPREM_URL_FLAG );
+		if ( param != null && param.length() > 0 )
 		{
 			// Yes, no need to convert it.
 			return false;
 		}
 		
-		String action = req.getParameter( "action" );
+		action = req.getParameter( "action" );
 		if ( action != null &&
 			 (action.equalsIgnoreCase( WebKeys.ACTION_VIEW_WS_LISTING ) ||
 			  action.equalsIgnoreCase( WebKeys.ACTION_VIEW_FOLDER_LISTING ) ||

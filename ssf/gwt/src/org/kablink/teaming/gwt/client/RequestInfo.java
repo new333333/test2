@@ -53,164 +53,119 @@ public class RequestInfo extends JavaScriptObject
 	protected RequestInfo()
 	{
 	}// end RequestInfo()
+
 	
 	/**
 	 * Return the the session captive state.
-	 * 
-	 * @return
 	 */
 	public final native boolean isSessionCaptive()
 	/*-{
 		return this.getBFromS( this.sessionCaptive );
 	}-*/;
 
+
 	/**
 	 * Return the adapted URL.
-	 * 
-	 * @return
 	 */
 	public final native String getAdaptedUrl()
 	/*-{
 		return this.adaptedUrl;
 	}-*/;
 
-	/**
-	 * Return the base Vibe URL.
-	 * 
-	 * @return
-	 */
-	public final native String getBaseVibeUrl()
-	/*-{
-		return this.baseVibeUrl;
-	}-*/;
 
 	/**
 	 * Return the binder ID.
-	 * 
-	 * @return
 	 */
 	public final native String getBinderId()
 	/*-{
 		return this.binderId;
 	}-*/;
 	
+	
 	/**
 	 * Return the get the current user's workspaceId
-	 * 
-	 * @return
 	 */
 	public final native String getCurrentUserWorkspaceId()
 	/*-{
 		return this.currentUserWorkspaceId;
 	}-*/;
 	
+	
 	/**
 	 * Return the URL for the CSS used with the tinyMCE editor.
-	 * 
-	 * @return
 	 */
 	public final native String getContentCss()
 	/*-{
 		return this.contentCss;
 	}-*/;
-
-	/**
-	 * Return whether the UI should perform extra debug checking
-	 * on landing pages.
-	 * 
-	 * @return
-	 */
-	public final native boolean isDebugLP()
-	/*-{
-		return this.getBFromS( this.debugLP );
-	}-*/;
 	
+
 	/**
 	 * Return whether the UI should perform extra debug checking and
 	 * debug message displays. 
-	 * 
-	 * @return
 	 */
 	public final native boolean isDebugUI()
 	/*-{
 		return this.getBFromS( this.debugUI );
 	}-*/;
 	
-	/**
-	 * Return whether the Granite GWT enhancements should enabled or
-	 * not.
-	 * 
-	 * @return
-	 */
-	public final native boolean isGraniteGwtEnabled()
-	/*-{
-		return this.getBFromS( this.graniteGwtEnabled );
-	}-*/;
 	
 	/**
 	 * Return the error message we should display.
-	 * 
-	 * @return
 	 */
 	public final native String getErrMsg()
 	/*-{
 		return this.errMsg;
 	}-*/;
 	
+	
 	/**
 	 * Return the URL used for simple searches.
-	 * 
-	 * @return
 	 */
 	public final native String getSimpleSearchUrl()
 	/*-{
 		return this.simpleSearchUrl;
 	}-*/;
 	
+	
 	/**
 	 * Return the URL used for advanced searches.
-	 * 
-	 * @return
 	 */
 	public final native String getAdvancedSearchUrl()
 	/*-{
 		return this.advancedSearchUrl;
 	}-*/;
 	
+	
 	/**
 	 * Return the URL used for saved searches.
-	 * 
-	 * @return
 	 */
 	public final native String getSavedSearchUrl()
 	/*-{
 		return this.savedSearchUrl;
 	}-*/;
 	
+	
 	/**
 	 * Return the URL used for recent place searches.
-	 * 
-	 * @return
 	 */
 	public final native String getRecentPlaceSearchUrl()
 	/*-{
 		return this.recentPlaceSearchUrl;
 	}-*/;
 	
+	
 	/**
 	 * Return the URL used for the help system.
-	 * 
-	 * @return
 	 */
 	public final native String getHelpUrl()
 	/*-{
 		return this.helpUrl;
 	}-*/;
 	
+	
 	/**
 	 * Return the path to Teaming's images.
-	 * 
-	 * @return
 	 */
 	public final native String getImagesPath()
 	/*-{
@@ -219,129 +174,106 @@ public class RequestInfo extends JavaScriptObject
 
 	/**
 	 * Return the path to Teaming's JavaScript.
-	 * 
-	 * @return
 	 */
 	public final native String getJSPath()
 	/*-{
 		return this.jsPath;
 	}-*/;
 
+	
 	/**
 	 * Return the user's language.
-	 * 
-	 * @return
 	 */
 	public final native String getLanguage()
 	/*-{
 		return this.language;
 	}-*/;
 
+	
 	/**
 	 * Return the user's locale.
-	 * 
-	 * @return
 	 */
 	public final native String getLocale()
 	/*-{
 		return this.locale;
 	}-*/;
+
 	
 	/**
 	 * Return the user's time zone.
-	 * 
-	 * @return
 	 */
 	public final native String getTimeSone()
 	/*-{
 		return this.timeZone;
 	}-*/;
 
+	
 	/**
 	 * Return the error message from the last login.
-	 * 
-	 * @return
 	 */
 	public final native String getLoginError()
 	/*-{
 		return this.loginError;
 	}-*/;
 	
+	
 	/**
 	 * Return the referrer URL that was passed as part of the login
 	 * info.
-	 * 
-	 * @return
 	 */
 	public final native String getLoginRefererUrl()
 	/*-{
 		return this.loginRefererUrl;
 	}-*/;
 	
+	
 	/**
 	 * Return the URL we should use when we are trying to log in.
-	 * 
-	 * @return
 	 */
 	public final native String getLoginUrl()
 	/*-{
 		return this.loginPostUrl;
 	}-*/;
 
+
 	/**
 	 * Return the My Workspace URL.
-	 * 
-	 * @return
 	 */
 	public final native String getMyWorkspaceUrl()
 	/*-{
 		return this.myWSUrl;
 	}-*/;
+
 	
 	/**
-	 * Return the language that the tinyMCE editor should use.
-	 * 
-	 * @return
-	 */
-	public final native String getTinyMCELanguage()
-	/*-{
-		return this.tinyMCELang;
-	}-*/;
-
-	/**
 	 * Return the user's id.
-	 * 
-	 * @return
 	 */
 	public final native String getUserId()
 	/*-{
 		return this.userId;
 	}-*/;
 
+
 	/**
 	 * Return the user's login id.
-	 * 
-	 * @return
 	 */
 	public final native String getUserLoginId()
 	/*-{
 		return this.userLoginId;
 	}-*/;
 
+
 	/**
 	 * Return the user's name.
-	 * 
-	 * @return
 	 */
 	public final native String getUserName()
 	/*-{
 		return this.userName;
 	}-*/;
 
+
 	/**
 	 * Return the flag that tells us what product we're running.
-	 * 
-	 * @return
 	 */
 	public final native String getVibeProductString()
 	/*-{
@@ -357,54 +289,25 @@ public class RequestInfo extends JavaScriptObject
 		return reply;
 	}
 
+
 	/**
-	 * Return the flag that tells us if we are running Novell Vibe.
-	 * 
-	 * @return
+	 * Return the flag that tells us if we are running Novell Teaming.
 	 */
 	public final native boolean isNovellTeaming()
 	/*-{
 		return this.getBFromS( this.isNovellTeaming );
 	}-*/;
-	
-	public final boolean isNovellVibe() {
-		return isNovellTeaming();
-	}
 
-	/**
-	 * Return the flag that tells us if we are running Kablink Vibe.
-	 * 
-	 * @return
-	 */
-	public final native boolean isKablinkTeaming()
-	/*-{
-		return (!(this.getBFromS( this.isNovellTeaming )));
-	}-*/;
-	
-	public final boolean isKablinkVibe() {
-		return isKablinkTeaming();
-	}
 
 	/**
 	 * Return the name (Novell vs. Kablink) of the version of Teaming
 	 * that's running.
-	 * 
-	 * @return
 	 */
 	public final native String getProductName()
 	/*-{
 		return this.productName;
 	}-*/;
 
-	/**
-	 * Return the namespace name of Teaming.
-	 * 
-	 * @return
-	 */
-	public final native String getNamespace()
-	/*-{
-		return this.namespace;
-	}-*/;
 
 	/**
 	 * Returns the source of this RequestInfo object (i.e., main,
@@ -420,8 +323,6 @@ public class RequestInfo extends JavaScriptObject
 	/**
 	 * Return whether logging in is allowed from our standard login dialog.  This will be
 	 * disallowed if we are running behind a single-sign on product such as NAM.
-	 * 
-	 * @return
 	 */
 	public final native boolean isFormLoginAllowed()
 	/*-{
@@ -430,8 +331,6 @@ public class RequestInfo extends JavaScriptObject
 
 	/**
 	 * Return the flag that tells us if the user is logged in.
-	 * 
-	 * @return
 	 */
 	public final native boolean isUserLoggedIn()
 	/*-{
@@ -441,18 +340,15 @@ public class RequestInfo extends JavaScriptObject
 	
 	/**
 	 * Return whether the tinyMCE editor can run on the device the user is running on. 
-	 * 
-	 * @return
 	 */
 	public final native boolean isTinyMCECapable()
 	/*-{
 		return this.getBFromS( this.isTinyMCECapable );
 	}-*/;
 	
+
 	/**
 	 * Return the flag that tells us if we should prompt for login
-	 * 
-	 * @return
 	 */
 	public final native boolean promptForLogin()
 	/*-{
@@ -461,8 +357,6 @@ public class RequestInfo extends JavaScriptObject
 
 	/**
 	 * Return the URL needed to invoke the Teaming Feed page.
-	 * 
-	 * @return
 	 */
 	public final native String getTeamingFeedUrl()
 	/*-{

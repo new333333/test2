@@ -33,9 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import java.util.ArrayList;
-
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
@@ -43,7 +40,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -56,54 +52,25 @@ public class EntryProperties
 	implements PropertiesObj
 {
 	private boolean m_showTitle;
-	private boolean m_showAuthor;
-	private boolean m_showDate;
-	private int m_numRepliesToShow;
 	private String m_entryId;
 	private String m_entryName;
-	private String m_entryDesc;
 	private String m_parentBinderName;	// Name of the binder the entry is found in.
 	private String m_zoneUUID;
 	private String m_viewEntryUrl;
-	private String m_author;
-	private String m_authorWsId;	// Id of the author's workspace
-	private String m_modificationDate;
-	private ArrayList<String> m_replyIds;
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
-	private GetterCallback<Boolean> m_getterCallback;
+	private boolean m_rpcInProgress;
 	
-	// The following data members are used to define the width and height of the view.
-	private int m_width;
-	private Style.Unit m_widthUnits;
-	private int m_height;
-	private Style.Unit m_heightUnits;
-	private Style.Overflow m_overflow;
-
 	/**
 	 * 
 	 */
 	public EntryProperties()
 	{
 		m_showTitle = false;
-		m_showAuthor = false;
-		m_showDate = false;
-		m_numRepliesToShow = 0;
 		m_entryId = null;
 		m_entryName = null;
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_viewEntryUrl = null;
-		m_author = null;
-		m_authorWsId = null;
-		m_modificationDate = null;
-		m_getterCallback = null;
-
-		// Default the width and height to 100%
-		m_width = 100;
-		m_widthUnits = Style.Unit.PCT;
-		m_height = 100;
-		m_heightUnits = Style.Unit.PCT;
-		m_overflow = Style.Overflow.HIDDEN;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
@@ -118,9 +85,7 @@ public class EntryProperties
 					GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
 					m_entryId );
 				
-				// Inform the callback that the rpc request failed.
-				if ( m_getterCallback != null )
-					m_getterCallback.returnValue( Boolean.FALSE );
+				m_rpcInProgress = false;
 			}// end onFailure()
 	
 			/**
@@ -135,14 +100,15 @@ public class EntryProperties
 				
 				if ( gwtFolderEntry != null )
 				{
-					setEntryData( gwtFolderEntry );
+					m_entryName = gwtFolderEntry.getEntryName();
+					m_parentBinderName = gwtFolderEntry.getParentBinderName();
+					m_viewEntryUrl = gwtFolderEntry.getViewEntryUrl();
 				}
 				
-				// Inform the callback that the rpc request finished.
-				if ( m_getterCallback != null )
-					m_getterCallback.returnValue( Boolean.TRUE );
+				m_rpcInProgress = false;
 			}// end onSuccess()
 		};
+		m_rpcInProgress = false;
 	}// end EntryProperties()
 	
 	
@@ -166,25 +132,11 @@ public class EntryProperties
 				m_zoneUUID = null;
 			}
 			
-			m_zoneUUID = entryProps.getZoneUUID();
 			m_entryId = newEntryId;
 			m_entryName = entryProps.getEntryName();
-			m_entryDesc = entryProps.getEntryDecs();
 			m_parentBinderName = entryProps.getBinderName();
 			m_showTitle = entryProps.getShowTitleValue();
-			m_showAuthor = entryProps.getShowAuthor();
-			m_showDate = entryProps.getShowDate();
-			m_numRepliesToShow = entryProps.getNumRepliesToShow();
 			m_viewEntryUrl = entryProps.getViewEntryUrl();
-			m_author = entryProps.getAuthor();
-			m_authorWsId = entryProps.getAuthorWorkspaceId();
-			m_modificationDate = entryProps.getModificationDate();
-			m_replyIds = entryProps.getReplyIds();
-			m_width = entryProps.getWidth();
-			m_widthUnits = entryProps.getWidthUnits();
-			m_height = entryProps.getHeight();
-			m_heightUnits = entryProps.getHeightUnits();
-			m_overflow = entryProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -209,48 +161,11 @@ public class EntryProperties
 		if ( m_showTitle )
 			str += "showTitle=1";
 
-		// Add the width
-		str += ",width=" + String.valueOf( m_width );
-		if ( m_widthUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
-		// Add the height
-		str += ",height=" + String.valueOf( m_height );
-		if ( m_heightUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
-		// Add overflow
-		str += ",overflow=";
-		if ( m_overflow == Style.Overflow.AUTO )
-			str += "auto";
-		else
-			str += "hidden";
-
 		str += ";";
 		
 		return str;
 	}// end createConfigString()
 	
-	
-	/**
-	 * 
-	 */
-	public String getAuthor()
-	{
-		return m_author;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getAuthorWorkspaceId()
-	{
-		return m_authorWsId;
-	}
 	
 	/**
 	 * Return the name of the binder the entry lives in.
@@ -264,40 +179,20 @@ public class EntryProperties
 	/**
 	 * Issue an ajax request to get the entry's name from the server.
 	 */
-	public void getDataFromServer( GetterCallback<Boolean> callback )
+	public void getDataFromServer()
 	{
 		// Do we have an entry id?
 		if ( m_entryId != null )
 		{
-			// Yes, Do we already have data for this entry?
-			if ( m_entryName == null )
-			{
-				GetEntryCmd cmd;
-				
-				// No, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
-				m_getterCallback = callback;
-				cmd = new GetEntryCmd( m_zoneUUID, m_entryId, m_numRepliesToShow );
-				GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
-			}
-			else
-			{
-				// Yes, tell the callback.
-				if ( callback != null )
-				{
-					callback.returnValue( Boolean.TRUE );
-				}
-			}
+			GetEntryCmd cmd;
+			
+			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
+			m_rpcInProgress = true;
+			cmd = new GetEntryCmd( m_zoneUUID, m_entryId );
+			GwtClientHelper.executeCommand( cmd, m_folderEntryCallback );
 		}
 	}// end getDataFromServer()
 	
-	
-	/**
-	 * Return the entry's desc
-	 */
-	public String getEntryDecs()
-	{
-		return m_entryDesc;
-	}
 	
 	/**
 	 * Return the entry id.
@@ -318,79 +213,6 @@ public class EntryProperties
 	
 	
 	/**
-	 * Return the entry's title
-	 */
-	public String getEntryTitle()
-	{
-		return m_entryName;
-	}
-
-	/**
-	 * Return the value of height.
-	 */
-	public int getHeight()
-	{
-		return m_height;
-	}
-	
-	/**
-	 * Return the height units
-	 */
-	public Style.Unit getHeightUnits()
-	{
-		return m_heightUnits;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getModificationDate()
-	{
-		return m_modificationDate;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getNumRepliesToShow()
-	{
-		return m_numRepliesToShow;
-	}
-	
-	/**
-	 * Return the value of overflow.
-	 */
-	public Style.Overflow getOverflow()
-	{
-		return m_overflow;
-	}
-	
-	/**
-	 * Return the ids of the replies to this entry.
-	 */
-	public ArrayList<String> getReplyIds()
-	{
-		return m_replyIds;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getShowAuthor()
-	{
-		return m_showAuthor;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getShowDate()
-	{
-		return m_showDate;
-	}
-	
-	/**
 	 * Return the "show title" property.
 	 */
 	public boolean getShowTitleValue()
@@ -409,23 +231,6 @@ public class EntryProperties
 	
 	
 	/**
-	 * Return the value of width.
-	 */
-	public int getWidth()
-	{
-		return m_width;
-	}
-	
-	/**
-	 * Return the width units
-	 */
-	public Style.Unit getWidthUnits()
-	{
-		return m_widthUnits;
-	}
-	
-	
-	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
@@ -433,37 +238,15 @@ public class EntryProperties
 		return m_zoneUUID;
 	}// end getZoneUUID()
 	
-
-	/**
-	 * 
-	 */
-	public void setAuthorWorkspaceId( String workspaceId )
-	{
-		m_authorWsId = workspaceId;
-	}
 	
 	/**
-	 * 
+	 * Return whether an rpc call is in progress.
 	 */
-	public void setAuthor( String author )
+	public boolean isRpcInProgress()
 	{
-		m_author = author;
-	}
+		return m_rpcInProgress;
+	}// end isRpcInProgress()
 	
-	/**
-	 * Save the data about the given entry
-	 */
-	public void setEntryData( GwtFolderEntry entry )
-	{
-		m_entryName = entry.getEntryName();
-		m_entryDesc = entry.getEntryDesc();
-		m_parentBinderName = entry.getParentBinderName();
-		m_viewEntryUrl = entry.getViewEntryUrl();
-		m_author = entry.getAuthor();
-		m_authorWsId = entry.getAuthorWorkspaceId();
-		m_modificationDate = entry.getModificationDate();
-		m_replyIds = entry.getReplyIds();
-	}
 	
 	/**
 	 * 
@@ -471,7 +254,7 @@ public class EntryProperties
 	public void setEntryId( String entryId )
 	{
 		// Did the entry id change?
-		if ( m_entryId != null && m_entryId.equalsIgnoreCase( entryId ) == false )
+		if ( m_entryId != null && m_entryId.equalsIgnoreCase( entryId ) )
 		{
 			// Yes
 			// Since we are changing the entry id clear out the entry name and the name of the parent binder.
@@ -482,54 +265,6 @@ public class EntryProperties
 		m_entryId = entryId;
 	}// end setEntryId()
 	
-	/**
-	 * 
-	 */
-	public void setHeight( int height )
-	{
-		m_height = height;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHeightUnits( Style.Unit units )
-	{
-		m_heightUnits = units;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void setNumRepliesToShow( int numReplies )
-	{
-		m_numRepliesToShow = numReplies;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setOverflow( Style.Overflow overflow )
-	{
-		m_overflow = overflow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setShowAuthor( boolean show )
-	{
-		m_showAuthor = show;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setShowDate( boolean show )
-	{
-		m_showDate = show;
-	}
 	
 	/**
 	 * 
@@ -540,23 +275,6 @@ public class EntryProperties
 	}// end setShowBorder()
 
 
-	/**
-	 * 
-	 */
-	public void setWidth( int width )
-	{
-		m_width = width;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setWidthUnits( Style.Unit units )
-	{
-		m_widthUnits = units;
-	}
-	
-	
 	/**
 	 * 
 	 */

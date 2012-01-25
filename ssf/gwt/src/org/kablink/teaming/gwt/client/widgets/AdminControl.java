@@ -33,8 +33,10 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
@@ -43,7 +45,6 @@ import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -82,8 +83,6 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TeamingPopupPanel;
-import com.google.gwt.user.client.ui.UIObject;
 
 
 /**
@@ -91,9 +90,10 @@ import com.google.gwt.user.client.ui.UIObject;
  * There is a widget that displays the list of administration actions and a widget
  * that displays the page for the selected administration action.
  */
-public class AdminControl extends TeamingPopupPanel
+public class AdminControl extends Composite
 	implements 
 	// Event handlers implemented by this class.
+		AdministrationExitEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -108,6 +108,7 @@ public class AdminControl extends TeamingPopupPanel
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
+		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		
 		// Login/out events.
@@ -360,7 +361,6 @@ public class AdminControl extends TeamingPopupPanel
 			m_mainTable.addStyleName( "adminCategoriesTable" );
 			m_mainTable.setCellPadding( 0 );
 			m_mainTable.setCellSpacing( 0 );
-			m_mainTable.setWidth("100%");
 			
 			mainPanel.add( m_mainTable );
 			
@@ -548,8 +548,6 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private AdminControl( GwtMainPage mainPage )
 	{
-		super( false, false );
-		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
 			GwtTeaming.getEventBus(),
@@ -562,10 +560,6 @@ public class AdminControl extends TeamingPopupPanel
 		// Create the control that holds all of the administration actions
 		m_adminActionsTreeControl = new AdminActionsTreeControl();
 		mainPanel.add( m_adminActionsTreeControl );
-		
-		// We need to replace gwt-PopupPanel style name because it is causing an empty
-		// box to be displayed because initially this control's width and height are 0.
-		setStylePrimaryName( "adminControlPopup" );
 		
 		// Create a control to hold the administration page for the selection administration action.
 		ContentControl.createAsync(
@@ -584,14 +578,13 @@ public class AdminControl extends TeamingPopupPanel
 			public void onSuccess( ContentControl contentCtrl )
 			{
 				m_contentControl = contentCtrl;
-				m_contentControl.setVisible( false );
 				m_contentControl.addStyleName( "adminContentControl" );
 				mainPanel.add( m_contentControl );
-				relayoutPage();
 			}// end onSuccess()
 		} );
 		
-		setWidget( mainPanel );
+		// All composites must call initWidget() in their constructors.
+		initWidget( mainPanel );
 	}// end AdminControl()
 
 	/**
@@ -623,6 +616,9 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			String url;
 			
+			// Position the content control.
+			relayoutPageNow();
+			
 			// Get the url used by the selected action.
 			url = adminAction.getUrl();
 			if ( url != null && url.length() > 0 )
@@ -639,9 +635,7 @@ public class AdminControl extends TeamingPopupPanel
 				{
 					public void execute()
 					{
-						// Show an position the content control.
 						showContentPanel();
-						relayoutPage();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -656,14 +650,11 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	public void doPreLogoutCleanup()
 	{
-		if ( isShowing() == true )
-		{
-			// Clear the iframe's content 
-			m_contentControl.clear();
+		// Clear the iframe's content 
+		m_contentControl.clear();
 		
-			// Set the iframe's content to nothing.
-			m_contentControl.setUrl( "" );
-		}
+		// Set the iframe's content to nothing.
+		m_contentControl.setUrl( "" );
 	}// end doPreLogoutCleanup()
 	
 	
@@ -756,9 +747,9 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	public void hideControl()
 	{
-		if ( isShowing() )
+		if ( isVisible() )
 		{
-			hide();
+			setVisible( false );
 		}
 	}// end hideControl()
 	
@@ -780,21 +771,16 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	public void relayoutPage()
 	{
-		// If the AdminControl is visible...
-		if ( isShowing() )
-		{		
-			Scheduler.ScheduledCommand cmd;
-	
-			cmd = new Scheduler.ScheduledCommand()
+		Scheduler.ScheduledCommand cmd;
+
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			public void execute()
 			{
-				public void execute()
-				{
-					// ...update the page's layout.
-					relayoutPageNow();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
+				relayoutPageNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end relayoutPage()
 	
 	
@@ -832,7 +818,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		
 		// Set the width and height of the content control.
-		m_contentControl.setDimensions( width, height + GwtConstants.PANEL_PADDING );
+		m_contentControl.setDimensions( width, height );
 
 		// Set the left position of the content control.
 		style = m_contentControl.getElement().getStyle();
@@ -893,9 +879,9 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void showControl( final UIObject target )
+	public void showControl()
 	{
-		if ( !isShowing() )
+		if ( !isVisible() )
 		{
 			Scheduler.ScheduledCommand cmd;
 	
@@ -912,8 +898,7 @@ public class AdminControl extends TeamingPopupPanel
 					{
 						public void execute()
 						{
-							showRelativeTo( target );
-							relayoutPage();
+							setVisible( true );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd2 );
@@ -946,6 +931,20 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}// end showTreeControl()
 		
+	/**
+	 * Handles AdministrationExitEvent's received by this class.
+	 * 
+	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationExit( AdministrationExitEvent event )
+	{
+		hideControl();
+	}// end onAdministrationExit()
+	
+
 	/**
 	 * Handles InvokeConfigureFileSyncAppDlgEvent received by this class.
 	 * 
@@ -1087,7 +1086,7 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onSidebarHide( SidebarHideEvent event )
 	{
-		if ( isShowing() )
+		if ( isVisible() )
 		{
 			hideTreeControl();
 		}
@@ -1103,7 +1102,7 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onSidebarShow( SidebarShowEvent event )
 	{
-		if ( isShowing() )
+		if ( isVisible() )
 		{
 			showTreeControl();
 		}

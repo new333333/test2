@@ -40,7 +40,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlgClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
@@ -49,7 +48,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 
 
@@ -62,6 +64,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 	
 	private BinderInfo m_currentBinder;				// The currently selected binder.
+	private int m_menuLeft;							// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;							// Top  coordinate of where the menu is to be placed.
 	private List<ToolbarItem> m_actionsBucket;		// List of action         items for the context based menu.
 	private List<ToolbarItem> m_configBucket;		// List of configuration  items for the context based menu.
 	private List<ToolbarItem> m_ignoreBucket;		// List of ignored        items for the context based menu.
@@ -88,9 +92,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageMenuPopup(ContextBinderProvider binderProvider, String manageName) {
+	private ManageMenuPopup(String manageName) {
 		// Simply initialize the super class.
-		super(binderProvider, manageName);
+		super(manageName);
 	}
 
 	/*
@@ -182,17 +186,16 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 		// File the buckets in the order things will appear in the
 		// menu.  Start with the actions section...
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"   );
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder");
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder");
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "delete"       );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"       );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "copy"         );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "move"         );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "export_import"                 );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_binder_quota"           );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_definitions"            );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "configure_configuration"       );
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "delete");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "copy");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "move");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "export_import");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_binder_quota");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_definitions");
 		
 		// ...then the team section...
 		if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {
@@ -210,8 +213,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageEditTeam());
 				localTBI.setUrl(m_tmi.getManageUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
-				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+				localTBI.addQualifier("popupHeight", "500");
+				localTBI.addQualifier("popupWidth",  "600");
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isTeamMeetingAllowed()) {
@@ -220,8 +223,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageStartTeamConference());
 				localTBI.setUrl(m_tmi.getTeamMeetingUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
-				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+				localTBI.addQualifier("popupHeight", "500");
+				localTBI.addQualifier("popupWidth",  "600");
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isSendMailAllowed()) {
@@ -230,8 +233,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setTitle(m_messages.mainMenuManageEmailTeam());
 				localTBI.setUrl(m_tmi.getSendMailUrl());
 				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
-				localTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+				localTBI.addQualifier("popupHeight", "500");
+				localTBI.addQualifier("popupWidth",  "600");
 				m_teamAndEmailBucket.add(localTBI);
 			}
 		}
@@ -408,9 +411,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 		// Add an anchor to run the folder options dialog.
 		final String foId = (IDBASE + "FolderOptions");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new Command() {
-			@Override
-			public void execute() {
+		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
@@ -420,16 +422,22 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
-		addContentMenuItem(mtA);
+		addContentWidget(mtA);
 	}
 	
 	private void showFolderOptionsAsync(String foId, ToolbarItem folderViewsTBI, ToolbarItem calendarImportTBI) {
-		// Run the folder options dialog.
+		// Remove the selection from the menu item...
+		Element menuItemElement = Document.get().getElementById(foId);
+		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+		
+		// ...hide the menu...
+		hide();
+
 		FolderOptionsDlg.createAsync(
 				false,	// false -> Don't auto hide.
 				true,	// true  -> Modal.
-				getRelativeX(),
-				getRelativeY(),
+				m_menuLeft,
+				m_menuTop,
 				m_currentBinder.getBinderId(),
 				m_configureColumnsTBI,
 				((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
@@ -451,12 +459,20 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Completes construction of the menu.
+	 * Completes construction of the menu and shows it.
 	 * 
-	 * Implements the MenuBarPopupBase.populateMenu() abstract method.
+	 * Implements the MenuBarPopupBase.showPopup() abstract method.
+	 * 
+	 * @param left
+	 * @param top
 	 */
 	@Override
-	public void populateMenu() {
+	public void showPopup(int left, int top) {
+		// Position the menu...
+		m_menuLeft = left;
+		m_menuTop  = top;
+		setPopupPosition(m_menuLeft, m_menuTop);
+		
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
 			// No!  We need to construct it now.  First the actions
@@ -501,6 +517,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
 		}
+					
+		// Finally, show the popup.
+		show();
 	}
 	
 	/*
@@ -541,9 +560,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 		// Add an anchor to run the tag this dialog.
 		final String menuId = (IDBASE + "TagThis");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new Command() {
-			@Override
-			public void execute() {
+		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
@@ -553,18 +571,24 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
-		addContentMenuItem(mtA);
+		addContentWidget(mtA);
 	}
 
 	private void showTagThisAsync(String menuId, String dlgCaption) {
-		// Show the tag this dialog.
+		// Remove the selection from the menu item...
+		Element menuItemElement = Document.get().getElementById(menuId);
+		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+		
+		// ...hide the menu...
+		hide();
+		
 		if (null == m_tagThisDlg) {
 			TagThisDlg.createAsync(
 					false,	// false -> Don't auto hide.
 					true,	// true  -> Modal.
 					null,
-					getRelativeX(),
-					getRelativeY(),
+					m_menuLeft,
+					m_menuTop,
 					dlgCaption,
 					new TagThisDlgClient() {						
 				@Override
@@ -607,16 +631,15 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * Loads the ManageMenuPopup split point and returns an
 	 * instance of it via the callback.
 	 *
-	 * @param binderProvider
 	 * @param name
 	 * @param mmpClient
 	 */
-	public static void createAsync(final ContextBinderProvider binderProvider, final String name, final ManageMenuPopupClient mmpClient) {
+	public static void createAsync(final String name, final ManageMenuPopupClient mmpClient) {
 		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				ManageMenuPopup mmp = new ManageMenuPopup(binderProvider, name);
+				ManageMenuPopup mmp = new ManageMenuPopup(name);
 				mmpClient.onSuccess(mmp);
 			}
 			

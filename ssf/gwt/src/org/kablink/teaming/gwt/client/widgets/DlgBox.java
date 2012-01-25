@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,12 +39,10 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -52,7 +50,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * 
@@ -71,14 +68,11 @@ public abstract class DlgBox extends PopupPanel
 	protected FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
 	protected boolean m_modal;
 	protected boolean m_visible = false;
-	private Label m_caption;
 	private FlowPanel m_errorPanel;
 	private Panel m_contentPanel;
 	private FlowPanel m_footerPanel;
-	private int m_id;
     	
 	protected static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
-	private static int m_uniqueId = 100;
 	
 	public enum DlgButtonMode {
 		Close,
@@ -103,27 +97,6 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public DlgBox(
 		boolean autoHide,
-		boolean modal )
-	{
-		this( autoHide, modal, 0, 0, DlgButtonMode.OkCancel );
-	}
-	
-	/**
-	 * 
-	 */
-	public DlgBox(
-		boolean autoHide,
-		boolean modal,
-		DlgButtonMode dlgBtnMode )
-	{
-		this( autoHide, modal, 0, 0, dlgBtnMode );
-	}
-	
-	/**
-	 * 
-	 */
-	public DlgBox(
-		boolean autoHide,
 		boolean modal,
 		int xPos,
 		int yPos,
@@ -139,36 +112,11 @@ public abstract class DlgBox extends PopupPanel
 		m_dlgBtnMode = dlgBtnMode;
 		
 		// Override the style used for PopupPanel
-		m_id = m_uniqueId;
-		++m_uniqueId;
 		setStyleName( "teamingDlgBox" );
-		getElement().setId( "teamingDlgBox-" + String.valueOf( m_id ) );
 		
 		setAnimationEnabled( true );
 		
 		setPopupPosition( xPos, yPos );
-		
-		// Create a callback that will be called when this dialog is visible.
-		// When the callback is called we will call makeDraggable().  We can't call
-		// makeDraggable() before the dialog is visible.
-		setPopupPositionAndShow( new PositionCallback()
-		{
-			@Override
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				ScheduledCommand cmd;
-				
-				cmd = new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						makeDraggable( String.valueOf( m_id ) );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		} );
 	}// end DlgBox()
 	
 	
@@ -309,13 +257,13 @@ public abstract class DlgBox extends PopupPanel
 	public Panel createHeader( String caption )
 	{
 		FlowPanel	flowPanel;
+		Label		label;
 		
 		flowPanel = new FlowPanel();
 		flowPanel.setStyleName( "teamingDlgBoxHeader" );
-		flowPanel.getElement().setId( "teamingDlgBoxHeader-" + String.valueOf( m_id ) );
 
-		m_caption = new Label( caption );
-		flowPanel.add( m_caption );
+		label = new Label( caption );
+		flowPanel.add( label );
 		
 		// Add a help link to the header if needed.
 		m_helpData = getHelpData();
@@ -334,7 +282,6 @@ public abstract class DlgBox extends PopupPanel
 			// Add a click handler for the Actions image.
 			clickHandler = new ClickHandler()
 			{
-				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -343,7 +290,6 @@ public abstract class DlgBox extends PopupPanel
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							// Invoke help for this dialog.
@@ -390,21 +336,6 @@ public abstract class DlgBox extends PopupPanel
 		return null;
 	}
 	
-
-	/**
-	 * Returns a simple EditCanceledHandler that simply lets the
-	 * dialog close.
-	 * 
-	 * @return
-	 */
-	public static EditCanceledHandler getSimpleCanceledHandler() {
-		return new EditCanceledHandler() {
-			@Override
-			public boolean editCanceled() {
-				return true;
-			}
-		};
-	}
 	
 	/**
 	 * Initialize the controls in the dialog with the values from the PropertiesObj.
@@ -414,7 +345,6 @@ public abstract class DlgBox extends PopupPanel
 	/**
 	 * Hide this dialog.
 	 */
-	@Override
 	public void hide()
 	{
 		if ( m_visible )
@@ -468,18 +398,10 @@ public abstract class DlgBox extends PopupPanel
 		}
 	}
 	
-	/**
-     * Makes this dialog draggable by using the native JQuery Draggable
-     */
-    private static native void makeDraggable( String id ) /*-{
-		$wnd.jQuery( "#teamingDlgBox-" + id ).draggable( { handle : '#teamingDlgBoxHeader-' + id } );
-	}-*/;
-
-    
-    /*
+	
+	/*
 	 * This method gets called when the user clicks on the ok or cancel button.
 	 */
-	@Override
 	public void onClick( ClickEvent event )
 	{
 		Object	source;
@@ -529,16 +451,6 @@ public abstract class DlgBox extends PopupPanel
 				hide();
 		}
 	}// end onClick()
-
-	/**
-	 * Updates the dialog's caption.
-	 * 
-	 * @param caption
-	 */
-	public void setCaption( String caption )
-	{
-		m_caption.setText( caption );
-	}// end setCaption()
 	
 	/**
 	 * Show this dialog.
@@ -576,6 +488,8 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Get the widget that should be given the focus when this dialog is displayed.
 		m_focusWidget = getFocusWidget();
+		
+		// Do we have a widget to give the initial focus to?
 		if ( m_focusWidget != null )
 		{
 			Timer timer;
@@ -586,7 +500,6 @@ public abstract class DlgBox extends PopupPanel
 			// wait for the dialog to be displayed.
 			timer = new Timer()
 			{
-				@Override
 				public void run()
 				{
 					// Give the focus to the appropriate field.
@@ -597,59 +510,11 @@ public abstract class DlgBox extends PopupPanel
 		}
 	}// end show()
 	
-	/**
-	 * 
-	 */
-	@Override
 	public void show()
 	{
 		// Always use the initial form of the method.
 		show( false );
 	}// end show()
-	
-	/**
-	 * 
-	 */
-	public void showRelativeToTarget( final UIObject target )
-	{
-		PopupPanel.PositionCallback posCallback;
-		
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				int x;
-				int y;
-				
-				x = target.getAbsoluteLeft() + target.getOffsetWidth();
-				if ( x > Window.getClientWidth() )
-					x = Window.getClientWidth();
-				
-				if ( (x + offsetWidth) > Window.getClientWidth() )
-					x -= (offsetWidth + 75);
-				
-				y = target.getAbsoluteTop();
-				
-				// Sometimes in Firefox getAbsoluteTop() returns the value that would
-				// normally be returned by getOffsetTop()
-				// Make sure the y value is reasonable.
-				if ( y > Window.getClientHeight() )
-					y = Window.getClientHeight();
-				
-				if ( (y + offsetHeight) > Window.getClientHeight() )
-				{
-					y -= (offsetHeight + 10);
-				}
-				
-				setPopupPosition( x, y );
-			}
-		};
-		setPopupPositionAndShow( posCallback );
-	}
 	
 	
 	/**

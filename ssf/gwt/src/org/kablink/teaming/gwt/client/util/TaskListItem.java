@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -57,27 +59,55 @@ public class TaskListItem implements IsSerializable {
 	/**
 	 * Inner class used to model assignment information for a task.
 	 */
-	public static class AssignmentInfo extends PrincipalInfo {
+	public static class AssignmentInfo implements IsSerializable {
+		private GwtPresenceInfo m_presence;			// Only used for individual assignees.
+		private int             m_members = (-1);	// Only used for group and team assignees.
+		private Long            m_id;				//
+		private Long			m_presenceUserWSId;	// Only used for individual assignees.
+		private String			m_presenceDude;		// Used for all assignees.
+		private String          m_title;			//
+
 		// The following are used for managing group and team assignees
 		// for this AssignmentInfo in the user interface.
 		private transient List<AssignmentInfo> m_membership;
 		private transient int                  m_membersShown;
 		
 		/**
+		 * Constructor method.
+		 * 
+		 * No parameters as per GWT serialization requirements.
+		 */
+		public AssignmentInfo() {
+			// Nothing to do.
+		}
+		
+		/**
 		 * Get'er methods.
 		 * 
 		 * @return
 		 */
-		public List<AssignmentInfo> getMembership()   {return m_membership;  }
-		public int                  getMembersShown() {return m_membersShown;}
+		public GwtPresenceInfo      getPresence()         {return m_presence;        }
+		public int                  getMembers()          {return m_members;         }
+		public Long                 getId()               {return m_id;              }
+		public Long                 getPresenceUserWSId() {return m_presenceUserWSId;}
+		public String               getPresenceDude()     {return m_presenceDude;    }
+		public String               getTitle()            {return m_title;           }
+		public List<AssignmentInfo> getMembership()       {return m_membership;      }
+		public int                  getMembersShown()     {return m_membersShown;    }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setMembership(  List<AssignmentInfo> membership)   {m_membership   = membership;  }
-		public void setMembersShown(int                  membersShown) {m_membersShown = membersShown;}
+		public void setPresence(        GwtPresenceInfo      presence)         {m_presence         = presence;        }
+		public void setMembers(         int                  members)          {m_members          = members;         }
+		public void setId(              Long                 id)               {m_id               = id;              }
+		public void setPresenceUserWSId(Long                 presenceUserWSId) {m_presenceUserWSId = presenceUserWSId;}
+		public void setPresenceDude(    String               presenceDude)     {m_presenceDude     = presenceDude;    }
+		public void setTitle(           String               title)            {m_title            = title;           }
+		public void setMembership(      List<AssignmentInfo> membership)       {m_membership       = membership;      }
+		public void setMembersShown(    int                  membersShown)     {m_membersShown     = membersShown;    }
 		
 		/**
 		 * Constructs an AssignmentInfo from the parameters.
@@ -398,8 +428,7 @@ public class TaskListItem implements IsSerializable {
 		private String					m_status           = "";
 		private TaskDate				m_completedDate    = new TaskDate();	
 		private TaskEvent				m_event            = new TaskEvent();
-		private TaskId					m_taskId           = new TaskId();
-		private String					m_desc			   = "";
+		private TaskId					m_taskId           = new TaskId();	
 
 		// The following are the values used for task completion
 		// percentages.
@@ -460,7 +489,6 @@ public class TaskListItem implements IsSerializable {
 		public TaskDate             getCompletedDate()    {return m_completedDate;   }
 		public TaskEvent            getEvent()            {return m_event;           }
 		public TaskId               getTaskId()           {return m_taskId;          }
-		public String				getDesc()			  {return m_desc;			 }
 		
 		/**
 		 * Set'er methods.
@@ -484,7 +512,6 @@ public class TaskListItem implements IsSerializable {
 		public void setCompletedDate(   TaskDate             completedDate)    {m_completedDate    = completedDate;   }
 		public void setEvent(           TaskEvent            event)            {m_event            = event;           }
 		public void setTaskId(          TaskId               taskId)           {m_taskId           = taskId;          }
-		public void setDesc(			String				 desc )			   {m_desc			   = desc;			  }
 
 		/**
 		 * Various task state evaluators.

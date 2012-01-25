@@ -38,14 +38,12 @@
  */
 package org.kablink.teaming.docconverter;
 
-import org.kablink.util.VibeRuntimeException;
-
 /**
  * @author Roy Klein
  *
  */
 
-public class DocConverterException extends VibeRuntimeException {
+public class DocConverterException extends RuntimeException {
     public DocConverterException() {
         super();
     }
@@ -58,11 +56,4 @@ public class DocConverterException extends VibeRuntimeException {
     public DocConverterException(Throwable cause) {
         super(cause);
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
-	}
 }

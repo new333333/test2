@@ -44,14 +44,13 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
-import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -80,7 +79,6 @@ public class EntryWidgetDlgBox extends DlgBox
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private SizeCtrl m_sizeCtrl = null;
 	private CheckBox m_showTitleCkBox = null;
 	private FindCtrl m_findCtrl = null;
 	private FlowPanel m_findPanel;
@@ -128,7 +126,6 @@ public class EntryWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		EntryProperties properties;
@@ -172,7 +169,6 @@ public class EntryWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -182,7 +178,6 @@ public class EntryWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
-						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -221,14 +216,12 @@ public class EntryWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
-					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
-							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -272,10 +265,6 @@ public class EntryWidgetDlgBox extends DlgBox
 			mainPanel.add( m_findPanel );
 		}
 		
-		// Add the size control
-		m_sizeCtrl = new SizeCtrl();
-		mainPanel.add( m_sizeCtrl );
-
 		// Add a checkbox for "Show title"
 		table = new FlexTable();
 		m_showTitleCkBox = new CheckBox( GwtTeaming.getMessages().showTitleBar() );
@@ -302,7 +291,6 @@ public class EntryWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		String entryId;
@@ -311,38 +299,6 @@ public class EntryWidgetDlgBox extends DlgBox
 		
 		properties = new EntryProperties();
 		
-		// Get the width and height values
-		{
-			int width;
-			int height;
-			Style.Unit units;
-			
-			// Get the width
-			width = getWidth();
-			units = getWidthUnits();
-			if ( width == 0 )
-			{
-				// Default to 100%
-				width = 100;
-				units = Style.Unit.PCT;
-			}
-			properties.setWidth( width );
-			properties.setWidthUnits( units );
-			
-			// Get the height
-			height = getHeight();
-			units = getHeightUnits();
-			if ( height == 0 )
-			{
-				// Default to 100%
-				height = 100;
-				units = Style.Unit.PCT;
-			}
-			properties.setHeight( height );
-			properties.setHeightUnits( units );
-			properties.setOverflow( getOverflow() );
-		}
-
 		// Save away the "show border" value.
 		properties.setShowTitle( getShowTitleValue() );
 		
@@ -385,7 +341,6 @@ public class EntryWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -398,7 +353,6 @@ public class EntryWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -423,41 +377,12 @@ public class EntryWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
-		if ( m_findCtrl != null )
-			return m_findCtrl.getFocusWidget();
-		
-		return null;
+		return m_findCtrl.getFocusWidget();
 	}// end getFocusWidget()
 	
 	
-	/**
-	 * 
-	 */
-	private int getHeight()
-	{
-		return m_sizeCtrl.getHeight();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getHeightUnits()
-	{
-		return m_sizeCtrl.getHeightUnits();
-	}
-	
-
-	/**
-	 * 
-	 */
-	private Style.Overflow getOverflow()
-	{
-		return m_sizeCtrl.getOverflow();
-	}
-
 	/**
 	 * Return true if the "show title" checkbox is checked.
 	 */
@@ -467,23 +392,6 @@ public class EntryWidgetDlgBox extends DlgBox
 	}// end getShowBorderValue()
 	
 	
-	/**
-	 * 
-	 */
-	private int getWidth()
-	{
-		return m_sizeCtrl.getWidth();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getWidthUnits()
-	{
-		return m_sizeCtrl.getWidthUnits();
-	}
-	
-
 	/**
 	 * 
 	 */
@@ -522,10 +430,8 @@ public class EntryWidgetDlgBox extends DlgBox
 			m_currentEntryNameLabel.addStyleName( "noEntrySelected" );
 			m_currentEntryNameLabel.removeStyleName( "bold" );
 		}
+		 
 		
-		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
-
 		// Hide the find control.
 		hideFindControl();
 		

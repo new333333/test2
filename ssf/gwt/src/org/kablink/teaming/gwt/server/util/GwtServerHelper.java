@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,21 +30,14 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.server.util;
 
-import static org.kablink.util.search.Constants.DOCID_FIELD;
-import static org.kablink.util.search.Constants.ENTRY_ANCESTRY;
-import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
-
-import java.io.InputStream;
-import java.net.URLDecoder;
 import java.text.Collator;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,24 +46,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.portlet.PortletRequest;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpURL;
-import org.apache.commons.httpclient.HttpsURL;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -89,7 +71,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -97,7 +78,6 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
-import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -123,38 +103,25 @@ import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.lpe.ConfigData;
-import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
-import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
-import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
@@ -171,7 +138,6 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
-import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -184,14 +150,8 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
-import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
-import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
-import org.kablink.teaming.portletadapter.support.KeyNames;
-import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -210,7 +170,6 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.Clipboard;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
@@ -220,20 +179,16 @@ import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
-import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
-import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
-import org.kablink.teaming.web.util.WorkspaceTreeHelper;
-import org.kablink.util.search.Criteria;
-import org.kablink.util.servlet.StringServletResponse;
+import org.kablink.util.PropertyNotFoundException;
+
 
 /**
  * Helper methods for the GWT UI server code.
  *
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unchecked")
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
 
@@ -248,44 +203,6 @@ public class GwtServerHelper {
 	private static final String VIEW_WORKSPACE_USER        = "_userWorkspace";
 	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
 	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
-
-	/**
-	 * Inner class used to compare two AssignmentInfo's.
-	 */
-	public static class AssignmentInfoComparator implements Comparator<AssignmentInfo> {
-		private boolean m_ascending;	//
-
-		/**
-		 * Class constructor.
-		 * 
-		 * @param ascending
-		 */
-		public AssignmentInfoComparator(boolean ascending) {
-			m_ascending = ascending;
-		}
-
-		/**
-		 * Compares two AssignmentInfo's by their assignee's name.
-		 * 
-		 * Implements the Comparator.compare() method.
-		 * 
-		 * @param ai1
-		 * @param ai2
-		 * 
-		 * @return
-		 */
-		@Override
-		public int compare(AssignmentInfo ai1, AssignmentInfo ai2) {
-			String assignee1 = ai1.getTitle();
-			String assignee2 = ai2.getTitle();
-
-			int reply;
-			if (m_ascending)
-			     reply = MiscUtil.safeSColatedCompare(assignee1, assignee2);
-			else reply = MiscUtil.safeSColatedCompare(assignee2, assignee1);
-			return reply;
-		}
-	}
 
 	/*
 	 * Inner class used assist in the construction of the
@@ -344,7 +261,6 @@ public class GwtServerHelper {
 		 *     0 if adminAction1 == adminAction2; and
 		 *     1 if adminAction1 >  adminAction2.
 		 */
-		@Override
 		public int compare( GwtAdminAction adminAction1, GwtAdminAction adminAction2 )
 		{
 			String s1, s2;
@@ -448,7 +364,6 @@ public class GwtServerHelper {
 		 * 
 		 * @return
 		 */
-		@Override
 		public int compare(SavedSearchInfo ssi1, SavedSearchInfo ssi2) {
 			return MiscUtil.safeSColatedCompare(ssi1.getName(), ssi2.getName());
 		}
@@ -480,7 +395,6 @@ public class GwtServerHelper {
 		 * 
 		 * @return
 		 */
-		@Override
 		public int compare(TeamInfo ti1, TeamInfo ti2) {
 			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
 		}
@@ -509,7 +423,6 @@ public class GwtServerHelper {
 		 * 
 		 * @return
 		 */
-		@Override
 		public int compare(GroupInfo ti1, GroupInfo ti2) {
 			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
 		}
@@ -563,18 +476,6 @@ public class GwtServerHelper {
 		// Nothing to do.
 	}
 
-	/*
-	 * Converts a String to a Long, if possible, and adds it as the ID
-	 * of an AssignmentInfo to a List<AssignmentInfo>.
-	 */
-	private static void addAIFromStringToList(String s, List<AssignmentInfo> l) {
-		try {
-			Long lVal = Long.parseLong(s);
-			l.add(AssignmentInfo.construct(lVal));
-		}
-		catch (NumberFormatException nfe) {/* Ignored. */}
-	}
-
 	/**
 	 * Add a tag to the given binder.
 	 */
@@ -613,6 +514,7 @@ public class GwtServerHelper {
 	/**
 	 * Add a reply to the given entry.
 	 */
+	@SuppressWarnings("unchecked")
 	public static FolderEntry addReply( AllModulesInjected bs, String entryId, String title, String desc )
 		throws WriteEntryDataException, WriteFilesException
 	{
@@ -840,7 +742,7 @@ public class GwtServerHelper {
 	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
-		reply.setBinderInfo(getBinderInfo(request, bs, binder));
+		reply.setBinderInfo(getBinderInfo(binder));
 		reply.setBinderTitle(GwtUIHelper.getTreeBinderTitle(binder));
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
@@ -1105,308 +1007,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Deletes the specified folder entries.
-	 *
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * @param entryIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
-		try {
-			// Before we delete any of them... 
-			FolderModule fm = bs.getFolderModule();
-			for (Long entryId:  entryIds) {
-				// ...make sure we can delete all of them.
-				fm.checkAccess(fm.getEntry(binderId, entryId), FolderOperation.preDeleteEntry);
-			}
-
-			// If we get here, we have rights to delete all the entries
-			// that we were given.  Scan them...
-			for (Long entryId:  entryIds) {
-				// ...deleting each.
-				TrashHelper.preDeleteEntry(bs, binderId, entryId);
-			}
-
-			// If we get here, the deletes were successful.
-			return Boolean.TRUE;
-		}
-		
-		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
-
-	/**
-	 * Execute the given enhanced view jsp and return the resulting html.
-	 */
-	public static String executeLandingPageJsp( AllModulesInjected ami, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr )
-	{
-		String results;
-		RequestDispatcher reqDispatcher;
-		StringServletResponse ssResponse;
-		
-		reqDispatcher = request.getRequestDispatcher( jspName );
-		ssResponse = new StringServletResponse( response );
-
-		try
-		{
-			RenderRequestImpl renderReq;
-			RenderResponseImpl renderRes;
-			PortletInfo portletInfo;
-
-			// Gather up all the data required by the jsp
-			{
-				Long binderIdL;
-				Map<String, Object> params;
-				Map<String, Object> model;
-
-				// Create the objects needed to call WorkspaceTreeHelper.setupWorkspaceBeans()
-				{
-					String portletName;
-					String charEncoding;
-
-					portletName = "ss_forum";
-					portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo( portletName );
-					
-					renderReq = new RenderRequestImpl( request, portletInfo, AdaptedPortlets.getPortletContext() );
-					
-					params = new HashMap<String, Object>();
-					params.put( KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName} );
-					params.put( WebKeys.URL_BINDER_ID, binderId );
-					renderReq.setRenderParameters( params );
-					
-					renderRes = new RenderResponseImpl( renderReq, response, portletName );
-					charEncoding = SPropsUtil.getString( "web.char.encoding", "UTF-8" );
-					renderRes.setContentType( "text/html; charset=" + charEncoding );
-					renderReq.defineObjects( portletInfo.getPortletConfig(), renderRes );
-					
-					renderReq.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
-					
-					model = new HashMap<String, Object>();
-					binderIdL = Long.valueOf( binderId );
-				}
-				
-				WorkspaceTreeHelper.setupWorkspaceBeans( ami, binderIdL, renderReq, renderRes, model, false );
-				
-				// Put the data that setupWorkspaceBeans() put in model into the request.
-				for (String key: model.keySet())
-				{
-					Object value;
-					
-					value = model.get( key );
-					request.setAttribute( key, value );
-				}
-				
-				// Add the data that normally would have been added by PortletAdapterServlet.java
-		    	// This attribute is used to distinguish adapter request from regular request
-		    	request.setAttribute( KeyNames.CTX, servletContext );
-
-		    	// Add the data that normally would have been added by PortletAdapterController.java
-				{
-					request.setAttribute( "javax.portlet.config", portletInfo.getPortletConfig() );
-					request.setAttribute( "javax.portlet.request", renderReq );
-					request.setAttribute( "javax.portlet.response", renderRes );
-					request.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
-				}
-				
-				// Add the data that normally would have been added by mashup_canvas_view.jsp
-				{
-					Map map1;
-					Map map2;
-					
-					map1 = new HashMap();
-					map2 = new HashMap();
-					map1.put( 0, "" );
-					map2.put( 0, Long.valueOf( 0 ) );
-
-					request.setAttribute( "ss_mashupTableDepth", Long.valueOf( 0 ) );
-					request.setAttribute( "ss_mashupTableNumber", Long.valueOf( 0 ) );
-					request.setAttribute( "ss_mashupTableItemCount", map1 );
-					request.setAttribute( "ss_mashupTableItemCount2", map2 );
-					request.setAttribute( "ss_mashupListDepth", Long.valueOf( 0 ) );
-				}
-				
-				// Add the data that normally would have been added by MashupTag.java
-				if ( configStr != null )
-				{
-					String[] mashupItemValues;
-					
-					mashupItemValues = configStr.split(",");
-					if ( mashupItemValues.length > 0 )
-					{
-						Map mashupItemAttributes;
-
-						//Build a map of attributes
-						mashupItemAttributes = new HashMap();
-						for (int i = 1; i < mashupItemValues.length; i++)
-						{
-							int k = mashupItemValues[i].indexOf("=");
-							if ( k > 0 )
-							{
-								String a = mashupItemValues[i].substring(0, k);
-								String v = mashupItemValues[i].substring(k+1, mashupItemValues[i].length());
-								String value1 = v;
-								try
-								{
-									value1 = URLDecoder.decode(v.replaceAll("\\+", "%2B"), "UTF-8");
-								}
-								catch(Exception e)
-								{
-								}
-								
-								if ( a != null && !a.equalsIgnoreCase( "width" ) && !a.equalsIgnoreCase( "height" ) && !a.equalsIgnoreCase( "overflow" ) )
-									mashupItemAttributes.put(a, value1);
-							}
-						}
-
-						request.setAttribute( "mashup_id", 0 );
-						request.setAttribute( "mashup_type", "enhancedView" );
-						request.setAttribute( "mashup_values", mashupItemValues );
-						request.setAttribute( "mashup_attributes", mashupItemAttributes );
-						request.setAttribute( "mashup_view", "view" );
-					}
-				}
-			}
-			
-			// Execute the jsp
-			reqDispatcher.include( request, ssResponse );
-			
-			results = ssResponse.getString().trim();
-			
-			/*
-			// Put the results of executing the jsp into a temporary file
-			{
-				File tempFile;
-				FileOutputStream fo;
-				
-				tempFile = TempFileUtil.createTempFile( "landing_page_", ".html", null, true );
-				fo = new FileOutputStream( tempFile );
-				fo.write( results.getBytes() );
-				fo.close();
-				
-				// Get a url to the file.
-				results = WebUrlUtil.getServletRootURL( request ) + WebKeys.SERVLET_VIEW_FILE + "?viewType=executeJspResults&fileId=" + tempFile.getName() + "&fullPath=" + tempFile.getAbsolutePath();
-			}
-			*/
-		}
-		catch ( Exception e )
-		{
-			String[] errorArgs;
-			String errorTag = "errorcode.unexpectedError";
-			
-			errorArgs = new String[] { e.getLocalizedMessage() };
-			results = NLT.get( errorTag, errorArgs );
-		}
-		
-		return results;
-	}
-	
-	
-	/**
-	 * Execute the given enhanced view jsp and return the resulting html.
-	 */
-	public static String executeJsp( AllModulesInjected bs, HttpServletRequest request, 
-			HttpServletResponse response, ServletContext servletContext, 
-			String jspName, Map<String,Object> model )
-	{
-		String results;
-		String path;
-		RequestDispatcher reqDispatcher;
-		StringServletResponse ssResponse;
-		
-		// Construct the full path to the jsp
-		path = "/WEB-INF/jsp/" + jspName;
-		
-		reqDispatcher = request.getRequestDispatcher( path );
-		ssResponse = new StringServletResponse( response );
-
-		try
-		{
-			RenderRequestImpl renderReq;
-			RenderResponseImpl renderRes;
-			PortletInfo portletInfo;
-
-			// Gather up all the data required by the jsp
-			{
-				Long binderIdL;
-				Map<String, Object> params;
-
-				// Create the objects needed to call setupStandardBeans
-				{
-					String portletName;
-					String charEncoding;
-
-					portletName = "ss_forum";
-					portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo( portletName );
-					
-					renderReq = new RenderRequestImpl( request, portletInfo, AdaptedPortlets.getPortletContext() );
-					
-					params = new HashMap<String, Object>();
-					params.put( KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName} );
-					renderReq.setRenderParameters( params );
-					
-					renderRes = new RenderResponseImpl( renderReq, response, portletName );
-					charEncoding = SPropsUtil.getString( "web.char.encoding", "UTF-8" );
-					renderRes.setContentType( "text/html; charset=" + charEncoding );
-					renderReq.defineObjects( portletInfo.getPortletConfig(), renderRes );
-					
-					renderReq.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
-				}
-				if (model.containsKey(WebKeys.BINDER_ID)) {
-					binderIdL = (Long)model.get(WebKeys.BINDER_ID);
-					Binder binder = bs.getBinderModule().getBinder(binderIdL);
-					model.put(WebKeys.BINDER, binder);
-					BinderHelper.setupStandardBeans( bs, renderReq, renderRes, model, binderIdL );
-				} else {
-					BinderHelper.setupStandardBeans( bs, renderReq, renderRes, model );
-				}
-				
-				// Put the data that setupWorkspaceBeans() put in model into the request.
-				for (String key: model.keySet())
-				{
-					Object value;
-					
-					value = model.get( key );
-					request.setAttribute( key, value );
-				}
-				
-				// Add the data that normally would have been added by PortletAdapterServlet.java
-		    	// This attribute is used to distinguish adapter request from regular request
-		    	request.setAttribute( KeyNames.CTX, servletContext );
-
-		    	// Add the data that normally would have been added by PortletAdapterController.java
-				{
-					request.setAttribute( "javax.portlet.config", portletInfo.getPortletConfig() );
-					request.setAttribute( "javax.portlet.request", renderReq );
-					request.setAttribute( "javax.portlet.response", renderRes );
-					request.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
-				}
-			}
-				
-			// Execute the jsp
-			reqDispatcher.include( request, ssResponse );
-			
-			results = ssResponse.getString().trim();
-		}
-		catch ( Exception e )
-		{
-			String[] errorArgs;
-			String errorTag = "errorcode.unexpectedError";
-			
-			errorArgs = new String[] { e.getLocalizedMessage() };
-			results = NLT.get( errorTag, errorArgs );
-		}
-		
-		return results;
-	}
-	
-	
-	/**
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a List<Long> of Binder IDs
 	 * (i.e., a bucket list.)
@@ -1518,110 +1118,11 @@ public class GwtServerHelper {
 		// JSONObject or is null.  Return it.
 		return reply;
 	}
-
-	/**
-	 * Fills a List<RecentPlaceInfo> with the recent places information
-	 * stored in a Tabs object.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param tabs
-	 * @param rpiList
-	 */
-	public static void fillRecentPlacesFromTabs(AllModulesInjected bs, HttpServletRequest request, Tabs tabs, List<RecentPlaceInfo> rpiList) {
-		// Scan the tabs...
-		int count = 0;
-		List tabList = tabs.getTabList();
-		int maxTitle = SPropsUtil.getInt("history.max.title",   30);
-		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
-		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
-			// ...creating a RecentPlaceInfo object for each...
-			TabEntry tab = ((TabEntry) tabIT.next());
-			RecentPlaceInfo rpi = new RecentPlaceInfo();
-			String title = ((String) tab.getData().get("title"));
-			if (title.length() > maxTitle) {
-				title = (title.substring(0, maxTitle) + "...");
-			}
-			rpi.setTitle(title);
-			rpi.setId(String.valueOf(tab.getTabId()));
-			rpi.setType(tab.getType());
-			switch (rpi.getTypeEnum()) {
-			case BINDER:
-				// If the tab's binder is no longer accessible...
-				Long binderId = tab.getBinderId();
-				Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
-				if ((null == binder) || GwtUIHelper.isBinderPreDeleted(binder)) {
-					// ...skip it.
-					continue;
-				}
-				rpi.setBinderId(String.valueOf(binderId));
-				rpi.setEntityPath(((String) tab.getData().get("path")));
-				rpi.setEntryId(String.valueOf(tab.getEntryId()));
-				rpi.setPermalink(PermaLinkUtil.getPermalink(request, binder));
-				
-				break;
-				
-			case SEARCH:
-				rpi.setSearchQuery(tab.getQuery());
-				rpi.setSearchQuick(((Boolean) tab.getData().get("quickSearch")));
-				
-				break;
-
-			default:
-				continue;
-			}
-			
-			// ...adding it to the list of them...
-			rpiList.add(rpi);
-			
-			// ...and stopping when we hit our maximum.
-			count += 1;
-			if (maxItems == count) {
-				break;
-			}
-		}
-	}
-	
-	/**
-	 * Return the URL needed to invoke the start/schedule meeting dialog.
-	 *
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static String getAddMeetingUrl( AllModulesInjected bs, HttpServletRequest request, String binderId ) throws GwtTeamingException
-	{
-		AdaptedPortletURL adapterUrl;
-
-		// ...store the team meeting URL.
-		adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
-		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
-		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-
-		if (getWorkspaceType(GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId)) == WorkspaceType.USER) {
-			// This is a User Workspace so add the owner in and don't append team members
-			Principal p = GwtProfileHelper.getPrincipalByBinderId(bs, binderId);
-			if (p != null) {
-				Long id = p.getId();
-				String [] ids = new String[1];
-				ids[0] = id.toString();
-				adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, ids);
-			}
-			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.FALSE.toString() );
-		} else {
-			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
-	    }
-
-		return adapterUrl.toString();
-	}
 	
 	/**
 	 * Return a list of administration actions the user has rights to perform. 
 	 */
+	@SuppressWarnings("unchecked")
 	public static ArrayList<GwtAdminCategory> getAdminActions( HttpServletRequest request, Binder binder, AbstractAllModulesInjected allModules )
 	{
 		ArrayList<GwtAdminCategory> adminCategories;
@@ -1653,7 +1154,7 @@ public class GwtServerHelper {
 		licenseModule = allModules.getLicenseModule();
 		zoneModule = allModules.getZoneModule();
 		
-		user = getCurrentUser();
+		user = GwtServerHelper.getCurrentUser();
 		
  		try
  		{
@@ -2367,55 +1868,6 @@ public class GwtServerHelper {
 	
 	
 	/**
-	 * Reads a List<AssignmentInfo> from a Map.
-	 * 
-	 * @param m
-	 * @param key
-	 * 
-	 * @return
-	 */
-	public static List<AssignmentInfo> getAssignmentInfoListFromEntryMap(Map m, String key) {
-		// Is there value for the key?
-		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
-		Object o = m.get(key);
-		if (null != o) {
-			// Yes!  Is the value is a String?
-			if (o instanceof String) {
-				// Yes!  Added it as a Long to the List<Long>. 
-				addAIFromStringToList(((String) o), reply);
-			}
-
-			// No, the value isn't a String!  Is it a String[]?
-			else if (o instanceof String[]) {
-				// Yes!  Scan them and add each as a Long to the
-				// List<Long>. 
-				String[] strLs = ((String[]) o);
-				int c = strLs.length;
-				for (int i = 0; i < c; i += 1) {
-					addAIFromStringToList(strLs[i], reply);
-				}
-			}
-
-			// No, the value isn't a String[] either!  Is it a
-			// SearchFieldResult?
-			else if (o instanceof SearchFieldResult) {
-				// Yes!  Scan the value set from it and add each as a
-				// Long to the List<Long>. 
-				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
-				Set<String> strLs = ((Set<String>) sfr.getValueSet());
-				for (String strL:  strLs) {
-					addAIFromStringToList(strL, reply);
-				}
-			}
-		}
-		
-		// If we get here, reply refers to the List<AssignmentInfo> of
-		// values from the Map.  Return it.
-		return reply;
-	}
-	
-
-	/**
 	 * Return the branding data for the given binder.
 	 */
 	public static GwtBrandingData getBinderBrandingData( AbstractAllModulesInjected allModules, String binderId, HttpServletRequest request ) throws GwtTeamingException
@@ -2792,17 +2244,16 @@ public class GwtServerHelper {
 		// accessed and null otherwise.  Return it.
 		return reply;
 	}
-
+	
 	/**
 	 * Returns a BinderInfo describing a binder.
-	 *
-	 * @param request
+	 * 
 	 * @param bs
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, String binderId) {
+	public static BinderInfo getBinderInfo(AllModulesInjected bs, String binderId) {
 		BinderInfo reply;
 		Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
 		if (null == binder) {
@@ -2810,60 +2261,19 @@ public class GwtServerHelper {
 			reply.setBinderId(binderId);
 		}
 		else {
-			reply = getBinderInfo(request, bs, binder);
+			reply = getBinderInfo(binder);
 		}
 		return reply;
 	}
-
-	/**
-	 * Returns a BinderInfo describing a binder.
-	 * 
-	 * @param request
-	 * @param binder
-	 * 
-	 * @return
-	 */
-	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
-		// Allocate a BinderInfo and store the core binder information.
+	
+	public static BinderInfo getBinderInfo(Binder binder) {
 		BinderInfo reply = new BinderInfo();
 		                                    reply.setBinderId(     binder.getId()             );
 		                                    reply.setBinderTitle(  binder.getTitle()          );
-		                                    reply.setIsLibrary(    binder.isLibrary()         );
 		                                    reply.setEntityType(   getBinderEntityType(binder));
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
-
-		// If the binder has a description...
-		Description binderDesc = binder.getDescription();
-		if (null != binderDesc) {
-			String desc = binderDesc.getText();
-			if (MiscUtil.hasString(desc)) {
-				// ...store it.
-				int descFmt = binderDesc.getFormat();
-				boolean descIsHTML = (Description.FORMAT_HTML == descFmt); 
-				if (descIsHTML) {
-					desc = MarkupUtil.markupStringReplacement( null, null, request, null, binder, desc, WebKeys.MARKUP_VIEW, false );
-					desc = MarkupUtil.markupSectionsReplacement( desc );
-				}
-				reply.setBinderDesc(    desc      );
-				reply.setBinderDescHTML(descIsHTML);
-			}
-		}
-		
-		try {
-			// Store whether the binder's description should be
-			// expanded in a description tool panel.
-			StringRpcResponseData regionStateRpcData = GwtViewHelper.getBinderRegionState(bs, request, binder.getId(), "descriptionRegion");
-			String regionState = regionStateRpcData.getStringValue();
-			boolean expanded = (MiscUtil.hasString(regionState) ? regionState.equals("expanded") : true);
-			reply.setBinderDescExpanded(expanded);
-		}
-		catch (GwtTeamingException gte) {
-			// Ignore.  The exception has already been logged by
-			// GwtViewHelper.getBinderRegionState().
-		}
-		
 		return reply;
 	}
 	
@@ -2936,110 +2346,6 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Returns a ClipboardUsersRpcResponseData object containing the
-	 * user's on a team.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ClipboardUsersRpcResponseData getClipboardTeamUsers(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
-		try {
-			// Read the IDs of the team members...
-			Set<Long> teamMemberIds = getTeamMemberIds(bs, binderId, true);
-			
-			// ...create a ClipboardUsersRpcResponseData object using them...
-			SortedSet<User> cbUsers = bs.getProfileModule().getUsersFromPrincipals(teamMemberIds);
-			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
-			for (User cbUser:  cbUsers) {
-				reply.addUser(cbUser.getId(), cbUser.getTitle());
-			}
-			
-			// ...and return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
-		}
-	}
-	
-	/**
-	 * Returns a ClipboardUsersRpcResponseData object containing the
-	 * user's currently on the clipboard.
-	 * 
-	 * @param bs
-	 * @param request
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ClipboardUsersRpcResponseData getClipboardUsers(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
-		try {
-			// Read the IDs of the users off the clipboard...
-			Clipboard clipboard = new Clipboard(request);
-			Set cbUserIds = clipboard.get(Clipboard.USERS);
-
-			// ...create a ClipboardUsersRpcResponseData object using them...
-			SortedSet<User> cbUsers = bs.getProfileModule().getUsersFromPrincipals(cbUserIds);
-			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
-			for (User cbUser:  cbUsers) {
-				reply.addUser(cbUser.getId(), cbUser.getTitle());
-			}
-			
-			// ...and return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
-		}
-	}
-	
-	/**
-	 * Returns a ClipboardUsersRpcResponseData object containing the
-	 * user's referenced by a binder clipboard.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * @param userIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ClipboardUsersRpcResponseData getClipboardUsersFromList(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> userIds) throws GwtTeamingException {
-		try {
-			// If we were given a null list of user IDs...
-			if (null == userIds) {
-				// ...substitute an empty list.
-				userIds = new ArrayList<Long>();
-			}
-			
-			// Create a ClipboardUsersRpcResponseData object using the
-			// user ID list provided...
-			SortedSet<User> cbUsers = bs.getProfileModule().getUsersFromPrincipals(userIds);
-			ClipboardUsersRpcResponseData reply = new ClipboardUsersRpcResponseData();
-			for (User cbUser:  cbUsers) {
-				reply.addUser(cbUser.getId(), cbUser.getTitle());
-			}
-			
-			// ...and return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
-		}
-	}
-	
-	/**
 	 * Returns the User object of the currently logged in user.
 	 * 
 	 * @return
@@ -3093,37 +2399,6 @@ public class GwtServerHelper {
 	
 	
 	/**
-	 * Return the url for the given binder and file
-	 */
-	public static String getFileUrl( AllModulesInjected ami, HttpServletRequest request, String binderId, String fileName )
-	{
-		String webPath;
-		String url = null;
-		
-		try
-		{
-			Binder binder;
-			
-			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
-
-			webPath = WebUrlUtil.getServletRootURL( request );
-			url = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, fileName );
-		}
-		catch (NoFolderEntryByTheIdException nbEx)
-		{
-		}
-		catch (AccessControlException acEx)
-		{
-		}
-		catch (Exception e)
-		{
-		}
-		
-		return url;
-	}
-	
-	
-	/**
 	 * Return a list of tags associated with the given entry.
 	 */
 	public static ArrayList<TagInfo> getEntryTags( AllModulesInjected bs, String entryId )
@@ -3173,25 +2448,11 @@ public class GwtServerHelper {
 	}
 	
 	
-	/**
-	 * Return the URL needed to execute the given jsp
-	 */
-	public static String getExecuteJspUrl( HttpServletRequest request, String binderId, String jspName ) throws GwtTeamingException
-	{
-		AdaptedPortletURL adapterUrl;
-
-		adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
-		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_EXECUTE_JSP );
-		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-		adapterUrl.setParameter( WebKeys.JSP_NAME, jspName );
-
-		return adapterUrl.toString();
-	}
-	
 	/*
 	 * Returns a cloned copy of the expanded Binder's list from the
 	 * UserProperties.
 	 */
+	@SuppressWarnings("unchecked")
 	private static List<Long> getExpandedBindersList(AllModulesInjected bs) {
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 		List<Long> reply= ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
@@ -3199,57 +2460,11 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Returns a formatted date/time string for the current user's
-	 * locale and time zone.
-	 * 
-	 * @param date
-	 * @param dateStyle
-	 * @param timeStyle
-	 * 
-	 * @return
-	 */
-	public static String getDateTimeString(Date date, int dateStyle, int timeStyle) {
-		User user = GwtServerHelper.getCurrentUser();
-		
-		DateFormat df = DateFormat.getDateTimeInstance(dateStyle, timeStyle, user.getLocale());
-		df.setTimeZone(user.getTimeZone());
-		
-		return df.format(date);
-	}
-	
-	public static String getDateTimeString(Date date) {
-		// Always use the initial form of the method.
-		return getDateTimeString(date, DateFormat.MEDIUM, DateFormat.LONG);
-	}
-	
-	/**
-	 * Returns a formatted date string for the current user's locale
-	 * and time zone.
-	 * 
-	 * @param date
-	 * @param dateStyle
-	 * 
-	 * @return
-	 */
-	public static String getDateString(Date date, int dateStyle) {
-		User user = GwtServerHelper.getCurrentUser();
-		
-		DateFormat df = DateFormat.getDateInstance(dateStyle, user.getLocale());
-		df.setTimeZone(user.getTimeZone());
-		
-		return df.format(date);
-	}
-	
-	public static String getDateString(Date date) {
-		// Always use the initial form of the method.
-		return getDateString(date, DateFormat.MEDIUM);
-	}
-	
-	/**
 	 * Returns the ID of the default view definition of a folder.
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static String getDefaultFolderDefinitionId(AllModulesInjected bs, String binderIdS) {
 		// Does the user have a default definition selected for this
 		// binder?
@@ -3275,6 +2490,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<FavoriteInfo> getFavorites(AllModulesInjected bs) {
 		// Allocate an ArrayList<FavoriteInfo> to hold the favorites.
 		ArrayList<FavoriteInfo> reply = new ArrayList<FavoriteInfo>();
@@ -3379,37 +2595,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns a count of the members of a group.
-	 * 
-	 * @param group
-	 * 
-	 * @return
-	 */
-	public static int getGroupCount(GroupPrincipal group) {
-		Set<Long> groupMemberIds = getGroupMemberIds(group);
-		return ((null == groupMemberIds) ? 0 : groupMemberIds.size());
-	}
-
-	/**
-	 * Returns a Set<Long> of the IDs of the members of a group.
-	 * 
-	 * @param group
-	 * 
-	 * @return
-	 */
-	public static Set<Long> getGroupMemberIds(GroupPrincipal group) {
-		List<Long> groupIds = new ArrayList<Long>();
-		groupIds.add(group.getId());
-		Set<Long> groupMemberIds = null;
-		try {
-			ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-			groupMemberIds = profileDao.explodeGroups(groupIds, group.getZoneId());
-		}
-		catch (Exception ex) {/* Ignored. */}
-		return validatePrincipalIds(groupMemberIds);
-	}
-	
-	/**
 	 * Returns a GwtTeamingException from a generic Exception.
 	 * 
 	 * Note:  The mappings between an instance of an exception and the
@@ -3471,432 +2656,6 @@ public class GwtServerHelper {
 		// Always use the initial form of the method.
 		return getGwtTeamingException(null);
 	}
-
-	/*
-	 * Creates an HttpClient from an HttpURL.
-	 */
-	private static HttpClient getHttpClient(HttpURL hrl) throws URIException {
-		HttpClient client = new HttpClient();
-		HostConfiguration hc = client.getHostConfiguration();
-		hc.setHost(hrl);
-		return client;
-	}
-
-	/*
-	 * Creates an HttpURL from a URL string.
-	 */
-	private static HttpURL getHttpURL(String urlStr) throws URIException  {
-		HttpURL reply;
-		if(urlStr.startsWith("https"))
-			 reply = new HttpsURL(urlStr);
-		else reply = new HttpURL(urlStr);
-		return reply;
-	}
-	
-	/**
-	 * Get the inherited landing page properties (background color, background image, etc) for
-	 * the given binder.
-	 * @throws GwtTeamingException 
-	 */
-	public static LandingPageProperties getInheritedLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
-	{
-		LandingPageProperties lpProperties = null;
-		
-		lpProperties = new LandingPageProperties();
-		lpProperties.setInheritProperties( true );
-		
-		try
-		{
-			Binder binder;
-			Binder parentBinder;
-			
-			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			
-			// Get the binder's parent.
-			parentBinder = binder.getParentBinder();
-			if ( parentBinder != null )
-				binder = parentBinder;
-			
-			lpProperties = getLandingPageProperties( ami, String.valueOf( binder.getId() ), request );
-		}
-		catch (Exception ex)
-		{
-			throw getGwtTeamingException( ex );
-		}
-		
-		return lpProperties;
-	}
-	
-	/**
-	 * Get the landing page data for the given binder.
-	 */
-	public static ConfigData getLandingPageData( HttpServletRequest request, AllModulesInjected allModules, String binderId ) throws GwtTeamingException
-	{
-		ConfigData configData;
-		
-		configData = new ConfigData();
-		configData.setBinderId( binderId );
-
-		try
-		{
-			Binder binder;
-			CustomAttribute customAttr;
-			String style;
-			
-			binder = allModules.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			
-			// The landing page configuration data is stored as a custom attribute with the name "mashup"
-			customAttr = binder.getCustomAttribute( "mashup" );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
-    		{
-    			String configStr;
-
-    			configStr = (String) customAttr.getValue();
-    			configData.setConfigStr( configStr );
-    		}
-    		
-			// Get the value of the "hide the masthead" setting.
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_MASTHEAD );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
-    			configData.setHideMasthead( ((Boolean) customAttr.getValue()).booleanValue() );
-			
-			// Get the value of the "hide the navigation panel" setting.
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_SIDEBAR );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
-    			configData.setHideNavPanel( ((Boolean) customAttr.getValue()).booleanValue() );
-			
-			// Get the value of the "hide the footer" setting.
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_FOOTER );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
-    			configData.setHideFooter( ((Boolean) customAttr.getValue()).booleanValue() );
-    		
-    		// Get the value of the "landing page style" setting.
-    		style = "mashup_dark.css";
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_STYLE );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
-    		{
-    			style = (String) customAttr.getValue();
-    			if ( style == null || style.length() == 0 )
-    				style = "mashup_dark.css";
-    		}
-    		configData.setLandingPageStyle( style );
-			
-			// Get the other settings that are stored in the "mashup__properties" custom attribute
-   			getLandingPageProperties( allModules, binderId, configData, request );
-		}
-		catch (Exception ex)
-		{
-			throw getGwtTeamingException( ex );
-		}
-		
-		return configData;
-	}
-	
-	/**
-	 * Get the landing page properties (background color, background image, etc) for
-	 * the given binder.
-	 * @throws GwtTeamingException 
-	 */
-	public static LandingPageProperties getLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
-	{
-		LandingPageProperties lpProperties = null;
-		
-		lpProperties = new LandingPageProperties();
-		lpProperties.setInheritProperties( true );
-		
-		try
-		{
-			Binder binder;
-			Binder sourceBinder;
-			Document doc;
-			
-			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			
-			// Landing page properties can be inherited.  Get the binder that holds the landing
-			// page properties.
-			sourceBinder = binder.getLandingPagePropertiesSourceBinder();
-			
-			// Does the user have rights to the binder where the landing page properties are coming from?
-			if ( !ami.getBinderModule().testAccess( sourceBinder, BinderOperation.readEntries ) )
-			{
-				// No, don't use inherited landing page properties.
-				sourceBinder = binder;
-			}
-			
-			// Get the landing page properties from the binder we inherit from.
-			doc = sourceBinder.getLandingPageProperties();
-			if ( doc != null )
-			{
-				Element bgElement;
-				Element pgLayoutElement;
-				Element headerElement;
-				Element contentElement;
-				Element borderElement;
-				
-				// Did we inherit the properties from another landing page.
-				if ( sourceBinder == binder )
-				{
-					// No
-					lpProperties.setInheritProperties( false );
-				}
-				
-				// Get the <background ...> element.
-				bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
-				if ( bgElement != null )
-				{
-					String bgColor;
-					String bgImgName;
-					
-					bgColor = bgElement.attributeValue( "color" );
-					if ( bgColor != null )
-						lpProperties.setBackgroundColor( bgColor );
-					
-					bgImgName = bgElement.attributeValue( "imgName");
-					if ( bgImgName != null && bgImgName.length() > 0 )
-					{
-						String fileUrl;
-						String webPath;
-						
-						webPath = WebUrlUtil.getServletRootURL( request );
-						fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, sourceBinder, bgImgName );
-						lpProperties.setBackgroundImgUrl( fileUrl );
-						
-						// Get the background image repeat value.
-						{
-							String repeat;
-							
-							repeat = bgElement.attributeValue( "repeat" );
-							if ( repeat != null )
-								lpProperties.setBackgroundRepeat( repeat );
-						}
-					}
-				}
-				
-				// Get the <pageLayout hideMenu="true | false" /> element.
-				pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
-				if ( pgLayoutElement != null )
-				{
-					String hideMenu;
-					
-					hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
-					if ( hideMenu != null )
-					{
-						boolean value;
-						
-						value = Boolean.parseBoolean( hideMenu );
-						lpProperties.setHideMenu( value );
-					}
-				}
-
-				// Get the <header bgColor="" textColor="" /> element.
-				headerElement = (Element) doc.selectSingleNode( "//landingPageData/header" );
-				if ( headerElement != null )
-				{
-					String bgColor;
-					String textColor;
-					
-					bgColor = headerElement.attributeValue( "bgColor" );
-					if ( bgColor != null )
-						lpProperties.setHeaderBgColor( bgColor );
-					
-					textColor = headerElement.attributeValue( "textColor" );
-					if ( textColor != null )
-						lpProperties.setHeaderTextColor( textColor );
-				}
-				
-				// Get the <content textColor="" /> element.
-				contentElement = (Element) doc.selectSingleNode( "//landingPageData/content" );
-				if ( contentElement != null )
-				{
-					String textColor;
-					
-					textColor = contentElement.attributeValue( "textColor" );
-					if ( textColor != null )
-						lpProperties.setContentTextColor( textColor );
-				}
-				
-				// Get the <border color="" width="" /> element
-				borderElement = (Element) doc.selectSingleNode( "//landingPageData/border" );
-				if ( borderElement != null )
-				{
-					String borderColor;
-					String width;
-					
-					borderColor = borderElement.attributeValue( "color" );
-					if ( borderColor != null )
-						lpProperties.setBorderColor( borderColor );
-					
-					width = borderElement.attributeValue( "width" );
-					if ( width != null )
-						lpProperties.setBorderWidth( width );
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			throw getGwtTeamingException( ex );
-		}
-		
-		return lpProperties;
-	}
-	
-	/**
-	 * Get the landing page properties (background color, background image, etc) for
-	 * the given binder.
-	 * @throws GwtTeamingException 
-	 */
-	public static void getLandingPageProperties( AllModulesInjected ami, String binderId, ConfigData lpConfigData, HttpServletRequest request ) throws GwtTeamingException
-	{
-		LandingPageProperties lpProperties;
-		
-		// Get the landing page properties for the given binder.
-		lpProperties = getLandingPageProperties( ami, binderId, request );
-		if ( lpProperties != null )
-		{
-			lpConfigData.initLandingPageProperties( lpProperties );
-		}
-	}
-	
-	/**
-	 * Return a list of child binders for the given binder.
-	 */
-	public static ArrayList<TreeInfo> getListOfChildBinders( HttpServletRequest request, AllModulesInjected ami, String binderId )
-	{
-		Binder binder;
-		ArrayList<TreeInfo> listOfChildBinders;
-    	Map<String, Counter> unseenCounts;
-
-		// Get the count of unseen items in the given binder and sub binders
-		{
-			@SuppressWarnings("unused")
-			HashMap options;
-			List binderIds;
-			Date creationDate;
-			String startDate;
-			String now;
-			Criteria crit;
-			Map results;
-	    	List<Map> entries;
-			SeenMap seen;
-			
-	    	unseenCounts = new HashMap();
-	    	
-			options = new HashMap();
-			binderIds = new ArrayList();
-			binderIds.add( binderId );
-		    
-			// Get entries created within last 30 days
-			creationDate = new Date();
-			creationDate.setTime( creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000 );
-			startDate = DateTools.dateToString( creationDate, DateTools.Resolution.SECOND );
-			now = DateTools.dateToString( new Date(), DateTools.Resolution.SECOND );
-			crit = SearchUtils.newEntriesDescendants( binderIds );
-			crit.add( org.kablink.util.search.Restrictions.between( MODIFICATION_DATE_FIELD, startDate, now ) );
-			results = ami.getBinderModule().executeSearchQuery( crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
-	    	entries = (List) results.get( ObjectKeys.SEARCH_ENTRIES );
-
-			// Get the count of unseen entries
-			seen = ami.getProfileModule().getUserSeenMap( null );
-	    	for (Map entry : entries)
-	    	{
-	    		SearchFieldResult entryAncestors;
-				String entryIdString;
-				Iterator itAncestors;
-
-	    		entryAncestors = (SearchFieldResult) entry.get( ENTRY_ANCESTRY );
-				if ( entryAncestors == null )
-					continue;
-				
-				entryIdString = (String) entry.get( DOCID_FIELD );
-				if ( entryIdString == null || ( seen.checkIfSeen( entry ) ) )
-					continue;
-				
-				// Count up the unseen counts for all ancestor binders
-				itAncestors = entryAncestors.getValueSet().iterator();
-				while ( itAncestors.hasNext() )
-				{
-					String binderIdString;
-					Counter cnt;
-
-					binderIdString = (String)itAncestors.next();
-					if ( binderIdString.equals("") )
-						continue;
-					
-					cnt = unseenCounts.get( binderIdString );
-					if ( cnt == null )
-					{
-						cnt = new WorkspaceTreeHelper.Counter();
-						unseenCounts.put( binderIdString, cnt );
-					}
-					cnt.increment();
-				}
-	    	}
-		}
-
-		listOfChildBinders = new ArrayList<TreeInfo>();
-		binder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), binderId );
-		if ( binder != null )
-		{
-			ArrayList<Long> expandedBindersList;
-			TreeInfo treeInfo;
-			List<Map> children;
-
-			// This is needed by buildTreeInfoFromBinder()
-			expandedBindersList = new ArrayList<Long>();
-			
-			// Get all of the child binders.
-			{
-				Map options;
-				Map searchResults;
-
-				options = new HashMap();
-				options.put( ObjectKeys.SEARCH_SORT_BY, org.kablink.util.search.Constants.SORT_TITLE_FIELD );
-				options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
-				options.put( ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
-				searchResults = ami.getBinderModule().getBinders( binder, options );
-				children = (List)searchResults.get( ObjectKeys.SEARCH_ENTRIES );
-				
-			}
-			
-			if ( children != null )
-			{
-				for (Map child : children)
-				{
-					String childBinderId;
-					Binder childBinder;
-					
-					// Get the next child binder
-					childBinderId = (String) child.get( DOCID_FIELD );
-					childBinder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), childBinderId );
-					
-					if ( childBinder != null )
-					{
-						treeInfo = buildTreeInfoFromBinder( request, ami, childBinder, expandedBindersList, false, 1 );
-	
-						// Set the number of unseen entries for this binder
-						{
-							Counter counter;
-							
-							counter = unseenCounts.get( childBinderId );
-							if ( counter != null )
-								treeInfo.getBinderInfo().setNumUnread( counter.getCount() );
-						}
-						
-						listOfChildBinders.add( treeInfo );
-					}
-				}
-			}
-		}
-		
-		// Sort the list of child binders.
-		if ( listOfChildBinders.isEmpty() == false )
-		{
-			Collections.sort( listOfChildBinders, new TreeInfoComparator( true ) );
-		}
-
-		return listOfChildBinders;
-	}
-	
 	
 	/**
 	 * Return login information such as self registration and auto complete.
@@ -3954,7 +2713,7 @@ public class GwtServerHelper {
 		
 		try {
 			// Guest user can't get presence information.
-			User userAsking = getCurrentUser();
+			User userAsking = GwtServerHelper.getCurrentUser();
 			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(userAsking.getInternalId()))) {
 				PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
 				if (null != presenceService) {
@@ -4044,17 +2803,14 @@ public class GwtServerHelper {
 
 	/**
 	 * Returns information about the recent places the current user has
-	 * visited that has been stored by the controllers in the session
-	 * cache.
-	 *
-	 * @param bs
-	 * @param request
+	 * visited.
 	 * 
 	 * @return
 	 */
-	public static List<RecentPlaceInfo> getRecentPlacesFromCache(AllModulesInjected bs, HttpServletRequest request) {
+	@SuppressWarnings("unchecked")
+	public static List<RecentPlaceInfo> getRecentPlaces(HttpServletRequest request, AllModulesInjected bs) {
 		// Allocate an ArrayList to return the recent places in.
-		List<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
+		ArrayList<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
 		
 		// If we can't access the HttpSession...
 		HttpSession hSession = getCurrentHttpSession();
@@ -4073,9 +2829,66 @@ public class GwtServerHelper {
 			m_logger.debug("GwtServerHelper.getRecentPlaces( 'Could not access any cached tabs' )");
 			return rpiList;
 		}
+		
+		// What's the maximum size for a place's title?
+		int maxTitle = 30;
+		try {
+			maxTitle = SPropsUtil.getInt("history.max.title");
+		} catch (PropertyNotFoundException e) {}
 
-		// Fill the List<RecentPlaceInfo> from the Tabs and return it.
-		fillRecentPlacesFromTabs(bs, request, tabs, rpiList);
+		// Scan the cached tabs...
+		int count = 0;
+		List tabList = tabs.getTabList();
+		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
+		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
+			// ...creating a RecentPlaceInfo object for each...
+			TabEntry tab = ((TabEntry) tabIT.next());
+			RecentPlaceInfo rpi = new RecentPlaceInfo();
+			String title = ((String) tab.getData().get("title"));
+			if (title.length() > maxTitle) {
+				title = (title.substring(0, maxTitle) + "...");
+			}
+			rpi.setTitle(title);
+			rpi.setId(String.valueOf(tab.getTabId()));
+			rpi.setType(tab.getType());
+			switch (rpi.getTypeEnum()) {
+			case BINDER:
+				// If the tab's binder is no longer accessible...
+				Long binderId = tab.getBinderId();
+				Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+				if ((null == binder) || GwtUIHelper.isBinderPreDeleted(binder)) {
+					// ...skip it.
+					continue;
+				}
+				rpi.setBinderId(String.valueOf(binderId));
+				rpi.setEntityPath(((String) tab.getData().get("path")));
+				rpi.setEntryId(String.valueOf(tab.getEntryId()));
+				rpi.setPermalink(PermaLinkUtil.getPermalink(request, binder));
+				
+				break;
+				
+			case SEARCH:
+				rpi.setSearchQuery(tab.getQuery());
+				rpi.setSearchQuick(((Boolean) tab.getData().get("quickSearch")));
+				
+				break;
+
+			default:
+				continue;
+			}
+			
+			// ...adding it to the list of them...
+			rpiList.add(rpi);
+			
+			// ...and stopping when we hit our maximum.
+			count += 1;
+			if (maxItems == count) {
+				break;
+			}
+		}
+
+		// If we get here, rpiList refers to a List<RecentPlaceInfo> of
+		// the user's recent places.  Return it.
 		return rpiList;
 	}
 	
@@ -4085,6 +2898,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<SavedSearchInfo> getSavedSearches(AllModulesInjected bs) {
 		// Allocate an ArrayList to return the saved searches in.
 		List<SavedSearchInfo> ssList = new ArrayList<SavedSearchInfo>();
@@ -4119,6 +2933,7 @@ public class GwtServerHelper {
 	/**
 	 * Return information about self registration.
 	 */
+	@SuppressWarnings("unchecked")
 	public static GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpServletRequest request, AllModulesInjected ami )
 	{
 		GwtSelfRegistrationInfo selfRegInfo;
@@ -4182,6 +2997,7 @@ public class GwtServerHelper {
 	/**
 	 * Return the membership of the given group.
 	 */
+	@SuppressWarnings("unchecked")
 	public static ArrayList<GwtTeamingItem> getGroupMembership( AllModulesInjected ami, String groupId ) throws GwtTeamingException
 	{
 		ArrayList<GwtTeamingItem> retList;
@@ -4262,7 +3078,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		}
 		
 		return retList;
@@ -4275,6 +3091,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<GroupInfo> getGroups(HttpServletRequest request, AllModulesInjected bs, Long userId) {
 		// Allocate an ArrayList<GroupInfo> to hold the groups.
 		ArrayList<GroupInfo> reply = new ArrayList<GroupInfo>();
@@ -4319,7 +3136,7 @@ public class GwtServerHelper {
 		
 		subscriptionData = new SubscriptionData();
 
-		user = getCurrentUser();
+		user = GwtServerHelper.getCurrentUser();
 		
 		// Get the user's primary email address.
 		address = user.getEmailAddress( Principal.PRIMARY_EMAIL );
@@ -4371,117 +3188,8 @@ public class GwtServerHelper {
 		
 		return subscriptionData;
 	}
-		
-	/**
-	 * Returns a string for a value out of the entry map from a search
-	 * results.
-	 * 
-	 * @param em
-	 * @param key
-	 * @param dateStyle
-	 * @param timeStyle
-	 * 
-	 * @return
-	 */
-	public static String getStringFromEntryMap(Map em, String key, int dateStyle, int timeStyle) {
-		return
-			getStringFromEntryMapValue(
-				getValueFromEntryMap(
-					em,
-					key),
-				dateStyle,
-				timeStyle);
-	}
 	
-	public static String getStringFromEntryMap(Map em, String key) {
-		// Always use the initial form of the method.
-		return getStringFromEntryMap(em, key, DateFormat.MEDIUM, DateFormat.LONG);		
-	}
 	
-	/**
-	 * Returns a string for a value out of the entry map from a search
-	 * results.
-	 * 
-	 * @param emValue
-	 * @param dateStyle
-	 * @param timeStyle
-	 * 
-	 * @return
-	 */
-	public static String getStringFromEntryMapValue(Object emValue, int dateStyle, int timeStyle) {
-		String reply = "";
-		if (null != emValue) {
-			// Yes!  Is it a string?
-			if (emValue instanceof String) {
-				// Yes!  Return it directly.
-				reply = ((String) emValue);
-			}
-			
-			// No, it isn't a string!  Is it a date?
-			else if (emValue instanceof Date) {
-				// Yes!  Format it for the current user and return
-				// that.
-				reply = getDateTimeString(((Date) emValue), dateStyle, timeStyle);
-			}
-			
-			else {
-				// No, it isn't a date either!  Let the object convert
-				// itself to a string and return that.
-				reply = emValue.toString();
-			}
-		}
-		
-		// If we get here, reply refers to an empty string or the
-		// appropriate string value for the key from the entry map.
-		// Return it.
-		return reply;
-	}
-	
-	/**
-	 * Returns a count of the members of a team.
-	 * 
-	 * @param bs
-	 * @param binder
-	 * 
-	 * @return
-	 */
-	public static int getTeamCount(AllModulesInjected bs, Binder binder) {
-		Set<Long> teamMemberIds = getTeamMemberIds(bs, binder.getId());
-		return ((null == teamMemberIds) ? 0 : teamMemberIds.size());
-	}
-
-	/**
-	 * Returns a Set<Long> of the member IDs of a team.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param explodeGroups
-	 * 
-	 * @return
-	 */
-	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId, boolean explodeGroups) {
-		Set<Long> teamMemberIds = null;
-		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, explodeGroups);}
-		catch (Exception ex) {/* Ignored. */}
-		return validatePrincipalIds(teamMemberIds);
-	}
-	
-	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
-		return getTeamMemberIds(bs, binderId, false);
-	}
-	
-	/**
-	 * Returns the Object from an entry map.
-	 * 
-	 * @param em
-	 * @param key
-	 * 
-	 * @return
-	 */
-	public static Object getValueFromEntryMap(Map em, String key) {
-		return em.get(key);
-	}
-
 	/**
 	 * Returns information about the teams of a specific user
 	 * @param bs
@@ -4489,6 +3197,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<TeamInfo> getTeams(HttpServletRequest request, AllModulesInjected bs, Long userId) {
 		// Allocate an ArrayList<TeamInfo> to hold the teams.
 		ArrayList<TeamInfo> reply = new ArrayList<TeamInfo>();
@@ -4525,7 +3234,7 @@ public class GwtServerHelper {
 	 */
 	public static List<String> getTrackedPeople(AllModulesInjected bs) {
 		// Return the IDs of the people the current user is tracking.
-		Long userId = getCurrentUser().getId();
+		Long userId = GwtServerHelper.getCurrentUser().getId();
 		return SearchUtils.getTrackedPeopleIds(bs, userId);
 	}
 	
@@ -4536,7 +3245,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static List<String> getTrackedPlaces(AllModulesInjected bs) {
-		Long userId = getCurrentUser().getId();
+		Long userId = GwtServerHelper.getCurrentUser().getId();
 		return SearchUtils.getTrackedPlacesIds(bs, userId);
 	}
 	
@@ -4544,6 +3253,7 @@ public class GwtServerHelper {
 	 * Using a search query, returns a List<BinderData> containing
 	 * the sorted list the children of a given binder.
 	 */
+	@SuppressWarnings("unchecked")
 	private static List<BinderData> getChildBinderData(AllModulesInjected bs, Binder binder, BucketInfo bi) {
 		String pageTuple;
 		if (null == bi) {
@@ -4613,6 +3323,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<TopRankedInfo> getTopRanked(HttpServletRequest request, AllModulesInjected bs)
 	{
 		// Allocate an ArrayList to return the top ranked items in.
@@ -4692,55 +3403,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Given a user ID, returns the corresponding User object.
-	 * 
-	 * @param bs
-	 * @param userId
-	 * 
-	 * @return
-	 */
-	public static User getUserFromId(AllModulesInjected bs, Long userId) {
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		Set<User> userSet = bs.getProfileModule().getUsers(userIds);
-		User[] users = userSet.toArray(new User[0]);
-		
-		User reply;
-		if ((null != users) && (1 == users.length))
-		     reply = users[0];
-		else reply = null;
-		return reply;
-	}
-	
-	/**
-	 * Return a view file URL that can be used to view an entry's file
-	 * as HTML.
-	 * 
-	 * @param request
-	 * @param vfi
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static String getViewFileUrl(HttpServletRequest request, ViewFileInfo vfi) throws GwtTeamingException {
-		try {
-			StringBuffer webUrl = new StringBuffer(WebUrlUtil.getServletRootURL(request) + WebKeys.ACTION_VIEW_FILE);
-			webUrl.append(org.kablink.teaming.util.Constants.QUESTION  + WebKeys.URL_BINDER_ID   + org.kablink.teaming.util.Constants.EQUAL + vfi.getBinderId()  );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTRY_ID    + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntryId()   );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTITY_TYPE + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntityType());
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_ID     + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileId()    );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_TIME   + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileTime()  );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_VIEW_TYPE   + org.kablink.teaming.util.Constants.EQUAL + vfi.getViewType()  );
-			return webUrl.toString();
-		}
-		
-		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}		
-	}
-	
-	/**
 	 * Return the "show setting" (show all or show unread) for the "What's new" page.
 	 */
 	public static ShowSetting getWhatsNewShowSetting( UserProperties userProperties )
@@ -4771,73 +3433,6 @@ public class GwtServerHelper {
 		return showSetting;
 	}
 
-	/**
-	 * Imports an iCal into a folder using a URL.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderId
-	 * @param iCalURL
-	 * 
-	 * @return
-	 */
-	public static ImportIcalByUrlRpcResponseData importIcalByUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId, String iCalURL) {
-		// Construct the RPC response data to return.
-		ImportIcalByUrlRpcResponseData reply = new ImportIcalByUrlRpcResponseData();
-
-		// Can we parse the URL?
-		GetMethod getMethod = null;
-		try {
-			HttpURL hrl = getHttpURL(iCalURL);
-			HttpClient httpClient = getHttpClient(hrl);
-			getMethod = new GetMethod(hrl.getPathQuery());
-			
-			// Can we perform the import using the URL?
-			int statusCode = httpClient.executeMethod(getMethod);
-			if (200 == statusCode) {
-				// Yes!  Get the response to the URL as an InputStream.
-				InputStream icalInputStream = getMethod.getResponseBodyAsStream();
-				
-				// Can we parse the data as iCal entries?
-				try {
-					AttendedEntries attendedEntries = bs.getIcalModule().parseToEntries(folderId, icalInputStream);
-					reply.setAddedEntryIds(   attendedEntries.added   );
-					reply.setModifiedEntryIds(attendedEntries.modified);
-				}
-				
-				catch (net.fortuna.ical4j.data.ParserException e) {
-					// No, we couldn't parse the data as iCal entries!
-					reply.setError(FailureReason.PARSE_EXCEPTION, e.getLocalizedMessage());
-				}
-				
-				// Close the input string.
-				icalInputStream.close();
-			}
-			else {
-				// No, we couldn't perform the import!
-				reply.setError(FailureReason.IMPORT_FAILED, "InvalidUrl");
-			}
-		}
-		
-		catch (Exception e) {
-			// No, we couldn't parse the URL!
-			reply.setError(FailureReason.URL_EXCEPTION, e.getLocalizedMessage());
-		}
-		
-		finally {
-			// If we're connected to the URL...
-			if (null != getMethod) {
-				// ...release the connection.
-				getMethod.releaseConnection();
-			}
-		}
-
-		// If we get here, reply refers to an
-		// ImportIcalByUrlRpcResponseData object that contains the
-		// results of the import.  Return it.
-		return reply;
-	}
-	
 	/**
 	 * Returns the WorkspaceType of a binder.
 	 * 
@@ -5080,32 +3675,11 @@ public class GwtServerHelper {
 			break;
 		}
 			
-		case SAVE_FOLDER_COLUMNS:
-		{
-			SaveFolderColumnsCmd saveFCCmd = ((SaveFolderColumnsCmd) cmd);
-			for (FolderColumn fc : saveFCCmd.getFolderColumns()) {
-				fc.setColumnCustomTitle(StringCheckUtil.check(fc.getColumnCustomTitle()));
-			}
-			break;
-		}
-		
-		case GET_JSP_HTML:
-		{
-			GetJspHtmlCmd jspHtmlCmd = ((GetJspHtmlCmd) cmd);
-			Map<String,Object> model = jspHtmlCmd.getModel();
-			StringCheckUtil.check(model, Boolean.TRUE);
-		}
-			
 		// The following commands do not require XSS checks.
 		case ADD_FAVORITE:
 		case CAN_MODIFY_BINDER:
-		case CHANGE_ENTRY_TYPES:
 		case COLLAPSE_SUBTASKS:
-		case COPY_ENTRIES:
-		case DELETE_FOLDER_ENTRIES:
 		case DELETE_TASKS:
-		case EXECUTE_ENHANCED_VIEW_JSP:
-		case EXECUTE_LANDING_PAGE_CUSTOM_JSP:
 		case EXECUTE_SEARCH:
 		case EXPAND_HORIZONTAL_BUCKET:
 		case EXPAND_SUBTASKS:
@@ -5115,50 +3689,27 @@ public class GwtServerHelper {
 		case GET_ADD_MEETING_URL:
 		case GET_ADMIN_ACTIONS:
 		case GET_BINDER_BRANDING:
-		case GET_BINDER_DESCRIPTION:
-		case GET_BINDER_FILTERS:
 		case GET_BINDER_INFO:
 		case GET_BINDER_PERMALINK:
-		case GET_BINDER_REGION_STATE:
 		case GET_BINDER_TAGS:
-		case GET_CLIPBOARD_TEAM_USERS:
-		case GET_CLIPBOARD_USERS:
-		case GET_CLIPBOARD_USERS_FROM_LIST:
-		case GET_COLUMN_WIDTHS:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
 		case GET_DOCUMENT_BASE_URL:
-		case GET_DOWNLOAD_FILE_URL:
 		case GET_DISK_USAGE_INFO:
-		case GET_EMAIL_NOTIFICATION_INFORMATION:
 		case GET_ENTRY:
 		case GET_ENTRY_TAGS:
-		case GET_ENTRY_TYPES:
-		case GET_EXECUTE_JSP_URL:
 		case GET_EXTENSION_FILES:
 		case GET_EXTENSION_INFO:
 		case GET_FAVORITES:
 		case GET_FILE_ATTACHMENTS:
 		case GET_FILE_SYNC_APP_CONFIGURATION:
-		case GET_FILE_URL:
 		case GET_FOLDER:
-		case GET_FOLDER_COLUMNS:
-		case GET_FOLDER_DISPLAY_DATA:
-		case GET_FOLDER_ENTRIES:
-		case GET_FOLDER_ROWS:
-		case GET_FOLDER_TOOLBAR_ITEMS:
-		case GET_FOOTER_TOOLBAR_ITEMS:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP:
 		case GET_GROUPS:
-		case GET_HELP_URL:
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
 		case GET_IM_URL:
-		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
-		case GET_LANDING_PAGE_DATA:
-		case GET_LIST_OF_CHILD_BINDERS:
-		case GET_LIST_OF_FILES:
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:
 		case GET_MICRO_BLOG_URL:
@@ -5173,7 +3724,6 @@ public class GwtServerHelper {
 		case GET_RECENT_PLACES:
 		case GET_ROOT_WORKSPACE_ID:
 		case GET_SAVED_SEARCHES:
-		case GET_SHARE_BINDER_PAGE_URL:
 		case GET_SITE_ADMIN_URL:
 		case GET_SITE_BRANDING:
 		case GET_SUBSCRIPTION_DATA:
@@ -5184,7 +3734,6 @@ public class GwtServerHelper {
 		case GET_TEAM_MANAGEMENT_INFO:
 		case GET_TEAMS:
 		case GET_TASK_BUNDLE:
-		case GET_TASK_DISPLAY_DATA:
 		case GET_TASK_LINKAGE:
 		case GET_TASK_LIST:
 		case GET_TOOLBAR_ITEMS:
@@ -5195,37 +3744,24 @@ public class GwtServerHelper {
 		case GET_VERTICAL_ACTIVITY_STREAMS_TREE:
 		case GET_VERTICAL_NODE:
 		case GET_VERTICAL_TREE:
-		case GET_VIEW_FILE_URL:
 		case GET_VIEW_FOLDER_ENTRY_URL:
-		case GET_VIEW_INFO:
 		case HAS_ACTIVITY_STREAM_CHANGED:
-		case IMPORT_ICAL_BY_URL:
 		case IS_ALL_USERS_GROUP:
 		case IS_PERSON_TRACKED:
 		case IS_SEEN:
-		case LOCK_ENTRIES:
-		case MOVE_ENTRIES:
 		case PERSIST_ACTIVITY_STREAM_SELECTION:
 		case PERSIST_NODE_COLLAPSE:
 		case PERSIST_NODE_EXPAND:
-		case PIN_ENTRY:
-		case PURGE_FOLDER_ENTRIES:
 		case PURGE_TASKS:
 		case REMOVE_EXTENSION:
 		case REMOVE_FAVORITE:
 		case REMOVE_TASK_LINKAGE:
 		case REMOVE_SAVED_SEARCH:
-		case SAVE_BINDER_REGION_STATE:
-		case SAVE_CLIPBOARD_USERS:
-		case SAVE_COLUMN_WIDTHS:
-		case SAVE_EMAIL_NOTIFICATION_INFORMATION:
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
-		case SAVE_FOLDER_SORT:
 		case SAVE_PERSONAL_PREFERENCES:
 		case SAVE_SUBSCRIPTION_DATA:
 		case SAVE_TASK_COMPLETED:
 		case SAVE_TASK_DUE_DATE:
-		case SAVE_TASK_GRAPH_STATE:
 		case SAVE_TASK_LINKAGE:
 		case SAVE_TASK_PRIORITY:
 		case SAVE_TASK_SORT:
@@ -5240,8 +3776,6 @@ public class GwtServerHelper {
 		case UPDATE_CALCULATED_DATES:
 		case UPDATE_ENTRY_TAGS:
 		case UPDATE_FAVORITES:
-		case UNLOCK_ENTRIES:
-		case UNPIN_ENTRY:
 		case UNTRACK_BINDER:
 		case UNTRACK_PERSON:
 		case VALIDATE_ENTRY_EVENTS:
@@ -5326,57 +3860,6 @@ public class GwtServerHelper {
 			setExpandedBindersList(bs, usersExpandedBindersList);
 		}
 	}
-
-	/**
-	 * Marks an entry as being pinned.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderId
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public static Boolean pinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
-		return setEntryPinState(bs, request, folderId, entryId, true);
-	}
-	
-	/**
-	 * Purges the specified folder entries.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * @param entryIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
-		try {
-			// Before we purge any of them... 
-			FolderModule fm = bs.getFolderModule();
-			for (Long entryId:  entryIds) {
-				// ...make sure we can purge all of them.
-				fm.checkAccess(fm.getEntry(binderId, entryId), FolderOperation.deleteEntry);
-			}
-
-			// If we get here, we have rights to purge all the entries
-			// that we were given.  Scan them...
-			for (Long entryId:  entryIds) {
-				// ...deleting each.
-				fm.deleteEntry(binderId, entryId);
-			}
-			
-			// If we get here, the purges were successful.
-			return Boolean.TRUE;
-		}
-		
-		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
 	
 	/**
 	 * Removes a search based on its SavedSearchInfo.
@@ -5386,6 +3869,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static Boolean removeSavedSearch(AllModulesInjected bs, SavedSearchInfo ssi) {
 		// Does the user contain any saved searches?
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
@@ -5407,59 +3891,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Removes the AssignmentInfo's in a remove list from an assignee
-	 * list and clears the remove list.
-	 * 
-	 * @param assigneeList
-	 * @param removeList
-	 */
-	public static void removeUnresolvedAssignees(List<AssignmentInfo> assigneeList, List<AssignmentInfo> removeList) {
-		// Scan the remove list...
-		for (AssignmentInfo ai: removeList) {
-			// ...removing the assignments from the assignee list...
-			assigneeList.remove(ai);
-		}
-		
-		// ...and clearing the remove list.
-		removeList.clear();
-	}
-	
-	/**
-	 * Save the users from a List<ClipboardUser> as the user's
-	 * clipboard contents. 
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param cbUserList
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static BooleanRpcResponseData saveClipboardUsers(AllModulesInjected bs, HttpServletRequest request, List<ClipboardUser> cbUserList) throws GwtTeamingException {
-		try {
-			// Extract the user ID's from the List<CliboardUser>...
-			List<Long> userIds = new ArrayList<Long>();
-			if ((null != cbUserList) && (!(cbUserList.isEmpty()))) {
-				for (ClipboardUser cbUser:  cbUserList) {
-					userIds.add(cbUser.getUserId());
-				}
-			}
-			
-			// ...store them in the clipboard...
-			Clipboard clipboard = new Clipboard(request);
-			clipboard.set(Clipboard.USERS, userIds);				
-
-			// ...and return true.
-			return new BooleanRpcResponseData(Boolean.TRUE);
-		}
-		
-		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
-		}
-	}
-	
-	/**
 	 * Save the given File Sync App configuration
 	 */
 	public static Boolean saveFileSyncAppConfiguration( AllModulesInjected allModules, GwtFileSyncAppConfiguration fsaConfiguration )
@@ -5478,88 +3909,6 @@ public class GwtServerHelper {
 	
 	
 	/**
-	 * Saves the folder columns configuration on the specified binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param fcList
-	 * @param isDefault
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean saveFolderColumns(AllModulesInjected bs, String binderId, 
-			List<FolderColumn> fcList, Boolean isDefault) throws GwtTeamingException {
-		try {
-			if (fcList.isEmpty()) {
-				//This is a request to restore the defaults
-				BinderHelper.saveFolderColumnSettings(bs, Long.valueOf(binderId), null, null, 
-						null, Boolean.TRUE);
-			} else {
-				//Build a map of columns and column texts
-				Map columns = new HashMap();
-				Map columnsText = new HashMap();
-				String columnSortOrder = "";
-				for (FolderColumn fc : fcList) {
-					if (!columnSortOrder.equals("")) columnSortOrder += "|";
-					columnSortOrder += fc.getColumnName();
-					if (fc.getColumnIsShown()) {
-						columns.put(fc.getColumnName(), "on");
-					} else {
-						columns.put(fc.getColumnName(), "");
-					}
-					String columnTitle = fc.getColumnCustomTitle();
-					if (columnTitle != null && !columnTitle.equals("")) {
-						columnsText.put(fc.getColumnName(), columnTitle);
-					} else {
-						columnsText.put(fc.getColumnName(), null);
-					}
-				}
-				//Save the column settings
-				BinderHelper.saveFolderColumnSettings(bs, Long.valueOf(binderId), columns, columnsText, 
-						columnSortOrder, isDefault);
-			}
-			
-			return Boolean.FALSE;
-		}
-		
-		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
-
-	/**
-	 * Saves the folder sort options on the specified binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param sortKey
-	 * @param sortAscending
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean saveFolderSort(AllModulesInjected bs, Long binderId, String sortKey, boolean sortAscending) throws GwtTeamingException {
-		try {
-			Long          userId = GwtServerHelper.getCurrentUser().getId();
-			ProfileModule pm     = bs.getProfileModule();
-			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_BY,                      sortKey       );
-			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(!sortAscending));
-			
-			if (m_logger.isDebugEnabled()) {
-				m_logger.debug("GwtTaskHelper.saveFolderSort( Stored folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
-			}
-			return Boolean.FALSE;
-		}
-		
-		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
-
-	/**
 	 * Saves a search based on its tab ID and SavedSearchInfo.
 	 *
 	 * @param bs
@@ -5568,6 +3917,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static SavedSearchInfo saveSearch(AllModulesInjected bs, String searchTabId, SavedSearchInfo ssi) {
 		// If we can't access the HttpSession...
 		HttpSession hSession = getCurrentHttpSession();
@@ -5676,8 +4026,8 @@ public class GwtServerHelper {
 		catch (Exception e)
 		{
 			if (e instanceof AccessControlException)
-			     m_logger.warn( "GwtServerHelper.saveSubscriptionData() AccessControlException" );
-			else m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception"      );
+			     m_logger.warn( "GwtSeverHelper.saveSubscriptionData() AccessControlException" );
+			else m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception"     );
 			
 			throw getGwtTeamingException( e );
 		}
@@ -5700,134 +4050,6 @@ public class GwtServerHelper {
 		profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_WHATS_NEW_SHOW_SETTING , setting );
 		
 		return Boolean.TRUE;
-	}
-	
-	/**
-	 * Stores the membership count of an AssignmentInfo based on Map
-	 * lookup using its ID.
-	 * 
-	 * @param ai
-	 * @param countMap
-	 * 
-	 * @return
-	 */
-	public static void setAssignmentInfoMembers(AssignmentInfo ai, Map<Long, Integer> countMap) {
-		Integer count = countMap.get(ai.getId());
-		ai.setMembers((null == count) ? 0 : count.intValue());
-	}
-
-	/**
-	 * Stores the title of an AssignmentInfo based on Map lookup using
-	 * its ID.
-	 * 
-	 * Returns true if a title was stored and false otherwise.
-	 * 
-	 * @param ai
-	 * @param titleMap
-	 * 
-	 * @return
-	 */
-	public static boolean setAssignmentInfoTitle(AssignmentInfo ai, Map<Long, String> titleMap) {
-		String title = titleMap.get(ai.getId());
-		boolean reply = MiscUtil.hasString(title);
-		if (reply) {
-			ai.setTitle(title);
-		}
-		return reply;
-	}
-
-	/**
-	 * Stores a GwtPresenceInfo of an AssignmentInfo based on Map
-	 * lookup using its ID.
-	 * 
-	 * @param ai
-	 * @param presenceMap
-	 */
-	public static void setAssignmentInfoPresence(AssignmentInfo ai, Map<Long, GwtPresenceInfo> presenceMap) {
-		GwtPresenceInfo pi = presenceMap.get(ai.getId());
-		if (null == pi) pi = GwtServerHelper.getPresenceInfoDefault();
-		ai.setPresence(pi);
-		ai.setPresenceDude(GwtServerHelper.getPresenceDude(pi));
-	}
-
-	/**
-	 * Stores a user's workspace ID of an AssignmentInfo based on a Map
-	 * lookup using its ID.
-	 * 
-	 * @param ai
-	 * @param presenceUserWSIdsMap
-	 */
-	public static void setAssignmentInfoPresenceUserWSId(AssignmentInfo ai, Map<Long, Long> presenceUserWSIdsMap) {
-		Long presenceUserWSId = presenceUserWSIdsMap.get(ai.getId());
-		ai.setPresenceUserWSId(presenceUserWSId);
-	}
-
-	/**
-	 * Sets an entry's pin state.
-	 */
-	private static Boolean setEntryPinState(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId, boolean pin) throws GwtTeamingException {
-		try {
-			// If we weren't given a folder ID...
-			if (null == folderId) {
-				// ...extract it from the entry.
-				FolderEntry fe = bs.getFolderModule().getEntry(null, entryId);
-				folderId = fe.getParentBinder().getId();
-			}
-
-			// Read the user's folder properties for the folder.
-			Long userId = getCurrentUser().getId();
-			ProfileModule pm = bs.getProfileModule();
-			UserProperties userFolderProperties = pm.getUserProperties(userId, folderId);
-			Map properties = userFolderProperties.getProperties();
-
-			// Parse the pinned entries from it.
-			String pinnedEntries;
-			if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES))
-			     pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
-			else pinnedEntries = "";
-			List<Long> peList = new ArrayList<Long>();
-			String[] peArray = pinnedEntries.split(",");
-			for (int i = 0; i < peArray.length; i += 1) {
-				String pe = peArray[i];
-				if (MiscUtil.hasString(pe)) {
-					peList.add(Long.valueOf(peArray[i]));
-				}
-			}
-			
-			// Add (pin)/remove (unpin) the entry as requested.
-			boolean isPinned = peList.contains(entryId);
-			if (pin != isPinned) {
-				if (pin)
-				     peList.add(   entryId);
-				else peList.remove(entryId);
-			}
-			
-			// Scan the entries in the pinned list.
-			StringBuffer finalPinnedEntries = new StringBuffer("");
-			SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peList);
-			for (FolderEntry entry:  pinnedFolderEntriesSet) {
-				// Is the entry still viable in this folder?
-				if (entry.getParentBinder().getId().equals(folderId) && (!(entry.isPreDeleted()))) {
-					// Yes!  Add it to the final pinned entries string.
-					if (0 < finalPinnedEntries.length()) {
-						finalPinnedEntries.append(",");
-					}
-					finalPinnedEntries.append(entry.getId().toString());
-				}
-			}
-			
-			// Write the final pinned entries list to the user's folder
-			// properties.
-			pm.setUserProperty(userId, folderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, finalPinnedEntries.toString());
-
-			// If we get here, setting the pin state was successful!
-			// Return true.
-			return Boolean.TRUE;
-		}
-		
-		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}		
 	}
 	
 	/*
@@ -5866,6 +4088,7 @@ public class GwtServerHelper {
 	 * Send an email notification to the given recipients for the given entry.
 	 * This code was taken from RelevanceAjaxController.java, ajaxSaveShareThisBinder() and modified.
 	 */
+	@SuppressWarnings("unchecked")
 	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, String entryId, String addedComments, List<String> principalIds, List<String> teamIds )
 		throws Exception
 	{
@@ -6011,20 +4234,6 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Marks an entry as being unpinned.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderId
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public static Boolean unpinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
-		return setEntryPinState(bs, request, folderId, entryId, false);
-	}
-	
-	/**
 	 * Update the tags for the given binder.
 	 */
 	public static Boolean updateBinderTags( AllModulesInjected bs, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
@@ -6148,25 +4357,5 @@ public class GwtServerHelper {
 		catch (Exception e)
 		{
 		}
-	}
-	
-	/*
-	 * Validates that the Long's in a Set<Long> are valid principal
-	 * IDs.
-	 */
-	private static Set<Long> validatePrincipalIds(Set<Long> principalIds) {
-		Set<Long> reply = new HashSet<Long>();
-		if ((null != principalIds) && (!(principalIds.isEmpty()))) {
-			List principals = null;
-			try {principals = ResolveIds.getPrincipals(principalIds);}
-			catch (Exception ex) {/* Ignored. */}
-			if ((null != principals) && (!(principals.isEmpty()))) {
-				for (Object o:  principals) {
-					Principal p = ((Principal) o);
-					reply.add(p.getId());
-				}
-			}
-		}
-		return reply;
 	}
 }

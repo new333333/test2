@@ -24,8 +24,6 @@
 		<property name="postingEnabled"/>
 		<property name="simpleUrlPostingEnabled"/>
    		<property name="sendMailEnabled"/>
-   		<property name="outgoingAttachmentSizeLimit"/>
-   		<property name="outgoingAttachmentSumLimit"/>
     </component>
     <component name="homePageConfig" class="org.kablink.teaming.domain.HomePageConfig">
 		<property name="defaultHomePageId"/>

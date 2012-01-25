@@ -88,18 +88,12 @@
 	<target name="clean" depends="init">
 		<delete dir="${temp.dir}" />
 		<delete dir="${docs.api.dir}" />
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="gwt-unitCache" />
-		</delete>
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="lucene-contrib" />
-		</delete>
 		
 		<ant dir="util" target="clean" inheritAll="false"/>
 		<ant dir="util-search" target="clean" inheritAll="false"/>
 		<ant dir="rest-shared" target="clean" inheritAll="false"/>
-		<ant dir="rest-client" target="clean" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="clean" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="clean" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="clean" inheritAll="false"/>
 		<ant dir="as-common" target="clean" inheritAll="false"/>
 		<ant dir="as-shared" target="clean" inheritAll="false"/>
@@ -136,15 +130,14 @@
 		<ant dir="simple-url" target="clean" inheritAll="false"/>		
 		<ant dir="mobile" target="clean" inheritAll="false"/>		
 		<ant dir="rest" target="clean" inheritAll="false"/>		
-		<ant dir="vibe-root" target="clean" inheritAll="false"/>		
 	</target>
 
 	<target name="compile" depends="init">
 		<ant dir="util" target="compile" inheritall="false"/>
 		<ant dir="util-search" target="compile" inheritall="false"/>
 		<ant dir="rest-shared" target="compile" inheritall="false"/>
-		<ant dir="rest-client" target="compile" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="compile" inheritall="false"/>
+		<ant dir="lucene-contrib" target="compile" inheritall="false"/>
 		<ant dir="indexer-lucene" target="compile" inheritall="false"/>			
 		<ant dir="as-common" target="compile" inheritall="false"/>
 		<ant dir="as-shared" target="compile" inheritall="false"/>
@@ -185,8 +178,8 @@
 		<ant dir="util" target="jar" inheritall="false"/>
 		<ant dir="util-search" target="jar" inheritall="false"/>
 		<ant dir="rest-shared" target="jar" inheritall="false"/>
-		<ant dir="rest-client" target="jar" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="jar" inheritall="false"/>
+		<ant dir="lucene-contrib" target="jar" inheritall="false"/>
 		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
 		<ant dir="as-common" target="jar" inheritall="false"/>
 		<ant dir="as-shared" target="jar" inheritall="false"/>
@@ -224,17 +217,15 @@
 		
 		<ant dir="mobile" target="war" inheritall="false"/>
 
-		<ant dir="rest" target="war" inheritall="false"/>
-
-		<ant dir="vibe-root" target="war" inheritall="false"/>
+		<!--<ant dir="rest" target="war" inheritall="false"/>-->
 	</target>
 
 	<target name="deploy" depends="init">
 		<ant dir="util" target="deploy" inheritall="false"/>
 		<ant dir="util-search" target="deploy" inheritall="false"/>
-		<ant dir="rest-shared" target="deploy" inheritall="false"/>
-		<ant dir="rest-client" target="deploy" inheritall="false"/>
+		<!--<ant dir="rest-shared" target="deploy" inheritall="false"/>-->
 		<ant dir="commons-httpclient-contrib" target="deploy" inheritall="false"/>
+		<ant dir="lucene-contrib" target="deploy" inheritall="false"/>
 		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>
 		<ant dir="as-common" target="deploy" inheritall="false"/>
 		<ant dir="as-shared" target="deploy" inheritall="false"/>
@@ -269,9 +260,7 @@
 		
 		<ant dir="mobile" target="deploy" inheritall="false"/>
 		
-		<ant dir="rest" target="deploy" inheritall="false"/>
-		
-		<ant dir="vibe-root" target="deploy" inheritall="false"/>
+		<!--<ant dir="rest" target="deploy" inheritall="false"/>-->
 	</target>
 
 	<target name="java2html" depends="init">
@@ -280,8 +269,8 @@
 		<ant dir="util" target="java2html" inheritAll="false"/>
 		<ant dir="util-search" target="java2html" inheritAll="false"/>
 		<ant dir="rest-shared" target="java2html" inheritAll="false"/>
-		<ant dir="rest-client" target="java2html" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="java2html" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="java2html" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="java2html" inheritAll="false"/>
 		<ant dir="as-common" target="java2html" inheritAll="false"/>
 		<ant dir="as-shared" target="java2html" inheritAll="false"/>
@@ -315,8 +304,8 @@
 		<ant dir="util" target="javadoc" inheritAll="false"/>
 		<ant dir="util-search" target="javadoc" inheritAll="false"/>
 		<ant dir="rest-shared" target="javadoc" inheritAll="false"/>
-		<ant dir="rest-client" target="javadoc" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="javadoc" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="javadoc" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="javadoc" inheritAll="false"/>
 		<ant dir="as-common" target="javadoc" inheritAll="false"/>
 		<ant dir="as-shared" target="javadoc" inheritAll="false"/>

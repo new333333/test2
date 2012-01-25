@@ -48,12 +48,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -90,7 +88,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	private CheckBox m_assocFolderCkBox = null;
 	private CheckBox m_assocEntryCkBox = null;
 	private LandingPageEditor m_lpe;
-	private SizeCtrl m_sizeCtrl = null;
 	
 	// The following data members are used if the user has checked the "Associate a folder with this custom jsp"
 	private String m_folderId = null;
@@ -205,10 +202,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			spacer.getElement().getStyle().setHeight( 2, Unit.PX );
 			mainPanel.add( spacer );
 		}
-
-		// Add the size control
-		m_sizeCtrl = new SizeCtrl();
-		mainPanel.add( m_sizeCtrl );
 
 		init( properties );
 		
@@ -589,39 +582,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			properties.setShowTitle( getShowEntryTitleValue() );
 		}
 		
-		// Get the width and height values
-		{
-			int width;
-			int height;
-			Style.Unit units;
-			
-			// Get the width
-			width = getWidth();
-			units = getWidthUnits();
-			if ( width == 0 )
-			{
-				// Default to 100%
-				width = 100;
-				units = Style.Unit.PCT;
-			}
-			properties.setWidth( width );
-			properties.setWidthUnits( units );
-			
-			// Get the height
-			height = getHeight();
-			units = getHeightUnits();
-			if ( height == 0 )
-			{
-				// Default to 100%
-				height = 100;
-				units = Style.Unit.PCT;
-			}
-
-			properties.setHeight( height );
-			properties.setHeightUnits( units );
-			properties.setOverflow( getOverflow() );
-		}
-
 		return properties;
 	}// end getDataFromDlg()
 	
@@ -730,23 +690,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	
 
 	/**
-	 * 
-	 */
-	private int getHeight()
-	{
-		return m_sizeCtrl.getHeight();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getHeightUnits()
-	{
-		return m_sizeCtrl.getHeightUnits();
-	}
-	
-
-	/**
 	 * Return the text found in the jsp name edit control.
 	 */
 	public String getJspName()
@@ -782,14 +725,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	
 	
 	/**
-	 * 
-	 */
-	private Style.Overflow getOverflow()
-	{
-		return m_sizeCtrl.getOverflow();
-	}
-
-	/**
 	 * Return true if the "show title" checkbox is checked.
 	 */
 	public boolean getShowEntryTitleValue()
@@ -807,23 +742,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	}// end getShowFolderTitleValue()
 	
 	
-	/**
-	 * 
-	 */
-	private int getWidth()
-	{
-		return m_sizeCtrl.getWidth();
-	}
-	
-	/**
-	 * 
-	 */
-	private Style.Unit getWidthUnits()
-	{
-		return m_sizeCtrl.getWidthUnits();
-	}
-	
-
 	/**
 	 * 
 	 */
@@ -867,9 +785,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 
 		m_folderId = properties.getFolderId();
 		m_entryId = properties.getEntryId();
-
-		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
 
 		// Do we have a folder?
 		if ( m_folderId != null && m_folderId.length() > 0 )

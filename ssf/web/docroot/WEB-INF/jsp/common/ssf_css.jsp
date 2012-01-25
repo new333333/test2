@@ -662,8 +662,8 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
     text-align: center !important;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -671,28 +671,17 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	</c:if>
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
-	color: #135c8f !important;
+	color: #fff;
     text-align: center !important;
     font-size: 11px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
   	padding: 2px 10px !important;
-	border: 0px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
+	border: 0px;
+
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -722,23 +711,9 @@ input[type="button"].n-button {
 	</c:if>
 	}
 input[type="button"].n-button:hover {
-	color: #135c8f !important;
-	border: 1px solid #81b2bd;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
   	padding: 2px 10px !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
 	}
 
 .n-buttonright {
@@ -758,42 +733,28 @@ input.ss_tinyButton,
 a.ss_tinyButton:link, 
 a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
-	color: #1f1f1f !important;
-	margin-right: 5px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8 !important;
-	font-weight: normal !important;
-	font-size: 11px;
-	padding: 2px 10px  !important;
-	text-decoration:none;	
+ 	font-size: 11px;
+	background: #949494 none repeat scroll 0 0;
+	color:#FFFFFF !important;
+	margin-right:3px;
+	padding: 2px 10px;
+	text-decoration:none;
+  	cursor: pointer;
   	white-space: nowrap;
-  	cursor: pointer !important;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
 	}
 a.ss_tinyButton:focus,
 a.ss_tinyButton:hover {
+  	color: ${ss_linkbutton_link_hover_color};
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: 11px;
-	color: #135c8f !important;
-	border: 1px solid #81b2bd !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
   	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -839,19 +800,14 @@ div.ss_tag_content {
 }
 
 .ss_muted_cloud_tag {
-	color: ${ss_style_muted_tag_color};
-	background-color: #ededed;
-	font-size: 13px;
-	padding-right: 2px 6px;
-	line-height: 17px;
-	border: 1px solid #b8b8b8;
-	padding: 2px 6px;
-	-moz-border-radius: 4px;
-	-web-border-radius: 4px;
+  color: ${ss_style_muted_tag_color};
+   font-size: 13px;
+   padding-right: 5px;
+   line-height: 17px;
 }
 .ss_muted_tag_cloud {
   width: 95%;
-  line-height: 28px;
+  padding-top: 1px;
 }
 
 
@@ -1507,9 +1463,9 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	padding-right:4px;
 	}
 tr.ss_attachments_list_primary_file td, tr.ss_attachments_list_regular_file td {
-	font-size: 12px;
 	padding: 5px 10px 5px 0px;
 	white-space: nowrap;
+	font-size: ${ss_style_font_largestprint};
 	}
 tr.ss_attachments_list_primary_file td {
     background-color: #fff;
@@ -2296,7 +2252,7 @@ div.ss_sidebar_panel_featured {
 	}
 /* titlebar */
 .ss_base_title_bar {
-	background-color: #e0e0e0;
+	background-color: #c4c4c4;
 	color: #333;
 	font-size: ${ss_style_font_normalprint};
 	font-weight: bold;
@@ -3570,10 +3526,10 @@ div.ss_calendarNaviBar {
 	margin: 0px;
 	padding: 10px;
 	overflow: hidden;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 }
  <c:if test="<%= isIE %>">
 	padding: 0px;
@@ -3597,39 +3553,14 @@ div.ss_calendarNaviBar {
 }
 
 .ss_calendarNaviBar .ss_hoursSelectorTitle {
-	color: #1f1f1f !important;
-	margin-right: 5px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 11px !important;
-	padding: 3px 8px  !important;
-	text-decoration:none;	
+	background-color: #e0e0e0;
+	color: #333333;
+	text-decoration: none;
+	border: 1px solid #FFFFFF;
+	font-size: 12px !important;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
-
-.ss_calendarNaviBar .ss_hoursSelectorTitle:hover {
-	color: #135c8f !important;
-	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-}
-
 
 .ss_calendarNaviBar .ss_calHoursSelectorMenu {
  <c:if test="<%= isIE %>">
@@ -3897,8 +3828,8 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
-	color: #505354; 
-	padding: 3px 5px 2px 2px; 
+	color: #333; 
+	padding: 4px 5px 4px 2px; 
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
 	background:url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
@@ -4308,45 +4239,29 @@ div.ss_questionContainer p {padding-right: 30px;}
 div.ss_questionContainer ol {margin: 10px 0px;}
 
 div.ss_questionContainer a.ss_tinyButton {
-
-	color: #1f1f1f !important;
-	margin-right: 5px;
-	display:block;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
-	border: 1px solid #B8B8B8;
-	font-weight: normal !important;
-	font-size: 11px;
-	padding: 2px 10px !important;
+	background: #949494 none repeat scroll 0 0;
+	color:#FFFFFF !important;
+  	font-size: 11px;
 	margin-right: 10px;
-	text-decoration:none;	
+	padding: 2px 10px;
+	text-decoration:none;
+  	cursor: pointer;
   	white-space: nowrap;
-  	cursor: pointer !important;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
 	}
 div.ss_questionContainer a.ss_tinyButton:focus,
 div.ss_questionContainer a.ss_tinyButton:hover {
   	font-size: 11px;
-	color: #135c8f !important;
-	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
   	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 }
+
+
 
 table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;

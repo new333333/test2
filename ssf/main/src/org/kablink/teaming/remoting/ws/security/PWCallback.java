@@ -38,8 +38,6 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.WSSecurityException;
@@ -70,8 +68,6 @@ import org.springframework.security.AuthenticationException;
  */
 public class PWCallback implements CallbackHandler {
 
-	private static final Log logger = LogFactory.getLog(PWCallback.class);
-	
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) {
@@ -103,7 +99,6 @@ public class PWCallback implements CallbackHandler {
         				}
         				catch(AuthenticationException e) {
         					// Authentication failed.
-        					logger.warn(e.toString());
          					throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
         				}
             			

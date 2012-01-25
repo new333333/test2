@@ -384,7 +384,6 @@
 				<prop key="org.kablink.teaming.lucene.LuceneException">common/defCodedError</prop>
 				<prop key="org.kablink.teaming.web.util.CloseWrapperException">common/defCodedErrorClose</prop>
 				<prop key="org.kablink.teaming.web.util.ExportException">common/noRenderError</prop>
-				<prop key="org.kablink.teaming.context.request.NoContextUserException">common/noContextUserError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
 			</props>
@@ -611,7 +610,6 @@
 		<property name="fileModule"><ref bean="fileModule"/></property>
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="rssModule"><ref bean="rssModule"/></property>
-		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
 	</bean>
 	

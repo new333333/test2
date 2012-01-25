@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.search.ScoreDoc;
 
 
 /**
@@ -69,22 +68,19 @@ public class Hits implements Serializable {
         return scores[n];
     }
 
-    public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
+    public static Hits transfer(org.apache.lucene.search.Hits hits,
             int offset, int maxSize) throws IOException {
-        if (topDocs == null) return new Hits(0);
-    	int length = topDocs.totalHits;
+        if (hits == null) return new Hits(0);
+    	int length = hits.length();
         if (maxSize > 0) {
-          length = Math.min(length - offset, maxSize);
+          length = Math.min(hits.length() - offset, maxSize);
         }
         if (length <= 0) return new Hits(0);
         Hits ss_hits = new Hits(length);
-        ScoreDoc[] hits = topDocs.scoreDocs;
-        int docId;
         for(int i = 0; i < length; i++) {
-            ss_hits.setDoc(searcher.doc(hits[offset + i].doc), i);
-            ss_hits.setScore(hits[offset + i].score, i);
+            ss_hits.setDoc(hits.doc(offset + i), i);
+            ss_hits.setScore(hits.score(offset + i), i);
         }
-        ss_hits.setTotalHits(topDocs.totalHits);
         return ss_hits;
     }
 

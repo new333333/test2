@@ -36,8 +36,6 @@ public class MailConfig  {
 	protected boolean sendMailEnabled = true;
 	protected boolean postingEnabled = false;
 	protected boolean simpleUrlPostingEnabled = false;
-	protected Long outgoingAttachmentSizeLimit;
-	protected Long outgoingAttachmentSumLimit;
 	
 	public MailConfig()	{
 	}
@@ -45,8 +43,6 @@ public class MailConfig  {
 		this.sendMailEnabled = src.sendMailEnabled;
 		this.postingEnabled = src.postingEnabled;
 		this.simpleUrlPostingEnabled = src.simpleUrlPostingEnabled;
-		this.outgoingAttachmentSizeLimit = src.outgoingAttachmentSizeLimit;
-		this.outgoingAttachmentSumLimit = src.outgoingAttachmentSumLimit;
 	}
 	public boolean isSendMailEnabled() {
 		return sendMailEnabled;
@@ -65,26 +61,6 @@ public class MailConfig  {
 	}
 	public void setSimpleUrlPostingEnabled(boolean simpleUrlPostingEnabled) {
 		this.simpleUrlPostingEnabled = simpleUrlPostingEnabled;
-	}
-	public Long getOutgoingAttachmentSizeLimit() {
-		return outgoingAttachmentSizeLimit;
-	}
-	public Long getOutgoingAttachmentSizeLimitKb() {
-		if (outgoingAttachmentSizeLimit == null) return null;
-		return outgoingAttachmentSizeLimit / 1024;
-	}
-	public void setOutgoingAttachmentSizeLimit(Long outgoingAttachmentSizeLimit) {
-		this.outgoingAttachmentSizeLimit = outgoingAttachmentSizeLimit;
-	}
-	public Long getOutgoingAttachmentSumLimit() {
-		return outgoingAttachmentSumLimit;
-	}
-	public Long getOutgoingAttachmentSumLimitKb() {
-		if (outgoingAttachmentSumLimit == null) return null;
-		return outgoingAttachmentSumLimit / 1024;
-	}
-	public void setOutgoingAttachmentSumLimit(Long outgoingAttachmentSumLimit) {
-		this.outgoingAttachmentSumLimit = outgoingAttachmentSumLimit;
 	}
 
 }

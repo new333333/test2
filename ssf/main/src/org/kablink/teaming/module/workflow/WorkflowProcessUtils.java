@@ -94,7 +94,6 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 
@@ -996,34 +995,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 						return toState;
 					}
 						
-				} else if (type.equals("transitionOnElapsedTime")) {
-					//Timers are now handled here instead of by jbpm
-					long total = 0;
-					//	get days and convert to minutes
-					String val=DefinitionUtils.getPropertyValue(condition, "days");
-					if (!Validator.isNull(val)) total += Long.parseLong(val)*24*60;
-					
-					val=DefinitionUtils.getPropertyValue(condition, "businessdays");
-					if (!Validator.isNull(val)) {
-						HistoryStamp stateChangeTime = state.getWorkflowChange();
-						Date elaspedDate = EventHelper.adjustDate(stateChangeTime.getDate(), Integer.valueOf(val));
-						long ms = elaspedDate.getTime() - stateChangeTime.getDate().getTime();
-						total += ms/60000;
-					}
-				
-					val=DefinitionUtils.getPropertyValue(condition, "hours");
-					if (!Validator.isNull(val)) total += Long.parseLong(val)*60;				    	
-				
-					val=DefinitionUtils.getPropertyValue(condition, "mins");
-					if (!Validator.isNull(val)) total += Long.parseLong(val);
-					Date timerDate = new Date();
-					timerDate.setTime(state.getWorkflowChange().getDate().getTime() + total*60000);
-					if (currentCal.getTime().after(timerDate)) {
-						return toState;
-					} else {
-						updateMinimum(minDate,timerDate);
-					}
-					
 				} else if (type.equals("waitForParallelThread")) {
 					//	get names of threads we are waiting for
 					List threads = DefinitionUtils.getPropertyValueList(condition, "name");
@@ -1102,15 +1073,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 	    		if (minDate.getTime() != timer.getDueDate().getTime()) {
 	    			timer.setDueDate(minDate);
 	    		}
-    		} catch (Exception ex) {
-    			//Something failed looking up the old timer, so set a new one.
-    			timer = new Timer(executionContext.getToken());
-	    		timer.setDueDate(minDate);
-	    		timer.setName("onDataValue");
-	    		executionContext.getJbpmContext().getSession().save(timer);
-	    		state.setTimerId(timer.getId());
-	    		timer.setAction(executionContext.getProcessDefinition().getAction("timerAction"));
-    		}
+    		} catch (Exception ex) {};
     	} else {
     		timer = new Timer(executionContext.getToken());
     		timer.setDueDate(minDate);

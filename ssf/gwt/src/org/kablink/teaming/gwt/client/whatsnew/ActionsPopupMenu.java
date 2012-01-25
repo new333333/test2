@@ -46,22 +46,16 @@ import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
-import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.EventValidationListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEntryEventsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.Agent;
-import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This popup menu is used to display the actions a user can take on a given entry.
@@ -70,23 +64,24 @@ import com.google.gwt.user.client.ui.UIObject;
  */
 public class ActionsPopupMenu extends PopupMenu
 {
-	private VibeMenuItem m_replyMenuItem;
-	private VibeMenuItem m_shareMenuItem;
-	private VibeMenuItem m_subscribeMenuItem;
-	private VibeMenuItem m_tagMenuItem;
-	private VibeMenuItem m_markReadMenuItem;
-	private VibeMenuItem m_markUnreadMenuItem;
+	private PopupMenuItem m_replyMenuItem;
+	private PopupMenuItem m_shareMenuItem;
+	private PopupMenuItem m_subscribeMenuItem;
+	private PopupMenuItem m_tagMenuItem;
+	private PopupMenuItem m_markReadMenuItem;
+	private PopupMenuItem m_markUnreadMenuItem;
 	private AsyncCallback<VibeRpcResponse> m_checkRightsCallback = null;
 	private List<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
-	private UIObject m_actionsMenuTarget;
+	private int m_x;
+	private int m_y;
 	
 	/**
 	 * 
 	 */
 	public ActionsPopupMenu( boolean autoHide, boolean modal )
 	{
-		super( autoHide, modal, false );
+		super( autoHide, modal );
 		
 		// Add all the possible menu items.
 		{
@@ -129,10 +124,10 @@ public class ActionsPopupMenu extends PopupMenu
 	 * @return
 	 */
 	@Override
-	public VibeMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
+	public PopupMenuItem addMenuItem( VibeEventBase<?> event, Image img, String text )
 	{
 		EventValidation eventValidation;
-		VibeMenuItem menuItem;
+		PopupMenuItem menuItem;
 
 	    menuItem = super.addMenuItem( event, img, text );
 
@@ -171,80 +166,32 @@ public class ActionsPopupMenu extends PopupMenu
 				}// end onFailure()
 
 				@Override
-				public void onSuccess( final VibeRpcResponse result )
+				public void onSuccess( VibeRpcResponse result )
 				{
-					Scheduler.ScheduledCommand cmd;
+					EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
+					List<EventValidation> eventValidations = responseData.getEventValidationListResults();
 					
-					cmd = new Scheduler.ScheduledCommand()
+					for( EventValidation nextValidation : eventValidations )
 					{
-						@Override
-						public void execute()
+						if ( nextValidation.isValid() == false )
 						{
-							EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
-							List<EventValidation> eventValidations = responseData.getEventValidationListResults();
-							AgentBase agent;
-							String userAgent;
+							TeamingEvents event;
 							
-							for( EventValidation nextValidation : eventValidations )
-							{
-								if ( nextValidation.isValid() == false )
-								{
-									TeamingEvents event;
-									
-									event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
-									
-									if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
-										m_replyMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
-										m_subscribeMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
-										m_shareMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
-										m_tagMenuItem.setVisible( false );
-								}
-							}
+							event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 							
-							// Now that we have validated all the events, show this menu.
-							// Are we running in Firefox?
-							agent = GWT.create( Agent.class );
-							userAgent = agent.getAgentName();
-							if ( userAgent != null && userAgent.equalsIgnoreCase( "gecko1_8" ) )
-							{
-								FlowPanel panel;
-								int x;
-								int y;
-								int scrollTop = 0;
-
-								// Yes
-								x = m_actionsMenuTarget.getAbsoluteLeft();
-								y = m_actionsMenuTarget.getAbsoluteTop() + m_actionsMenuTarget.getOffsetHeight();
-
-								// Get the panel the menu will be displayed in.
-								panel = m_entry.getActivityStreamCtrl().getSearchResultsPanel();
-								if ( panel != null )
-								{
-									scrollTop = panel.getElement().getScrollTop(); 
-								}
-
-								// Show the menu.
-								showMenu( x, y );
-								
-								// If the menu is being displayed in a <div> that has
-								// been scrolled, Firefox resets the scroll position to 0.
-								// We need to restore the scroll position.
-								if ( panel != null )
-								{
-									panel.getElement().setScrollTop( scrollTop );
-								}
-							}
-							else
-							{
-								// No
-								showRelativeToTarget( m_actionsMenuTarget );
-							}
+							if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
+								setMenuItemVisibility( m_replyMenuItem, false );
+							else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
+								setMenuItemVisibility( m_subscribeMenuItem, false );
+							else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
+								setMenuItemVisibility( m_shareMenuItem, false );
+							else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
+								setMenuItemVisibility( m_tagMenuItem, false );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					}
+					
+					// Now that we have validated all the events, show this menu.
+					showMenu();
 				}// end onSuccess()
 			};
 		}
@@ -259,13 +206,14 @@ public class ActionsPopupMenu extends PopupMenu
 	 * Show this menu.  Make an rpc request and see what rights the user has for the given entry.
 	 * Then based on those rights show/hide the appropriate menu items.  Then show the menu.
 	 */
-	public void showActionsMenu( ActivityStreamUIEntry entry, UIObject target )
+	public void showActionsMenu( ActivityStreamUIEntry entry, int x, int y )
 	{
 		// Remember the entry we are dealing with.
 		m_entry = entry;
 		
 		// Remember where we should position this popup menu.
-		m_actionsMenuTarget = target;
+		m_x = x;
+		m_y = y;
 		
 		// Associate the given entry with each menu item.
 		InvokeReplyEvent reply = ((InvokeReplyEvent) m_replyMenuItem.getEvent());
@@ -287,21 +235,42 @@ public class ActionsPopupMenu extends PopupMenu
 		markUnread.setUIEntry( entry );
 		
 		// Make sure all the menu items are visible.
-		m_replyMenuItem.setVisible( true );
-		m_shareMenuItem.setVisible( true );
-		m_subscribeMenuItem.setVisible( true );
-		m_tagMenuItem.setVisible( true );
-		m_markReadMenuItem.setVisible( true );
-		m_markUnreadMenuItem.setVisible( true );
+		setMenuItemVisibility( m_replyMenuItem, true );
+		setMenuItemVisibility( m_shareMenuItem, true );
+		setMenuItemVisibility( m_subscribeMenuItem, true );
+		setMenuItemVisibility( m_tagMenuItem, true );
+		setMenuItemVisibility( m_markReadMenuItem, true );
+		setMenuItemVisibility( m_markUnreadMenuItem, true );
 		
 		// Hide "Mark read" or "Mark unread" depending on whether or not the entry has been read.
 		if ( entry.isEntryUnread() )
-			m_markUnreadMenuItem.setVisible( false );
+			setMenuItemVisibility( m_markUnreadMenuItem, false );
 		else
-			m_markReadMenuItem.setVisible( false );
+			setMenuItemVisibility( m_markReadMenuItem, false );
 
 		// Make an ajax request to see what rights the user has for the given entry.
 		// After the ajax request returns we will display this menu.
 		checkRights();
+	}
+	
+	
+	/**
+	 * Show this popup menu.
+	 */
+	private void showMenu()
+	{
+		PopupPanel.PositionCallback posCallback;
+
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				setPopupPosition( m_x - offsetWidth, m_y );
+			}// end setPosition()
+		};
+		setPopupPositionAndShow( posCallback );
 	}
 }

@@ -104,7 +104,7 @@ public class ListDropWidget extends DropWidget
 				configItem = configData.get( i );
 				
 				// Create the appropriate DropWidget based on the configuration data.
-				dropWidget = configItem.createDropWidget( m_lpe );
+				dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
 				
 				// Add the widget to the col's drop zone.
 				m_dropZone.addWidgetToDropZone( dropWidget );

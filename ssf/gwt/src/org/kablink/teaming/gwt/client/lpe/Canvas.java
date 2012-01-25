@@ -36,7 +36,6 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EditLandingPagePropertiesEvent;
-import org.kablink.teaming.gwt.client.event.PreviewLandingPageEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -45,6 +44,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This class represents the canvas that the user can add landing page elements to
@@ -68,7 +68,6 @@ public class Canvas extends Composite
 		// Create an "edit" image
 		{
 			ImageResource imageResource;
-			Image previewImg;
 			Image editImg;
 			Image delImg;
 			FlowPanel actionsPanel;
@@ -77,25 +76,7 @@ public class Canvas extends Composite
 			actionsPanel = new FlowPanel();
 			actionsPanel.addStyleName( "lpeCanvasActionsControl" );
 
-			// Add an image the user can click on to preview the landing page.
-			imageResource = GwtTeaming.getImageBundle().preview10();
-			previewImg = new Image( imageResource );
-			previewImg.addStyleName( "lpePreviewImg" );
-			previewImg.setTitle( GwtTeaming.getMessages().lpeAltPreviewLandingPage() );
-			clickHandler = new ClickHandler()
-			{
-				/**
-				 * Invoke the preview landing page dialog
-				 */
-				public void onClick( ClickEvent event )
-				{
-					// Fire the PreviewLandingPage event
-				    PreviewLandingPageEvent.fireOne();
-				}
-			};
-			previewImg.addClickHandler( clickHandler );
-			
-			// Add an edit properties image
+			// Add an edit image
 			imageResource = GwtTeaming.getImageBundle().edit10();
 			editImg = new Image( imageResource );
 			editImg.addStyleName( "lpeEditImg" );
@@ -107,8 +88,13 @@ public class Canvas extends Composite
 				 */
 				public void onClick( ClickEvent event )
 				{
+					Widget img;
+					
+					// Get the anchor the user clicked on.
+					img = (Widget) event.getSource();
+					
 					// Fire the EditLandingPageProperties event
-				    EditLandingPagePropertiesEvent.fireOne();
+				     EditLandingPagePropertiesEvent.fireOne();
 				}
 			};
 			editImg.addClickHandler( clickHandler );
@@ -135,8 +121,7 @@ public class Canvas extends Composite
 				};
 				delImg.addClickHandler( clickHandler );
 			}
-
-			actionsPanel.add( previewImg );
+			
 			actionsPanel.add( editImg );
 			actionsPanel.add( delImg );
 			mainPanel.add( actionsPanel );

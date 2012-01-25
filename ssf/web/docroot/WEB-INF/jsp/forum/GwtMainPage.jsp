@@ -43,27 +43,7 @@
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
-<% // The following javascript files are needed because the enhanced view widget on %>
-<% // a landing page may display a calendar. %>
-	<script type="text/javascript">
- 		ss_loadJsFile( ss_rootPath, "js/common/ss_calendar.js" );
-	</script>
-	<script type="text/javascript" src="<html:rootPath/>js/datepicker/CalendarPopup.js"></script>
-	<script type="text/javascript" src="<html:rootPath/>js/common/AnchorPosition.js"></script>
-	<script type="text/javascript" src="<html:rootPath/>js/common/PopupWindow.js"></script>
-	<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
-<% //------------------------------------------------------------------------------ %>
-
 	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-
-<% // The DlgBox class uses JQuery to make dialogs draggable. %>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
-<script type="text/javascript">
-	// Relinquish jQuery's control of the $ variable.
-    jQuery.noConflict();
-</script>
 
 	<c:set var="gwtPage" value="main" scope="request"/>	
 	<%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
@@ -115,7 +95,7 @@
 			//This may fail if the iframe is showing something in another domain
 			//If so, the alternate method (via ss_communicationFrame) is used to set the window height
 			try {
-				var iframeDiv = document.getElementById('contentFlowPanel')
+				var iframeDiv = document.getElementById('contentControl')
 				var startOfContent = ss_getObjectTop(iframeDiv);
 				var windowHeight = ss_getWindowHeight();
 				var iframeMinimum = parseInt(windowHeight - startOfContent - ss_workareaIframeMinOffset);
@@ -140,22 +120,18 @@
 			//ss_debug("**** "+ss_debugTrace());
 			if (ss_isGwtUIActive && ss_getUserDisplayStyle() == "newpage") {
 				try {
-					var PANEL_PADDING = 8;
-					var contentIframe = document.getElementById('contentFlowPanel');
+					var contentIframe = document.getElementById('contentControl');
 					var startOfContent = ss_getObjectTop(contentIframe);
-					var entryIframeBoxDiv = document.getElementById('ss_iframe_box_div');
 					var entryIframeDiv = document.getElementById('ss_showentrydiv');
 					var entryIframeFrame = document.getElementById('ss_showentryframe');
 					if (entryIframeDiv == null || entryIframeFrame == null) return;
-					var top   = (Number(ss_getObjectTop(contentIframe)) + PANEL_PADDING);
-					var left  =  Number(ss_getObjectLeft(contentIframe));
-					var width = (Number(contentIframe.offsetWidth)      - PANEL_PADDING);
-					ss_setObjectTop(  entryIframeDiv,    top  );
-					ss_setObjectLeft( entryIframeDiv,    left );
-					ss_setObjectWidth(entryIframeBoxDiv, width);
-					ss_setObjectWidth(entryIframeFrame,  width);
+					var top = ss_getObjectTop(contentIframe);
+					var left = ss_getObjectLeft(contentIframe);
+					ss_setObjectTop(entryIframeDiv, top);
+					ss_setObjectLeft(entryIframeDiv, left);
+					ss_setObjectWidth(entryIframeFrame, contentIframe.style.width);
 					var windowHeight = parseInt(ss_getWindowHeight());
-					var iframeMinimum = (parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin) - PANEL_PADDING);
+					var iframeMinimum = parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin);
 					if (iframeMinimum < 100) iframeMinimum = 100;
 					if (window.frames['ss_showentryframe'] != null) {
 						if (parseInt(entryIframeFrame.style.height) != parseInt(iframeMinimum)) {
@@ -185,7 +161,6 @@
 		var ss_wikiLinkUrl = "<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="__ajax_request">
 			  					<ssf:param name="operation" value="wikilink_form" />
 			  					<ssf:param name="binderId" value="${wikiLinkBinderId}" />
-			  					<ssf:param name="originalBinderId" value="${wikiLinkBinderId}" />
 		    				   </ssf:url>";
 
 		// ss_youTubeUrl and ss_invalidYouTubeUrl are used with the tinyMCE editor plugin that lets you add a youtube video.
@@ -306,7 +281,6 @@
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-	
   </head>
 
   <body>
@@ -327,7 +301,7 @@
 	</form> 
 	
 	<!--  This form is used for logging in. -->
-	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;" accept-charset="UTF-8">
+	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;">
 		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
 			<colgroup>
 				<col>

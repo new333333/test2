@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -122,7 +122,6 @@ public class SearchOptionsComposite extends Composite
 		FinderRB(String id, String label, final GwtSearchCriteria.SearchType searchType, boolean checked) {
 			super("finders", label);
 			addClickHandler(new ClickHandler() {
-				@Override
 				public void onClick(ClickEvent event) {
 					m_finderControl.hideSearchResults();
 					m_finderControl.setInitialSearchString("");
@@ -145,7 +144,6 @@ public class SearchOptionsComposite extends Composite
 	 * list box.
 	 */
 	private class SavedSearchSelected implements ChangeHandler {
-		@Override
 		public void onChange(ChangeEvent event) {
 			// Is other than the select a search item selected?
 			ListBox ssiList = ((ListBox) event.getSource());
@@ -206,7 +204,6 @@ public class SearchOptionsComposite extends Composite
 		asAnchor.getElement().appendChild(asLabel.getElement());
 		asAnchor.setTitle(m_messages.mainMenuSearchOptionsAdvancedSearch());
 		asAnchor.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				// Hide the search options popup and run the advanced
 				// search dialog.
@@ -289,7 +286,6 @@ public class SearchOptionsComposite extends Composite
 		Anchor closePBAnchor = new Anchor();
 		closePBAnchor.addStyleName("searchOptionsDlg_CloseA");
 		closePBAnchor.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				m_searchOptionsPopup.hide();
 			}
@@ -338,7 +334,6 @@ public class SearchOptionsComposite extends Composite
 		
 		cmd = new GetBinderPermalinkCmd( binderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -346,7 +341,6 @@ public class SearchOptionsComposite extends Composite
 					binderId);
 			}
 			
-			@Override
 			public void onSuccess(final VibeRpcResponse response ) {
 				String binderPermalink;
 				StringRpcResponseData responseData;
@@ -356,7 +350,7 @@ public class SearchOptionsComposite extends Composite
 				
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.SEARCH_SELECT);
 				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
-			}
+			}// end onSuccess()
 		});
 	}
 
@@ -442,14 +436,11 @@ public class SearchOptionsComposite extends Composite
 		// Does the user have any saved searches defined?
 		cmd = new GetSavedSearchesCmd();
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetSavedSearches());
 			}
-			
-			@Override
 			public void onSuccess(VibeRpcResponse response)  {
 				List<SavedSearchInfo> ssiList;
 				GetSavedSearchesRpcResponseData responseData;
@@ -487,7 +478,6 @@ public class SearchOptionsComposite extends Composite
 	 */
 	private void setFocusOnSearch() {
 		ScheduledCommand cmd = new ScheduledCommand() {
-			@Override
 			public void execute() {
     			m_finderControl.getFocusWidget().setFocus(true);
 			}

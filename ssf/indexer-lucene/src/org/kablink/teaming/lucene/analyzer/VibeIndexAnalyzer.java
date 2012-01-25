@@ -51,7 +51,7 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 	private static Log logger = LogFactory.getLog(VibeIndexAnalyzer.class);
 	
 	private static boolean inited = false;
-	private static Set indexStopWords;
+	private static Set<String> indexStopWords;
 	private static String indexStemmerName;
 	private static boolean indexFoldToAscii;
 	private static boolean indexFallbackToLegacy;
@@ -96,6 +96,13 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 
 	public TokenStream reusableTokenStream(String fieldName, Reader reader)
 			throws IOException {
+		if (overridesTokenStreamMethod) {
+			// LUCENE-1678: force fallback to tokenStream() if we
+			// have been subclassed and that subclass overrides
+			// tokenStream but not reusableTokenStream
+			return tokenStream(fieldName, reader);
+		}
+
 		SavedStreams streams = (SavedStreams) getPreviousTokenStream();
 		if (streams == null) {
 			streams = new SavedStreams();

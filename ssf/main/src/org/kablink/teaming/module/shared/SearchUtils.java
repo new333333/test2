@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -113,9 +114,9 @@ public class SearchUtils {
 				HashMap ent = new HashMap();
 				Document doc = hits.doc(count);
 				//enumerate thru all the returned fields, and add to the map object
-				List flds = doc.getFields();
-				for(int i = 0; i < flds.size(); i++) {
-					fld = (Field)flds.get(i);
+				Enumeration flds = doc.fields();
+				while (flds.hasMoreElements()) {
+					fld = (Field)flds.nextElement();
 					//TODO This hack needs to go.
 					if (SearchUtils.isDateField(fld.name())) {
 						try {
@@ -154,9 +155,9 @@ public class SearchUtils {
 			childEntries.add(ent);
 			Field fld;
 			//enumerate thru all the returned fields, and add to the map object
-			List flds = doc.getFields();
-			for(int i = 0; i < flds.size(); i++) {
-				fld = (Field)flds.get(i);
+			Enumeration flds = doc.fields(); 
+			while (flds.hasMoreElements()) {
+				fld = (Field)flds.nextElement();
 				if (fld.isStored()) {
 					//TODO This hack needs to go.
 					if (SearchUtils.isDateField(fld.name())) {

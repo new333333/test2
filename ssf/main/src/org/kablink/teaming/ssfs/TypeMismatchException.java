@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.ssfs;
 
-import org.kablink.util.VibeRuntimeException;
-
 /**
  * Thrown to indicate that the actual type of the object 
  * (either folder or file) does not match the expectation. 
@@ -41,20 +39,12 @@ import org.kablink.util.VibeRuntimeException;
  * @author jong
  *
  */
-public class TypeMismatchException extends VibeRuntimeException {
+public class TypeMismatchException extends RuntimeException {
 
 	public TypeMismatchException() {
 	}
 	
 	public TypeMismatchException(String msg) {
 		super(msg);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
 	}
 }

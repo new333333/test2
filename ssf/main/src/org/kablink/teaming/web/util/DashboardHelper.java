@@ -144,7 +144,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     public static DashboardHelper getInstance() {
     	return instance;
     }
-    
+		
     protected static void getDashboardBeans(Binder binder, Map ssDashboard, Map model, boolean isConfig) {
 		//Go through each list and build the needed beans
     	List componentList = new ArrayList();
@@ -284,14 +284,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
-					//Also set up the wrokspace tree bean because it is used by all of these
-					getInstance().getWorkspaceTreeBean(binder, 
-						ssDashboard, model, id, component, false);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)){
 					getInstance().getTasksBean(binder, ssDashboard, model, id, component, false);
-					//Also set up the wrokspace tree bean because it is used by all of these
-					getInstance().getWorkspaceTreeBean(binder, 
-						ssDashboard, model, id, component, false);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_REMOTE_APPLICATION)){
 					getInstance().getRemoteApplicationBean(ssDashboard, id, component);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
@@ -302,9 +296,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component, false);
-					//Also set up the wrokspace tree bean because it is used by all of these
-					getInstance().getWorkspaceTreeBean(binder, 
-						ssDashboard, model, id, component, false);
 				} 
 			}
 		}
@@ -393,11 +384,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	}
 	//penlets
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, String componentId, boolean isConfig) {
-		return getDashboardMap(binder, userProperties, model, DashboardHelper.Local, componentId, false, true);
-	}
-	//penlets
-	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, 
-			String componentId, boolean isConfig, boolean loadComponents) {
 		//Users dashboard settings for this binder		
 		Map dashboard = getInstance().getDashboard(binder, DashboardHelper.Local);
 		//Users global dashboard settings
@@ -477,13 +463,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 
 		//Set up the beans
-		if (loadComponents) {
-			if (componentId.equals("")) {
-				getDashboardBeans(binder, ssDashboard, model, isConfig);
-			} else {
-				getDashboardBean(binder, ssDashboard, model, componentId, isConfig);
-				ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
-			}
+		if (componentId.equals("")) {
+			getDashboardBeans(binder, ssDashboard, model, isConfig);
+		} else {
+			getDashboardBean(binder, ssDashboard, model, componentId, isConfig);
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
 		}
 		
 		//Check the access rights of the user

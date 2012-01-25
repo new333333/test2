@@ -8,7 +8,7 @@
 	
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
-		<fileset dir="${project.dir}/lib" includes="${libraries.restshared}" />
+		<fileset dir="../lib" includes="*.jar" />
 	</path>
 
 	<target name="deploy" depends="jar">
@@ -17,18 +17,4 @@
 		</antcall>
 	</target>
 
-	<!-- This overrides the imported definition -->
-	<!--
-	<target name="jar" depends="compile">
-		<jar
-			basedir="${classes.dir}"
-			jarfile="${jar.file}"
-			includes="**/rest/v1/**"
-		/>
-		<antcall target="jar-manifest">
-			<param name="jar-manifest.jar.file" value="${jar.file}"/>
-		</antcall>
-	</target>
-	-->
-	
 </project>

@@ -32,15 +32,13 @@
  */
 package org.kablink.teaming.security;
 
-import org.kablink.util.VibeRuntimeException;
-
 /**
  * Same as <code>AccessControlException</code> except that this is not a
  * <i>coded</i> exception.
  * 
  * @author Jong Kim
  */
-public class AccessControlNonCodedException extends VibeRuntimeException {
+public class AccessControlNonCodedException extends RuntimeException {
     
     public AccessControlNonCodedException() {
         super();
@@ -54,11 +52,4 @@ public class AccessControlNonCodedException extends VibeRuntimeException {
     public AccessControlNonCodedException(Throwable cause) {
         super(cause);
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 403; // Forbidden
-	}
 }

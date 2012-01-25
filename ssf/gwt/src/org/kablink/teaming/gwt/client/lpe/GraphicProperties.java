@@ -33,16 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFileUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
-
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -56,15 +47,7 @@ public class GraphicProperties
 	private boolean m_showBorder;
 	private String m_graphicName;
 	private String m_graphicId;
-	private String m_binderId;
 	
-	// The following data members are used to define the width and height of the view.
-	private int m_width;
-	private Style.Unit m_widthUnits;
-	private int m_height;
-	private Style.Unit m_heightUnits;
-	private Style.Overflow m_overflow;
-
 	/**
 	 * 
 	 */
@@ -73,14 +56,6 @@ public class GraphicProperties
 		m_showBorder = false;
 		m_graphicName = null;
 		m_graphicId = null;
-
-		// Default the width and height to 100%
-		m_width = 100;
-		m_widthUnits = Style.Unit.PCT;
-		m_height = 100;
-		m_heightUnits = Style.Unit.PCT;
-		m_overflow = Style.Overflow.HIDDEN;
-
 	}// end GraphicProperties()
 	
 	
@@ -96,13 +71,7 @@ public class GraphicProperties
 			graphicProps = (GraphicProperties) props;
 			m_graphicName = graphicProps.getGraphicName();
 			m_graphicId = graphicProps.getGraphicId();
-			m_binderId = graphicProps.getBinderId();
 			m_showBorder = graphicProps.getShowBorderValue();
-			m_width = graphicProps.getWidth();
-			m_widthUnits = graphicProps.getWidthUnits();
-			m_height = graphicProps.getHeight();
-			m_heightUnits = graphicProps.getHeightUnits();
-			m_overflow = graphicProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -130,41 +99,10 @@ public class GraphicProperties
 		str += "title=";
 		if ( m_graphicName != null )
 			str += ConfigData.encodeConfigData( m_graphicName );
-
-		// Add the width
-		str += ",width=" + String.valueOf( m_width );
-		if ( m_widthUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
-		// Add the height
-		str += ",height=" + String.valueOf( m_height );
-		if ( m_heightUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
-		// Add overflow
-		str += ",overflow=";
-		if ( m_overflow == Style.Overflow.AUTO )
-			str += "auto";
-		else
-			str += "hidden";
-
 		str += ";";
 
 		return str;
 	}// end createConfigString()
-	
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
 	
 	
 	/**
@@ -186,61 +124,12 @@ public class GraphicProperties
 	
 	
 	/**
-	 * Return the value of height.
-	 */
-	public int getHeight()
-	{
-		return m_height;
-	}
-	
-	/**
-	 * Return the height units
-	 */
-	public Style.Unit getHeightUnits()
-	{
-		return m_heightUnits;
-	}
-	
-	/**
-	 * Return the value of overflow.
-	 */
-	public Style.Overflow getOverflow()
-	{
-		return m_overflow;
-	}
-	
-	/**
 	 * Return the "show border" property.
 	 */
 	public boolean getShowBorderValue()
 	{
 		return m_showBorder;
 	}// end getShowBorderValue()
-	
-	
-	/**
-	 * Return the value of width.
-	 */
-	public int getWidth()
-	{
-		return m_width;
-	}
-	
-	/**
-	 * Return the width units
-	 */
-	public Style.Unit getWidthUnits()
-	{
-		return m_widthUnits;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setBinderId( String binderId )
-	{
-		m_binderId = binderId;
-	}
 	
 	
 	/**
@@ -262,91 +151,10 @@ public class GraphicProperties
 	
 	
 	/**
-	 * Get the url needed to display this image
-	 */
-	public void getGraphicUrl( final GetterCallback<String> callback )
-	{
-		GetFileUrlCmd cmd;
-		
-		cmd = new GetFileUrlCmd( m_binderId, m_graphicName );
-		
-		// Issue an ajax request to get the url needed to display the graphic.
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable caught )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetFileUrl(),
-						getGraphicName() );
-			}
-
-			/**
-			 * 
-			 */
-			public void onSuccess( VibeRpcResponse result )
-			{
-				String url;
-				StringRpcResponseData responseData;
-
-				responseData = ((StringRpcResponseData) result.getResponseData());
-				url = responseData.getStringValue();
-				
-				// Return the url
-				callback.returnValue( url );
-			}
-		} );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHeight( int height )
-	{
-		m_height = height;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHeightUnits( Style.Unit units )
-	{
-		m_heightUnits = units;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setOverflow( Style.Overflow overflow )
-	{
-		m_overflow = overflow;
-	}
-	
-	/**
 	 * 
 	 */
 	public void setShowBorder( boolean showBorder )
 	{
 		m_showBorder = showBorder;
 	}// end setShowBorder()
-
-	/**
-	 * 
-	 */
-	public void setWidth( int width )
-	{
-		m_width = width;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setWidthUnits( Style.Unit units )
-	{
-		m_widthUnits = units;
-	}
-	
 }// end GraphicProperties

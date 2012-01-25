@@ -32,22 +32,12 @@
  */
 package org.kablink.teaming.ssfs;
 
-import org.kablink.util.VibeRuntimeException;
-
-public class AlreadyExistsException extends VibeRuntimeException {
+public class AlreadyExistsException extends RuntimeException {
 
 	public AlreadyExistsException() {
 	}
 	
 	public AlreadyExistsException(String msg) {
 		super(msg);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.util.VibeRuntimeException#getHttpStatusCode()
-	 */
-	@Override
-	public int getHttpStatusCode() {
-		return 409; // Conflict
 	}
 }

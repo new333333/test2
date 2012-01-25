@@ -102,7 +102,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 				
 				<c:if test="${!empty toolbarMenu.value.categories}">
 					<img border="0" style="padding-left: 2px;" title="<ssf:nlt tag="alt.showMenu"/>"
-					  <ssf:alt tag="alt.showMenu"/> align="absmiddle" src="<html:imagesPath/>pics/menu_sm.png"/>
+					  <ssf:alt tag="alt.showMenu"/> align="absmiddle" src="<html:imagesPath/>pics/menu_arrow.png"/>
 				</c:if>
 				</a>
 			</c:when>

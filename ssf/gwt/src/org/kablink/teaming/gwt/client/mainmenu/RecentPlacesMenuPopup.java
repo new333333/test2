@@ -42,14 +42,14 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -61,32 +61,35 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "recentPlaces_";
 	
+	@SuppressWarnings("unused")
 	private BinderInfo m_currentBinder;	// The currently selected binder.
 	
 	/*
-	 * Inner class that handles selecting an individual place.
+	 * Inner class that handles clicks on individual places.
 	 */
-	private class PlaceCommand implements Command {
-		private RecentPlaceInfo m_place;	// The place selected on.
+	private class PlaceClickHandler implements ClickHandler {
+		private RecentPlaceInfo m_place;	// The place clicked on.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param place
 		 */
-		PlaceCommand(RecentPlaceInfo place) {
+		PlaceClickHandler(RecentPlaceInfo place) {
 			// Simply store the parameter.
 			m_place = place;
 		}
 
 		/**
-		 * Called when the user selects a place.
+		 * Called when the user clicks on a place.
 		 * 
-		 * Implements the Command.execute() method.
+		 * @param event
 		 */
-		@Override
-		public void execute() {
-			// Trigger the appropriate action for the place.
+		public void onClick(ClickEvent event) {
+			// Hide the menu...
+			hide();
+			
+			// ...and trigger the appropriate action for the place.
 			switch (m_place.getTypeEnum()) {
 			case BINDER:
 				GwtTeaming.fireEvent(
@@ -113,9 +116,9 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	/**
 	 * Class constructor.
 	 */
-	public RecentPlacesMenuPopup(ContextBinderProvider binderProvider) {
-		// Initialize the superclass.
-		super(binderProvider, GwtTeaming.getMessages().mainMenuBarRecentPlaces());
+	public RecentPlacesMenuPopup() {
+		// Initialize the super class.
+		super(GwtTeaming.getMessages().mainMenuBarRecentPlaces());
 	}
 	
 	/**
@@ -159,56 +162,66 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Completes construction of the menu.
+	 * Completes construction of the menu and shows it.
 	 * 
-	 * Implements the MenuBarPopupBase.populateMenu() abstract method.
+	 * Implements the MenuBarPopupBase.showPopup() abstract method.
+	 * 
+	 * @param left
+	 * @param top
 	 */
 	@Override
-	public void populateMenu() {
-		// Have we populated the menu yet?
-		if (!(hasContent())) {
-			// No!  Populate it now.
-			GetRecentPlacesCmd cmd = new GetRecentPlacesCmd(Long.parseLong(m_currentBinder.getBinderId()));
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						m_messages.rpcFailure_GetRecentPlaces());
-				}
-				
-				public void onSuccess(VibeRpcResponse response)  {
-					List<RecentPlaceInfo> rpList;
-					GetRecentPlacesRpcResponseData responseData;
-					
-					responseData = (GetRecentPlacesRpcResponseData) response.getResponseData();
-					rpList = responseData.getRecentPlaces();
-					
-					// Populate the 'Recent Places' popup menu
-					// asynchronously so that we can release the AJAX
-					// request ASAP.
-					populateRecentPlacesMenuAsync(rpList);
-				}
-			});
+	public void showPopup(int left, int top) {
+		GetRecentPlacesCmd cmd;
+		
+		// Position the popup and if we've already constructed its
+		// content...
+		setPopupPosition(left, top);
+		if (hasContent()) {
+			// ...simply show it and bail.
+			show();
+			return;
 		}
+		
+		// Otherwise, read the users recent places.
+		cmd = new GetRecentPlacesCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetRecentPlaces());
+			}
+			
+			public void onSuccess(VibeRpcResponse response)  {
+				List<RecentPlaceInfo> rpList;
+				GetRecentPlacesRpcResponseData responseData;
+				
+				responseData = (GetRecentPlacesRpcResponseData) response.getResponseData();
+				rpList = responseData.getRecentPlaces();
+				
+				// Show the 'Recent Places' popup menu asynchronously
+				// so that we can release the AJAX request ASAP.
+				showRecentPlacesMenuAsync(rpList);
+			}
+		});
 	}
 	
 	/*
-	 * Asynchronously populates the 'Recent Places' popup menu.
+	 * Asynchronously shows the 'Recent Places' popup menu.
 	 */
-	private void populateRecentPlacesMenuAsync(final List<RecentPlaceInfo> rpList) {
-		ScheduledCommand populateMenu = new ScheduledCommand() {
+	private void showRecentPlacesMenuAsync(final List<RecentPlaceInfo> rpList) {
+		ScheduledCommand showMenu = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				populateRecentPlacesMenuNow(rpList);
+				showRecentPlacesMenuNow(rpList);
 			}
 		};
-		Scheduler.get().scheduleDeferred(populateMenu);
+		Scheduler.get().scheduleDeferred(showMenu);
 	}
 	
 	/*
-	 * Synchronously populates the 'Recent Places' popup menu.
+	 * Synchronously shows the 'Recent Places' popup menu.
 	 */
-	private void populateRecentPlacesMenuNow(List<RecentPlaceInfo> rpList) {
+	private void showRecentPlacesMenuNow(List<RecentPlaceInfo> rpList) {
 		// Scan the places...
 		int mtCount = 0;
 		MenuPopupAnchor rpA;
@@ -217,8 +230,8 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			RecentPlaceInfo place = rpIT.next();
 			String rpId = (IDBASE + place.getId());
 			
-			rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceCommand(place));
-			addContentMenuItem(rpA);
+			rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceClickHandler(place));
+			addContentWidget(rpA);
 			mtCount += 1;
 		}
 		
@@ -227,7 +240,10 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			// ...put something in the menu that tells the user
 			// ...that.
 			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuRecentPlacesNoPlaces());
-			addContentMenuItem(content);
+			addContentWidget(content);
 		}
+		
+		// Finally, show the menu popup.
+		show();
 	}
 }

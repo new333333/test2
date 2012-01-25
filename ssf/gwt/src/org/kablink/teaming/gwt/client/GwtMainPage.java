@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
-import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
@@ -50,15 +49,12 @@ import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.FilesDroppedEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
-import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
-import org.kablink.teaming.gwt.client.event.JspLayoutChangedEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
@@ -70,7 +66,6 @@ import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 import org.kablink.teaming.gwt.client.event.SearchTagEvent;
-import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -90,7 +85,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetShareBinderPageUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
@@ -100,13 +94,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.Agent;
-import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
@@ -126,7 +117,6 @@ import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
-import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
@@ -138,26 +128,25 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.RootPanel;
 
 
 /**
  * This widget will display the main Teaming page
  */
-public class GwtMainPage extends ResizeComposite
-	implements
+public class GwtMainPage extends Composite
+	implements ResizeHandler,
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamEnterEvent.Handler,
-		ActivityStreamExitEvent.Handler,
 		AdministrationEvent.Handler,
 		AdministrationExitEvent.Handler,
 		AdministrationUpgradeCheckEvent.Handler,
@@ -173,7 +162,6 @@ public class GwtMainPage extends ResizeComposite
 		GotoPermalinkUrlEvent.Handler,
 		InvokeHelpEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
-		InvokeShareBinderEvent.Handler,
 		LoginEvent.Handler,
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
@@ -185,7 +173,6 @@ public class GwtMainPage extends ResizeComposite
 		SearchSavedEvent.Handler,
 		SearchSimpleEvent.Handler,
 		SearchTagEvent.Handler,
-		ShowContentControlEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarReloadEvent.Handler,
 		SidebarShowEvent.Handler,
@@ -203,10 +190,6 @@ public class GwtMainPage extends ResizeComposite
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
-	private VibeDockLayoutPanel m_mainPanel = null;
-	private DockLayoutPanel m_splitLayoutPanel = null;
-	private MainContentLayoutPanel m_contentLayoutPanel = null;
-	private FlowPanel m_headerPanel = null;
 	private boolean m_inSearch = false;
 	private String m_searchTabId = "";
 	private EditBrandingDlg m_editBrandingDlg = null;
@@ -217,6 +200,8 @@ public class GwtMainPage extends ResizeComposite
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditSuccessfulHandler m_editPersonalPrefsSuccessHandler = null;
 	private EditSuccessfulHandler m_editTagsSuccessHandler = null;
+	private FlowPanel m_contentPanel;
+	private FlowPanel m_teamingRootPanel;
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
@@ -235,7 +220,6 @@ public class GwtMainPage extends ResizeComposite
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
-		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		
 		// Administration events.
 		TeamingEvents.ADMINISTRATION,
@@ -245,7 +229,6 @@ public class GwtMainPage extends ResizeComposite
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY,
 		TeamingEvents.FULL_UI_RELOAD,
-		TeamingEvents.INVOKE_SHARE_BINDER,
 
 		// Goto events.
 		TeamingEvents.GOTO_CONTENT_URL,
@@ -260,7 +243,7 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.EDIT_CURRENT_BINDER_BRANDING,
 		TeamingEvents.EDIT_PERSONAL_PREFERENCES,
 		TeamingEvents.EDIT_SITE_BRANDING,
-
+		
 		// Invoke events.
 		TeamingEvents.INVOKE_HELP,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
@@ -283,9 +266,6 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.SEARCH_SAVED,
 		TeamingEvents.SEARCH_SIMPLE,
 		TeamingEvents.SEARCH_TAG,
-		
-		// Show events.
-		TeamingEvents.SHOW_CONTENT_CONTROL,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -317,20 +297,10 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private GwtMainPage()
 	{
-		// If the UI debug toggle is turned on...
-		if (m_requestInfo.isDebugUI()) {
-			// ...display the GWT user agent we loaded in the status
-			// ...bar and tab.
-			AgentBase agent = GWT.create(Agent.class);
-			String userAgent = ("GWT user.agent: " + agent.getAgentName());
-//			Window.alert(userAgent);
-			Window.setStatus(userAgent);
-			Window.setTitle( userAgent);
-		}
-		
-		// Construct and initialize the page.
 		constructMainPage_Start();
-		initWidget( m_mainPanel );
+		
+		// All composites must call initWidget() in their constructors.
+		initWidget( m_teamingRootPanel );
 	}
 	
 	/*
@@ -342,7 +312,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void loadMainMenuControl()
 	{
-		MainMenuControl.createAsync( this, "top", new MainMenuControlClient()
+		MainMenuControl.createAsync( this, new MainMenuControlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -373,7 +343,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void loadWorkspaceTreeControl()
 	{
-		WorkspaceTreeControl.createAsync( this, m_selectedBinderId, false, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
+		WorkspaceTreeControl.createAsync( this, m_selectedBinderId, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -435,7 +405,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void ActivityStreamCtrl()
 	{
-		ActivityStreamCtrl.createAsync( new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( this, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -470,8 +440,8 @@ public class GwtMainPage extends ResizeComposite
 		}
 		m_novellTeaming = m_requestInfo.isNovellTeaming();
 		
-		m_mainPanel = new VibeDockLayoutPanel( Style.Unit.PX );
-		m_mainPanel.addStyleName( "mainTeamingPagePanel" );
+		m_teamingRootPanel = new FlowPanel();
+		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
 
 		ScheduledCommand loadControls = new ScheduledCommand()
 		{
@@ -497,9 +467,46 @@ public class GwtMainPage extends ResizeComposite
 			GwtTeaming.getEventBus(),
 			m_registeredEvents,
 			this);
-
-		// Initialize the various call backs accessed from JavaScript.
-		initJSMethods();
+		
+		// Initialize the context load handler used by the JSP based
+		// UI to tell the GWT UI that a context has been loaded.
+		initContextLoadHandlerJS(this);
+		
+		// Initialize the pre context switch handler used by the
+		// JSP based UI to tell the GWT UI that a context switch is
+		// about to occur.
+		initFireContextChangingJS(this);
+		
+		// Initialize the JavaScript function that gets called when we want to handle a page using
+		// GWT instead of in jsp.
+		// For example, we never want the jsp login page to be loaded in the content control.
+		initHandlePageWithGWTJS( this );
+		
+		// Initialize the JavaScript function that gets called when we want to close the
+		// administration content panel.
+		initCloseAdministrationContentPanelJS( this );
+		
+		// Initialize the JSNI method that will allow any content to
+		// fire a Vibe OnPrem event on the main event bus for the
+		// application.
+		//
+		// See GwtClientHelper:jsFireVibeEventOnMainEventBus()
+		initFireVibeEventOnMainEventBusJS( this );
+		
+		// Initialize JavaScript to perform Popup for User Profile
+		initSimpleUserProfileJS( this );
+		
+		// Initialize JavaScript that handles the landing page options
+		initHandleLandingPageOptionsJS( this );
+		
+		// Initialize the JavaScript that calls the login dialog.
+		initInvokeLoginDlgJS( this );
+		
+		// Initialize the JavaScript that invokes the Tag dialog
+		initInvokeTagDlgJS( this );
+		
+		// Initialize the JavaScript that invokes the admin page.
+		initInvokeAdminPageJS( this );
 		
 		// Create a UIStateManager that we will use to save/restore the ui state.
 		m_uiStateManager = new UIStateManager();
@@ -508,13 +515,9 @@ public class GwtMainPage extends ResizeComposite
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
 		
-		m_headerPanel = new FlowPanel();
-		m_headerPanel.addStyleName( "mainHeaderPanel" );
-		m_mainPanel.addNorth( m_headerPanel, GwtConstants.HEADER_HEIGHT );
-
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
-		m_headerPanel.add( m_mastHead );
+		m_teamingRootPanel.add( m_mastHead );
 
 		// Is there an error message to be displayed?
 		final String errMsg = m_requestInfo.getErrMsg();
@@ -524,7 +527,6 @@ public class GwtMainPage extends ResizeComposite
 			// Execute a deferred command the will display it.
 			ScheduledCommand cmd = new ScheduledCommand()
 			{
-				@Override
 				public void execute()
 				{
 					// Is the user logged in?
@@ -545,32 +547,36 @@ public class GwtMainPage extends ResizeComposite
 		}
 		
 		// Add the main menu to the page.
-		m_headerPanel.add( m_mainMenuCtrl );
+		m_teamingRootPanel.add( m_mainMenuCtrl );
 		
-		m_splitLayoutPanel = new DockLayoutPanel( Style.Unit.PX );
-		m_mainPanel.add( m_splitLayoutPanel );
+		// Create a panel to hold the WorkspaceTree control and the content control
+		m_contentPanel = new FlowPanel();
+		m_contentPanel.addStyleName( "mainContentPanel" );
 		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
-		m_splitLayoutPanel.addWest( m_wsTreeCtrl, GwtConstants.SIDEBAR_TREE_WIDTH );
+		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
 		m_contentCtrl.addStyleName( "mainContentControl" );
+		m_contentPanel.add( m_contentCtrl );
 		
+		// Create an activity stream control.
 		m_activityStreamCtrl.hide();
-		
-		// Create a panel that will hold the content.
-		m_contentLayoutPanel = new MainContentLayoutPanel( m_contentCtrl, m_activityStreamCtrl );
-		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
-		m_splitLayoutPanel.add( m_contentLayoutPanel );
+		m_contentPanel.add( m_activityStreamCtrl );
 		
 		// Do we have a url we should set the ContentControl to?
 		url = m_requestInfo.getAdaptedUrl();
 		if ( url != null && url.length() > 0 )
 		{
 			// Yes
-			gotoUrlAsync( m_requestInfo.getAdaptedUrl() );
+			m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() );
 		}
+		
+		m_teamingRootPanel.add( m_contentPanel );
+		
+		// Add a ResizeHandler to the browser so we'll know when the user resizes the browser.
+		Window.addResizeHandler( this );
 		
 		// Is the user logged in?
 		if ( m_requestInfo.isUserLoggedIn() == false )
@@ -587,7 +593,6 @@ public class GwtMainPage extends ResizeComposite
 				// invoke the login dialog.
 				ScheduledCommand cmd = new ScheduledCommand()
 				{
-					@Override
 					public void execute()
 					{
 						invokeLoginDlg( false );
@@ -610,16 +615,6 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}// end constructMainPage_Finish()
 
-	/**
-	 * Returns the main content panel.
-	 * 
-	 * @return
-	 */
-	public MainContentLayoutPanel getMainContentLayoutPanel()
-	{
-		return m_contentLayoutPanel;
-	}
-	
 	/**
 	 * Returns the main menu control.
 	 * 
@@ -650,17 +645,6 @@ public class GwtMainPage extends ResizeComposite
 		return m_wsTreeCtrl;
 	}//end getWorkspaceTree()
 	
-	/*
-	 * Called to create a JavaScript method that will be invoked from
-	 * JSP based content when its layout changes.
-	 */
-	private native void initJspLayoutChangedJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_jspLayoutChanged = function( binderId )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::jspLayoutChanged(Ljava/lang/String;)( binderId );
-		}//end ss_jspLayoutChanged()
-	}-*/;
-
 	/*
 	 * Called to create a JavaScript method that will be invoked from
 	 * an administration page when the user presses close or cancel in the administration page.
@@ -702,17 +686,6 @@ public class GwtMainPage extends ResizeComposite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireContextChanging()();
 		}//end ss_preContextSwitch()
-	}-*/;
-
-	/*
-	 * Called to create a JavaScript method that will be invoked from
-	 * JSP when file(s) are successfully dropped on an applet.
-	 */
-	private native void initFireFilesDroppedJS(GwtMainPage gwtMainPage) /*-{
-		$wnd.ss_filesDropped = function( binderId )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireFilesDropped(Ljava/lang/String;)( binderId );
-		}//end ss_filesDropped()
 	}-*/;
 
 	/*
@@ -775,74 +748,6 @@ public class GwtMainPage extends ResizeComposite
 	}-*/;
 
 	/*
-	 * Initialize the various call backs accessed from JavaScript.
-	 */
-	private void initJSMethods()
-	{
-		// Initialize the context load handler used by the JSP based
-		// UI to tell the GWT UI that a context has been loaded.
-		initContextLoadHandlerJS( this );
-		
-		// Initialize the pre context switch handler used by the
-		// JSP based UI to tell the GWT UI that a context switch is
-		// about to occur.
-		initFireContextChangingJS( this );
-
-		// Initialize the JavaScript function that gets called when
-		// files are successfully dropped on the file drag and drop
-		// applet.
-		initFireFilesDroppedJS( this );
-		
-		// Initialize the JavaScript function that gets called when we want to handle a page using
-		// GWT instead of in jsp.
-		// For example, we never want the jsp login page to be loaded in the content control.
-		initHandlePageWithGWTJS( this );
-		
-		// Initialize the JavaScript function that gets called when
-		// JSP content layout changes.
-		initJspLayoutChangedJS( this );
-		
-		// Initialize the JavaScript function that gets called when we want to close the
-		// administration content panel.
-		initCloseAdministrationContentPanelJS( this );
-		
-		// Initialize the JSNI method that will allow any content to
-		// fire a Vibe OnPrem event on the main event bus for the
-		// application.
-		//
-		// See GwtClientHelper:jsFireVibeEventOnMainEventBus()
-		initFireVibeEventOnMainEventBusJS( this );
-		
-		// Initializes the callback method used to load a content URL. 
-		initGotoContentUrlJS( this );
-		
-		// Initialize JavaScript to perform Popup for User Profile
-		initSimpleUserProfileJS( this );
-		
-		// Initialize JavaScript that handles the landing page options
-		initHandleLandingPageOptionsJS( this );
-		
-		// Initialize the JavaScript that calls the login dialog.
-		initInvokeLoginDlgJS( this );
-		
-		// Initialize the JavaScript that invokes the Tag dialog
-		initInvokeTagDlgJS( this );
-		
-		// Initialize the JavaScript that invokes the admin page.
-		initInvokeAdminPageJS( this );
-	}
-
-	/*
-	 * Creates the native JavaScript method used to load a content URL.
-	 */
-	private native void initGotoContentUrlJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_gotoContentUrl = function( url )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::gotoUrlAsync(Ljava/lang/String;)( url );
-		}//end ss_gotoContentUrl
-	}-*/;
-	
-	/*
 	 * Invoke the Simple User Profile or Quick View
 	 */
 	private native void initSimpleUserProfileJS( GwtMainPage gwtMainPage ) /*-{
@@ -869,18 +774,8 @@ public class GwtMainPage extends ResizeComposite
 	private static native void jsFixupGwtMainTitle() /*-{
 		$wnd.top.document.title = $wnd.top.gwtContentIframe.document.title;
 	}-*/;
-
-	/*
-	 * Called when a the layout of JSP content changes.  Simply fires
-	 * an JspLayoutChangedEvent.
-	 */
-	private void jspLayoutChanged( String binderId )
-	{
-		JspLayoutChangedEvent are = new JspLayoutChangedEvent( Long.parseLong( binderId ));
-		GwtTeaming.fireEvent( are );
-	}// end jspLayoutChanged()
 	
-	/*
+	/**
 	 * This method will close the administration content panel.
 	 */
 	private void closeAdministrationContentPanel()
@@ -925,8 +820,7 @@ public class GwtMainPage extends ResizeComposite
 			// ...Clear the flag, tell the menu about this context and
 			// ...otherwise ignore this.
 			m_requestInfo.clearShowWhatsNewOnLogin();
-			m_mainMenuCtrl.setContext( binderId, inSearch, searchTabId );
-			handleOnActivityStreamEnter(ShowSetting.UNKNOWN);
+			m_mainMenuCtrl.setContext( binderId, inSearch, searchTabId );			
 			return;
 		}
 		
@@ -944,7 +838,7 @@ public class GwtMainPage extends ResizeComposite
 			
 			// ...otherwise, we hide the activity streams control and
 			// ...let the search display.
-			m_contentLayoutPanel.showContentControl();
+			m_activityStreamCtrl.hide();
 		}
 		
 		m_inSearch    = inSearch;
@@ -968,7 +862,6 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new GetBinderPermalinkCmd( contextBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -977,7 +870,6 @@ public class GwtMainPage extends ResizeComposite
 					contextBinderId );
 			}//end onFailure()
 			
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String binderPermalink;
@@ -1043,7 +935,7 @@ public class GwtMainPage extends ResizeComposite
 		// Get the position of the content control.
 		if ( xPos == -1 )
 		{
-			xCalc = m_contentLayoutPanel.getAbsoluteLeft();
+			xCalc = m_contentCtrl.getAbsoluteLeft();
 			if ( xCalc < 75 )
 				xCalc = 75;
 		}
@@ -1052,7 +944,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		if ( yPos == -1 )
 		{
-			yCalc = m_contentLayoutPanel.getAbsoluteTop();
+			yCalc = m_contentCtrl.getAbsoluteTop();
 			if ( yCalc < 75 )
 				yCalc = 75;
 		}
@@ -1074,7 +966,6 @@ public class GwtMainPage extends ResizeComposite
 				/**
 				 * This method gets called when user user presses ok in the "Edit Branding" dialog.
 				 */
-				@Override
 				public boolean editSuccessful( Object obj )
 				{
 					// Create the callback that will be used when we issue an ajax request to save the branding data.
@@ -1085,7 +976,6 @@ public class GwtMainPage extends ResizeComposite
 							/**
 							 * 
 							 */
-							@Override
 							public void onFailure( Throwable t )
 							{
 								GwtClientHelper.handleGwtRPCFailure(
@@ -1098,7 +988,6 @@ public class GwtMainPage extends ResizeComposite
 							 * 
 							 * @param result
 							 */
-							@Override
 							public void onSuccess( VibeRpcResponse response )
 							{
 								// Did we just save site branding?
@@ -1142,7 +1031,6 @@ public class GwtMainPage extends ResizeComposite
 				/**
 				 * This method gets called when the user presses cancel in the "Edit Branding" dialog.
 				 */
-				@Override
 				public boolean editCanceled()
 				{
 					return true;
@@ -1207,7 +1095,7 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
-	public void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
+	private void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
 	{
 		// If we are running in captive mode we never want to show the masthead of sidebar.
 		// Are we running in captive mode (GroupWise integration)?
@@ -1247,7 +1135,6 @@ public class GwtMainPage extends ResizeComposite
 					/**
 					 * 
 					 */
-					@Override
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -1259,7 +1146,6 @@ public class GwtMainPage extends ResizeComposite
 					/**
 					 * 
 					 */
-					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						BooleanRpcResponseData responseData;
@@ -1278,7 +1164,6 @@ public class GwtMainPage extends ResizeComposite
 								/**
 								 * 
 								 */
-								@Override
 								public void execute()
 								{
 									MenuHideEvent.fireOne();
@@ -1294,18 +1179,6 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}// end handleLandingPageOptions()
 	
-	
-	/**
-	 * Do the work when we enter activity stream mode.
-	 */
-	private void handleOnActivityStreamEnter( ShowSetting ss )
-	{
-		// Hide any popup entry iframe divs.
-		GwtClientHelper.jsHideEntryPopupDiv();
-		
-		m_activityStreamCtrl.setSize( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
-		m_contentLayoutPanel.showActivityStream( ss );
-	}
 
 	/*
 	 * This method will handle the given page ui in gwt instead of
@@ -1342,6 +1215,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		AdministrationEvent.fireOne();
 	}
+	
 	
 	/**
 	 * Invoke the "login" dialog.
@@ -1415,8 +1289,8 @@ public class GwtMainPage extends ResizeComposite
 	{
 		m_tagPanelElement = tagPanelElement;
 		
-		final int x = m_contentLayoutPanel.getAbsoluteLeft() + 500;
-		final int y = m_contentLayoutPanel.getAbsoluteTop() + 25;
+		final int x = m_contentCtrl.getAbsoluteLeft() + 500;
+		final int y = m_contentCtrl.getAbsoluteTop() + 25;
 
 		if ( m_tagThisDlg == null )
 		{
@@ -1430,7 +1304,6 @@ public class GwtMainPage extends ResizeComposite
 					 * with the new list of tags.
 					 */
 					@SuppressWarnings("unchecked")
-					@Override
 					public boolean editSuccessful( Object obj )
 					{
 						if ( obj != null && obj instanceof ArrayList )
@@ -1553,14 +1426,10 @@ public class GwtMainPage extends ResizeComposite
 	
 	/**
 	 * This method gets called when the browser gets resized.
-	 * 
-	 * Overrides ResizeComposite.onResize()
 	 */
-	@Override
-	public void onResize()
+	public void onResize( ResizeEvent event )
 	{
 		// Adjust the height and width of the controls on this page.
-		super.onResize();
 		relayoutPage( false );
 	}// end onResize()
 	
@@ -1664,7 +1533,6 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new PersistActivityStreamSelectionCmd( asi );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1672,7 +1540,6 @@ public class GwtMainPage extends ResizeComposite
 					GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
 			}// end onFailure()
 			
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// Note that we're not doing anything with the results
@@ -1689,26 +1556,11 @@ public class GwtMainPage extends ResizeComposite
 	 * 
 	 * @param event
 	 */
-	@Override
 	public void onActivityStreamEnter( ActivityStreamEnterEvent event )
 	{
-		handleOnActivityStreamEnter( event.getShowSetting() );
+		// Hide any popup entry iframe divs.
+		GwtClientHelper.jsHideEntryPopupDiv();
 	}//end enterActivityStreamMode()
-
-
-	/**
-	 * Handles ActivityStreamEnterExit's received by this class.
-	 * 
-	 * Implements the ActivityStreamExitEvent.Handler.onActivityStreamExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onActivityStreamExit( ActivityStreamExitEvent event )
-	{
-		m_contentLayoutPanel.showContentControl();
-		m_contentCtrl.setDimensions( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
-	}
 
 	/**
 	 * Handles AdministrationEvent's received by this class.
@@ -1745,25 +1597,10 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void execute()
 			{
-				// Hide the administration console and its menu.
-				m_adminControl.hideControl();
-				m_mainMenuCtrl.hideAdministrationMenubar();
-				
-				m_splitLayoutPanel.setVisible( true );
-
-				// If the activity stream was showing show it now.
-				if ( isActivityStreamActive() )
-				{
-					m_contentLayoutPanel.showActivityStream();
-				}
-				else if ( m_contentCtrl.isVisible() == false )
-				{
-					m_contentLayoutPanel.showContentControl();
-				}
-				
 				// Restore the ui state to what it was before we opened
 				// the site administration.
 				restoreUIState();
+				relayoutPage( true );
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -1805,8 +1642,7 @@ public class GwtMainPage extends ResizeComposite
 		WorkspaceTreeControl.createAsync(
 				this,
 				m_selectedBinderId,
-				false,
-				TreeMode.HORIZONTAL_POPUP,
+				TreeMode.HORIZONTAL,
 				new WorkspaceTreeControlClient() {				
 			@Override
 			public void onUnavailable()
@@ -1910,7 +1746,6 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1921,7 +1756,6 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				int x;
@@ -1931,8 +1765,8 @@ public class GwtMainPage extends ResizeComposite
 				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
 				
 				// Get the position of the content control.
-				x = m_contentLayoutPanel.getAbsoluteLeft();
-				y = m_contentLayoutPanel.getAbsoluteTop();
+				x = m_contentCtrl.getAbsoluteLeft();
+				y = m_contentCtrl.getAbsoluteTop();
 				
 				// Create a handler that will be called when the user presses the ok button in the dialog.
 				if ( m_editPersonalPrefsSuccessHandler == null )
@@ -1945,7 +1779,6 @@ public class GwtMainPage extends ResizeComposite
 						/**
 						 * This method gets called when user user presses ok in the "Personal Preferences" dialog.
 						 */
-						@Override
 						public boolean editSuccessful( Object obj )
 						{
 							personalPrefs = (GwtPersonalPreferences) obj;
@@ -1958,7 +1791,6 @@ public class GwtMainPage extends ResizeComposite
 									/**
 									 * 
 									 */
-									@Override
 									public void onFailure( Throwable t )
 									{
 										GwtClientHelper.handleGwtRPCFailure(
@@ -1970,7 +1802,6 @@ public class GwtMainPage extends ResizeComposite
 									 * 
 									 * @param result
 									 */
-									@Override
 									public void onSuccess( VibeRpcResponse response )
 									{
 										@SuppressWarnings("unused")
@@ -2084,7 +1915,6 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onGotoMyWorkspace( GotoMyWorkspaceEvent event )
 	{
-		m_contentLayoutPanel.showContentControl();
 		gotoUrlAsync( m_requestInfo.getMyWorkspaceUrl() );
 	}// end onGotoMyWorkspace()
 	
@@ -2173,7 +2003,6 @@ public class GwtMainPage extends ResizeComposite
 			{
 				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
 				{
-					@Override
 					public void setPosition(int offsetWidth, int offsetHeight)
 					{
 						int x;
@@ -2213,13 +2042,10 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMastheadHide( MastheadHideEvent event )
 	{
-		// Force the layout panels to resize as appropriate.
-		m_mainPanel.setWidgetSize( m_headerPanel, m_mainMenuCtrl.getOffsetHeight() );
-		m_mainPanel.forceLayout();
-		
-		// Note that we don't have to do anything special here to
-		// affect our resize processing.  That just happens because of
-		// the workings of the layout panels.
+		if ( event.getResizeContentImmediately() )
+		{
+			relayoutPage( true );
+		}
 	}// end onMastheadHide()
 	
 	/**
@@ -2232,24 +2058,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMastheadShow( MastheadShowEvent event )
 	{
-		// Is the masthead visible?
-		if ( !m_mastHead.isVisible() ) {
-			// No!  We need to show it so that we can get it's height
-			// below to adjust the panel sizes correctly.  It doesn't
-			// appear to be deterministic as to which MastheadShowEvent
-			// handler gets called first (this one or the one is
-			// Masthead.java.)  If it's this one, the masthead will
-			// still be hidden and the getHight() on it returns 0.
-			m_mastHead.setVisible( true );
-		}
-		
-		// Force the layout panels to resize as appropriate.
-		m_mainPanel.setWidgetSize( m_headerPanel, m_mainMenuCtrl.getOffsetHeight() + m_mastHead.getHeight() );	//GwtConstants.HEADER_HEIGHT );
-		m_mainPanel.forceLayout();
-		
-		// Note that we don't have to do anything special here to
-		// affect our resize processing.  That just happens because of
-		// the workings of the layout panels.
+		relayoutPage( true );
 	}// end onMastheadShow()
 	
 	/**
@@ -2273,7 +2082,6 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
-			@Override
 			public void execute()
 			{
 				relayoutPage( true );
@@ -2303,7 +2111,6 @@ public class GwtMainPage extends ResizeComposite
 			/**
 			 * 
 			 */
-			@Override
 			public void execute()
 			{
 				relayoutPage( true );
@@ -2367,9 +2174,21 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSearchSimple( SearchSimpleEvent event )
 	{		
+		// What are we searching for?
 		String searchFor = event.getSimpleSearchString();
-		String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
-		gotoUrlAsync( searchUrl );
+		if ( null == searchFor )
+		{
+			searchFor = "";
+		}
+		if (GwtClientHelper.jsHasSimpleSearchForm()) {
+			fireContextChanging();
+			GwtClientHelper.jsInvokeSimpleSearch( searchFor );
+		}
+		
+		else {
+			String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
+			gotoUrlAsync( searchUrl );
+		}
 	}// end onSearchSimple()
 	
 	/**
@@ -2388,81 +2207,6 @@ public class GwtMainPage extends ResizeComposite
 		gotoUrlAsync( searchUrl );
 	}// end onSearchTag()
 	
-	
-	/**
-	 * Handle the InvokeShareBinderEvents received by this class.
-	 */
-	@Override
-	public void onInvokeShareBinder( InvokeShareBinderEvent event )
-	{
-		GetShareBinderPageUrlCmd gsbpuCmd;
-		String binderId;
-		
-		// Issue an rpc request to get the url for the "share binder" page.
-		binderId = event.getBinderId();
-		gsbpuCmd = new GetShareBinderPageUrlCmd( binderId );
-		GwtClientHelper.executeCommand( gsbpuCmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetShareBinderPageUrl() );
-			}
-			
-			/**
-			 * 
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				final String url;
-				StringRpcResponseData responseData;
-				ScheduledCommand cmd;
-
-				responseData = (StringRpcResponseData) response.getResponseData();
-				url = responseData.getStringValue();
-				
-				// Open the "share binder" page.
-				if ( url != null && url.length() > 0 )
-				{
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							int height;
-							int width;
-	
-							// Yes
-							width = 550;
-							height = 750;
-							Window.open( url, "sharebinder", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,width=" + String.valueOf( width ) );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}
-		});
-	}
-	
-	/**
-	 * Handles ShowContentControlEvent's received by this class.
-	 * 
-	 * Implements the ShowContentControlEvent.Handler.onShowContentControl() method.
-	 * 
-	 */
-	@Override
-	public void onShowContentControl( ShowContentControlEvent event )
-	{
-		// Display the content control
-		m_contentLayoutPanel.showContentControl();
-	}
-	
 	/**
 	 * Handles SidebarHideEvent's received by this class.
 	 * 
@@ -2473,10 +2217,10 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSidebarHide( SidebarHideEvent event )
 	{
-		m_splitLayoutPanel.setWidgetSize( m_wsTreeCtrl, GwtConstants.PANEL_PADDING );
-		m_splitLayoutPanel.forceLayout();
-		
-		onResize();
+		if ( event.getResizeContentImmediately() )
+		{
+			relayoutPage( true );
+		}
 	}// end onSidebarHide()
 	
 	/**
@@ -2502,10 +2246,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSidebarShow( SidebarShowEvent event )
 	{
-		m_splitLayoutPanel.setWidgetSize( m_wsTreeCtrl, GwtConstants.SIDEBAR_TREE_WIDTH );
-		m_splitLayoutPanel.forceLayout();
-		
-		onResize();
+		relayoutPage( true );
 	}// end onSidebarShow()
 	
 	/**
@@ -2519,14 +2260,10 @@ public class GwtMainPage extends ResizeComposite
 	public void onTrackCurrentBinder( TrackCurrentBinderEvent event )
 	{
 		TrackBinderCmd cmd;
-		final boolean forceUIReload;
-		
-		forceUIReload = event.getForceUIReload();
 		
 		cmd = new TrackBinderCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2535,15 +2272,13 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// It's overkill to force a full context reload, which
 				// this does, but it's the only way right now to ensure
 				// the What's New tab and other information gets fully
 				// refreshed.
-				if ( forceUIReload )
-					FullUIReloadEvent.fireOne();
+				FullUIReloadEvent.fireOne();
 			}// end onSuccess()
 		});
 	}// end onTrackCurrentBinder()
@@ -2577,7 +2312,6 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new UntrackBinderCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2586,7 +2320,6 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			@Override
 			public void onSuccess( VibeRpcResponse respnse )
 			{
 				// It's overkill to force a full context reload, which
@@ -2613,7 +2346,6 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new GetBinderPermalinkCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			@Override
 			public void onFailure( Throwable t ) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -2621,7 +2353,6 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String binderUrl;
@@ -2711,7 +2442,6 @@ public class GwtMainPage extends ResizeComposite
 		cmd = new UntrackPersonCmd( m_selectedBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
-			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -2720,7 +2450,6 @@ public class GwtMainPage extends ResizeComposite
 					m_selectedBinderId );
 			}//end onFailure()
 			
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// It's overkill to force a full context reload, which
@@ -2738,63 +2467,60 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public void relayoutPage( boolean layoutImmediately )
 	{
+		int width;
+		int height;
+
 		// Are we supposed to relayout now?
 		if ( layoutImmediately == true )
 		{
-			// Are we in administration mode?
-			if ( isAdminActive() ) {
-				// Yes!  Tell the admin console to relayout.
+			// Yes
+			// Calculate how wide the ContentControl should be.
+			{
+				int clientWidth;
+				
+				// Get the width of the browser window's client area.
+				clientWidth = Window.getClientWidth();
+				
+				width = clientWidth - m_contentCtrl.getAbsoluteLeft() - 10; 
+			}
+			
+			// Calculate how high the ContentControl should be.
+			{
+				int clientHeight;
+				
+				// Get the height of the browser window's client area.
+				clientHeight = Window.getClientHeight();
+				
+				height = clientHeight - m_contentPanel.getAbsoluteTop() - 20;
+			}
+			
+			m_contentCtrl.setDimensions( width, height );
+			
+			// Tell the activity stream control to relayout.
+			if ( m_activityStreamCtrl != null )
+				m_activityStreamCtrl.setSize( width, height );
+			
+			// Do we have an Administration control?
+			if ( m_adminControl != null )
+			{
+				// Yes
 				m_adminControl.relayoutPage();
 			}
 			
-			else
+			// Do we have a workspace tree control?
+			if ( null != m_wsTreeCtrl )
 			{
-				int width;
-				int height;
-
-				// No, we aren't in administration mode!  layout the
-				// non-admin content.
-				width  = m_contentLayoutPanel.getOffsetWidth();
-				height = m_contentLayoutPanel.getOffsetHeight();
-				
 				// Yes
-				if ( m_contentCtrl != null )
-					m_contentCtrl.setDimensions( width, height );
-				
-				if ( isActivityStreamActive() )
-					m_activityStreamCtrl.setSize( width, height );
-				
-				// Adjust the size of the north panel that holds the masthead and menu bar
-				{
-					int panelHeight;
-					
-					panelHeight = 0;
-					
-					if ( m_mastHead != null && m_mastHead.isVisible() )
-						panelHeight += m_mastHead.getOffsetHeight();
-					
-					if ( m_mainMenuCtrl != null && m_mainMenuCtrl.isVisible() )
-						panelHeight += m_mainMenuCtrl.getOffsetHeight();
-	
-					m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
-				}
-				
-				// Do we have a workspace tree control?
-				if ( null != m_wsTreeCtrl )
-				{
-					// Yes
-					m_wsTreeCtrl.relayoutPageAsync();
-				}
-				
-				// Set the size and position of the entry popup div.
-				GwtClientHelper.jsSetEntryPopupIframeSize();
+				m_wsTreeCtrl.relayoutPageAsync();
 			}
+			
+			// Set the size and position of the entry popup div.
+			GwtClientHelper.jsSetEntryPopupIframeSize();
 		}
 		else
 		{
 			ScheduledCommand cmd = new ScheduledCommand()
 			{
-				@Override
 				public void execute()
 				{
 					relayoutPage( true );
@@ -2815,22 +2541,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public void reloadContentPanel()
 	{
-		// Is the Activity Stream visible?
-		if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible() )
-		{
-			ActivityStreamInfo asi;
-			
-			// Yes
-			// Get the activity stream currently being used.
-			asi = m_activityStreamCtrl.getActivityStreamInfo();
-			
-			// Refresh the activity stream.
-			GwtTeaming.fireEvent( new ActivityStreamEvent( asi ) );
-		}
-		else
-		{
-			m_contentCtrl.reload();
-		}
+		m_contentCtrl.reload();
 	}// end reloadContentPanel()
 	
 	/**
@@ -2860,7 +2571,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public boolean isAdminActive()
 	{
-		return ( ( null != m_adminControl ) && m_adminControl.isShowing() );
+		return ( ( null != m_adminControl ) && m_adminControl.isVisible() );
 	}// end isAdminActive()
 
 	/**
@@ -2873,14 +2584,6 @@ public class GwtMainPage extends ResizeComposite
 	{
 		return m_inSearch;
 	}// end isInSearch()
-	
-	/**
-	 * Return whether the user is logged in.
-	 */
-	public boolean isUserLoggedIn()
-	{
-		return m_requestInfo.isUserLoggedIn();
-	}
 	
 	private void showAdminControl()
 	{
@@ -2907,6 +2610,7 @@ public class GwtMainPage extends ResizeComposite
 				public void onSuccess( AdminControl adminCtrl )
 				{
 					m_adminControl = adminCtrl;
+					m_contentPanel.add( m_adminControl );
 					
 					ScheduledCommand showAdminControl = new ScheduledCommand()
 					{
@@ -2927,10 +2631,12 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Hide everything on the menu, the workspace tree control and the content control.
 		m_mainMenuCtrl.showAdministrationMenubar();
+		m_wsTreeCtrl.setVisible( false );
+		m_contentCtrl.setVisible( false );
+		m_activityStreamCtrl.hide();
 		
-		m_splitLayoutPanel.setVisible( false );
-		
-		m_adminControl.showControl( m_mainMenuCtrl );
+		m_adminControl.showControl();
+		relayoutPage( false );
 	}// end showAdminControlImpl()
 	
 	/*
@@ -2940,14 +2646,6 @@ public class GwtMainPage extends ResizeComposite
 	{
 		ContextChangingEvent.fireOne();
 	}// end fireContextChanging()
-
-	/*
-	 * Fires a FilesDroppedEvent from JSP.
-	 */
-	private void fireFilesDropped( String binderId )
-	{
-		GwtTeaming.fireEvent(new FilesDroppedEvent( Long.parseLong( binderId )));
-	}// end fireFilesDropped()
 	
 	/*
 	 * Fires a GotoContentUrlEvent from the JSP based UI.

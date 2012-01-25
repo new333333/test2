@@ -1764,7 +1764,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 		
 		Event event = new Event();
-
+		
 		boolean hasUid           = (null != uid);
 		boolean hasRecurrenceUid = (null != recurrenceId);
 		if (hasUid || hasRecurrenceUid) {
@@ -2233,6 +2233,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	/**
 	 * Creates new iCalendar object and sets fields.
 	 */
+
 	private Calendar createICalendar(String calendarName) {
 		Calendar calendar = new Calendar();
 		calendar.getProperties().add(PROD_ID);

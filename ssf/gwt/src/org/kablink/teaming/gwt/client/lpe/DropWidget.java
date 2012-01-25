@@ -70,6 +70,60 @@ public abstract class DropWidget extends Composite
 
 
 	/**
+	 * Create a DropWidget from the given configuration data.
+	 * @param lpe
+	 * @param configItem
+	 * @return
+	 */
+	public static DropWidget createDropWidget( LandingPageEditor lpe, ConfigItem configItem )
+	{
+		if ( configItem instanceof CustomJspConfig )
+			return new CustomJspDropWidget( lpe, (CustomJspConfig)configItem );
+		
+		if ( configItem instanceof LinkToUrlConfig )
+			return new LinkToUrlDropWidget( lpe, (LinkToUrlConfig)configItem );
+
+		if ( configItem instanceof ListConfig )
+			return new ListDropWidget( lpe, (ListConfig)configItem );
+
+		if ( configItem instanceof TableConfig )
+			return new TableDropWidget( lpe, (TableConfig)configItem );
+
+		if ( configItem instanceof UtilityElementConfig )
+			return new UtilityElementDropWidget( lpe, (UtilityElementConfig)configItem );
+
+		if ( configItem instanceof GraphicConfig )
+			return new GraphicDropWidget( lpe, (GraphicConfig)configItem );
+		
+		if ( configItem instanceof EntryConfig )
+			return new EntryDropWidget( lpe, (EntryConfig)configItem );
+		
+		if ( configItem instanceof LinkToEntryConfig )
+			return new LinkToEntryDropWidget( lpe, (LinkToEntryConfig)configItem );
+		
+		if ( configItem instanceof FolderConfig )
+			return new FolderDropWidget( lpe, (FolderConfig)configItem );
+		
+		if ( configItem instanceof LinkToFolderConfig )
+			return new LinkToFolderDropWidget( lpe, (LinkToFolderConfig)configItem );
+		
+		if ( configItem instanceof HtmlConfig )
+			return new HtmlDropWidget( lpe, (HtmlConfig) configItem );
+		
+		if ( configItem instanceof EnhancedViewConfig )
+			return new EnhancedViewDropWidget( lpe, (EnhancedViewConfig) configItem );
+		
+		if ( configItem instanceof IFrameConfig )
+			return new IFrameDropWidget( lpe, (IFrameConfig) configItem );
+		
+		//!!! Add new DropWidgets here.
+		
+		// If we get here we didn't recognize the type of widget being requested.
+		return null;
+	}// end createDropWidget()
+	
+	
+	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
 	public abstract String createConfigString();

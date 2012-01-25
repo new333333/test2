@@ -62,8 +62,6 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -85,11 +83,10 @@ import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.mail.MimeEntryPreparator;
 import org.kablink.teaming.module.shared.EmptyInputData;
-import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.BaseService;
-import org.kablink.teaming.remoting.ws.RemotingException;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
@@ -624,7 +621,15 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		try {
-			FileUtils.modifyFolderEntryWithFile(entry, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
+			if (Validator.isNull(fileUploadDataItemName) && entry.getParentFolder().isLibrary()) {
+				// This will attach the file to appropriate definition element of file type (which is by default "upload").
+				FolderUtils.modifyLibraryEntry(entry, fileName, new ByteArrayInputStream(fileContent), null, true);
+			}
+			else {
+				if (Validator.isNull(fileUploadDataItemName)) 
+					fileUploadDataItemName="ss_attachFile1";
+				getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
+			}
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -770,7 +775,15 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		FileAttachment fa = getFileAttachment(entry, attachmentId);
 	
 		try {
-			FileUtils.modifyFolderEntryWithFile(entry, fileUploadDataItemName, fa.getFileItem().getName(),  new ByteArrayInputStream(fileContent), null);
+			if (Validator.isNull(fileUploadDataItemName) && entry.getParentFolder().isLibrary()) {
+				// This will attach the file to appropriate definition element of file type (which is by default "upload").
+				FolderUtils.modifyLibraryEntry(entry, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null, true);
+			}
+			else {
+				if (Validator.isNull(fileUploadDataItemName)) 
+					fileUploadDataItemName="ss_attachFile1";
+				getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null);
+			}
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -786,7 +799,25 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		FileAttachment fa = getFileAttachment(entry, attachmentId);
-		boolean result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+		boolean result;
+		if(lastVersionNumber != null || lastMajorVersionNumber != null || lastMinorVersionNumber != null) {
+			result = false;
+			VersionAttachment va = fa.getHighestVersion();
+			if(va != null) {
+				if(lastVersionNumber != null) {
+					if(lastVersionNumber.intValue() == va.getVersionNumber())
+						result = true;
+				}
+				else if(lastMajorVersionNumber != null && lastMinorVersionNumber != null) {
+					if(lastMajorVersionNumber.intValue() == va.getMajorVersion() && 
+						lastMinorVersionNumber.intValue() == va.getMinorVersion())
+						result = true;
+				}
+			}
+		}
+		else {
+			result = true;
+		}
 		if(result)
 			folder_uploadAttachmentAsByteArray(accessToken, entryId, fileUploadDataItemName, attachmentId, fileContent);
 		return result;
@@ -922,7 +953,13 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			long entryId, String fileVersionId, String note) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
-		FileUtils.setFileVersionNote(va, note);
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().setFileVersionNote(entry, fa, note);
 	}
 
 	/* (non-Javadoc)
@@ -932,8 +969,12 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public void folder_promoteFileVersionCurrent(String accessToken,
 			long entryId, String fileVersionId) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		if(entry.getParentBinder().isMirrored())
+			throw new UnsupportedOperationException("Mirrored file does not support version promotion");
 		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
-		FileUtils.promoteFileVersionCurrent(va);
+		if(isTopMostVersion(va))
+			throw new UnsupportedOperationException("Cannot promote a version that is already current");
+		getBinderModule().promoteFileVersionCurrent(entry, va);
 	}
 
 	/* (non-Javadoc)
@@ -943,7 +984,22 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public void folder_deleteFileVersion(String accessToken, long entryId,
 			String fileVersionId) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
-		deleteFileVersion(entry, fileVersionId);
+		VersionAttachment va;
+		try {
+			va = getVersionAttachment(entry, fileVersionId);
+		}
+		catch(NoFileVersionByTheIdException e) {
+			// The version isn't found. Since post-action condition is still met, 
+			// do not throw an exception. Return normally.
+			return;
+		}
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().deleteFileVersion(entry.getParentBinder(), entry, fa);
 	}
 
 	/* (non-Javadoc)
@@ -954,20 +1010,17 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			String fileVersionId, int status) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		VersionAttachment va = getVersionAttachment(entry, fileVersionId);
-		FileUtils.setFileVersionStatus(va, status);
+		// Due to some odd design by another developer, I have to pass in top-level
+		// attachment object (as opposed to the top-most version attachment) to the
+		// lower level, if the specified version happens to be the top-most one.
+		FileAttachment fa = va;
+		if(isTopMostVersion(va))
+			fa = va.getParentAttachment();
+		getBinderModule().setFileVersionStatus(entry, fa, status);
 	}
 
-	private void deleteFileVersion(DefinableEntity entity, String fileVersionId) {
-		VersionAttachment va;
-		try {
-			va = getVersionAttachment(entity, fileVersionId);
-		}
-		catch(NoFileVersionByTheIdException e) {
-			// The version isn't found. Since post-action condition is still met, 
-			// do not throw an exception. Return normally.
-			return;
-		}
-		FileUtils.deleteFileVersion(va);
+	private boolean isTopMostVersion(VersionAttachment va) {
+		return (va.getParentAttachment().getHighestVersionNumber() == va.getVersionNumber());
 	}
-	
+
 }

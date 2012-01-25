@@ -40,8 +40,6 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
-import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
@@ -71,7 +69,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -119,11 +116,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	// WorkspaceTreeControl.
 	private final static int SELECTOR_GRID_DEPTH_OFFSET	=  18;	// Based on empirical evidence.
 	private final static int SELECTOR_GRID_WIDTH        = 208;	// Based on the width of 230 in the workspaceTreeControl style
-
-	// The following defines the maximum amount of time we wait to
-	// process the completion event for a context switch.  If we exceed
-	// this, we simply clear it.
-	private final static int MAX_BUSY_DURATION	= 5000;	//	5 seconds. 
 	
 	/*
 	 * Inner class that implements clicking on the various tree
@@ -168,16 +160,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Synchronously collapses the current row.
 		 */
 		private void doCollapseRowNow() {
-			// Collapse the row...
 			if (!m_ti.isActivityStream()) {
 				m_ti.clearChildBindersList();
 			}
 			m_ti.setBinderExpanded(false);
 			reRenderRow(m_grid, m_gridRow, m_ti, true);
 			m_expanderImg.setResource(getImages().tree_opener());
-			
-			// ...and tell everybody that it's been collapsed.
-			GwtTeaming.fireEventAsync(new TreeNodeCollapsedEvent(getSelectedBinderId(), getTreeMode()));
 		}
 
 		/*
@@ -197,16 +185,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Synchronously expands the current row.
 		 */
 		private void doExpandRowNow(TreeInfo expandedTI) {
-			// Expand the row...
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
 			if (0 < m_ti.getBinderChildren()) {
 				reRenderRow(m_grid, m_gridRow, m_ti, false);
 			}
 			m_expanderImg.setResource(getImages().tree_closer());
-			
-			// ...and tell everybody that it's been expanded.
-			GwtTeaming.fireEventAsync(new TreeNodeExpandedEvent(getSelectedBinderId(), getTreeMode()));
 		}
 		
 		/**
@@ -214,7 +198,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * 
 		 * @param event
 		 */
-		@Override
 		public void onClick(ClickEvent event) {
 			// Are we collapsing the row?
 			if (m_ti.isBinderExpanded()) {
@@ -233,7 +216,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// row.  Can we mark the row as being closed?
 					cmd = new PersistNodeCollapseCmd( m_ti.getBinderInfo().getBinderId() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -241,7 +223,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
-						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							// Yes!  Update the TreeInfo, re-render the
 							// row and change the row's Anchor Image to a
@@ -261,14 +242,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// Yes!  Expand it.
 					cmd = new ExpandVerticalBucketCmd( m_ti.getBucketInfo() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
 						}
 						
-						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							TreeInfo expandedTI;
 							
@@ -297,7 +276,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// Can we mark the row as being opened?
 					PersistNodeExpandCmd cmd = new PersistNodeExpandCmd( m_ti.getBinderInfo().getBinderId() );
 					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -305,7 +283,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
-						@Override
 						public void onSuccess(VibeRpcResponse response) {
 							// Run the 'Get Vertical Node' RPC request
 							// as a scheduled command so the RPC
@@ -320,7 +297,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 									// expansion?
 									cmd = new GetVerticalNodeCmd( m_ti.getBinderInfo().getBinderId() );
 									GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-										@Override
 										public void onFailure(Throwable t) {
 											GwtClientHelper.handleGwtRPCFailure(
 												t,
@@ -328,7 +304,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 												m_ti.getBinderInfo().getBinderId());
 										}
 										
-										@Override
 										public void onSuccess(VibeRpcResponse response) {
 											TreeInfo expandedTI;
 											
@@ -373,7 +348,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * 
 		 * @param me
 		 */
-		@Override
 		public void onMouseOut(MouseOutEvent me) {
 			// Simply remove the hover style.
 			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
@@ -385,7 +359,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * 
 		 * @param me
 		 */
-		@Override
 		public void onMouseOver(MouseOverEvent me) {
 			// Simply add the hover style.
 			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
@@ -397,79 +370,32 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Inner class used to track information about the sidebar tree
 	 * being in a busy state.
 	 */
-	private class BusyInfo {
-		private Timer		m_maxBusyDurationTimer;	// A timer used to control the maximum amount of time we'll keep a busy spinner spinning.
-		private TreeInfo	m_busyTI;				// TreeInfo running a busy animation, if there is one.  May be null.
+	private static class BusyInfo {
+		private TreeInfo m_busyTI;	// TreeInfo running a busy animation, if there is one.  May be null.
 
 		/**
 		 * Class constructor.
 		 */
 		public BusyInfo() {
-			// Setup a timer to wait for the the busy state to clear.
-			// If we exceed the timeout, we simply clear the busy
-			// state.
-			m_maxBusyDurationTimer = new Timer() {
-				@Override
-				public void run() {
-					// Clear the busy state and...
-					clearBusy();
-
-					// ...if we're in UI debug mode, display an alert
-					// ...about the problem.
-//!					GwtClientHelper.debugAlert(
-//!						"Rats!  I hate it when this happens.  We've entered an endless busy state with a sidebar tree spinner.\n\n" +
-//!						"That means that somewhere along the way, we failed to process the completion event for a context switch.");
-				}
-			};
-			m_maxBusyDurationTimer.schedule(MAX_BUSY_DURATION);
-		}
-
-		/**
-		 * Called to clear the busy state.
-		 */
-		public void clearBusy() {
-			// Clear the timer.
-			clearTimer();
-			m_busyInfo = null;
-			
-			// Do we have a TreeInfo for the tree node that's busy?
-			if (hasBusyTI()) {
-				// Yes!  Restore its default image.
-				setBinderImageResource(getBusyTI());
-			}
-			
-			else {
-				// No, we don't have a TreeInfo for the tree node
-				// that's busy!  In that case, we'll have stuck the
-				// spinner on the tree's root node.  Restore that.
-				Image binderImg = ((Image) getRootTreeInfo().getBinderUIImage());
-				binderImg.setResource(getImages().spacer_1px());
-			}
-		}
-		/*
-		 * Cancels and forgets about the timer waiting for contributors.
-		 */
-		private void clearTimer() {
-			// If we have a busy timer...
-			if (null != m_maxBusyDurationTimer) {
-				// ...cancel and forget about it.
-				m_maxBusyDurationTimer.cancel();
-				m_maxBusyDurationTimer = null;
-			}
+			// Nothing to do.
 		}
 		
-		/*
-		 * Returns the TreeInfo associated with this BusyInfo object.
+		/**
+		 * Returns any TreeInfo associated with this BusyInfo object.
+		 * 
+		 * @return
 		 */
-		private TreeInfo getBusyTI() {
+		public TreeInfo getBusyTI() {
 			return m_busyTI;
 		}
 
-		/*
+		/**
 		 * Returns true if this BusyInfo is tracking a TreeInfo and
 		 * false otherwise.
+		 * 
+		 * @return
 		 */
-		private boolean hasBusyTI() {
+		public boolean hasBusyTI() {
 			return (null != m_busyTI);
 		}
 
@@ -490,7 +416,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param rootTI
 	 */
 	public TreeDisplayVertical(WorkspaceTreeControl wsTree, TreeInfo rootTI) {
-		// Initialize the super class...
+		// Construct the super class...
 		super(wsTree, rootTI);
 		
 		// ...and initialize everything else.
@@ -513,7 +439,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		Anchor closePBAnchor = new Anchor();
 		closePBAnchor.addStyleName("workspaceTreeControlHeader_closeA");
 		closePBAnchor.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				GwtTeaming.fireEvent(new ActivityStreamExitEvent(ExitMode.SIMPLE_EXIT));
 			}
@@ -534,7 +459,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
-	@Override
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
 		// Construct an OnSelectBinderInfo for this TreeInfo object.
 		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti, Instigator.SIDEBAR_TREE_SELECT);
@@ -602,15 +526,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			
 			cmd = new GetVerticalActivityStreamsTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
 				}
 
-				@Override
 				public void onSuccess(VibeRpcResponse response) {
+					TreeInfo ti;
+					
 					// ...and put it into effect.
-					TreeInfo ti = (TreeInfo) response.getResponseData();
+					ti = (TreeInfo) response.getResponseData();
 					enterActivityStreamModeAsync(ti, defaultASI);
 				}
 			});
@@ -691,8 +615,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Are we tracking a BusyInfo indicating that we're in the
 		// middle of a context switch?
 		if (null != m_busyInfo) {
-			// Yes!  Clear the busy state.
-			m_busyInfo.clearBusy();
+			// Yes!  Does it contain a TreeInfo?
+			if (m_busyInfo.hasBusyTI()) {
+				// Yes!  Restore its default image.
+				setBinderImageResource(m_busyInfo.getBusyTI());
+			}
+			
+			// ...and forget about it.
+			m_busyInfo = null;
 		}
 	}
 
@@ -847,7 +777,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @return
 	 */
-	@Override
 	public boolean isInActivityStreamMode() {
 		TreeInfo rootTI = getRootTreeInfo();
 		return ((null != rootTI) && rootTI.isActivityStream());
@@ -887,7 +816,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param selectedBinderId
 	 * @param targetPanel
 	 */
-	@Override
 	public void render(String selectedBinderId, FlowPanel targetPanel) {
 		// Track the Binder that's to be initially selected.
 		m_rootPanel = targetPanel;
@@ -902,7 +830,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Create the WorkspaceTree control's header...
 		TreeInfo rootTI = getRootTreeInfo();
 		boolean isAS = rootTI.isActivityStream();
-		Grid selectorGrid = new Grid(1, (isAS ? 4 : 3));
+		Grid selectorGrid = new Grid(1, (isAS ? 3 : 2));
 		String styles = "workspaceTreeControlHeader workspaceTreeControlHeader_base ";
 		if (isAS)
 		     styles += "workspaceTreeControlHeader_as";
@@ -912,20 +840,16 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setCellPadding(0);
 		String rootTitle = rootTI.getBinderTitle();
 		if (GwtClientHelper.hasString(rootTitle)) {
-			Image binderImg = new Image(getImages().spacer_1px());
-			rootTI.setBinderUIImage(binderImg);
-			binderImg.addStyleName("workspaceTreeBinderImg");
-			selectorGrid.setWidget(0, 0, binderImg);
 			Label selectorLabel = new Label(rootTitle);
 			selectorLabel.setWordWrap(false);
 			selectorLabel.getElement().setId(getSelectorId(rootTI));
 			selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, rootTI.getBinderTrashPermalink());
-			selectorGrid.setWidget(0, 1, selectorLabel);
-			selectorGrid.setWidget(0, 2, new Label("\u00A0"));
-			selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
+			selectorGrid.setWidget(0, 0, selectorLabel);
+			selectorGrid.setWidget(0, 1, new Label("\u00A0"));
+			selectorGrid.getCellFormatter().setWidth(0, 1, "100%");
 			Widget rootWidget;
 			if (isAS) {
-				selectorGrid.setWidget(0, 3, buildCloseActivityStreamsPB());
+				selectorGrid.setWidget(0, 2, buildCloseActivityStreamsPB());
 				rootWidget = selectorGrid;
 			}
 			else {
@@ -1123,7 +1047,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @param ti
 	 */
-	@Override
 	void selectBinder(TreeInfo ti) {
 		// If this a trash Binder?
 		if (!(ti.getBinderInfo().isBinderTrash())) {
@@ -1178,15 +1101,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Read the TreeInfo for the selected Binder.
 		cmd = new GetVerticalTreeCmd( newRootBinderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetTree(),
 					newRootBinderId);
 			}
-			
-			@Override
 			public void onSuccess(VibeRpcResponse response)  {
 				TreeInfo rootTI;
 				
@@ -1293,7 +1213,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param selectedBinderId
 	 * @param targetPanel
 	 */
-	@Override
 	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
 		// Simply store the parameter in their appropriate data
 		// members.
@@ -1309,7 +1228,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * @param binderId
 	 */
-	@Override
 	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
 		// If the selection is for a Binder's trash...
 		if (binderInfo.isTrash()) {
@@ -1343,7 +1261,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// selected Binder's root workspace?
 				cmd = new GetRootWorkspaceIdCmd( binderId );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
@@ -1351,8 +1268,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 							binderId);
 						selectBinder(targetTI);
 					}
-					
-					@Override
 					public void onSuccess(VibeRpcResponse response)  {
 						String rootWorkspaceId;
 						StringRpcResponseData responseData;
@@ -1502,17 +1417,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					ti = TreeInfo.findBinderTI(rootTI, binderId.toString());
 				}
 			}
-			Image binderImg;
-			if ((null == ti) || (ti == rootTI)) {
-				// No!  Set the busy animation image on the tree's
-				// root.
-				binderImg = ((Image) rootTI.getBinderUIImage());
-				binderImg.setResource(getImages().busyAnimation());
-			}
-			else {
+			if (null != ti) {
 				// Yes!  Set the busy animation image for this
 				// TreeInfo's binder...
-				binderImg = ((Image) ti.getBinderUIImage());
+				Image binderImg = ((Image) ti.getBinderUIImage());
 				if (null != binderImg) {
 					binderImg.setResource(getImages().busyAnimation());
 				}

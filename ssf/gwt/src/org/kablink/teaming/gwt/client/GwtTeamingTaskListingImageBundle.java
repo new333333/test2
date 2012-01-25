@@ -218,11 +218,11 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource p5();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sortAZ.gif")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/sortAZ.gif")
 	public ImageResource sortAZ();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sortZA.gif")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/sortZA.gif")
 	public ImageResource sortZA();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

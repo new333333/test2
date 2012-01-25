@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -93,12 +93,8 @@ public class WebKeys {
     public static final String SESSION_CAPTIVE = "sessionCaptive";
     public static final String SESSION_PRODUCT = "sessionProduct";
     public static final String VIBE_PRODUCT = "vibeProduct";
-    public static final String VIBE_LP_DEBUG = "vibeLPDebug";
     public static final String VIBE_UI_DEBUG = "vibeUIDebug";
-    public static final String VIBE_GRANITE_GWT_ENABLED = "vibeGraniteGWTEnabled";
     public static final String IS_FORM_LOGIN_ALLOWED = "isFormLoginAllowed";
-    public static final String JSP_NAME = "jspName";
-    public static final String CONFIG_STRING = "configStr";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
@@ -120,7 +116,6 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE = "showWhatsNew";
     public static final String URL_BINDER_ID="binderId";
-    public static final String URL_MULTIPLE_ENTRY_IDS="multipleEntryIds";
     public static final String URL_ZONE_UUID="zoneUUID";
     public static final String URL_BINDER_PARENT_ID="binderParentId";
     public static final String URL_BINDER_IDS="binderIds";
@@ -142,10 +137,8 @@ public class WebKeys {
 	public static final String URL_PRODUCT_GW="gw";
 	public static final String URL_PRODUCT_KABLINK="kablink";
 	public static final String URL_PRODUCT_NOVELL="novell";
-	public static final String URL_VIBEONPREM_ROOT_FLAG_DEPRECATED="vibeonprem_root";
-	public static final String URL_VIBEONPREM_URL_FLAG_DEPRECATED="vibeonprem_url";	
-	public static final String URL_VIBE_ROOT_FLAG="vibe_root";
-	public static final String URL_VIBE_URL_FLAG="vibe_url";	
+	public static final String URL_VIBEONPREM_ROOT_FLAG="vibeonprem_root";
+	public static final String URL_VIBEONPREM_URL_FLAG="vibeonprem_url";	
 	public static final String URL_CONTEXT="context";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";
@@ -217,7 +210,6 @@ public class WebKeys {
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_SEARCH_SCOPE="scope";
-    public static final String URL_SELECT_FILTER="select_filter";
     public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";
     public static final String URL_PORTAL_SIGNAL="portalSignalUrl";
@@ -324,7 +316,6 @@ public class WebKeys {
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_BINDER_REPORTS = "binder_reports";
-    public static final String ACTION_BUILD_FILTER = "build_filter";
     public static final String ACTION_USER_ACCESS_REPORT = "user_access_report";
     public static final String ACTION_XSS_REPORT = "xss_report";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
@@ -346,7 +337,6 @@ public class WebKeys {
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";
 	public static final String ACTION_ENTRY_ACL_REPORT = "view_entry_acl_report";
 	public static final String ACTION_MANAGE_DEFINITIONS = "manage_definitions";
-	public static final String ACTION_MANAGE_TEMPLATES = "configure_configuration";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
@@ -417,7 +407,6 @@ public class WebKeys {
 	public static final String ACTION_VIEW_FILE="viewFile";
 	public static final String ACTION_VIEW_SUCCESS="view_success";
 	public static final String ACTION_VIEW_WORKFLOW_HISTORY="view_workflow_history";
-	public static final String ACTION_EXECUTE_JSP = "execute_jsp";
 	
 	
 	//operations
@@ -576,7 +565,6 @@ public class WebKeys {
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
 	public static final String OPERATION_UPLOAD_ICALENDAR_FILE = "uploadICalendarFile";
-	public static final String OPERATION_UPLOAD_ICALENDAR_FILE_GWT = "uploadICalendarFileGWT";
 	public static final String OPERATION_LOAD_ICALENDAR_BY_URL = "loadICalendarByURL";
 	public static final String OPERATION_SAVE_CALENDAR_CONFIGURATION = "saveCalendarConfiguration";
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";
@@ -797,7 +785,6 @@ public class WebKeys {
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String CONFIG_FALLBACK_JSP="ssConfigJsp";
-    public static final String CONFIGURE_CONFIGURATION_LOCAL="ssConfigureConfigurationLocal";
     public static final String CREATE_FILE_NAME_FORM_ELEMENT="createFileName_";
     public static final String CREATE_FILE_TYPE_FORM_ELEMENT="createFileType_";
     public static final String CSS_THEME="ssCssTheme";
@@ -1275,7 +1262,7 @@ public class WebKeys {
     public static final String SIMPLE_URL_INVALID_CHARACTERS="ss_simpleUrlInvalidCharactersError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String SMPT_ENABLED="ssSMTPEnabled";
-    public static final String SNIPPET="ssf_snippet";
+    public static final String SNIPPET="ss_snippet";
     public static final String TEAMING_LIVE_PREVIOUS_UPDATE_DATE = "ss_teaming_live_previous_update_date";
     public static final String TEAMING_LIVE_UPDATE_DATE = "ss_teaming_live_update_date";
     public static final String TEXT_VERIFICATION_RESPONSE = "kaptcha-response";

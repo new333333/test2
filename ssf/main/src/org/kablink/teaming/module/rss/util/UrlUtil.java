@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,6 @@
 package org.kablink.teaming.module.rss.util;
 
 import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -44,14 +43,6 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 public class UrlUtil {
 
 	public static String getFeedURL(PortletRequest req, String binderId) {
-		return getFeedURLImpl(WebUrlUtil.getRssRootURL(req), binderId);
-	}
-	
-	public static String getFeedURLHttp(HttpServletRequest req, String binderId) {
-		return getFeedURLImpl(WebUrlUtil.getRssRootURL(req), binderId);
-	}
-	
-	private static String getFeedURLImpl(String rssRootUrl, String binderId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
@@ -59,7 +50,7 @@ public class UrlUtil {
 		
 		StringBuffer url = new StringBuffer();
 		
-		url.append(rssRootUrl).
+		url.append(WebUrlUtil.getRssRootURL(req)).
 			append("list").
 			append("?bi=").
 			append(binderId).
@@ -71,16 +62,7 @@ public class UrlUtil {
 		
 		return url.toString();
 	}
-	
 	public static String getAtomURL(PortletRequest req, String binderId) {
-		return getAtomURLImpl(WebUrlUtil.getAtomRootURL(req), binderId);
-	}
-	
-	public static String getAtomURLHttp(HttpServletRequest req, String binderId) {
-		return getAtomURLImpl(WebUrlUtil.getAtomRootURL(req), binderId);
-	}
-	
-	private static String getAtomURLImpl(String atomRootURL, String binderId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
@@ -88,7 +70,7 @@ public class UrlUtil {
 		
 		StringBuffer url = new StringBuffer();
 		
-		url.append(atomRootURL).
+		url.append(WebUrlUtil.getAtomRootURL(req)).
 			append("list").
 			append("?bi=").
 			append(binderId).

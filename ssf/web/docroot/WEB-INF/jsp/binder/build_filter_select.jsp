@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,35 +47,16 @@ function ss_buttonSelect(btn) {
 	ss_buttonSelected = btn
 }
 function checkFilterForm(obj) {
-	if (ss_buttonSelected == 'delete') {
-		var delPersonalFilter = document.forms.filterData.selectedSearchFilter.value;
-		if (delPersonalFilter == "") {
-			ss_buttonSelected = 'close';
-		}
-		else {
-			if (!confirm("<ssf:nlt tag="filter.confirmDelete"
-				/>\n" + document.forms.filterData.selectedSearchFilter.value)) return false;
-		}
+	if (ss_buttonSelected == 'delete' && 
+			document.forms.filterData.selectedSearchFilter.value != "") {
+		if (!confirm("<ssf:nlt tag="filter.confirmDelete"
+		/>\n" + document.forms.filterData.selectedSearchFilter.value)) return false;
 	}
-	if (ss_buttonSelected == 'deleteGlobal') {
-		var delGlobalFilter = document.forms.filterData.selectedSearchFilterGlobal.value;
-		if (delGlobalFilter == "") {
-			ss_buttonSelected = 'close';
-		}
-		else {
-			if (!confirm("<ssf:nlt tag="filter.confirmDelete"
-				/>\n" + document.forms.filterData.selectedSearchFilterGlobal.value)) return false;
-		}
+	if (ss_buttonSelected == 'deleteGlobal' && 
+			document.forms.filterData.selectedSearchFilterGlobal.value != "") {
+		if (!confirm("<ssf:nlt tag="filter.confirmDelete"
+		/>\n" + document.forms.filterData.selectedSearchFilterGlobal.value)) return false;
 	}
-	
-	if ((ss_buttonSelected == 'close') && window.top.ss_getUrlFromContentHistory) {
-		var url = window.top.ss_getUrlFromContentHistory(-1);
-		if (url && (0 < url.length)) {
-			window.top.ss_gotoContentUrl(url);
-			return false;
-		}
-	}
-	
 	return true;
 }
 
@@ -85,7 +66,7 @@ function checkFilterForm(obj) {
     action="<ssf:url action="build_filter" actionUrl="true"><ssf:param 
     	name="binderId" value="${ssBinder.id}"/><ssf:param 
     	name="binderType" value="${ssBinder.entityType}"/></ssf:url>" 
-	onSubmit="return(checkFilterForm(this));"
+	onSubmit="return(checkFilterForm(this))"
 >
 
 <div class="ss_buttonBarRight">

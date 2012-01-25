@@ -35,8 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-import org.kablink.teaming.gwt.client.widgets.VibeWidget;
-import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -49,15 +47,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ConfigData
 	implements IsSerializable, VibeRpcResponseData
 {
-	private transient TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
-	private String m_binderId;
+	private TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
 	private String m_configStr;
-	private boolean m_hideMasthead;
-	private boolean m_hideNavPanel;
-	private boolean m_hideFooter;
-	private boolean m_isPreviewMode;
-	private LandingPageProperties m_lpProperties;
-	private String m_lpStyle;		// The current values for this are mashup_dark.css or mashup.css
 	
 
 	/**
@@ -95,23 +86,6 @@ public class ConfigData
 		
 		
 		/**
-		 * This is just a place holder.  Nothing to do.
-		 */
-		public VibeWidget createWidget( WidgetStyles widgetStyles )
-		{
-			return null;
-		}
-		
-		/**
-		 * This is just a place holder.  Nothing to do.
-		 */
-		public DropWidget createDropWidget( LandingPageEditor lpe )
-		{
-			return null;
-		}
-		
-		
-		/**
 		 * 
 		 */
 		public ConfigItem get( int index )
@@ -138,24 +112,21 @@ public class ConfigData
 	 */
 	public ConfigData()
 	{
-		init();
+		
 	}
 	
 	
 	/**
 	 * 
 	 */
-	public ConfigData( String configStr, String binderId )
+	public ConfigData( String configStr )
 	{
-		init();
-		
-		m_binderId = binderId;
-		
 		// Does the string that holds the configuration have a ';' at the end?
 		m_configStr = configStr;
 		if ( m_configStr != null && !m_configStr.endsWith( ";" ) )
 			m_configStr += ";";
-
+		
+		m_topLevelConfig = new TopLevelConfig();
 	}// end ConfigData()
 	
 	
@@ -183,7 +154,7 @@ public class ConfigData
 				
 				if ( itemName.equalsIgnoreCase( "utility" ) )
 				{
-					configItem = new UtilityElementConfig( itemData[i], getBinderId() );
+					configItem = new UtilityElementConfig( itemData[i] );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "url" ) )
@@ -193,21 +164,14 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "customJsp" ) )
 				{
-					configItem = new CustomJspConfig( itemData[i], getLandingPageStyle(), getBinderId() );
+					configItem = new CustomJspConfig( itemData[i] );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "tableStart" ) )
 				{
-					configItem = new TableConfig( itemData[i], getLandingPageStyle() );
+					configItem = new TableConfig( itemData[i] );
 					
 					// Recursively call ourselves and add items to the TableConfig object we just created.
-					i = addConfigItems( configItem, itemData, i+1 );
-				}
-				else if ( itemName.equalsIgnoreCase( "tableRow" ) )
-				{
-					configItem = new TableRowConfig( itemData[i] );
-					
-					// Recursively call ourselves and add items to the TableRowConfig object we just created.
 					i = addConfigItems( configItem, itemData, i+1 );
 				}
 				else if ( itemName.equalsIgnoreCase( "tableCol" ) )
@@ -219,37 +183,10 @@ public class ConfigData
 						return i;
 					}
 					
-					// Are we adding the table column to a TableRowConfig?
-					if ( parent instanceof TableRowConfig )
-					{
-						// Yes
-						configItem = new TableColConfig( itemData[i] );
-					}
-					else
-					{
-						TableRowConfig trConfig;
-						
-						// No, this happens when we find an old landing page configuration before we
-						// added the ability to have multiple rows in a table.
-						// Create a TableRowConfig item where all subsequent items will live
-						trConfig = new TableRowConfig( "" );
-						parent.addChild( trConfig );
-						parent = trConfig;
-						
-						configItem = new TableColConfig( itemData[i] );
-					}
+					configItem = new TableColConfig( itemData[i] );
 					
 					// Recursively call ourselves and add items to the TableColConfig object we just created.
 					i = addConfigItems( configItem, itemData, i+1 );
-				}
-				else if ( itemName.equalsIgnoreCase( "tableRowEnd" ) )
-				{
-					// If this signals the end of a tableCol we want to process this item again because
-					// the tableRowEnd signals both the end of a tableCol and the end of tableRow.
-					if ( parent instanceof TableColConfig )
-						return i;
-					
-					return i+1;
 				}
 				else if ( itemName.equalsIgnoreCase( "tableEnd" ) )
 				{
@@ -262,7 +199,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "listStart" ) )
 				{
-					configItem = new ListConfig( itemData[i], getLandingPageStyle() );
+					configItem = new ListConfig( itemData[i] );
 					
 					// Recursively call ourselves and add items to the ListConfig object we just created.
 					i = addConfigItems( configItem, itemData, i+1 );
@@ -273,12 +210,12 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "graphic" ) )
 				{
-					configItem = new GraphicConfig( itemData[i], getLandingPageStyle(), getBinderId() );
+					configItem = new GraphicConfig( itemData[i] );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "entry" ) )
 				{
-					configItem = new EntryConfig( itemData[i], getLandingPageStyle() );
+					configItem = new EntryConfig( itemData[i] );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "entryUrl" ) )
@@ -288,7 +225,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "folder" ) )
 				{
-					configItem = new FolderConfig( itemData[i], getLandingPageStyle() );
+					configItem = new FolderConfig( itemData[i] );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "binderUrl" ) )
@@ -298,12 +235,12 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "html" ) )
 				{
-					configItem = new HtmlConfig( itemData[i], getBinderId() );
+					configItem = new HtmlConfig( itemData[i] );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "enhancedView" ) )
 				{
-					configItem = new EnhancedViewConfig( itemData[i], getLandingPageStyle(), getBinderId() );
+					configItem = new EnhancedViewConfig( itemData[i] );
 					++i;
 				}
 				else if ( itemName.equalsIgnoreCase( "iframe" ) )
@@ -402,40 +339,6 @@ public class ConfigData
 	
 	
 	/**
-	 * 
-	 */
-	public String getBackgroundColor()
-	{
-		return m_lpProperties.getBackgroundColor();
-	}
-	
-	/**
-	 * 
-	 */
-	public String getBackgroundImgUrl()
-	{
-		return m_lpProperties.getBackgroundImageUrl();
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getBackgroundImgRepeat()
-	{
-		return m_lpProperties.getBackgroundRepeat();
-	}
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
-	
-	
-	/**
 	 * Get the name of the item from the configuration string.  The name will be the
 	 * first word followed by a ',' or a ';'
 	 */
@@ -453,108 +356,6 @@ public class ConfigData
 
 		return name;
 	}// end getConfigItemName()
-	
-
-	/**
-	 * 
-	 */
-	public boolean getHideFooter()
-	{
-		return m_hideFooter;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public boolean getHideMasthead()
-	{
-		return m_hideMasthead;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public boolean getHideMenu()
-	{
-		return m_lpProperties.getHideMenu();
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getHideNavPanel()
-	{
-		return m_hideNavPanel;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getInheritProperties()
-	{
-		return m_lpProperties.getInheritProperties();
-	}
-	
-	/**
-	 * 
-	 */
-	public LandingPageProperties getLandingPageProperties()
-	{
-		return m_lpProperties;
-	}
-	
-	/**
-	 * Initialize the landing page properties from the given xml
-	 */
-	public LandingPageProperties initLandingPageProperties( String xml )
-	{
-		m_lpProperties = new LandingPageProperties( xml );
-		
-		return m_lpProperties;
-	}
-	
-	/**
-	 * Initialize the landing page properties from the given landing page properties
-	 */
-	public void initLandingPageProperties( LandingPageProperties lpProperties )
-	{
-		m_lpProperties.copy( lpProperties );
-	}
-	
-	/**
-	 * Is this configuration data being used in "preview mode"?
-	 */
-	public boolean isPreviewMode()
-	{
-		return m_isPreviewMode;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getLandingPageStyle()
-	{
-		return m_lpStyle;
-	}
-	
-	
-	/**
-	 * Initialized data members to their default value.
-	 */
-	private void init()
-	{
-		m_topLevelConfig = new TopLevelConfig();
-
-		m_binderId = null;
-		m_configStr = null;
-		m_hideFooter = false;
-		m_hideMasthead = false;
-		m_lpProperties = new LandingPageProperties();
-		m_hideNavPanel = false;
-		m_isPreviewMode = false;
-	}
 	
 	
 	/**
@@ -578,98 +379,6 @@ public class ConfigData
 			}
 		}
 	}// end parse()
-	
-	
-	/**
-	 * 
-	 */
-	public void setBackgroundColor( String color )
-	{
-		m_lpProperties.setBackgroundColor( color );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setBackgroundImgRepeat( String repeat )
-	{
-		m_lpProperties.setBackgroundRepeat( repeat );
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void setBackgroundImgUrl( String imgUrl )
-	{
-		m_lpProperties.setBackgroundImgUrl( imgUrl );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setBinderId( String binderId )
-	{
-		m_binderId = binderId;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void setConfigStr( String configStr )
-	{
-		m_configStr = configStr;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void setHideFooter( boolean hideFooter )
-	{
-		m_hideFooter = hideFooter;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHideMasthead( boolean hideMasthead )
-	{
-		m_hideMasthead = hideMasthead;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHideMenu( boolean hideMenu )
-	{
-		m_lpProperties.setHideMenu( hideMenu );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHideNavPanel( boolean hideNavPanel )
-	{
-		m_hideNavPanel = hideNavPanel;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setLandingPageStyle( String style )
-	{
-		m_lpStyle = style;
-	}
-	
-	/**
-	 * Set the flag that tells us whether this configuration data is being used in preview mode.
-	 */
-	public void setPreviewMode( boolean isPreviewMode )
-	{
-		m_isPreviewMode = isPreviewMode;
-	}
 	
 	
 	/**

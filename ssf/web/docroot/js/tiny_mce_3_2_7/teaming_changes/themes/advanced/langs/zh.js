@@ -34,7 +34,7 @@ undo_desc:"\u9084\u539F(Ctrl+Z)",
 redo_desc:"\u91CD\u505A(Ctrl+Y)",
 link_desc:"\u63D2\u5165/\u7DE8\u8F2F\u9023\u7D50",
 unlink_desc:"\u53D6\u6D88\u9023\u7D50",
-image_desc:"\u63D2\u5165/\u7F16\u8F91\u56FE\u7247",
+image_desc:"\u63D2\u5165/\u7DE8\u8F2F\u5716\u7247",
 cleanup_desc:"\u6E05\u9664\u591A\u9918\u4EE3\u78BC",
 code_desc:"\u7DE8\u8F2FHTML\u6E90\u4EE3\u78BC",
 sub_desc:"\u4E0B\u6A19",
@@ -58,7 +58,7 @@ clipboard_msg:"\u8907\u88FD\u3001\u526A\u5207\u53CA\u7C98\u8CBC\u529F\u80FD\u572
 path:"\u4F4D\u7F6E",
 newdocument:"\u60A8\u78BA\u8A8D\u8981\u6E05\u9664\u5168\u90E8\u5167\u5BB9\u55CE\uFF1F",
 toolbar_focus:"\u5DE5\u5177\u6309\u9215- Alt+Q,\u7DE8\u8F2F\u5668- Alt-Z,\u7D44\u4EF6\u4F4D\u7F6E- Alt-X",
-more_colors:"\u66F4\u591A\u989C\u8272",
+more_colors:"\u66F4\u591A\u984F\u8272",
 link_delta_width:"40",
 link_delta_height:"60"
 });

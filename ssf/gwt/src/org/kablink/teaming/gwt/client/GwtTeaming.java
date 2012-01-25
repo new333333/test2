@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,10 +47,7 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -62,26 +59,14 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class GwtTeaming implements EntryPoint
 {
 	private static final GwtTeamingMessages					m_stringMessages			=                       GWT.create( GwtTeamingMessages.class                 );
-	private static final GwtTeamingDataTableImageBundle		m_dataTableImageBundle		=                       GWT.create( GwtTeamingDataTableImageBundle.class     );
 	private static final GwtTeamingImageBundle				m_imageBundle				=                       GWT.create( GwtTeamingImageBundle.class              );
+	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			=                       GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
 	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		=                       GWT.create( GwtTeamingMainMenuImageBundle.class      );
 	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
-	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			=                       GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
 	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
 	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class                     );
 	
 	private static GwtMainPage	m_mainPage = null;	
-	
-	/**
-	 * Returns the object that is used to retrieve data table images.
-	 * 
-	 * @return
-	 */
-	public static GwtTeamingDataTableImageBundle getDataTableImageBundle()
-	{
-		return m_dataTableImageBundle;
-	}// end getDataTableImageBundle()
-	
 	
 	/**
 	 * Returns the object that is used to retrieve images.
@@ -92,6 +77,18 @@ public class GwtTeaming implements EntryPoint
 	{
 		return m_imageBundle;
 	}// end getImageBundle()
+	
+	
+	/**
+	 * Returns the object that is used to retrieve Workspace Tree
+	 * images.
+	 * 
+	 * @return
+	 */
+	public static GwtTeamingWorkspaceTreeImageBundle getWorkspaceTreeImageBundle()
+	{
+		return m_wsTreeImageBundle;
+	}// end getWorkspaceTreeImageBundle()
 	
 	
 	/**
@@ -114,18 +111,6 @@ public class GwtTeaming implements EntryPoint
 	{
 		return m_taskListingImageBundle;
 	}// end getTaskListingImageBundle()
-	
-	
-	/**
-	 * Returns the object that is used to retrieve Workspace Tree
-	 * images.
-	 * 
-	 * @return
-	 */
-	public static GwtTeamingWorkspaceTreeImageBundle getWorkspaceTreeImageBundle()
-	{
-		return m_wsTreeImageBundle;
-	}// end getWorkspaceTreeImageBundle()
 	
 	
 	/**
@@ -260,7 +245,7 @@ public class GwtTeaming implements EntryPoint
 		}
 		
 		// Are we in the main page?
-		RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
+		final RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
 		if ( mainRootPanel != null )
 		{
 			// Yes!  Load the main page's split point.
@@ -276,12 +261,8 @@ public class GwtTeaming implements EntryPoint
 				@Override
 				public void onSuccess( GwtMainPage mainPage )
 				{
-					RootLayoutPanel rlPanel;
-					
 					m_mainPage = mainPage;
-					
-					rlPanel = RootLayoutPanel.get();
-					rlPanel.add( mainPage );
+					mainRootPanel.add( mainPage );
 				}// end onSuccess()
 			} );
 			
@@ -344,7 +325,6 @@ public class GwtTeaming implements EntryPoint
 		{
 			// Yes!  Load the task listing's split point.
 			TaskListing.createAsync(
-					null,	// null -> No TaskFolderView -> Embedded JSP version.
 					new TaskListingClient() {				
 				@Override
 				public void onUnavailable()
@@ -419,30 +399,12 @@ public class GwtTeaming implements EntryPoint
 
 	
 	/**
-	 * Synchronously fires a Vibe event on the event bus.
+	 * Fire a Vibe OnPrem event on the event bus.
 	 * 
 	 * @param event
 	 */
 	public static void fireEvent( VibeEventBase<?> event )
 	{
 		m_eventBus.fireEvent( event );
-	}// end fireEvent()
-	
-	/**
-	 * Asynchronously fires a Vibe event on the event bus.
-	 * 
-	 * @param event
-	 */
-	public static void fireEventAsync( final VibeEventBase<?> event )
-	{
-		ScheduledCommand doEvent = new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				fireEvent( event );
-			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred(doEvent);
 	}// end fireEvent()	
 }// end GwtTeaming

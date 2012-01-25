@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -69,6 +69,7 @@ import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.StringUtil;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -80,18 +81,8 @@ import org.springframework.web.multipart.MultipartFile;
 public final class MiscUtil
 {
 	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
-	
-	public static class IdPair {
-		public Long m_binderId;
-		public Long m_entryId;
-		
-		public IdPair(Long binderId, Long entryId) {
-			super();
-			m_binderId = binderId;
-			m_entryId  = entryId;
-		}
-	}
 
+	
 	/**
 	 * Class constructor that prevents this class from being instantiated.
 	 */
@@ -101,20 +92,6 @@ public final class MiscUtil
 	}// end MiscUtil()
 	
 	
-	/**
-	 * Adds a Long to a List<Long> if it's not already there.
-	 * 
-	 * @param lList
-	 * @param l
-	 */
-	public static void addLongToListLongIfUnique(List<Long> lList, Long l) {
-		// If the List<Long> doesn't contain the Long...
-		if (!(lList.contains(l))) {
-			// ...add it.
-			lList.add(l);
-		}
-	}
-
 	/**
 	 * Add all of the information needed to support the "Create new account" ui to the response.
 	 */
@@ -487,23 +464,6 @@ public final class MiscUtil
 				((null == s2) ? "" : s2) );
    }
 
-	/**
-	 * Converts a String to an int protected against any exceptions.
-	 * 
-	 * @param s
-	 * @param def
-	 * 
-	 * @return
-	 */
-	public static int safeSToInt(String s, int def) {
-		int reply = def;
-		if (hasString(s)) {
-			try                  {reply = Integer.parseInt(s);}
-			catch (Exception ex) {reply = def;                }
-		}
-		return reply;
-	}
-	
 	/**
 	 * Returns the ZoneInfo for the zone we're currently running under.
 	 * 
@@ -898,67 +858,5 @@ public final class MiscUtil
 	
 	public static boolean isHtmlQuirksMode() {
 		return (!(isHtmlStandardsMode()));
-	}
-	
-	/**
-	 * Replaces all occurrences of oldSub with newSub in s.
-	 * 
-	 * The implementation was copied from StringUtil.replace().
-	 * 
-	 * @param s
-	 * @param oldSub
-	 * @param newSub
-	 * 
-	 * @return
-	 */
-	public static String replace(String s, String oldSub, String newSub) {
-		if ((s == null) || (oldSub == null) || (newSub == null)) {
-			return null;
-		}
-
-		int y = s.indexOf(oldSub);
-
-		if (y >= 0) {
-			StringBuffer sb = new StringBuffer();
-			int length = oldSub.length();
-			int x = 0;
-
-			while (x <= y) {
-				sb.append(s.substring(x, y));
-				sb.append(newSub);
-				x = y + length;
-				y = s.indexOf(oldSub, x);
-			}
-
-			sb.append(s.substring(x));
-
-			return sb.toString();
-		}
-		else {
-			return s;
-		}
-	}
-	
-	/**
-	 * Returns a List<IdPair> of the binder ID/entry ID pairs stored in
-	 * a multiple entry ID string.
-	 * 
-	 * @param multipleEntryIds
-	 * 
-	 * @return
-	 */
-	public static List<IdPair> getIdPairsFromMultipleEntryIds( String multipleEntryIds )
-	{
-		List<IdPair> reply = new ArrayList<IdPair>();
-		if ( MiscUtil.hasString( multipleEntryIds ) )
-		{
-			String[] meIds = multipleEntryIds.split( "," );
-			for ( String meId:  meIds )
-			{
-				String[] eId = meId.split( ":" );
-				reply.add(new IdPair(Long.parseLong(eId[0]), Long.parseLong(eId[1])));
-			}
-		}
-		return reply;
 	}
 }// end MiscUtil

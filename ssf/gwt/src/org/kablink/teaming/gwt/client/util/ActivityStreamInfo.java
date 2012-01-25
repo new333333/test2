@@ -83,8 +83,7 @@ public class ActivityStreamInfo
 		MY_FAVORITE(    7),
 		MY_TEAMS(       8),
 		MY_TEAM(        9),
-		SITE_WIDE(     10),
-		SPECIFIC_BINDER( 11 );
+		SITE_WIDE(     10);
 
 		private int m_asValue;
 		
@@ -136,7 +135,6 @@ public class ActivityStreamInfo
 			case  8:  reply = MY_TEAMS;        break;
 			case  9:  reply = MY_TEAM;         break;
 			case 10:  reply = SITE_WIDE;       break;
-			case 11:  reply = SPECIFIC_BINDER; break;
 			}
 			return reply;
 		}

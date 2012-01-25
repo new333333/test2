@@ -933,7 +933,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	 		}});
 		}
 	}
-	
+
     //***********************************************************************************************************
     //no transaction
 	public boolean isFolderEmpty(final Binder binder) { 

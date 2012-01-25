@@ -128,7 +128,12 @@
 
 	<filter-mapping>
 		<filter-name>defaultCharacterEncodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<servlet-name>dispatcher</servlet-name>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>defaultCharacterEncodingFilter</filter-name>
+		<servlet-name>portletAdapter</servlet-name>
 	</filter-mapping>
 
 @@LOGIN_FILTER@@
@@ -418,12 +423,12 @@
 		<url-pattern>*.groovy</url-pattern>
 	</servlet-mapping>	
 	
-	<servlet>
+	<!--<servlet>
 		<servlet-name>jerseyServlet</servlet-name>
-		<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>org.kablink.teaming.remoting.rest.resource;org.kablink.teaming.remoting.rest.v1.resource;org.kablink.teaming.remoting.rest.provider;org.kablink.teaming.remoting.rest.v1.provider</param-value>
+			<param-value>org.kablink.teaming.remoting.rest.resource;org.kablink.teaming.remoting.rest.provider</param-value>
 		</init-param>
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
@@ -439,7 +444,7 @@
 	<servlet-mapping>
 		<servlet-name>jerseyServlet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping>-->
 
 	<session-config>
 		<session-timeout>250</session-timeout>
