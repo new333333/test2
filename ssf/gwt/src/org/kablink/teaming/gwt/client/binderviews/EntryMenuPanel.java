@@ -88,14 +88,18 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * @author drfoster@novell.com
  */
 public class EntryMenuPanel extends ToolPanelBase {
-	private BinderInfo			m_binderInfo;			//
-	private boolean				m_includeColumnResizer;	//
-	private List<ToolbarItem>	m_toolbarIems;			//
-	private VibeFlowPanel		m_fp;					// The panel holding the AccessoryPanel's contents.
-	private VibeMenuBar			m_entryMenu;			//
-	private VibeMenuItem		m_addFilesMenu;			//
-	private VibeMenuItem		m_deleteMenu;			//
-	private VibeMenuItem		m_moreMenu;				//
+	private BinderInfo			m_binderInfo;				//
+	private boolean				m_includeColumnResizer;		//
+	private List<ToolbarItem>	m_toolbarIems;				//
+	private VibeFlowPanel		m_fp;						// The panel holding the AccessoryPanel's contents.
+	private VibeMenuBar			m_entryMenu;				//
+	private VibeMenuItem		m_addFilesMenu;				//
+	private VibeMenuItem		m_deleteMenu;				//
+	private VibeMenuItem		m_moreMenu;					//
+	private VibeMenuItem		m_trashPurgeAllMenu;		//
+	private VibeMenuItem		m_trashPurgeSelectedMenu;	//
+	private VibeMenuItem		m_trashRestoreAllMenu;		//
+	private VibeMenuItem		m_trashRestoreSelectedMenu;	//
 	
 	/*
 	 * Constructor method.
@@ -337,8 +341,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 			}
 		});
 		switch (simpleTBI.getTeamingEvent()) {
-		case INVOKE_DROPBOX:           m_addFilesMenu = menuItem; break;
-		case DELETE_SELECTED_ENTRIES:  m_deleteMenu   = menuItem; break;
+		case INVOKE_DROPBOX:                  m_addFilesMenu             = menuItem; break;
+		case DELETE_SELECTED_ENTRIES:         m_deleteMenu               = menuItem; break;
+		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = menuItem; break;
+		case TRASH_PURGE_SELECTED_ENTRIES:    m_trashPurgeSelectedMenu   = menuItem; break;
+		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
+		case TRASH_RESTORE_SELECTED_ENTRIES:  m_trashRestoreSelectedMenu = menuItem; break;
 		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		menuBar.addItem(menuItem);
@@ -414,6 +422,32 @@ public class EntryMenuPanel extends ToolPanelBase {
 
 	/**
 	 * Called to enable/disable the menu items that require something
+	 * to be available (i.e., a data table is not empty, ...)
+	 * 
+	 * @param enable
+	 */
+	public void setEntriesAvailable(boolean dataAvailable) {
+		// If we have a trash purge all menu item...
+		if (null != m_trashPurgeAllMenu) {
+			// ...enable disable it.
+			m_trashPurgeAllMenu.setEnabled(dataAvailable);
+			if (dataAvailable)
+			     m_trashPurgeAllMenu.removeStyleName("vibe-menuDisabled");
+			else m_trashPurgeAllMenu.addStyleName(   "vibe-menuDisabled");
+		}
+		
+		// If we have a trash restore all menu item...
+		if (null != m_trashRestoreAllMenu) {
+			// ...enable disable it.
+			m_trashRestoreAllMenu.setEnabled(dataAvailable);
+			if (dataAvailable)
+			     m_trashRestoreAllMenu.removeStyleName("vibe-menuDisabled");
+			else m_trashRestoreAllMenu.addStyleName(   "vibe-menuDisabled");
+		}
+	}
+	
+	/**
+	 * Called to enable/disable the menu items that require something
 	 * to be selected.
 	 * 
 	 * @param enable
@@ -443,6 +477,24 @@ public class EntryMenuPanel extends ToolPanelBase {
 				renderStructuredItemHTML(
 					m_moreMenu.getText(),
 					enable));
+		}
+		
+		// If we have a trash purge selected menu item...
+		if (null != m_trashPurgeSelectedMenu) {
+			// ...enable disable it.
+			m_trashPurgeSelectedMenu.setEnabled(enable);
+			if (enable)
+			     m_trashPurgeSelectedMenu.removeStyleName("vibe-menuDisabled");
+			else m_trashPurgeSelectedMenu.addStyleName(   "vibe-menuDisabled");
+		}
+		
+		// If we have a trash restore selected menu item...
+		if (null != m_trashRestoreSelectedMenu) {
+			// ...enable disable it.
+			m_trashRestoreSelectedMenu.setEnabled(enable);
+			if (enable)
+			     m_trashRestoreSelectedMenu.removeStyleName("vibe-menuDisabled");
+			else m_trashRestoreSelectedMenu.addStyleName(   "vibe-menuDisabled");
 		}
 	}
 }

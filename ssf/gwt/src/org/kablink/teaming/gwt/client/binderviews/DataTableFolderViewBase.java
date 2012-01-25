@@ -263,6 +263,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						t,
 						m_messages.rpcFailure_GetFolderRows(),
 						folderId);
+					
+					// If we have an entry menu...
+					EntryMenuPanel emp = getEntryMenuPanel();
+					if (null != emp) {
+						// ...tell it to update the state of its items that
+						// ...require entries be available.
+						emp.setEntriesAvailable(false);
+					}
 				}
 				
 				@Override
@@ -282,6 +290,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					// Apply the rows we read.
 					m_vdt.setRowData( responseData.getStartOffset(), folderRows);
 					m_vdt.setRowCount(responseData.getTotalRows()              );
+					
+					// If we have an entry menu...
+					EntryMenuPanel emp = getEntryMenuPanel();
+					if (null != emp) {
+						// ...tell it to update the state of its items that
+						// ...require entries be available.
+						emp.setEntriesAvailable(0 < rowsRead);
+					}
 				}
 			});
 		}
