@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="jong" context="schema" failOnError="true" id="1">
+        <comment>Size limit for any attachment in an email message</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OUTGOINGATTACHMENTSIZELIMIT" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Size limit for the sum of all attachments in an email message</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OUTGOINGATTACHMENTSUMLIMIT" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="3">
+        <comment>The binder owning this local template</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="TEMPLATEOWNINGBINDERID" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="4">
+        <createIndex indexName="TEMPLATEOWNINGBINDERID_BINDER" tableName="SS_FORUMS" unique="false">
+            <column name="TEMPLATEOWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
