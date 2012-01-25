@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class discriminator-value="A" dynamic-update="true" lazy="false" table="SS_CustomAttributes" name="org.kablink.teaming.domain.CustomAttribute">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator type="char" column="type"/>
+    <property name="zoneId" access="field"/>
+    <component name="owner" class="org.kablink.teaming.domain.AnyOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry_cAtt"/>
+      <many-to-one name="principal" index="ownerPrincipal_cAtt"/>
+      <many-to-one name="binder" index="ownerBinder_cAtt"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_cAtt" >
+        <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="org.kablink.teaming.domain.User" value="user"/>
+        <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
+        <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
+        <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
+        <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
+        <column name="ownerType" length="16"/>
+        <column name="ownerId"/>
+      </any>
+      <property name="ownerType" update="false" insert="false"/>
+      <property name="ownerId" update="false" insert="false"/>
+      <property name="owningBinderKey" length="255"/>
+      <property name="owningBinderId" index="owningBinder_cAtt"/>
+    </component>
+    <property name="name" length="64" access="field"/>
+    <property name="stringValue" length="2000"/>
+    <component name="description">
+<!-- use length to force medium blog in mysql -->
+      <property name="HDescription" length="2000000" column="description_text" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+      <property name="HFormat" column="description_format"/>
+    </component>
+    <property name="longValue" />
+    <property name="dateValue" />
+<!-- use length to force medium blog in mysql -->
+    <property name="serializedValue"  length="2000000" type="org.kablink.teaming.dao.util.SSBlobSerializableType"/>
+<!-- use length to force medium text in mysql -->
+    <property name="xmlValue" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+    <property name="booleanValue" />
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="values" order-by="position asc">
+      <!--<cache usage="read-write"/>-->
+      <key column="parent"/>
+      <one-to-many class="org.kablink.teaming.domain.CustomAttributeListElement"/>
+    </set>
+    <property name="valueType"/>
+    <subclass name="org.kablink.teaming.domain.CustomAttributeListElement" lazy="false" discriminator-value="L" dynamic-update="true">
+  	 <property name="position"/>
+     <many-to-one name="parent">
+        <column name="parent" sql-type="char(32)" index="owningAttribute_cAtt"/>
+      </many-to-one>
+    </subclass>
+  </class>
+</hibernate-mapping>

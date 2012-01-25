@@ -1,0 +1,26 @@
+
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">  
+  <portlet> 
+    <description xml:lang="en">Teaming</description>  
+    <portlet-name>teaming</portlet-name>  
+    <display-name>Teaming</display-name>
+    <display-name xml:lang="en">Teaming</display-name>  
+    <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
+    <init-param> 
+      <name>contextConfigLocation</name>  
+      <value>/WEB-INF/context/portlet/ssf.xml optional:/WEB-INF/context/portlet/ssf-ext.xml</value> 
+    </init-param>  
+    <init-param> 
+      <name>contextClass</name>  
+      <value>org.kablink.teaming.spring.web.portlet.context.support.XmlPortletApplicationContext</value> 
+    </init-param>  
+    <expiration-cache>300</expiration-cache>  
+    <supports> 
+      <mime-type>text/html</mime-type>  
+      <portlet-mode>view</portlet-mode>  
+      <portlet-mode>edit</portlet-mode> 
+    </supports>  
+    <supported-locale>en</supported-locale>
+    <resource-bundle>content.teaming</resource-bundle>
+  </portlet>
+</portlet-app>
