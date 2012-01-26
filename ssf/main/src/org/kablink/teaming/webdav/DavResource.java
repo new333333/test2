@@ -61,10 +61,8 @@ public class DavResource extends WebdavResource implements PropFindableResource,
 
 	static final String ID = "dav";
 	
-	private WebdavResourceFactory factory;
-	
 	public DavResource(WebdavResourceFactory factory) {
-		this.factory = factory;
+		super(factory);
 	}
 	
 	/* (non-Javadoc)
@@ -130,7 +128,8 @@ public class DavResource extends WebdavResource implements PropFindableResource,
 	public void sendContent(OutputStream out, Range range,
 			Map<String, String> params, String contentType) throws IOException,
 			NotAuthorizedException, BadRequestException, NotFoundException {
-		// $$$
+		String content = getDirectoryListing(getChildren());
+		out.write(content.getBytes("UTF-8"));
 	}
 
 	/* (non-Javadoc)
@@ -146,7 +145,7 @@ public class DavResource extends WebdavResource implements PropFindableResource,
 	 */
 	@Override
 	public String getContentType(String accepts) {
-		return TEXT_HTML;
+		return CONTENT_TYPE_TEXT_HTML_UTF8;
 	}
 
 	/* (non-Javadoc)

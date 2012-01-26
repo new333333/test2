@@ -45,11 +45,10 @@ import com.bradmcevoy.http.PropFindableResource;
  */
 public class FolderResource extends WebdavResource implements PropFindableResource {
 
-	private WebdavResourceFactory factory;
 	private Folder folder;
 	
 	public FolderResource(WebdavResourceFactory factory, Folder folder) {
-		this.factory = factory;
+		super(factory);
 		this.folder = folder;
 	}
 

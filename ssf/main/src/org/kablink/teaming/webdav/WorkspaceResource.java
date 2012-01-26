@@ -45,11 +45,10 @@ import com.bradmcevoy.http.PropFindableResource;
  */
 public class WorkspaceResource extends WebdavResource implements PropFindableResource {
 
-	private WebdavResourceFactory factory;
 	private Workspace ws;
 	
 	public WorkspaceResource(WebdavResourceFactory factory, Workspace ws) {
-		this.factory = factory;
+		super(factory);
 		this.ws = ws;
 	}
 
