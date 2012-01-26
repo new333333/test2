@@ -420,6 +420,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ShareEntry();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
+	String rpcFailure_TrashPurgeAll();
+	String rpcFailure_TrashPurgeSelectedEntries();
+	String rpcFailure_TrashRestoreAll();
+	String rpcFailure_TrashRestoreSelectedEntries();
 	String rpcFailure_UnknownCause();
 	String rpcFailure_UnknownException();
 	String rpcFailure_UnlockEntries();
@@ -1279,6 +1283,12 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_Start();
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
+	String vibeDataTable_TrashConfirmPurge();
+	String vibeDataTable_TrashConfirmPurgeAll();
+	String vibeDataTable_TrashConfirmPurgeAllWithSelections();
+	String vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders();
+	String vibeDataTable_TrashConfirmRestoreAllWithSelections();
+	String vibeDataTable_TrashInternalErrorOverrideMissing(String methodName);
 	String vibeDataTable_View();
 	
 	// String used in the Landing Page

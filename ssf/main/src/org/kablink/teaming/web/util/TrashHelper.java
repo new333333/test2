@@ -544,11 +544,11 @@ public class TrashHelper {
 		}
 	}
 	
-	/*
+	/**
 	 * Inner class used to communicate information while traversing
 	 * binders and entries to predelete or restore them. 
 	 */
-	private static class TrashResponse {
+	public static class TrashResponse {
 		// Class data members.
 		public Exception		m_exception;
 		public Long				m_binderId;
@@ -1464,15 +1464,28 @@ public class TrashHelper {
 			throw tr.m_exception;
 		}
 	}
-	
+
 	/*
-	 * Called to purge the TrashEntry's in trashEntries. 
+	 * Called to purge the TrashEntry's in trashEntries and return an
+	 * appropriate ModelAndView.
 	 */
 	private static ModelAndView purgeEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
+		boolean purgeMirroredSources = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_PURGE_MIRRORED_SOURCES, false);
+		TrashResponse tr = purgeSelectedEntries(bs, trashEntries, purgeMirroredSources);
+		return getMVBasedOnTrashResponse(response, bs, tr);
+	}
+	
+	/**
+	 * Called to purge the TrashEntry's in trashEntries.
+	 * 
+	 * @param bs
+	 * @param trashEntries
+	 * @param purgeMirroredSsources.
+	 */
+	public static TrashResponse purgeSelectedEntries(AllModulesInjected bs, TrashEntry[] trashEntries, boolean purgeMirroredSources) {
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
 		int purgedBinderCount = 0;
-		TrashResponse tr = new TrashResponse(bs);
-		boolean purgeMirroredSources = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_PURGE_MIRRORED_SOURCES, false);
+		TrashResponse reply = new TrashResponse(bs);
 		TrashPurgedBinderTracker purgedBinders = new TrashPurgedBinderTracker();
 		
 		// Scan the TrashEntry's.
@@ -1494,7 +1507,7 @@ public class TrashHelper {
 						if (!(bs.getFolderModule().testAccess(fe, FolderOperation.deleteEntry))) {
 							// No!  Track the error.
 							logger.debug(".........ACL violation!");
-							tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
+							reply.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
 						}
 					}
 					else {
@@ -1505,8 +1518,8 @@ public class TrashHelper {
 					// Something choked trying to do the ACL check.
 					// Track the error.
 					logger.debug(".........check failed!");
-					if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
-					else                                     tr.setException(e, trashEntry.m_docId);
+					if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
+					else                                     reply.setException(e, trashEntry.m_docId);
 				}
 			}
 					
@@ -1521,7 +1534,7 @@ public class TrashHelper {
 						if (!(bs.getBinderModule().testAccess(binder, BinderOperation.deleteBinder))) {
 							// No!  Track the error.
 							logger.debug(".........ACL violation!");
-							tr.setACLViolation(trashEntry.m_docId);
+							reply.setACLViolation(trashEntry.m_docId);
 						}
 					}
 					else {
@@ -1532,13 +1545,13 @@ public class TrashHelper {
 					// Something choked trying to do the ACL check.
 					// Track the error.
 					logger.debug(".........check failed!");
-					if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
-					else                                     tr.setException(e, trashEntry.m_docId);
+					if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
+					else                                     reply.setException(e, trashEntry.m_docId);
 				}
 			}
 			
 			// If we detect an error during the ACL check...
-			if (tr.isError()) {
+			if (reply.isError()) {
 				// ...quit processing items.
 				break;
 			}
@@ -1546,7 +1559,7 @@ public class TrashHelper {
 		}
 
 		// Did we detect any ACL violations?
-		if (!(tr.isError())) {
+		if (!(reply.isError())) {
 			// Scan the TrashEntry's again.
 			logger.debug("...purging binders...");
 			for (int i = 0; i < count; i += 1) {
@@ -1585,12 +1598,12 @@ public class TrashHelper {
 					}
 					catch (Exception e) {
 						logger.debug(".........binder purge failed.", e);
-						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
-						else                                     tr.setException(e, trashEntry.m_docId);
+						if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
+						else                                     reply.setException(e, trashEntry.m_docId);
 					}
 					
 					// If we detect an error doing a purge...
-					if (tr.isError()) {
+					if (reply.isError()) {
 						// ...quit processing items.
 						break;
 					}
@@ -1599,7 +1612,7 @@ public class TrashHelper {
 		}
 
 		// Have we detected any errors yet?
-		if (!(tr.isError())) {
+		if (!(reply.isError())) {
 			// No!  Scan the TrashEntry's one more time.
 			logger.debug("...purging entries...");
 			for (int i = 0; i < count; i += 1) {
@@ -1631,12 +1644,12 @@ public class TrashHelper {
 					}
 					catch (Exception e) {
 						logger.debug(".........entry purge failed.", e);
-						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
-						else                                     tr.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
+						if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
+						else                                     reply.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
 					}
 					
 					// If we detect an error doing a purge...
-					if (tr.isError()) {
+					if (reply.isError()) {
 						// ...quit processing items.
 						break;
 					}
@@ -1654,8 +1667,9 @@ public class TrashHelper {
 			bs.getBinderModule().deleteBinderFinish();
 		}
 		
-		// Handle any messages based on the purge.
-		return getMVBasedOnTrashResponse(response, bs, tr);
+		// If we get here, reply refers to the TrashResponse that
+		// describes the results of the purge.  Return it.
+		return reply;
 	}
 
 	/*
@@ -1999,7 +2013,8 @@ public class TrashHelper {
 	}
 
 	/**
-	 * Called to restore the TrashEntry's in trashEntries. 
+	 * Called to restore the TrashEntry's in trashEntries and return an
+	 * appropriate ModelAndView. 
 	 * 
 	 * @param bs
 	 * @param trashEntries
@@ -2009,9 +2024,23 @@ public class TrashHelper {
 	 * @return
 	 */
 	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
+		// Perform the restore and handle any messages returned.
+		TrashResponse tr = restoreSelectedEntries(bs, trashEntries);
+		return getMVBasedOnTrashResponse(response, bs, tr);
+	}
+	
+	/**
+	 * Called to restore the TrashEntry's in trashEntries. 
+	 * 
+	 * @param bs
+	 * @param trashEntries
+	 * 
+	 * @return
+	 */
+	public static TrashResponse restoreSelectedEntries(AllModulesInjected bs, TrashEntry[] trashEntries) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
-		TrashResponse tr = new TrashResponse(bs);
+		TrashResponse reply = new TrashResponse(bs);
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
@@ -2019,8 +2048,8 @@ public class TrashHelper {
 				// Yes!  Is it an entry?
 				if (trashEntry.isEntry()) {
 					// Yes!  Restore the entry itself...
-					restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId, tr);
-					if (tr.isError()) {
+					restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId, reply);
+					if (reply.isError()) {
 						break;
 					}
 				}
@@ -2028,16 +2057,17 @@ public class TrashHelper {
 				// No, it isn't an entry!  Is it a binder?
 				else if (trashEntry.isBinder()) {
 					// Yes!  Restore the binder itself...
-					restoreBinder(bs, trashEntry.m_docId, tr);
-					if (tr.isError()) {
+					restoreBinder(bs, trashEntry.m_docId, reply);
+					if (reply.isError()) {
 						break;
 					}
 				}
 			}
 		}
 		
-		// Handle any messages based on the restore.
-		return getMVBasedOnTrashResponse(response, bs, tr);
+		// If we get here, reply refers to the TrashResponse that
+		// describes the results of the restore.  Return it.
+		return reply;
 	}
 	
 	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry trashEntry) {
