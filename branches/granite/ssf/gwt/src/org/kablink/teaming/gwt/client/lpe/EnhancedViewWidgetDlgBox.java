@@ -154,8 +154,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_views = new ArrayList<EnhancedViewInfo>();
 		evInfo = new EnhancedViewInfo( "landing_page_entry.jsp" );
 		m_views.add( evInfo );
-		evInfo = new EnhancedViewInfo( "landing_page_full_entry.jsp" );
-		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_folder.jsp" );
 		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_folder_list.jsp" );

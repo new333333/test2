@@ -64,13 +64,6 @@ public class EnhancedViewInfo
 			m_folderRequired = false;
 			m_entryRequired = true;
 		}
-		else if ( jspName.equalsIgnoreCase( "landing_page_full_entry.jsp" ) )
-		{
-			m_displayName = messages.enhancedViewDisplayFullEntry();
-			m_desc = messages.enhancedViewDisplayFullEntryDesc();
-			m_folderRequired = false;
-			m_entryRequired = true;
-		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
 		{
 			m_displayName = messages.enhancedViewDisplayRecentEntries();
