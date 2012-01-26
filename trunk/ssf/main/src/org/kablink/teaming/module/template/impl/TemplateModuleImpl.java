@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
@@ -200,7 +201,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				try {
 					in = new ClassPathResource(file).getInputStream();
 					Document doc = reader.read(in);
-					Long templateId = addTemplate(doc,true).getId();
+					Long templateId = addTemplate(null, doc, true).getId();
 					if (templateId == null) result = false;
 					getCoreDao().flush();
 				} catch (Exception ex) {
@@ -320,15 +321,21 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		doAddTemplate(template, type, updates);
 	    return template;
 	 }
-	 public TemplateBinder addTemplate(InputStream indoc, boolean replace) 
+	 public TemplateBinder addTemplate(Binder localBinderParent, InputStream indoc, boolean replace) 
 	 	throws AccessControlException, DocumentException {
 		 SAXReader xIn = new SAXReader(false);
 		 Document doc = xIn.read(indoc);
-		 return addTemplate(doc, replace);
+		 return addTemplate(localBinderParent, doc, replace);
 	 }
 		//add top level template
-	 public TemplateBinder addTemplate(Document doc, boolean replace) {
-		 checkAccess(TemplateOperation.manageTemplate);
+	 public TemplateBinder addTemplate(Binder localBinderParent, Document doc, boolean replace) {
+		 if (localBinderParent == null) {
+			 //This is a zone wide template
+			 checkAccess(TemplateOperation.manageTemplate);
+		 } else {
+			 //This is a local template, check access to the folder
+			 getBinderModule().checkAccess(localBinderParent, BinderOperation.manageConfiguration);
+		 }
 		 Element config = doc.getRootElement();
 		 //check name
 		 String name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_BINDER_NAME);
@@ -340,6 +347,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 }
 		 String internalId = config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
 		 if (Validator.isNotNull(internalId)) {
+			 if (localBinderParent != null) {
+				 throw new NotSupportedException("errorcode.notsupported.cannotImportGlobalTemplate");
+			 }
 			 try {
 			 //	see if it exists
 				 Binder binder = getCoreDao().loadReservedBinder(internalId, RequestContextHolder.getRequestContext().getZoneId());
@@ -356,14 +366,29 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 } else {
 			 List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
 			 if (!binders.isEmpty()) {
-				 if (replace) getBinderModule().deleteBinder(binders.get(0).getId());
-				 else throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
+				 if (localBinderParent != null) {
+					 //Make sure these templates really belong to this binder
+					 for (TemplateBinder tb : binders) {
+						 if (!localBinderParent.getId().equals(tb.getTemplateOwningBinderId())) {
+							 throw new NotSupportedException("errorcode.notsupported.cannotImportLocalTemplate", new Object[]{name});
+						 }
+					 }
+				 }
+				 if (replace) {
+					 getBinderModule().deleteBinder(binders.get(0).getId());
+				 } else {
+					 throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
+				 }
 			 }
 		 }
 		 TemplateBinder template = new TemplateBinder();
 		 //only top level needs a name
 		 template.setName(name);
 		 template.setInternalId((internalId));
+		 if (localBinderParent != null) {
+			 //Mark this template as local to the parent binder
+			 template.setTemplateOwningBinderId(localBinderParent.getId());
+		 }
 		 doTemplate(template, config);
 		 
 		 //see if any child configs need to be copied
@@ -858,7 +883,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		while (!binders.isEmpty()) {
 			Binder b = binders.remove(0);
 			binders.addAll(b.getBinders());
-			//See if this binder usesany local definitions
+			//See if this binder uses any local definitions
 			List<Definition> definitions = binder.getViewDefinitions();
 			definitions.addAll(binder.getEntryDefinitions());
 			definitions.addAll(binder.getWorkflowDefinitions());

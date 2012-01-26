@@ -82,8 +82,8 @@ public interface TemplateModule {
      * @param replace
      * @return
      */
-	public TemplateBinder addTemplate(Document document, boolean replace) throws AccessControlException;
-	public TemplateBinder addTemplate(InputStream stream, boolean replace) throws AccessControlException, DocumentException;
+	public TemplateBinder addTemplate(Binder localBinderParent, Document document, boolean replace) throws AccessControlException;
+	public TemplateBinder addTemplate(Binder localBinderParent, InputStream stream, boolean replace) throws AccessControlException, DocumentException;
 	/**
 	 * Create a template
 	 * @param type

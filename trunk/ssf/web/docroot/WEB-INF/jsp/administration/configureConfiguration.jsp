@@ -85,12 +85,7 @@ String cTreeName = renderResponse.getNamespace() + "_cTree";
 
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
-	<c:if test="${!ssConfigureConfigurationLocal}">
-	  var params = {binderId:id};
-	</c:if>
-	<c:if test="${ssConfigureConfigurationLocal}">
-	  var params = {binderParentId:"${binderParentId}", binderId:id};
-	</c:if>
+	var params = {binderId:id};
 	self.location.href = ss_buildAdapterUrl(ss_AjaxBaseUrl, params, action);
 	return false;
 } 
@@ -207,8 +202,10 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
 	var url = "<ssf:url action="ssActionPlaceHolder" actionUrl="true"><ssf:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
+		name="binderId" value="ssBinderIdPlaceHolder"/><ssf:param 
+		name="parentBinderId" value="ssParentBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssParentBinderIdPlaceHolder", "${ssBinder.templateOwningBinderId}");
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
 	return false;

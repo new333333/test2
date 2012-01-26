@@ -85,6 +85,7 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
@@ -97,13 +98,14 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
+			Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+			Binder parentBinder = null;
+			if (parentBinderId != null) {
+				//Make sure there is access to the parent binder
+				parentBinder = (Binder)getBinderModule().getBinder(parentBinderId);
+				response.setRenderParameter(WebKeys.URL_BINDER_PARENT_ID, parentBinderId.toString());
+			}
 			if (WebKeys.OPERATION_ADD.equals(operation)) {
-				Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
-				Binder parentBinder = null;
-				if (parentBinderId != null) {
-					//Make sure there is access to the parent binder
-					parentBinder = (Binder)getBinderModule().getBinder(parentBinderId);
-				}
 				//adding a new template
 				Integer type = PortletRequestUtils.getIntParameter(request, "definitionType");
 				if (type == null)  return;
@@ -135,7 +137,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
 					updates.put(ObjectKeys.FIELD_TEMPLATE_TITLE, sVal);
 					sVal = PortletRequestUtils.getStringParameter(request, "description", null);
-					updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(sVal));
+					updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(Html.stripHtml(sVal)));
 					sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
 					if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal);
 					Long configId = getTemplateModule().addTemplate(parentBinder, type, updates).getId();
@@ -161,11 +163,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 									ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
 									ZipEntry entry = null;
 									while((entry = zipIn.getNextEntry()) != null) {
-										loadTemplates(entry.getName(), new ZipEntryStream(zipIn), replace, errors);
+										loadTemplates(parentBinder, entry.getName(), new ZipEntryStream(zipIn), replace, errors);
 										zipIn.closeEntry();
 									}
 								} else {
-									loadTemplates(myFile.getOriginalFilename(), myFile.getInputStream(), replace, errors);
+									loadTemplates(parentBinder, myFile.getOriginalFilename(), myFile.getInputStream(), replace, errors);
 								}
 								myFile.getInputStream().close();
 							} catch (Exception fe) {
@@ -208,9 +210,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
 				updates.put(ObjectKeys.FIELD_TEMPLATE_TITLE, sVal);
 				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
-				updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(sVal));
+				updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(Html.stripHtml(sVal)));
 				sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
-				if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal); //should only be present for root templates
+				if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, Html.stripHtml(sVal)); //should only be present for root templates
 			
 				getTemplateModule().modifyTemplate(configId, updates);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
@@ -239,6 +241,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 				if (configId != null) {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				}
+				Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+				if (parentBinderId != null) {
+					//Make sure there is access to the parent binder
+					response.setRenderParameter(WebKeys.URL_BINDER_PARENT_ID, parentBinderId.toString());
 				}
 			}
 		} else if (WebKeys.OPERATION_DELETE.equals(operation) && WebHelper.isMethodPost(request)) {
@@ -273,12 +280,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			
 		} else response.setRenderParameters(formData);
 	}
-	protected Long loadTemplates(String fileName, InputStream fIn, boolean replace, List errors)
+	protected Long loadTemplates(Binder parentBinder, String fileName, InputStream fIn, boolean replace, List errors)
 	{
 		try {
 			SAXReader xIn = new SAXReader();
 			Document doc = xIn.read(fIn);  
-			return getTemplateModule().addTemplate(doc, replace).getId();
+			return getTemplateModule().addTemplate(parentBinder, doc, replace).getId();
 		} catch (Exception fe) {
 			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 		}
@@ -305,16 +312,30 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		String path = WebKeys.VIEW_TEMPLATE;
 		if (configId != null) {
 			TemplateBinder config = getTemplateModule().getTemplate(configId);
-		
+			//See if this is a local template binder.
+			parentBinderId = config.getTemplateOwningBinderId();
+			model.put(WebKeys.CONFIGURE_CONFIGURATION_LOCAL, false);
+			model.put(WebKeys.URL_BINDER_PARENT_ID, "");
+			if (parentBinderId != null) {
+				parentBinder = (Binder)getBinderModule().getBinder(parentBinderId);
+				model.put(WebKeys.CONFIGURE_CONFIGURATION_LOCAL, true);
+				model.put(WebKeys.URL_BINDER_PARENT_ID, String.valueOf(parentBinderId));
+			}
 			model.put(WebKeys.BINDER_CONFIG, config);
 			model.put(WebKeys.BINDER, config);
 			model.put(WebKeys.FOLDER, config); //some jsps still look for folder
 			if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
 				List<TemplateBinder> configs = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
+				if (parentBinder != null) {
+					configs.addAll(getTemplateModule().getTemplates(Definition.FOLDER_VIEW, parentBinder, true));
+				}
 				model.put(WebKeys.BINDER_CONFIGS, configs);
 				model.put(WebKeys.OPERATION, operation);								
 			} else  if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
 				List<TemplateBinder> configs = getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
+				if (parentBinder != null) {
+					configs.addAll(getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW, parentBinder, true));
+				}
 				model.put(WebKeys.OPERATION, operation);				
 				model.put(WebKeys.BINDER_CONFIGS, configs);
 			} else if (WebKeys.OPERATION_ADD.equals(operation)) {
@@ -402,7 +423,10 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					if (viewType == null) viewType = "";
 					model.put(WebKeys.VIEW_TYPE, viewType);
 				}
-} 
+				//Build the mashup beans (if any)
+				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+				DefinitionHelper.buildMashupBeans(this, config, configDocument, model, request );
+			} 
 		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
 				model.put(WebKeys.OPERATION, operation);
 				String definitionType = PortletRequestUtils.getStringParameter(request, "definitionType", String.valueOf(Definition.FOLDER_VIEW));
@@ -419,8 +443,15 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			model.put(WebKeys.OPERATION, operation);
 			path = WebKeys.VIEW_IMPORT_TEMPLATE;
 		} else if (WebKeys.OPERATION_EXPORT.equals(operation)) {
-			List<TemplateBinder> configs = getTemplateModule().getTemplates();
-
+			List<TemplateBinder> configs = new ArrayList<TemplateBinder>();
+			if (parentBinderId == null) {
+				//Get all of the global templates
+				configs = getTemplateModule().getTemplates();
+			} else {
+				//Get just the local templates
+				configs = getTemplateModule().getTemplates(parentBinder);
+			}
+			
 			//Build the definition tree
 			Document definitionTree = DocumentHelper.createDocument();
 			Element dtRoot = definitionTree.addElement(DomTreeBuilder.NODE_ROOT);
@@ -473,13 +504,16 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			}
 			toolbar.addToolbarMenuItem("1_add", "", NLT.get("administration.configure_cfg.clone"), url, qualifiers);
 			
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RESET);
-			if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
-				url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+			if (parentBinderId == null) {
+				//Don't offer this option if doing local templates
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RESET);
+				if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+					url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+				}
+				toolbar.addToolbarMenu("3_reload", NLT.get("administration.toolbar.reset"), url);
 			}
-			toolbar.addToolbarMenu("3_reload", NLT.get("administration.toolbar.reset"), url);
 			
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
@@ -548,6 +582,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+				if ((Boolean) model.get(WebKeys.CONFIGURE_CONFIGURATION_LOCAL)) {
+					url.setParameter(WebKeys.URL_BINDER_PARENT_ID, (String) model.get(WebKeys.URL_BINDER_PARENT_ID));
+				}
 				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url, qualifiersBlock);			
 			}
 			//Delete config

@@ -69,7 +69,8 @@
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[nextConfig.id]}">
 <div style="display:inline">
-<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextConfig.id}" treeDocument="${ssNavigationLinkTree[nextConfig.id]}" 
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextConfig.id}" 
+  treeDocument="${ssNavigationLinkTree[nextConfig.id]}" 
   rootOpen="false" topId="${nextConfig.id}"
   showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
 </div>
