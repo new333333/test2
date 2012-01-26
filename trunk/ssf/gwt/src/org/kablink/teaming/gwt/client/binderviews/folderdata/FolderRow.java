@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -56,8 +57,8 @@ public class FolderRow implements IsSerializable {
 	private boolean								m_canPurge;			//
 	private boolean								m_canTrash;			//
 	private boolean								m_pinned;			//
+	private EntryId								m_entryId;			// The entry ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>					m_columns;			// The FolderColumns that contribute to this FolderRow.
-	private Long 								m_entryId;			// The entry ID of the FolderEntry this FolderRow corresponds to.
 	private Map<String, EntryEventInfo>			m_rowEntryEvents;	// A map of column names to EntryEventInfo's       possibly stored for a column.
 	private Map<String, EntryLinkInfo>			m_rowEntryLinks;	// A map of column names to EntryLinkInfo's        possibly stored for a column.
 	private Map<String, EntryTitleInfo>			m_rowEntryTitles;	// A map of column names to EntryTitleInfo's       possibly stored for a column.
@@ -84,7 +85,7 @@ public class FolderRow implements IsSerializable {
 	 * @param entityType
 	 * @param columns
 	 */
-	public FolderRow(Long entryId, String entityType, List<FolderColumn> columns) {
+	public FolderRow(EntryId entryId, String entityType, List<FolderColumn> columns) {
 		// Initialize the class...
 		this();
 
@@ -103,8 +104,8 @@ public class FolderRow implements IsSerializable {
 	public boolean                           getCanPurge()                {                         return m_canPurge;        }
 	public boolean                           getCanTrash()                {                         return m_canTrash;        }
 	public boolean                           getPinned()                  {                         return m_pinned;          }
+	public EntryId                           getEntryId()                 {                         return m_entryId;         }
 	public List<FolderColumn>                getColumns()                 {                         return m_columns;         }
-	public Long                              getEntryId()                 {                         return m_entryId;         }
 	public Map<String, EntryEventInfo>       getRowEntryEventMap()        {validateMapEvents();     return m_rowEntryEvents;  }
 	public Map<String, EntryLinkInfo>        getRowEntryLinkMap()         {validateMapLinks();      return m_rowEntryLinks;   }
 	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()       {validateMapTitles();     return m_rowEntryTitles;  }
@@ -240,6 +241,17 @@ public class FolderRow implements IsSerializable {
 		return fc.getColumnEleName().toLowerCase();
 	}
 
+	/**
+	 * Returns true if this row refers to a binder and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinder() {
+		String entityType = getEntityType();
+		if (null == entityType) entityType = "";
+		return (entityType.equals("folder") || entityType.equals("workspace"));
+	}
+	
 	/**
 	 * Returns true if a column's value is a List<AssignmenInfo> and
 	 * false otherwise.

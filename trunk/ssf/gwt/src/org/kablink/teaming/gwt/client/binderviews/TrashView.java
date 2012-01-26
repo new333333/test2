@@ -33,12 +33,30 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeAllCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeSelectedEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreAllCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreSelectedEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Trash view.
@@ -56,6 +74,45 @@ public class TrashView extends DataTableFolderViewBase {
 	private TrashView(BinderInfo binderInfo, ViewReady viewReady) {
 		// Simply initialize the base class.
 		super(binderInfo, viewReady, "vibe-trashDataTable");
+	}
+	
+	/*
+	 * Returns a List<String> of trash selection information.  The
+	 * format of the strings duplicates that used by the JSP version
+	 * of the trash.  See the serialize() method in ss_trash.js
+	 * 
+	 * Examples of the format used:
+	 *		9337:18704:entry:folderEntry
+	 *		19160:18704:binder:folder
+	 */
+	private List<String> buildTrashSelectionList() {
+		// Allocate a List<String> to return with the trash selection information.
+		List<String> reply = new ArrayList<String>();
+
+		// Scan the rows in the data table.
+		AbstractCellTable<FolderRow> dt = getDataTable();
+		List<FolderRow> rows = dt.getVisibleItems();
+		if (null != rows) {
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) dt.getSelectionModel());
+			for (FolderRow row:  rows) {
+				// Is this row selected?
+				if (fsm.isSelected(row)) {
+					// Yes!  We need to add trash information about it
+					// the reply list. 
+					EntryId rowEntryId = row.getEntryId();
+					String trashData =
+						 rowEntryId.getEntryId()              + ":" +
+						 rowEntryId.getBinderId()             + ":" +
+						(row.isBinder() ? "binder" : "entry") + ":" +
+						 row.getEntityType();
+					reply.add(trashData);
+				}
+			}
+		}
+		
+		// If we get here, reply refers to a List<String> of the trash
+		// selection data.  Return it.
+		return reply;
 	}
 	
 	/**
@@ -97,7 +154,32 @@ public class TrashView extends DataTableFolderViewBase {
 			}
 		});
 	}
+
+	/*
+	 * Asynchronously forces the content to reload and optionally, the
+	 * sidebar tree.
+	 */
+	private void reloadUIAsync(final boolean reloadSidebar) {
+		ScheduledCommand doReload = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				reloadUINow(reloadSidebar);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doReload);
+	}
 	
+	/*
+	 * Synchronously forces the content to reload and optionally, the
+	 * sidebar tree.
+	 */
+	private void reloadUINow(boolean reloadSidebar) {
+		FullUIReloadEvent.fireOne();
+		if (reloadSidebar) {
+			SidebarReloadEvent.fireOne();
+		}
+	}
+
 	/**
 	 * Called from the base class to reset the content of this trash
 	 * view.
@@ -120,5 +202,178 @@ public class TrashView extends DataTableFolderViewBase {
 	@Override
 	public void resizeView() {
 		// Nothing to do.
+	}
+	
+	/**
+	 * Purges all the entries from the trash.
+	 * 
+	 * Overrides the DataTableFolderViewBase.trashPurgeAll()
+	 * method.
+	 */
+	@Override
+	public void trashPurgeAll() {
+		// Is the user sure they want to purge everything?
+		String confirm = m_messages.vibeDataTable_TrashConfirmPurgeAll();
+		if (areEntriesSelected()) {
+			// If they have anything selected, we need to ensure they
+			// meant to do a purge all and not simply a purge of what
+			// they've selected.
+			confirm += "\n\n";
+			confirm += m_messages.vibeDataTable_TrashConfirmPurgeAllWithSelections();
+		}
+		if (!(Window.confirm(confirm))) {
+			// No!  Bail.
+			return;
+		}
+		
+	    // If there are any binders being purged...
+		final boolean purgeBinders = areBindersInDataTable();
+	    boolean purgeMirroredSources = purgeBinders;
+	    if (purgeMirroredSources) {
+	    	// ...ask the user about purging mirrored sources.
+			purgeMirroredSources = Window.confirm(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
+	    }
+
+		// Perform the purge.
+		Long binderId = getFolderInfo().getBinderIdAsLong();
+		GwtClientHelper.executeCommand(new TrashPurgeAllCmd(binderId, purgeMirroredSources), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_TrashPurgeAll());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display any messages we get back from the server.
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String messages = responseData.getStringValue();
+				if (GwtClientHelper.hasString(messages)) {
+					GwtClientHelper.deferredAlert(messages);
+				}
+				reloadUIAsync(purgeBinders);
+			}
+		});
+	}
+	
+	/**
+	 * Purges the selected entries from the trash.
+	 * 
+	 * Overrides the DataTableFolderViewBase.trashPurgeSelectedEntries()
+	 * method.
+	 */
+	@Override
+	public void trashPurgeSelectedEntries() {
+		// Is the user sure they want to purge the selected items?
+		if (!(Window.confirm(m_messages.vibeDataTable_TrashConfirmPurge()))) {
+			// No!  Bail.
+			return;
+		}
+		
+	    // If there are any binders being purged...
+		final boolean purgeBinders = areBindersSelectedInDataTable();
+		boolean purgeMirroredSources = purgeBinders;
+		if (purgeMirroredSources) {
+	    	// ...ask the user about purging mirrored sources.
+			purgeMirroredSources = Window.confirm(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
+		}
+		
+		// Perform the purge.
+		List<String> trashSelectionData = buildTrashSelectionList();
+		Long binderId = getFolderInfo().getBinderIdAsLong();
+		GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(binderId, purgeMirroredSources, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_TrashPurgeSelectedEntries());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display any messages we get back from the server.
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String messages = responseData.getStringValue();
+				if (GwtClientHelper.hasString(messages)) {
+					GwtClientHelper.deferredAlert(messages);
+				}
+				reloadUIAsync(purgeBinders);
+			}
+		});
+	}
+	
+	/**
+	 * Restores all the entries in the trash. 
+	 * 
+	 * Overrides the DataTableFolderViewBase.trashRestoreAll()
+	 * method.
+	 */
+	@Override
+	public void trashRestoreAll() {
+		// If the user has made selections...
+		if (areEntriesSelected()) {
+			// ...make sure they know that we'll restore everything and
+			// ...not just what they selected.
+			if (!(Window.confirm(m_messages.vibeDataTable_TrashConfirmRestoreAllWithSelections()))) {
+				return;
+			}
+		}
+
+		// Perform the restore.
+		final boolean restoreBinders = areBindersInDataTable();
+		Long binderId = getFolderInfo().getBinderIdAsLong();
+		GwtClientHelper.executeCommand(new TrashRestoreAllCmd(binderId), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_TrashRestoreAll());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display any messages we get back from the server.
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String messages = responseData.getStringValue();
+				if (GwtClientHelper.hasString(messages)) {
+					GwtClientHelper.deferredAlert(messages);
+				}
+				reloadUIAsync(restoreBinders);
+			}
+		});
+	}
+	
+	/**
+	 * Restores the selected entries in the trash.
+	 * 
+	 * Overrides the DataTableFolderViewBase.trashRestoreSelectedEntries()
+	 * method.
+	 */
+	@Override
+	public void trashRestoreSelectedEntries() {
+		// Perform the restore.
+		final boolean restoreBinders = areBindersInDataTable();
+		List<String> trashSelectionData = buildTrashSelectionList();
+		Long binderId = getFolderInfo().getBinderIdAsLong();
+		GwtClientHelper.executeCommand(new TrashRestoreSelectedEntriesCmd(binderId, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_TrashRestoreSelectedEntries());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display any messages we get back from the server.
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String messages = responseData.getStringValue();
+				if (GwtClientHelper.hasString(messages)) {
+					GwtClientHelper.deferredAlert(messages);
+				}
+				reloadUIAsync(restoreBinders);
+			}
+		});
 	}
 }

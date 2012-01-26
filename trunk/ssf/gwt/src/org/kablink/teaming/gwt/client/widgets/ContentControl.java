@@ -122,8 +122,6 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
-	private final static boolean SHOW_NEW_TRASH	= false;	// 20120124:DRF - Allows me to turn this off until I get it all working.
-	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -598,10 +596,8 @@ public class ContentControl extends Composite
 	
 							
 						case TRASH:
-							if (SHOW_NEW_TRASH) {
-								GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 	
 							
@@ -706,10 +702,8 @@ public class ContentControl extends Composite
 						}
 							
 						case TRASH:
-							if (SHOW_NEW_TRASH) {
-								GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 	
 							

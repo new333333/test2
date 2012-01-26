@@ -250,9 +250,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			GwtClientHelper.executeCommand(
 					new GetFolderRowsCmd(
 						folderId,
-						(isTrash()           ?
-							FolderType.TRASH :
-							getFolderInfo().getFolderType()),
+						getFolderType(),
 						m_folderColumnsList,
 						range.getStart(),
 						rowsRequested),
@@ -367,7 +365,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Inner class used to provide row selection for FolderRow's.
 	 */
-	private class FolderRowSelectionModel extends MultiSelectionModel<FolderRow> {
+	protected class FolderRowSelectionModel extends MultiSelectionModel<FolderRow> {
 		/**
 		 * Constructor method.
 		 * 
@@ -503,10 +501,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Get'er methods.
 	 */
-	private boolean             getFolderSortDescend()  {return getFolderDisplayData().getFolderSortDescend(); }
-	private int                 getFolderPageSize()     {return getFolderDisplayData().getFolderPageSize();    }
-	private Map<String, String> getFolderColumnWidths() {return getFolderDisplayData().getFolderColumnWidths();}
-	private String              getFolderSortBy()       {return getFolderDisplayData().getFolderSortBy();      }
+	protected AbstractCellTable<FolderRow> getDataTable()          {return m_dataTable;                                                     }
+	private   boolean                      getFolderSortDescend()  {return getFolderDisplayData().getFolderSortDescend();                   }
+	private   int                          getFolderPageSize()     {return getFolderDisplayData().getFolderPageSize();                      }
+	private   FolderType                   getFolderType()         {return (isTrash() ? FolderType.TRASH : getFolderInfo().getFolderType());}
+	private   Map<String, String>          getFolderColumnWidths() {return getFolderDisplayData().getFolderColumnWidths();                  }
+	private   String                       getFolderSortBy()       {return getFolderDisplayData().getFolderSortBy();                        }
 	
 	/*
 	 * Set'er methods.
@@ -534,7 +534,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					new EntryPinInfo(
 						fr.getPinned(),
 						getFolderInfo().getBinderIdAsLong(),
-						fr.getEntryId());
+						fr.getEntryId().getEntryId());
 			}
 		};
 		
@@ -609,10 +609,68 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	    setColumnWidth(         ColumnWidth.COLUMN_SELECT, column  );
 	}
 
-	/*
-	 * Returns true if any rows are selected and false otherwise.
+	/**
+	 * Returns true if there are binders in the data table and false
+	 * otherwise.
+	 * 
+	 * @return
 	 */
-	private boolean areEntriesSelected() {
+	final public boolean areBindersInDataTable() {
+		// If we've got more than 1 page of entries, we'll assume there
+		// will be a binder somewhere.  Do we have more than 1 page of
+		// entries?
+		int totalRows = m_dataTable.getRowCount();
+	    int pageSize  = m_dataTablePager.getDisplay().getVisibleRange().getLength();
+	    boolean reply = (totalRows > pageSize);
+	    if (!reply) {
+	    	// No!  We need to scan the rows in the table to see if
+	    	// there any binders.
+			List<FolderRow> rows = m_dataTable.getVisibleItems();
+			if (null != rows) {
+				for (FolderRow row:  rows) {
+					if (row.isBinder()) {
+						reply = true;
+						break;
+					}
+				}
+			}
+	    }
+	    
+	    // If we get here, reply is true if there are binders in the
+	    // data table and false otherwise.  Return it.
+	    return reply;
+	}
+	
+	/**
+	 * Returns true if there are binders selected in the data table and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean areBindersSelectedInDataTable() {
+		boolean reply = false;
+		List<FolderRow> rows = m_dataTable.getVisibleItems();
+		if (null != rows) {
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
+			for (FolderRow row:  rows) {
+				if (fsm.isSelected(row) && row.isBinder()) {
+					reply = true;
+					break;
+				}
+			}
+		}
+		
+	    // If we get here, reply is true if there are binders selected
+		// in the data table and false otherwise.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns true if any rows are selected and false otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean areEntriesSelected() {
 		// Are there any visible rows in the table?
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
 		if (null != rows) {
@@ -636,7 +694,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * false otherwise.
 	 */
 	private boolean canPinEntries() {
-		return (FolderType.DISCUSSION == getFolderInfo().getFolderType());
+		return (FolderType.DISCUSSION == getFolderType());
 	}
 	
 	/*
@@ -720,7 +778,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row selected?
 				if (fsm.isSelected(row)) {
 					// Yes!  Add its entry ID to the List<Long>.
-					reply.add(row.getEntryId());
+					reply.add(row.getEntryId().getEntryId());
 				}
 			}
 		}
@@ -832,7 +890,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						String value = fr.getColumnValueAsString(fc);
 						Long reply;
 						if (GwtClientHelper.hasString(value))
-						     reply = fr.getEntryId();
+						     reply = fr.getEntryId().getEntryId();
 						else reply = null;
 						return reply;
 					}
@@ -990,11 +1048,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private void loadFolderColumnsNow() {
 		final Long folderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderColumnsCmd(
-					folderId,
-					(isTrash()           ?
-						FolderType.TRASH :
-						getFolderInfo().getFolderType())),
+				new GetFolderColumnsCmd(folderId, getFolderType()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1133,7 +1187,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the change.
 			BinderViewsHelper.changeEntryTypes(
-				getFolderInfo().getFolderType(),
+				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
@@ -1152,7 +1206,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the copy.
 			BinderViewsHelper.copyEntries(
-				getFolderInfo().getFolderType(),
+				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
@@ -1263,7 +1317,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the lock.
 			BinderViewsHelper.lockEntries(
-				getFolderInfo().getFolderType(),
+				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
@@ -1299,7 +1353,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the move.
 			BinderViewsHelper.moveEntries(
-				getFolderInfo().getFolderType(),
+				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
@@ -1431,7 +1485,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the share.
 			BinderViewsHelper.shareEntries(
-				getFolderInfo().getFolderType(),
+				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
@@ -1450,7 +1504,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the subscribe to.
 			BinderViewsHelper.subscribeToEntries(
-				getFolderInfo().getFolderType(),
+				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
@@ -1467,12 +1521,18 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Asynchronously restore the selected entries.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onTrashPurgeAll():  ...this needs to be implemented...");
+			// Yes!  Asynchronously purge all the entries from the
+			// trash.
+			Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					trashPurgeAll();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doPurge);
 		}
 	}
-	
+
 	/**
 	 * Handles TrashPurgeSelectedEntriesEvent's received by this class.
 	 * 
@@ -1485,12 +1545,18 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Asynchronously restore the selected entries.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onTrashPurgeSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Asynchronously purge the selected entries from the
+			// trash.
+			Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					trashPurgeSelectedEntries();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doPurge);
 		}
 	}
-	
+
 	/**
 	 * Handles TrashRestoreAllEvent's received by this class.
 	 * 
@@ -1503,12 +1569,18 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Asynchronously restore the selected entries.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onTrashRestoreAll():  ...this needs to be implemented...");
+			// Yes!  Asynchronously restore all the entries in the
+			// trash.
+			Scheduler.ScheduledCommand doRestore = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					trashRestoreAll();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doRestore);
 		}
 	}
-	
+
 	/**
 	 * Handles TrashRestoreSelectedEntriesEvent's received by this class.
 	 * 
@@ -1521,9 +1593,16 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Asynchronously restore the selected entries.
-//!			...this needs to be implemented...
-			Window.alert("DataTableFolderViewBase.onTrashRestoreSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Asynchronously restore the selected entries in the
+			// trash.
+			Scheduler.ScheduledCommand doRestore = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					trashRestoreSelectedEntries();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doRestore);
+			
 		}
 	}
 	
@@ -1541,7 +1620,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
 			// Yes!  Invoke the unlock.
 			BinderViewsHelper.unlockEntries(
-				getFolderInfo().getFolderType(),
+				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
 		}
 	}
@@ -1764,6 +1843,46 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			m_defaultColumnWidths,
 			m_dataTable,
 			m_fixedLayout);
+	}
+	
+	/**
+	 * Purges all the entries from the trash.
+	 * 
+	 * Stub provided as a convenience method.  Must be overridden by
+	 * those classes that extend this that provide trash handling.
+	 */
+	public void trashPurgeAll() {
+		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeAll()"));
+	}
+	
+	/**
+	 * Purges the selected entries from the trash.
+	 * 
+	 * Stub provided as a convenience method.  Must be overridden by
+	 * those classes that extend this that provide trash handling.
+	 */
+	public void trashPurgeSelectedEntries() {
+		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeSelectedEntries()"));
+	}
+	
+	/**
+	 * Restores all the entries in the trash. 
+	 * 
+	 * Stub provided as a convenience method.  Must be overridden by
+	 * those classes that extend this that provide trash handling.
+	 */
+	public void trashRestoreAll() {
+		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreAll()"));
+	}
+	
+	/**
+	 * Restores the selected entries in the trash.
+	 * 
+	 * Stub provided as a convenience method.  Must be overridden by
+	 * those classes that extend this that provide trash handling.
+	 */
+	public void trashRestoreSelectedEntries() {
+		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntries()"));
 	}
 	
 	/*

@@ -1797,7 +1797,55 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
-
+		
+		case TRASH_PURGE_ALL:
+		{
+			TrashPurgeAllCmd tpaCmd = ((TrashPurgeAllCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.trashPurgeAll( 
+				this,
+				getRequest( ri ),
+				tpaCmd.getBinderId(),
+				tpaCmd.getPurgeMirroredSources() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case TRASH_PURGE_SELECTED_ENTRIES:
+		{
+			TrashPurgeSelectedEntriesCmd tpseCmd = ((TrashPurgeSelectedEntriesCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.trashPurgeSelectedEntries(
+				this,
+				getRequest( ri ),
+				tpseCmd.getBinderId(),
+				tpseCmd.getPurgeMirroredSources(),
+				tpseCmd.getTrashSelectionData() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case TRASH_RESTORE_ALL:
+		{
+			TrashRestoreAllCmd traCmd = ((TrashRestoreAllCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.trashRestoreAll(
+				this,
+				getRequest( ri ),
+				traCmd.getBinderId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case TRASH_RESTORE_SELECTED_ENTRIES:
+		{
+			TrashRestoreSelectedEntriesCmd trseCmd = ((TrashRestoreSelectedEntriesCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.trashRestoreSelectedEntries(
+				this,
+				getRequest( ri ),
+				trseCmd.getBinderId(),
+				trseCmd.getTrashSelectionData() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case UNLOCK_ENTRIES:
 		{
 			UnlockEntriesCmd uleCmd = ((UnlockEntriesCmd) cmd);

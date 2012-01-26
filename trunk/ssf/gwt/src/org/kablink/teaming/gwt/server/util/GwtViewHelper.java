@@ -139,6 +139,8 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
+import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
+import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 import org.kablink.util.search.Constants;
 
 
@@ -661,7 +663,7 @@ public class GwtViewHelper {
 		// Collect the entry IDs of the rows from the List<FolderRow>.
 		List<Long> entryIds = new ArrayList<Long>();
 		for (FolderRow fr:  frList) {
-			entryIds.add(fr.getEntryId());
+			entryIds.add(fr.getEntryId().getEntryId());
 		}
 		
 		try {
@@ -1417,8 +1419,12 @@ public class GwtViewHelper {
 				collectContributorIds(entryMap, contributorIds);
 				
 				// Creating a FolderRow for each entry.
-				String entityType = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
-				FolderRow fr = new FolderRow(entryId, entityType, folderColumns);
+				String entityType       = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD   );
+				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
+				if (!(MiscUtil.hasString(locationBinderId))) {
+					locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDERS_PARENT_ID_FIELD);
+				}
+				FolderRow fr = new FolderRow(new EntryId(Long.parseLong(locationBinderId), entryId), entityType, folderColumns);
 				if (pinnedEntryIds.contains(entryId)) {
 					fr.setPinned(true);
 				}
@@ -2633,6 +2639,184 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Called to purge all the entries in the trash.
+	 * 
+	 * @param bs
+	 * @param reqeust
+	 * @param binderId
+	 * @param purgeMirroredSources
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData trashPurgeAll(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, boolean purgeMirroredSources) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			StringRpcResponseData reply = new StringRpcResponseData();
+
+			// Purge the entries in the trash...
+			TrashEntry[] trashEntries = TrashHelper.getAllTrashEntries(bs, binderId);
+			TrashResponse tr = TrashHelper.purgeSelectedEntries(bs, trashEntries, purgeMirroredSources);
+			if (tr.isError() || tr.m_rd.hasRenames()) {
+				// ...and return any messages we get in response.
+				reply.setStringValue(tr.getTrashMessage(bs));
+			}
+
+			// If we get here, reply refers to a StringRpcResponseData
+			// containing any errors we encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.trashPurgeAll( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Called to purge the selected entries in the trash.
+	 * 
+	 * @param bs
+	 * @param reqeust
+	 * @param binderId
+	 * @param purgeMirroredSources
+	 * @param trashSelectionData
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData trashPurgeSelectedEntries(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, boolean purgeMirroredSources, List<String> trashSelectionData) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			StringRpcResponseData reply = new StringRpcResponseData();
+
+			// Do we have any selections to purge?
+			int count = ((null == trashSelectionData) ? 0 : trashSelectionData.size());
+			if (0 < count) {
+				// Yes!  Convert them to a TrashEntry[]...
+				TrashEntry[] trashEntries = new TrashEntry[count];
+				for (int i = 0; i < count; i += 1) {
+					trashEntries[i] = new TrashEntry(trashSelectionData.get(i));
+				}
+				
+				// ...purge those...
+				TrashResponse tr = TrashHelper.purgeSelectedEntries(bs, trashEntries, purgeMirroredSources);
+				if (tr.isError() || tr.m_rd.hasRenames()) {
+					// ...and return any messages we get in response.
+					reply.setStringValue(tr.getTrashMessage(bs));
+				}
+			}
+			
+			// If we get here, reply refers to a StringRpcResponseData
+			// containing any errors we encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.trashPurgeSelectedEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Called to restore all the entries in the trash.
+	 * 
+	 * @param bs
+	 * @param reqeust
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData trashRestoreAll(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			StringRpcResponseData reply = new StringRpcResponseData();
+
+			// Restore the entries in the trash...
+			TrashEntry[] trashEntries = TrashHelper.getAllTrashEntries(bs, binderId);
+			TrashResponse tr = TrashHelper.restoreSelectedEntries(bs, trashEntries);
+			if (tr.isError() || tr.m_rd.hasRenames()) {
+				// ...and return any messages we get in response.
+				reply.setStringValue(tr.getTrashMessage(bs));
+			}
+
+			// If we get here, reply refers to a StringRpcResponseData
+			// containing any errors we encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.trashRestoreAll( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Called to restore the selected entries in the trash.
+	 * 
+	 * @param bs
+	 * @param reqeust
+	 * @param binderId
+	 * @param trashSelectionData
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData trashRestoreSelectedEntries(AllModulesInjected bs, HttpServletRequest reqeust, Long binderId, List<String> trashSelectionData) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			StringRpcResponseData reply = new StringRpcResponseData();
+
+			// Do we have any selections to restore?
+			int count = ((null == trashSelectionData) ? 0 : trashSelectionData.size());
+			if (0 < count) {
+				// Yes!  Convert them to a TrashEntry[]...
+				TrashEntry[] trashEntries = new TrashEntry[count];
+				for (int i = 0; i < count; i += 1) {
+					trashEntries[i] = new TrashEntry(trashSelectionData.get(i));
+				}
+				
+				// ...restore those...
+				TrashResponse tr = TrashHelper.restoreSelectedEntries(bs, trashEntries);
+				if (tr.isError() || tr.m_rd.hasRenames()) {
+					// ...and return any messages we get in response.
+					reply.setStringValue(tr.getTrashMessage(bs));
+				}
+			}
+			
+			// If we get here, reply refers to a StringRpcResponseData
+			// containing any errors we encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.trashRestoreSelectedEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Strips the leading 0's off a String value and returns it.
 	 */
