@@ -164,7 +164,11 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_calendar.jsp" );
 		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_my_calendar_events.jsp" );
+		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_task_folder.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_my_tasks.jsp" );
 		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_survey.jsp" );
 		m_views.add( evInfo );
