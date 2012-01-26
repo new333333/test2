@@ -110,6 +110,10 @@ public interface GwtTeamingMessages extends Messages
 	String enhancedViewDisplayTaskFolderDesc();
 	String enhancedViewDisplaySurvey();
 	String enhancedViewDisplaySurveyDesc();
+	String enhancedViewDisplayMyTasks();
+	String enhancedViewDisplayMyTasksDesc();
+	String enhancedViewDisplayMyCalendarEvents();
+	String enhancedViewDisplayMyCalendarEventsDesc();
 	
 	// lpe stands for Landing Page Editor
 	String lpeAltCustomJsp();

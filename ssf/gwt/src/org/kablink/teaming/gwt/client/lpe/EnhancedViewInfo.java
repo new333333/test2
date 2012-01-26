@@ -116,6 +116,20 @@ public class EnhancedViewInfo
 			m_folderRequired = false;
 			m_entryRequired = true;
 		}
+		else if ( jspName.equalsIgnoreCase( "landing_page_my_calendar_events.jsp" ) )
+		{
+			m_displayName = messages.enhancedViewDisplayMyCalendarEvents();
+			m_desc = messages.enhancedViewDisplayMyCalendarEventsDesc();
+			m_folderRequired = false;
+			m_entryRequired = false;
+		}
+		else if ( jspName.equalsIgnoreCase( "landing_page_my_tasks.jsp" ) )
+		{
+			m_displayName = messages.enhancedViewDisplayMyTasks();
+			m_desc = messages.enhancedViewDisplayMyTasksDesc();
+			m_folderRequired = false;
+			m_entryRequired = false;
+		}
 		else
 		{
 			m_displayName = "Unknown jsp: " + jspName;
