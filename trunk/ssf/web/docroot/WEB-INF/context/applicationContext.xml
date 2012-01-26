@@ -1378,4 +1378,8 @@ text/calendar											  ics
 	</bean>
 	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl" depends-on="zoneConfig"/>
 	
+	<!-- ================================ Groovy Script Service =============================== -->
+	<bean id="groovyScriptService" class="org.kablink.teaming.groovy.GroovyScriptService" depends-on="sPropsUtil">
+	</bean>
+	
 </beans>
