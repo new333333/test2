@@ -179,8 +179,10 @@ public interface GwtTeamingMessages extends Messages
 	String columnXWidth( int colNum );
 	String emptyColumnWidth( int colNum );
 	String invalidColumnWidth( int colNum );
+	String invalidNumberOfRows();
 	String invalidTotalTableWidth();
 	String numColumns();
+	String numRows();
 	String tableProperties();
 	
 	// String used in the "IFrame" widget properties dialog.
