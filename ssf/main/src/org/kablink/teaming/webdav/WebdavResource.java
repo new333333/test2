@@ -58,7 +58,7 @@ import com.bradmcevoy.http.Request.Method;
  */
 public abstract class WebdavResource implements Resource {
 	
-	protected static final String CONTENT_TYPE_TEXT_HTML_UTF8 = "text/html; charset=UTF-8";
+	protected static final String CONTENT_TYPE_TEXT_HTML_UTF8 = "text/html; charset=utf-8";
 	
 	protected WebdavResourceFactory factory;
 	
