@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -64,6 +65,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class TrashView extends DataTableFolderViewBase {
+	private SpinnerPopup m_busySpinner;
+	
 	/*
 	 * Class constructor.
 	 * 
@@ -156,6 +159,17 @@ public class TrashView extends DataTableFolderViewBase {
 	}
 
 	/*
+	 * If a busy spinner exists, hide it.
+	 */
+	private void hideBusySpinner() {
+		// If we have a busy spinner...
+		if (null != m_busySpinner) {
+			// ...make sure that it's hidden.
+			m_busySpinner.hide();
+		}
+	}
+
+	/*
 	 * Asynchronously forces the content to reload and optionally, the
 	 * sidebar tree.
 	 */
@@ -203,6 +217,21 @@ public class TrashView extends DataTableFolderViewBase {
 	public void resizeView() {
 		// Nothing to do.
 	}
+
+	/*
+	 * Shows a busy spinner animation while a trash operation is going
+	 * on.
+	 */
+	private void showBusySpinner() {
+		// If we haven't created a busy spinner yet...
+		if (null == m_busySpinner) {
+			// ...create one now...
+			m_busySpinner = new SpinnerPopup();
+		}
+
+		// ...and show it.
+		m_busySpinner.center();
+	}
 	
 	/**
 	 * Purges all the entries from the trash.
@@ -235,10 +264,12 @@ public class TrashView extends DataTableFolderViewBase {
 	    }
 
 		// Perform the purge.
+	    showBusySpinner();
 		Long binderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(new TrashPurgeAllCmd(binderId, purgeMirroredSources), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+			    hideBusySpinner();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_TrashPurgeAll());
@@ -247,6 +278,7 @@ public class TrashView extends DataTableFolderViewBase {
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Display any messages we get back from the server.
+			    hideBusySpinner();
 				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
 				String messages = responseData.getStringValue();
 				if (GwtClientHelper.hasString(messages)) {
@@ -280,11 +312,13 @@ public class TrashView extends DataTableFolderViewBase {
 		}
 		
 		// Perform the purge.
+	    showBusySpinner();
 		List<String> trashSelectionData = buildTrashSelectionList();
 		Long binderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(binderId, purgeMirroredSources, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+			    hideBusySpinner();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_TrashPurgeSelectedEntries());
@@ -293,6 +327,7 @@ public class TrashView extends DataTableFolderViewBase {
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Display any messages we get back from the server.
+			    hideBusySpinner();
 				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
 				String messages = responseData.getStringValue();
 				if (GwtClientHelper.hasString(messages)) {
@@ -321,11 +356,13 @@ public class TrashView extends DataTableFolderViewBase {
 		}
 
 		// Perform the restore.
+	    showBusySpinner();
 		final boolean restoreBinders = areBindersInDataTable();
 		Long binderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(new TrashRestoreAllCmd(binderId), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+			    hideBusySpinner();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_TrashRestoreAll());
@@ -334,6 +371,7 @@ public class TrashView extends DataTableFolderViewBase {
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Display any messages we get back from the server.
+			    hideBusySpinner();
 				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
 				String messages = responseData.getStringValue();
 				if (GwtClientHelper.hasString(messages)) {
@@ -353,12 +391,14 @@ public class TrashView extends DataTableFolderViewBase {
 	@Override
 	public void trashRestoreSelectedEntries() {
 		// Perform the restore.
+	    showBusySpinner();
 		final boolean restoreBinders = areBindersInDataTable();
 		List<String> trashSelectionData = buildTrashSelectionList();
 		Long binderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(new TrashRestoreSelectedEntriesCmd(binderId, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+			    hideBusySpinner();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_TrashRestoreSelectedEntries());
@@ -367,6 +407,7 @@ public class TrashView extends DataTableFolderViewBase {
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Display any messages we get back from the server.
+			    hideBusySpinner();
 				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
 				String messages = responseData.getStringValue();
 				if (GwtClientHelper.hasString(messages)) {
