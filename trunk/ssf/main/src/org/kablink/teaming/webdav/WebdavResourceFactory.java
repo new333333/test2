@@ -60,12 +60,12 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private long maxAgeSecondsFile;
 	
 	public WebdavResourceFactory() {
-		allowDirectoryBrowsing = SPropsUtil.getBoolean("webdav2.allow.directory.browsing", true);
-		maxAgeSecondsRoot = SPropsUtil.getLong("webdav2.max.age.seconds.root", 31536000);
-		maxAgeSecondsDav = SPropsUtil.getLong("webdav2.max.age.seconds.root", 86400);
-		maxAgeSecondsWorkspace = SPropsUtil.getLong("webdav2.max.age.seconds.root", 10);
-		maxAgeSecondsFolder = SPropsUtil.getLong("webdav2.max.age.seconds.root", 10);
-		maxAgeSecondsFile = SPropsUtil.getLong("webdav2.max.age.seconds.root", 10);
+		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
+		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 31536000);
+		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
+		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
+		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
+		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
 	}
 
 	/* (non-Javadoc)

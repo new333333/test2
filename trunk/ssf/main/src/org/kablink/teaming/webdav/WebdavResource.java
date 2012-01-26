@@ -32,10 +32,19 @@
  */
 package org.kablink.teaming.webdav;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
+
+import org.kablink.teaming.groovy.GroovyScriptService;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.http.Auth;
@@ -49,7 +58,13 @@ import com.bradmcevoy.http.Request.Method;
  */
 public abstract class WebdavResource implements Resource {
 	
-	protected static final String TEXT_HTML = "text/html";
+	protected static final String CONTENT_TYPE_TEXT_HTML_UTF8 = "text/html; charset=UTF-8";
+	
+	protected WebdavResourceFactory factory;
+	
+	protected WebdavResource(WebdavResourceFactory factory) {
+		this.factory = factory;
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#authenticate(java.lang.String, java.lang.String)
@@ -83,6 +98,28 @@ public abstract class WebdavResource implements Resource {
 		return null;
 	}
 
+	protected String getDirectoryListing(List<? extends Resource> list) {
+		if(factory.isAllowDirectoryBrowsing()) {
+			List<String> childNames = new ArrayList<String>(list.size());
+			for(Resource child:list)
+				childNames.add(child.getName());
+			Binding binding = new Binding();
+			binding.setVariable("children", childNames);
+			try {
+				getGroovyScriptService().execute("webdav_dir_list.groovy", binding);
+			} catch (ResourceException e) {
+				return e.toString();
+			} catch (ScriptException e) {
+				return e.toString();
+			}
+			Object output = binding.getVariable("output");
+			return output.toString();
+		}
+		else {
+			return NLT.get("wd.dir.browsing.disabled");
+		}
+	}
+	
 	protected WorkspaceModule getWorkspaceModule () {
 		return (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
 	}
@@ -97,5 +134,9 @@ public abstract class WebdavResource implements Resource {
 
 	protected FileModule getFileModule () {
 		return (FileModule) SpringContextUtil.getBean("fileModule");
+	}
+	
+	protected GroovyScriptService getGroovyScriptService() {
+		return (GroovyScriptService) SpringContextUtil.getBean("groovyScriptService");
 	}
 }

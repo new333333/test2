@@ -45,11 +45,10 @@ import com.bradmcevoy.http.PropFindableResource;
  */
 public class FileResource extends WebdavResource implements PropFindableResource {
 
-	private WebdavResourceFactory factory;
 	private FileAttachment fa;
 	
 	public FileResource(WebdavResourceFactory factory, FileAttachment fa) {
-		this.factory = factory;
+		super(factory);
 		this.fa = fa;
 	}
 
