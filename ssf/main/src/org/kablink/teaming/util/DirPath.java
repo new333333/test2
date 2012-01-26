@@ -54,8 +54,11 @@ public class DirPath {
 		return getImagesDirPath() + File.separator + "thumbnails";
 	}
 	
+	public static String getWebinfClassesDirPath() {
+		return getWebinfDirPath() + File.separator + "classes";
+	}
 	public static String getDTDDirPath() {
-		return getWebinfDirPath() + File.separator + "classes" + File.separator + "dtd";
+		return getWebinfClassesDirPath() + File.separator + "dtd";
 	}
 	public static String getExtensionWebPath() {
 		return getWebappDirPathVisible("ext");
@@ -74,6 +77,10 @@ public class DirPath {
     	return getWebappRootDirPath() + File.separator + "WEB-INF";
     }
     
+	public static String getGroovyScriptPath() {
+		return getWebinfDirPath() + File.separator + "groovyscript";
+	}
+	
     private static String getWebappDirPathVisible(String subdirName) {
     	return getWebappRootDirPath() + File.separator + subdirName;
     }
