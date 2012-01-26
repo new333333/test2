@@ -55,6 +55,7 @@ public class TableConfig extends ConfigItem
 	{
 		int i;
 		int numCols;
+		int numRows;
 		int width;
 		String[] propsStr;
 		boolean valid;
@@ -62,8 +63,11 @@ public class TableConfig extends ConfigItem
 		m_properties = new TableProperties();
 		m_configItems = new ArrayList<ConfigItem>();
 
-		// Split the string "tableStart,showBorder=n,cols=n,colWidths=xxxx" into its parts.
+		// Split the string "tableStart,showBorder=n,rows=n,cols=n,colWidths=xxxx" into its parts.
 		propsStr = configStr.split( "[,;]" );
+		
+		// Default to 1 row in the table.
+		numRows = 1;
 		
 		// Get the table properties
 		if ( propsStr != null )
@@ -77,6 +81,18 @@ public class TableConfig extends ConfigItem
 				{
 					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
 						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "rows" ) )
+					{
+						try
+						{
+							numRows = Integer.parseInt( URL.decodeComponent( results2[1] ) );
+						}
+						catch (Exception ex)
+						{
+							// Nothing to do.  This is here to handle the case when the data is
+							// not properly url encoded.
+						}
+					}
 					else if ( results2[0].equalsIgnoreCase( "cols" ) )
 					{
 						numCols = 0;
@@ -179,6 +195,8 @@ public class TableConfig extends ConfigItem
 				m_properties.setColWidthUnit( i, ColWidthUnit.PERCENTAGE );
 			}
 		}
+		
+		m_properties.setNumRows( numRows );
 	}// end TableConfig()
 	
 	

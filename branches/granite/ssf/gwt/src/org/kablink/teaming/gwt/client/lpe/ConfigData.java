@@ -174,6 +174,13 @@ public class ConfigData
 					// Recursively call ourselves and add items to the TableConfig object we just created.
 					i = addConfigItems( configItem, itemData, i+1 );
 				}
+				else if ( itemName.equalsIgnoreCase( "tableRow" ) )
+				{
+					configItem = new TableRowConfig( itemData[i] );
+					
+					// Recursively call ourselves and add items to the TableRowConfig object we just created.
+					i = addConfigItems( configItem, itemData, i+1 );
+				}
 				else if ( itemName.equalsIgnoreCase( "tableCol" ) )
 				{
 					// Are we adding items to a TableCol object?
@@ -183,10 +190,37 @@ public class ConfigData
 						return i;
 					}
 					
-					configItem = new TableColConfig( itemData[i] );
-					
+					// Are we adding the table column to a TableRowConfig?
+					if ( parent instanceof TableRowConfig )
+					{
+						// Yes
+						configItem = new TableColConfig( itemData[i] );
+					}
+					else
+					{
+						TableRowConfig trConfig;
+						
+						// No, this happens when we find an old landing page configuration before we
+						// added the ability to have multiple rows in a table.
+						// Create a TableRowConfig item where all subsequent items will live
+						trConfig = new TableRowConfig( "" );
+						parent.addChild( trConfig );
+						parent = trConfig;
+						
+						configItem = new TableColConfig( itemData[i] );
+					}
+
 					// Recursively call ourselves and add items to the TableColConfig object we just created.
 					i = addConfigItems( configItem, itemData, i+1 );
+				}
+				else if ( itemName.equalsIgnoreCase( "tableRowEnd" ) )
+				{
+					// If this signals the end of a tableCol we want to process this item again because
+					// the tableRowEnd signals both the end of a tableCol and the end of tableRow.
+					if ( parent instanceof TableColConfig )
+						return i;
+					
+					return i+1;
 				}
 				else if ( itemName.equalsIgnoreCase( "tableEnd" ) )
 				{
