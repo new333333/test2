@@ -40,6 +40,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.NameMissingException;
+import org.kablink.teaming.ZoneNameMissingException;
+import org.kablink.teaming.ZoneVirtualHostMissingException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -55,10 +57,10 @@ public class ManageZonesController extends  SAbstractController {
 		if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			String zoneName=PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
 			if(Validator.isNull(zoneName))
-				throw new NameMissingException("errorcode.zonename.missing");
+				throw new ZoneNameMissingException();
 			String virtualHost = PortletRequestUtils.getStringParameter(request, WebKeys.URL_VIRTUAL_HOST, null);
 			if(Validator.isNull(virtualHost))
-				throw new NameMissingException("errorcode.virtualhost.missing");
+				throw new ZoneVirtualHostMissingException();
 			getZoneModule().addZone(zoneName, virtualHost, null);
 		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			String zoneName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
@@ -67,10 +69,10 @@ public class ManageZonesController extends  SAbstractController {
 		} else if (formData.containsKey("modifyBtn") && WebHelper.isMethodPost(request)) {
 			String zoneName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
 			if(Validator.isNull(zoneName))
-				throw new NameMissingException("errorcode.zonename.missing");
+				throw new ZoneNameMissingException();
 			String virtualHost = PortletRequestUtils.getStringParameter(request, WebKeys.URL_VIRTUAL_HOST, null);
 			if(Validator.isNull(virtualHost))
-				throw new NameMissingException("errorcode.virtualhost.missing");
+				throw new ZoneVirtualHostMissingException();
 			getZoneModule().modifyZone(zoneName, virtualHost, null);
 		} else {
 			response.setRenderParameters(formData);

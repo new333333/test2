@@ -34,7 +34,7 @@ package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
 
-public class ObjectExistsException extends UncheckedCodedException {
+public abstract class ObjectExistsException extends UncheckedCodedException {
 	   public ObjectExistsException(String errorCode) {
 	        super(errorCode);
 	    }
@@ -56,12 +56,4 @@ public class ObjectExistsException extends UncheckedCodedException {
 	    	return 409; // Conflict
 	    }
 
-
-		/* (non-Javadoc)
-		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-		 */
-		@Override
-		public ApiErrorCode getApiErrorCode() {
-			return ApiErrorCode.GENERAL_ERROR;
-		}
 }
