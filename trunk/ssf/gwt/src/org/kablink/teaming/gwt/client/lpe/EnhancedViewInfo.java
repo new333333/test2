@@ -64,13 +64,6 @@ public class EnhancedViewInfo
 			m_folderRequired = false;
 			m_entryRequired = true;
 		}
-		else if ( jspName.equalsIgnoreCase( "landing_page_full_entry.jsp" ) )
-		{
-			m_displayName = messages.enhancedViewDisplayFullEntry();
-			m_desc = messages.enhancedViewDisplayFullEntryDesc();
-			m_folderRequired = false;
-			m_entryRequired = true;
-		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
 		{
 			m_displayName = messages.enhancedViewDisplayRecentEntries();
@@ -122,6 +115,20 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplaySurveyDesc();
 			m_folderRequired = false;
 			m_entryRequired = true;
+		}
+		else if ( jspName.equalsIgnoreCase( "landing_page_my_calendar_events.jsp" ) )
+		{
+			m_displayName = messages.enhancedViewDisplayMyCalendarEvents();
+			m_desc = messages.enhancedViewDisplayMyCalendarEventsDesc();
+			m_folderRequired = false;
+			m_entryRequired = false;
+		}
+		else if ( jspName.equalsIgnoreCase( "landing_page_my_tasks.jsp" ) )
+		{
+			m_displayName = messages.enhancedViewDisplayMyTasks();
+			m_desc = messages.enhancedViewDisplayMyTasksDesc();
+			m_folderRequired = false;
+			m_entryRequired = false;
 		}
 		else
 		{

@@ -98,6 +98,10 @@ public interface GwtTeamingMessages extends Messages
 	String enhancedViewDisplayEntryDesc();
 	String enhancedViewDisplayFullEntry();
 	String enhancedViewDisplayFullEntryDesc();
+	String enhancedViewDisplayMyCalendarEvents();
+	String enhancedViewDisplayMyCalendarEventsDesc();
+	String enhancedViewDisplayMyTasks();
+	String enhancedViewDisplayMyTasksDesc();
 	String enhancedViewDisplayRecentEntries();
 	String enhancedViewDisplayRecentEntriesDesc();
 	String enhancedViewDisplayRecentEntriesList();

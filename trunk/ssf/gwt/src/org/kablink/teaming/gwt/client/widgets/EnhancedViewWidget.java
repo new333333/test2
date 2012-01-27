@@ -214,7 +214,8 @@ public class EnhancedViewWidget extends VibeWidget
 		}
 		
 		case DISPLAY_CALENDAR:
-		case DISPLAY_FULL_ENTRY:
+		case DISPLAY_MY_CALENDAR_EVENTS:
+		case DISPLAY_MY_TASKS:
 		case DISPLAY_SURVEY:
 		case UNKNOWN:
 		default:
