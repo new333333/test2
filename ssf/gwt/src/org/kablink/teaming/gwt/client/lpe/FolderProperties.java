@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -63,6 +64,13 @@ public class FolderProperties
 	private AsyncCallback<VibeRpcResponse> m_folderCallback;
 	private boolean m_rpcInProgress;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
+
 	/**
 	 * 
 	 */
@@ -78,6 +86,13 @@ public class FolderProperties
 		m_zoneUUID = null;
 		m_viewFolderUrl = null;
 		
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
+		m_overflow = Style.Overflow.HIDDEN;
+
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -145,6 +160,11 @@ public class FolderProperties
 			m_showEntriesOpened = folderProps.getShowEntriesOpenedValue();
 			m_numEntriesToBeShown = folderProps.getNumEntriesToBeShownValue();
 			m_viewFolderUrl = folderProps.getViewFolderUrl();
+			m_width = folderProps.getWidth();
+			m_widthUnits = folderProps.getWidthUnits();
+			m_height = folderProps.getHeight();
+			m_heightUnits = folderProps.getHeightUnits();
+			m_overflow = folderProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -175,8 +195,31 @@ public class FolderProperties
 		if ( m_showEntriesOpened )
 			str += "showEntriesOpened=1,";
 
-		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown ) + ";";
+		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown );
 
+		// Add the width
+		str += ",width=" + String.valueOf( m_width );
+		if ( m_widthUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add the height
+		str += ",height=" + String.valueOf( m_height );
+		if ( m_heightUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
+
+		str += ";";
+		
 		return str;
 	}// end createConfigString()
 	
@@ -218,6 +261,22 @@ public class FolderProperties
 	
 	
 	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
+	
+	/**
 	 * Return the "number of entries to be shown" property.
 	 */
 	public int getNumEntriesToBeShownValue()
@@ -225,6 +284,14 @@ public class FolderProperties
 		return m_numEntriesToBeShown;
 	}// end getNumEntriesToBeShownValue()
 	
+	
+	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
+	}
 	
 	/**
 	 * Return the name of the binder the folder lives in.
@@ -272,6 +339,22 @@ public class FolderProperties
 	
 	
 	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
+	}
+	
+	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
@@ -317,6 +400,22 @@ public class FolderProperties
 	
 	
 	/**
+	 * 
+	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
+	
+	/**
 	 * Set the "number of entries to be shown" property.
 	 */
 	public void setNumEntriesToBeShownValue( int numEntries )
@@ -324,6 +423,14 @@ public class FolderProperties
 		m_numEntriesToBeShown = numEntries;
 	}// end setNumEntriesToBeShownValue()
 	
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
+	}
 	
 	/**
 	 * 
@@ -369,6 +476,22 @@ public class FolderProperties
 		m_viewFolderUrl = url;
 	}// end setViewFolderUrl()
 	
+	
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
 	
 	/**
 	 * 

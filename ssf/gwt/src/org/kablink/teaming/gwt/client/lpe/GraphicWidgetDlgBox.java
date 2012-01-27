@@ -37,8 +37,9 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -56,6 +57,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 {
 	private CheckBox m_showBorderCkBox = null;
 	private ListBox m_graphicListBox = null;
+	private SizeCtrl m_sizeCtrl = null;
 	
 	/**
 	 * 
@@ -136,6 +138,10 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		mainPanel.add( table );
 		
+		// Add the size control
+		m_sizeCtrl = new SizeCtrl();
+		mainPanel.add( m_sizeCtrl );
+
 		// Add a checkbox for "Show border"
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
@@ -166,6 +172,39 @@ public class GraphicWidgetDlgBox extends DlgBox
 		properties.setGraphicId( getGraphicId() );
 		properties.setGraphicName( getGraphicName() );
 		
+		// Get the width and height values
+		{
+			int width;
+			int height;
+			Style.Unit units;
+			
+			// Get the width
+			width = getWidth();
+			units = getWidthUnits();
+			if ( width == 0 )
+			{
+				// Default to 100%
+				width = 100;
+				units = Style.Unit.PCT;
+			}
+			properties.setWidth( width );
+			properties.setWidthUnits( units );
+			
+			// Get the height
+			height = getHeight();
+			units = getHeightUnits();
+			if ( height == 0 )
+			{
+				// Default to 100%
+				height = 100;
+				units = Style.Unit.PCT;
+			}
+
+			properties.setHeight( height );
+			properties.setHeightUnits( units );
+			properties.setOverflow( getOverflow() );
+		}
+
 		return properties;
 	}// end getDataFromDlg()
 
@@ -230,6 +269,31 @@ public class GraphicWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * 
+	 */
+	private int getHeight()
+	{
+		return m_sizeCtrl.getHeight();
+	}
+	
+	/**
+	 * 
+	 */
+	private Style.Unit getHeightUnits()
+	{
+		return m_sizeCtrl.getHeightUnits();
+	}
+	
+
+	/**
+	 * 
+	 */
+	private Style.Overflow getOverflow()
+	{
+		return m_sizeCtrl.getOverflow();
+	}
+
+	/**
 	 * Return true if the "show border" checkbox is checked.
 	 */
 	public boolean getShowBorderValue()
@@ -237,6 +301,22 @@ public class GraphicWidgetDlgBox extends DlgBox
 		return m_showBorderCkBox.getValue().booleanValue();
 	}// end getShowBorderValue()
 	
+	
+	/**
+	 * 
+	 */
+	private int getWidth()
+	{
+		return m_sizeCtrl.getWidth();
+	}
+	
+	/**
+	 * 
+	 */
+	private Style.Unit getWidthUnits()
+	{
+		return m_sizeCtrl.getWidthUnits();
+	}
 	
 	/**
 	 * Initialize the controls on the page with the values from the properties.
@@ -271,5 +351,9 @@ public class GraphicWidgetDlgBox extends DlgBox
 		}
 		
 		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
+
+		// Initialize the size control.
+		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
+
 	}// end init()
 }// end GraphicWidgetDlgBox
