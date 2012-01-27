@@ -431,46 +431,74 @@ public class FileResource extends AbstractResource {
 	throws WriteFilesException, WriteEntryDataException {
         EntityType et = entityTypeFromString(entityType);
         FileAttachment fa;
-        boolean result = false;
+        boolean result = true;
         Date modDate;
         if(et == EntityType.folderEntry) {
     		FolderEntry entry = folderModule.getEntry(null, entityId);
-    		fa = getFileAttachment(entry, filename);
-    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    		if(result) {
-    			modDate = dateFromISO8601(modDateISO8601);
-	    		FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
+    		fa = entry.getFileAttachment(filename);
+    		if(fa != null) {
+	    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	    		if(result) {
+	    			modDate = dateFromISO8601(modDateISO8601);
+		    		FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
+	    		}
+    		}
+    		else {
+    			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    			if(result)
+    				FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, null);
     		}
         }
         else if(et == EntityType.user) {
         	Principal user = profileModule.getEntry(entityId);
-    		fa = getFileAttachment(user, filename);
-    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    		if(result) {
-	        	if(!(user instanceof User))
-	        		throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
-	        	modDate = dateFromISO8601(modDateISO8601);
-	    		FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
+        	if(!(user instanceof User))
+        		throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
+    		fa = user.getFileAttachment(filename);
+    		if(fa != null) {
+	    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	    		if(result) {
+		        	modDate = dateFromISO8601(modDateISO8601);
+		    		FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
+	    		}
+    		}
+    		else {
+    			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    			if(result)
+    				FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, null);
     		}
         }
         else if(et == EntityType.group) {
         	Principal group = profileModule.getEntry(entityId);
-    		fa = getFileAttachment(group, filename);
-    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    		if(result) {
-	        	if(!(group instanceof Group))
-	        		throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
-	        	modDate = dateFromISO8601(modDateISO8601);
-	    		FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
+        	if(!(group instanceof Group))
+        		throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
+    		fa = group.getFileAttachment(filename);
+    		if(fa != null) {
+	    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	    		if(result) {
+		        	modDate = dateFromISO8601(modDateISO8601);
+		    		FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
+	    		}
+    		}
+    		else {
+    			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    			if(result)
+    				FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, null);
     		}
         }
         else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
     		Binder binder = binderModule.getBinder(entityId);
-    		fa = getFileAttachment(binder, filename);
-    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    		if(result) {
-	    		// Ignore modDate param, since it isn't applicable in this case.
-	    		FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
+    		fa = binder.getFileAttachment(filename);
+    		if(fa != null) {
+	    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	    		if(result) {
+		    		// Ignore modDate param, since it isn't applicable in this case.
+		    		FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
+	    		}
+    		}
+    		else {
+    			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    			if(result)
+    				FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
     		}
         }
         else {
@@ -482,6 +510,14 @@ public class FileResource extends AbstractResource {
         	throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
 	}
 
+	private boolean validateArgumentsForNewFile(Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+		// These arguments should not be specified when creating a new file.
+		if(lastVersionNumber == null && lastMajorVersionNumber == null && lastMinorVersionNumber == null)
+			return true;
+		else
+			return false;
+	}
+	
 	private FileAttachment findFileAttachment(String fileId) 
 	throws NoFileByTheIdException {
 		FileAttachment fa = fileModule.getFileAttachmentById(fileId);
