@@ -46,6 +46,6 @@ import org.kablink.teaming.rest.v1.model.ErrorInfo;
 @Provider
 public class WriteFilesMapper implements ExceptionMapper<WriteFilesException> {
 	public Response toResponse(WriteFilesException ex) {
-		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode(), ex.getMessage())).build();
+		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getMessage())).build();
 	}
 }

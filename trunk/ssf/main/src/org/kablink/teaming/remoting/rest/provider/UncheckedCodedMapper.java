@@ -42,7 +42,7 @@ import org.kablink.teaming.rest.v1.model.ErrorInfo;
 @Provider
 public class UncheckedCodedMapper implements ExceptionMapper<UncheckedCodedException> {
 	public Response toResponse(UncheckedCodedException ex) {
-		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode(), ex.getLocalizedMessage())).build();
+		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getLocalizedMessage())).build();
 	}
 
 }
