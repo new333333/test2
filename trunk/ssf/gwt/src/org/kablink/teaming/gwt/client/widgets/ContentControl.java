@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
 import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
+import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
 import org.kablink.teaming.gwt.client.binderviews.TrashView;
@@ -64,6 +65,7 @@ import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
@@ -120,6 +122,7 @@ public class ContentControl extends Composite
 		ShowHomeWSEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowMicroBlogFolderEvent.Handler,
+		ShowSurveyFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
 		ShowTeamRootWSEvent.Handler,
 		ShowTeamWSEvent.Handler,
@@ -153,6 +156,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_HOME_WORKSPACE,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_MICRO_BLOG_FOLDER,
+		TeamingEvents.SHOW_SURVEY_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
 		TeamingEvents.SHOW_TEAM_ROOT_WORKSPACE,
 		TeamingEvents.SHOW_TEAM_WORKSPACE,
@@ -599,6 +603,12 @@ public class ContentControl extends Composite
 							break;
 	
 							
+						case SURVEY:
+							GwtTeaming.fireEvent( new ShowSurveyFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+							break;
+	
+							
 						case TASK:
 							GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
 							m_contentInGWT = true;
@@ -617,7 +627,6 @@ public class ContentControl extends Composite
 						case MILESTONE:
 						case MIRROREDFILE:
 						case PHOTOALBUM:
-						case SURVEY:
 						case WIKI:
 							// These aren't handled!  Let things take
 							// the default flow.
@@ -1196,6 +1205,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowMicroBlogFolder()
+	
+	/**
+	 * Handles ShowSurveyFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowSurveyFolderEvent.Handler.onShowSurveyFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowSurveyFolder( final ShowSurveyFolderEvent event )
+	{
+		// Create a SurveyFolderView widget for the selected binder.
+		SurveyFolderView.createAsync(
+				event.getFolderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase sfView )
+			{
+				sfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( sfView );
+			}// end onSuccess()
+		});
+	}// end onShowSurveyFolder()
 	
 	/**
 	 * Handles ShowTaskFolderEvent's received by this class.

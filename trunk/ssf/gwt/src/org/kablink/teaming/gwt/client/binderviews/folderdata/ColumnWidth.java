@@ -50,6 +50,7 @@ public class ColumnWidth {
 	public final static String COLUMN_DATE			= "date";
 	public final static String COLUMN_DESCRIPTION	= "description";
 	public final static String COLUMN_DOWNLOAD		= "download";
+	public final static String COLUMN_DUE_DATE		= "dueDate";
 	public final static String COLUMN_HTML			= "html";
 	public final static String COLUMN_LOCATION		= "location";
 	public final static String COLUMN_NUMBER		= "number";

@@ -60,6 +60,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
+
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
@@ -123,6 +124,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
@@ -584,6 +586,7 @@ public class GwtViewHelper {
 			else if (colName.equals("date"))        {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
 			else if (colName.equals("description")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
 			else if (colName.equals("download"))    {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
+			else if (colName.equals("dueDate"))     {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
 			else if (colName.equals("html"))        {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
 			else if (colName.equals("location"))    {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
 			else if (colName.equals("number"))      {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
@@ -1077,9 +1080,11 @@ public class GwtViewHelper {
 			else {
 				// No, we aren't showing the trash on this folder!  Are
 				// there user defined columns on this folder?
-				baseNameKey   = "folder.column.";
-				Folder folder = ((Folder) bs.getBinderModule().getBinder(folderId));
-				columnNames   = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
+				if (FolderType.SURVEY == folderType)
+				     baseNameKey = "survey.";
+				else baseNameKey = "folder.column.";
+				Folder folder    = ((Folder) bs.getBinderModule().getBinder(folderId));
+				columnNames      = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
 				if (null == columnNames) {
 					// No!  Are there defaults stored on the binder?
 					columnNames = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS));
@@ -1090,6 +1095,7 @@ public class GwtViewHelper {
 						switch (folderType) {
 						case FILE:      defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"}; break;
 						case MINIBLOG:  defaultCols = new String[]{"title", "description"};                                                     break;
+						case SURVEY:    defaultCols = new String[]{"title", "author", "dueDate"};                                               break;
 						default:        defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"};         break;
 						}
 						columnNames = getColumnsLHMFromAS(defaultCols);
@@ -1382,7 +1388,8 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
 			// Factor in the user's sorting selection.
-			boolean isTrash = (FolderType.TRASH == folderType);
+			boolean isTrash  = (FolderType.TRASH  == folderType);
+			boolean isSurvey = (FolderType.SURVEY == folderType);
 			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderId, isTrash);
 			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
@@ -1521,14 +1528,25 @@ public class GwtViewHelper {
 									}
 								}
 								
+								// No, we aren't working on a file ID
+								// field either!  Are we working on a
+								// survey's due date field?
+								else if (csk.equals(Constants.DUE_DATE_FIELD) && isSurvey) {
+									if ((emValue instanceof Date) && (DateComparer.isOverdue((Date) emValue))) {
+										value += (" " + NLT.get("survey.overdue"));
+									}
+									fr.setColumnValue(fc, (null == (value) ? "" : value));
+								}
+								
 								else {
-									// No, we aren't working on a file
-									// ID field either!  Are we working
-									// on a file size field?
+									// No, we aren't working on a
+									// survey's due date field either!
+									// Are we working on a file size
+									// field?
 									if (csk.equals(Constants.FILE_SIZE_FIELD)) {
 										// Yes!  Trim any leading 0's
 										// from the value.
-										value = trimLeadingZeros(value);
+										value = trimFileSize(value);
 										if (MiscUtil.hasString(value)) {
 											value += "KB";
 										}
@@ -2829,15 +2847,32 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Strips the leading 0's off a String value and returns it.
+	 * Strips the leading 0's and any trying decimal information off a
+	 * String value and returns it.
 	 */
-	private static String trimLeadingZeros(String value) {
+	private static String trimFileSize(String value) {
 		if (null != value) {
 	        while (value.startsWith("0")) {
 	        	value = value.substring(1, value.length());
 	        }
+	        value = trimFollowing(value, ".");	// Cleans any decimal...
+	        value = trimFollowing(value, ",");	// information.
 	        if (value.equals("")) {
 	        	value = "0";
+	        }
+		}
+		return value;
+	}
+
+	/*
+	 * Strips everything in a string followingThis.
+	 */
+	private static String trimFollowing(String value, String followingThis) {
+		if (null != value) {
+	        int dPos = value.indexOf(followingThis);
+	        while ((-1) != dPos) {
+	        	value = value.substring(0, dPos);
+		        dPos = value.indexOf(followingThis);
 	        }
 		}
 		return value;

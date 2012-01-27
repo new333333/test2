@@ -128,6 +128,17 @@
 		.vibe-fileFolderFlowPanel {}
 	/* ...End:  File folder view styles. */
 	
+	/* ...Start:  Micro-blog folder view styles. */
+		.vibe-microBlogFolderDataTable {}
+		.vibe-microBlogFolderFlowPanel {}
+	/* ...End:  Micro-blog folder view styles. */
+	
+	/* ...Start:  Survey folder view styles. */
+		.vibe-surveyFolderDataTable {}
+		.vibe-surveyFolderFlowPanel {}
+		.vibe-surveyFolderOverdue   {font-style: italic;}
+	/* ...End:  Survey folder view styles. */
+
 	/* ...Start:  Task folder view styles. */
 		.vibe-taskFolderFilterPanel
 		{
@@ -147,7 +158,7 @@
 		.vibe-taskFolderFlowPanel     {}
 		.vibe-taskFolderVerticalPanel {}
 		.vibe-taskFolderView          {}
-	/* ...End:  Task older view styles. */
+	/* ...End:  Task folder view styles. */
 	
 	/* ...Start:  Task graphs panel styles. */
 		.vibe-taskGraphsBarSegment      {color: white; font-size: 0.75em; font-weight: bold;}
@@ -186,11 +197,6 @@
 		.vibe-trashDataTable {}
 		.vibe-trashFlowPanel {}
 	/* ...End:  trash view styles. */
-	
-	/* ...Start:  Micro-blog folder view styles. */
-		.vibe-microBlogFolderDataTable {}
-		.vibe-microBlogFolderFlowPanel {}
-	/* ...End:  Micro-blog folder view styles. */
 /* End:  GWT folder view styles. */
 
 
