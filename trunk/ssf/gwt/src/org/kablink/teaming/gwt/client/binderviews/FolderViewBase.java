@@ -543,7 +543,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private void loadPart7Now() {
 		final Long folderId = m_folderInfo.getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderDisplayDataCmd(folderId),
+				new GetFolderDisplayDataCmd(folderId, m_folderInfo.isBinderTrash()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -558,11 +558,6 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 				// Store the core folder display data and tell the view
 				// to construct itself.
 				m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
-				if (isTrash()) {
-					// For trash views, we ignore the column widths on
-					// the folder.
-					m_folderDisplayData.setFolderColumnWidths(null);
-				}
 				constructViewAsync();
 			}
 		});

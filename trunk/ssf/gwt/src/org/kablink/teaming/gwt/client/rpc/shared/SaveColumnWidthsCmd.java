@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,6 +41,7 @@ import java.util.Map;
  * @author drfoster@novell.com
  */
 public class SaveColumnWidthsCmd extends VibeRpcCmd {
+	private boolean				m_trashColumns;	//
 	private Long				m_folderId;		//
 	private Map<String, String>	m_columnWidths;	//
 	
@@ -58,14 +59,17 @@ public class SaveColumnWidthsCmd extends VibeRpcCmd {
 	 * Constructor method.
 	 * 
 	 * @param folderId
+	 * @param columnWidths
+	 * @param trashColumns
 	 */
-	public SaveColumnWidthsCmd(Long folderId, Map<String, String> columnWidths) {
+	public SaveColumnWidthsCmd(Long folderId, Map<String, String> columnWidths, boolean trashColumns) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameters.
 		setFolderId(    folderId    );
 		setColumnWidths(columnWidths);
+		setTrashColumns(trashColumns);
 	}
 
 	/**
@@ -73,6 +77,7 @@ public class SaveColumnWidthsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
+	public boolean             getTrashColumns() {return m_trashColumns;}
 	public Long                getFolderId()     {return m_folderId;    }
 	public Map<String, String> getColumnWidths() {return m_columnWidths;}
 	
@@ -81,6 +86,7 @@ public class SaveColumnWidthsCmd extends VibeRpcCmd {
 	 * 
 	 * @param
 	 */
+	public void setTrashColumns(boolean             trashColumns) {m_trashColumns = trashColumns;}
 	public void setFolderId(    Long                folderId)     {m_folderId     = folderId;    }
 	public void setColumnWidths(Map<String, String> columnWidths) {m_columnWidths = columnWidths;}
 	

@@ -523,7 +523,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ColumnWidthsRpcResponseData result = GwtViewHelper.getColumnWidths(
 				this,
 				getRequest( ri ),
-				gcwCmd.getFolderId() );
+				gcwCmd.getFolderId(),
+				gcwCmd.getTrashColumns() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -733,7 +734,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			FolderDisplayDataRpcResponseData responseData = GwtViewHelper.getFolderDisplayData(
 				this,
 				getRequest( ri ),
-				gfddCmd.getFolderId() );
+				gfddCmd.getFolderId(),
+				gfddCmd.getTrashFolder() );
 			return new VibeRpcResponse( responseData );
 		}
 		
@@ -1589,7 +1591,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				this,
 				getRequest( ri ),
 				scwCmd.getFolderId(),
-				scwCmd.getColumnWidths() );
+				scwCmd.getColumnWidths(),
+				scwCmd.getTrashColumns() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
