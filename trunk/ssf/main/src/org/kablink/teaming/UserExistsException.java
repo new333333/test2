@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class UserExistsException extends UncheckedCodedException {
 	   

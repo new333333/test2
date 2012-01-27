@@ -35,7 +35,6 @@ package org.kablink.teaming;
 import java.io.IOException;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.remoting.ApiErrorCode;
 
 /**
  * Unchecked version of IOException.

@@ -34,7 +34,7 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.kablink.teaming.remoting.ApiErrorCode;
+import org.kablink.teaming.ApiErrorCode;
 
 /**
  * @author jong

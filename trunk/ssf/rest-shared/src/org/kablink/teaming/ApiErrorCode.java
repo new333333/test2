@@ -31,7 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.remoting;
+package org.kablink.teaming;
 
 /**
  * @author jong

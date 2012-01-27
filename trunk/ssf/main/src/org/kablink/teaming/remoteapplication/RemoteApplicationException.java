@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.remoteapplication;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class RemoteApplicationException extends UncheckedCodedException {
 

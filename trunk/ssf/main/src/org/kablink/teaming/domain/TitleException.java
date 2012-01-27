@@ -36,8 +36,8 @@ package org.kablink.teaming.domain;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.util.Validator;
 
 /**

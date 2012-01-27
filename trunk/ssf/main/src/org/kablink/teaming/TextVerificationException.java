@@ -33,7 +33,6 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.remoting.ApiErrorCode;
 
 /**
  * This class is used when we find the user did not enter the captcha text correctly.
