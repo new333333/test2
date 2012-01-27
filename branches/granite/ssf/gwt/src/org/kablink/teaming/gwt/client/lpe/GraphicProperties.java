@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
+
 
 /**
  * This class holds all of the properties needed to define a "Graphic" widget in a landing page.
@@ -48,6 +50,13 @@ public class GraphicProperties
 	private String m_graphicName;
 	private String m_graphicId;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
+
 	/**
 	 * 
 	 */
@@ -56,6 +65,14 @@ public class GraphicProperties
 		m_showBorder = false;
 		m_graphicName = null;
 		m_graphicId = null;
+
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
+		m_overflow = Style.Overflow.HIDDEN;
+
 	}// end GraphicProperties()
 	
 	
@@ -72,6 +89,11 @@ public class GraphicProperties
 			m_graphicName = graphicProps.getGraphicName();
 			m_graphicId = graphicProps.getGraphicId();
 			m_showBorder = graphicProps.getShowBorderValue();
+			m_width = graphicProps.getWidth();
+			m_widthUnits = graphicProps.getWidthUnits();
+			m_height = graphicProps.getHeight();
+			m_heightUnits = graphicProps.getHeightUnits();
+			m_overflow = graphicProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -99,6 +121,28 @@ public class GraphicProperties
 		str += "title=";
 		if ( m_graphicName != null )
 			str += ConfigData.encodeConfigData( m_graphicName );
+
+		// Add the width
+		str += ",width=" + String.valueOf( m_width );
+		if ( m_widthUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add the height
+		str += ",height=" + String.valueOf( m_height );
+		if ( m_heightUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
+
 		str += ";";
 
 		return str;
@@ -124,6 +168,30 @@ public class GraphicProperties
 	
 	
 	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
+	
+	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
+	}
+	
+	/**
 	 * Return the "show border" property.
 	 */
 	public boolean getShowBorderValue()
@@ -131,6 +199,22 @@ public class GraphicProperties
 		return m_showBorder;
 	}// end getShowBorderValue()
 	
+	
+	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
+	}
 	
 	/**
 	 * 
@@ -153,8 +237,49 @@ public class GraphicProperties
 	/**
 	 * 
 	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setShowBorder( boolean showBorder )
 	{
 		m_showBorder = showBorder;
 	}// end setShowBorder()
+
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
+	
 }// end GraphicProperties
