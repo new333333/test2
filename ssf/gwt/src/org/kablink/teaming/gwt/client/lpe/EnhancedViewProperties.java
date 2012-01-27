@@ -59,13 +59,14 @@ public class EnhancedViewProperties
 	{
 		DISPLAY_CALENDAR,
 		DISPLAY_ENTRY,
-		DISPLAY_FULL_ENTRY,
 		DISPLAY_LIST_OF_RECENT_ENTRIES,
 		DISPLAY_RECENT_ENTRIES,
 		DISPLAY_SORTED_LIST_RECENT_ENTRIES,
 		DISPLAY_SORTED_LIST_FILES,
 		DISPLAY_SURVEY,
 		DISPLAY_TASK_FOLDER,
+		DISPLAY_MY_CALENDAR_EVENTS,
+		DISPLAY_MY_TASKS,
 		UNKNOWN
 	}
 
@@ -126,6 +127,7 @@ public class EnhancedViewProperties
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -140,6 +142,7 @@ public class EnhancedViewProperties
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -162,6 +165,7 @@ public class EnhancedViewProperties
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -176,6 +180,7 @@ public class EnhancedViewProperties
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry ;
@@ -197,6 +202,7 @@ public class EnhancedViewProperties
 	/**
 	 * 
 	 */
+	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof EnhancedViewProperties )
@@ -244,6 +250,7 @@ public class EnhancedViewProperties
 	/**
 	 * Return the properties as a string that can be stored in the db.
 	 */
+	@Override
 	public String createConfigString()
 	{
 		String str;
@@ -545,8 +552,6 @@ public class EnhancedViewProperties
 		{
 			if ( m_jspName.equalsIgnoreCase( "landing_page_entry.jsp" ) )
 				m_viewType = EnhancedViewType.DISPLAY_ENTRY;
-			else if ( m_jspName.equalsIgnoreCase( "landing_page_full_entry.jsp" ) )
-				m_viewType = EnhancedViewType.DISPLAY_FULL_ENTRY;
 			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
 				m_viewType = EnhancedViewType.DISPLAY_RECENT_ENTRIES;
 			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list.jsp" ) )
@@ -561,6 +566,10 @@ public class EnhancedViewProperties
 				m_viewType = EnhancedViewType.DISPLAY_TASK_FOLDER;
 			else if ( m_jspName.equalsIgnoreCase( "landing_page_survey.jsp" ) )
 				m_viewType = EnhancedViewType.DISPLAY_SURVEY;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_my_calendar_events.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_MY_CALENDAR_EVENTS;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_my_tasks.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_MY_TASKS;
 			else
 				m_viewType = EnhancedViewType.UNKNOWN;
 		}

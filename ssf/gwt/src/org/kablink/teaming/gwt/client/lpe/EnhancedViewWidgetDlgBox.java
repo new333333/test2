@@ -151,8 +151,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_views = new ArrayList<EnhancedViewInfo>();
 		evInfo = new EnhancedViewInfo( "landing_page_entry.jsp" );
 		m_views.add( evInfo );
-		evInfo = new EnhancedViewInfo( "landing_page_full_entry.jsp" );
-		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_folder.jsp" );
 		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_folder_list.jsp" );
@@ -163,7 +161,11 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_calendar.jsp" );
 		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_my_calendar_events.jsp" );
+		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_task_folder.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_my_tasks.jsp" );
 		m_views.add( evInfo );
 		evInfo = new EnhancedViewInfo( "landing_page_survey.jsp" );
 		m_views.add( evInfo );
@@ -176,6 +178,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		EnhancedViewProperties properties;
@@ -206,6 +209,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onChange( ChangeEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -215,6 +219,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							handleViewSelected();
@@ -306,6 +311,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -315,6 +321,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -353,12 +360,14 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -457,6 +466,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -466,6 +476,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -505,12 +516,14 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -657,6 +670,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
+	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		EnhancedViewProperties	properties;
@@ -754,6 +768,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -766,6 +781,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -810,6 +826,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return m_evListBox;
@@ -830,6 +847,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -842,6 +860,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -1114,6 +1133,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show", "width" or "height" text box.
 	 * We only allow the user to enter numbers.
 	 */
+	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;
