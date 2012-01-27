@@ -30,15 +30,27 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming;
 
-package org.kablink.teaming.exception;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 /**
  * @author jong
  *
  */
-public interface HttpStatusCodeSupport {
+public class FileSizeLimitException extends DataQuotaException {
 
-    public int getHttpStatusCode();
+	private static final String errorCode = "file.maxSizeExceeded";
+	
+	public FileSizeLimitException(String fileName) {
+		super(errorCode, new Object[]{fileName});
+	}
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FILE_SIZE_LIMIT_EXCEEDED;
+	}
 }

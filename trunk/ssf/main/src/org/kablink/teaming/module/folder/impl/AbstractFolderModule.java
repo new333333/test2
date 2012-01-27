@@ -56,7 +56,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
+import org.kablink.teaming.FileSizeLimitException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -925,7 +927,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         }
 		if (!processor.checkMoveEntryQuota(entry.getParentBinder(), destination, entry)) {
 			//Adding this file would cause the quota to be exceeded
-			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{entry.getTitle()});
+			throw new BinderQuotaException(entry.getTitle());
 		}
 
         processor.moveEntry(folder, entry, destination, options);
@@ -940,8 +942,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		if (maxFileSize != null) {
 			//There is a file size limit, go check it
 			if (fileSize > maxFileSize * ObjectKeys.MEGABYTES) {
-				throw new DataQuotaException("file.maxSizeExceeded", 
-						new Object[]{fileName});
+				throw new FileSizeLimitException(fileName);
 			}
 		}
 		//Check the system default and the user limits
@@ -962,8 +963,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 		//Now check to see if the file size is above the limit
 		if (fileSizeLimit != null && fileSize > fileSizeLimit * ObjectKeys.MEGABYTES) {
-			throw new DataQuotaException("file.maxSizeExceeded", 
-					new Object[]{fileName});
+			throw new FileSizeLimitException(fileName);
 		}
 	}
 
@@ -990,7 +990,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         }
 		if (!getBinderModule().isBinderDiskQuotaOk(destination, fileSize)) {
 			//Adding this file would cause the quota to be exceeded
-			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{entry.getTitle()});
+			throw new BinderQuotaException(entry.getTitle());
 		}
 
 		return (FolderEntry) processor.copyEntry(folder, entry, destination, options);
