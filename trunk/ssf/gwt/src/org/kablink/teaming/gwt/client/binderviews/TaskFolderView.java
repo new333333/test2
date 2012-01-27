@@ -86,8 +86,8 @@ public class TaskFolderView extends FolderViewBase
 	};
 	
 	// The following define the indexes into a VibeVerticalPanel of the
-	// addition panel that makes up a task folder view.
-	private final static int TASK_GRAPHS_PANEL_INDEX	= 3;
+	// additional panel that makes up a task folder view.
+	private final static int TASK_GRAPHS_PANEL_INDEX	= FILTER_PANEL_INDEX;	// Inserted before the filter panel.
 
 	/**
 	 * Constructor method.

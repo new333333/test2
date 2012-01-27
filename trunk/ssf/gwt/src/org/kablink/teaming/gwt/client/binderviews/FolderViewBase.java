@@ -79,7 +79,6 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class FolderViewBase extends ViewBase implements ToolPanelReady {
 	private BinderInfo							m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
 	private boolean								m_allowColumnSizing;	// true -> Add the column sizing entry menu item.  false -> Don't.
-	private boolean								m_trash;				// true -> We're viewing the trash on a binder.  false -> We're not.
 	private boolean								m_viewReady;			// Set true once the view and all its components are ready.
 	private FolderDisplayDataRpcResponseData	m_folderDisplayData;	// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
 	private int									m_readyComponents;		// Tracks items as they become ready.
@@ -100,6 +99,19 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 
 	public final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	public final static int NO_VSCROLL_ADJUST			=  28;	// Height adjustment required so there's no vertical scroll bar by default.
+
+	/*
+	 * Enumeration that identifies the various optional panels that
+	 * make up a folder view.
+	 */
+	protected enum FolderPanels {
+		BREADCRUMB,
+		ACCESSORIES,
+		DESCRIPTION,
+		FILTER,
+		ENTRY_MENU,
+		FOOTER,
+	}
 	
 	/**
 	 * Constructor method.
@@ -116,9 +128,6 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		m_styleBase         = ((GwtClientHelper.hasString(styleBase) ? styleBase : "vibe-folderView"));
 		m_allowColumnSizing = allowColumnSizing;
 		
-		// ...initialize any other data members...
-		m_trash = m_folderInfo.isBinderTrash();
-		
 		// ...create the main content panels and initialize the
 		// ...composite...
 		initWidget(constructInitialContent());
@@ -134,7 +143,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	final public BinderInfo                       getFolderInfo()        {return m_folderInfo;                    }	// The binder being viewed.
-	final public boolean                          isTrash()              {return m_trash;                         } //
+	final public boolean                          isTrash()              {return m_folderInfo.isBinderTrash();    } //
 	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;             }	//
 	final public List<ToolPanelBase>              getToolPanels()        {return m_toolPanels;                    }	//
 	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();}	//
@@ -249,6 +258,21 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		}
 		return null;
 	}
+
+	/**
+	 * Returns true if a panel should be loaded and false otherwise.
+	 *
+	 * Classes that extend this class can override this method to
+	 * inhibit the inclusion of various panels as they see fit.
+	 * 
+	 * @param folderPanel
+	 * 
+	 * @return
+	 */
+	protected boolean includePanel(FolderPanels folderPanel) {
+		// Unless overridden, all panels are included.
+		return true;
+	}
 	
 	/*
 	 * Initializes various data members for the class.
@@ -286,6 +310,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the BreadCrumbPanel.
 	 */
 	private void loadPart1Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.BREADCRUMB))) {
+			// ...we don't show the bread crumbs.
+			insertToolPanelPlaceholder(BREADCRUMB_PANEL_INDEX);
+			loadPart2Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -322,8 +354,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the AccessoriesPanel.
 	 */
 	private void loadPart2Async() {
-		// For a trash view...
-		if (isTrash()) {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.ACCESSORIES))) {
 			// ...we don't show the accessories.
 			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
 			loadPart3Async();
@@ -366,8 +398,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart3Async() {
-		// For a trash view...
-		if (isTrash()) {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.DESCRIPTION))) {
 			// ...we don't show the description.
 			insertToolPanelPlaceholder(DESCRIPTION_PANEL_INDEX);
 			loadPart4Async();
@@ -410,9 +442,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart4Async() {
-		// For a trash view...
-		if (isTrash()) {
-			// ...we don't show the filters.
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.FILTER))) {
+			// ...we don't show the filter.
 			insertToolPanelPlaceholder(FILTER_PANEL_INDEX);
 			loadPart5Async();
 			return;
@@ -454,6 +486,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart5Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.ENTRY_MENU))) {
+			// ...we don't show the entry menu.
+			insertToolPanelPlaceholder(ENTRY_MENU_PANEL_INDEX);
+			loadPart6Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -490,6 +530,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the FooterPanel.
 	 */
 	private void loadPart6Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.FOOTER))) {
+			// ...we don't show the footer.
+			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
+			loadPart7Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -543,7 +591,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private void loadPart7Now() {
 		final Long folderId = m_folderInfo.getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderDisplayDataCmd(folderId, m_folderInfo.isBinderTrash()),
+				new GetFolderDisplayDataCmd(folderId, isTrash()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {

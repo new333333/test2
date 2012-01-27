@@ -127,6 +127,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_GLOBAL_WORKSPACE,				// Shows the global workspace
 	SHOW_HOME_WORKSPACE,				// Shows the home (top) workspace
 	SHOW_LANDING_PAGE,					// Shows a landing page.
+	SHOW_MICRO_BLOG_FOLDER,				// Shows a micro-blog folder.
 	SHOW_TASK_FOLDER,					// Shows a task folder.
 	SHOW_TEAM_ROOT_WORKSPACE,			// Shows the team root workspace.
 	SHOW_TEAM_WORKSPACE,				// Shows a team workspace.

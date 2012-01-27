@@ -186,6 +186,11 @@
 		.vibe-trashDataTable {}
 		.vibe-trashFlowPanel {}
 	/* ...End:  trash view styles. */
+	
+	/* ...Start:  Micro-blog folder view styles. */
+		.vibe-microBlogFolderDataTable {}
+		.vibe-microBlogFolderFlowPanel {}
+	/* ...End:  Micro-blog folder view styles. */
 /* End:  GWT folder view styles. */
 
 

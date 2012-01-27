@@ -35,9 +35,11 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -79,6 +81,22 @@ public class TrashView extends DataTableFolderViewBase {
 		super(binderInfo, viewReady, "vibe-trashDataTable");
 	}
 	
+	/**
+	 * Resets the columns as appropriate for the trash view.
+	 * 
+	 * Unless otherwise specified the widths default to be a percentage
+	 * value.
+	 * 
+	 * Overrides the DataTableFolderViewBase.adjustFixedColumnWidths() method.
+	 * 
+	 * @param columnWidths
+	 */
+	@Override
+	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
+		columnWidths.put(ColumnWidth.COLUMN_AUTHOR, new ColumnWidth(20));
+		columnWidths.put(ColumnWidth.COLUMN_TITLE,  new ColumnWidth(27));
+	}
+
 	/*
 	 * Returns a List<String> of trash selection information.  The
 	 * format of the strings duplicates that used by the JSP version
@@ -167,6 +185,32 @@ public class TrashView extends DataTableFolderViewBase {
 			// ...make sure that it's hidden.
 			m_busySpinner.hide();
 		}
+	}
+
+	/**
+	 * Returns true for panels that are to be included and false
+	 * otherwise.
+	 * 
+	 * Overrides the FolderViewBase.includePanel() method.
+	 * 
+	 * @param folderPanel
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean includePanel(FolderPanels folderPanel) {
+		boolean reply;
+
+		// In the trash view, we don't show the accessories,
+		// description or filter panels.
+		switch (folderPanel) {
+		case ACCESSORIES:
+		case DESCRIPTION:
+		case FILTER:  reply = false; break;
+		default:      reply = true;  break;
+		}
+		
+		return reply;
 	}
 
 	/*

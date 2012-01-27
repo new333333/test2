@@ -610,6 +610,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
+	 * Allows the view's that extend this do what ever they need to
+	 * to these widths for their own purposes.
+	 * 
+	 * @param columnWidths
+	 */
+	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
+		// By default, there are no adjustments.
+	}
+	
+	protected void adjustFloatColumnWidths(Map<String, ColumnWidth> columnWidths) {
+		// By default, there are no adjustments.
+	}
+
+	/**
 	 * Returns true if there are binders in the data table and false
 	 * otherwise.
 	 * 
@@ -824,23 +838,26 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		m_defaultColumnWidth = new ColumnWidth(20);
 
 		// Add the widths for predefined column names...
-		boolean isTrash = isTrash();
-		m_columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(isTrash ? 20 : 24));	// Unless otherwise specified...
-		m_columnWidths.put(ColumnWidth.COLUMN_COMMENTS, new ColumnWidth(                8));	// ...the widths default to...
-		m_columnWidths.put(ColumnWidth.COLUMN_DATE,     new ColumnWidth(               20));	// ...be a percentage value.
-		m_columnWidths.put(ColumnWidth.COLUMN_DOWNLOAD, new ColumnWidth(                8));
-		m_columnWidths.put(ColumnWidth.COLUMN_HTML,     new ColumnWidth(               10));
-		m_columnWidths.put(ColumnWidth.COLUMN_LOCATION, new ColumnWidth(               30));
-		m_columnWidths.put(ColumnWidth.COLUMN_NUMBER,   new ColumnWidth(                5));
-		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(               10));
-		m_columnWidths.put(ColumnWidth.COLUMN_SIZE,     new ColumnWidth(                8));
-		m_columnWidths.put(ColumnWidth.COLUMN_STATE,    new ColumnWidth(                8));
-		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(               10));
-		m_columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(isTrash ? 27 : 28));
+		m_columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
+		m_columnWidths.put(ColumnWidth.COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
+		m_columnWidths.put(ColumnWidth.COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
+		m_columnWidths.put(ColumnWidth.COLUMN_DOWNLOAD, new ColumnWidth( 8));
+		m_columnWidths.put(ColumnWidth.COLUMN_HTML,     new ColumnWidth(10));
+		m_columnWidths.put(ColumnWidth.COLUMN_LOCATION, new ColumnWidth(30));
+		m_columnWidths.put(ColumnWidth.COLUMN_NUMBER,   new ColumnWidth( 5));
+		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(ColumnWidth.COLUMN_SIZE,     new ColumnWidth( 8));
+		m_columnWidths.put(ColumnWidth.COLUMN_STATE,    new ColumnWidth( 8));
+		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(28));
 
 		// ...and then add the widths for everything else.
 		m_columnWidths.put(ColumnWidth.COLUMN_SELECT,   new ColumnWidth(40, Unit.PX));
 		m_columnWidths.put(ColumnWidth.COLUMN_PIN,      new ColumnWidth(40, Unit.PX));
+
+		// Finally, let the view's that extend this do what ever they
+		// need to these widths for their own purposes.
+		adjustFixedColumnWidths(m_columnWidths);
 	}
 	
 	/*
@@ -855,6 +872,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// For a floating table layout, the only column whose width we
 		// explicitly set is the title.
 		m_columnWidths.put(ColumnWidth.COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
+		
+		// Finally, let the view's that extend this do what ever they
+		// need to these widths for their own purposes.
+		adjustFloatColumnWidths(m_columnWidths);
 	}
 	
 	/*
