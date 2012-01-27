@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
 import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
+import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
 import org.kablink.teaming.gwt.client.binderviews.TrashView;
@@ -62,6 +63,7 @@ import org.kablink.teaming.gwt.client.event.ShowGenericWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
+import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
@@ -117,6 +119,7 @@ public class ContentControl extends Composite
 		ShowGlobalWSEvent.Handler,
 		ShowHomeWSEvent.Handler,
 		ShowLandingPageEvent.Handler,
+		ShowMicroBlogFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
 		ShowTeamRootWSEvent.Handler,
 		ShowTeamWSEvent.Handler,
@@ -149,6 +152,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_GLOBAL_WORKSPACE,
 		TeamingEvents.SHOW_HOME_WORKSPACE,
 		TeamingEvents.SHOW_LANDING_PAGE,
+		TeamingEvents.SHOW_MICRO_BLOG_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
 		TeamingEvents.SHOW_TEAM_ROOT_WORKSPACE,
 		TeamingEvents.SHOW_TEAM_WORKSPACE,
@@ -589,6 +593,12 @@ public class ContentControl extends Composite
 							break;
 							
 							
+						case MINIBLOG:
+							GwtTeaming.fireEvent( new ShowMicroBlogFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+							break;
+	
+							
 						case TASK:
 							GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
 							m_contentInGWT = true;
@@ -605,7 +615,6 @@ public class ContentControl extends Composite
 						case CALENDAR:
 						case GUESTBOOK:
 						case MILESTONE:
-						case MINIBLOG:
 						case MIRROREDFILE:
 						case PHOTOALBUM:
 						case SURVEY:
@@ -1156,6 +1165,37 @@ public class ContentControl extends Composite
 		// Create a LandingPage widget for the selected binder.
 		LandingPageView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}// end onShowLandingPage()
+	
+	/**
+	 * Handles ShowMicroBlogFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowMicroBlogFolderEvent.Handler.onShowMicroBlogFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowMicroBlogFolder( final ShowMicroBlogFolderEvent event )
+	{
+		// Create a MicroBlogFolderView widget for the selected binder.
+		MicroBlogFolderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase mbfView )
+			{
+				mbfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( mbfView );
+			}// end onSuccess()
+		});
+	}// end onShowMicroBlogFolder()
 	
 	/**
 	 * Handles ShowTaskFolderEvent's received by this class.

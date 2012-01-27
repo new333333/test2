@@ -838,6 +838,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_MICRO_BLOG_FOLDER:
+				// A ShowMicroBlogFolderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ShowMicroBlogFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowMicroBlogFolderEvent.registerEvent(eventBus, ((ShowMicroBlogFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SHOW_TASK_FOLDER:
 				// A ShowTaskFolderEvent!  Can the event handler we
 				// were given handle that?
@@ -1406,6 +1415,7 @@ public class EventHelper {
 			case SHOW_GLOBAL_WORKSPACE:					hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	   break;
 			case SHOW_HOME_WORKSPACE:					hasHandler = (eventHandler instanceof ShowHomeWSEvent.Handler);			   	   	   break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
+			case SHOW_MICRO_BLOG_FOLDER:				hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		   break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
 			case SHOW_TEAM_ROOT_WORKSPACE:				hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	   break;
 			case SHOW_TEAM_WORKSPACE:					hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		   break;

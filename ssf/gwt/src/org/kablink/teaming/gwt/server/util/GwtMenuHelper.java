@@ -513,10 +513,11 @@ public class GwtMenuHelper {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			BinderModule bm = bs.getBinderModule();
-			if ((viewType.equals(  Definition.VIEW_STYLE_DISCUSSION) ||
-						viewType.equals(Definition.VIEW_STYLE_TABLE) ||
-						viewType.equals(Definition.VIEW_STYLE_FILE)  ||
-						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
+			if ((viewType.equals(       Definition.VIEW_STYLE_DISCUSSION) ||
+						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
+						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
+						viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
+						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
 					(!(folder.isMirrored()))) {
 				// ...and for which the user has rights to do it...
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
@@ -583,6 +584,7 @@ public class GwtMenuHelper {
 			if ((viewType.equals(       Definition.VIEW_STYLE_DISCUSSION) ||
 						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
+						viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
 						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
 					(!(folder.isMirrored()))) {
 				// ...and for which the user has rights to do it...

@@ -579,17 +579,18 @@ public class GwtViewHelper {
 	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash) {
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("author"))   {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
-			else if (colName.equals("comments")) {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
-			else if (colName.equals("date"))     {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
-			else if (colName.equals("download")) {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
-			else if (colName.equals("html"))     {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
-			else if (colName.equals("location")) {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
-			else if (colName.equals("number"))   {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
-			else if (colName.equals("rating"))   {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
-			else if (colName.equals("size"))     {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
-			else if (colName.equals("state"))    {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
-			else if (colName.equals("title"))    {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
+			if      (colName.equals("author"))      {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
+			else if (colName.equals("comments"))    {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
+			else if (colName.equals("date"))        {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
+			else if (colName.equals("description")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
+			else if (colName.equals("download"))    {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
+			else if (colName.equals("html"))        {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
+			else if (colName.equals("location"))    {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
+			else if (colName.equals("number"))      {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
+			else if (colName.equals("rating"))      {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
+			else if (colName.equals("size"))        {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
+			else if (colName.equals("state"))       {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
+			else if (colName.equals("title"))       {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -1086,9 +1087,11 @@ public class GwtViewHelper {
 						// No!  Use the default as setup in
 						// folder_column_defaults.jsp.
 						String[] defaultCols;
-						if (FolderType.FILE == folderType)
-						     defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"};
-						else defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"};
+						switch (folderType) {
+						case FILE:      defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"}; break;
+						case MINIBLOG:  defaultCols = new String[]{"title", "description"};                                                     break;
+						default:        defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"};         break;
+						}
 						columnNames = getColumnsLHMFromAS(defaultCols);
 					}
 					
