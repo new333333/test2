@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -60,6 +61,13 @@ public class EntryProperties
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
 	private boolean m_rpcInProgress;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+	private Style.Overflow m_overflow;
+
 	/**
 	 * 
 	 */
@@ -71,6 +79,13 @@ public class EntryProperties
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_viewEntryUrl = null;
+		
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
+		m_overflow = Style.Overflow.HIDDEN;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
@@ -137,6 +152,11 @@ public class EntryProperties
 			m_parentBinderName = entryProps.getBinderName();
 			m_showTitle = entryProps.getShowTitleValue();
 			m_viewEntryUrl = entryProps.getViewEntryUrl();
+			m_width = entryProps.getWidth();
+			m_widthUnits = entryProps.getWidthUnits();
+			m_height = entryProps.getHeight();
+			m_heightUnits = entryProps.getHeightUnits();
+			m_overflow = entryProps.getOverflow();
 		}
 	}// end copy()
 	
@@ -160,6 +180,27 @@ public class EntryProperties
 		
 		if ( m_showTitle )
 			str += "showTitle=1";
+
+		// Add the width
+		str += ",width=" + String.valueOf( m_width );
+		if ( m_widthUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add the height
+		str += ",height=" + String.valueOf( m_height );
+		if ( m_heightUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+
+		// Add overflow
+		str += ",overflow=";
+		if ( m_overflow == Style.Overflow.AUTO )
+			str += "auto";
+		else
+			str += "hidden";
 
 		str += ";";
 		
@@ -213,6 +254,30 @@ public class EntryProperties
 	
 	
 	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
+	
+	/**
+	 * Return the value of overflow.
+	 */
+	public Style.Overflow getOverflow()
+	{
+		return m_overflow;
+	}
+	
+	/**
 	 * Return the "show title" property.
 	 */
 	public boolean getShowTitleValue()
@@ -229,6 +294,22 @@ public class EntryProperties
 		return m_viewEntryUrl;
 	}// end getViewEntryUrl()
 	
+	
+	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
+	}
 	
 	/**
 	 * Return the zone uuid
@@ -269,12 +350,52 @@ public class EntryProperties
 	/**
 	 * 
 	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setOverflow( Style.Overflow overflow )
+	{
+		m_overflow = overflow;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setShowTitle( boolean showTitle )
 	{
 		m_showTitle = showTitle;
 	}// end setShowBorder()
 
 
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
+	
 	/**
 	 * 
 	 */
