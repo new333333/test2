@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,32 +30,28 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.domain;
+package org.kablink.teaming;
 
-import org.kablink.teaming.ApiErrorCode;
-import org.kablink.teaming.NoObjectByTheNameException;
+/**
+ * @author jong
+ *
+ */
+public class ZoneNameExistsException extends ObjectExistsException {
 
-public class NoFileByTheNameException extends NoObjectByTheNameException {
-    private static final String NoFileByTheNameException_ErrorCode = "errorcode.no.file.by.the.name";
-    
-    public NoFileByTheNameException(String fileName) {
-        super(NoFileByTheNameException_ErrorCode, fileName);
-    }
-    public NoFileByTheNameException(String fileName, String message) {
-        super(NoFileByTheNameException_ErrorCode, fileName, message);
-    }
-    public NoFileByTheNameException(String fileName, String message, Throwable cause) {
-        super(NoFileByTheNameException_ErrorCode,fileName, message, cause);
-    }
-    public NoFileByTheNameException(String fileName, Throwable cause) {
-        super(NoFileByTheNameException_ErrorCode, fileName, cause);
-    }
-    
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	private static final String errorCode = "errorcode.zone.name.exists";
+
+	public ZoneNameExistsException(String zoneName) {
+		super(errorCode, new Object[]{zoneName});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.FILE_NOT_FOUND;
+		return ApiErrorCode.ZONE_NAME_EXISTS;
 	}
 }

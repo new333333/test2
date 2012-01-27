@@ -3,16 +3,22 @@ package org.kablink.teaming;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
-
-public class UserExistsException extends UncheckedCodedException {
+public class UserExistsException extends ObjectExistsException {
 	   
     private static final String userExistsException_ErrorCode = "errorcode.user.alreadyExists";
 
 	public UserExistsException() {
-	        super(userExistsException_ErrorCode);
+        super(userExistsException_ErrorCode);
 	}
-	
+
+	public UserExistsException(Throwable cause) {
+        super(userExistsException_ErrorCode, null, cause);
+	}
+
+    public UserExistsException(Object[] errorArgs, Throwable cause) {
+        super(userExistsException_ErrorCode, errorArgs, cause);    
+    }
+
     //overload to remove stack trace filling log files
     //This is because springs DispatcherPortlet calls the logger.warn method with the exception
     public void printStackTrace(PrintStream s) {
@@ -28,10 +34,6 @@ public class UserExistsException extends UncheckedCodedException {
         }	
     }
     
-    public int getHttpStatusCode() {
-    	return 409; // Conflict
-    }
-
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
 	 */

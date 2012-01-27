@@ -52,10 +52,14 @@ import java.util.TreeSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.kablink.teaming.ApplicationExistsException;
+import org.kablink.teaming.ApplicationGroupExistsException;
+import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
+import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1604,9 +1608,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
             return newEntry;
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(User.class))
-        		throw new ObjectExistsException("errorcode.user.exists", (Object[])null, de);
+        		throw new UserExistsException(de);
         	else
-            	throw new ObjectExistsException("errorcode.application.exists", (Object[])null, de);
+            	throw new ApplicationExistsException(de);
         }
 	}
 
@@ -1634,7 +1638,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	principal = doesPrincipalExist( name );
         	if ( principal != null )
         	{
-        		String errStringId = "errorcode.user.exists";
         		EntityType entityType;
         		
         		// Yes
@@ -1642,31 +1645,29 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		switch ( entityType )
         		{
         		case application:
-        			errStringId = "errorcode.application.exists";
-        			break;
+        			throw new ApplicationExistsException();
 
         		case applicationGroup:
-        			errStringId = "errorcode.applicationgroup.exists";
-        			break;
+        			throw new ApplicationGroupExistsException();
         		
         		case group:
-        			errStringId = "errorcode.group.exists";
-        			break;
+        			throw new GroupExistsException();
         			
         		case user:
-        			errStringId = "errorcode.user.alreadyExists";
-        			break;
+        			throw new UserExistsException();
+        			
+        		default:
+        			throw new UserExistsException();
         		}
-        		
-           		throw new ObjectExistsException( errStringId );
+
         	}
         	
         	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(Group.class))
-        		throw new ObjectExistsException("errorcode.group.exists", (Object[])null, de);
+        		throw new GroupExistsException(de);
         	else
-        		throw new ObjectExistsException("errorcode.applicationgroup.exists", (Object[])null, de);        		
+        		throw new ApplicationGroupExistsException(de);        		
         }
 	}
     //RO transaction

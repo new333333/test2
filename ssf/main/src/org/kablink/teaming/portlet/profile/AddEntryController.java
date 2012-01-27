@@ -49,6 +49,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.UserExistsException;
+import org.kablink.teaming.UserNameMissingException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -113,7 +114,7 @@ public class AddEntryController extends SAbstractController {
 			}
 			MapInputData inputData = new MapInputData(formData);
         	String name = inputData.getSingleValue(WebKeys.USER_PROFILE_NAME);
-        	if (name == null || name.equals("")) throw new NameMissingException("errorcode.name.missing");
+        	if (name == null || name.equals("")) throw new UserNameMissingException();
         	if (!BinderHelper.isBinderNameLegal(name)) throw new IllegalCharacterInNameException("errorcode.illegalCharacterInName");
         
         	//check if the user already exists, if found throw ObjectExistsException,

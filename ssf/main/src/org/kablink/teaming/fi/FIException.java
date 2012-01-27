@@ -61,7 +61,7 @@ public class FIException extends UncheckedCodedException {
     }
 
     public int getHttpStatusCode() {
-    	return 400; // Bad Request
+    	return 500; // internal server error
     }
 
 
@@ -70,6 +70,6 @@ public class FIException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.GENERAL_ERROR;
+		return ApiErrorCode.MIRRORED_FOLDER_ERROR;
 	}
 }
