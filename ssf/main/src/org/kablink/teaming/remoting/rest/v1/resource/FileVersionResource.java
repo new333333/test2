@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
@@ -101,7 +102,7 @@ public class FileVersionResource extends AbstractResource {
 				FileUtils.promoteFileVersionCurrent(va);
 			}
 			catch(UnsupportedOperationException e) {
-				throw new ConflictException(e.getLocalizedMessage());
+				throw new ConflictException(ApiErrorCode.UNSUPPORTED_OPERATION, e.getLocalizedMessage());
 			}
 		}
 		

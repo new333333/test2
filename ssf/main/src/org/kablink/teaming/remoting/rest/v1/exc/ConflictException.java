@@ -36,6 +36,7 @@ package org.kablink.teaming.remoting.rest.v1.exc;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
@@ -46,7 +47,7 @@ public class ConflictException extends WebApplicationException {
 
 	private static final long serialVersionUID = 1L;
 
-	public ConflictException(String message) {
-		super(Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(message)).build());
+	public ConflictException(ApiErrorCode apiErrorCode, String message) {
+		super(Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(apiErrorCode, message)).build());
 	}
 }

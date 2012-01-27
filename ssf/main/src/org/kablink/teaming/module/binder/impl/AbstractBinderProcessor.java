@@ -60,6 +60,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -286,7 +287,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	entryData.put("title", title);
 	        }
 	        if (Validator.isNull(title)) throw new TitleException("");
-    		if (Validator.containsPathCharacters(title)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{title}){
+    		if (Validator.containsPathCharacters(title)) throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{title}){
     		    public int getHttpStatusCode() {
     		    	return 400; // Bad Request
     		    }
@@ -691,7 +692,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		//if title changed, must update path info for all child folders
 	        		String newTitle = binder.getTitle();
 	        		if (Validator.isNull(newTitle)) throw new TitleException("");
-	        		if (Validator.containsPathCharacters(newTitle)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{newTitle}){
+	        		if (Validator.containsPathCharacters(newTitle)) throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{newTitle}){
 	        		    public int getHttpStatusCode() {
 	        		    	return 400; // Bad Request
 	        		    }

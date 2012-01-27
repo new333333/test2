@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoteapplication;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class RemoteApplicationException extends UncheckedCodedException {
 
@@ -55,5 +56,12 @@ public class RemoteApplicationException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 500; // Inrernal Server Error
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.GENERAL_ERROR;
+	}
 
 }

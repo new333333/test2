@@ -85,6 +85,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
@@ -361,7 +362,7 @@ public class FileResource extends AbstractResource {
 		if(fa != null)
 			return fa;
 		else
-			throw new NotFoundException("File '" + filename + "' is not found for entity '" + entity.getId() + "' of type '" + entity.getEntityType().name() + "'");
+			throw new NotFoundException(ApiErrorCode.FILE_NOT_FOUND, "File '" + filename + "' is not found for entity '" + entity.getId() + "' of type '" + entity.getEntityType().name() + "'");
 	}
 	
 	/*
@@ -394,11 +395,11 @@ public class FileResource extends AbstractResource {
             }
             else
             {
-            	throw new BadRequestException("Missing form data");
+            	throw new BadRequestException(ApiErrorCode.MISSING_MULTIPART_FORM_DATA, "Missing form data");
             }
         } catch (FileUploadException e) {
         	logger.warn("Received bad multipart form data", e);
-        	throw new BadRequestException("Received bad multipart form data");
+        	throw new BadRequestException(ApiErrorCode.BAD_MULTIPART_FORM_DATA, "Received bad multipart form data");
         } catch (IOException e) {
         	logger.error("Error reading multipart form data", e);
         	throw new UncheckedIOException(e);
@@ -447,7 +448,7 @@ public class FileResource extends AbstractResource {
     		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
     		if(result) {
 	        	if(!(user instanceof User))
-	        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
+	        		throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
 	        	modDate = dateFromISO8601(modDateISO8601);
 	    		FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
     		}
@@ -458,7 +459,7 @@ public class FileResource extends AbstractResource {
     		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
     		if(result) {
 	        	if(!(group instanceof Group))
-	        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+	        		throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
 	        	modDate = dateFromISO8601(modDateISO8601);
 	    		FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
     		}
@@ -473,12 +474,12 @@ public class FileResource extends AbstractResource {
     		}
         }
         else {
-        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
+        	throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }
         if(result)
         	return filePropertiesFromFileAttachment(fa);
         else
-        	throw new ConflictException("Specified version number does not reflect the current state of the file");
+        	throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
 	}
 
 	private FileAttachment findFileAttachment(String fileId) 
@@ -511,13 +512,13 @@ public class FileResource extends AbstractResource {
         else if(et == EntityType.user) {
         	entity = profileModule.getEntry(entityId);
         	if(!(entity instanceof User))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
+        		throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
         	binder = entity.getParentBinder();
         }
         else if(et == EntityType.group) {
         	entity = profileModule.getEntry(entityId);
         	if(!(entity instanceof Group))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+        		throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
         	binder = entity.getParentBinder();
         }
         else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
@@ -525,7 +526,7 @@ public class FileResource extends AbstractResource {
     		binder = (Binder) entity;
         }
         else {
-        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
+        	throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }
 		fa = getFileAttachment(entity, filename);
 		Date lastModDate = fa.getModification().getDate();
@@ -565,7 +566,7 @@ public class FileResource extends AbstractResource {
         	try {
 	        	Principal user = profileModule.getEntry(entityId);
 	        	if(!(user instanceof User))
-	        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
+	        		throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
 				fa = user.getFileAttachment(filename);
 				if(fa != null) {
 					List deletes = new ArrayList();
@@ -581,7 +582,7 @@ public class FileResource extends AbstractResource {
         	try {
 	        	Principal group = profileModule.getEntry(entityId);
 	        	if(!(group instanceof User))
-	        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+	        		throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
 				fa = group.getFileAttachment(filename);
 				if(fa != null) {
 					List deletes = new ArrayList();
@@ -608,7 +609,7 @@ public class FileResource extends AbstractResource {
         	}
         }
         else {
-        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
+        	throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }
 	}
 
@@ -618,7 +619,7 @@ public class FileResource extends AbstractResource {
 			return EntityType.valueOf(entityTypeStr);
 		}
 		catch(IllegalArgumentException e) {
-			throw new BadRequestException("Entity type '" + entityTypeStr + "' is invalid");
+			throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityTypeStr + "' is invalid");
 		}
 	}
 
@@ -632,18 +633,18 @@ public class FileResource extends AbstractResource {
         else if(et == EntityType.user) {
         	entity = profileModule.getEntry(entityId);
         	if(!(entity instanceof User))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a user");
+        		throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
         }
         else if(et == EntityType.group) {
         	entity = profileModule.getEntry(entityId);
         	if(!(entity instanceof Group))
-        		throw new BadRequestException("Entity ID '" + entityId + "' does not represent a group");
+        		throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
         }
         else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
     		entity = binderModule.getBinder(entityId);
         }
         else {
-        	throw new BadRequestException("Entity type '" + entityType + "' is unknown or not supported by this method");
+        	throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }
         return entity;
 	}

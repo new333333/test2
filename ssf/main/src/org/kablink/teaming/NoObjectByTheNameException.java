@@ -33,6 +33,7 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 /**
  * @author Jong Kim
@@ -55,4 +56,11 @@ public class NoObjectByTheNameException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 404; // Not Found
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.NOT_FOUND;
+	}
 }

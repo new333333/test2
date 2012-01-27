@@ -121,7 +121,7 @@ public class AddEntryController extends SAbstractController {
         	try
         	{
         		User user = getProfileModule().getUserDeadOrAlive( name );
-        		throw new UserExistsException("errorcode.user.alreadyExists", (Object[])null);
+        		throw new UserExistsException();
         	} catch (NoPrincipalByTheNameException nue){
         		//if user not found continue, this is what we want
         	}
@@ -166,7 +166,7 @@ public class AddEntryController extends SAbstractController {
 		    				if ( kaptchaExpected == null || kaptchaResponse == null || !kaptchaExpected.equalsIgnoreCase( kaptchaResponse  ) )
 		    				{
 		    					// The text entered by the user did not match the text used to create the kaptcha image.
-		    	        		throw new TextVerificationException( "errorcode.textverification.mismatch" );
+		    	        		throw new TextVerificationException();
 		    				}
 	    				}
     				}

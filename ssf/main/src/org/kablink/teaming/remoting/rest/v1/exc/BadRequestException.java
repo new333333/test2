@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.exc;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
@@ -45,8 +46,8 @@ public class BadRequestException extends WebApplicationException {
 
 	private static final long serialVersionUID = 1L;
 
-	public BadRequestException(String message) {
-		super(Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(message)).build());
+	public BadRequestException(ApiErrorCode apiErrorCode, String message) {
+		super(Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(apiErrorCode, message)).build());
 	}
 }
 

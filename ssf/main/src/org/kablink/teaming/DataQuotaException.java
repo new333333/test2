@@ -33,6 +33,7 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class DataQuotaException extends UncheckedCodedException {
 
@@ -43,4 +44,12 @@ public class DataQuotaException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 403; // Forbidden
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.GENERAL_ERROR;
+	}
 }
