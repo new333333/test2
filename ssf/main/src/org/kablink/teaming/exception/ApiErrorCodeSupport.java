@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.exception;
 
-import org.kablink.teaming.remoting.ApiErrorCode;
+import org.kablink.teaming.ApiErrorCode;
 
 /**
  * @author jong

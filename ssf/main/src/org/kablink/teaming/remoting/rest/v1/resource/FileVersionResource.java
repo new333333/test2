@@ -42,6 +42,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
@@ -49,7 +50,6 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.shared.FileUtils;
-import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;

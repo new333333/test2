@@ -32,11 +32,11 @@
  */
 package org.kablink.teaming.module.file;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.remoting.ApiErrorCode;
 
 
 public class LockedByAnotherUserException extends UncheckedCodedException {

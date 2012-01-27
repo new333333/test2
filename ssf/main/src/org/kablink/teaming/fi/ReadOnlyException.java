@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.fi;
 
-import org.kablink.teaming.remoting.ApiErrorCode;
+import org.kablink.teaming.ApiErrorCode;
 
 public class ReadOnlyException extends FIException {
 

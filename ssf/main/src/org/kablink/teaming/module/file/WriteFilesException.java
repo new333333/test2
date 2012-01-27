@@ -35,8 +35,8 @@ package org.kablink.teaming.module.file;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.exception.ApiErrorCodeSupport;
-import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.util.HttpStatusCodeSupport;
 
 public class WriteFilesException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport {

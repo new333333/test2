@@ -35,7 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.exc;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.ApiErrorCode;
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**

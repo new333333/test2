@@ -33,7 +33,6 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
-import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class ObjectExistsException extends UncheckedCodedException {
 	   public ObjectExistsException(String errorCode) {
