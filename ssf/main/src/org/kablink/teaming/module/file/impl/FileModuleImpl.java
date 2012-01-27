@@ -60,10 +60,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
 import org.dom4j.Element;
+import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
+import org.kablink.teaming.FileSizeLimitException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.UserQuotaException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -2131,13 +2134,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// strict conformance - allow a transaction only if the user quota
 				// will not be exceeded after the transaction commits.
 				if(userQuota < user.getDiskSpaceUsed() + fileSize)
-					throw new DataQuotaException("quota.exceeded.error.message", new Object[]{fileName});					
+					throw new UserQuotaException(fileName);					
 			}
 			else {
 				// soft conformance - allow a transaction if the user quota wasn't
 				// exceeded when the transaction began.
 				if ((userQuota < user.getDiskSpaceUsed()))
-					throw new DataQuotaException("quota.exceeded.error.message", new Object[]{fileName});
+					throw new UserQuotaException(fileName);
 			}
 		}
 	}
@@ -2146,7 +2149,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			throws DataQuotaException {
 		if (!getBinderModule().isBinderDiskQuotaOk(binder, fileSize)) {
 			//Adding this file would cause the quota to be exceeded
-			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{fileName});
+			throw new BinderQuotaException(fileName);
 		}
 	}
 	
@@ -2159,8 +2162,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if (maxFileSize != null) {
 			//There is a file size limit, go check it
 			if (fileSize > maxFileSize * ObjectKeys.MEGABYTES) {
-				throw new DataQuotaException("file.maxSizeExceeded", 
-						new Object[]{fileName});
+				throw new FileSizeLimitException(fileName);
 			}
 		}
 		//Check the system default and the user limits
@@ -2181,8 +2183,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		//Now check to see if the file size is above the limit
 		if (fileSizeLimit != null && fileSize > fileSizeLimit * ObjectKeys.MEGABYTES) {
-			throw new DataQuotaException("file.maxSizeExceeded", 
-					new Object[]{fileName});
+			throw new FileSizeLimitException(fileName);
 		}
 	}
 	

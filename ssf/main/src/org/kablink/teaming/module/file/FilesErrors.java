@@ -37,9 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.exception.ApiErrorCodeSupport;
-import org.kablink.teaming.exception.HttpStatusCodeSupport;
 import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.util.NLT;
+import org.kablink.util.HttpStatusCodeSupport;
 
 
 public class FilesErrors implements Serializable {
