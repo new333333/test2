@@ -901,18 +901,20 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param folderId
+	 * @param trashColumns
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static ColumnWidthsRpcResponseData getColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+	public static ColumnWidthsRpcResponseData getColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId, boolean trashColumns) throws GwtTeamingException {
 		try {
 			// Read the column widths stored in the folder properties...
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
-			Map<String, String> columnWidths = ((Map<String, String>) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS));
+			String          propKey              = (ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS + (trashColumns ? ".Trash" : ""));
+			Map<String, String> columnWidths = ((Map<String, String>) userFolderProperties.getProperty(propKey));
 			if ((null != columnWidths) && columnWidths.isEmpty()) {
 				columnWidths = null;
 			}
@@ -1299,10 +1301,11 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param folderId
+	 * @param trashFolder
 	 * 
 	 * @return
 	 */
-	public static FolderDisplayDataRpcResponseData getFolderDisplayData(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+	public static FolderDisplayDataRpcResponseData getFolderDisplayData(AllModulesInjected bs, HttpServletRequest request, Long folderId, boolean trashFolder) throws GwtTeamingException {
 		try {
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userProperties       = bs.getProfileModule().getUserProperties(user.getId());
@@ -1326,7 +1329,7 @@ public class GwtViewHelper {
 			catch (Exception ex) {pageSize = 25;                                                       }
 			
 			// Has the user defined any column widths on this folder?
-			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderId);
+			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderId, trashFolder);
 			
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
@@ -1376,13 +1379,13 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
 			// Factor in the user's sorting selection.
-			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderId);
+			boolean isTrash = (FolderType.TRASH == folderType);
+			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderId, isTrash);
 			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
 
 			// Read the entries based on the search.
 			Map searchResults;
-			boolean isTrash = (FolderType.TRASH == folderType);
 			if (isTrash)
 			     searchResults = TrashHelper.getTrashEntries(bs, binder, options);
 			else searchResults = bs.getFolderModule().getEntries(folderId, options);
@@ -2415,18 +2418,23 @@ public class GwtViewHelper {
 	 * @param request
 	 * @param folderId
 	 * @param columnWidths
+	 * @param trashColumns
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static BooleanRpcResponseData saveColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId, Map<String, String> columnWidths) throws GwtTeamingException {
+	public static BooleanRpcResponseData saveColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId, Map<String, String> columnWidths, boolean trashColumns) throws GwtTeamingException {
 		try {
 			// Store the column widths...
+			String propKey = ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS;
+			if (trashColumns) {
+				propKey += ".Trash";
+			}
 			bs.getProfileModule().setUserProperty(
 				GwtServerHelper.getCurrentUser().getId(),
 				folderId,
-				ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS,
+				propKey,
 				columnWidths);
 			
 			// ...and return true.

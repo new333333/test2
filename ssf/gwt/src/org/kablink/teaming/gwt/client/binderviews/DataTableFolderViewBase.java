@@ -492,7 +492,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String folderStyles) {
 		// Initialize the super class...
-		super(folderInfo, viewReady, "vibe-dataTableFolder", (!(folderInfo.isBinderTrash())));
+		super(folderInfo, viewReady, "vibe-dataTableFolder", true);
 
 		// ...and initialize any other data members.
 		initDataMembers(folderStyles);
