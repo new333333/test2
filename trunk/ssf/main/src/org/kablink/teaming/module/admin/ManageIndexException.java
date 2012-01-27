@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.admin;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class ManageIndexException extends UncheckedCodedException {
 
@@ -47,5 +48,13 @@ public class ManageIndexException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 500; // Internal Server Error
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.LUCENE_INDEX_ERROR;
+	}
 
 }

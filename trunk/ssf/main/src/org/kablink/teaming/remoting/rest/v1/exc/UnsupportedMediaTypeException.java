@@ -36,6 +36,7 @@ package org.kablink.teaming.remoting.rest.v1.exc;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
@@ -47,6 +48,6 @@ public class UnsupportedMediaTypeException extends WebApplicationException {
 	private static final long serialVersionUID = 1L;
 
 	public UnsupportedMediaTypeException(String message) {
-		super(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(new ErrorInfo(message)).build());
+		super(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(new ErrorInfo(ApiErrorCode.UNSUPPORTED_MEDIA_TYPE, message)).build());
 	}
 }

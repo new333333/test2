@@ -36,6 +36,7 @@ package org.kablink.teaming.remoting.rest.v1.exc;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
@@ -46,7 +47,7 @@ public class NotFoundException extends WebApplicationException {
 
 	private static final long serialVersionUID = 1L;
 
-	public NotFoundException(String message) {
-		super(Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo(message)).build());
+	public NotFoundException(ApiErrorCode apiErrorCode, String message) {
+		super(Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo(apiErrorCode, message)).build());
 	}
 }

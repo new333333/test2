@@ -36,6 +36,7 @@ package org.kablink.teaming.remoting.rest.v1.exc;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
@@ -46,7 +47,7 @@ public class InternalServerErrorException extends WebApplicationException {
 
 	private static final long serialVersionUID = 1L;
 
-	public InternalServerErrorException(String message) {
-		super(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(message)).build());
+	public InternalServerErrorException(ApiErrorCode apiErrorCode, String message) {
+		super(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(apiErrorCode, message)).build());
 	}
 }

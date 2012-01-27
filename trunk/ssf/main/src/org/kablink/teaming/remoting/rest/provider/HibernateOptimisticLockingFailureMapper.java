@@ -36,12 +36,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 
 @Provider
 public class HibernateOptimisticLockingFailureMapper implements ExceptionMapper<HibernateOptimisticLockingFailureException> {
 	public Response toResponse(HibernateOptimisticLockingFailureException ex) {
-		return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(ex.getMessage())).build();
+		return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(ApiErrorCode.OPTIMISTIC_LOCKING_FAILURE, ex.getMessage())).build();
 	}
 }

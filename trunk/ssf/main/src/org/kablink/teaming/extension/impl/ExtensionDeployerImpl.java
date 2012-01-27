@@ -727,7 +727,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 				if(foundExtension != null){
 					
 					if( checkDefinitionsInUse(foundExtension, zoneKey) )
-						throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
+						throw new DefinitionInvalidOperation();
 					
 					//remove the WEB-INF and files under webapp
 					boolean okToRemove = remove(foundExtension);
@@ -764,7 +764,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		catch (Exception ex) {
 
 			if(ex instanceof DefinitionInvalidOperation){
-				throw new DefinitionInvalidOperation(ex.getMessage());
+				throw (DefinitionInvalidOperation) ex;
 			}
 			
 			logger.error("Error in deployer", ex);

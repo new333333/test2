@@ -36,6 +36,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 
 public class LockedByAnotherUserException extends UncheckedCodedException {
@@ -72,7 +73,15 @@ public class LockedByAnotherUserException extends UncheckedCodedException {
 	}
 	
     public int getHttpStatusCode() {
-    	return 409; // Conflict
+    	return 403; // Forbidden
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FILE_LOCKED;
+	}
 
 }

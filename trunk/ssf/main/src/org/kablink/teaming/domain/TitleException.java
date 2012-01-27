@@ -37,6 +37,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.util.Validator;
 
 /**
@@ -73,6 +74,13 @@ public class TitleException extends UncheckedCodedException {
     }
     
     public int getHttpStatusCode() {
-    	return 400; // Bad Request
+    	return 409; // conflict
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.NAME_EXISTS;
+	}
 }

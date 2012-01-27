@@ -36,6 +36,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.exception.ApiErrorCodeSupport;
+import org.kablink.teaming.exception.HttpStatusCodeSupport;
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.util.NLT;
 
 
@@ -43,7 +46,7 @@ public class FilesErrors implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private List problems;
+	private List<Problem> problems;
 	
 	public FilesErrors() {
 		this.problems = new ArrayList();
@@ -53,7 +56,7 @@ public class FilesErrors implements Serializable {
 		problems.add(problem);
 	}
 	
-	public List getProblems() {
+	public List<Problem> getProblems() {
 		return problems;
 	}
 	
@@ -67,57 +70,71 @@ public class FilesErrors implements Serializable {
 		return sb.toString();
 	}
 	
-	public static class Problem implements Serializable {
+	public static class Problem implements ApiErrorCodeSupport, HttpStatusCodeSupport, Serializable {
 		private static final long serialVersionUID = 1L;
 		
 		// Problem types
 		public static int OTHER_PROBLEM								= 0;
 		public static int PROBLEM_FILTERING							= 1;
 		public static int PROBLEM_STORING_PRIMARY_FILE				= 2;
-		public static int PROBLEM_GENERATING_SCALED_FILE			= 3;
-		public static int PROBLEM_STORING_SCALED_FILE				= 4;
-		public static int PROBLEM_GENERATING_THUMBNAIL_FILE			= 5;
-		public static int PROBLEM_STORING_THUMBNAIL_FILE			= 6;
-		public static int PROBLEM_DELETING_PRIMARY_FILE				= 7;
-		public static int PROBLEM_DELETING_SCALED_FILE				= 8;
-		public static int PROBLEM_DELETING_THUMBNAIL_FILE			= 9;
-		public static int PROBLEM_CANCELING_LOCK					= 10;
-		public static int PROBLEM_LOCKED_BY_ANOTHER_USER			= 11;
-		public static int PROBLEM_RESERVED_BY_ANOTHER_USER  		= 12;
-		public static int PROBLEM_FILE_EXISTS						= 13;
-		public static int PROBLEM_ARCHIVING							= 14;
-		public static int PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER	= 15;
-		public static int PROBLEM_MIRRORED_FILE_MULTIPLE			= 16;
-		public static int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER   = 17;
-		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 18;
-		public static int PROBLEM_OVER_QUOTA						= 19;
-		public static int PROBLEM_ENCRYPTION_FAILED					= 20;
+		public static int PROBLEM_DELETING_PRIMARY_FILE				= 3;
+		public static int PROBLEM_CANCELING_LOCK					= 4;
+		public static int PROBLEM_FILE_EXISTS						= 5;
+		public static int PROBLEM_ARCHIVING							= 6;
+		public static int PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER	= 7;
+		public static int PROBLEM_MIRRORED_FILE_MULTIPLE			= 8;
+		public static int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER   = 9;
+		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 10;
+		public static int PROBLEM_ENCRYPTION_FAILED					= 11;
 		
 		// Message codes corresponding to each problem type.
 		public static String[] typeCodes = {
 			"file.error.other",
 			"file.error.filtering",
 			"file.error.storing.primary.file",
-			"file.error.generating.scaled.file",
-			"file.error.storing.scaled.file",
-			"file.error.generating.thumbnail.file",
-			"file.error.storing.thumbnail.file",
 			"file.error.deleting.primary.file",
-			"file.error.deleting.scaled.file",
-			"file.error.deleting.thumbnail.file",
 			"file.error.canceling.lock",
-			"file.error.locked.by.another.user",
-			"file.error.reserved.by.another.user",
 			"entry.duplicateFileInLibrary",
 			"file.error.archiving",
 			"file.error.mirrored.file.in.regular.folder",
 			"file.error.mirrored.file.multiple",
 			"file.error.regular.file.in.mirrored.folder",
 			"file.error.mirrored.file.readonly.driver",
-			"file.error.over.quota",
 			"file.error.encryption.failed"
 		};
 		
+		// API error codes corresponding to each problem type.
+		public static ApiErrorCode[] apiErrorCodes = {
+			ApiErrorCode.GENERAL_ERROR,
+			ApiErrorCode.FILE_FILTERING_ERROR,
+			ApiErrorCode.FILE_WRITE_FAILED,
+			ApiErrorCode.FILE_DELETE_FAILED,
+			ApiErrorCode.FILE_LOCK_CANCELLATION_FAILED,
+			ApiErrorCode.FILE_EXISTS,
+			ApiErrorCode.FILE_ARCHIVE_FAILED,
+			ApiErrorCode.MIRRORED_FILE_IN_REGULAR_FOLDER,
+			ApiErrorCode.MIRRORED_FILE_MULTIPLE,
+			ApiErrorCode.REGULAR_FILE_IN_MIRRORED_FOLDER,
+			ApiErrorCode.MIRRORED_FILE_READONLY_DRIVER,
+			ApiErrorCode.FILE_ENCRYPTION_FAILED
+		};
+		
+		// HTTP status codes corresponding to each problem type.
+		public static int[] httpStatusCodes = {
+			500, // internal server error
+			403, // forbidden
+			500,
+			500,
+			500,
+			409, // conflict
+			500,
+			400, // bad request
+			400,
+			400,
+			400,
+			500
+		};
+
 		private String repositoryName; // required
 		private String fileName; // required
 		private int type; // required - one of the constants defined above
@@ -187,6 +204,22 @@ public class FilesErrors implements Serializable {
 				}
 			}
 			return sb.toString();
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.HttpStatusCodeSupport#getHttpStatusCode()
+		 */
+		@Override
+		public int getHttpStatusCode() {
+			return httpStatusCodes[type];
+		}
+
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+		 */
+		@Override
+		public ApiErrorCode getApiErrorCode() {
+			return apiErrorCodes[type];
 		}
 	}
 

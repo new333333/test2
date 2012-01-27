@@ -33,6 +33,7 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class NameMissingException extends UncheckedCodedException {
     public NameMissingException(String errorCode) {
@@ -55,4 +56,12 @@ public class NameMissingException extends UncheckedCodedException {
     	return 400; // Bad Request
     }
 
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.GENERAL_ERROR;
+	}
 }

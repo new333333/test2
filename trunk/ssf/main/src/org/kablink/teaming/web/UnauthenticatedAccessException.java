@@ -33,6 +33,7 @@
 package org.kablink.teaming.web;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class UnauthenticatedAccessException extends UncheckedCodedException {
 
@@ -49,5 +50,13 @@ public class UnauthenticatedAccessException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 401; // Unauthorized
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.UNAUTHENTICATED;
+	}
 
 }

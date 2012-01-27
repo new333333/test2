@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.file;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class LockIdMismatchException extends UncheckedCodedException {
 
@@ -45,4 +46,12 @@ public class LockIdMismatchException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 400; // Bad Request
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.LOCK_ID_MISMATCH;
+	}
 }

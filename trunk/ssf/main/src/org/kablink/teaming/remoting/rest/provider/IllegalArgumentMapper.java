@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
@@ -46,6 +47,6 @@ import org.kablink.teaming.rest.v1.model.ErrorInfo;
 @Provider
 public class IllegalArgumentMapper implements ExceptionMapper<IllegalArgumentException> {
 	public Response toResponse(IllegalArgumentException ex) {
-		return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(ex.getMessage())).build();
+		return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(ApiErrorCode.ILLEGAL_ARGUMENT, ex.getMessage())).build();
 	}
 }

@@ -47,6 +47,6 @@ import org.kablink.teaming.rest.v1.model.ErrorInfo;
 @Provider
 public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
 	public Response toResponse(WriteEntryDataException ex) {
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ex.getMessage())).build();
+		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode(), ex.getMessage())).build();
 	}
 }

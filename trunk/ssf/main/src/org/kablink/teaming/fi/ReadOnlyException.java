@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.fi;
 
+import org.kablink.teaming.remoting.ApiErrorCode;
+
 public class ReadOnlyException extends FIException {
 
 	private static final long serialVersionUID = 1L;
@@ -45,4 +47,11 @@ public class ReadOnlyException extends FIException {
     	return 403; // Forbidden
     }
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.MIRRORED_FILE_READONLY_DRIVER;
+	}
 }

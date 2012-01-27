@@ -33,6 +33,7 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 /**
  * @author Jong Kim
@@ -55,4 +56,11 @@ public class ConfigurationException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 500; // Internal Server Error
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.SERVER_CONFIG_ERROR;
+	}
 }

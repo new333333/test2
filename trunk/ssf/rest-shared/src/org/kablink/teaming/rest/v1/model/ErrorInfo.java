@@ -32,8 +32,9 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 /**
  * @author jong
@@ -42,11 +43,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ErrorInfo {
 
+	public String code;
+	public String description;
 	public String message;
 	
 	private ErrorInfo() {}
 	
-	public ErrorInfo(String message) {
+	public ErrorInfo(ApiErrorCode apiErrorCode, String message) {
+		this.code = apiErrorCode.name();
 		this.message = message;
 	}
 }

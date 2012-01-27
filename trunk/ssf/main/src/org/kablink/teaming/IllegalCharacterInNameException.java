@@ -33,6 +33,7 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class IllegalCharacterInNameException extends UncheckedCodedException {
     public IllegalCharacterInNameException(String errorCode) {
@@ -54,4 +55,11 @@ public class IllegalCharacterInNameException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 400; // Bad Request
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ILLEGAL_CHARACTER;
+	}
 }

@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class ReservedByAnotherUserException extends UncheckedCodedException {
 	
@@ -52,7 +53,15 @@ public class ReservedByAnotherUserException extends UncheckedCodedException {
 	}
 	
     public int getHttpStatusCode() {
-    	return 409; // Conflict
+    	return 403; // Forbidden
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ENTITY_RESERVED;
+	}
 
 }

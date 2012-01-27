@@ -35,7 +35,11 @@ package org.kablink.teaming.module.file;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-public class WriteFilesException extends Exception {
+import org.kablink.teaming.exception.ApiErrorCodeSupport;
+import org.kablink.teaming.exception.HttpStatusCodeSupport;
+import org.kablink.teaming.remoting.ApiErrorCode;
+
+public class WriteFilesException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport {
 	
 	private FilesErrors errors;
 	private Long entityId;
@@ -72,4 +76,24 @@ public class WriteFilesException extends Exception {
     public void setEntityId(Long entityId) {
     	this.entityId = entityId;
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.HttpStatusCodeSupport#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		if(errors.getProblems().size() > 0)
+			return errors.getProblems().get(0).getHttpStatusCode();
+		else
+			return 500; // internal server error
+	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		if(errors.getProblems().size() > 0)
+			return errors.getProblems().get(0).getApiErrorCode();
+		else
+			return ApiErrorCode.GENERAL_ERROR;
+	}
 }

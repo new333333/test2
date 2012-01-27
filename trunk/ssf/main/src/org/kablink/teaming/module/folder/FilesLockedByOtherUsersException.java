@@ -35,6 +35,7 @@ package org.kablink.teaming.module.folder;
 import java.util.List;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 
 /**
@@ -65,4 +66,12 @@ public class FilesLockedByOtherUsersException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 403; // Forbidden
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FILE_LOCKED;
+	}
 }

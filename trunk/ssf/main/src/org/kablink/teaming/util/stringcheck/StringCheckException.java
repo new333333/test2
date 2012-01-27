@@ -33,6 +33,7 @@
 package org.kablink.teaming.util.stringcheck;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.remoting.ApiErrorCode;
 
 public class StringCheckException extends UncheckedCodedException {
 
@@ -55,4 +56,12 @@ public class StringCheckException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 400; // Bad Request
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.INVALID_DATA;
+	}
 }

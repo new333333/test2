@@ -1569,11 +1569,11 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		            	List results;
 		               	if (def.getType() != Definition.WORKFLOW) {
 		               		long count = countObjects(org.kablink.teaming.domain.FolderEntry.class, new FilterControls("entryDefId", def.getId()), def.getZoneId());
-		               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
+		               		if (count > 0) throw new DefinitionInvalidOperation();
 		               		count = countObjects(org.kablink.teaming.domain.Principal.class, new FilterControls("entryDefId", def.getId()), def.getZoneId());
-		               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
+		               		if (count > 0) throw new DefinitionInvalidOperation();
 		               		count = countObjects(org.kablink.teaming.domain.Binder.class, new FilterControls("entryDef", def), def.getZoneId());
-		               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
+		               		if (count > 0) throw new DefinitionInvalidOperation();
 		               		results = session.createCriteria(Binder.class)
 		               			.createCriteria("definitions")
 		               			.add(Expression.eq("id", def.getId()))
@@ -1586,7 +1586,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			               	}
 		               	} else {
 		               		long count = countObjects(org.kablink.teaming.domain.WorkflowState.class, new FilterControls("definition", def), def.getZoneId());
-		               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
+		               		if (count > 0) throw new DefinitionInvalidOperation();
 	
 		               		results = session.createCriteria(Binder.class)
 	               			.createCriteria("definitions")
