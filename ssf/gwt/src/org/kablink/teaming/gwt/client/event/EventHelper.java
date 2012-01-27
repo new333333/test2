@@ -847,6 +847,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_SURVEY_FOLDER:
+				// A ShowSurveyFolderEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowSurveyFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowSurveyFolderEvent.registerEvent(eventBus, ((ShowSurveyFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SHOW_TASK_FOLDER:
 				// A ShowTaskFolderEvent!  Can the event handler we
 				// were given handle that?
@@ -1416,6 +1425,7 @@ public class EventHelper {
 			case SHOW_HOME_WORKSPACE:					hasHandler = (eventHandler instanceof ShowHomeWSEvent.Handler);			   	   	   break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			case SHOW_MICRO_BLOG_FOLDER:				hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		   break;
+			case SHOW_SURVEY_FOLDER:				    hasHandler = (eventHandler instanceof ShowSurveyFolderEvent.Handler);		       break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
 			case SHOW_TEAM_ROOT_WORKSPACE:				hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	   break;
 			case SHOW_TEAM_WORKSPACE:					hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		   break;

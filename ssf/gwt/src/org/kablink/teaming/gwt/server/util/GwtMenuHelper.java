@@ -517,6 +517,7 @@ public class GwtMenuHelper {
 						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
 						viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
+						viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
 						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
 					(!(folder.isMirrored()))) {
 				// ...and for which the user has rights to do it...
@@ -585,6 +586,7 @@ public class GwtMenuHelper {
 						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
 						viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
+						viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
 						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
 					(!(folder.isMirrored()))) {
 				// ...and for which the user has rights to do it...

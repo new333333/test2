@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -88,6 +88,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String VIEW_STYLE_GUESTBOOK="guestbook"; 
 	public static final String VIEW_STYLE_MILESTONE="milestone"; 
 	public static final String VIEW_STYLE_MINIBLOG="miniblog"; 
+	public static final String VIEW_STYLE_SURVEY="survey"; 
 	public static final String VIEW_STYLE_TASK="task"; 
 	public static final String VIEW_STYLE_PHOTO_ALBUM="photo"; 
 	public static final String VIEW_STYLE_FILE="file"; 
@@ -166,7 +167,8 @@ public class Definition extends PersistentTimestampObject  {
     /**
      * @hibernate.property not-null="true"
      */
-    public Long getZoneId() {
+    @Override
+	public Long getZoneId() {
     	return this.zoneId;
     }
     public void setZoneId(Long zoneId) {
@@ -212,7 +214,8 @@ public class Definition extends PersistentTimestampObject  {
     	return getDocument();
     }
     
-    public void setDefinition(Document doc) {
+    @SuppressWarnings("unused")
+	public void setDefinition(Document doc) {
 		long startTime = System.nanoTime();
 		if(DefinitionCache.isCachedDocument(getId(), doc))
 			throw new InternalException("Bug: Application has directly modified shared cached definition document");
@@ -232,6 +235,7 @@ public class Definition extends PersistentTimestampObject  {
     /**
      * Return the definition name.
      */
+    @Override
     public String toString() {
     	return name;
     }
@@ -241,7 +245,8 @@ public class Definition extends PersistentTimestampObject  {
      * (and its subclasses) and the DefinitionCache class.
      * IMPORTANT: Don't ever make this method public!!!
      */
-    protected Document getDocument() {
+    @SuppressWarnings("unused")
+	protected Document getDocument() {
 		long startTime = System.nanoTime();
 		Document doc = null;
     	try {

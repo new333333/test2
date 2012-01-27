@@ -42,14 +42,13 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.dom.client.Style.Unit;
 
 /**
- * MicroBlog folder view.
+ * Survey folder view.
  * 
  * @author drfoster@novell.com
  */
-public class MicroBlogFolderView extends DataTableFolderViewBase {
+public class SurveyFolderView extends DataTableFolderViewBase {
 	/*
 	 * Class constructor.
 	 * 
@@ -57,14 +56,13 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private MicroBlogFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	private SurveyFolderView(BinderInfo folderInfo, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-microBlogFolderDataTable");
+		super(folderInfo, viewReady, "vibe-surveyFolderDataTable");
 	}
 	
 	/**
-	 * Resets the columns as appropriate for the micro-blog folder
-	 * view.
+	 * Resets the columns as appropriate for the survey folder view.
 	 * 
 	 * Unless otherwise specified the widths default to be a percentage
 	 * value.
@@ -75,39 +73,29 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_TITLE,       new ColumnWidth(10));
-		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION, new ColumnWidth(90));
-	}
-
-	/**
-	 * Overrides the DataTableFolderViewBase.adjustFloatColumnWidths() method.
-	 * 
-	 * @param columnWidths
-	 */
-	@Override
-	protected void adjustFloatColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.remove(ColumnWidth.COLUMN_TITLE);
-		columnWidths.put(   ColumnWidth.COLUMN_DESCRIPTION, new ColumnWidth(100, Unit.PCT));
+		columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(70));
+		columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(15));
+		columnWidths.put(ColumnWidth.COLUMN_DUE_DATE, new ColumnWidth(15));
 	}
 
 	/**
 	 * Called from the base class to complete the construction of this
-	 * micro-blog folder view.
+	 * survey folder view.
 	 * 
 	 * Implements the FolderViewBase.constructView() method.
 	 */
 	@Override
 	public void constructView() {
-		// Setup the appropriate styles for a micro-blog folder,
-		// populate the view's contents and tell the base class
-		// that we're done with the construction.
-		getFlowPanel().addStyleName("vibe-microBlogFolderFlowPanel");
+		// Setup the appropriate styles for a survey folder, populate
+		// the view's contents and tell the base class that we're done
+		// with the construction.
+		getFlowPanel().addStyleName("vibe-surveyFolderFlowPanel");
 		populateContent();
 		super.viewReady();
 	}
 	
 	/**
-	 * Loads the MicroBlogFolderView split point and returns an
+	 * Loads the SurveyFolderView split point and returns an
 	 * instance of it via the callback.
 	 * 
 	 * @param folderInfo
@@ -115,50 +103,24 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	 * @param vClient
 	 */
 	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
-		GWT.runAsync(MicroBlogFolderView.class, new RunAsyncCallback() {			
+		GWT.runAsync(SurveyFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				MicroBlogFolderView dfView = new MicroBlogFolderView(folderInfo, viewReady);
+				SurveyFolderView dfView = new SurveyFolderView(folderInfo, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(m_messages.codeSplitFailure_MicroBlogFolderView());
+				Window.alert(m_messages.codeSplitFailure_SurveyFolderView());
 				vClient.onUnavailable();
 			}
 		});
 	}
 	
 	/**
-	 * Returns true for panels that are to be included and false
-	 * otherwise.
-	 * 
-	 * Overrides the FolderViewBase.includePanel() method.
-	 * 
-	 * @param folderPanel
-	 * 
-	 * @return
-	 */
-	@Override
-	protected boolean includePanel(FolderPanels folderPanel) {
-		boolean reply;
-
-		// In the micro-blog folder view, we don't show the bread
-		// crumbs, accessories or filter panels.
-		switch (folderPanel) {
-		case BREADCRUMB:
-		case ACCESSORIES:
-		case FILTER:  reply = false; break;
-		default:      reply = true;  break;
-		}
-		
-		return reply;
-	}
-
-	/**
-	 * Called from the base class to reset the content of this
-	 * micro-blog folder view.
+	 * Called from the base class to reset the content of this survey
+	 * folder view.
 	 * 
 	 * Implements the FolderViewBase.resetView() method.
 	 */
@@ -170,8 +132,8 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	}
 	
 	/**
-	 * Called from the base class to resize the content of this
-	 * micro-blog folder view.
+	 * Called from the base class to resize the content of this survey
+	 * folder view.
 	 * 
 	 * Implements the FolderViewBase.resizeView() method.
 	 */
