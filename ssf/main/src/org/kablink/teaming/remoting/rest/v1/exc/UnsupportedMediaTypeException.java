@@ -48,6 +48,6 @@ public class UnsupportedMediaTypeException extends WebApplicationException {
 	private static final long serialVersionUID = 1L;
 
 	public UnsupportedMediaTypeException(String message) {
-		super(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(new ErrorInfo(ApiErrorCode.UNSUPPORTED_MEDIA_TYPE, message)).build());
+		super(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(new ErrorInfo(ApiErrorCode.UNSUPPORTED_MEDIA_TYPE.name(), message)).build());
 	}
 }

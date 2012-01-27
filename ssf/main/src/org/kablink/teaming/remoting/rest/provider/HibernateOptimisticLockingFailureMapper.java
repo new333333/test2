@@ -43,6 +43,6 @@ import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureExcep
 @Provider
 public class HibernateOptimisticLockingFailureMapper implements ExceptionMapper<HibernateOptimisticLockingFailureException> {
 	public Response toResponse(HibernateOptimisticLockingFailureException ex) {
-		return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(ApiErrorCode.OPTIMISTIC_LOCKING_FAILURE, ex.getMessage())).build();
+		return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(ApiErrorCode.OPTIMISTIC_LOCKING_FAILURE.name(), ex.getMessage())).build();
 	}
 }
