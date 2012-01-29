@@ -70,6 +70,6 @@ public class FIException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.MIRRORED_FOLDER_ERROR;
+		return ApiErrorCode.MIRRORED_ERROR;
 	}
 }

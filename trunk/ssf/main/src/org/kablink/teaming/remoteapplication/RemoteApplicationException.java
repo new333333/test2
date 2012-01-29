@@ -61,7 +61,7 @@ public class RemoteApplicationException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.GENERAL_ERROR;
+		return ApiErrorCode.REMOTE_APP_ERROR;
 	}
 
 }

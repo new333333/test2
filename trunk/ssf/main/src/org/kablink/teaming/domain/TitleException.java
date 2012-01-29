@@ -81,6 +81,6 @@ public class TitleException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.NAME_EXISTS;
+		return ApiErrorCode.TITLE_EXISTS;
 	}
 }

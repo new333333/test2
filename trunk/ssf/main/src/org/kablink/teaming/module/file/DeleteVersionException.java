@@ -61,6 +61,6 @@ public class DeleteVersionException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.ONLY_FILE_VERSION;
+		return ApiErrorCode.FILE_ONLY_VERSION;
 	}
 }

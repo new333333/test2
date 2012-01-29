@@ -57,7 +57,7 @@ public class FilterException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.CONTENT_FILTERING_FAILED;
+		return ApiErrorCode.FILE_FILTER_ERROR;
 	}
 
 }

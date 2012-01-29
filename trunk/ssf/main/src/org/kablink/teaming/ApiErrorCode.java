@@ -39,91 +39,90 @@ package org.kablink.teaming;
  */
 public enum ApiErrorCode {
 
-	// Authorization
-	ACCESS_DENIED, // Access is denied
-	ACCESS_TOKEN_EXPIRED,
-	ACCESS_TOKEN_INVALID,
+	// Authentication errors
+	UNAUTHENTICATED, // Unauthenticated access
+	PASSWORD_MISMATCH, // Password mismatch
+
+	// Authorization errors
+	ACCESS_DENIED, // Access denied
+	ACCESS_TOKEN_EXPIRED, // SOAP API access token expired
+	ACCESS_TOKEN_INVALID, // SOAP API access token invalid
 	
-	// Authentication
-	UNAUTHENTICATED,
-	PASSWORD_MISMATCH,
-
-	// General errors
-	SERVER_CONFIG_ERROR, // Server configuration is bad
-	MISSING_MULTIPART_FORM_DATA, // Missing multipart form data
-	BAD_MULTIPART_FORM_DATA, // Bad multipart form data
-	INVALID_ENTITY_TYPE, // Entity type is unknown or not supported by this method
-	UNSUPPORTED_OPERATION, // Unsupported operation
-	OPTIMISTIC_LOCKING_FAILURE, // Hibernate optimistic locking failed
-	ILLEGAL_ARGUMENT, // Illegal argument
-	GENERAL_ERROR, // General error occurred
-	INVALID_HTML, // The input HTML is invalid
-	UNSUPPORTED_MEDIA_TYPE,
-	IO_ERROR,
-	NAME_EXISTS,
-	TEXT_VERIFICATION_FAILED,
-	INVALID_DATA,
-	ENTITY_RESERVED,
-	NOT_SUPPORTED,
-	NOT_FOUND,
-	ILLEGAL_CHARACTER,
-
 	// Definition errors
-	INVALID_DEFINITION, // Definition is invalid
+	INVALID_DEFINITION, // Invalid definition
 	DEFINITION_IN_USE, // Can not delete definition because it is in use
-	DEFINITION_EXISTS,
+	DEFINITION_EXISTS, // A definition already exists with this name
+
+	// Entry errors
+	ENTRY_RESERVED, // Entry reserved by another user
 
 	// File errors
-	ONLY_FILE_VERSION, // Can not delete file version because it is the only remaining version of the file
+	FILE_ONLY_VERSION, // Can not delete version of file because it is the only remaining version of the file
 	FILE_LOCKED, // File is locked by another user
-	CONTENT_FILTERING_FAILED, // File content filtering failed
-	LOCK_ID_MISMATCH, // The supplied lock token id does not match
+	FILE_FILTER_ERROR, // Failed to filter content of file
+	FILE_LOCK_ID_MISMATCH, // Specified file lock id does not match
 	FILE_VERSION_CONFLICT, // Specified version number does not reflect the current state of the file
-	FILE_FILTERING_ERROR,
-	FILE_WRITE_FAILED,
-	FILE_DELETE_FAILED,
-	FILE_LOCK_CANCELLATION_FAILED,
+	FILE_WRITE_FAILED, // Writing file failed
+	FILE_DELETE_FAILED, // Deleting file failed
+	FILE_ARCHIVE_FAILED, // Archiving file failed
+	FILE_ENCRYPTION_FAILED, // Encrypting file failed
+	FILE_LOCK_CANCELLATION_FAILED, // File lock cancellation failed
 	FILE_EXISTS, // This folder requires that all uploaded files have unique filenames. A file with this name already exists.
-	FILE_ARCHIVE_FAILED,
-	FILE_ENCRYPTION_FAILED,
-	FILE_NOT_FOUND,
-	FILE_VERSION_NOT_FOUND,
+	FILE_NOT_FOUND, // No file found with this name or id
+	FILE_VERSION_NOT_FOUND, // No file version found with this id
 
 	// Folder errors
 	INVALID_FOLDER_HIERARCHY, // The hierarchy of the folder is invalid
 	
+	// General errors
+	MISSING_MULTIPART_FORM_DATA, // Missing multipart form data
+	BAD_MULTIPART_FORM_DATA, // Bad multipart form data
+	UNSUPPORTED_MEDIA_TYPE, // Unsupported media type
+	INVALID_ENTITY_TYPE, // Entity type is unknown or not supported by this method
+	INVALID_HTML, // Input HTML is invalid
+	ILLEGAL_CHARACTER, // Illegal character in the identifier
+	BAD_INPUT, // Bad input
+	TITLE_EXISTS, // The title already exists
+	NOT_FOUND, // Not found by this name or id
+	NOT_SUPPORTED, // Not supported
+	SERVER_CONFIG_ERROR, // Server configuration error
+	OPTIMISTIC_LOCKING_FAILURE, // Hibernate optimistic locking failure
+	IO_ERROR, // I/O error
+	REMOTE_APP_ERROR, // Error executing remote application
+	GENERAL_ERROR, // General error
+
+	// Lucene errors
+	LUCENE_INDEX_ERROR, // Error with Lucene index
+	
+	// Mirrored folder/file errors
+	MIRRORED_FILE_IN_REGULAR_FOLDER, // Cannot write mirrored file in non-mirrored folder
+	REGULAR_FILE_IN_MIRRORED_FOLDER, // Cannot write regular file in mirrored folder
+	MIRRORED_MULTIPLE, // An entry cannot mirror more than one file
+	MIRRORED_READONLY_DRIVER, // Cannot create/update/delete mirrored file through read-only driver
+	MIRRORED_ERROR, // Error with mirrored folder/file
+
+	// Principal (user/group/application/application group) errors
+	USER_EXISTS, // User already exists with this name
+	NOT_USER, // The entity does not represent a user
+	USER_NAME_MISSING, // User name is missing
+	GROUP_EXISTS, // Group already exists with this name
+	NOT_GROUP, // The entity does not represent a group
+	APPLICATION_EXISTS, // Application already exists with this name
+	APPLICATION_GROUP_EXISTS, // Application group already exists with this name
+
+	// Quota errors
+	USER_QUOTA_EXCEEDED, // User quota exceeded
+	BINDER_QUOTA_EXCEEDED, // Binder quota exceeded
+	FILE_SIZE_LIMIT_EXCEEDED, // File size limit exceeded
+	
 	// Role management errors
-	ROLE_EXISTS, // Role already exists
+	ROLE_EXISTS, // Role with this name already exists
 	
 	// Zone errors
 	ZONE_MISMATCH, // Found zone does not match expected zone
-	ZONE_NAME_MISSING,
-	ZONE_VIRTUAL_HOST_MISSING,
-	ZONE_NAME_EXISTS,
-	ZONE_VIRTUAL_HOST_EXISTS,
+	ZONE_NAME_MISSING, // Zone name is missing
+	ZONE_VIRTUAL_HOST_MISSING, // Zone virtual host is missing
+	ZONE_NAME_EXISTS, // Zone with this name already exists
+	ZONE_VIRTUAL_HOST_EXISTS, // Zone with this virtual host already exists
 
-	// Principal errors
-	USER_EXISTS, // User already exists with this name.
-	NOT_USER, // The entity does not represent a user
-	NOT_GROUP, // The entity does not represent a group
-	USER_NAME_MISSING,
-	APPLICATION_EXISTS,
-	APPLICATION_GROUP_EXISTS,
-	GROUP_EXISTS,
-
-	// Mirrored folder/file errors
-	MIRRORED_FILE_IN_REGULAR_FOLDER,
-	MIRRORED_FILE_MULTIPLE,
-	REGULAR_FILE_IN_MIRRORED_FOLDER,
-	MIRRORED_FILE_READONLY_DRIVER,
-	MIRRORED_FOLDER_ERROR,
-
-	// Lucene errors
-	LUCENE_INDEX_ERROR,
-	
-	// Quota errors
-	USER_QUOTA_EXCEEDED,
-	BINDER_QUOTA_EXCEEDED,
-	FILE_SIZE_LIMIT_EXCEEDED,
-	
 }
