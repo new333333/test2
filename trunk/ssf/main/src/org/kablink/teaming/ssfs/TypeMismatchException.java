@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.ssfs;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
 
 /**
@@ -56,5 +57,13 @@ public class TypeMismatchException extends VibeRuntimeException {
 	@Override
 	public int getHttpStatusCode() {
 		return 500; // Internal Server Error
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.NOT_SUPPORTED;
 	}
 }

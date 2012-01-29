@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.security;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
 
 /**
@@ -60,5 +61,12 @@ public class AccessControlNonCodedException extends VibeRuntimeException {
 	@Override
 	public int getHttpStatusCode() {
 		return 403; // Forbidden
+	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ACCESS_DENIED;
 	}
 }

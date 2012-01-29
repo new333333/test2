@@ -70,13 +70,13 @@ public class PasswordMismatchException extends UncheckedCodedException {
 
     }    
     public int getHttpStatusCode() {
-    	return 401; // Unauthorized
+    	return 400; // Bad data
     }
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.PASSWORD_MISMATCH;
+		return ApiErrorCode.BAD_INPUT;
 	}
 }

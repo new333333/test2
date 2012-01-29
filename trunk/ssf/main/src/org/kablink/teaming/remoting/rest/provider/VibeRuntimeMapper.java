@@ -36,12 +36,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.util.VibeRuntimeException;
 
 @Provider
-public class UncheckedCodedMapper implements ExceptionMapper<UncheckedCodedException> {
-	public Response toResponse(UncheckedCodedException ex) {
+public class VibeRuntimeMapper implements ExceptionMapper<VibeRuntimeException> {
+	public Response toResponse(VibeRuntimeException ex) {
 		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getLocalizedMessage())).build();
 	}
 

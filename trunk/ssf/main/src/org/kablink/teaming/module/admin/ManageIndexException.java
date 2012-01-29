@@ -54,7 +54,7 @@ public class ManageIndexException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.LUCENE_INDEX_ERROR;
+		return ApiErrorCode.LUCENE_ERROR;
 	}
 
 }

@@ -64,6 +64,7 @@ import org.jbpm.instantiation.Delegation;
 import org.jbpm.scheduler.def.CancelTimerAction;
 import org.jbpm.scheduler.def.CreateTimerAction;
 import org.jbpm.scheduler.exe.Timer;
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -944,6 +945,13 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		@Override
 		public int getHttpStatusCode() {
 			return 500; // Internal Server Error
+		}
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+		 */
+		@Override
+		public ApiErrorCode getApiErrorCode() {
+			return ApiErrorCode.WORKFLOW_ERROR;
 		}
 		
 	}

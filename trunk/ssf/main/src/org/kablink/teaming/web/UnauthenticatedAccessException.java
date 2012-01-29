@@ -56,7 +56,7 @@ public class UnauthenticatedAccessException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.UNAUTHENTICATED;
+		return ApiErrorCode.UNAUTHENTICATED_ACCESS;
 	}
 
 }

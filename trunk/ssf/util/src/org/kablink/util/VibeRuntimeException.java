@@ -32,12 +32,14 @@
  */
 package org.kablink.util;
 
+import org.kablink.teaming.exception.ApiErrorCodeSupport;
+
 
 /**
  * @author jong
  *
  */
-public abstract class VibeRuntimeException extends RuntimeException implements HttpStatusCodeSupport {
+public abstract class VibeRuntimeException extends RuntimeException implements HttpStatusCodeSupport, ApiErrorCodeSupport {
 
 	public VibeRuntimeException() {
 		super();
@@ -55,4 +57,5 @@ public abstract class VibeRuntimeException extends RuntimeException implements H
 		super(cause);
 	}
     
+	
 }

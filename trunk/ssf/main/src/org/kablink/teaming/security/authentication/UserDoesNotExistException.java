@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.security.authentication;
 
+import org.kablink.teaming.ApiErrorCode;
+
 public class UserDoesNotExistException extends AuthenticationException {
     public UserDoesNotExistException() {
         super();
@@ -45,5 +47,12 @@ public class UserDoesNotExistException extends AuthenticationException {
     public UserDoesNotExistException(Throwable cause) {
         super(cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.USERNAME_NOT_FOUND;
+	}
 
 }

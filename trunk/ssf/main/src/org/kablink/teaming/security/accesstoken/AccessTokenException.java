@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.security.accesstoken;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
 
 public class AccessTokenException extends VibeRuntimeException {
@@ -52,6 +53,13 @@ public class AccessTokenException extends VibeRuntimeException {
 	@Override
 	public int getHttpStatusCode() {
 		return 403; // Forbidden
+	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ACCESS_TOKEN_INVALID;
 	}
 
 }

@@ -58,4 +58,11 @@ public class InternalException extends VibeRuntimeException {
 	public int getHttpStatusCode() {
 		return 500; // Internal Server Error
 	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.GENERAL_ERROR;
+	}
 }

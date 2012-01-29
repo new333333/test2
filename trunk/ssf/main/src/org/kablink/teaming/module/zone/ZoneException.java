@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.zone;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
 
 public class ZoneException extends VibeRuntimeException {
@@ -54,6 +55,14 @@ public class ZoneException extends VibeRuntimeException {
 	@Override
 	public int getHttpStatusCode() {
 		return 500; // Internal Server Error
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ZONE_ERROR;
 	}
 }
 
