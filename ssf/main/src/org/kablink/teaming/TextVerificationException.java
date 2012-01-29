@@ -61,7 +61,7 @@ public class TextVerificationException extends UncheckedCodedException
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.TEXT_VERIFICATION_FAILED;
+		return ApiErrorCode.BAD_INPUT;
 	}
 
 }// end TextVerificationException

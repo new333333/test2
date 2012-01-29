@@ -62,6 +62,6 @@ public class StringCheckException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.INVALID_DATA;
+		return ApiErrorCode.BAD_INPUT;
 	}
 }

@@ -52,6 +52,6 @@ public class LockIdMismatchException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.LOCK_ID_MISMATCH;
+		return ApiErrorCode.FILE_LOCK_ID_MISMATCH;
 	}
 }

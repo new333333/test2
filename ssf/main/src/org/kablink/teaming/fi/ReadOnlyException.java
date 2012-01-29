@@ -52,6 +52,6 @@ public class ReadOnlyException extends FIException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.MIRRORED_FILE_READONLY_DRIVER;
+		return ApiErrorCode.MIRRORED_READONLY_DRIVER;
 	}
 }

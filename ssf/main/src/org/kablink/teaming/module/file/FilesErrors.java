@@ -106,16 +106,16 @@ public class FilesErrors implements Serializable {
 		// API error codes corresponding to each problem type.
 		public static ApiErrorCode[] apiErrorCodes = {
 			ApiErrorCode.GENERAL_ERROR,
-			ApiErrorCode.FILE_FILTERING_ERROR,
+			ApiErrorCode.FILE_FILTER_ERROR,
 			ApiErrorCode.FILE_WRITE_FAILED,
 			ApiErrorCode.FILE_DELETE_FAILED,
 			ApiErrorCode.FILE_LOCK_CANCELLATION_FAILED,
 			ApiErrorCode.FILE_EXISTS,
 			ApiErrorCode.FILE_ARCHIVE_FAILED,
 			ApiErrorCode.MIRRORED_FILE_IN_REGULAR_FOLDER,
-			ApiErrorCode.MIRRORED_FILE_MULTIPLE,
+			ApiErrorCode.MIRRORED_MULTIPLE,
 			ApiErrorCode.REGULAR_FILE_IN_MIRRORED_FOLDER,
-			ApiErrorCode.MIRRORED_FILE_READONLY_DRIVER,
+			ApiErrorCode.MIRRORED_READONLY_DRIVER,
 			ApiErrorCode.FILE_ENCRYPTION_FAILED
 		};
 		

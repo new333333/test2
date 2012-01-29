@@ -61,7 +61,7 @@ public class ReservedByAnotherUserException extends UncheckedCodedException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.ENTITY_RESERVED;
+		return ApiErrorCode.ENTRY_RESERVED;
 	}
 
 }

@@ -102,7 +102,7 @@ public class FileVersionResource extends AbstractResource {
 				FileUtils.promoteFileVersionCurrent(va);
 			}
 			catch(UnsupportedOperationException e) {
-				throw new ConflictException(ApiErrorCode.UNSUPPORTED_OPERATION, e.getLocalizedMessage());
+				throw new ConflictException(ApiErrorCode.NOT_SUPPORTED, e.getLocalizedMessage());
 			}
 		}
 		
