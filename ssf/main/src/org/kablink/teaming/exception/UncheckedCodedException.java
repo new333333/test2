@@ -42,7 +42,7 @@ import org.kablink.util.VibeRuntimeException;
  * @author Jong Kim
  *
  */
-public abstract class UncheckedCodedException extends VibeRuntimeException implements ErrorCodeSupport, ApiErrorCodeSupport {
+public abstract class UncheckedCodedException extends VibeRuntimeException implements ErrorCodeSupport {
     private String errorCode;
     private Object[] errorArgs;
     protected String msg;

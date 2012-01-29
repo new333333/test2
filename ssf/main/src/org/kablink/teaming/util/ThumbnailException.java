@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.util;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
 
 public class ThumbnailException extends VibeRuntimeException {
@@ -54,6 +55,13 @@ public class ThumbnailException extends VibeRuntimeException {
 	@Override
 	public int getHttpStatusCode() {
 		return 500; // Internal Server Error
+	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.DOC_CONVERSION_ERROR;
 	}
 
 }

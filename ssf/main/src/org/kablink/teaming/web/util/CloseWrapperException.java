@@ -35,6 +35,7 @@ package org.kablink.teaming.web.util;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
 
 /**
@@ -105,6 +106,19 @@ public class CloseWrapperException extends VibeRuntimeException {
 		}
 		else {
 			return 500; // Internal Server Error
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		if(wrappedExc instanceof VibeRuntimeException) {
+			return ((VibeRuntimeException) wrappedExc).getApiErrorCode();
+		}
+		else {
+			return ApiErrorCode.GENERAL_ERROR;
 		}
 	}
 }

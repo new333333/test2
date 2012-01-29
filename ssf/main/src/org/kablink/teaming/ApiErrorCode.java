@@ -40,19 +40,24 @@ package org.kablink.teaming;
 public enum ApiErrorCode {
 
 	// Authentication errors
-	UNAUTHENTICATED, // Unauthenticated access
-	PASSWORD_MISMATCH, // Password mismatch
+	USERNAME_NOT_FOUND, // Authentication service cannot locate a user by this username.
+	USERACCOUNT_NOT_ACTIVE, // This account has been disabled or deleted.
+	BAD_CREDENTIALS, // Bad credentials
 
 	// Authorization errors
 	ACCESS_DENIED, // Access denied
 	ACCESS_TOKEN_EXPIRED, // SOAP API access token expired
 	ACCESS_TOKEN_INVALID, // SOAP API access token invalid
+	UNAUTHENTICATED_ACCESS, // Unauthenticated access
 	
 	// Definition errors
 	INVALID_DEFINITION, // Invalid definition
 	DEFINITION_IN_USE, // Can not delete definition because it is in use
 	DEFINITION_EXISTS, // A definition already exists with this name
 
+	// Document conversion error
+	DOC_CONVERSION_ERROR, // Error during document conversion
+	
 	// Entry errors
 	ENTRY_RESERVED, // Entry reserved by another user
 
@@ -92,7 +97,7 @@ public enum ApiErrorCode {
 	GENERAL_ERROR, // General error
 
 	// Lucene errors
-	LUCENE_INDEX_ERROR, // Error with Lucene index
+	LUCENE_ERROR, // Error with indexing, searching or index management
 	
 	// Mirrored folder/file errors
 	MIRRORED_FILE_IN_REGULAR_FOLDER, // Cannot write mirrored file in non-mirrored folder
@@ -115,8 +120,17 @@ public enum ApiErrorCode {
 	BINDER_QUOTA_EXCEEDED, // Binder quota exceeded
 	FILE_SIZE_LIMIT_EXCEEDED, // File size limit exceeded
 	
+	// Repository service errors
+	REPOSITORY_ERROR, // Error during repository operation
+	
 	// Role management errors
 	ROLE_EXISTS, // Role with this name already exists
+	
+	// WebDAV errors
+	WEBDAV_RESOURCE_EXISTS, // A resource with the same name already exists
+	
+	// Workflow errors
+	WORKFLOW_ERROR, // Error during workflow operation
 	
 	// Zone errors
 	ZONE_MISMATCH, // Found zone does not match expected zone
@@ -124,5 +138,5 @@ public enum ApiErrorCode {
 	ZONE_VIRTUAL_HOST_MISSING, // Zone virtual host is missing
 	ZONE_NAME_EXISTS, // Zone with this name already exists
 	ZONE_VIRTUAL_HOST_EXISTS, // Zone with this virtual host already exists
-
+	ZONE_ERROR, // Error during zone operation
 }

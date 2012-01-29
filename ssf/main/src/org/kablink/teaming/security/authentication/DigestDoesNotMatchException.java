@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.security.authentication;
 
+import org.kablink.teaming.ApiErrorCode;
+
 public class DigestDoesNotMatchException extends AuthenticationException {
 
 	private static final long serialVersionUID = 1L;
@@ -48,5 +50,12 @@ public class DigestDoesNotMatchException extends AuthenticationException {
     public DigestDoesNotMatchException(Throwable cause) {
         super(cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.BAD_CREDENTIALS;
+	}
 
 }

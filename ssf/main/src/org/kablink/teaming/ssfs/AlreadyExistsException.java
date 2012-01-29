@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.ssfs;
 
+import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
 
 public class AlreadyExistsException extends VibeRuntimeException {
@@ -49,5 +50,12 @@ public class AlreadyExistsException extends VibeRuntimeException {
 	@Override
 	public int getHttpStatusCode() {
 		return 409; // Conflict
+	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.WEBDAV_RESOURCE_EXISTS;
 	}
 }

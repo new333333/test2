@@ -34,7 +34,7 @@ package org.kablink.teaming.security.authentication;
 
 import org.kablink.util.VibeRuntimeException;
 
-public class AuthenticationException extends VibeRuntimeException {
+public abstract class AuthenticationException extends VibeRuntimeException {
     public AuthenticationException() {
         super();
     }
