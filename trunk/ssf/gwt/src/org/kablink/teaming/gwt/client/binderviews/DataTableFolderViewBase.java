@@ -296,6 +296,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						// ...require entries be available.
 						emp.setEntriesAvailable(0 < rowsRead);
 					}
+
+					// Allow the view's that extend this do what ever
+					// they need to do once a collection of rows has
+					// been rendered.
+					postProcessRowDataAsync(folderRows);
 				}
 			});
 		}
@@ -1022,7 +1027,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 
 			// Complete the initialization of the column.
-			column.setSortable(true);
+			fc.setDisplayIndex(   colIndex                   );
+			column.setSortable(   true                       );
 			m_dataTable.addColumn(column, fc.getColumnTitle());
 		    setColumnStyles(      column, cName, colIndex++  );
 		    setColumnWidth(               cName, column      );
@@ -1762,7 +1768,31 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Finally, ensure the table gets sized correctly.
 		onResizeAsync();
 	}
+
+	/*
+	 * Asynchronously allows the view's that extend this do what ever
+	 * they need to do once a collection of rows have been rendered.
+	 */
+	private void postProcessRowDataAsync(final List<FolderRow> folderRows) {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				postProcessRowData(folderRows, m_folderColumnsList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
 	
+	/**
+	 * Allows the view's that extend this do what ever they need to
+	 * do once a collection of rows have been rendered.
+	 * 
+	 * @param columnWidths
+	 */
+	protected void postProcessRowData(final List<FolderRow> folderRows, final List<FolderColumn> folderColumns) {
+		// By default, there post processing required.
+	}
+
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
