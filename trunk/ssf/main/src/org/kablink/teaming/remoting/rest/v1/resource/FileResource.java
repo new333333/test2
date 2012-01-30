@@ -445,8 +445,10 @@ public class FileResource extends AbstractResource {
     		}
     		else {
     			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    			if(result)
+    			if(result) {
     				FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, null);
+    				fa = entry.getFileAttachment(filename);
+    			}
     		}
         }
         else if(et == EntityType.user) {
@@ -463,8 +465,10 @@ public class FileResource extends AbstractResource {
     		}
     		else {
     			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    			if(result)
+    			if(result) {
     				FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, null);
+    				fa = user.getFileAttachment(filename);
+    			}
     		}
         }
         else if(et == EntityType.group) {
@@ -481,8 +485,10 @@ public class FileResource extends AbstractResource {
     		}
     		else {
     			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    			if(result)
+    			if(result) {
     				FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, null);
+    				fa = group.getFileAttachment(filename);
+    			}
     		}
         }
         else if(et == EntityType.workspace || et == EntityType.folder || et == EntityType.profiles) {
@@ -497,8 +503,10 @@ public class FileResource extends AbstractResource {
     		}
     		else {
     			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-    			if(result)
+    			if(result) {
     				FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
+    				fa = binder.getFileAttachment(filename);
+    			}
     		}
         }
         else {
