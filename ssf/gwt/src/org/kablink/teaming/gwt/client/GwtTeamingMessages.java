@@ -480,6 +480,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfilePage();
+	String codeSplitFailure_ProjectManagementWSView();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
 	String codeSplitFailure_SurveyFolderView();
