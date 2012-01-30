@@ -1,1 +1,1 @@
-output = "Hello ${input}"
+output = "Hello ${children}"
