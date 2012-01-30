@@ -74,6 +74,8 @@
 
 <c:set var="calendarWidth" value="100%" />
 <c:set var="calendarHeight" value="100%" />
+<c:set var="calendarOverflow" value="auto" />
+<c:set var="calendarPadding" value="" />
 
 <c:if test="${!empty mashup_attributes['width']}">
 	<c:set var="calendarWidth" value="${mashup_attributes['width']}" />
@@ -83,12 +85,21 @@
 	<c:set var="calendarHeight" value="${mashup_attributes['height']}" />
 </c:if>
 
+<c:if test="${!empty mashup_attributes['overflow']}">
+	<c:set var="calendarOverflow" value="${mashup_attributes['overflow']}" />
+	<c:if test="${mashup_attributes['overflow'] == 'auto'}">
+	  <c:set var="calendarPadding" value="padding: 0 1px 0 0;" />
+	</c:if>
+</c:if>
+
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 <li>
 </c:if>
 <% } %>
-<div class="ss_mashup_element" style="width: ${calendarWidth}; height: ${calendarHeight}; overflow: auto;">
+<div class="ss_mashup_element" 
+  style="width: ${calendarWidth}; height: ${calendarHeight}; overflow: ${calendarOverflow}; ${calendarPadding}"
+>
     <div class="ss_mashup_round_top"><div></div></div>
       <c:if test="${!empty mashup_attributes['showTitle']}">
 	<div class="ss_mashup_folder_header_view">

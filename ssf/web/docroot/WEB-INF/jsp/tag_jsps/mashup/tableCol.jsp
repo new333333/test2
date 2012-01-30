@@ -64,7 +64,11 @@
 %>
 
 <c:if test="${ss_mashupColStarted == 'true'}">
-</td>
+  </td>
+</c:if>
+<c:if test="${ss_mashupRowStarted != 'true'}">
+  <tr>
+  <c:set var="ss_mashupRowStarted" value="true" scope="request"/>
 </c:if>
 <td valign="top" <c:if test="${!empty mashup_attributes['colWidth']}">width="<%= colWidth %><%= widthUnits %>"</c:if> >
 <c:set var="ss_mashupColStarted" value="true" scope="request"/>

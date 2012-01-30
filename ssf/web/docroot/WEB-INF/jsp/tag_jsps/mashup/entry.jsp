@@ -50,6 +50,19 @@
     <c:set var="mashupEntry" value="${ss_mashupEntries[zoneEntryId]}"/>
   </c:if>
 </c:if>
+<c:set var="mWidth" value="100%" />
+<c:set var="mHeight" value="100%" />
+<c:set var="mOverflow" value="hidden" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+</c:if>
+
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupEntry}">
 <li>
@@ -66,7 +79,11 @@
 	</script>
 </c:if>
 <c:if test="${!empty mashupEntry}">
-  <div class="ss_mashup_element">
+  <div class="ss_mashup_element"
+    <c:if test="${ssConfigJspStyle != 'form'}">
+      style="width: ${mWidth}; overflow: ${mOverflow}"
+    </c:if>
+  >
   <div class="ss_mashup_round_top"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <div class="ss_mashup_entry_header">
@@ -98,7 +115,7 @@
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form'}">
-	  <div class="ss_mashup_entry_content">
+	  <div class="ss_mashup_entry_content" style="height: ${mHeight}; overflow: ${mOverflow}">
 	    <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
 	    <div class="ss_clear"></div>
 	  </div>
