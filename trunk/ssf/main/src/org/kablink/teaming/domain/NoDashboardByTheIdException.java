@@ -54,6 +54,6 @@ public class NoDashboardByTheIdException extends NoObjectByTheIdException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.DASHBOARD_NOT_FOUND;
+		return ApiErrorCode.ACCESSORY_NOT_FOUND;
 	}
 }
