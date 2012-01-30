@@ -35,8 +35,8 @@ package org.kablink.teaming.web.util;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * This class is used to wrap another exception within the web tier so that the 

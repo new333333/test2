@@ -35,8 +35,8 @@ package org.kablink.teaming.exception;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * This class overrides the default behavior of <code>VibeRuntimeException</code> such that

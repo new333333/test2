@@ -31,9 +31,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.exception;
+package org.kablink.util.api;
 
-import org.kablink.teaming.ApiErrorCode;
 
 /**
  * @author jong

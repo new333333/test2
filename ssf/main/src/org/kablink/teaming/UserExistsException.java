@@ -3,6 +3,8 @@ package org.kablink.teaming;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.util.api.ApiErrorCode;
+
 public class UserExistsException extends ObjectExistsException {
 	   
     private static final String userExistsException_ErrorCode = "errorcode.user.alreadyExists";

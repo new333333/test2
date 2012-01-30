@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.ssfs;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * Thrown to indicate that the actual type of the object 

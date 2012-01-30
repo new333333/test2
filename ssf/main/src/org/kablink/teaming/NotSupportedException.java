@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming;
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NotSupportedException extends UncheckedCodedException {
  	private static final long serialVersionUID = 1L;

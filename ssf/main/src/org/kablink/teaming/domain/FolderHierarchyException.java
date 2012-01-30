@@ -37,8 +37,8 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.kablink.teaming.domain;
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 /**
  * @author Janet McCann
  *

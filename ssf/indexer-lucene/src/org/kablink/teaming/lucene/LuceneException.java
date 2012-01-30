@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.lucene;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim

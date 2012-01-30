@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.module.file;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class LockIdMismatchException extends UncheckedCodedException {
 

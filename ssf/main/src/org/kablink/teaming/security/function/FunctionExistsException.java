@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.security.function;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class FunctionExistsException extends UncheckedCodedException {
 		private static final String FunctionExistsException_ErrorCode = "errorcode.function.exists";

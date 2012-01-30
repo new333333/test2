@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.security.accesstoken;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class ExpiredAccessTokenException extends AccessControlException {
 	

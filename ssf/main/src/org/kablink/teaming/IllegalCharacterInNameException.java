@@ -33,6 +33,7 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class IllegalCharacterInNameException extends UncheckedCodedException {
     public IllegalCharacterInNameException(String errorCode) {

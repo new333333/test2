@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.ssfs;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class AlreadyExistsException extends VibeRuntimeException {
 
