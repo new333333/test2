@@ -74,6 +74,10 @@ public class FilesErrors implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
 		// Problem types
+		
+		// Special type that delegates to exception
+		public static int DELEGATED									= -1;
+		// Regular types
 		public static int OTHER_PROBLEM								= 0;
 		public static int PROBLEM_FILTERING							= 1;
 		public static int PROBLEM_STORING_PRIMARY_FILE				= 2;
@@ -87,7 +91,7 @@ public class FilesErrors implements Serializable {
 		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 10;
 		public static int PROBLEM_ENCRYPTION_FAILED					= 11;
 		
-		// Message codes corresponding to each problem type.
+		// Message codes corresponding to each regular problem type.
 		public static String[] typeCodes = {
 			"file.error.other",
 			"file.error.filtering",
@@ -103,7 +107,7 @@ public class FilesErrors implements Serializable {
 			"file.error.encryption.failed"
 		};
 		
-		// API error codes corresponding to each problem type.
+		// API error codes corresponding to each regular problem type.
 		public static ApiErrorCode[] apiErrorCodes = {
 			ApiErrorCode.SERVER_ERROR,
 			ApiErrorCode.FILE_FILTER_ERROR,
@@ -119,7 +123,7 @@ public class FilesErrors implements Serializable {
 			ApiErrorCode.FILE_ENCRYPTION_FAILED
 		};
 		
-		// HTTP status codes corresponding to each problem type.
+		// HTTP status codes corresponding to each regular problem type.
 		public static int[] httpStatusCodes = {
 			500, // internal server error
 			403, // forbidden
@@ -154,13 +158,6 @@ public class FilesErrors implements Serializable {
 			this.exception = exception;
 		}
 		
-		public Problem(Exception exception) {
-			this.repositoryName = null;
-			this.fileName = null;
-			this.type = -1;
-			this.exception = exception;
-		}
-		
 		public Exception getException() {
 			return exception; // may be null
 		}
@@ -174,7 +171,10 @@ public class FilesErrors implements Serializable {
 		}
 		
 		public String getTypeCode() {
-			return typeCodes[type];
+			if(type == DELEGATED)
+				return "";
+			else 
+				return typeCodes[type];
 		}
 		
 		public String getRepositoryName() {
@@ -187,10 +187,12 @@ public class FilesErrors implements Serializable {
 				sb.append(getException().getLocalizedMessage());
 			} else {
 				String typeCodeError = NLT.get(getTypeCode()).trim();
-				sb.append(typeCodeError);
-				if (typeCodeError.lastIndexOf(":") == -1 || 
-						typeCodeError.lastIndexOf(":") < typeCodeError.length() - 1) sb.append(":");
-				sb.append(" ");
+				if(typeCodeError.length() > 0) {
+					sb.append(typeCodeError);
+					if (typeCodeError.lastIndexOf(":") == -1 || 
+							typeCodeError.lastIndexOf(":") < typeCodeError.length() - 1) sb.append(":");
+					sb.append(" ");
+				}
 				sb.append(getFileName());
 				sb.append(" ");
 				if (getRepositoryName() != null && !getRepositoryName().equals("")) {
@@ -211,7 +213,15 @@ public class FilesErrors implements Serializable {
 		 */
 		@Override
 		public int getHttpStatusCode() {
-			return httpStatusCodes[type];
+			if(type == DELEGATED) {
+				if(exception != null && (exception instanceof HttpStatusCodeSupport))
+					return ((HttpStatusCodeSupport)exception).getHttpStatusCode();
+				else
+					return 500;
+			}
+			else { 
+				return httpStatusCodes[type];
+			}
 		}
 
 		/* (non-Javadoc)
@@ -219,7 +229,15 @@ public class FilesErrors implements Serializable {
 		 */
 		@Override
 		public ApiErrorCode getApiErrorCode() {
-			return apiErrorCodes[type];
+			if(type == DELEGATED) {
+				if(exception != null && (exception instanceof ApiErrorCodeSupport))
+					return ((ApiErrorCodeSupport)exception).getApiErrorCode();
+				else
+					return ApiErrorCode.SERVER_ERROR;
+			}
+			else {
+				return apiErrorCodes[type];
+			}
 		}
 	}
 
