@@ -39,6 +39,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 
 /**
@@ -74,4 +75,11 @@ public class NoFolderEntryByTheIdException extends NoObjectByTheIdException {
     public NoFolderEntryByTheIdException(String entryKey, Throwable cause) {
         super(NoDocshareEntryByTheIdException_ErrorCode, entryKey, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ENTRY_NOT_FOUND;
+	}
 }

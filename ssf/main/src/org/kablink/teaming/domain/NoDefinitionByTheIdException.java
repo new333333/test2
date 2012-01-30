@@ -34,6 +34,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Janet McCann
@@ -54,4 +55,11 @@ public class NoDefinitionByTheIdException extends NoObjectByTheIdException {
 	    public NoDefinitionByTheIdException(String defId, Throwable cause) {
 	        super(NoDefinitionByTheIdException_ErrorCode, defId, cause);
 	    }
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+		 */
+		@Override
+		public ApiErrorCode getApiErrorCode() {
+			return ApiErrorCode.DEFINITION_NOT_FOUND;
+		}
 }

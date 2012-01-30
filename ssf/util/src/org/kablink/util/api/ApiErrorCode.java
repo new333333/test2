@@ -50,17 +50,18 @@ public enum ApiErrorCode {
 	ACCESS_TOKEN_INVALID, // SOAP API access token invalid
 	UNAUTHENTICATED_ACCESS, // Unauthenticated access
 	
+	// Binder errors
+	BINDER_NOT_FOUND, // No binder found with this name or id
+	
 	// Definition errors
 	INVALID_DEFINITION, // Invalid definition
 	DEFINITION_IN_USE, // Can not delete definition because it is in use
 	DEFINITION_EXISTS, // A definition already exists with this name
+	DEFINITION_NOT_FOUND, // No definition found with this name or id
 
 	// Document conversion error
 	DOC_CONVERSION_ERROR, // Error during document conversion
 	
-	// Entry errors
-	ENTRY_RESERVED, // Entry reserved by another user
-
 	// File errors
 	FILE_ONLY_VERSION, // Can not delete version of file because it is the only remaining version of the file
 	FILE_LOCKED, // File is locked by another user
@@ -77,9 +78,14 @@ public enum ApiErrorCode {
 	FILE_VERSION_NOT_FOUND, // No file version found with this id
 
 	// Folder errors
+	FOLDER_NOT_FOUND, // No folder found with this name or id
 	INVALID_FOLDER_HIERARCHY, // The hierarchy of the folder is invalid
 	
-	// General errors
+	// Folder entry errors
+	ENTRY_RESERVED, // Entry reserved by another user
+	ENTRY_NOT_FOUND, // No entry found with this name or id
+
+	// General client errors
 	MISSING_MULTIPART_FORM_DATA, // Missing multipart form data
 	BAD_MULTIPART_FORM_DATA, // Bad multipart form data
 	UNSUPPORTED_MEDIA_TYPE, // Unsupported media type
@@ -88,14 +94,23 @@ public enum ApiErrorCode {
 	ILLEGAL_CHARACTER, // Illegal character in the identifier
 	BAD_INPUT, // Bad input
 	TITLE_EXISTS, // The title already exists
-	NOT_FOUND, // Not found by this name or id
 	NOT_SUPPORTED, // Not supported
+	
+	// General server errors
 	SERVER_CONFIG_ERROR, // Server configuration error
 	OPTIMISTIC_LOCKING_FAILURE, // Hibernate optimistic locking failure
 	IO_ERROR, // I/O error
 	REMOTE_APP_ERROR, // Error executing remote application
-	GENERAL_ERROR, // General error
-
+	LIBRARY_ENTRY_NOT_FOUND, // No library entry object found with this name or id
+	BINDER_QUOTA_NOT_FOUND, // No binder quota object found with this name or id
+	INDEX_NODE_NOT_FOUND, // No index node object found with this name or id
+	DASHBOARD_NOT_FOUND, // No dashboard object found with this name or id
+	POSTING_NOT_FOUND, // No posting object found with this name or id
+	ROLE_NOT_FOUND, // No role object found with this name or id
+	ROLE_CONDITION_NOT_FOUND, // No role condition object found with this name or id
+	TAG_NOT_FOUND, // No tag object found with this name or id
+	SERVER_ERROR, // Server error
+	
 	// Lucene errors
 	LUCENE_ERROR, // Error with indexing, searching or index management
 	
@@ -107,12 +122,16 @@ public enum ApiErrorCode {
 	MIRRORED_ERROR, // Error with mirrored folder/file
 
 	// Principal (user/group/application/application group) errors
+	PRINCIPAL_NOT_FOUND, // No principal found with this name or id
 	USER_EXISTS, // User already exists with this name
+	USER_NOT_FOUND, // No user found with this name or id
 	NOT_USER, // The entity does not represent a user
 	USER_NAME_MISSING, // User name is missing
 	GROUP_EXISTS, // Group already exists with this name
+	GROUP_NOT_FOUND, // No group found with this name or id
 	NOT_GROUP, // The entity does not represent a group
 	APPLICATION_EXISTS, // Application already exists with this name
+	APPLICATION_NOT_FOUND, // No application found with this name or id
 	APPLICATION_GROUP_EXISTS, // Application group already exists with this name
 
 	// Quota errors
@@ -132,7 +151,11 @@ public enum ApiErrorCode {
 	// Workflow errors
 	WORKFLOW_ERROR, // Error during workflow operation
 	
+	// Workspace errors
+	WORKSPACE_NOT_FOUND, // No workspace found with this name or id
+	
 	// Zone errors
+	ZONE_NOT_FOUND, // No zone found with this name or id
 	ZONE_MISMATCH, // Found zone does not match expected zone
 	ZONE_NAME_MISSING, // Zone name is missing
 	ZONE_VIRTUAL_HOST_MISSING, // Zone virtual host is missing

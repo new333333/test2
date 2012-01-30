@@ -125,6 +125,6 @@ public class NoStackTraceWrapperRuntimeException extends VibeRuntimeException {
 		if(wrappedException instanceof VibeRuntimeException)
 			return ((VibeRuntimeException) wrappedException).getApiErrorCode();
 		else
-			return ApiErrorCode.GENERAL_ERROR;
+			return ApiErrorCode.SERVER_ERROR;
 	}
 }

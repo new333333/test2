@@ -118,7 +118,7 @@ public class CloseWrapperException extends VibeRuntimeException {
 			return ((VibeRuntimeException) wrappedExc).getApiErrorCode();
 		}
 		else {
-			return ApiErrorCode.GENERAL_ERROR;
+			return ApiErrorCode.SERVER_ERROR;
 		}
 	}
 }
