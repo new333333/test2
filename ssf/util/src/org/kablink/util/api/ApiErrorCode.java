@@ -38,7 +38,7 @@ package org.kablink.util.api;
  *
  */
 public enum ApiErrorCode {
-
+	
 	// Authentication errors
 	USERNAME_NOT_FOUND, // Authentication service cannot locate a user by this username.
 	USERACCOUNT_NOT_ACTIVE, // This account has been disabled or deleted.
@@ -92,27 +92,20 @@ public enum ApiErrorCode {
 	INVALID_ENTITY_TYPE, // Entity type is unknown or not supported by this method
 	INVALID_HTML, // Input HTML is invalid
 	ILLEGAL_CHARACTER, // Illegal character in the identifier
-	BAD_INPUT, // Bad input
 	TITLE_EXISTS, // The title already exists
-	NOT_SUPPORTED, // Not supported
+	BAD_INPUT, // Bad input (catch-all category)
+	NOT_SUPPORTED, // Not supported (catch-all category)
 	
 	// General server errors
 	SERVER_CONFIG_ERROR, // Server configuration error
 	OPTIMISTIC_LOCKING_FAILURE, // Hibernate optimistic locking failure
 	IO_ERROR, // I/O error
-	REMOTE_APP_ERROR, // Error executing remote application
-	LIBRARY_ENTRY_NOT_FOUND, // No library entry object found with this name or id
-	BINDER_QUOTA_NOT_FOUND, // No binder quota object found with this name or id
-	INDEX_NODE_NOT_FOUND, // No index node object found with this name or id
-	DASHBOARD_NOT_FOUND, // No dashboard object found with this name or id
-	POSTING_NOT_FOUND, // No posting object found with this name or id
-	ROLE_NOT_FOUND, // No role object found with this name or id
-	ROLE_CONDITION_NOT_FOUND, // No role condition object found with this name or id
-	TAG_NOT_FOUND, // No tag object found with this name or id
-	SERVER_ERROR, // Server error
+	SERVER_ERROR, // Server error (catch-all category)
 	
-	// Lucene errors
-	LUCENE_ERROR, // Error with indexing, searching or index management
+	// Indexing/search errors
+	LUCENE_ERROR, // Error during search or indexing of Lucene index
+	INDEX_MGT_ERROR, // Error during index management operation
+	INDEX_NODE_NOT_FOUND, // No index node object found with this name or id
 	
 	// Mirrored folder/file errors
 	MIRRORED_FILE_IN_REGULAR_FOLDER, // Cannot write mirrored file in non-mirrored folder
@@ -121,6 +114,12 @@ public enum ApiErrorCode {
 	MIRRORED_READONLY_DRIVER, // Cannot create/update/delete mirrored file through read-only driver
 	MIRRORED_ERROR, // Error with mirrored folder/file
 
+	// Miscellaneous errors
+	LIBRARY_ENTRY_NOT_FOUND, // No library entry object found with this name or id
+	BINDER_QUOTA_NOT_FOUND, // No binder quota object found with this name or id
+	POSTING_NOT_FOUND, // No posting object found with this name or id
+	ACCESSORY_NOT_FOUND, // No dashboard object found with this name or id
+	
 	// Principal (user/group/application/application group) errors
 	PRINCIPAL_NOT_FOUND, // No principal found with this name or id
 	USER_EXISTS, // User already exists with this name
@@ -139,11 +138,19 @@ public enum ApiErrorCode {
 	BINDER_QUOTA_EXCEEDED, // Binder quota exceeded
 	FILE_SIZE_LIMIT_EXCEEDED, // File size limit exceeded
 	
+	// Remote application errors
+	REMOTE_APP_ERROR, // Error executing remote application
+
 	// Repository service errors
 	REPOSITORY_ERROR, // Error during repository operation
 	
 	// Role management errors
 	ROLE_EXISTS, // Role with this name already exists
+	ROLE_NOT_FOUND, // No role object found with this name or id
+	ROLE_CONDITION_NOT_FOUND, // No role condition object found with this name or id
+	
+	// Tag errors
+	TAG_NOT_FOUND, // No tag object found with this name or id
 	
 	// WebDAV errors
 	WEBDAV_RESOURCE_EXISTS, // A resource with the same name already exists
