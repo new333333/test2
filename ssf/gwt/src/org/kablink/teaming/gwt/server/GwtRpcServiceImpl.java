@@ -466,6 +466,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_BINDER_OWNER_AVATAR_INFO:
+		{
+			GetBinderOwnerAvatarInfoCmd gboaiCmd = ((GetBinderOwnerAvatarInfoCmd) cmd);
+			AvatarInfoRpcResponseData responseData = GwtViewHelper.getBinderOwnerAvatarInfo( this, getRequest( ri ), gboaiCmd.getBinderId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_BINDER_PERMALINK:
 		{
 			GetBinderPermalinkCmd gbpCmd;

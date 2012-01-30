@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -91,8 +91,10 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Criteria;
 
@@ -718,6 +720,39 @@ public class GwtProfileHelper {
 	    
 	    //continue to the next value
 	    return;
+	}
+	
+	/**
+	 * Given an avatar URL from a user's profile, patches it so
+	 * that it renders from a thumbnail instead of the full image.
+	 * 
+	 * @param url
+	 * 
+	 * @return
+	 */
+	private final static String[] FIXUP_AVATAR_URL_CHANGE_THESE = new String[] {
+		// The follow define URL parts used to 'fixup' an avatar URL so
+		// that we use a scaled image instead of a full image.
+		"readFile",
+		"readScaled",
+	};
+	private final static String FIXUP_AVATAR_URL_TO_THIS = "readThumbnail";	// Other option:  "readScaledFile"
+	public static String fixupAvatarUrl(String url) {
+		// Do we have a URL to fixup?
+		if (MiscUtil.hasString(url)) {
+			// Yes!  Change it so that it renders from a thumbnail
+			// instead of the full image.							
+			for (int i = 0; i < FIXUP_AVATAR_URL_CHANGE_THESE.length; i += 1) {
+				if (url.contains(FIXUP_AVATAR_URL_CHANGE_THESE[i])) {
+					url = StringUtil.replace(url, FIXUP_AVATAR_URL_CHANGE_THESE[i], FIXUP_AVATAR_URL_TO_THIS);
+					break;
+				}
+			}
+		}
+		
+		// If we get here, URL refers to the fixed up avatar URL.
+		// Return it.
+		return url;
 	}
 	
 	/**

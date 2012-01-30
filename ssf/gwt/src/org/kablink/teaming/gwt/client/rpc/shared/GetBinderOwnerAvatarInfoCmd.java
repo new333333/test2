@@ -31,53 +31,60 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
-
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.resources.client.ImageResource.RepeatStyle;
-
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
- * Images used by the GWT Teaming 'Data Table' implementation.
+ * This class holds all of the information necessary to execute the
+ * 'Get Binder Owner Avatar URL' command.
  * 
  * @author drfoster@novell.com
  */
-public interface GwtTeamingDataTableImageBundle extends ClientBundle {
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
-	public ImageResource collapseDescription();
+public class GetBinderOwnerAvatarInfoCmd extends VibeRpcCmd {
+	private Long	m_binderId;	//
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/expand_16.png")
-	public ImageResource expandDescription();
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor
+	 * method.
+	 */
+	public GetBinderOwnerAvatarInfoCmd() {
+		super();
+	}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gold.png")
-	public ImageResource goldStar();
+	/**
+	 * Constructor method.
+	 * 
+	 * @param binderId
+	 */
+	public GetBinderOwnerAvatarInfoCmd(Long binderId) {
+		this();
+		setBinderId(binderId);
+	}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_gray.png")
-	public ImageResource grayPin();
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Long getBinderId() {return m_binderId;}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gray.png")
-	public ImageResource grayStar();
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setBinderId(Long binderId) {m_binderId = binderId;}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
-	public ImageResource help();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_orange.png")
-	public ImageResource orangePin();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
-	public ImageResource unread();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/UserPhoto.png")
-	public ImageResource userPhoto();
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_BINDER_OWNER_AVATAR_INFO.ordinal();
+	}
 }

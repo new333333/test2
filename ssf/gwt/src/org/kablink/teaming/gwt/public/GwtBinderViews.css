@@ -22,6 +22,11 @@
 		.vibe-breadCrumbPanel {}
 	/* ...End:  Bread crumb panel styles. */
 	
+	/* ...Start:  Binder owner avatar panel styles. */
+		.vibe-binderOwnerAvatarImage {width: 70px;}
+		.vibe-binderOwnerAvatarPanel {}
+	/* ...End:  Binder owner avatar panel styles. */
+
 	/* ...Start:  Description panel styles. */
 		.vibe-descriptionContent        {}
 		.vibe-descriptionContentClipped {height: 225px; overflow: auto !important;}
