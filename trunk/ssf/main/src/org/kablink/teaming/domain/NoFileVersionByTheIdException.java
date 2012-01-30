@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.domain;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NoFileVersionByTheIdException extends NoObjectByTheIdException {
 

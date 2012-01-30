@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.domain;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NoFileByTheNameException extends NoObjectByTheNameException {
     private static final String NoFileByTheNameException_ErrorCode = "errorcode.no.file.by.the.name";

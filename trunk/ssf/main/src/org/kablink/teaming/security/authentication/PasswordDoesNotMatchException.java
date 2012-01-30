@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.security.authentication;
 
-import org.kablink.teaming.ApiErrorCode;
+import org.kablink.util.api.ApiErrorCode;
 
 public class PasswordDoesNotMatchException extends AuthenticationException {
     public PasswordDoesNotMatchException() {

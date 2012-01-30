@@ -36,8 +36,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.util.api.ApiErrorCode;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 
 @Provider

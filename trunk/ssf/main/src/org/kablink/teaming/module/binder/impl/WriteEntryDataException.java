@@ -35,9 +35,9 @@ package org.kablink.teaming.module.binder.impl;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import org.kablink.teaming.ApiErrorCode;
-import org.kablink.teaming.exception.ApiErrorCodeSupport;
 import org.kablink.util.HttpStatusCodeSupport;
+import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.api.ApiErrorCodeSupport;
 
 public class WriteEntryDataException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport {
 	

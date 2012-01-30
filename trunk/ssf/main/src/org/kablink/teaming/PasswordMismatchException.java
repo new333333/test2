@@ -36,6 +36,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class PasswordMismatchException extends UncheckedCodedException {
     public PasswordMismatchException(String errorCode) {

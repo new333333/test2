@@ -34,9 +34,9 @@ package org.kablink.teaming.exception;
 
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.ApiErrorCode;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim

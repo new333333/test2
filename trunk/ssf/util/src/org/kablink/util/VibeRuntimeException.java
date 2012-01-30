@@ -32,7 +32,7 @@
  */
 package org.kablink.util;
 
-import org.kablink.teaming.exception.ApiErrorCodeSupport;
+import org.kablink.util.api.ApiErrorCodeSupport;
 
 
 /**
