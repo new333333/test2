@@ -32,32 +32,14 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //table start %>
+<% //table row top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%
-	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
-	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
-	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
-	Map ss_mashupTableItemCount2 = (Map) request.getAttribute("ss_mashupTableItemCount2");
-	ss_mashupTableItemCount.put(ss_mashupTableNumber, "table");  
-	ss_mashupTableDepth = ss_mashupTableDepth + 1;
-	ss_mashupTableNumber = ss_mashupTableNumber + 1;
-	ss_mashupTableItemCount.put(ss_mashupTableNumber, "");  
-	ss_mashupTableItemCount2.put(ss_mashupTableDepth, ss_mashupTableNumber);  
-	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
-	request.setAttribute("ss_mashupTableItemCount2", ss_mashupTableItemCount2);
-	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
-	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
-
-	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
-%>
-<% if (ss_mashupListDepth > 0) { %>
-<li>
-<% } %>
-
+<c:if test="${ss_mashupColStarted == 'true'}">
 <c:set var="ss_mashupColStarted" value="false" scope="request"/>
-<table class="ss_mashup"
-  <c:if test="${!empty mashup_attributes['showBorder'] || ssConfigJspStyle == 'form'}">border="1"</c:if>
-  width="100%">
-<c:set var="ss_mashupRowStarted" value="false" scope="request"/>
-<c:set var="ss_mashupColStarted" value="false" scope="request"/>
+</td>
+</c:if>
+<c:if test="${ss_mashupRowStarted == 'true'}">
+</tr>
+</c:if>
+<tr>
+<c:set var="ss_mashupRowStarted" value="true" scope="request"/>
