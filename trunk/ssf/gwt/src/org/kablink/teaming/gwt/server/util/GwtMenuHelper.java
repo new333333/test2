@@ -513,13 +513,7 @@ public class GwtMenuHelper {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			BinderModule bm = bs.getBinderModule();
-			if ((viewType.equals(       Definition.VIEW_STYLE_DISCUSSION) ||
-						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
-						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
-						viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
-						viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
-						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
-					(!(folder.isMirrored()))) {
+			if (folderSupportsDeleteAndPurge(folder, viewType)) {
 				// ...and for which the user has rights to do it...
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
 					// ...add a Delete item.
@@ -582,13 +576,7 @@ public class GwtMenuHelper {
 		// ...for the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			BinderModule bm = bs.getBinderModule();
-			if ((viewType.equals(       Definition.VIEW_STYLE_DISCUSSION) ||
-						viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
-						viewType.equals(Definition.VIEW_STYLE_FILE)       ||
-						viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
-						viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
-						viewType.equals(Definition.VIEW_STYLE_TASK))      &&
-					(!(folder.isMirrored()))) {
+			if (folderSupportsDeleteAndPurge(folder, viewType)) {
 				// ...and for which the user has rights to do it...
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
 					// ...add the Purge item...
@@ -1572,6 +1560,25 @@ public class GwtMenuHelper {
 				dumpToolbarItem(tbi, dumpStart);
 			}
 		}
+	}
+
+	/*
+	 * Returns true if a folder (including its view type) supports
+	 * delete and purge operations and false otherwise.
+	 */
+	private static boolean folderSupportsDeleteAndPurge(Folder folder, String viewType) {
+		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
+		if (reply) {
+			reply =
+				((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
+				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
+				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
+				  viewType.equals(Definition.VIEW_STYLE_MILESTONE)  ||
+				  viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
+				  viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
+				  viewType.equals(Definition.VIEW_STYLE_TASK))      && (!(folder.isMirrored())));
+		}
+		return reply;
 	}
 	
 	/*

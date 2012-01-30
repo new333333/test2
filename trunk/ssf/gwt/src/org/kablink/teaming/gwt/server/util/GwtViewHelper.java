@@ -595,9 +595,15 @@ public class GwtViewHelper {
 			else if (colName.equals("location"))    {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
 			else if (colName.equals("number"))      {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
 			else if (colName.equals("rating"))      {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
+			else if (colName.equals("responsible")) {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
 			else if (colName.equals("size"))        {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
 			else if (colName.equals("state"))       {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
+			else if (colName.equals("status"))      {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
+			else if (colName.equals("tasks"))       {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
 			else if (colName.equals("title"))       {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
+			
+			// "responsible", "tasks", "status"
+
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -1133,9 +1139,10 @@ public class GwtViewHelper {
 				// No, we aren't showing the trash on this folder!  Are
 				// there user defined columns on this folder?
 				switch (folderType) {
-				case MINIBLOG:  baseNameKey = "miniblog.column."; break;
-				case SURVEY:    baseNameKey = "survey.";          break;
-				default:        baseNameKey = "folder.column.";   break;
+				case MILESTONE:  baseNameKey = "milestone.";       break;
+				case MINIBLOG:   baseNameKey = "miniblog.column."; break;
+				case SURVEY:     baseNameKey = "survey.";          break;
+				default:         baseNameKey = "folder.column.";   break;
 				}
 				Folder folder    = ((Folder) bs.getBinderModule().getBinder(folderId));
 				columnNames      = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
@@ -1147,10 +1154,11 @@ public class GwtViewHelper {
 						// folder_column_defaults.jsp.
 						String[] defaultCols;
 						switch (folderType) {
-						case FILE:      defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"}; break;
-						case MINIBLOG:  defaultCols = new String[]{"title", "description"};                                                     break;
-						case SURVEY:    defaultCols = new String[]{"title", "author", "dueDate"};                                               break;
-						default:        defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"};         break;
+						case FILE:       defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"}; break;
+						case MILESTONE:  defaultCols = new String[]{"title", "responsible", "tasks", "status", "dueDate"};                       break;
+						case MINIBLOG:   defaultCols = new String[]{"title", "description"};                                                     break;
+						case SURVEY:     defaultCols = new String[]{"title", "author", "dueDate"};                                               break;
+						default:         defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"};         break;
 						}
 						columnNames = getColumnsLHMFromAS(defaultCols);
 					}
@@ -1442,8 +1450,14 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
 			// Factor in the user's sorting selection.
-			boolean isTrash  = (FolderType.TRASH  == folderType);
-			boolean isSurvey = (FolderType.SURVEY == folderType);
+			boolean isTrash     = false;
+			boolean isMilestone = false;
+			boolean isSurvey    = false;
+			switch (folderType) {
+			case MILESTONE:  isMilestone = true; break;
+			case SURVEY:     isSurvey    = true; break;
+			case TRASH:      isTrash     = true; break;
+			}
 			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderId, isTrash);
 			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
@@ -1527,7 +1541,7 @@ public class GwtViewHelper {
 								// Extract its String value.
 								String value = GwtServerHelper.getStringFromEntryMapValue(
 									emValue,
-									DateFormat.SHORT,
+									DateFormat.MEDIUM,
 									DateFormat.SHORT);
 								
 								// Are we working on a title field?
@@ -1592,13 +1606,21 @@ public class GwtViewHelper {
 										if (DateComparer.isOverdue((Date) emValue)) {
 											// Yes!  Mark that column
 											// as being an overdue
-											// date, and if this is the
-											// due date of a survey...
-											fr.setColumnOverdueDate(fc, Boolean.TRUE);
-											if (isSurvey && csk.equals(Constants.DUE_DATE_FIELD)) {
-												// ...show it as being
-												// ...closed.
-												value += (" " + NLT.get("survey.overdue"));
+											// date, and if this a
+											// due date...
+											if (csk.equals(Constants.DUE_DATE_FIELD)) {
+												// ...that's not...
+												// ...completed...
+												String status = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.STATUS_FIELD);
+												boolean completed = (MiscUtil.hasString(status) && status.equals("completed"));
+												if (!completed) {
+													// ...show it as
+													// ...being
+													// ...overdue.
+													fr.setColumnOverdueDate(fc, Boolean.TRUE);
+													if      (isSurvey)    value += (" " + NLT.get("survey.overdue"   ));
+													else if (isMilestone) value += (" " + NLT.get("milestone.overdue"));
+												}
 											}
 										}
 										fr.setColumnValue(fc, (null == (value) ? "" : value));

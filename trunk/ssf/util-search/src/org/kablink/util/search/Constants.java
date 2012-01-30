@@ -145,6 +145,9 @@ public class Constants {
 	public static final String DESC_FIELD = "_desc"; // Lucene stored field for description element
 	public static final String DESC_TEXT_FIELD = "description"; // Lucene indexed field for description element
 	public static final String DESC_FORMAT_FIELD = "_desc_format";
+	public static final String RESPONSIBLE_FIELD = "responsible"; // milestones
+	public static final String TASKS_FIELD = "tasks"; // milestones
+	public static final String STATUS_FIELD = "status"; // milestones
 	public static final String EVENT_FIELD = "_event";
 	public static final String EVENT_FIELD_START_DATE = "StartDate";
 	public static final String EVENT_FIELD_START_END = "start_end";
