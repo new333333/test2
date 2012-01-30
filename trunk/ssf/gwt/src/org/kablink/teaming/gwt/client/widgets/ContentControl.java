@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
 import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
+import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
 import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
@@ -65,6 +66,7 @@ import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
@@ -122,6 +124,7 @@ public class ContentControl extends Composite
 		ShowHomeWSEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowMicroBlogFolderEvent.Handler,
+		ShowProjectManagementWSEvent.Handler,
 		ShowSurveyFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
 		ShowTeamRootWSEvent.Handler,
@@ -156,6 +159,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_HOME_WORKSPACE,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_MICRO_BLOG_FOLDER,
+		TeamingEvents.SHOW_PROJECT_MANAGEMENT_WORKSPACE,
 		TeamingEvents.SHOW_SURVEY_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
 		TeamingEvents.SHOW_TEAM_ROOT_WORKSPACE,
@@ -782,8 +786,26 @@ public class ContentControl extends Composite
 							break;
 						}
 							
-						case PROFILE_ROOT:
 						case PROJECT_MANAGEMENT:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new project management workspace?" ) )
+									showNew = false;
+							}
+							
+							if ( showNew )
+							{
+								// Fire the event that will display the project management workspace.
+								GwtTeaming.fireEvent( new ShowProjectManagementWSEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
+						case PROFILE_ROOT:
 						case USER:
 							// These aren't handled!  Let things take 
 							// the default flow.
@@ -1205,6 +1227,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowMicroBlogFolder()
+	
+	/**
+	 * Handles ShowProjectManagementWSEvent's received by this class.
+	 * 
+	 * Implements the ShowProjectManagementWSEvent.Handler.onShowTeamWS() method.
+	 */
+	@Override
+	public void onShowProjectManagementWS( ShowProjectManagementWSEvent event )
+	{
+		ViewClient vClient;
+		
+		// Display a Project Management Workspace for the given binder id.
+		vClient = new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase projectManagementWS )
+			{
+				projectManagementWS.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( projectManagementWS );
+			}
+		};
+		
+		// Create a ProjectManagementWSView widget for the selected binder.
+		ProjectManagementWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+	}
 	
 	/**
 	 * Handles ShowSurveyFolderEvent's received by this class.
