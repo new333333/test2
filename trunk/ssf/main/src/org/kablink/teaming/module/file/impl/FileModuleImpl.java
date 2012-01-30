@@ -1771,7 +1771,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		}
     		}
     		catch(DataQuotaException e) {
-    			errors.addProblem(new FilesErrors.Problem(null, null, -1, e));
+    			errors.addProblem(new FilesErrors.Problem(repositoryName, relativeFilePath, -1, e));
     			return false;
     		}
     		catch(Exception e) {
