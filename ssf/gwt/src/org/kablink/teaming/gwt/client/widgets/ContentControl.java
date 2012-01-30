@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
 import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
+import org.kablink.teaming.gwt.client.binderviews.MilestoneFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
 import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
@@ -66,6 +67,7 @@ import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowMilestoneFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
@@ -124,6 +126,7 @@ public class ContentControl extends Composite
 		ShowHomeWSEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowMicroBlogFolderEvent.Handler,
+		ShowMilestoneFolderEvent.Handler,
 		ShowProjectManagementWSEvent.Handler,
 		ShowSurveyFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
@@ -131,6 +134,7 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
+	private final static boolean	SHOW_NEW_MILESTONE_FOLDER	= false;	// 20120130 (DRF):  Until I get this working.
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -159,6 +163,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_HOME_WORKSPACE,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_MICRO_BLOG_FOLDER,
+		TeamingEvents.SHOW_MILESTONE_FOLDER,
 		TeamingEvents.SHOW_PROJECT_MANAGEMENT_WORKSPACE,
 		TeamingEvents.SHOW_SURVEY_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
@@ -601,6 +606,15 @@ public class ContentControl extends Composite
 							break;
 							
 							
+						case MILESTONE:
+							if ( SHOW_NEW_MILESTONE_FOLDER )
+							{
+								GwtTeaming.fireEvent( new ShowMilestoneFolderEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+	
+							
 						case MINIBLOG:
 							GwtTeaming.fireEvent( new ShowMicroBlogFolderEvent( bi, viewReady ) );
 							m_contentInGWT = true;
@@ -628,7 +642,6 @@ public class ContentControl extends Composite
 						case BLOG:
 						case CALENDAR:
 						case GUESTBOOK:
-						case MILESTONE:
 						case MIRROREDFILE:
 						case PHOTOALBUM:
 						case WIKI:
@@ -1227,6 +1240,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowMicroBlogFolder()
+	
+	/**
+	 * Handles ShowMilestoneFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowMilestoneFolderEvent.Handler.onShowMilestoneFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowMilestoneFolder( final ShowMilestoneFolderEvent event )
+	{
+		// Create a MilestoneFolderView widget for the selected binder.
+		MilestoneFolderView.createAsync(
+				event.getFolderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase mbfView )
+			{
+				mbfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( mbfView );
+			}// end onSuccess()
+		});
+	}// end onShowMilestoneFolder()
 	
 	/**
 	 * Handles ShowProjectManagementWSEvent's received by this class.

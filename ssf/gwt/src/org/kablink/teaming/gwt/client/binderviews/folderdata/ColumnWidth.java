@@ -55,8 +55,11 @@ public class ColumnWidth {
 	public final static String COLUMN_LOCATION		= "location";
 	public final static String COLUMN_NUMBER		= "number";
 	public final static String COLUMN_RATING		= "rating";
+	public final static String COLUMN_RESPONSIBLE	= "responsible";
 	public final static String COLUMN_SIZE			= "size";
 	public final static String COLUMN_STATE			= "state";
+	public final static String COLUMN_STATUS		= "status";
+	public final static String COLUMN_TASKS			= "tasks";
 	public final static String COLUMN_TITLE			= "title";
 	
 	// The following are the various internal names used for columns.

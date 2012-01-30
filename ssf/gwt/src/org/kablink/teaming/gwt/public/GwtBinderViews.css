@@ -138,6 +138,12 @@
 		.vibe-microBlogFolderFlowPanel {}
 	/* ...End:  Micro-blog folder view styles. */
 	
+	/* ...Start:  Milestone folder view styles. */
+		.vibe-milestoneFolderDataTable {}
+		.vibe-milestoneFolderFlowPanel {}
+		.vibe-milestoneFolderOverdue   {font-style: italic; color: red;}
+	/* ...End:  milestone folder view styles. */
+
 	/* ...Start:  Survey folder view styles. */
 		.vibe-surveyFolderDataTable {}
 		.vibe-surveyFolderFlowPanel {}
