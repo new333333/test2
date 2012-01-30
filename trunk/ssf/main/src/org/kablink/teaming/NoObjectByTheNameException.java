@@ -39,7 +39,7 @@ import org.kablink.util.api.ApiErrorCode;
  * @author Jong Kim
  *
  */
-public class NoObjectByTheNameException extends UncheckedCodedException {
+public abstract class NoObjectByTheNameException extends UncheckedCodedException {
     public NoObjectByTheNameException(String errorCode, String objName) {
         super(errorCode, new Object[] {objName});
     }
@@ -56,11 +56,4 @@ public class NoObjectByTheNameException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 404; // Not Found
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.NOT_FOUND;
-	}
 }

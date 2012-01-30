@@ -95,8 +95,14 @@ import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
+import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
+import org.kablink.teaming.domain.NoDashboardByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.domain.NoLibraryEntryByTheIdException;
+import org.kablink.teaming.domain.NoPostingByTheIdException;
+import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
+import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.SharedEntity;
@@ -1154,7 +1160,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(),LibraryEntry.FILE, name));
-	    	if (le == null) throw new NoObjectByTheIdException("errorcode.no.library.entry.by.the.id", new Object[]{binder.getId(), name});
+	    	if (le == null) throw new NoLibraryEntryByTheIdException(binder.getId(), name);
 	    	return le.getEntityId();
     	}
     	finally {
@@ -1720,9 +1726,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		long begin = System.nanoTime();
 		try {
 			PostingDef post = (PostingDef)load(PostingDef.class, postingId);
-	        if (post == null) {throw new NoObjectByTheIdException("errorcode.no.posting.by.the.id", postingId);}
+	        if (post == null) {throw new NoPostingByTheIdException(postingId);}
 	        //make sure from correct zone
-	        if (!post.getZoneId().equals(zoneId)) {throw new NoObjectByTheIdException("errorcode.no.posting.by.the.id", postingId);}
+	        if (!post.getZoneId().equals(zoneId)) {throw new NoPostingByTheIdException(postingId);}
 	  		return post;
     	}
     	finally {
@@ -1920,7 +1926,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		try {
 	        Tag t =(Tag)getHibernateTemplate().get(Tag.class, tagId);
 	        if (t != null && t.getZoneId().equals(zoneId)) return t;
-	        throw new NoObjectByTheIdException("errorcode.no.tag.by.the.id", tagId);
+	        throw new NoTagByTheIdException(tagId);
     	}
     	finally {
     		end(begin, "loadTag(String,Long)");
@@ -2219,7 +2225,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				} else throw se;
 			}
 			if (d != null && d.getZoneId().equals(zoneId)) return d;
-			throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
+			throw new NoDashboardByTheIdException(id);
     	}
     	finally {
     		end(begin, "loadDashboard(String,Long)");
@@ -2528,7 +2534,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		try {
 			ZoneConfig zoneConfig = (ZoneConfig)load(ZoneConfig.class, zoneId);
 			if (zoneConfig != null) return zoneConfig;
-			throw new NoObjectByTheIdException("errorcode.no.zone.by.the.id", zoneId);
+			throw new NoZoneByTheIdException(zoneId);
     	}
     	finally {
     		end(begin, "loadZoneConfig(Long)");
@@ -2657,10 +2663,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		try {
 			BinderQuota bq = (BinderQuota) load(BinderQuota.class, binderId);
 			if(bq == null)
-				throw new NoObjectByTheIdException("errorcode.no.binderquota.by.the.id", binderId);
+				throw new NoBinderQuotaByTheIdException(binderId);
 	        //make sure from correct zone
 	        if (!bq.getZoneId().equals(zoneId)) 
-	        	throw new NoObjectByTheIdException("errorcode.no.binderquota.by.the.id", binderId);
+	        	throw new NoBinderQuotaByTheIdException(binderId);
 	  		return bq;
     	}
     	finally {

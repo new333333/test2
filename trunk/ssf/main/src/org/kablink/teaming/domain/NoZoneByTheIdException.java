@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,28 +30,30 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
- * @author Janet McCann
+ * @author jong
  *
  */
-public class NoConfigurationByTheIdException extends NoObjectByTheIdException {
-	   private static final String NoConfigurationByTheIdException_ErrorCode = "errorcode.no.configuration.by.the.id";
-	    
-	    public NoConfigurationByTheIdException(String defId) {
-	        super(NoConfigurationByTheIdException_ErrorCode, defId);
-	    }
-	    public NoConfigurationByTheIdException(String defId, String message) {
-	        super(NoConfigurationByTheIdException_ErrorCode, defId, message);
-	    }
-	    public NoConfigurationByTheIdException(String defId, String message, Throwable cause) {
-	        super(NoConfigurationByTheIdException_ErrorCode,defId, message, cause);
-	    }
-	    public NoConfigurationByTheIdException(String defId, Throwable cause) {
-	        super(NoConfigurationByTheIdException_ErrorCode, defId, cause);
-	    }
+public class NoZoneByTheIdException extends NoObjectByTheIdException {
+	private static final long serialVersionUID = 1L;
+	
+	private static final String errorCode = "errorcode.no.zone.by.the.id";
+
+	public NoZoneByTheIdException(Long zoneId) {
+		super(errorCode, zoneId);
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ZONE_NOT_FOUND;
+	}
 }

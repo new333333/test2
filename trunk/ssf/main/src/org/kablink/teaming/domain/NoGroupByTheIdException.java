@@ -34,6 +34,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Janet McCann
@@ -54,4 +55,11 @@ public class NoGroupByTheIdException extends NoObjectByTheIdException {
 	    public NoGroupByTheIdException(Long groupId, Throwable cause) {
 	        super(NoGroupByTheIdException_ErrorCode, groupId, cause);
 	    }
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+		 */
+		@Override
+		public ApiErrorCode getApiErrorCode() {
+			return ApiErrorCode.GROUP_NOT_FOUND;
+		}
 }

@@ -64,6 +64,6 @@ public class InternalException extends VibeRuntimeException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.GENERAL_ERROR;
+		return ApiErrorCode.SERVER_ERROR;
 	}
 }

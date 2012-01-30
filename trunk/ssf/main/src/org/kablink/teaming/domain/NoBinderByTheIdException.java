@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 
 /**
@@ -54,4 +55,11 @@ public class NoBinderByTheIdException extends NoObjectByTheIdException {
     public NoBinderByTheIdException(Long folderId, Throwable cause) {
         super(NoBinderByTheIdException_ErrorCode, folderId, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.BINDER_NOT_FOUND;
+	}
 }

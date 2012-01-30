@@ -56,7 +56,7 @@ public class TypeMismatchException extends VibeRuntimeException {
 	 */
 	@Override
 	public int getHttpStatusCode() {
-		return 500; // Internal Server Error
+		return 400; // Bad request
 	}
 
 	/* (non-Javadoc)

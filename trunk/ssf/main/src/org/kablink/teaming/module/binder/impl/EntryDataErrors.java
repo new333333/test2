@@ -85,7 +85,7 @@ public class EntryDataErrors implements Serializable {
 		
 		// API error codes corresponding to each problem type.
 		public static ApiErrorCode[] apiErrorCodes = {
-			ApiErrorCode.GENERAL_ERROR,
+			ApiErrorCode.SERVER_ERROR,
 			ApiErrorCode.INVALID_HTML
 		};
 		

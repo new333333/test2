@@ -105,7 +105,7 @@ public class FilesErrors implements Serializable {
 		
 		// API error codes corresponding to each problem type.
 		public static ApiErrorCode[] apiErrorCodes = {
-			ApiErrorCode.GENERAL_ERROR,
+			ApiErrorCode.SERVER_ERROR,
 			ApiErrorCode.FILE_FILTER_ERROR,
 			ApiErrorCode.FILE_WRITE_FAILED,
 			ApiErrorCode.FILE_DELETE_FAILED,

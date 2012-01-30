@@ -94,6 +94,6 @@ public class WriteFilesException extends Exception implements ApiErrorCodeSuppor
 		if(errors.getProblems().size() > 0)
 			return errors.getProblems().get(0).getApiErrorCode();
 		else
-			return ApiErrorCode.GENERAL_ERROR;
+			return ApiErrorCode.SERVER_ERROR;
 	}
 }

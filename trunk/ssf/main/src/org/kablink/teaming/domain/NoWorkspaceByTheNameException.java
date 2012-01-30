@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
@@ -53,4 +54,11 @@ public class NoWorkspaceByTheNameException extends NoObjectByTheNameException {
     public NoWorkspaceByTheNameException(String workspaceName, Throwable cause) {
         super(NoWorkspaceByTheNameException_ErrorCode, workspaceName, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.WORKSPACE_NOT_FOUND;
+	}
 }
