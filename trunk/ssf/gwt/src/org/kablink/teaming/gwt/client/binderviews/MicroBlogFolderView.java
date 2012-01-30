@@ -35,12 +35,14 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.dom.client.Style.Unit;
 
@@ -50,6 +52,10 @@ import com.google.gwt.dom.client.Style.Unit;
  * @author drfoster@novell.com
  */
 public class MicroBlogFolderView extends DataTableFolderViewBase {
+	// The following define the indexes into a VibeVerticalPanel of the
+	// additional panel that makes up a micro-blog view.
+	private final static int BINDER_OWNER_AVATAR_PANEL_INDEX	= ENTRY_MENU_PANEL_INDEX;	// Inserted before the entry menu.
+
 	/*
 	 * Class constructor.
 	 * 
@@ -75,8 +81,8 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_TITLE,       new ColumnWidth(10));
-		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION, new ColumnWidth(90));
+		columnWidths.put(ColumnWidth.COLUMN_TITLE,       new ColumnWidth(15));
+		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION, new ColumnWidth(85));
 	}
 
 	/**
@@ -102,8 +108,7 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 		// populate the view's contents and tell the base class
 		// that we're done with the construction.
 		getFlowPanel().addStyleName("vibe-microBlogFolderFlowPanel");
-		populateContent();
-		super.viewReady();
+		loadPart1Async();
 	}
 	
 	/**
@@ -154,6 +159,40 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 		}
 		
 		return reply;
+	}
+
+	/*
+	 * Asynchronously loads the BinderOwnerAvatarPanel.
+	 */
+	private void loadPart1Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the BinderOwnerAvatarPanel.
+	 */
+	private void loadPart1Now() {
+		BinderOwnerAvatarPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+				viewReady();
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, BINDER_OWNER_AVATAR_PANEL_INDEX);
+				viewReady();
+				populateContent();
+			}
+		});
 	}
 
 	/**

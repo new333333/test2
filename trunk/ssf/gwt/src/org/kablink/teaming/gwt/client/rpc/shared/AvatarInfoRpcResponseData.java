@@ -30,54 +30,56 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-package org.kablink.teaming.gwt.client;
-
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.resources.client.ImageResource.RepeatStyle;
-
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Images used by the GWT Teaming 'Data Table' implementation.
+ * This class holds the response data for any command that information
+ * about an avatar in response.
  * 
  * @author drfoster@novell.com
  */
-public interface GwtTeamingDataTableImageBundle extends ClientBundle {
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
-	public ImageResource collapseDescription();
+public class AvatarInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private String	m_title;	//
+	private String	m_url;		//
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/expand_16.png")
-	public ImageResource expandDescription();
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor
+	 * method.
+	 */
+	public AvatarInfoRpcResponseData() {
+		super();
+	}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gold.png")
-	public ImageResource goldStar();
+	/**
+	 * Constructor method.
+	 *
+	 * @param url
+	 * @param title
+	 */
+	public AvatarInfoRpcResponseData(String url, String title) {
+		this();
+		
+		setUrl(  url  );
+		setTitle(title);
+	}
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_gray.png")
-	public ImageResource grayPin();
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String getTitle() {return m_title;}
+	public String getUrl()   {return m_url;  }
 	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/star_gray.png")
-	public ImageResource grayStar();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
-	public ImageResource help();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_orange.png")
-	public ImageResource orangePin();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
-	public ImageResource unread();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/UserPhoto.png")
-	public ImageResource userPhoto();
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setTitle(String title) {m_title = title;}
+	public void setUrl(  String url)   {m_url   = url;  }
 }

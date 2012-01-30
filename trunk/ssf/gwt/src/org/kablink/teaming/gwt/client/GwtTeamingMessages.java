@@ -309,6 +309,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
+	String rpcFailure_GetBinderOwnerAvatarUrl();
 	String rpcFailure_GetClipboardTeamUsers();
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();
@@ -444,6 +445,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AddFilesDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
+	String codeSplitFailure_BinderOwnerAvatarPanel();
 	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_ChangeEntryTypesDlg();
 	String codeSplitFailure_ChildBindersWidget();

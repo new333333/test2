@@ -81,6 +81,9 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
+import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
+import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
@@ -129,6 +132,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
@@ -855,6 +859,54 @@ public class GwtViewHelper {
 	}
 
 	/**
+	 * Returns an AvatarInfoRpcResponseData object containing the
+	 * information about a binder owner's avatar.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static AvatarInfoRpcResponseData getBinderOwnerAvatarInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			AvatarInfoRpcResponseData reply = new AvatarInfoRpcResponseData();
+
+			// If the binder owner has any avatars defined..
+			ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, binderId);
+			@SuppressWarnings("unchecked")
+			List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
+			if((null != paValue) && (!(paValue.isEmpty()))) {
+				// ...use the URL from first one.
+				ProfileAttributeListElement paValueItem = paValue.get(0);
+				reply.setUrl(GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString()));
+			}
+
+			// Get the title of of the binder's owner.
+			Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
+			Principal owner = binder.getCreation().getPrincipal(); //creator is user
+			owner = Utils.fixProxy(owner);
+			reply.setTitle(owner.getTitle());
+
+			// If we get here, reply refers to the
+			// AvatarInfoRpcResponseData for the binder's owner.
+			// Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getBinderOwnerAvatarInfo( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
 	 * Reads the current user's region state for a binder and returns
 	 * it as a StringRpcResponseData.
 	 * 
@@ -1080,9 +1132,11 @@ public class GwtViewHelper {
 			else {
 				// No, we aren't showing the trash on this folder!  Are
 				// there user defined columns on this folder?
-				if (FolderType.SURVEY == folderType)
-				     baseNameKey = "survey.";
-				else baseNameKey = "folder.column.";
+				switch (folderType) {
+				case MINIBLOG:  baseNameKey = "miniblog.column."; break;
+				case SURVEY:    baseNameKey = "survey.";          break;
+				default:        baseNameKey = "folder.column.";   break;
+				}
 				Folder folder    = ((Folder) bs.getBinderModule().getBinder(folderId));
 				columnNames      = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
 				if (null == columnNames) {
