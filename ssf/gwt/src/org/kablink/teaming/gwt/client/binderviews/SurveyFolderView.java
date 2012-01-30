@@ -33,14 +33,20 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.dom.client.TableRowElement;
+import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.client.Window;
 
 /**
@@ -116,6 +122,47 @@ public class SurveyFolderView extends DataTableFolderViewBase {
 				vClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Scans the rows looking for overdue due dates and adds the
+	 * appropriate styling to the cells.
+	 * 
+	 * Overrides the DataTableFolderViewBase.postProcessRowData() method.
+	 * 
+	 * @param columnWidths
+	 */
+	@Override
+	protected void postProcessRowData(final List<FolderRow> folderRows, final List<FolderColumn> folderColumns) {
+		// If there aren't any rows...
+		int rowCount = ((null == folderRows) ? 0 : folderRows.size());
+		if (0 == rowCount) {
+			// ...there's nothing to process.  Bail.
+			return;
+		}
+		
+		// If there aren't any columns...
+		if ((null == folderColumns) || folderColumns.isEmpty()) {
+			// ...there's nothing to process.  Bail.
+			return;
+		}
+
+		// Scan the rows...
+		AbstractCellTable<FolderRow> dt = getDataTable();
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+			// ...an scan the columns.
+			FolderRow fr = folderRows.get(rowIndex);
+			for (FolderColumn fc:  folderColumns) {
+				// Is this an overdue date column?
+				Boolean overdueDate = fr.getColumnOverdueDate(fc);
+				if ((null != overdueDate) && overdueDate) {
+					// Yes!  Add the survey overdue style to the cell.
+					TableRowElement  tr = dt.getRowElement(rowIndex);
+					TableCellElement td = tr.getCells().getItem(fc.getDisplayIndex());
+					td.addClassName("vibe-surveyFolderOverdue");
+				}
+			}
+		}
 	}
 	
 	/**

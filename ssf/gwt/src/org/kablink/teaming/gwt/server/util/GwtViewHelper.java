@@ -1582,22 +1582,32 @@ public class GwtViewHelper {
 									}
 								}
 								
-								// No, we aren't working on a file ID
-								// field either!  Are we working on a
-								// survey's due date field?
-								else if (csk.equals(Constants.DUE_DATE_FIELD) && isSurvey) {
-									if ((emValue instanceof Date) && (DateComparer.isOverdue((Date) emValue))) {
-										value += (" " + NLT.get("survey.overdue"));
-									}
-									fr.setColumnValue(fc, (null == (value) ? "" : value));
-								}
-								
 								else {
-									// No, we aren't working on a
-									// survey's due date field either!
-									// Are we working on a file size
-									// field?
-									if (csk.equals(Constants.FILE_SIZE_FIELD)) {
+									// No, we aren't working on a file
+									// ID field either!  Are we working
+									// on a field whose value is a
+									// Date?
+									if (emValue instanceof Date) {
+										// Yes!  Is that Date overdue?
+										if (DateComparer.isOverdue((Date) emValue)) {
+											// Yes!  Mark that column
+											// as being an overdue
+											// date, and if this is the
+											// due date of a survey...
+											fr.setColumnOverdueDate(fc, Boolean.TRUE);
+											if (isSurvey && csk.equals(Constants.DUE_DATE_FIELD)) {
+												// ...show it as being
+												// ...closed.
+												value += (" " + NLT.get("survey.overdue"));
+											}
+										}
+										fr.setColumnValue(fc, (null == (value) ? "" : value));
+									}
+									
+									// No, we aren't working on a Date
+									// field!  Are we working on a file
+									// size field?
+									else if (csk.equals(Constants.FILE_SIZE_FIELD)) {
 										// Yes!  Trim any leading 0's
 										// from the value.
 										value = trimFileSize(value);
