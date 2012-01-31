@@ -1291,6 +1291,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_End();
 	String vibeDataTable_Event_Duration(String days);
 	String vibeDataTable_Event_Start();
+	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
 	String vibeDataTable_TrashConfirmPurge();

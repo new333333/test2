@@ -653,21 +653,22 @@ body, table td, select
 .mediumtext { color: black; font-size: 0.85em;  line-height: 1.1em; }
 .largetext  { color: black; font-style: normal; line-height: 1.1em; font-weight: normal; font-size: 1em; }
 
-.margintop1    { margin-top: 0.3em }
-.margintop1a   { margin-top: 0.3em !important; }
-.margintop2    { margin-top: 0.5em }
-.margintop3    { margin-top: 1em   }
-.marginleft1   { margin-left: 1em }
-.marginleft2   { margin-left: 2em }
-.marginleft2px { margin-left: 2px }
-.marginleft3   { margin-left: 3em }
-.marginleft4   { margin-left: 4em }
-.marginleft5px { margin-left: 5px }
-.marginbottom1 { margin-bottom: 0.3em }
-.marginbottom2 { margin-bottom: 0.5em }
-.marginbottom3 { margin-bottom: 1em }
-.marginright2px { margin-right: 2px }
-.marginright10px { margin-right: 10px; }
+.margintop1      {margin-top:    0.3em;}
+.margintop1a     {margin-top:    0.3em !important;}
+.margintop2      {margin-top:    0.5em;}
+.margintop3      {margin-top:    1em;}
+.margintop3px    {margin-top:    3px;}
+.marginleft1     {margin-left:   1em;}
+.marginleft2     {margin-left:   2em;}
+.marginleft2px   {margin-left:   2px;}
+.marginleft3     {margin-left:   3em;}
+.marginleft4     {margin-left:   4em;}
+.marginleft5px   {margin-left:   5px;}
+.marginbottom1   {margin-bottom: 0.3em;}
+.marginbottom2   {margin-bottom: 0.5em;}
+.marginbottom3   {margin-bottom: 1em;}
+.marginright2px  {margin-right:  2px;}
+.marginright10px {margin-right:  10px;}
 
 /* Style used for the panel that holds the content in the "color picker" dialog. */
 .colorPickerContentPanel

@@ -49,6 +49,8 @@ import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.datatable.AssignmentCell.AssigneeType;
+import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
@@ -751,14 +753,37 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Various column type detectors.
 	 */
+	private static AssigneeType getAssigneeType(String columnName) {
+		AssigneeType reply;
+		if      (isColumnAssignee(     columnName)) reply = AssigneeType.INDIVIDUAL;
+		else if (isColumnAssigneeGroup(columnName)) reply = AssigneeType.GROUP;
+		else if (isColumnAssigneeTeam( columnName)) reply = AssigneeType.TEAM;
+		else                                        reply = AssigneeType.UNKNOWN;
+		return reply;
+	}
 	private static boolean isColumnAssigneeInfo(String columnName) {
 		return
-			(columnName.equals("attendee")          ||
-			 columnName.equals("attendee_groups")   ||
-			 columnName.equals("attendee_teams")    ||
-			 columnName.equals("assignment")        ||
-			 columnName.equals("assignment_groups") ||
-			 columnName.equals("assignment_teams"));
+			(isColumnAssignee(     columnName) ||
+			 isColumnAssigneeGroup(columnName) ||
+			 isColumnAssigneeTeam( columnName));
+	}
+	private static boolean isColumnAssignee(String columnName) {
+		return
+			(columnName.equals("attendee")           ||	// Calendar entry attendee.
+			 columnName.equals("assignment")         ||	// Task assignee.
+			 columnName.equals("responsible"));			// Milestone responsible.
+	}
+	private static boolean isColumnAssigneeGroup(String columnName) {
+		return
+			(columnName.equals("attendee_groups")    ||	// Calendar entry attendee.
+			 columnName.equals("assignment_groups")  ||	// Task assignee.
+			 columnName.equals("responsible_groups"));	// Milestone responsible.
+	}
+	private static boolean isColumnAssigneeTeam(String columnName) {
+		return
+			(columnName.equals("attendee_teams")     ||	// Calendar entry attendee.
+			 columnName.equals("assignment_teams")   ||	// Task assignee.
+			 columnName.equals("responsible_teams"));	// Milestone responsible.
 	}
 	private static boolean isColumnCustom(      FolderColumn column)     {return column.isCustomColumn();                       }
 	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);}
@@ -996,21 +1021,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// No, this column doesn't show a custom column either!  Is
 			// it an assignment of some sort?
 			else if (isColumnAssigneeInfo(cName)){
-				// Yes!  Create a StringColumn for it.
-				column = new StringColumn<FolderRow>(fc) {
+				// Yes!  Create an AssignmentColumn for it.
+				column = new AssignmentColumn<FolderRow>(fc, getAssigneeType(cName)) {
 					@Override
-					public String getValue(FolderRow fr) {
-						List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
-						StringBuffer reply = new StringBuffer("");
-						if ((null != aiList) && (!(aiList.isEmpty()))) {
-							for (AssignmentInfo ai:  aiList) {
-								if (0 < reply.length()) {
-									reply.append(", ");
-								}
-								reply.append(ai.getTitle());
-							}
-						}
-						return reply.toString();
+					public List<AssignmentInfo> getValue(FolderRow fr) {
+						return fr.getColumnValueAsAssignmentInfos(fc);
 					}
 				};
 			}
