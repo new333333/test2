@@ -99,6 +99,12 @@
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
+		.vibe-dataTableAssignment-list       {}
+		.vibe-dataTableAssignment-panel      {white-space: nowrap;}
+		.vibe-dataTableAssignment-control    {}
+		.vibe-dataTableAssignment-label      {display: inline; font-weight: bold; padding-left: 2px !important;}
+		.vibe-dataTableAssignment-disabled   {color: #c4c4c4;}
+		.vibe-dataTableAssignment-enabled    {color: #353838;}
 		.vibe-dataTableCustom-anchor         {}
 		.vibe-dataTableCustom-anchor-label   {}
 		.vibe-dataTableCustom-event          {}
@@ -141,7 +147,7 @@
 	/* ...Start:  Milestone folder view styles. */
 		.vibe-milestoneFolderDataTable {}
 		.vibe-milestoneFolderFlowPanel {}
-		.vibe-milestoneFolderOverdue   {font-style: italic; color: red;}
+		.vibe-milestoneFolderOverdue   {font-style: italic; font-weight: bold; color: red;}
 	/* ...End:  milestone folder view styles. */
 
 	/* ...Start:  Survey folder view styles. */

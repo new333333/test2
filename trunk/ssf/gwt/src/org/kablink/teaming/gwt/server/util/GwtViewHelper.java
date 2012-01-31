@@ -159,6 +159,11 @@ import org.kablink.util.search.Constants;
 public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 
+	// Attribute names used for items related to milestones.
+	public static final String RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME	= "responsible_groups";
+	public static final String RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME			= "responsible";
+	public static final String RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME		= "responsible_teams";
+	
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -205,6 +210,9 @@ public class GwtViewHelper {
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
 				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
 			
 			// Scan this FolderRow's group assignees tracking each
 			// unique ID.
@@ -214,6 +222,9 @@ public class GwtViewHelper {
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
 				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
 			
 			// Scan this FolderRow's team assignees tracking each
 			// unique ID.
@@ -221,6 +232,9 @@ public class GwtViewHelper {
 				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+			}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
 				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 		}
@@ -286,10 +300,13 @@ public class GwtViewHelper {
 			// ...this time, fixing the assignee lists.
 			fixupAIs(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, userPresence, presenceUserWSIds);
 			fixupAIs(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, userPresence, presenceUserWSIds);
+			fixupAIs(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, userPresence, presenceUserWSIds);
 			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                    );
 			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                    );
+			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                    );
 			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                     );
 			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                     );
+			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                     );
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
@@ -298,10 +315,13 @@ public class GwtViewHelper {
 			// ...this time, to sort the assignee lists.
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        comparator);
+			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  comparator);
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), comparator);
+			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           comparator);
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
+			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
 		}
 	}
 	
@@ -601,9 +621,6 @@ public class GwtViewHelper {
 			else if (colName.equals("status"))      {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
 			else if (colName.equals("tasks"))       {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
 			else if (colName.equals("title"))       {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
-			
-			// "responsible", "tasks", "status"
-
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -1440,24 +1457,29 @@ public class GwtViewHelper {
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
 
+			// What type of folder are we dealing with?
+			boolean isDiscussion = false;
+			boolean isFolder     = (null != folder);
+			boolean isMilestone  = false;
+			boolean isSurvey     = false;
+			boolean isTrash      = false;
+			switch (folderType) {
+			case DISCUSSION:  isDiscussion = true; break;
+			case MILESTONE:   isMilestone  = true; break;
+			case SURVEY:      isSurvey     = true; break;
+			case TRASH:       isTrash      = true; break;
+			}
+			
 			// Setup the current search filter the user has selected
 			// on the folder.
 			Map options;
-			if (null != folder)
+			if (isFolder)
 			     options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
 			else options = new HashMap();
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
 			// Factor in the user's sorting selection.
-			boolean isTrash     = false;
-			boolean isMilestone = false;
-			boolean isSurvey    = false;
-			switch (folderType) {
-			case MILESTONE:  isMilestone = true; break;
-			case SURVEY:     isSurvey    = true; break;
-			case TRASH:      isTrash     = true; break;
-			}
 			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderId, isTrash);
 			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
@@ -1472,7 +1494,7 @@ public class GwtViewHelper {
 
 			// Is this the first page of a discussion folder?
 			List<Long> pinnedEntryIds = new ArrayList<Long>();
-			if ((0 == start) && (FolderType.DISCUSSION == folderType)) {
+			if ((0 == start) && isDiscussion) {
 				// Yes!  Are there any entries pinned in the folder?
 				List<Map>  pinnedEntrySearchMaps = getPinnedEntries(bs, folder, userFolderProperties, pinnedEntryIds);
 				if (!(pinnedEntrySearchMaps.isEmpty())) {
@@ -1483,9 +1505,9 @@ public class GwtViewHelper {
 			}
 
 			// Scan the entries we read.
-			boolean addedAssignments = false;
-			List<FolderRow> folderRows     = new ArrayList<FolderRow>();
-			List<Long>      contributorIds = new ArrayList<Long>();
+			boolean         addedAssignments = false;
+			List<FolderRow> folderRows       = new ArrayList<FolderRow>();
+			List<Long>      contributorIds   = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
 				// Have we already process this entry's ID?
 				String entryIdS  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
@@ -1499,7 +1521,7 @@ public class GwtViewHelper {
 				// Extract the contributors from this entry.
 				collectContributorIds(entryMap, contributorIds);
 				
-				// Creating a FolderRow for each entry.
+				// Create a FolderRow for each entry.
 				String entityType       = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD   );
 				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
 				if (!(MiscUtil.hasString(locationBinderId))) {
@@ -1509,6 +1531,8 @@ public class GwtViewHelper {
 				if (pinnedEntryIds.contains(entryId)) {
 					fr.setPinned(true);
 				}
+				
+				// Scan the columns.
 				for (FolderColumn fc:  folderColumns) {
 					// Is this a custom column?
 					if (fc.isCustomColumn()) {
@@ -2312,7 +2336,10 @@ public class GwtViewHelper {
 				 csk.equals(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)       ||
 				 csk.equals(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)        ||
 				 csk.equals(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME) ||
-				 csk.equals(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME));
+				 csk.equals(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)  ||
+				 csk.equals(RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)                  ||
+				 csk.equals(RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME)           ||
+				 csk.equals(RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME));
 		}
 		return reply;
 	}
