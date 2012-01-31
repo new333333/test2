@@ -409,7 +409,7 @@ public class FileResource extends AbstractResource {
 	
 	private Date dateFromISO8601(String modDateISO8601) {
 		if(Validator.isNotNull(modDateISO8601)) {
-			DateTime dateTime = ISODateTimeFormat.dateTime().parseDateTime(modDateISO8601);
+			DateTime dateTime = ISODateTimeFormat.dateTimeParser().parseDateTime(modDateISO8601);
 			return dateTime.toDate();
 		}
 		else {
