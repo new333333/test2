@@ -63,6 +63,20 @@
     <c:set var="mashupBinderId" value="${mashupBinder.id}"/>
   </c:if>
 </c:if>
+<c:set var="mWidth" value="100%" />
+<c:set var="mHeight" value="100%" />
+<c:set var="mOverflow" value="hidden" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+</c:if>
+
+
 <style>
 .tasks {
 	background: #FFF;
@@ -94,7 +108,11 @@
 <li>
 </c:if>
 <% } %>
-<div class="ss_mashup_element">
+<div class="ss_mashup_element"
+  <c:if test="${ssConfigJspStyle != 'form'}">
+    style="width: ${mWidth}; overflow: hidden;"
+  </c:if>
+>
     <div class="ss_mashup_round_top"><div></div></div>
 	<div class="ss_mashup_folder_header_view">
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
@@ -111,7 +129,7 @@
 	  </div>
 	</c:if>
 	
-	<div class="ss_mashup_folder_list_open">
+  <div class="ss_mashup_folder_list_open" style="height: ${mHeight}; overflow: ${mOverflow};">
 
 
   <div class="folders">
@@ -312,12 +330,8 @@
 	</div>
   </div>
 
-
-
-
-
-</div>
 <div class="ss_mashup_round_bottom"><div></div></div>
+</div>
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 </li>

@@ -67,12 +67,29 @@
   </c:if>
 </c:if>
 
+<c:set var="mWidth" value="100%" />
+<c:set var="mHeight" value="100%" />
+<c:set var="mOverflow" value="hidden" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+</c:if>
+
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 <li>
 </c:if>
 <% } %>
-<div class="ss_mashup_element">
+<div class="ss_mashup_element"
+  <c:if test="${ssConfigJspStyle != 'form'}">
+    style="width: ${mWidth}; overflow: hidden;"
+  </c:if>
+>
     <div class="ss_mashup_round_top"><div></div></div>
       <c:if test="${!empty mashup_attributes['showTitle']}">
 		<div class="ss_mashup_folder_header_view">
@@ -91,7 +108,7 @@
 		</div>
     </c:if>
 
-	<div class="ss_mashup_folder_list_open">
+	<div class="ss_mashup_folder_list_open" style="height: ${mHeight}; overflow: ${mOverflow};">
 	<ul>
 <% 
 	TreeMap tm = new java.util.TreeMap(new StringComparator(ssUser.getLocale()));
