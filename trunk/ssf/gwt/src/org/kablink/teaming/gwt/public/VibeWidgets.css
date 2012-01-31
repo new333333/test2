@@ -94,3 +94,40 @@
 
 /* ########################################################################################################### */
 
+/* Styles used with the ProjectInfoWidget */
+
+.projectInfoWidget_InfoTable
+{
+}
+
+.projectInfoWidget_MainPanel
+{
+}
+
+.projectInfoWidget_ManagersPanel
+{
+}
+
+.projectInfoWidget_ManagerName
+{
+	color: #353838;
+	font-size: 11px;
+	margin-left: 4px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+	padding-right: 6px;
+	vertical-align: top;
+}
+
+.projectInfoWidget_ManagerName:hover
+{
+	color: #135c8f;
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+/* ########################################################################################################### */
+

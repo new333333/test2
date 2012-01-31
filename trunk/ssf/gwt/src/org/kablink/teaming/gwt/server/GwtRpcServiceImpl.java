@@ -112,6 +112,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -1027,6 +1028,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			gpiCmd = (GetProfileInfoCmd) cmd;
 			result = getProfileInfo( ri, gpiCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_PROJECT_INFO:
+		{
+			GetProjectInfoCmd gpiCmd;
+			ProjectInfo result;
+			
+			gpiCmd = (GetProjectInfoCmd) cmd;
+			result = GwtServerHelper.getProjectInfo( this, gpiCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
