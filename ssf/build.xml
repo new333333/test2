@@ -223,7 +223,7 @@
 	<target name="deploy" depends="init">
 		<ant dir="util" target="deploy" inheritall="false"/>
 		<ant dir="util-search" target="deploy" inheritall="false"/>
-		<!--<ant dir="rest-shared" target="deploy" inheritall="false"/>-->
+		<ant dir="rest-shared" target="deploy" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="deploy" inheritall="false"/>
 		<ant dir="lucene-contrib" target="deploy" inheritall="false"/>
 		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>

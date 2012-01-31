@@ -30,8 +30,46 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.model;
+package org.kablink.teaming.rest.v1.model;
 
-public class FileVersionProperties {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+// This annotation is necessary not only for XML but also for JSON representation.
+@XmlRootElement
+public class FolderEntry {
+
+	private Long id;
+	private String title;
+	private String description;
+	
+	//@XmlElement
+	private String[] products = new String[] {"droid", "iPhone", "Nexus"};
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	/*
+	public String[] getProducts() {
+		return products;
+	}
+	public void setProducts(String[] products) {
+		this.products = products;
+	}
+	*/
 }

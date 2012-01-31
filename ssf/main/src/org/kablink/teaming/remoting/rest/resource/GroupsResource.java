@@ -45,7 +45,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.rest.model.Group;
+import org.kablink.teaming.rest.v1.model.Group;
 
 @Path("/groups")
 public class GroupsResource {

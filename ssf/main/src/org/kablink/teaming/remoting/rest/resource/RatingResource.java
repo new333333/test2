@@ -40,7 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.rest.model.Rating;
+import org.kablink.teaming.rest.v1.model.Rating;
 
 @Path("/rating/{user_id}/{entity_type}/{entity_id}")
 public class RatingResource {

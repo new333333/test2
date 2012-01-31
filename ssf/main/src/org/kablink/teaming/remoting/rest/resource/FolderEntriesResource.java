@@ -45,7 +45,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import org.kablink.teaming.rest.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.FolderEntry;
 
 @Path("/folder_entries")
 public class FolderEntriesResource extends AbstractResource {

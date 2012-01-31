@@ -30,8 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.model;
+package org.kablink.teaming.rest.v1.model;
 
-public class Group {
+import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * @author jong
+ *
+ */
+@XmlRootElement
+public class ErrorInfo {
+
+	public String code;
+	public String message;
+	
+	private ErrorInfo() {}
+	
+	public ErrorInfo(String code, String message) {
+		this.code = code;
+		this.message = message;
+	}
 }

@@ -37,7 +37,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.kablink.teaming.rest.model.Binder;
+import org.kablink.teaming.rest.v1.model.Binder;
 
 @Path("/path")
 public class PathResource {
