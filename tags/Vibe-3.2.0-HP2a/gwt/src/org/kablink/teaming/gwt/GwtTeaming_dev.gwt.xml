@@ -1,0 +1,12 @@
+<module rename-to="gwtteaming">
+	<!-- Inherit the core GwtTeaing stuff. -->
+	<inherits name='org.kablink.teaming.gwt.GwtTeaming' />
+	
+ 	<!-- Other 'development only' module inherits go here. -->
+ 	
+	<!-- Support for English only. -->
+	<extend-property       name="locale" values="en" />	<!-- English.            -->
+		
+	<set-property          name="locale" value="en"  />	<!-- English only.       -->
+	<set-property-fallback name="locale" value="en"  />	<!-- Default is English. -->
+</module>

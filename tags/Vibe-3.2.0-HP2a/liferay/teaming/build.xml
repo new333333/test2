@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<project name="liferay-open-teaming" basedir="." >
+	<!-- This setting will override the value in the properties file -->
+	<property name="portal.type" value="liferay"/>
+	<property name="project.dir" value="${basedir}/../.."/>
+	
+	<import file="../../build-common.xml" />
+	
+	<import file="../../deploy-support.xml" />
+	
+	<property name="jar.file" value="kablink-teaming-liferay-hooks.jar" />
+
+	<target name="clean" depends="build-common.clean">
+	</target>
+	
+	<!-- Incremental deploy for kablink-teaming-liferay-hooks.jar -->
+	<target name="deploy">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+	<target name="build" depends="jar"/>
+
+	<target name="clean-app-server">
+		<delete>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="${jar.file}" />
+		</delete>		
+	</target>
+	
+	<target name="full-deploy">
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<antcall target="deploy-liferay-tomcat" />
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<antcall target="deploy-liferay-jboss-tomcat" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+
+	<target name="deploy-liferay-tomcat" depends="clean-app-server">
+	</target>
+		
+	<target name="deploy-liferay-jboss-tomcat" depends="clean-app-server">		
+	</target>		
+
+</project>
