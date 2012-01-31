@@ -82,6 +82,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CommaSeparatedValue;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
@@ -101,6 +102,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -118,6 +120,8 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
@@ -142,6 +146,7 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
@@ -4044,6 +4049,105 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Get the project information for the given binder
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 */
+	public static ProjectInfo getProjectInfo( AllModulesInjected allModules, String binderId ) throws GwtTeamingException
+	{
+		try
+		{
+			ProjectInfo projectInfo;
+			Binder binder;
+			CustomAttribute customAttr;
+			
+			projectInfo = new ProjectInfo();
+			projectInfo.setBinderId( binderId );
+			
+			binder = allModules.getBinderModule().getBinder( Long.parseLong( binderId ) );
+			
+			// Get the project status
+			customAttr = binder.getCustomAttribute( "status" );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
+    		{
+    			String status;
+
+    			status = (String) customAttr.getValue();
+    			projectInfo.setStatus( status );
+    		}
+    		
+    		// Get the list of managers for this project.
+			customAttr = binder.getCustomAttribute( "manager" );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.COMMASEPARATEDSTRING )
+    		{
+				CommaSeparatedValue ids;
+				List<Principal> principals;
+
+				ids = (CommaSeparatedValue) customAttr.getValue();
+				
+				principals = ResolveIds.getPrincipals( ids.getValueSet() );
+				
+				for (Principal nextManager : principals)
+				{
+					if ( nextManager instanceof UserPrincipal )
+					{
+						PrincipalInfo principalInfo;
+						GwtPresenceInfo presenceInfo;
+						User user;
+						
+						principalInfo = PrincipalInfo.construct( nextManager.getId(), nextManager.getTitle() );
+						
+						user = (User) nextManager;
+						principalInfo.setPresenceUserWSId( user.getWorkspaceId() );
+
+						if ( GwtServerHelper.isPresenceEnabled() )
+						     presenceInfo = GwtServerHelper.getPresenceInfo( user );
+						else
+							presenceInfo = null;
+						if ( null == presenceInfo )
+						{
+							presenceInfo = GwtServerHelper.getPresenceInfoDefault();
+						}
+						if ( presenceInfo != null )
+						{
+							principalInfo.setPresence( presenceInfo );
+							principalInfo.setPresenceDude( GwtServerHelper.getPresenceDude( presenceInfo ) );
+						}
+
+						projectInfo.addManager( principalInfo );
+					}
+				}// end for()
+    		}
+    		
+    		// Get the project due date
+			customAttr = binder.getCustomAttribute( "due_date" );
+    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.DATE )
+    		{
+				Date dueDate;
+				DateFormat df;
+				User user;
+
+				user = getCurrentUser();
+				dueDate = (Date) customAttr.getValue();
+
+    			df = DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale() );
+		    	df.setTimeZone( user.getTimeZone() );
+
+		    	projectInfo.setDueDate( df.format( dueDate ) );
+    		}
+    		
+			return projectInfo;
+		}
+		catch (Exception ex)
+		{
+			throw getGwtTeamingException( ex );
+		}
+	}
+	
+	
+	/**
 	 * Returns information about the recent places the current user has
 	 * visited that has been stored by the controllers in the session
 	 * cache.
@@ -5221,6 +5325,7 @@ public class GwtServerHelper {
 		case GET_PROFILE_AVATARS:
 		case GET_PROFILE_INFO:
 		case GET_PROFILE_STATS:
+		case GET_PROJECT_INFO:
 		case GET_QUICK_VIEW_INFO:
 		case GET_RECENT_PLACES:
 		case GET_ROOT_WORKSPACE_ID:

@@ -354,6 +354,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetProfileAvatars();
 	String rpcFailure_GetProfileInfo();
 	String rpcFailure_GetProfileStats();
+	String rpcFailure_GetProjectInfo();
 	String rpcFailure_GetRecentPlaces();
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
@@ -481,6 +482,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MilestoneFolderView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfilePage();
+	String codeSplitFailure_ProjectInfoWidget();
 	String codeSplitFailure_ProjectManagementWSView();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
@@ -1382,4 +1384,15 @@ public interface GwtTeamingMessages extends Messages
 	String changeEntryTypesDlgNew();
 	String changeEntryTypesDlgNote();
 	String changeEntryTypesDlgSelect();
+	
+	// Strings used in the Project Information widget
+	String dueDateLabel();
+	String managerLabel();
+	String projectInformation();
+	String projectStatusCancelled();
+	String projectStatusClosed();
+	String projectStatusOpen();
+	String projectStatusUnknown();
+	String statusLabel();
+	
 }// end GwtTeamingMessages
