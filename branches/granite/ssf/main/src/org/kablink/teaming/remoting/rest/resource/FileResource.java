@@ -46,8 +46,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
 
-import org.kablink.teaming.rest.model.FileProperties;
-import org.kablink.teaming.rest.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 
 @Path("/file/{id}")
 public class FileResource extends AbstractResource {

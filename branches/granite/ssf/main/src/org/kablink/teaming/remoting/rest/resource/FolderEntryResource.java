@@ -51,10 +51,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.kablink.teaming.rest.model.FolderEntry;
-import org.kablink.teaming.rest.model.Rating;
-import org.kablink.teaming.rest.model.Subscription;
-import org.kablink.teaming.rest.model.Tag;
+import org.kablink.teaming.rest.v1.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.Rating;
+import org.kablink.teaming.rest.v1.model.Subscription;
+import org.kablink.teaming.rest.v1.model.Tag;
 
 @Path("/folder_entry/{id}")
 public class FolderEntryResource extends AbstractResource {

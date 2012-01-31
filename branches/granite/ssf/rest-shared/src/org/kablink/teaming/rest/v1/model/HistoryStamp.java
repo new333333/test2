@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,8 +30,50 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.model;
+package org.kablink.teaming.rest.v1.model;
 
-public class Tag {
+import java.util.Calendar;
+import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+/**
+ * @author jong
+ *
+ */
+@XmlRootElement
+public class HistoryStamp {
+
+	private Long principalId;
+	private Calendar date;
+	
+	private HistoryStamp() {}
+	
+	public HistoryStamp(Long principalId, Calendar date) {
+		this.principalId = principalId;
+		this.date = date;
+	}
+	
+	public HistoryStamp(Long principalId, Date date) {
+		this.principalId = principalId;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		this.date = cal;
+	}
+
+	public Long getPrincipalId() {
+		return principalId;
+	}
+
+	public void setPrincipalId(Long principalId) {
+		this.principalId = principalId;
+	}
+
+	public Calendar getDate() {
+		return date;
+	}
+
+	public void setDate(Calendar date) {
+		this.date = date;
+	}
 }

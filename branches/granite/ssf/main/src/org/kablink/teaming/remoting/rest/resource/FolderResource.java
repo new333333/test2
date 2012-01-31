@@ -46,11 +46,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.rest.model.Folder;
-import org.kablink.teaming.rest.model.FolderEntry;
-import org.kablink.teaming.rest.model.Subscription;
-import org.kablink.teaming.rest.model.Tag;
-import org.kablink.teaming.rest.model.Team;
+import org.kablink.teaming.rest.v1.model.Folder;
+import org.kablink.teaming.rest.v1.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.Subscription;
+import org.kablink.teaming.rest.v1.model.Tag;
+import org.kablink.teaming.rest.v1.model.Team;
 
 @Path("/folder/{id}")
 public class FolderResource extends AbstractResource {

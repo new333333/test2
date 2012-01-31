@@ -30,12 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.model;
+package org.kablink.teaming.rest.v1.model;
 
-public class Team {
+public class Folder {
 
-	private Long binderId; // ID of the binder on which this team is defined.
-	private Boolean inherit; // inherit team membership list from its parent
-	private Long[] users; // a list of users who are members of the team
-	private Long[] groups; // a list of groups who are members of the team
 }

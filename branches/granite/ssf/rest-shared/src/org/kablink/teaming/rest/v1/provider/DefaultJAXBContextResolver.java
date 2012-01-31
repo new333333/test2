@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,46 +30,48 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+package org.kablink.teaming.rest.v1.provider;
 
-// This annotation is necessary not only for XML but also for JSON representation.
-@XmlRootElement
-public class FolderEntry {
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-	private Long id;
-	private String title;
-	private String description;
-	
-	//@XmlElement
-	private String[] products = new String[] {"droid", "iPhone", "Nexus"};
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	/*
-	public String[] getProducts() {
-		return products;
-	}
-	public void setProducts(String[] products) {
-		this.products = products;
-	}
-	*/
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
+
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
+
+import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.api.json.JSONJAXBContext;
+
+/**
+ * @author jong
+ *
+ */
+@Provider
+public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> {
+
+    private final JAXBContext context;
+    
+    private final Set<Class> types;
+    
+    private final Class[] cTypes = {
+    		FileProperties.class,
+    		FileVersionProperties.class,
+    		FileVersionPropertiesCollection.class
+    		};
+    
+    public DefaultJAXBContextResolver() throws Exception {
+        this.types = new HashSet(Arrays.asList(cTypes)); 
+        this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), cTypes);
+    }
+    
+    public JAXBContext getContext(Class<?> objectType) {
+        return (types.contains(objectType)) ? context : null;
+    }
+
 }

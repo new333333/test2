@@ -30,8 +30,31 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.model;
+package org.kablink.teaming.rest.v1.model;
 
-public class Folder {
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name="fileVersion")
+public class FileVersionProperties extends FileCommonProperties {
+
+	private Boolean promoteCurrent; // processing instruction - used for update only
+	
+	private FileVersionProperties() {
+		super();
+	}
+	
+	public FileVersionProperties(String id, HistoryStamp creation, HistoryStamp modification, 
+			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
+			String note, Integer status, String webUrl) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+	}
+
+	public Boolean getPromoteCurrent() {
+		return promoteCurrent;
+	}
+
+	public void setPromoteCurrent(Boolean promoteCurrent) {
+		this.promoteCurrent = promoteCurrent;
+	}
 
 }

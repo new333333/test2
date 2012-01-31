@@ -30,8 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.model;
+package org.kablink.teaming.rest.v1.model;
 
-public class Binder {
+public class ReleaseInfo {
 
 }

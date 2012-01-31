@@ -40,7 +40,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 
-import org.kablink.teaming.rest.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.FolderEntry;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
