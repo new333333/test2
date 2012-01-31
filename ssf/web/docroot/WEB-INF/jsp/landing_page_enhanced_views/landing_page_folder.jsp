@@ -83,11 +83,10 @@
 <% } %>
 <div class="ss_mashup_element"
   <c:if test="${ssConfigJspStyle != 'form'}">
-    style="width: ${mWidth};"
+    style="width: ${mWidth}; overflow: hidden;"
   </c:if>
 >
     <div class="ss_mashup_round_top"><div></div></div>
-    <div style="height: ${mHeight}; overflow: ${mOverflow}">
 	<div class="ss_mashup_folder_header_view">
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_permalink" 
@@ -104,6 +103,8 @@
 		</c:if>
 
 	</div>
+	
+    <div style="height: ${mHeight}; overflow: ${mOverflow};">
 
 	<c:forEach var="entryMap" items="${ss_mashupBinderEntries[mashupBinderId]}" varStatus="status">
 		<c:set var="mashupEntryId" value="${entryMap['_docId']}"/>

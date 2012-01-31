@@ -48,7 +48,7 @@
   <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_tools" offsetX="-2" offsetY="6" 
     title="<ssf:nlt tag="helpSpot.calendarTools"/>"></ssHelpSpot>
     
-	<div class="ss_calendarNaviBar">
+	<div class="ss_calendarNaviBar ${ss_calendarHeaderBackgroundColor}">
 		<table cellpadding="0" cellspacing="0">
 			<tr>
 			<td class="ss_calendarNaviBarOption ss_calHoursSelectorMenu">

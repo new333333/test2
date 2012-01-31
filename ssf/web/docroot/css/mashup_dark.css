@@ -29,7 +29,7 @@ table.ss_mashup {
   }
 
 div.ss_mashup_element {
-  padding:6px;
+  padding:6px 0px 6px 6px;
 }
 div.ss_mashup_element #ss_calendar_container,
 div.ss_mashup_element .tasks {
@@ -41,8 +41,8 @@ div.ss_mashup_element_content {
 }
 
 div.ss_mashup_form_element_header {
-  border:1px solid #cecece; 
-  background-color:#e5e5e5; 
+  border:1px solid #CCCCCC; 
+  background-color:#EDEDED; 
   padding:6px;
   }
 
@@ -65,10 +65,7 @@ div.ss_mashup_list_header_form span {
   font-weight:bold;
   }
 div.ss_mashup_list_content {
-  background-color:#ededed; 
   padding: 8px;
-  -moz-border-radius: 6px;
-  -webkit-border-radius: 6px;
   }
 div.ss_mashup_list_content ul {
   padding:4px 0px 0px 16px;
@@ -100,11 +97,15 @@ div.ss_mashup_folder_header_form a span {
 div.ss_mashup_folder_header_view {
   font-size: 16px;
   padding: 5px 10px;
-  margin-bottom: 2px;
-  background: #949494;
-  -moz-border-radius: 6px;
-  -webkit-border-radius: 6px;
+  background: #949494 !important;
+  -moz-border-radius-topleft: 6px;
+  -moz-border-radius-topright: 6px;
+  -webkit-border-top-left-radius: 6px;
+  -webkit-border-top-right-radius: 6px;
   }
+.ss_mashup_folder_header_view_background {
+  background: #949494 !important;
+}
 div.ss_mashup_folder_header_view span {
   color: #ededed;
 }
@@ -133,7 +134,8 @@ div.ss_mashup_folder_description p {
 
 div.ss_mashup_folder_list_closed {
   padding:6px;
-  }
+  border:1px solid #CCCCCC; 
+}
 	
 div.ss_mashup_folder_list_open span.ss_size_20px {
   font-size: 15px !important;
@@ -141,9 +143,15 @@ div.ss_mashup_folder_list_open span.ss_size_20px {
   }
 
 div.ss_mashup_folder_list_open {
-  background: #ededed;
-  padding: 5px;
+  padding: 0px;
   margin-bottom: 2px;
+  border:1px solid #CCCCCC; 
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  }
+div.ss_mashup_folder_list_open_no_border {
+  padding: 0px;
+  margin: 0px 1px 2px 0px;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   }
@@ -158,6 +166,7 @@ div.ss_mashup_folder_list_open_title {
 
 div.ss_mashup_folder_list_open_entry {
   padding: 5px 5px 0 5px;
+  background: transparent !important;
   }
 div.ss_mashup_folder_list_open ul {
   list-style: circle;
@@ -166,7 +175,7 @@ div.ss_mashup_folder_list_open_entry p {
   margin-top: -2px !important;
   }
 div.ss_mashup_entry_header {
-  background: #ededed;
+  background: #949494;
   padding: 6px 10px;
   -moz-border-radius-topleft: 6px;
   -moz-border-radius-topright: 6px;
@@ -178,12 +187,7 @@ div.ss_mashup_entry_header  span.ss_size_20px {
   } 
   
 div.ss_mashup_entry_content {
-  background: #ededed;
   padding: 3px 10px;
-  -moz-border-radius-bottomleft: 6px;
-  -moz-border-radius-bottomright: 6px;
-  -webkit-border-bottom-left-radius: 6px;
-  -webkit-border-bottom-right-radius: 6px;
   }
 div.ss_mashup_entry_content p {
   margin-top: 0px;
@@ -195,7 +199,6 @@ div.ss_mashup_graphic_header {
   }
   
 div.ss_mashup_graphic_content {
-  padding: 2px 10px;
   }
   
 div.ss_mashup_url_content {

@@ -97,18 +97,20 @@
 <li>
 </c:if>
 <% } %>
-<div class="ss_mashup_element" 
-  style="width: ${calendarWidth}; height: ${calendarHeight}; overflow: ${calendarOverflow}; ${calendarPadding}"
+<div class="ss_mashup_element"
+  <c:if test="${ssConfigJspStyle != 'form'}">
+    style="width: ${calendarWidth}; overflow: hidden;"
+  </c:if>
 >
     <div class="ss_mashup_round_top"><div></div></div>
       <c:if test="${!empty mashup_attributes['showTitle']}">
-	<div class="ss_mashup_folder_header_view">
-		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_permalink" 
-		  binderId="${mashupBinder.id}">
-		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
-		  </ssf:url>"><span>${mashupBinder.title}</span></a>
-	</div>
+		<div class="ss_mashup_folder_header_view">
+			<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+			  action="view_permalink" 
+			  binderId="${mashupBinder.id}">
+			  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+			  </ssf:url>"><span>${mashupBinder.title}</span></a>
+		</div>
       </c:if>
 
 	<c:if test="${!empty mashupBinder.description.text}">
@@ -118,17 +120,21 @@
 	  </div>
 	</c:if>
 	
-	<div class="ss_mashup_folder_list_open">
-<c:if test="${!empty mashupBinder}">
-  <c:set var="ssBinderOriginal" value="${ssBinder}" scope="request"/>
-  <c:set var="ssBinder" value="${mashupBinder}" scope="request"/>
-  <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
-  <c:set var="ssBinder" value="${ssBinderOriginal}" scope="request"/>
-</c:if>
-<c:if test="${empty mashupBinder}">
-  <div style="padding:4px;"><span class="ss_labelLeftError">No Calendar Specified</span></div>
-</c:if>
+  <div class="ss_mashup_folder_list_open_no_border" 
+    style="height: ${calendarHeight}; overflow: ${calendarOverflow};">
+    <div style="padding-right:1px;">
+	<c:if test="${!empty mashupBinder}">
+	  <c:set var="ssBinderOriginal" value="${ssBinder}" scope="request"/>
+	  <c:set var="ssBinder" value="${mashupBinder}" scope="request"/>
+	  <c:set var="ss_calendarHeaderBackgroundColor" value="ss_mashup_folder_header_view_background" scope="request"/>
+	  <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
+	  <c:set var="ssBinder" value="${ssBinderOriginal}" scope="request"/>
+	</c:if>
 	</div>
+	<c:if test="${empty mashupBinder}">
+	  <div style="padding:4px;"><span class="ss_labelLeftError">No Calendar Specified</span></div>
+	</c:if>
+  </div>
   <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 <% if (ss_mashupListDepth > 0) { %>

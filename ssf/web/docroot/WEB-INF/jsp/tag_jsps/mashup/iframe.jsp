@@ -49,6 +49,7 @@
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
+  <div class="ss_mashup_element">
 	<div class="ss_mashup_url_content">
 		<c:set var="url" value="" />
 		<c:if test="${!empty mashup_attributes['url']}">
@@ -89,6 +90,7 @@
 				width="${width}">
 		</iframe>
 	</div>
+  </div>
 </c:if>
 
 <% if (ss_mashupListDepth > 0) { %>

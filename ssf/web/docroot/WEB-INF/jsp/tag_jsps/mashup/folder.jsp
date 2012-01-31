@@ -52,6 +52,19 @@
     <c:set var="mashupBinderIdIndex" value="${zoneBinderId}"/>
   </c:if>
 </c:if>
+<c:set var="mWidth" value="100%" />
+<c:set var="mHeight" value="100%" />
+<c:set var="mOverflow" value="hidden" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+</c:if>
+
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 <li>
@@ -67,8 +80,11 @@
 	}
 	</script>
 </c:if>
-<div class="ss_mashup_element">
-  <c:if test="${!empty mashupBinder}">
+<div class="ss_mashup_element"
+  <c:if test="${ssConfigJspStyle != 'form'}">
+    style="width: ${mWidth}; overflow: hidden;"
+  </c:if>
+>
   <div class="ss_mashup_round_top"><div></div></div>
 
 	  <!-- Should we show the title or the description? -->
@@ -96,11 +112,11 @@
 					<div class="ss_clear"></div>
 			  	</div>
 			</c:if>
+			</div>
 		</c:if>
-	  </div>
 
 	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened']}">
-	<div class="ss_mashup_folder_list_closed">
+	<div class="ss_mashup_folder_list_closed" style="height: ${mHeight}; overflow: ${mOverflow};">
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div style="padding-left:6px;">
@@ -123,6 +139,7 @@
 	</div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showEntriesOpened']}">
+	  <div class="ss_mashup_folder_list_open" style="height: ${mHeight}; overflow: ${mOverflow};">
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div class="ss_mashup_folder_list_open">
@@ -150,6 +167,7 @@
 		  </div>
 		</c:if>
 	  </c:forEach>
+	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle == 'form'}">
 	  <div>
@@ -159,7 +177,6 @@
 	  </div>
     </c:if>
   <div class="ss_mashup_round_bottom"><div></div></div>
-  </c:if>
 
   <c:if test="${empty mashupBinder}">
 	<c:if test="${ssConfigJspStyle == 'form'}">

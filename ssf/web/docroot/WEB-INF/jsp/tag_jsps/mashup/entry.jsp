@@ -81,7 +81,7 @@
 <c:if test="${!empty mashupEntry}">
   <div class="ss_mashup_element"
     <c:if test="${ssConfigJspStyle != 'form'}">
-      style="width: ${mWidth}; overflow: ${mOverflow}"
+      style="width: ${mWidth}; overflow: hidden;"
     </c:if>
   >
   <div class="ss_mashup_round_top"><div></div></div>
@@ -115,9 +115,11 @@
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form'}">
-	  <div class="ss_mashup_entry_content" style="height: ${mHeight}; overflow: ${mOverflow}">
-	    <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
-	    <div class="ss_clear"></div>
+  	  <div class="ss_mashup_folder_list_open" style="height: ${mHeight}; overflow: ${mOverflow};">
+	    <div class="ss_mashup_entry_content">
+	      <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
+	      <div class="ss_clear"></div>
+	    </div>
 	  </div>
 	</c:if>
   <div class="ss_mashup_round_bottom"><div></div></div>
