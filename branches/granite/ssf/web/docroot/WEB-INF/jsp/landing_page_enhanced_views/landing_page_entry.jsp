@@ -85,12 +85,11 @@
 
 <div class="ss_mashup_element"
   <c:if test="${ssConfigJspStyle != 'form'}">
-    style="width: ${mWidth}; overflow: ${mOverflow}"
+    style="width: ${mWidth}; overflow: hidden;"
   </c:if>
 >
   <div class="ss_mashup_round_top"><div></div></div>
-  <div class="ss_mashup_folder_list_open" style="height: ${mHeight}; overflow: ${mOverflow}">
-    <div >
+    <div class="ss_mashup_entry_header">
 
 		<ssf:titleLink action="view_permalink" entryId="$mashupEntry.id}" 
 			binderId="${mashupEntry.parentFolder.id}" entityType="folderEntry"
@@ -107,8 +106,9 @@
 			</ssf:param>
 			<c:out value="${mashupEntry.title}"/>
 		</ssf:titleLink>
-
     </div>
+
+  <div class="ss_mashup_folder_list_open" style="height: ${mHeight}; overflow: ${mOverflow};">
 	<div class="ss_mashup_entry_content ss_smallprint">
 	  <span><ssf:showUser user="${mashupEntry.modification.principal}"/><span>
 	  <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
