@@ -218,6 +218,7 @@ public class ListWidget extends VibeWidget
 			titlePanel.addStyleName( "listWidgetTitlePanel" + m_style );
 			
 			label = new InlineLabel( title );
+			label.addStyleName( "listWidgetTitleLabel" + m_style );
 			titlePanel.add( label );
 			
 			// Set the title background color.

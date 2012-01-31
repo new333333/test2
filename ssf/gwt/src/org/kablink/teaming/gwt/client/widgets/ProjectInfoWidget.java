@@ -107,12 +107,8 @@ public class ProjectInfoWidget extends ToolPanelBase
 	 */
 	private void buildUI( ProjectInfo projectInfo )
 	{
-		int row;
-		
 		// Add the status info
-		row = 0;
-		m_infoTable.setText( row, 1, projectInfo.getStatusStr() );
-		++row;
+		m_infoTable.setText( 0, 1, projectInfo.getStatusStr() );
 		
 		// Add the manager info
 		{
@@ -171,14 +167,12 @@ public class ProjectInfoWidget extends ToolPanelBase
 					panel.add( namePanel );
 				}// end for()
 				
-				m_infoTable.setWidget( row, 1, panel );
-				++row;
+				m_infoTable.setWidget( 1, 1, panel );
 			}
 		}
 		
 		// Add the due date
-		m_infoTable.setText( row, 2, projectInfo.getDueDate() );
-		++row;
+		m_infoTable.setText( 2, 1, projectInfo.getDueDate() );
 	}
 	
 	/**
