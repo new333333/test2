@@ -260,6 +260,10 @@ public class GwtServerHelper {
 	 */
 	public static class AssignmentInfoComparator implements Comparator<AssignmentInfo> {
 		private boolean m_ascending;	//
+		
+		private final static int LESS		= (-1);
+		private final static int EQUAL		=   0;
+		private final static int GREATER	=   1;
 
 		/**
 		 * Class constructor.
@@ -282,13 +286,36 @@ public class GwtServerHelper {
 		 */
 		@Override
 		public int compare(AssignmentInfo ai1, AssignmentInfo ai2) {
-			String assignee1 = ai1.getTitle();
-			String assignee2 = ai2.getTitle();
+			int reply = EQUAL;
 
-			int reply;
-			if (m_ascending)
-			     reply = MiscUtil.safeSColatedCompare(assignee1, assignee2);
-			else reply = MiscUtil.safeSColatedCompare(assignee2, assignee1);
+			// Are the assignee types equal?
+			AssigneeType ait1 = ai1.getAssigneeType();
+			AssigneeType ait2 = ai2.getAssigneeType();
+			if ((ait1 != ait2) && (null != ait1) && (null != ait2)) {
+				// No!  That's all we compare as we sort individuals
+				// before groups and groups before teams.
+				switch (ait1) {
+				case INDIVIDUAL:  reply =                                              LESS;  break;	// 1 < 2
+				case GROUP:       reply = (AssigneeType.INDIVIDUAL == ait2 ? GREATER : LESS); break;	//
+				case TEAM:        reply =                                    GREATER;         break;	// 1 > 2
+				}
+				if (!m_ascending) {
+					reply = -reply;
+				}
+			}
+			
+			else {
+				// Yes, the assignee types are equal!  Compare their
+				// titles.
+				String assignee1 = ai1.getTitle();
+				String assignee2 = ai2.getTitle();
+				if (m_ascending)
+				     reply = MiscUtil.safeSColatedCompare(assignee1, assignee2);
+				else reply = MiscUtil.safeSColatedCompare(assignee2, assignee1);
+			}
+
+			// If we get here, reply contains the appropriate value for
+			// the compare.  Return it.
 			return reply;
 		}
 	}

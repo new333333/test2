@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -246,6 +247,13 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 		// Scan the assignments.
 		int assignmentIndex = 0;
 		for (AssignmentInfo ai:  aiList) {
+			// If this assignment doesn't have an assignee type...
+			AssigneeType ait = ai.getAssigneeType();
+			if (null == ait) {
+				// ...skip it.
+				continue;
+			}
+			
 			// Generate a panel to hold the assignment...
 			VibeFlowPanel fp = new VibeFlowPanel();
 			fp.addStyleName("vibe-dataTableAssignment-panel displayBlock verticalAlignTop");
@@ -254,7 +262,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			}
 			renderPanel.add(fp);
 
-			switch (ai.getAssigneeType()) {
+			switch (ait) {
 			case INDIVIDUAL:
 				// Individual assignee!  Generate a presence control...
 				String assignmentIndexTail = ("." + (assignmentIndex++));
