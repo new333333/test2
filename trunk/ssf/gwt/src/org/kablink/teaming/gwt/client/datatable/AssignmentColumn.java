@@ -35,8 +35,7 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.datatable.AssignmentCell.AssigneeType;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 
 /**
  * A column that displays its contents with a list of presence controls
@@ -54,7 +53,7 @@ public abstract class AssignmentColumn<T> extends VibeColumn<T, List<AssignmentI
    * @param fc
    * @param assigneeType
    */
-  public AssignmentColumn(FolderColumn fc, AssigneeType assigneeType) {
-	  super(fc, new AssignmentCell(assigneeType));
+  public AssignmentColumn(FolderColumn fc) {
+	  super(fc, new AssignmentCell());
   }
 }

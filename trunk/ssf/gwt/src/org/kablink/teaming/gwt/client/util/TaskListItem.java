@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,54 +54,6 @@ public class TaskListItem implements IsSerializable {
 	// TaskListItem in the user interface.
 	private transient Object	m_uiData;
 
-	/**
-	 * Inner class used to model assignment information for a task.
-	 */
-	public static class AssignmentInfo extends PrincipalInfo {
-		// The following are used for managing group and team assignees
-		// for this AssignmentInfo in the user interface.
-		private transient List<AssignmentInfo> m_membership;
-		private transient int                  m_membersShown;
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public List<AssignmentInfo> getMembership()   {return m_membership;  }
-		public int                  getMembersShown() {return m_membersShown;}
-		
-		/**
-		 * Set'er methods.
-		 * 
-		 * @param
-		 */
-		public void setMembership(  List<AssignmentInfo> membership)   {m_membership   = membership;  }
-		public void setMembersShown(int                  membersShown) {m_membersShown = membersShown;}
-		
-		/**
-		 * Constructs an AssignmentInfo from the parameters.
-		 * 
-		 * @param id
-		 * @param title
-		 * 
-		 * @return
-		 */
-		public static AssignmentInfo construct(Long id, String title) {
-			AssignmentInfo reply = new AssignmentInfo();
-			
-			reply.setId(   id   );
-			reply.setTitle(title);
-			
-			return reply;
-		}
-		
-		public static AssignmentInfo construct(Long id) {
-			// Always use the initial form of the method.
-			return construct(id, "");
-		}		
-	}
-	
 	/**
 	 * Inner class used to model the Vibe Duration object in a way
 	 * that's compatible with GWT RPC calls 
