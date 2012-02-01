@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskProvider;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -103,109 +103,6 @@ public class TaskGraphsPanel extends ToolPanelBase
 		TeamingEvents.TASK_LIST_READY,
 	};
 
-	/*
-	 * Inner class used to track the task statistics.
-	 */
-	private static class TaskStats {
-		private int m_priorityCritical;		//
-		private int m_priorityHigh;			//
-		private int m_priorityLeast;		//
-		private int m_priorityLow;			//
-		private int m_priorityMedium;		//
-		private int m_priorityNone;			//
-		
-		private int m_statusCanceled;		//
-		private int m_statusCompleted;		//
-		private int m_statusInProcess;		//
-		private int m_statusNeedsAction;	//
-		
-		private int m_totalTasks;			//
-	
-		/**
-		 * Constructor method.
-		 * 
-		 * @param taskList
-		 */
-		public TaskStats(List<TaskListItem> taskList) {
-			// Gather the statistics from the task list.
-			gatherStats(taskList);
-		}
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public int getPriorityCritical()  {return m_priorityCritical; }
-		public int getPriorityHigh()      {return m_priorityHigh;     }
-		public int getPriorityLeast()     {return m_priorityLeast;    }
-		public int getPriorityLow()       {return m_priorityLow;      }
-		public int getPriorityMedium()    {return m_priorityMedium;   }
-		public int getPriorityNone()      {return m_priorityNone;     }
-		
-		public int getStatusCanceled()    {return m_statusCanceled;   }
-		public int getStatusCompleted()   {return m_statusCompleted;  }
-		public int getStatusInProcess()   {return m_statusInProcess;  }
-		public int getStatusNeedsAction() {return m_statusNeedsAction;}
-		
-		public int getTotalTasks()        {return m_totalTasks;       }
-
-		/**
-		 * Returns the percentage a given count is of the total.
-		 * 
-		 * @param count
-		 * 
-		 * @return
-		 */
-		public int getPercent(int count) {
-			return ((int) Math.round((((double) count) / ((double) m_totalTasks)) * 100.0));
-		}
-		
-		/*
-		 * Reflects this task in the counts.
-		 */
-		private void countTask(TaskListItem task) {
-			// Count the priority...
-			String p = task.getTask().getPriority();
-			if      (p.equals(TaskListItem.TaskInfo.PRIORITY_NONE))     m_priorityNone     += 1;
-			else if (p.equals(TaskListItem.TaskInfo.PRIORITY_CRITICAL)) m_priorityCritical += 1;
-			else if (p.equals(TaskListItem.TaskInfo.PRIORITY_HIGH))     m_priorityHigh     += 1;
-			else if (p.equals(TaskListItem.TaskInfo.PRIORITY_MEDIUM))   m_priorityMedium   += 1;
-			else if (p.equals(TaskListItem.TaskInfo.PRIORITY_LOW))      m_priorityLow      += 1;
-			else if (p.equals(TaskListItem.TaskInfo.PRIORITY_LEAST))    m_priorityLeast    += 1;
-
-			// ...status...
-			String s = task.getTask().getStatus();
-			if      (s.equals(TaskListItem.TaskInfo.STATUS_NEEDS_ACTION)) m_statusNeedsAction += 1;
-			else if (s.equals(TaskListItem.TaskInfo.STATUS_IN_PROCESS))   m_statusInProcess   += 1;
-			else if (s.equals(TaskListItem.TaskInfo.STATUS_COMPLETED))    m_statusCompleted   += 1;
-			else if (s.equals(TaskListItem.TaskInfo.STATUS_CANCELED))     m_statusCanceled    += 1;
-			
-			// ...and total.
-			m_totalTasks += 1;
-		}
-		
-		/*
-		 * Gathers the counts from the given list.
-		 */
-		private void gatherStats(List<TaskListItem> taskList) {
-			// If we don't have a list...
-			if ((null == taskList) || taskList.isEmpty()) {
-				// ...there's nothing to count.  Bail.
-				return;
-			}
-
-			// Scan the tasks in the task list...
-			for (TaskListItem task:  taskList) {
-				// ...counting each one...
-				countTask(task);
-				
-				// ...and its subtasks.
-				gatherStats(task.getSubtasks());
-			}
-		}
-	}
-	
 	/*
 	 * Constructor method.
 	 * 

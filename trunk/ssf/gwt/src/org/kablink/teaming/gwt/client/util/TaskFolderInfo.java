@@ -30,32 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
+package org.kablink.teaming.gwt.client.util;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Constants used by the various Vibe data table implementations (i.e.,
- * VibeDataGrid's, VibeCellTable's, ...
+ * Class used to model information about task folder.
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTableConstants {
-	// The following are used as event names that are captured by the
-	// various cell handlers. 
-	public final static String CELL_EVENT_CLICK		= "click";
-	public final static String CELL_EVENT_KEYDOWN	= "keydown";
-	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
-	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
+public class TaskFolderInfo implements IsSerializable {
+	private Long		m_folderId;			//
+	private String		m_folderPermalink;	//
+	private String		m_title;			//
+	private TaskStats	m_taskStatistics;	//
 	
-	// The following are used to name widgets stored in various cells.
-	public final static String CELL_WIDGET_ATTRIBUTE				= "n-cellWidget";
-	public final static String CELL_WIDGET_ENTRY_DOWNLOAD_LABEL		= "entryDownloadLabel";
-	public final static String CELL_WIDGET_ENTRY_PIN_IMAGE			= "entryPinImg";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL		= "entryTitleLabel";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK	= "entryTitleLabelNoLink";
-	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE		= "entryUnseenImg";
-	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR		= "entryViewAnchor";
-	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL			= "entryViewLabel";
-	public final static String CELL_WIDGET_PRESENCE					= "presenceControl";
-	public final static String CELL_WIDGET_PRESENCE_LABEL			= "presenceLabel";
-	public final static String CELL_WIDGET_TASK_FOLDER				= "taskFolder";
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameter constructor as per GWT serialization
+	 * requirements.
+	 */
+	public TaskFolderInfo() {
+		super();
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param folderId
+	 * @param folderPermalink
+	 * @param title
+	 * @param taskStatistics
+	 */
+	public TaskFolderInfo(Long folderId, String folderPermalink, String title, TaskStats taskStatistics) {
+		this();
+		
+		setFolderId(       folderId       );
+		setFolderPermalink(folderPermalink);
+		setTitle(          title          );
+		setTaskStatistics( taskStatistics );
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Long      getFolderId()        {return m_folderId;       }
+	public String    getFolderPermalink() {return m_folderPermalink;}
+	public String    getTitle()           {return m_title;          }
+	public TaskStats getTaskStatistics()  {return m_taskStatistics; }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFolderId(       Long      folderId)        {m_folderId        = folderId;       }
+	public void setFolderPermalink(String    folderPermalink) {m_folderPermalink = folderPermalink;}
+	public void setTitle(          String    title)           {m_title           = title;          }
+	public void setTaskStatistics( TaskStats taskStatistics)  {m_taskStatistics  = taskStatistics; }
 }

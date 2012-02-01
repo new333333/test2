@@ -32,30 +32,26 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+
 /**
- * Constants used by the various Vibe data table implementations (i.e.,
- * VibeDataGrid's, VibeCellTable's, ...
+ * A column that displays its contents with a list of task folder
+ * information blocks corresponding to a list of task folders.
+ *
+ * @param <T> is a FolderRow.
  * 
  * @author drfoster@novell.com
  */
-public class VibeDataTableConstants {
-	// The following are used as event names that are captured by the
-	// various cell handlers. 
-	public final static String CELL_EVENT_CLICK		= "click";
-	public final static String CELL_EVENT_KEYDOWN	= "keydown";
-	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
-	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
-	
-	// The following are used to name widgets stored in various cells.
-	public final static String CELL_WIDGET_ATTRIBUTE				= "n-cellWidget";
-	public final static String CELL_WIDGET_ENTRY_DOWNLOAD_LABEL		= "entryDownloadLabel";
-	public final static String CELL_WIDGET_ENTRY_PIN_IMAGE			= "entryPinImg";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL		= "entryTitleLabel";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK	= "entryTitleLabelNoLink";
-	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE		= "entryUnseenImg";
-	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR		= "entryViewAnchor";
-	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL			= "entryViewLabel";
-	public final static String CELL_WIDGET_PRESENCE					= "presenceControl";
-	public final static String CELL_WIDGET_PRESENCE_LABEL			= "presenceLabel";
-	public final static String CELL_WIDGET_TASK_FOLDER				= "taskFolder";
+public abstract class TaskFolderColumn<T> extends VibeColumn<T, List<TaskFolderInfo>> {
+  /**
+   * Constructor method.
+   * 
+   * @param fc
+   */
+  public TaskFolderColumn(FolderColumn fc) {
+	  super(fc, new TaskFolderCell());
+  }
 }
