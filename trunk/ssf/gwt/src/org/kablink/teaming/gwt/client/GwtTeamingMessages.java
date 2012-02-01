@@ -1296,6 +1296,10 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
+	String vibeDataTable_TaskFolderStatusCanceled(String percent, String count);
+	String vibeDataTable_TaskFolderStatusCompleted(String percent, String count);
+	String vibeDataTable_TaskFolderStatusInProcess(String percent, String count);
+	String vibeDataTable_TaskFolderStatusNeedsAction(String percent, String count);
 	String vibeDataTable_TrashConfirmPurge();
 	String vibeDataTable_TrashConfirmPurgeAll();
 	String vibeDataTable_TrashConfirmPurgeAllWithSelections();

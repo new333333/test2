@@ -99,35 +99,45 @@
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
-		.vibe-dataTableAssignment-list       {}
-		.vibe-dataTableAssignment-panel      {white-space: nowrap;}
-		.vibe-dataTableAssignment-control    {}
-		.vibe-dataTableAssignment-label      {display: inline; font-weight: bold; padding-left: 2px !important;}
-		.vibe-dataTableAssignment-disabled   {color: #c4c4c4;}
-		.vibe-dataTableAssignment-enabled    {color: #353838;}
-		.vibe-dataTableCustom-anchor         {}
-		.vibe-dataTableCustom-anchor-label   {}
-		.vibe-dataTableCustom-event          {}
-		.vibe-dataTableCustom-event-allDay   {}
-		.vibe-dataTableCustom-event-start    {}
-		.vibe-dataTableCustom-event-end      {}
-		.vibe-dataTableCustom-event-duration {}
-		.vibe-dataTableCustom-string         {}
-		.vibe-dataTableEntity-Marker         {display: inline; cursor: pointer;}
-		.vibe-dataTableEntry-download        {border: 0px solid #666666; background: url(images/move_down.gif); background-repeat: no-repeat; background-position:  left center; padding-left: 15px; padding-right: 0px; line-height: 11px;}
-		.vibe-dataTableEntry-title           {cursor: pointer; color: #135c8f !important; padding: 2px;}
-		.vibe-dataTableEntry-titleNoLink     {color: #353838 !important; padding: 2px;}
-		.vibe-dataTableEntry-unseenMarker    {display: inline; cursor: pointer;}
-		.vibe-dataTableEntry-viewAnchor      {text-decoration: none;}
-		.vibe-dataTableEntry-viewLabel       {}
-		.vibe-dataTableLink-hover            {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
-		.vibe-dataTableLink-hoverHint        {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: 300px; -moz-border-radius: 6px; -webkit-border-radius: 6px; }
-		.vibe-dataTableLink-hoverHintLabel   {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
-		.vibe-dataTablePresence-control      {}
-		.vibe-dataTablePresence-label        {display: inline; font-weight: bold; padding-left: 2px !important;}
-		.vibe-dataTablePresence-disabled     {color: #c4c4c4;}
-		.vibe-dataTablePresence-enabled      {color: #353838;}
-		.vibe-dataTableTaskFolder-panel      {white-space: nowrap;}
+		.vibe-dataTableAssignment-control         {}
+		.vibe-dataTableAssignment-disabled        {color: #c4c4c4;}
+		.vibe-dataTableAssignment-enabled         {color: #353838;}
+		.vibe-dataTableAssignment-label           {display: inline; font-weight: bold; padding-left: 2px !important;}
+		.vibe-dataTableAssignment-list            {}
+		.vibe-dataTableAssignment-panel           {white-space: nowrap;}
+		.vibe-dataTableCustom-anchor              {}
+		.vibe-dataTableCustom-anchor-label        {}
+		.vibe-dataTableCustom-event               {}
+		.vibe-dataTableCustom-event-allDay        {}
+		.vibe-dataTableCustom-event-start         {}
+		.vibe-dataTableCustom-event-end           {}
+		.vibe-dataTableCustom-event-duration      {}
+		.vibe-dataTableCustom-string              {}
+		.vibe-dataTableEntity-Marker              {display: inline; cursor: pointer;}
+		.vibe-dataTableEntry-download             {border: 0px solid #666666; background: url(images/move_down.gif); background-repeat: no-repeat; background-position:  left center; padding-left: 15px; padding-right: 0px; line-height: 11px;}
+		.vibe-dataTableEntry-title                {cursor: pointer; color: #135c8f !important; padding: 2px;}
+		.vibe-dataTableEntry-titleNoLink          {color: #353838 !important; padding: 2px;}
+		.vibe-dataTableEntry-unseenMarker         {display: inline; cursor: pointer;}
+		.vibe-dataTableEntry-viewAnchor           {text-decoration: none;}
+		.vibe-dataTableEntry-viewLabel            {}
+		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLink-hoverHint             {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: 300px; -moz-border-radius: 6px; -webkit-border-radius: 6px; }
+		.vibe-dataTableLink-hoverHintLabel        {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
+		.vibe-dataTablePresence-control           {}
+		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
+		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
+		.vibe-dataTablePresence-enabled           {color: #353838;}
+		.vibe-dataTableTaskFolder-disabled        {color: #c4c4c4;}
+		.vibe-dataTableTaskFolder-enabled         {color: #353838;}
+		.vibe-dataTableTaskFolder-label           {display: inline; color: #135c8f;}
+		.vibe-dataTableTaskFolder-panel           {white-space: nowrap;}
+		.vibe-dataTableTaskFolder-stats           {white-space: nowrap; padding-left: 8px;}
+		.vibe-dataTableTaskFolder-statsBarSegment {color: white; font-size: 0.75em; font-weight: bold;}
+		.vibe-dataTableTaskFolder-statsStatus0    {background-color:#EC9112;}
+		.vibe-dataTableTaskFolder-statsStatus1    {background-color:#617F9F;}
+		.vibe-dataTableTaskFolder-statsStatus2    {background-color:#70AE55;}
+		.vibe-dataTableTaskFolder-statsStatus3    {background-color:#995DB2;}
+		.vibe-dataTableTaskFolder-statsStatusBar  {width: 150px;}
 	/* ...End:  Data table cell styles. */
 
 	/* ...Start:  Discussion folder view styles. */

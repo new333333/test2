@@ -2278,6 +2278,12 @@ body, table td, select
 	padding-top: 2px;
 }
 
+/* Style used to add padding-top: 3px; */
+.paddingTop3px
+{
+	padding-top: 3px;
+}
+
 /* Style used to add padding-top: 5px; */
 .paddingTop5px
 {

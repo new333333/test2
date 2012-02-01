@@ -134,8 +134,6 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
-	private final static boolean	SHOW_NEW_MILESTONE_FOLDER	= false;	// 20120130 (DRF):  Until I get this working.
-	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -608,11 +606,8 @@ public class ContentControl extends Composite
 							
 							
 						case MILESTONE:
-							if ( SHOW_NEW_MILESTONE_FOLDER )
-							{
-								GwtTeaming.fireEvent( new ShowMilestoneFolderEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							GwtTeaming.fireEvent( new ShowMilestoneFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 	
 							
