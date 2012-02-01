@@ -97,6 +97,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
@@ -106,7 +107,6 @@ import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -1553,11 +1553,17 @@ public class GwtViewHelper {
 						if (null == pi) {
 							// No!  Does the column contain assignment
 							// information?
-							if (isAssignmentColumnSearchKey(csk)) {
+							if (AssignmentInfo.isColumnAssigneeInfo(csk)) {
 								// Yes!  Process it for a
 								// List<AssignmentInfo>'s.
 								addedAssignments = true;
-								fr.setColumnValue(fc, GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk));
+								fr.setColumnValue(
+									fc,
+									GwtServerHelper.getAssignmentInfoListFromEntryMap(
+										entryMap,
+										csk,
+										AssignmentInfo.getColumnAssigneeType(
+											csk)));
 							}
 							else {
 								// No, the column doesn't contain
@@ -2321,27 +2327,6 @@ public class GwtViewHelper {
 		vi.setBinderInfo(bi);
 		
 		return true;
-	}
-
-	/*
-	 * Returns true if a column search key corresponds to an
-	 * 'assignment' attribute or false otherwise.
-	 */
-	private static boolean isAssignmentColumnSearchKey(String csk) {
-		boolean reply = false;
-		if (MiscUtil.hasString(csk)) {
-			reply =
-				(csk.equals(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)             ||
-				 csk.equals(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)      ||
-				 csk.equals(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)       ||
-				 csk.equals(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)        ||
-				 csk.equals(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME) ||
-				 csk.equals(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)  ||
-				 csk.equals(RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)                  ||
-				 csk.equals(RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME)           ||
-				 csk.equals(RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME));
-		}
-		return reply;
 	}
 
 	/*

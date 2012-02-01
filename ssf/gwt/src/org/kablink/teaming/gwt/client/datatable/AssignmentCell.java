@@ -38,7 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -59,18 +59,6 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
-	private AssigneeType	m_assigneeType;	//
-	
-	/**
-	 * Enumeration used to represent the type of an AssignmentInfo.
-	 */
-	public enum AssigneeType {
-		INDIVIDUAL,
-		GROUP,
-		TEAM,
-		UNKNOWN,
-	}
-	
 	/*
 	 * Inner class used to encapsulate information about an event
 	 * received by an AssignmentCell.
@@ -149,16 +137,13 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	/**
 	 * Constructor method.
 	 */
-	public AssignmentCell(AssigneeType assigneeType) {
-		// Sink the events we need to process presence...
+	public AssignmentCell() {
+		// Sink the events we need to process presence.
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
-		
-		// ...and save the parameters.
-		m_assigneeType = assigneeType;
 	}
 
 	/*
@@ -269,7 +254,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			}
 			renderPanel.add(fp);
 
-			switch (m_assigneeType) {
+			switch (ai.getAssigneeType()) {
 			case INDIVIDUAL:
 				// Individual assignee!  Generate a presence control...
 				String assignmentIndexTail = ("." + (assignmentIndex++));

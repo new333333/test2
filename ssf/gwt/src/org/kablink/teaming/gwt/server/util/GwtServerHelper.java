@@ -116,6 +116,8 @@ import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -129,7 +131,6 @@ import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
@@ -146,7 +147,6 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
@@ -573,10 +573,10 @@ public class GwtServerHelper {
 	 * Converts a String to a Long, if possible, and adds it as the ID
 	 * of an AssignmentInfo to a List<AssignmentInfo>.
 	 */
-	private static void addAIFromStringToList(String s, List<AssignmentInfo> l) {
+	private static void addAIFromStringToList(String s, List<AssignmentInfo> l, AssigneeType assigneeType) {
 		try {
 			Long lVal = Long.parseLong(s);
-			l.add(AssignmentInfo.construct(lVal));
+			l.add(AssignmentInfo.construct(lVal, assigneeType));
 		}
 		catch (NumberFormatException nfe) {/* Ignored. */}
 	}
@@ -2380,7 +2380,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static List<AssignmentInfo> getAssignmentInfoListFromEntryMap(Map m, String key) {
+	public static List<AssignmentInfo> getAssignmentInfoListFromEntryMap(Map m, String key, AssigneeType assigneeType) {
 		// Is there value for the key?
 		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
 		Object o = m.get(key);
@@ -2388,7 +2388,7 @@ public class GwtServerHelper {
 			// Yes!  Is the value is a String?
 			if (o instanceof String) {
 				// Yes!  Added it as a Long to the List<Long>. 
-				addAIFromStringToList(((String) o), reply);
+				addAIFromStringToList(((String) o), reply, assigneeType);
 			}
 
 			// No, the value isn't a String!  Is it a String[]?
@@ -2398,7 +2398,7 @@ public class GwtServerHelper {
 				String[] strLs = ((String[]) o);
 				int c = strLs.length;
 				for (int i = 0; i < c; i += 1) {
-					addAIFromStringToList(strLs[i], reply);
+					addAIFromStringToList(strLs[i], reply, assigneeType);
 				}
 			}
 
@@ -2410,7 +2410,7 @@ public class GwtServerHelper {
 				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
 				Set<String> strLs = ((Set<String>) sfr.getValueSet());
 				for (String strL:  strLs) {
-					addAIFromStringToList(strL, reply);
+					addAIFromStringToList(strL, reply, assigneeType);
 				}
 			}
 		}

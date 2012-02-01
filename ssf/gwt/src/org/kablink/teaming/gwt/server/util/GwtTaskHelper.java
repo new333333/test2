@@ -76,13 +76,14 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskDuration;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
@@ -1074,7 +1075,7 @@ public class GwtTaskHelper {
 							// each ID to the List<AssignmentInfo> that
 							// we're going to return.
 							for (Long memberId:  groupMemberIds) {
-								reply.add(AssignmentInfo.construct(memberId));
+								reply.add(AssignmentInfo.construct(memberId, AssigneeType.GROUP));
 							}
 						}
 					}
@@ -1423,7 +1424,7 @@ public class GwtTaskHelper {
 				// Yes!  Add a base AssignmentInfo with each ID to the
 				// List<AssignmentInfo> that we're going to return.
 				for (Long memberId:  teamMemberIds) {
-					reply.add(AssignmentInfo.construct(memberId));
+					reply.add(AssignmentInfo.construct(memberId, AssigneeType.TEAM));
 				}
 			}
 			
@@ -1693,16 +1694,16 @@ public class GwtTaskHelper {
 		for (Map taskEntry:  taskEntriesList) {			
 			TaskInfo ti = new TaskInfo();
 			
-			ti.setOverdue(                         getOverdueFromMap(                taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
-			ti.setEvent(                           getEventFromMap(                  taskEntry, clientBundle                                               ));
-			ti.setStatus(                          getStringFromMap(                 taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME                ));
-			ti.setCompleted(                       getStringFromMap(                 taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME             ));
-			ti.setSeen(                            seenMap.checkIfSeen(              taskEntry                                                             ));
-			ti.setEntityType(                      getStringFromMap(                 taskEntry, Constants.ENTITY_FIELD                                     ));
-			ti.setPriority(                        getStringFromMap(                 taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME              ));
-			ti.setAssignments(     GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME            ));
-			ti.setAssignmentGroups(GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME     ));
-			ti.setAssignmentTeams( GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME      ));
+			ti.setOverdue(                         getOverdueFromMap(                taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)                    ));
+			ti.setEvent(                           getEventFromMap(                  taskEntry, clientBundle                                                                   ));
+			ti.setStatus(                          getStringFromMap(                 taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME                                    ));
+			ti.setCompleted(                       getStringFromMap(                 taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME                                 ));
+			ti.setSeen(                            seenMap.checkIfSeen(              taskEntry                                                                                 ));
+			ti.setEntityType(                      getStringFromMap(                 taskEntry, Constants.ENTITY_FIELD                                                         ));
+			ti.setPriority(                        getStringFromMap(                 taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME                                  ));
+			ti.setAssignments(     GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,        AssigneeType.INDIVIDUAL));
+			ti.setAssignmentGroups(GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.GROUP     ));
+			ti.setAssignmentTeams( GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,  AssigneeType.TEAM      ));
 			
 			String title = getStringFromMap(taskEntry, Constants.TITLE_FIELD);
 			if (!(MiscUtil.hasString(title))) {

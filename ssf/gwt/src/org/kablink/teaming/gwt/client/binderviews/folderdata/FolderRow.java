@@ -36,12 +36,12 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;

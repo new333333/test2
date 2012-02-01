@@ -90,6 +90,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -101,7 +103,6 @@ import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
@@ -255,15 +256,6 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_QUICK_FILTER,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
-	
-	/*
-	 * Enumeration used to represent the type of an AssignmentInfo.
-	 */
-	private enum AssigneeType {
-		INDIVIDUAL,
-		GROUP,
-		TEAM,
-	}
 	
 	/*
 	 * Enumeration used to represent the order of the columns in the

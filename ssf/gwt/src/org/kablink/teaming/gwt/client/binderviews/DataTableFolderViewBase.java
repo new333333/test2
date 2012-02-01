@@ -49,7 +49,6 @@ import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
-import org.kablink.teaming.gwt.client.datatable.AssignmentCell.AssigneeType;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
@@ -91,6 +90,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
@@ -99,7 +99,6 @@ import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
-import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -753,38 +752,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Various column type detectors.
 	 */
-	private static AssigneeType getAssigneeType(String columnName) {
-		AssigneeType reply;
-		if      (isColumnAssignee(     columnName)) reply = AssigneeType.INDIVIDUAL;
-		else if (isColumnAssigneeGroup(columnName)) reply = AssigneeType.GROUP;
-		else if (isColumnAssigneeTeam( columnName)) reply = AssigneeType.TEAM;
-		else                                        reply = AssigneeType.UNKNOWN;
-		return reply;
-	}
-	private static boolean isColumnAssigneeInfo(String columnName) {
-		return
-			(isColumnAssignee(     columnName) ||
-			 isColumnAssigneeGroup(columnName) ||
-			 isColumnAssigneeTeam( columnName));
-	}
-	private static boolean isColumnAssignee(String columnName) {
-		return
-			(columnName.equals("attendee")           ||	// Calendar entry attendee.
-			 columnName.equals("assignment")         ||	// Task assignee.
-			 columnName.equals("responsible"));			// Milestone responsible.
-	}
-	private static boolean isColumnAssigneeGroup(String columnName) {
-		return
-			(columnName.equals("attendee_groups")    ||	// Calendar entry attendee.
-			 columnName.equals("assignment_groups")  ||	// Task assignee.
-			 columnName.equals("responsible_groups"));	// Milestone responsible.
-	}
-	private static boolean isColumnAssigneeTeam(String columnName) {
-		return
-			(columnName.equals("attendee_teams")     ||	// Calendar entry attendee.
-			 columnName.equals("assignment_teams")   ||	// Task assignee.
-			 columnName.equals("responsible_teams"));	// Milestone responsible.
-	}
 	private static boolean isColumnCustom(      FolderColumn column)     {return column.isCustomColumn();                       }
 	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);}
 	private static boolean isColumnRating(      String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);  }
@@ -1020,9 +987,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a custom column either!  Is
 			// it an assignment of some sort?
-			else if (isColumnAssigneeInfo(cName)){
+			else if (AssignmentInfo.isColumnAssigneeInfo(cName)){
 				// Yes!  Create an AssignmentColumn for it.
-				column = new AssignmentColumn<FolderRow>(fc, getAssigneeType(cName)) {
+				column = new AssignmentColumn<FolderRow>(fc) {
 					@Override
 					public List<AssignmentInfo> getValue(FolderRow fr) {
 						return fr.getColumnValueAsAssignmentInfos(fc);
