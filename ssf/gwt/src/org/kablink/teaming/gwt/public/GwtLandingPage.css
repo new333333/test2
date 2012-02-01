@@ -19,10 +19,18 @@
 
 
 /* Style used for all widgets on a landing page. */
-.landingPageWidgetMainPanel, .landingPageWidgetMainPanel_dark 
+.landingPageWidgetMainPanel 
 {
 	background: transparent;
 	margin: 6px;
+}
+
+.landingPageWidgetMainPanel_dark 
+{
+	background: transparent;
+	margin: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
 }
 
 /* Style used for the title on widgets in a landing page. */
