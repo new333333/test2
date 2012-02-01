@@ -34,7 +34,7 @@ package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
 
-public class DataQuotaException extends UncheckedCodedException {
+public abstract class DataQuotaException extends UncheckedCodedException {
 
 	public DataQuotaException(String errorCode, Object[] args) {
 		super(errorCode, args);

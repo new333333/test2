@@ -33,6 +33,7 @@
 package org.kablink.teaming.fi;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class FIException extends UncheckedCodedException {
 
@@ -60,7 +61,15 @@ public class FIException extends UncheckedCodedException {
     }
 
     public int getHttpStatusCode() {
-    	return 400; // Bad Request
+    	return 500; // internal server error
     }
 
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.MIRRORED_ERROR;
+	}
 }

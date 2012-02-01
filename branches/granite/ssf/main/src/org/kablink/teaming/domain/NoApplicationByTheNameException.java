@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NoApplicationByTheNameException extends NoObjectByTheNameException {
     private static final String NoApplicationByTheNameException_ErrorCode = "errorcode.no.application.by.the.name";
@@ -50,5 +51,12 @@ public class NoApplicationByTheNameException extends NoObjectByTheNameException 
         super(NoApplicationByTheNameException_ErrorCode, applicationName, cause);
     }
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.APPLICATION_NOT_FOUND;
+	}
 }
 

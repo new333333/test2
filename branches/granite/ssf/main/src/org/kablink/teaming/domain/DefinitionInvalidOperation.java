@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
   *
@@ -41,25 +42,21 @@ import org.kablink.teaming.exception.UncheckedCodedException;
  *
  */
 public class DefinitionInvalidOperation extends UncheckedCodedException {
-	private static final String DefinitionInvalidOperation_ErrorCode = "errorcode.definition.operation.invalid";
+	private static final String DefinitionInvalidOperation_ErrorCode = "definition.errror.inUse";
 
 	public DefinitionInvalidOperation() {
         super(DefinitionInvalidOperation_ErrorCode, new Object[]{""});
 	}
 
-	public DefinitionInvalidOperation(String msg) {
-		super(DefinitionInvalidOperation_ErrorCode, new Object[]{msg});
-	}
-
-	public DefinitionInvalidOperation(String msg, Throwable cause) {
-		super(DefinitionInvalidOperation_ErrorCode, new Object[]{msg, cause});
-	}
-
-	public DefinitionInvalidOperation(Throwable cause) {
-		super(DefinitionInvalidOperation_ErrorCode, new Object[]{cause});
-	}
-
     public int getHttpStatusCode() {
     	return 400; // Bad Request
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.DEFINITION_IN_USE;
+	}
 }

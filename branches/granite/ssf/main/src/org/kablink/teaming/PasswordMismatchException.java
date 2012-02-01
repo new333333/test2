@@ -36,6 +36,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class PasswordMismatchException extends UncheckedCodedException {
     public PasswordMismatchException(String errorCode) {
@@ -70,6 +71,13 @@ public class PasswordMismatchException extends UncheckedCodedException {
 
     }    
     public int getHttpStatusCode() {
-    	return 401; // Unauthorized
+    	return 400; // Bad data
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.BAD_INPUT;
+	}
 }

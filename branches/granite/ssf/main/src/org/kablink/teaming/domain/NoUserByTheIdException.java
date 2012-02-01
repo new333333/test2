@@ -39,6 +39,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author janet
@@ -61,6 +62,13 @@ public class NoUserByTheIdException extends NoObjectByTheIdException {
     public NoUserByTheIdException(Long userId, Throwable cause) {
         super(NoUserByTheIdException_ErrorCode, userId, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.USER_NOT_FOUND;
+	}
 
 }
 

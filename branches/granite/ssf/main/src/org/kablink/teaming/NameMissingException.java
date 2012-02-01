@@ -34,7 +34,7 @@ package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
 
-public class NameMissingException extends UncheckedCodedException {
+public abstract class NameMissingException extends UncheckedCodedException {
     public NameMissingException(String errorCode) {
         super(errorCode);
     }

@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NoFileVersionByTheIdException extends NoObjectByTheIdException {
 
@@ -53,4 +54,11 @@ public class NoFileVersionByTheIdException extends NoObjectByTheIdException {
         super(NoFileVersionByTheIdException_ErrorCode, versionAttachmentId, cause);
     }
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FILE_VERSION_NOT_FOUND;
+	}
 }

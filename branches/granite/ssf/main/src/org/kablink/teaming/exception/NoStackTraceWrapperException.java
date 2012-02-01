@@ -35,6 +35,17 @@ package org.kablink.teaming.exception;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+/**
+ * This class overrides the default behavior of <code>Exception</code> such that
+ * handling of stack trace is ignored.
+ * 
+ * This wrapper is used to work around the situation where some framework code that we don't have
+ * direct control over attempts to print (big and ugly) stack trace when it is not desirable in
+ * our application.
+ *  
+ * @author jong
+ *
+ */
 public class NoStackTraceWrapperException extends Exception {
 
 	private Exception wrappedException;
@@ -64,7 +75,7 @@ public class NoStackTraceWrapperException extends Exception {
     }
 
     public void printStackTrace() { 
-    	wrappedException.printStackTrace();
+    	// This is noop!
     }
 
     public void printStackTrace(PrintStream s) {

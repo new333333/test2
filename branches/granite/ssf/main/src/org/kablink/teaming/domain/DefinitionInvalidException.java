@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.domain;
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 /**
   *
  * @author  Peter Hurley
@@ -58,4 +59,11 @@ public class DefinitionInvalidException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 400; // Bad Request
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.INVALID_DEFINITION;
+	}
 }

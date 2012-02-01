@@ -35,13 +35,17 @@ package org.kablink.teaming.module.binder.impl;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-public class WriteEntryDataException extends Exception {
+import org.kablink.util.HttpStatusCodeSupport;
+import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.api.ApiErrorCodeSupport;
+
+public class WriteEntryDataException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport {
 	
 	private EntryDataErrors errors;
 	private Long entityId;
 	
 	public WriteEntryDataException(EntryDataErrors errors, Long entityId) {
-		this.errors = errors;
+		this(errors);
 		this.entityId = entityId;
 	}
 	public WriteEntryDataException(EntryDataErrors errors) {
@@ -69,4 +73,24 @@ public class WriteEntryDataException extends Exception {
     public Long getEntityId() {
     	return entityId;
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.HttpStatusCodeSupport#getHttpStatusCode()
+	 */
+	@Override
+	public int getHttpStatusCode() {
+		if(errors.getProblems().size() > 0)
+			return errors.getProblems().get(0).getHttpStatusCode();
+		else
+			return 500; // internal server error
+	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		if(errors.getProblems().size() > 0)
+			return errors.getProblems().get(0).getApiErrorCode();
+		else
+			return ApiErrorCode.SERVER_ERROR;
+	}
 }

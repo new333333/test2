@@ -49,6 +49,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.UserExistsException;
+import org.kablink.teaming.UserNameMissingException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -113,7 +114,7 @@ public class AddEntryController extends SAbstractController {
 			}
 			MapInputData inputData = new MapInputData(formData);
         	String name = inputData.getSingleValue(WebKeys.USER_PROFILE_NAME);
-        	if (name == null || name.equals("")) throw new NameMissingException("errorcode.name.missing");
+        	if (name == null || name.equals("")) throw new UserNameMissingException();
         	if (!BinderHelper.isBinderNameLegal(name)) throw new IllegalCharacterInNameException("errorcode.illegalCharacterInName");
         
         	//check if the user already exists, if found throw ObjectExistsException,
@@ -121,7 +122,7 @@ public class AddEntryController extends SAbstractController {
         	try
         	{
         		User user = getProfileModule().getUserDeadOrAlive( name );
-        		throw new UserExistsException("errorcode.user.alreadyExists", (Object[])null);
+        		throw new UserExistsException();
         	} catch (NoPrincipalByTheNameException nue){
         		//if user not found continue, this is what we want
         	}
@@ -166,7 +167,7 @@ public class AddEntryController extends SAbstractController {
 		    				if ( kaptchaExpected == null || kaptchaResponse == null || !kaptchaExpected.equalsIgnoreCase( kaptchaResponse  ) )
 		    				{
 		    					// The text entered by the user did not match the text used to create the kaptcha image.
-		    	        		throw new TextVerificationException( "errorcode.textverification.mismatch" );
+		    	        		throw new TextVerificationException();
 		    				}
 	    				}
     				}

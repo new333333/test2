@@ -35,12 +35,14 @@ package org.kablink.teaming.exception;
 import javax.ws.rs.core.Response;
 
 import org.kablink.teaming.util.NLT;
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
  *
  */
-public abstract class UncheckedCodedException extends RuntimeException implements ErrorCodeSupport {
+public abstract class UncheckedCodedException extends VibeRuntimeException implements ErrorCodeSupport {
     private String errorCode;
     private Object[] errorArgs;
     protected String msg;
@@ -71,8 +73,6 @@ public abstract class UncheckedCodedException extends RuntimeException implement
         setErrorCode(errorCode);
         setErrorArgs(errorArgs);
     }
-
-    public abstract int getHttpStatusCode();
     
     public String getLocalizedMessage() {
     	try {

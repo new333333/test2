@@ -58,6 +58,7 @@ import org.dom4j.DocumentException;
 
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.kablink.teaming.DefinitionExistsException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
@@ -628,7 +629,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		   		try {
    		   			getCoreDao().loadDefinitionByName(null, def.getName(), def.getZoneId());
    		   			//already exists
-   		   			throw new ObjectExistsException("errorcode.name.exists");
+   		   			throw new DefinitionExistsException();
    		   		} catch (NoDefinitionByTheIdException nd) {
    		   			def.setVisibility(visibility);
    		   			def.setBinderId(ObjectKeys.RESERVED_BINDER_ID);
@@ -646,7 +647,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		   		try {
    		   			getCoreDao().loadDefinitionByName(binder, def.getName(), def.getZoneId());
    		   			//already exists
-   		   			throw new ObjectExistsException("errorcode.name.exists");
+   		   			throw new DefinitionExistsException();
    		   		} catch (NoDefinitionByTheIdException nd) {
    		   			def.setVisibility(visibility);
    					def.setBinderId(binderId);

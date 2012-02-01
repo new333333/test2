@@ -50,6 +50,8 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.dao.KablinkDao;
+import org.kablink.teaming.domain.NoRoleByTheIdException;
+import org.kablink.teaming.domain.NoRoleConditionByTheIdException;
 import org.kablink.teaming.domain.ZoneMismatchException;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfo;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
@@ -91,7 +93,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		try {
 	        Function f = (Function)getHibernateTemplate().get(Function.class, id);
 	        if (f != null && zoneId.equals(f.getZoneId())) return f;
-	        throw new NoObjectByTheIdException("errorcode.no.role.by.the.id", id);
+	        throw new NoRoleByTheIdException(id);
     	}
     	finally {
     		end(begin, "loadFunction(Long,Long)");
@@ -134,7 +136,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	        if (c != null && zoneId.equals(c.getZoneId())) 
 	        	return c;
 	        else 
-	        	throw new NoObjectByTheIdException("errorcode.no.condition.by.the.id", functionConditionId);
+	        	throw new NoRoleConditionByTheIdException(functionConditionId);
     	}
     	finally {
     		end(begin, "loadFunctionCondition(Long,String)");

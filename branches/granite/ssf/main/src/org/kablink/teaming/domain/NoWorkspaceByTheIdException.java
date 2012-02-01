@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
@@ -53,4 +54,11 @@ public class NoWorkspaceByTheIdException extends NoObjectByTheIdException {
     public NoWorkspaceByTheIdException(Long workspaceId, Throwable cause) {
         super(NoWorkspaceByTheIdException_ErrorCode, workspaceId, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.WORKSPACE_NOT_FOUND;
+	}
 }

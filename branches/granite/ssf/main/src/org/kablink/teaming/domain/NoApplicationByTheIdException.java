@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NoApplicationByTheIdException extends NoObjectByTheIdException {
     private static final String NoApplicationByTheIdException_ErrorCode = "errorcode.no.application.by.the.id";
@@ -50,5 +51,12 @@ public class NoApplicationByTheIdException extends NoObjectByTheIdException {
         super(NoApplicationByTheIdException_ErrorCode, applicationId, cause);
     }
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.APPLICATION_NOT_FOUND;
+	}
 }
 

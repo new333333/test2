@@ -35,6 +35,7 @@ package org.kablink.teaming;
 import java.io.IOException;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * Unchecked version of IOException.
@@ -52,4 +53,12 @@ public class UncheckedIOException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 500; // Internal Server Error
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.IO_ERROR;
+	}
 }

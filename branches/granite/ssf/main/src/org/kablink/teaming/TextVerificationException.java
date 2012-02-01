@@ -33,6 +33,7 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * This class is used when we find the user did not enter the captcha text correctly.
@@ -41,17 +42,27 @@ import org.kablink.teaming.exception.UncheckedCodedException;
  */
 public class TextVerificationException extends UncheckedCodedException
 {
+	private static final String TextVerificationException_ErrorCode = "errorcode.textverification.mismatch";
+	
 	/**
 	 * 
 	 * @param errorCode
 	 */
-    public TextVerificationException( String errorCode )
+    public TextVerificationException()
     {
-        super( errorCode );
+        super(TextVerificationException_ErrorCode);
     }
     
     public int getHttpStatusCode() {
     	return 400; // Bad Request
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.BAD_INPUT;
+	}
 
 }// end TextVerificationException

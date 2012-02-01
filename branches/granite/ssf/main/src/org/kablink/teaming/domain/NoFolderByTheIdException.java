@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 
 /**
@@ -54,4 +55,11 @@ public class NoFolderByTheIdException extends NoObjectByTheIdException {
     public NoFolderByTheIdException(Long folderId, Throwable cause) {
         super(NoFolderByTheIdException_ErrorCode, folderId, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FOLDER_NOT_FOUND;
+	}
 }

@@ -33,12 +33,13 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
  *
  */
-public class NoObjectByTheNameException extends UncheckedCodedException {
+public abstract class NoObjectByTheNameException extends UncheckedCodedException {
     public NoObjectByTheNameException(String errorCode, String objName) {
         super(errorCode, new Object[] {objName});
     }

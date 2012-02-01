@@ -34,7 +34,7 @@ package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
 
-public class ObjectExistsException extends UncheckedCodedException {
+public abstract class ObjectExistsException extends UncheckedCodedException {
 	   public ObjectExistsException(String errorCode) {
 	        super(errorCode);
 	    }

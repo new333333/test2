@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
@@ -53,4 +54,11 @@ public class NoUserByTheNameException extends NoObjectByTheNameException {
     public NoUserByTheNameException(String userName, Throwable cause) {
         super(NoUserByTheNameException_ErrorCode, userName, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.USER_NOT_FOUND;
+	}
 }
