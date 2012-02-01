@@ -181,30 +181,6 @@ public class ListWidget extends VibeWidget
 			m_layoutPanel.addStyleName( "landingPageWidgetNoBorder" );
 		}
 
-		// Set the width and height
-		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
-			
-			style = m_layoutPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			style.setOverflow( m_properties.getOverflow() );
-		}
-
 		// Is there a title?
 		title = properties.getTitle();
 		if ( title != null && title.length() > 0 )
@@ -235,6 +211,30 @@ public class ListWidget extends VibeWidget
 			m_contentPanel = new VibeFlowPanel();
 			m_contentPanel.addStyleName( "listWidgetContentPanel" + m_style );
 			m_layoutPanel.add( m_contentPanel );
+		}
+
+		// Set the width and height
+		{
+			Style style;
+			int width;
+			int height;
+			Unit unit;
+			
+			style = m_contentPanel.getElement().getStyle();
+			
+			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+			width = m_properties.getWidth();
+			unit = m_properties.getWidthUnits();
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
+			
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			height = m_properties.getHeight();
+			unit = m_properties.getHeightUnits();
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+			
+			style.setOverflow( m_properties.getOverflow() );
 		}
 	}
 }

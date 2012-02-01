@@ -135,6 +135,7 @@ public class EntryWidget extends VibeWidget
 	{
 		VibeFlowPanel titlePanel;
 		VibeFlowPanel mainPanel;
+		VibeFlowPanel contentPanel;
 		
 		m_properties = new EntryProperties();
 		m_properties.copy( properties );
@@ -152,30 +153,6 @@ public class EntryWidget extends VibeWidget
 		// Set the border width and color.
 		GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
 		
-		// Set the width and height
-		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
-			
-			style = mainPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			style.setOverflow( m_properties.getOverflow() );
-		}
-
 		// Create a place for the title to live.
 		{
 			InlineLabel label;
@@ -192,12 +169,14 @@ public class EntryWidget extends VibeWidget
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
 
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							handleClickOnTitle();
@@ -216,6 +195,36 @@ public class EntryWidget extends VibeWidget
 			GwtClientHelper.setElementTextColor( m_titleElement, widgetStyles.getHeaderTextColor() );
 			
 			mainPanel.add( titlePanel );
+		}
+		
+		// Create a content panel that will hold everything else
+		{
+			contentPanel = new VibeFlowPanel();
+			mainPanel.add( contentPanel );
+			
+			// Set the width and height
+			{
+				Style style;
+				int width;
+				int height;
+				Unit unit;
+				
+				style = contentPanel.getElement().getStyle();
+				
+				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+				width = m_properties.getWidth();
+				unit = m_properties.getWidthUnits();
+				if ( width != 100 || unit != Unit.PCT )
+					style.setWidth( width, unit );
+				
+				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+				height = m_properties.getHeight();
+				unit = m_properties.getHeightUnits();
+				if ( height != 100 || unit != Unit.PCT )
+					style.setHeight( height, unit );
+				
+				style.setOverflow( m_properties.getOverflow() );
+			}
 		}
 		
 		// Are we supposed to show the author or date?
@@ -240,12 +249,14 @@ public class EntryWidget extends VibeWidget
 					/**
 					 * 
 					 */
+					@Override
 					public void onClick( ClickEvent event )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								handleClickOnAuthor();
@@ -272,26 +283,26 @@ public class EntryWidget extends VibeWidget
 				authorPanel.add( dateLabel );
 			}
 			
-			mainPanel.add( authorPanel );
+			contentPanel.add( authorPanel );
 		}
 		
 		// Create a panel for the description of the entry to live in.
 		{
-			VibeFlowPanel contentPanel;
+			VibeFlowPanel descPanel;
 			Label label;
 			
-			contentPanel = new VibeFlowPanel();
-			contentPanel.addStyleName( "entryWidgetContentPanel" + m_style );
+			descPanel = new VibeFlowPanel();
+			descPanel.addStyleName( "entryWidgetContentPanel" + m_style );
 			
 			label = new Label( " " );
 			label.addStyleName( "entryWidgetDesc" + m_style );
-			contentPanel.add( label );
+			descPanel.add( label );
 			m_descElement = label.getElement();
 			
 			// Set the text color for the description.
 			GwtClientHelper.setElementTextColor( contentPanel.getElement(), widgetStyles.getContentTextColor() );
 			
-			mainPanel.add( contentPanel );
+			contentPanel.add( descPanel );
 		}
 		
 		// Are we supposed to show replies?
@@ -301,7 +312,7 @@ public class EntryWidget extends VibeWidget
 			m_repliesPanel = new VibeFlowPanel();
 			m_repliesPanel.addStyleName( "entryWidgetRepliesPanel" );
 			
-			mainPanel.add( m_repliesPanel );
+			contentPanel.add( m_repliesPanel );
 		}
 		
 		// Issue an ajax request to get the entry's data.
@@ -310,12 +321,14 @@ public class EntryWidget extends VibeWidget
 			/**
 			 * 
 			 */
+			@Override
 			public void returnValue( Boolean value )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						updateWidget();

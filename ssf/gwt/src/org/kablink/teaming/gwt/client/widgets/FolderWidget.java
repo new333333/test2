@@ -109,12 +109,14 @@ public class FolderWidget extends VibeWidget
 		/**
 		 * 
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			Scheduler.ScheduledCommand cmd;
 
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					handleClickOnLink();
@@ -164,12 +166,14 @@ public class FolderWidget extends VibeWidget
 		/**
 		 * 
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			Scheduler.ScheduledCommand cmd;
 
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					handleClickOnLink();
@@ -337,6 +341,8 @@ public class FolderWidget extends VibeWidget
 	private VibeFlowPanel init( FolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
+		VibeFlowPanel contentPanel;
+		
 		int numEntries;
 		
 		m_properties = new FolderProperties();
@@ -353,30 +359,6 @@ public class FolderWidget extends VibeWidget
 		// Set the border width and color.
 		GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
 		
-		// Set the width and height
-		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
-			
-			style = mainPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			style.setOverflow( m_properties.getOverflow() );
-		}
-
 		// Should we show the name of the folder?
 		if ( m_properties.getShowTitleValue() )
 		{
@@ -395,12 +377,14 @@ public class FolderWidget extends VibeWidget
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							handleClickOnFolderTitle();
@@ -421,25 +405,55 @@ public class FolderWidget extends VibeWidget
 			mainPanel.add( titlePanel );
 		}
 		
+		// Create a panel where everything except the title will live
+		{
+			contentPanel = new VibeFlowPanel();
+			mainPanel.add( contentPanel );
+
+			// Set the width and height
+			{
+				Style style;
+				int width;
+				int height;
+				Unit unit;
+				
+				style = contentPanel.getElement().getStyle();
+				
+				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+				width = m_properties.getWidth();
+				unit = m_properties.getWidthUnits();
+				if ( width != 100 || unit != Unit.PCT )
+					style.setWidth( width, unit );
+				
+				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+				height = m_properties.getHeight();
+				unit = m_properties.getHeightUnits();
+				if ( height != 100 || unit != Unit.PCT )
+					style.setHeight( height, unit );
+				
+				style.setOverflow( m_properties.getOverflow() );
+			}
+		}
+		
 		// Should we show the folder description?
 		{
-			VibeFlowPanel contentPanel;
+			VibeFlowPanel descPanel;
 			Label label;
 			
 			// Yes
 			// Create a panel for the description to live in.
-			contentPanel = new VibeFlowPanel();
-			contentPanel.addStyleName( "folderWidgetContentPanel" + m_style );
+			descPanel = new VibeFlowPanel();
+			descPanel.addStyleName( "folderWidgetContentPanel" + m_style );
 			
 			label = new Label( " " );
 			label.addStyleName( "folderWidgetDesc" + m_style );
-			contentPanel.add( label );
+			descPanel.add( label );
 			m_folderDescElement = label.getElement();
 			
 			// Set the text color for the description.
-			GwtClientHelper.setElementTextColor( contentPanel.getElement(), widgetStyles.getContentTextColor() );
+			GwtClientHelper.setElementTextColor( descPanel.getElement(), widgetStyles.getContentTextColor() );
 			
-			mainPanel.add( contentPanel );
+			contentPanel.add( descPanel );
 		}
 		
 		// Issue an rpc request to get information about the folder.
@@ -448,6 +462,7 @@ public class FolderWidget extends VibeWidget
 			/**
 			 * 
 			 */
+			@Override
 			public void returnValue( Boolean value )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -458,6 +473,7 @@ public class FolderWidget extends VibeWidget
 					// Yes
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Update this widget with the folder information
@@ -478,7 +494,7 @@ public class FolderWidget extends VibeWidget
 			// Yes, create a panel for the entries to live in.
 			m_listOfEntriesPanel = new VibeFlowPanel();
 			m_listOfEntriesPanel.addStyleName( "folderWidgetListOfEntriesPanel" + m_style );
-			mainPanel.add( m_listOfEntriesPanel );
+			contentPanel.add( m_listOfEntriesPanel );
 
 			// Issue an rpc request to get the last n entries from the folder.
 			cmd = new GetFolderEntriesCmd( m_properties.getZoneUUID(), m_properties.getFolderId(), numEntries, m_properties.getNumRepliesToShow() );
@@ -487,6 +503,7 @@ public class FolderWidget extends VibeWidget
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -499,6 +516,7 @@ public class FolderWidget extends VibeWidget
 				 * 
 				 * @param result
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					GetFolderEntriesRpcResponseData gfeResponse;
@@ -516,6 +534,7 @@ public class FolderWidget extends VibeWidget
 	
 							cmd = new Scheduler.ScheduledCommand()
 							{
+								@Override
 								public void execute()
 								{
 									// Add the entries to this widget
@@ -543,6 +562,7 @@ public class FolderWidget extends VibeWidget
 		
 		Collections.sort( entries, new Comparator()
 		{
+			@Override
 			public int compare( Object obj1, Object obj2 )
 			{
 				GwtFolderEntry entry1;
