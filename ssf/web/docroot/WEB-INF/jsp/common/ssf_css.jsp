@@ -4271,7 +4271,14 @@ input.ss_saveQueryName {
 #ss_surveyForm_questions {
 	margin:0px 0px 0px 0px;
 }
-div.ss_questionContainer, 
+
+div.ss_questionContainer {
+	position: relative;
+	padding: 10px;
+	margin: 10px 0px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
+}
 div.ss_subsection {
 	position: relative;
 	padding: 10px;
