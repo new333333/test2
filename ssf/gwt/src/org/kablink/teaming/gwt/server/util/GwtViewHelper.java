@@ -108,6 +108,7 @@ import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -1667,11 +1668,23 @@ public class GwtViewHelper {
 								
 								// Add the column data to the list.
 								addedAssignments = true;
-								fr.setColumnValue(fc, assignmentList);
+								fr.setColumnValue_AssignmentInfos(fc, assignmentList);
 							}
+							
+							// No, the column doesn't contain
+							// assignment information either!  Does
+							// it contain a collection of task folders?
+							else if (csk.equals("tasks")) {
+								// Yes!  Create a List<TaskFolderInfo>
+								// from the IDs it contains and set
+								// that as the column value.
+								List<TaskFolderInfo> taskFolderList = GwtServerHelper.getTaskFolderInfoListFromEntryMap(bs, request, entryMap, csk);
+								fr.setColumnValue_TaskFolderInfos(fc, taskFolderList);
+							}
+							
 							else {
-								// No, the column doesn't contain
-								// assignment information either!
+								// No, the column doesn't contain a
+								// collection of task folders either!
 								// Extract its String value.
 								String value = GwtServerHelper.getStringFromEntryMapValue(
 									emValue,

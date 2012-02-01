@@ -128,6 +128,9 @@ import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
+import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -200,6 +203,7 @@ import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -227,6 +231,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
@@ -730,7 +735,42 @@ public class GwtServerHelper {
     	return folderModule.addReply( binderIdL, entryIdL, replyDefId, inputData, fileMap, null );
 	}
 	
-	
+	/*
+	 * Converts a String to a Long, if possible, and uses it as the ID
+	 * of a task folder to construct a TaskFolderInfo to add to a
+	 * List<TaskFolderInfo>.
+	 */
+	private static void addTFIFromStringToList(AllModulesInjected bs, HttpServletRequest request, String s, List<TaskFolderInfo> tfiList) {
+		try {
+			// Access the folder...
+			Long folderId = Long.parseLong(s);
+			Folder folder = bs.getFolderModule().getFolder(folderId);
+			
+			// ...read the List<TaskListItem> from it...
+			List<TaskListItem> taskList = GwtTaskHelper.getTaskList(
+				request,
+				bs,
+				false,	// false -> Don't apply the user's filters.
+				false,	// false -> Not embedded in a JSP.
+				folder,
+				FilterType.ALL.name(),
+				ModeType.PHYSICAL.name());
+
+			// ...and use what we've got to construct a TaskFolderInfo
+			// ...and add it to the list.
+			tfiList.add(
+				new TaskFolderInfo(
+					folderId,
+					PermaLinkUtil.getPermalink(request, folder),
+					folder.getTitle(),
+					new TaskStats(
+						taskList)));
+		}
+		
+		catch (GwtTeamingException   fte) {/* Ignored. */}
+		catch (NumberFormatException nfe) {/* Ignored. */}
+	}
+
 	/**
 	 * Adds a Trash folder to the TreeInfo.
 	 * 
@@ -2404,6 +2444,7 @@ public class GwtServerHelper {
 	 * 
 	 * @param m
 	 * @param key
+	 * @param assigneeType
 	 * 
 	 * @return
 	 */
@@ -2414,14 +2455,15 @@ public class GwtServerHelper {
 		if (null != o) {
 			// Yes!  Is the value is a String?
 			if (o instanceof String) {
-				// Yes!  Added it as a Long to the List<Long>. 
+				// Yes!  Use it as Long to create an AssignmentInfo to
+				// add to the List<AssignmentInfo>. 
 				addAIFromStringToList(((String) o), reply, assigneeType);
 			}
 
 			// No, the value isn't a String!  Is it a String[]?
 			else if (o instanceof String[]) {
-				// Yes!  Scan them and add each as a Long to the
-				// List<Long>. 
+				// Yes!  Scan them and use each as Long to create an
+				// AssignmentInfo to add to the List<AssignmentInfo>. 
 				String[] strLs = ((String[]) o);
 				int c = strLs.length;
 				for (int i = 0; i < c; i += 1) {
@@ -2432,8 +2474,9 @@ public class GwtServerHelper {
 			// No, the value isn't a String[] either!  Is it a
 			// SearchFieldResult?
 			else if (o instanceof SearchFieldResult) {
-				// Yes!  Scan the value set from it and add each as a
-				// Long to the List<Long>. 
+				// Yes!  Scan the value set from it and use each as
+				// Long to create an AssignmentInfo to add to the
+				// List<AssignmentInfo>. 
 				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
 				Set<String> strLs = ((Set<String>) sfr.getValueSet());
 				for (String strL:  strLs) {
@@ -2447,7 +2490,6 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
-
 	/**
 	 * Return the branding data for the given binder.
 	 */
@@ -4566,6 +4608,59 @@ public class GwtServerHelper {
 		// If we get here, reply refers to an empty string or the
 		// appropriate string value for the key from the entry map.
 		// Return it.
+		return reply;
+	}
+	
+	/**
+	 * Reads a List<TaskFolderInfo> from a Map.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param m
+	 * @param key
+	 * 
+	 * @return
+	 */
+	public static List<TaskFolderInfo> getTaskFolderInfoListFromEntryMap(AllModulesInjected bs, HttpServletRequest request, Map m, String key) {
+		// Is there value for the key?
+		List<TaskFolderInfo> reply = new ArrayList<TaskFolderInfo>();
+		Object o = m.get(key);
+		if (null != o) {
+			// Yes!  Is the value is a String?
+			if (o instanceof String) {
+				// Yes!  Use it as the folder ID to create a
+				// TaskFolderInfo to add to the List<TaskFolderInfo>. 
+				addTFIFromStringToList(bs, request, ((String) o), reply);
+			}
+
+			// No, the value isn't a String!  Is it a String[]?
+			else if (o instanceof String[]) {
+				// Yes!  Scan them and use each as the folder ID to
+				// create a TaskFolderInfo to add to the
+				// List<TaskFolderInfo>. 
+				String[] strLs = ((String[]) o);
+				int c = strLs.length;
+				for (int i = 0; i < c; i += 1) {
+					addTFIFromStringToList(bs, request, strLs[i], reply);
+				}
+			}
+
+			// No, the value isn't a String[] either!  Is it a
+			// SearchFieldResult?
+			else if (o instanceof SearchFieldResult) {
+				// Yes!  Scan the value set from it and use each as the
+				// folder ID to create a TaskFolderInfo to add to the
+				// List<TaskFolderInfo>. 
+				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
+				Set<String> strLs = ((Set<String>) sfr.getValueSet());
+				for (String strL:  strLs) {
+					addTFIFromStringToList(bs, request, strL, reply);
+				}
+			}
+		}
+		
+		// If we get here, reply refers to the List<TaskFolderInfo> of
+		// values from the Map.  Return it.
 		return reply;
 	}
 	

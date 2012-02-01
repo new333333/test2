@@ -139,7 +139,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	 * Constructor method.
 	 */
 	public AssignmentCell() {
-		// Sink the events we need to process presence.
+		// Sink the events we need to process assignments.
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,

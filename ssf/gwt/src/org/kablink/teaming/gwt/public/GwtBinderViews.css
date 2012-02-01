@@ -127,6 +127,7 @@
 		.vibe-dataTablePresence-label        {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled     {color: #c4c4c4;}
 		.vibe-dataTablePresence-enabled      {color: #353838;}
+		.vibe-dataTableTaskFolder-panel      {white-space: nowrap;}
 	/* ...End:  Data table cell styles. */
 
 	/* ...Start:  Discussion folder view styles. */

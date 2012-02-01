@@ -59,6 +59,7 @@ import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
+import org.kablink.teaming.gwt.client.datatable.TaskFolderColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
@@ -98,6 +99,7 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
@@ -756,6 +758,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);}
 	private static boolean isColumnRating(      String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);  }
 	private static boolean isColumnPresence(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_AUTHOR);  }
+	private static boolean isColumnTaskFolders( String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TASKS);   }
 	private static boolean isColumnTitle(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TITLE);   }
 	private static boolean isColumnView(        String       columnName) {return columnName.equals(ColumnWidth.COLUMN_HTML);    }
 
@@ -997,9 +1000,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// No, this column doesn't show an assignment either!  Is
+			// it a collection of task folders?
+			else if (isColumnTaskFolders(cName)) {
+				// Yes!  Create an TaskFolderColumn for it.
+				column = new TaskFolderColumn<FolderRow>(fc) {
+					@Override
+					public List<TaskFolderInfo> getValue(FolderRow fr) {
+						return fr.getColumnValueAsTaskFolderInfos(fc);
+					}
+				};
+			}
+			
 			else {
-				// No, this column doesn't show a view link either!
-				// Define a StringColumn for it.
+				// No, this column isn't a collection of task folders
+				// either!  Define a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {

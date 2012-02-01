@@ -51,7 +51,6 @@ public abstract class AssignmentColumn<T> extends VibeColumn<T, List<AssignmentI
    * Constructor method.
    * 
    * @param fc
-   * @param assigneeType
    */
   public AssignmentColumn(FolderColumn fc) {
 	  super(fc, new AssignmentCell());
