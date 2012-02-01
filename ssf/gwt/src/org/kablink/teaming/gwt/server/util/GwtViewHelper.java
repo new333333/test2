@@ -98,6 +98,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
@@ -205,13 +206,13 @@ public class GwtViewHelper {
 			// Scan this FolderRow's individual assignees tracking each
 			// unique ID.
 			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				MiscUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				MiscUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				MiscUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
 			}
 			
 			// Scan this FolderRow's group assignees tracking each
@@ -299,11 +300,19 @@ public class GwtViewHelper {
 		for (FolderRow fr:  folderRows) {
 			// ...this time, fixing the assignee lists.
 			fixupAIs(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, userPresence, presenceUserWSIds);
+			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                    );
+			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                     );
 			fixupAIs(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, userPresence, presenceUserWSIds);
+			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                    );
+			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                     );
 			fixupAIs(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, userPresence, presenceUserWSIds);
+			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                    );
+			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                     );
+			
 			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                    );
 			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                    );
 			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                    );
+			
 			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                     );
 			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                     );
 			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                     );
@@ -316,9 +325,11 @@ public class GwtViewHelper {
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  comparator);
+			
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           comparator);
+			
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
@@ -491,6 +502,76 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Checks for assignment column search key in the folder columns.
+	 * If there's a column for it, simply returns.  If there's not a
+	 * column for it, checks the entry map for assignments and if any
+	 * are found, adds them to the assignment list.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void factorInAssignments(Map entryMap, List<FolderColumn> folderColumns, String csk, AssigneeType assigneeType, List<AssignmentInfo> assignmentList) {
+		// Scan the columns.
+		for (FolderColumn fc:  folderColumns) {
+			// Is this column for the given search key?
+			if (fc.getColumnSearchKey().equals(csk)) {
+				// Yes!  Then we don't handle it's assignments
+				// separately.  Bail.
+				return;
+			}
+		}
+		
+		// Are there any assignments for the given column search key?
+		List<AssignmentInfo> addList = GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, assigneeType);
+		if ((null != addList) && (!(addList.isEmpty()))) {
+			// Yes!  Copy them into the assignment list we were given.
+			for (AssignmentInfo ai:  addList) {
+				assignmentList.add(ai);
+			}
+		}
+	}
+	
+	/*
+	 * Checks for the group assignment corresponding to the individual
+	 * column search key in the folder columns.  If there's a column
+	 * for it, simply returns.  If there's not a column for it, checks
+	 * the entry map for assignments and if any are found, adds them to
+	 * the assignment list.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void factorInGroupAssignments(Map entryMap, List<FolderColumn> folderColumns, String csk, List<AssignmentInfo> assignmentList) {
+		// Can we determine the group assignment attribute?
+		String groupCSK;
+		if (csk.equals(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME))           groupCSK = TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME;
+		else if (csk.equals(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) groupCSK = EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
+		else if (csk.equals(RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME))           groupCSK = RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME;
+		else                                                                       groupCSK = null;
+		if (null != groupCSK) {
+			// Yes!  Factor in any group assignments using it.
+			factorInAssignments(entryMap, folderColumns, groupCSK, AssigneeType.GROUP, assignmentList);
+		}
+	}
+	
+	/*
+	 * Checks for the team assignment corresponding to the individual
+	 * column search key in the folder columns.  If there's a column
+	 * for it, simply returns.  If there's not a column for it, checks
+	 * the entry map for assignments and if any are found, adds them to
+	 * the assignment list.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void factorInTeamAssignments(Map entryMap, List<FolderColumn> folderColumns, String csk, List<AssignmentInfo> assignmentList) {
+		// Can we determine the team assignment attribute?
+		String teamCSK;
+		if (csk.equals(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME))           teamCSK = TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME;
+		else if (csk.equals(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) teamCSK = EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
+		else if (csk.equals(RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME))           teamCSK = RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME;
+		else                                                                       teamCSK = null;
+		if (null != teamCSK) {
+			// Yes!  Factor in any team assignments using it.
+			factorInAssignments(entryMap, folderColumns, teamCSK, AssigneeType.TEAM, assignmentList);
+		}
+	}
+	
+	/*
 	 * Returns the days duration value if only days were found. 
 	 * Otherwise returns -1.
 	 */
@@ -522,9 +603,14 @@ public class GwtViewHelper {
 		// deleted.)
 		List<AssignmentInfo> removeList = new ArrayList<AssignmentInfo>();
 		
-		// Scan this AssignmentInfo's group assignees again...
+		// Scan this AssignmentInfo's group assignees...
 		for (AssignmentInfo ai:  aiGroupsList) {
-			// ...setting each one's title and membership count.
+			// ...skipping those that aren't really groups...
+			if (AssigneeType.GROUP != ai.getAssigneeType()) {
+				continue;
+			}
+			
+			// ...and setting each one's title and membership count.
 			if (GwtServerHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 				GwtServerHelper.setAssignmentInfoMembers(ai, groupCounts     );
 				ai.setPresenceDude("pics/group_icon_small.png");
@@ -551,9 +637,14 @@ public class GwtViewHelper {
 		// deleted.)
 		List<AssignmentInfo> removeList = new ArrayList<AssignmentInfo>();
 		
-		// Scan this AssignmentInfo's team assignees again...
+		// Scan this AssignmentInfo's team assignees...
 		for (AssignmentInfo ai:  aiTeamsList) {
-			// ...setting each one's title and membership count.
+			// ...skipping those that aren't really teams...
+			if (AssigneeType.TEAM != ai.getAssigneeType()) {
+				continue;
+			}
+			
+			// ...and setting each one's title and membership count.
 			if (GwtServerHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
 				GwtServerHelper.setAssignmentInfoMembers(ai, teamCounts );
 				ai.setPresenceDude("pics/team_16.png");
@@ -582,7 +673,12 @@ public class GwtViewHelper {
 		
 		// Scan this AssignmentInfo's individual assignees...
 		for (AssignmentInfo ai:  aiList) {
-			// ...setting each one's title.
+			// ...skipping those that aren't really individuals...
+			if (AssigneeType.INDIVIDUAL != ai.getAssigneeType()) {
+				continue;
+			}
+			
+			// ...and setting each one's title.
 			if (GwtServerHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
 				GwtServerHelper.setAssignmentInfoPresence(        ai, userPresence     );
 				GwtServerHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
@@ -1554,16 +1650,24 @@ public class GwtViewHelper {
 							// No!  Does the column contain assignment
 							// information?
 							if (AssignmentInfo.isColumnAssigneeInfo(csk)) {
-								// Yes!  Process it for a
+								// Yes!  Read its
 								// List<AssignmentInfo>'s.
+								AssigneeType ait = AssignmentInfo.getColumnAssigneeType(csk);
+								List<AssignmentInfo> assignmentList = GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, ait);
+								
+								// Is this column for an individual
+								// assignee?
+								if (AssigneeType.INDIVIDUAL == ait) {
+									// Yes!  If we don't have columns
+									// for group or team assignments,
+									// factor those in as well.
+									factorInGroupAssignments(entryMap, folderColumns, csk, assignmentList);
+									factorInTeamAssignments( entryMap, folderColumns, csk, assignmentList);
+								}
+								
+								// Add the column data to the list.
 								addedAssignments = true;
-								fr.setColumnValue(
-									fc,
-									GwtServerHelper.getAssignmentInfoListFromEntryMap(
-										entryMap,
-										csk,
-										AssignmentInfo.getColumnAssigneeType(
-											csk)));
+								fr.setColumnValue(fc, assignmentList);
 							}
 							else {
 								// No, the column doesn't contain
