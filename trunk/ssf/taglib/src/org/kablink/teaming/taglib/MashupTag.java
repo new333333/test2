@@ -180,7 +180,9 @@ public class MashupTag extends BodyTagSupport {
 						StringServletResponse res = new StringServletResponse(httpRes);
 						try {
 							rd.include(req, res);
+							pageContext.getOut().print("\n<!-- " + jsp + " -->\n");
 							pageContext.getOut().print(res.getString().trim());
+							pageContext.getOut().print("\n<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
 						} catch (Exception e) {
 							String errorTag = "errorcode.unexpectedError";
 							if (type.equals("customJsp")) {
