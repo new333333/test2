@@ -217,7 +217,7 @@
 		
 		<ant dir="mobile" target="war" inheritall="false"/>
 
-		<!--<ant dir="rest" target="war" inheritall="false"/>-->
+		<ant dir="rest" target="war" inheritall="false"/>
 	</target>
 
 	<target name="deploy" depends="init">
@@ -260,7 +260,7 @@
 		
 		<ant dir="mobile" target="deploy" inheritall="false"/>
 		
-		<!--<ant dir="rest" target="deploy" inheritall="false"/>-->
+		<ant dir="rest" target="deploy" inheritall="false"/>
 	</target>
 
 	<target name="java2html" depends="init">
