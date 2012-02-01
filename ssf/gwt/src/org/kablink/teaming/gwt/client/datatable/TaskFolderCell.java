@@ -34,7 +34,11 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -45,6 +49,9 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -119,7 +126,6 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 		 * 
 		 * @return
 		 */
-		@SuppressWarnings("unused")
 		public int     getTaskFolderIndex()    {return m_taskFolderIndex;      }
 		public boolean isTaskFolderPermalink() {return m_isTaskFolderPermalink;}
 	}
@@ -136,6 +142,36 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
+	/*
+	 * Adds a colored bar segment to a grid.
+	 */
+	private void addBarSegment(FlexTable grid, FlexCellFormatter gridCellFormatter, int count, int percent, String style, String message) {
+		// If this segment doesn't show anything...
+		if (0 == count) {
+			// ...skip it.
+			return;
+		}
+		
+		String width = (percent + "%");
+		InlineLabel il = new InlineLabel(width);
+		il.addStyleName("vibe-dataTableTaskFolder-statsBarSegment");
+		il.setWordWrap(false);
+		il.setTitle(message);
+		int cell;
+		try                  {cell = grid.getCellCount(0);}
+		catch (Exception ex) {cell = 0;                   }
+		grid.setWidget(0, cell, il);
+		gridCellFormatter.setWidth(0, cell, width);
+		gridCellFormatter.addStyleName(0, cell, style);
+	}
+
+	/*
+	 * Called to invoke the permalink to a task folder.
+	 */
+	private void invokeTaskFolderPermalink(TaskFolderInfo tfi) {
+		GwtTeaming.fireEvent(new GotoContentUrlEvent(tfi.getFolderPermalink()));
+	}
+	
 	/**
      * Called when an event occurs in a rendered instance of this
      * cell.  The parent element refers to the element that contains
@@ -144,20 +180,20 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
      * 
      * @param context
      * @param parent
-     * @param aiList
+     * @param tfiList
      * @param event
      * @param valueUpdater
      * 
      * Overrides AbstractCell.onBrowserEvent()
      */
     @Override
-    public void onBrowserEvent(Context context, Element parent, List<TaskFolderInfo> aiList, NativeEvent event, ValueUpdater<List<TaskFolderInfo>> valueUpdater) {
+    public void onBrowserEvent(Context context, Element parent, List<TaskFolderInfo> tfiList, NativeEvent event, ValueUpdater<List<TaskFolderInfo>> valueUpdater) {
 		// What type of event are we processing?
     	String eventType = event.getType();
     	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
         	// A key down!  Let AbstractCell handle it.  It will
     		// convert it to an entry key down, ... as necessary.
-        	super.onBrowserEvent(context, parent, aiList, event, valueUpdater);
+        	super.onBrowserEvent(context, parent, tfiList, event, valueUpdater);
         	return;
     	}
 
@@ -168,9 +204,9 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 			// Yes!  What event are we handling?
 	    	if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
 	    		// A click!  Strip off any hover style and invoke the
-    			// simple profile dialog.
+    			// task folder permalink.
     			eventTarget.removeClassName(ei.isTaskFolderPermalink() ? "cursorPointer" : "vibe-dataTableLink-hover");
-//!				...this needs to be implemented...
+    			invokeTaskFolderPermalink(tfiList.get(ei.getTaskFolderIndex()));
 	    	}
 	    	
 	    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
@@ -193,8 +229,8 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
      * Overrides AbstractCell.onEnterKeyDown()
      */
     @Override
-    protected void onEnterKeyDown(Context context, Element parent, List<TaskFolderInfo> aiList, NativeEvent event, ValueUpdater<List<TaskFolderInfo>> valueUpdater) {
-//!		...this needs to be implemented...
+    protected void onEnterKeyDown(Context context, Element parent, List<TaskFolderInfo> tfiList, NativeEvent event, ValueUpdater<List<TaskFolderInfo>> valueUpdater) {
+		invokeTaskFolderPermalink(tfiList.get(new EventInfo(parent, event).getTaskFolderIndex()));
     }
     
 	/**
@@ -221,15 +257,75 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 		VibeFlowPanel renderPanel = new VibeFlowPanel();
 
 		// Scan the task folders.
+		GwtTeamingMessages messages = GwtTeaming.getMessages();
 		int taskFolderIndex = 0;
 		for (TaskFolderInfo tfi:  tfiList) {
 			// Generate a panel to hold this task folder...
 			VibeFlowPanel fp = new VibeFlowPanel();
 			fp.addStyleName("vibe-dataTableTaskFolder-panel displayBlock verticalAlignTop");
 			if (0 < taskFolderIndex) {
-				fp.addStyleName("margintop3px");
+				fp.addStyleName("paddingTop3px");
 			}
-			fp.add(new Label(tfi.getTitle()));
+
+			// Render the task folder link.
+			String taskFolderIndexTail = ("." + (taskFolderIndex++));
+			Label tfLabel = new Label(tfi.getTitle());
+			tfLabel.addStyleName("vibe-dataTableTaskFolder-label vibe-dataTableTaskFolder-enabled");
+			tfLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_TASK_FOLDER + taskFolderIndexTail));
+			fp.add(tfLabel);
+
+			// Are there any tasks defined in the folder?
+			TaskStats ts = tfi.getTaskStatistics();
+			if (0 < ts.getTotalTasks()) {
+				// Yes!  Create panel to hold their status graph...
+				VibeFlowPanel sp = new VibeFlowPanel();
+				sp.addStyleName("vibe-dataTableTaskFolder-stats displayBlock verticalAlignTop");
+				
+				// ...create a grid for the status bar chart...
+				FlexTable grid = new FlexTable();
+				grid.addStyleName("vibe-dataTableTaskFolder-statsStatusBar");
+				grid.setCellPadding(0);
+				grid.setCellSpacing(0);
+				sp.add(grid);
+				FlexCellFormatter gridCellFormatter = grid.getFlexCellFormatter();
+				
+				// ...render the various status values into that grid...
+				int c = ts.getStatusNeedsAction();
+				int p;
+				String m;
+				if (0 < c) {
+					p = ts.getPercent(c);
+					m = messages.vibeDataTable_TaskFolderStatusNeedsAction(String.valueOf(p), String.valueOf(c));
+					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus0", m);
+				}
+				
+				c = ts.getStatusInProcess();
+				if (0 < c) {
+					p = ts.getPercent(c);
+					m = messages.vibeDataTable_TaskFolderStatusInProcess(String.valueOf(p), String.valueOf(c));
+					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus1", m);
+				}
+				
+				c = ts.getStatusCompleted();
+				if (0 < c) {
+					p = ts.getPercent(c);
+					m = messages.vibeDataTable_TaskFolderStatusCompleted(String.valueOf(p), String.valueOf(c));
+					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus2", m);
+				}
+				
+				c = ts.getStatusCanceled();
+				if (0 < c) {
+					p = ts.getPercent(c);
+					m = messages.vibeDataTable_TaskFolderStatusCanceled(String.valueOf(p), String.valueOf(c));
+					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus3", m);
+				}
+
+				// ...and put the status panel into the task folder's
+				// ...panel.
+				fp.add(sp);
+			}
+
+			// Add this task folder's panel to the render panel.
 			renderPanel.add(fp);
 		}
 		
