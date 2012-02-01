@@ -106,12 +106,14 @@ public class FileFolderWidget extends VibeWidget
 		/**
 		 * 
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			Scheduler.ScheduledCommand cmd;
 
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					handleClickOnLink();
@@ -199,6 +201,7 @@ public class FileFolderWidget extends VibeWidget
 	private VibeFlowPanel init( FileFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
+		VibeFlowPanel contentPanel;
 		int numEntries;
 		
 		m_properties = new FileFolderProperties();
@@ -214,28 +217,33 @@ public class FileFolderWidget extends VibeWidget
 		// Set the border width and color.
 		GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
 		
-		// Set the width and height
+		// Create a panel that will hold the content
 		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
+			contentPanel = new VibeFlowPanel();
 			
-			style = mainPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			style.setOverflow( m_properties.getOverflow() );
+			// Set the width and height
+			{
+				Style style;
+				int width;
+				int height;
+				Unit unit;
+				
+				style = contentPanel.getElement().getStyle();
+				
+				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+				width = m_properties.getWidth();
+				unit = m_properties.getWidthUnits();
+				if ( width != 100 || unit != Unit.PCT )
+					style.setWidth( width, unit );
+				
+				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+				height = m_properties.getHeight();
+				unit = m_properties.getHeightUnits();
+				if ( height != 100 || unit != Unit.PCT )
+					style.setHeight( height, unit );
+				
+				style.setOverflow( m_properties.getOverflow() );
+			}
 		}
 
 		// Should we show the name of the folder?
@@ -256,12 +264,14 @@ public class FileFolderWidget extends VibeWidget
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							handleClickOnFolderTitle();
@@ -283,25 +293,24 @@ public class FileFolderWidget extends VibeWidget
 			
 			// Create a panel for the description
 			{
-				VibeFlowPanel contentPanel;
+				VibeFlowPanel descPanel;
 				Label descLabel;
 				
 				// Yes
 				// Create a panel for the description to live in.
-				contentPanel = new VibeFlowPanel();
-				contentPanel.addStyleName( "fileFolderWidgetContentPanel" + m_style );
+				descPanel = new VibeFlowPanel();
+				descPanel.addStyleName( "fileFolderWidgetContentPanel" + m_style );
 				
 				descLabel = new Label( " " );
 				descLabel.addStyleName( "fileFolderWidgetDesc" + m_style );
-				contentPanel.add( descLabel );
+				descPanel.add( descLabel );
 				m_folderDescElement = descLabel.getElement();
 				
 				// Set the text color for the content.
-				GwtClientHelper.setElementTextColor( contentPanel.getElement(), widgetStyles.getContentTextColor() );
+				GwtClientHelper.setElementTextColor( descPanel.getElement(), widgetStyles.getContentTextColor() );
 
-				mainPanel.add( contentPanel );
+				contentPanel.add( descPanel );
 			}
-			
 		}
 		
 		// Issue an rpc request to get information about the folder.
@@ -310,6 +319,7 @@ public class FileFolderWidget extends VibeWidget
 			/**
 			 * 
 			 */
+			@Override
 			public void returnValue( Boolean value )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -320,6 +330,7 @@ public class FileFolderWidget extends VibeWidget
 					// Yes
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Update this widget with the folder information
@@ -340,7 +351,7 @@ public class FileFolderWidget extends VibeWidget
 			// Yes, create a panel for the entries to live in.
 			m_listOfFilesPanel = new VibeFlowPanel();
 			m_listOfFilesPanel.addStyleName( "fileFolderWidgetListOfEntriesPanel" + m_style );
-			mainPanel.add( m_listOfFilesPanel );
+			contentPanel.add( m_listOfFilesPanel );
 
 			// Issue an rpc request to get the last n entries from the file folder.
 			cmd = new GetListOfFilesCmd( m_properties.getZoneUUID(), m_properties.getFolderId(), numEntries );
@@ -349,6 +360,7 @@ public class FileFolderWidget extends VibeWidget
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -361,6 +373,7 @@ public class FileFolderWidget extends VibeWidget
 				 * 
 				 * @param result
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					GetListOfFilesRpcResponseData glofResponse;
@@ -378,6 +391,7 @@ public class FileFolderWidget extends VibeWidget
 	
 							cmd = new Scheduler.ScheduledCommand()
 							{
+								@Override
 								public void execute()
 								{
 									// Add the files to this widget
@@ -391,6 +405,8 @@ public class FileFolderWidget extends VibeWidget
 			} );
 		}
 		
+		mainPanel.add( contentPanel );
+
 		return mainPanel;
 	}
 	
@@ -405,6 +421,7 @@ public class FileFolderWidget extends VibeWidget
 		
 		Collections.sort( files, new Comparator()
 		{
+			@Override
 			public int compare( Object obj1, Object obj2 )
 			{
 				GwtAttachment file1;

@@ -929,6 +929,7 @@ public class TaskFolderWidget extends VibeWidget
 	private VibeFlowPanel init( TaskFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
+		VibeFlowPanel contentPanel;
 		int numTasks;
 		InlineLabel label;
 		VibeFlowPanel titlePanel;
@@ -943,30 +944,6 @@ public class TaskFolderWidget extends VibeWidget
 		mainPanel.addStyleName( "taskFolderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
 		
-		// Set the width and height
-		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
-			
-			style = mainPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			style.setOverflow( m_properties.getOverflow() );
-		}
-
 		// Add a place for the folder's title
 		{
 			// Create a place for the folder title to live.
@@ -1037,6 +1014,36 @@ public class TaskFolderWidget extends VibeWidget
 				}
 			}
 		} );
+
+		// Create a panel where all the content will live.
+		{
+			contentPanel = new VibeFlowPanel();
+			mainPanel.add( contentPanel );
+			
+			// Set the width and height
+			{
+				Style style;
+				int width;
+				int height;
+				Unit unit;
+				
+				style = contentPanel.getElement().getStyle();
+				
+				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
+				width = m_properties.getWidth();
+				unit = m_properties.getWidthUnits();
+				if ( width != 100 || unit != Unit.PCT )
+					style.setWidth( width, unit );
+				
+				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+				height = m_properties.getHeight();
+				unit = m_properties.getHeightUnits();
+				if ( height != 100 || unit != Unit.PCT )
+					style.setHeight( height, unit );
+				
+				style.setOverflow( m_properties.getOverflow() );
+			}
+		}
 		
 		// Are we supposed to show tasks from this folder?
 		numTasks = m_properties.getNumTasksToBeShownValue();
@@ -1048,7 +1055,7 @@ public class TaskFolderWidget extends VibeWidget
 			// Yes, create a panel for the tasks to live in.
 			tasksPanel = new VibeFlowPanel();
 			tasksPanel.addStyleName( "taskFolderWidgetListOfTasksPanel" + m_style );
-			mainPanel.add( tasksPanel );
+			contentPanel.add( tasksPanel );
 			
 			// Set the text color for the content.
 			GwtClientHelper.setElementTextColor( tasksPanel.getElement(), widgetStyles.getContentTextColor() );
