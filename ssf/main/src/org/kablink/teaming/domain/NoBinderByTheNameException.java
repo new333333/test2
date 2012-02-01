@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
@@ -53,4 +54,11 @@ public class NoBinderByTheNameException extends NoObjectByTheNameException {
     public NoBinderByTheNameException(String name, Throwable cause) {
         super(NoBinderByTheNameException_ErrorCode, name, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.BINDER_NOT_FOUND;
+	}
 }

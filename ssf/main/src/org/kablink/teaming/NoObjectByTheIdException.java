@@ -33,12 +33,13 @@
 package org.kablink.teaming;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
  *
  */
-public class NoObjectByTheIdException extends UncheckedCodedException {
+public abstract class NoObjectByTheIdException extends UncheckedCodedException {
     public NoObjectByTheIdException(String errorCode, String objId) {
         super(errorCode, new Object[] {objId});
     }
@@ -79,4 +80,5 @@ public class NoObjectByTheIdException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 404; // Not Found
     }
- }
+    
+}

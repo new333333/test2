@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NoFileByTheIdException extends NoObjectByTheIdException {
 
@@ -52,5 +53,13 @@ public class NoFileByTheIdException extends NoObjectByTheIdException {
     public NoFileByTheIdException(String fileAttachmentId, Throwable cause) {
         super(NoFileByTheIdException_ErrorCode, fileAttachmentId, cause);
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FILE_NOT_FOUND;
+	}
 
 }

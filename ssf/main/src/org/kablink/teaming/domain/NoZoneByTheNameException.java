@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class NoZoneByTheNameException extends NoObjectByTheNameException {
     private static final String NoZoneByTheNameException_ErrorCode = "errorcode.no.zone.by.the.name";
@@ -49,5 +50,12 @@ public class NoZoneByTheNameException extends NoObjectByTheNameException {
     public NoZoneByTheNameException(String zoneName, Throwable cause) {
         super(NoZoneByTheNameException_ErrorCode, zoneName, cause);
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ZONE_NOT_FOUND;
+	}
 
 }

@@ -37,13 +37,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.util.NLT;
+import org.kablink.util.HttpStatusCodeSupport;
+import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.api.ApiErrorCodeSupport;
 
 
 public class EntryDataErrors implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private List problems;
+	private List<Problem> problems;
 	
 	public EntryDataErrors() {
 		this.problems = new ArrayList();
@@ -53,7 +56,7 @@ public class EntryDataErrors implements Serializable {
 		problems.add(problem);
 	}
 	
-	public List getProblems() {
+	public List<Problem> getProblems() {
 		return problems;
 	}
 	
@@ -67,7 +70,7 @@ public class EntryDataErrors implements Serializable {
 		return sb.toString();
 	}
 	
-	public static class Problem implements Serializable {
+	public static class Problem implements ApiErrorCodeSupport, HttpStatusCodeSupport, Serializable {
 		private static final long serialVersionUID = 1L;
 		
 		// Problem types
@@ -78,6 +81,18 @@ public class EntryDataErrors implements Serializable {
 		public static String[] typeCodes = {
 			"general.error.anErrorOccurred",
 			"general.error.invalidHTML"
+		};
+		
+		// API error codes corresponding to each problem type.
+		public static ApiErrorCode[] apiErrorCodes = {
+			ApiErrorCode.SERVER_ERROR,
+			ApiErrorCode.INVALID_HTML
+		};
+		
+		// HTTP status codes corresponding to each problem type.
+		public static int[] httpStatusCodes = {
+			500, // internal server error
+			400, // bad request			
 		};
 		
 		private int type; // required - one of the constants defined above
@@ -108,6 +123,23 @@ public class EntryDataErrors implements Serializable {
 			sb.append(typeCodeError);
 			return sb.toString();
 		}
+
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.HttpStatusCodeSupport#getHttpStatusCode()
+		 */
+		@Override
+		public int getHttpStatusCode() {
+			return httpStatusCodes[type];
+		}
+
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+		 */
+		@Override
+		public ApiErrorCode getApiErrorCode() {
+			return apiErrorCodes[type];
+		}
+
 	}
 
 }

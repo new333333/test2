@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.file;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 public class FilterException extends UncheckedCodedException {
 
@@ -50,5 +51,13 @@ public class FilterException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 400; // Bad Request
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FILE_FILTER_ERROR;
+	}
 
 }

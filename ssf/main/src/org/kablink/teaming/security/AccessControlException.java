@@ -36,6 +36,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * Thrown to indicate that access is denied.
@@ -66,4 +67,11 @@ public class AccessControlException extends UncheckedCodedException {
 		// In the case of ACL checking failure, return 403 Forbidden, not 401 Unauthorized.
     	return 403; // Forbidden 
     }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ACCESS_DENIED;
+	}
 }

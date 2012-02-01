@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Jong Kim
@@ -48,4 +49,12 @@ public class ZoneMismatchException extends UncheckedCodedException {
     public int getHttpStatusCode() {
     	return 500; // Internal Server Error
     }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.UncheckedCodedException#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ZONE_MISMATCH;
+	}
 }

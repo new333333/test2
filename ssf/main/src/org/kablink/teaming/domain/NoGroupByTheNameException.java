@@ -34,6 +34,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author Janet McCann
@@ -54,4 +55,11 @@ public class NoGroupByTheNameException extends NoObjectByTheNameException {
 	    public NoGroupByTheNameException(String userName, Throwable cause) {
 	        super(NoGroupByTheNameException_ErrorCode, userName, cause);
 	    }
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+		 */
+		@Override
+		public ApiErrorCode getApiErrorCode() {
+			return ApiErrorCode.GROUP_NOT_FOUND;
+		}
 }

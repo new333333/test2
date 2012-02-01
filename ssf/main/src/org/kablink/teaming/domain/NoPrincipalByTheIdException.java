@@ -39,6 +39,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
  * @author janet
@@ -62,5 +63,12 @@ public class NoPrincipalByTheIdException extends NoObjectByTheIdException {
         super(NoPrincipalByTheIdException_ErrorCode, userId, cause);
     }
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.PRINCIPAL_NOT_FOUND;
+	}
 }
 
