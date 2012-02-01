@@ -53,8 +53,10 @@ div.ss_mashup_list_header_view {
   font-weight:bold;
   padding: 8px;
   margin-bottom: 2px;
-  -moz-border-radius: 6px;
-  -webkit-border-radius: 6px;
+  -moz-border-radius-topleft: 6px;
+  -moz-border-radius-topright: 6px;
+  -webkit-border-top-left-radius: 6px;
+  -webkit-border-top-right-radius: 6px;
   }
 div.ss_mashup_list_header_form {
   background-color:#ededed; 
@@ -67,6 +69,10 @@ div.ss_mashup_list_header_form span {
 div.ss_mashup_list_content {
   padding: 8px;
   }
+div.ss_mashup_list_content_border {
+  padding: 8px;
+  border:1px solid #CCCCCC; 
+}
 div.ss_mashup_list_content ul {
   padding:4px 0px 0px 16px;
   margin:0px;
@@ -77,9 +83,6 @@ div.ss_mashup_list_content ul li {
   list-style-position: outside;
   }
 
-
-  
-  
 div.ss_mashup_folder_header_form {
   border-bottom:1px solid #cecece; 
   background-color:#FFFFFF; 
