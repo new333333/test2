@@ -1784,6 +1784,20 @@ public class GwtViewHelper {
 											value += "KB";
 										}
 									}
+
+									// No, we aren't working on a file
+									// size field!  Are we working on
+									// the status field of a milestone?
+									else if (csk.equals(Constants.STATUS_FIELD) && isMilestone) {
+										// Yes!  Do we have a status
+										// value for it?
+										if (MiscUtil.hasString(value)) {
+											// Yes!  Pull its localized
+											// string from the
+											// resources.
+											value = NLT.get(("__milestone_status_" + value), value);
+										}
+									}
 									
 									// Use what ever String value we
 									// arrived at.

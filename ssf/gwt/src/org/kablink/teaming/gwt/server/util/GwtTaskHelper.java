@@ -81,6 +81,7 @@ import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
+import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
@@ -111,6 +112,8 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.cal.Duration;
 import org.kablink.util.search.Constants;
+
+import com.sitescape.team.domain.Statistics;
 
 /**
  * Helper methods for the GWT UI server code that services task
@@ -1371,6 +1374,194 @@ public class GwtTaskHelper {
 		
 		return reply;
 	}
+
+	/**
+	 * Returns a TaskStats object for a given task folder.
+	 * 
+	 * @param folder
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static TaskStats getTaskStatistics(Folder folder) {
+		// Allocate a TaskStats object we can return.
+		TaskStats reply = new TaskStats();
+		
+		// Initialize some variables we can use to what we find.
+		boolean foundComplete = false;
+		boolean foundPriority = false;
+		boolean foundStatus   = false;
+
+		// Does the folder have a Statistics custom attribute?
+		CustomAttribute caStats = folder.getCustomAttribute("statistics");
+		if (null != caStats) {
+			Object o = caStats.getValue();
+			if ((null != o) && (o instanceof Statistics)) {
+				// Yes!  Does it contain any values?
+				Statistics stats = ((Statistics) o);
+				Map<String, Map> statsMap = stats.getValue();
+				if (null != statsMap) {
+					// Yes!  Scan the map's keys.
+					Set<String> statsKeys = statsMap.keySet();
+					for (String statsKey:  statsKeys) {
+						// Are there any values for this key?
+						Map defsMap = ((Map) statsMap.get(statsKey));
+						if (null != defsMap) {
+							// Yes!  Scan this map's keys.
+							Set<String> defsKeys = ((Set<String>) defsMap.keySet());
+							for (String defsKey:  defsKeys) {
+								// Is this the map for completed percentage
+								// statistics?
+								if (defsKey.equals(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME) && (!foundComplete)) {
+									// Yes!  Extract the completed
+									// values.
+									foundComplete = true;
+									Map completeMap = ((Map) defsMap.get(defsKey));
+									if (null != completeMap) {
+										Set<String> completeKeys = ((Set<String>) completeMap.keySet());
+										for (String completeKey:  completeKeys) {
+											if (completeKey.equals("total")) {
+												reply.setTotalTasks((Integer) completeMap.get(completeKey));
+											}
+											
+											else if (completeKey.equals("values")) {
+												Map cValuesMap = ((Map) completeMap.get(completeKey));
+												Set<String> cKeys = ((Set<String>) cValuesMap.keySet());
+												for (String cKey:  cKeys) {
+													Integer c = ((Integer) cValuesMap.get(cKey));
+													if (null != c) {
+														if      (TaskInfo.COMPLETED_0.equals(  cKey)) reply.setCompleted0(  c);
+														else if (TaskInfo.COMPLETED_10.equals( cKey)) reply.setCompleted10( c);
+														else if (TaskInfo.COMPLETED_20.equals( cKey)) reply.setCompleted20( c);
+														else if (TaskInfo.COMPLETED_30.equals( cKey)) reply.setCompleted30( c);
+														else if (TaskInfo.COMPLETED_40.equals( cKey)) reply.setCompleted40( c);
+														else if (TaskInfo.COMPLETED_50.equals( cKey)) reply.setCompleted50( c);
+														else if (TaskInfo.COMPLETED_60.equals( cKey)) reply.setCompleted60( c);
+														else if (TaskInfo.COMPLETED_70.equals( cKey)) reply.setCompleted70( c);
+														else if (TaskInfo.COMPLETED_80.equals( cKey)) reply.setCompleted80( c);
+														else if (TaskInfo.COMPLETED_90.equals( cKey)) reply.setCompleted90( c);
+														else if (TaskInfo.COMPLETED_100.equals(cKey)) reply.setCompleted100(c);
+													}
+												}
+											}
+										}
+									}
+								}
+								
+								// No, it isn't the map for completed
+								// percentage statistics!  Is this the
+								// map for priority statistics?
+								else if (defsKey.equals(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME) && (!foundPriority)) {
+									// Yes!  Extract the priority
+									// values.
+									foundPriority = true;
+									Map priorityMap = ((Map) defsMap.get(defsKey));
+									if (null != priorityMap) {
+										Set<String> priorityKeys = ((Set<String>) priorityMap.keySet());
+										for (String priorityKey:  priorityKeys) {
+											if (priorityKey.equals("total")) {
+												reply.setTotalTasks((Integer) priorityMap.get(priorityKey));
+											}
+											
+											else if (priorityKey.equals("values")) {
+												Map pValuesMap = ((Map) priorityMap.get(priorityKey));
+												Set<String> pKeys = ((Set<String>) pValuesMap.keySet());
+												for (String pKey:  pKeys) {
+													Integer p = ((Integer) pValuesMap.get(pKey));
+													if (null != p) {
+														if      (TaskInfo.PRIORITY_NONE.equals(    pKey)) reply.setPriorityNone(    p);
+														else if (TaskInfo.PRIORITY_CRITICAL.equals(pKey)) reply.setPriorityCritical(p);
+														else if (TaskInfo.PRIORITY_HIGH.equals(    pKey)) reply.setPriorityHigh(    p);
+														else if (TaskInfo.PRIORITY_MEDIUM.equals(  pKey)) reply.setPriorityMedium(  p);
+														else if (TaskInfo.PRIORITY_LOW.equals(     pKey)) reply.setPriorityLow(     p);
+														else if (TaskInfo.PRIORITY_LEAST.equals(   pKey)) reply.setPriorityLeast(   p);
+													}
+												}
+											}
+										}
+									}
+								}
+								
+								// No, it isn't the map for priority
+								// statistics either!  Is this the map
+								// for status statistics?
+								else if (defsKey.equals(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME) && (!foundStatus)) {
+									// Yes!  Extract the status values.
+									foundStatus = true;
+									Map statusMap = ((Map) defsMap.get(defsKey));
+									if (null != statusMap) {
+										Set<String> statusKeys = ((Set<String>) statusMap.keySet());
+										for (String statusKey:  statusKeys) {
+											if (statusKey.equals("total")) {
+												reply.setTotalTasks((Integer) statusMap.get(statusKey));
+											}
+											
+											else if (statusKey.equals("values")) {
+												Map sValuesMap = ((Map) statusMap.get(statusKey));
+												Set<String> sKeys = ((Set<String>) sValuesMap.keySet());
+												for (String sKey:  sKeys) {
+													Integer s = ((Integer) sValuesMap.get(sKey));
+													if (null != s) {
+														if      (TaskInfo.STATUS_NEEDS_ACTION.equals(sKey)) reply.setStatusNeedsAction(s);
+														else if (TaskInfo.STATUS_IN_PROCESS.equals(  sKey)) reply.setStatusInProcess(  s);
+														else if (TaskInfo.STATUS_COMPLETED.equals(   sKey)) reply.setStatusCompleted(  s);
+														else if (TaskInfo.STATUS_CANCELED.equals(    sKey)) reply.setStatusCanceled(   s);
+													}
+												}
+											}
+										}
+									}
+								}
+								
+								// If we found all the statistics we
+								// need...
+								if (foundComplete && foundPriority && foundStatus) {
+									// ...we're done.
+									break;
+								}
+							}
+						}
+						
+						// If we found all the statistics we need...
+						if (foundComplete && foundPriority && foundStatus) {
+							// ...we're done.
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// If we found any of the statistic components, return the task
+		// statistics object.  Otherwise, return null.
+		return ((foundComplete || foundPriority || foundStatus) ? reply : null);
+	}
+
+	/**
+	 * Returns a TaskStats object for a given task folder.
+	 * 
+	 * @param bs
+	 * @param folderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static TaskStats getTaskStatistics(AllModulesInjected bs, Long folderId) throws GwtTeamingException {
+		try {
+			Folder folder = bs.getFolderModule().getFolder(folderId);
+			return getTaskStatistics(folder);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtTaskHelper.getTaskStatistics( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
 	
 	/*
 	 * Returns the TaskDate equivalent of a Calendar. 
@@ -1499,8 +1690,7 @@ public class GwtTaskHelper {
 
 			// ...wrap it in a TaskListItem and add it to the
 			// ...List<TaskListItem>...
-			TaskListItem tli = new TaskListItem();
-			tli.setTask(task);			
+			TaskListItem tli = new TaskListItem(task);
 			tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
 			taskList.add(tli);
 			
@@ -1608,8 +1798,7 @@ public class GwtTaskHelper {
 		for (TaskInfo task:  tasks) {
 			// ...add each as a TaskListItem to the task list being
 			// ...built...
-			TaskListItem tli = new TaskListItem();
-			tli.setTask(task);
+			TaskListItem tli = new TaskListItem(task);
 			if (respectLinkage) {
 				tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
 			}
@@ -1635,11 +1824,22 @@ public class GwtTaskHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Reads the tasks from the specified binder.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param applyUsersFilter
+	 * @param embeddedInJSP
+	 * @param binder
+	 * @param filterTypeParam
+	 * @param modeTypeParam
+	 * @param clientBundle
+	 * 
+	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<TaskInfo> readTasks(HttpServletRequest request, AllModulesInjected bs, boolean applyUsersFilter, boolean embeddedInJSP, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
+	public static List<TaskInfo> readTasks(HttpServletRequest request, AllModulesInjected bs, boolean applyUsersFilter, boolean embeddedInJSP, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
 		Map taskEntriesMap;		
 		try {
 			// Setup to read the task entries...

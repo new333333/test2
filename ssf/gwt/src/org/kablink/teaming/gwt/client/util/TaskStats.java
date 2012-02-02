@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -44,6 +45,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class TaskStats implements IsSerializable {
+	private int m_completed0;			//
+	private int m_completed10;			//
+	private int m_completed20;			//
+	private int m_completed30;			//
+	private int m_completed40;			//
+	private int m_completed50;			//
+	private int m_completed60;			//
+	private int m_completed70;			//
+	private int m_completed80;			//
+	private int m_completed90;			//
+	private int m_completed100;			//
+	
 	private int m_priorityCritical;		//
 	private int m_priorityHigh;			//
 	private int m_priorityLeast;		//
@@ -86,6 +99,18 @@ public class TaskStats implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public int getCompleted0()        {return m_completed0;       }
+	public int getCompleted10()       {return m_completed10;      }
+	public int getCompleted20()       {return m_completed20;      }
+	public int getCompleted30()       {return m_completed30;      }
+	public int getCompleted40()       {return m_completed40;      }
+	public int getCompleted50()       {return m_completed50;      }
+	public int getCompleted60()       {return m_completed60;      }
+	public int getCompleted70()       {return m_completed70;      }
+	public int getCompleted80()       {return m_completed80;      }
+	public int getCompleted90()       {return m_completed90;      }
+	public int getCompleted100()      {return m_completed100;     }
+	
 	public int getPriorityCritical()  {return m_priorityCritical; }
 	public int getPriorityHigh()      {return m_priorityHigh;     }
 	public int getPriorityLeast()     {return m_priorityLeast;    }
@@ -99,6 +124,37 @@ public class TaskStats implements IsSerializable {
 	public int getStatusNeedsAction() {return m_statusNeedsAction;}
 	
 	public int getTotalTasks()        {return m_totalTasks;       }
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setCompleted0(       int completed0)        {m_completed0        = completed0;        }
+	public void setCompleted10(      int completed10)       {m_completed10       = completed10;       }
+	public void setCompleted20(      int completed20)       {m_completed20       = completed20;       }
+	public void setCompleted30(      int completed30)       {m_completed30       = completed30;       }
+	public void setCompleted40(      int completed40)       {m_completed40       = completed40;       }
+	public void setCompleted50(      int completed50)       {m_completed50       = completed50;       }
+	public void setCompleted60(      int completed60)       {m_completed60       = completed60;       }
+	public void setCompleted70(      int completed70)       {m_completed70       = completed70;       }
+	public void setCompleted80(      int completed80)       {m_completed80       = completed80;       }
+	public void setCompleted90(      int completed90)       {m_completed90       = completed90;       }
+	public void setCompleted100(     int completed100)      {m_completed100      = completed100;      }
+	
+	public void setPriorityCritical( int prioritiyCritical) {m_priorityCritical  = prioritiyCritical; }
+	public void setPriorityHigh(     int prioritiyHigh)     {m_priorityHigh      = prioritiyHigh;     }
+	public void setPriorityLeast(    int prioritiyLeast)    {m_priorityLeast     = prioritiyLeast;    }
+	public void setPriorityLow(      int prioritiyLow)      {m_priorityLow       = prioritiyLow;      }
+	public void setPriorityMedium(   int prioritiyMedium)   {m_priorityMedium    = prioritiyMedium;   }
+	public void setPriorityNone(     int prioritiyNone)     {m_priorityNone      = prioritiyNone;     }
+	
+	public void setStatusCanceled(   int statusCanceled)    {m_statusCanceled    = statusCanceled;    }
+	public void setStatusCompleted(  int statusCompleted)   {m_statusCompleted   = statusCompleted;   }
+	public void setStatusInProcess(  int statusInProcess)   {m_statusInProcess   = statusInProcess;   }
+	public void setStatusNeedsAction(int statusNeedsAction) {m_statusNeedsAction = statusNeedsAction; }
+	
+	public void setTotalTasks(       int totalTasks)        {m_totalTasks        = totalTasks;        }
 
 	/**
 	 * Returns the percentage a given count is of the total.
@@ -115,21 +171,36 @@ public class TaskStats implements IsSerializable {
 	 * Reflects this task in the counts.
 	 */
 	private void countTask(TaskListItem task) {
-		// Count the priority...
-		String p = task.getTask().getPriority();
-		if      (p.equals(TaskListItem.TaskInfo.PRIORITY_NONE))     m_priorityNone     += 1;
-		else if (p.equals(TaskListItem.TaskInfo.PRIORITY_CRITICAL)) m_priorityCritical += 1;
-		else if (p.equals(TaskListItem.TaskInfo.PRIORITY_HIGH))     m_priorityHigh     += 1;
-		else if (p.equals(TaskListItem.TaskInfo.PRIORITY_MEDIUM))   m_priorityMedium   += 1;
-		else if (p.equals(TaskListItem.TaskInfo.PRIORITY_LOW))      m_priorityLow      += 1;
-		else if (p.equals(TaskListItem.TaskInfo.PRIORITY_LEAST))    m_priorityLeast    += 1;
+		// Count the completed...
+		TaskInfo ti = task.getTask();
+		String   c  = ti.getCompleted();
+		if      (c.equals(TaskInfo.COMPLETED_0))   m_completed0   += 1;
+		else if (c.equals(TaskInfo.COMPLETED_10))  m_completed10  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_20))  m_completed20  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_30))  m_completed30  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_40))  m_completed40  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_50))  m_completed50  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_60))  m_completed60  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_70))  m_completed70  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_80))  m_completed80  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_90))  m_completed90  += 1;
+		else if (c.equals(TaskInfo.COMPLETED_100)) m_completed100 += 1;
+		
+		// ...priority...
+		String p = ti.getPriority();
+		if      (p.equals(TaskInfo.PRIORITY_NONE))     m_priorityNone     += 1;
+		else if (p.equals(TaskInfo.PRIORITY_CRITICAL)) m_priorityCritical += 1;
+		else if (p.equals(TaskInfo.PRIORITY_HIGH))     m_priorityHigh     += 1;
+		else if (p.equals(TaskInfo.PRIORITY_MEDIUM))   m_priorityMedium   += 1;
+		else if (p.equals(TaskInfo.PRIORITY_LOW))      m_priorityLow      += 1;
+		else if (p.equals(TaskInfo.PRIORITY_LEAST))    m_priorityLeast    += 1;
 
 		// ...status...
-		String s = task.getTask().getStatus();
-		if      (s.equals(TaskListItem.TaskInfo.STATUS_NEEDS_ACTION)) m_statusNeedsAction += 1;
-		else if (s.equals(TaskListItem.TaskInfo.STATUS_IN_PROCESS))   m_statusInProcess   += 1;
-		else if (s.equals(TaskListItem.TaskInfo.STATUS_COMPLETED))    m_statusCompleted   += 1;
-		else if (s.equals(TaskListItem.TaskInfo.STATUS_CANCELED))     m_statusCanceled    += 1;
+		String s = ti.getStatus();
+		if      (s.equals(TaskInfo.STATUS_NEEDS_ACTION)) m_statusNeedsAction += 1;
+		else if (s.equals(TaskInfo.STATUS_IN_PROCESS))   m_statusInProcess   += 1;
+		else if (s.equals(TaskInfo.STATUS_COMPLETED))    m_statusCompleted   += 1;
+		else if (s.equals(TaskInfo.STATUS_CANCELED))     m_statusCanceled    += 1;
 		
 		// ...and total.
 		m_totalTasks += 1;
