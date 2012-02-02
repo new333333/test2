@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskStats;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -62,9 +61,9 @@ public abstract class TaskGraphBase extends VibeFlowPanel {
 	 * 
 	 * @param taskStats
 	 * @param gridStyles
-	 * @param renderAsync
+	 * @param showLegend
 	 */
-	public TaskGraphBase(TaskStats taskStats, String gridStyles, boolean renderAsync) {
+	public TaskGraphBase(TaskStats taskStats, String gridStyles, boolean showLegend) {
 		// Initialize the super class...
 		super();
 		
@@ -76,9 +75,7 @@ public abstract class TaskGraphBase extends VibeFlowPanel {
 		addStyleName("taskGraphs-stats");
 
 		// ...and render it.
-		if (renderAsync)
-		     renderAsync();
-		else renderNow();
+		renderGraph(showLegend);
 	}
 
 	/**
@@ -123,32 +120,45 @@ public abstract class TaskGraphBase extends VibeFlowPanel {
 	}
 
 	/**
+	 * Adds a statistic bar to a graph.
+	 * 
+	 * @param vp
+	 * @param style
+	 * @param message
+	 */
+	protected void addLegendBar(String style, String message) {
+		// Create a panel for the bar...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("taskGraphs-statsLegendBar");
+		add(fp);
+
+		// ...create the colored box...
+		VibeFlowPanel colorBox = new VibeFlowPanel();
+		colorBox.addStyleName("taskGraphs-statsLegendBox " + style);
+		fp.add(colorBox);
+
+		// ...and create its label.
+		InlineLabel il = new InlineLabel(message);
+		il.addStyleName("taskGraphs-statsLegendLabel");
+		fp.add(il);
+	}
+
+	/**
 	 * Renders the graph.
 	 * 
 	 * This is implemented by the classes that extend this class to
 	 * render their graph.
+	 * 
+	 * @param showLegend
 	 */
-	protected abstract void render();
+	protected abstract void render(boolean showLegend);
 	
 	/*
-	 * Asynchronously renders the graph.
+	 * Renders the components of the graph.
 	 */
-	private void renderAsync() {
-		Scheduler.ScheduledCommand doRender = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				renderNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doRender);
-	}
-	
-	/*
-	 * Synchronously renders the graph.
-	 */
-	private void renderNow() {
-		renderGrid();
-		render();
+	private void renderGraph(boolean showLegend) {
+		renderGrid();		// Constructs the grid the graph will live in...
+		render(showLegend);	// ...allows the implementing class to render what it wants.
 	}
 
 	/*

@@ -130,26 +130,6 @@ public class TaskGraphsPanel extends ToolPanelBase
 		renderTaskGraphsAsync();
 	}
 
-	/*
-	 * Adds a statistic bar to a graph.
-	 */
-	private void addBar(VibeVerticalPanel vp, String style, String message) {
-		// Create a panel for the bar...
-		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-taskGraphsStatisticBar");
-		vp.add(fp);
-
-		// ...create the colored box...
-		VibeFlowPanel colorBox = new VibeFlowPanel();
-		colorBox.addStyleName("vibe-taskGraphsStatisticBox " + style);
-		fp.add(colorBox);
-
-		// ...and create its label.
-		InlineLabel il = new InlineLabel(message);
-		il.addStyleName("vibe-taskGraphsStatisticLabel");
-		fp.add(il);
-	}
-
 	/**
 	 * Loads the TaskGraphsPanel split point and returns an instance
 	 * of it via the callback.
@@ -349,48 +329,9 @@ public class TaskGraphsPanel extends ToolPanelBase
 		il.addStyleName("vibe-taskGraphsLabel");
 		m_priorityPanel.add(il);
 
-		// Are we displaying any tasks? 
-		int    c;
-		int    p;
-		String m;
-		if (0 < m_taskStats.getTotalTasks()) {
-			// Yes!  Create a grid for the priorities bar chart.
-			TaskPriorityGraph tpgPanel = new TaskPriorityGraph(m_taskStats, "vibe-taskGraphsPrioritiesBar");
-			m_priorityPanel.add(tpgPanel);
-		}
-
-		// Finally, add the individual priority rows.
-		c = m_taskStats.getPriorityCritical();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphs_PriorityCritical(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "taskGraphs-statsPriority0", m);
-		
-		c = m_taskStats.getPriorityHigh();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphs_PriorityHigh(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "taskGraphs-statsPriority1", m);
-		
-		c = m_taskStats.getPriorityMedium();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphs_PriorityMedium(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "taskGraphs-statsPriority2", m);
-		
-		c = m_taskStats.getPriorityLow();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphs_PriorityLow(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "taskGraphs-statsPriority3", m);
-		
-		c = m_taskStats.getPriorityLeast();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphs_PriorityLeast(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "taskGraphs-statsPriority4", m);
-		
-		c = m_taskStats.getPriorityNone();
-		if (0 < c) {
-			p = m_taskStats.getPercent(c);
-			m = m_messages.taskGraphs_PriorityNone(String.valueOf(p), String.valueOf(c));
-			addBar(m_priorityPanel, "taskGraphs-statsPriority5", m);
-		}
+		// Finally, create the priorities bar chart.
+		TaskPriorityGraph tpgPanel = new TaskPriorityGraph(m_taskStats, "vibe-taskGraphsPrioritiesBar", true);
+		m_priorityPanel.add(tpgPanel);
 	}
 	
 	/*
@@ -446,36 +387,9 @@ public class TaskGraphsPanel extends ToolPanelBase
 		il.addStyleName("vibe-taskGraphsLabel");
 		m_statusPanel.add(il);
 		
-		// Are we displaying any tasks? 
-		int    c;
-		int    p;
-		String m;
-		if (0 < m_taskStats.getTotalTasks()) {
-			// Yes!  Create a grid for the status bar chart...
-			TaskStatusGraph tsg = new TaskStatusGraph(m_taskStats, "vibe-taskGraphsStatusBar");
-			m_statusPanel.add(tsg);
-		}
-
-		// Finally, add the individual status value rows.
-		c = m_taskStats.getStatusNeedsAction();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsStatusNeedsAction(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "taskGraphs-statsStatus0", m);
-		
-		c = m_taskStats.getStatusInProcess();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsStatusInProcess(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "taskGraphs-statsStatus1", m);
-		
-		c = m_taskStats.getStatusCompleted();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsStatusCompleted(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "taskGraphs-statsStatus2", m);
-		
-		c = m_taskStats.getStatusCanceled();
-		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsStatusCanceled(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "taskGraphs-statsStatus3", m);
+		// Finally, create the status bar chart.
+		TaskStatusGraph tsg = new TaskStatusGraph(m_taskStats, "vibe-taskGraphsStatusBar", true);
+		m_statusPanel.add(tsg);
 	}
 	
 	/*

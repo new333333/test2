@@ -46,69 +46,111 @@ public class TaskPriorityGraph extends TaskGraphBase {
 	 *  
 	 * @param taskStats
 	 * @param gridStyles
-	 * @param renderAsync
+	 * @param showLegend
 	 */
-	public TaskPriorityGraph(TaskStats taskStats, String gridStyles, boolean renderAsync) {
+	public TaskPriorityGraph(TaskStats taskStats, String gridStyles, boolean showLegend) {
 		// Simply initialize the super class.
-		super(taskStats, gridStyles, renderAsync);
+		super(taskStats, gridStyles, showLegend);
 	}
 	
 	public TaskPriorityGraph(TaskStats taskStats, String gridStyles) {
 		// Always use the initial form of the constructor.
-		this(taskStats, gridStyles, true);
+		this(taskStats, gridStyles, false);
 	}
 
 	/**
 	 * Called by the base class to render the graph.
 	 * 
 	 * Implements the TaskGraphBase.render() method.
+	 * 
+	 * @param showLegend
 	 */
 	@Override
-	protected void render() {
+	protected void render(boolean showLegend) {
+		int		c;
+		int		p;
+		String	m;
+		
 		// Render the various priority values into the grid.
 		TaskStats ts = getTaskStatistics();
-		int c = ts.getPriorityCritical();
-		int p;
-		String m;
-		if (0 < c) {
+		if (0 < ts.getTotalTasks()) {
+			c = ts.getPriorityCritical();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_PriorityCritical(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsPriority0", m);
+			}
+			
+			c = ts.getPriorityHigh();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_PriorityHigh(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsPriority1", m);
+			}
+			
+			c = ts.getPriorityMedium();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_PriorityMedium(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsPriority2", m);
+			}
+			
+			c = ts.getPriorityLow();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_PriorityLow(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsPriority3", m);
+			}
+			
+			c = ts.getPriorityLeast();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_PriorityLeast(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsPriority4", m);
+			}
+			
+			c = ts.getPriorityNone();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_PriorityNone(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsPriority5", m);
+			}
+		}
+		
+		// Finally, when requested...
+		if (showLegend) {
+			// ...add the individual priority rows.
+			c = ts.getPriorityCritical();
 			p = ts.getPercent(c);
 			m = m_messages.taskGraphs_PriorityCritical(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsPriority0", m);
-		}
-		
-		c = ts.getPriorityHigh();
-		if (0 < c) {
+			addLegendBar("taskGraphs-statsPriority0", m);
+			
+			c = ts.getPriorityHigh();
 			p = ts.getPercent(c);
 			m = m_messages.taskGraphs_PriorityHigh(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsPriority1", m);
-		}
-		
-		c = ts.getPriorityMedium();
-		if (0 < c) {
+			addLegendBar("taskGraphs-statsPriority1", m);
+			
+			c = ts.getPriorityMedium();
 			p = ts.getPercent(c);
 			m = m_messages.taskGraphs_PriorityMedium(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsPriority2", m);
-		}
-		
-		c = ts.getPriorityLow();
-		if (0 < c) {
+			addLegendBar("taskGraphs-statsPriority2", m);
+			
+			c = ts.getPriorityLow();
 			p = ts.getPercent(c);
 			m = m_messages.taskGraphs_PriorityLow(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsPriority3", m);
-		}
-		
-		c = ts.getPriorityLeast();
-		if (0 < c) {
+			addLegendBar("taskGraphs-statsPriority3", m);
+			
+			c = ts.getPriorityLeast();
 			p = ts.getPercent(c);
 			m = m_messages.taskGraphs_PriorityLeast(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsPriority4", m);
-		}
-		
-		c = ts.getPriorityNone();
-		if (0 < c) {
-			p = ts.getPercent(c);
-			m = m_messages.taskGraphs_PriorityNone(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsPriority5", m);
+			addLegendBar("taskGraphs-statsPriority4", m);
+			
+			c = ts.getPriorityNone();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_PriorityNone(String.valueOf(p), String.valueOf(c));
+				addLegendBar("taskGraphs-statsPriority5", m);
+			}
 		}
 	}
 }
