@@ -475,7 +475,21 @@ public class TaskListItem implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public TaskListItem() {
-		// Nothing to do.
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param task
+	 */
+	public TaskListItem(TaskInfo task) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the task.
+		setTask(task);
 	}
 
 	/**

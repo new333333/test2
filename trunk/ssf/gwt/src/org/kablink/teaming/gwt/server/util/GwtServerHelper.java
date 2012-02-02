@@ -134,6 +134,7 @@ import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
@@ -742,29 +743,45 @@ public class GwtServerHelper {
 	 */
 	private static void addTFIFromStringToList(AllModulesInjected bs, HttpServletRequest request, String s, List<TaskFolderInfo> tfiList) {
 		try {
-			// Access the folder...
+			// Access the folder.
 			Long folderId = Long.parseLong(s);
 			Folder folder = bs.getFolderModule().getFolder(folderId);
-			
-			// ...read the List<TaskListItem> from it...
-			List<TaskListItem> taskList = GwtTaskHelper.getTaskList(
-				request,
-				bs,
-				false,	// false -> Don't apply the user's filters.
-				false,	// false -> Not embedded in a JSP.
-				folder,
-				FilterType.ALL.name(),
-				ModeType.PHYSICAL.name());
 
-			// ...and use what we've got to construct a TaskFolderInfo
-			// ...and add it to the list.
+			// Can we pull the statistics from the folder's custom
+			// attributes?
+			TaskStats ts = GwtTaskHelper.getTaskStatistics(folder);
+			if (null == ts) {
+				// No!  Read the tasks from the folder...
+				List<TaskInfo> tiList = GwtTaskHelper.readTasks(
+					request,					//
+					bs,							//
+					false,						// false -> Don't apply user's filter.
+					false,						// false -> Not embedded in JSP.
+					folder,						//
+					FilterType.ALL.name(),		// Read all the tasks.
+					ModeType.PHYSICAL.name(),	// Read the tasks that are physically in the folder.
+					false);						// false -> We don't need all the client information for the tasks (i.e., location, assignments, ...)
+	
+				// ...construct a List<TaskListItem> from the tasks...
+				List<TaskListItem> tliList = new ArrayList<TaskListItem>();
+				if ((null != tiList) && (!(tiList.isEmpty()))) {
+					for (TaskInfo task:  tiList) {
+						tliList.add(new TaskListItem(task));
+					}
+				}
+
+				// ...and use that to construct a TaskStats object.
+				ts = new TaskStats(tliList);
+			}
+			
+			// Finally, use what we've got to construct a
+			// TaskFolderInfo and add it to the list.
 			tfiList.add(
 				new TaskFolderInfo(
 					folderId,
 					PermaLinkUtil.getPermalink(request, folder),
 					folder.getTitle(),
-					new TaskStats(
-						taskList)));
+					ts));
 		}
 		
 		catch (GwtTeamingException   fte) {/* Ignored. */}
