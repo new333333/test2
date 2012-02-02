@@ -432,21 +432,20 @@ public class FileResource extends AbstractResource {
         EntityType et = entityTypeFromString(entityType);
         FileAttachment fa;
         boolean result = true;
-        Date modDate;
+        Date modDate = dateFromISO8601(modDateISO8601);
         if(et == EntityType.folderEntry) {
     		FolderEntry entry = folderModule.getEntry(null, entityId);
     		fa = entry.getFileAttachment(filename);
     		if(fa != null) {
 	    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	    		if(result) {
-	    			modDate = dateFromISO8601(modDateISO8601);
 		    		FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
 	    		}
     		}
     		else {
     			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
     			if(result) {
-    				FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, null);
+    				FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
     				fa = entry.getFileAttachment(filename);
     			}
     		}
@@ -459,14 +458,13 @@ public class FileResource extends AbstractResource {
     		if(fa != null) {
 	    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	    		if(result) {
-		        	modDate = dateFromISO8601(modDateISO8601);
 		    		FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
 	    		}
     		}
     		else {
     			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
     			if(result) {
-    				FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, null);
+    				FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
     				fa = user.getFileAttachment(filename);
     			}
     		}
@@ -479,14 +477,13 @@ public class FileResource extends AbstractResource {
     		if(fa != null) {
 	    		result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	    		if(result) {
-		        	modDate = dateFromISO8601(modDateISO8601);
 		    		FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
 	    		}
     		}
     		else {
     			result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
     			if(result) {
-    				FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, null);
+    				FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
     				fa = group.getFileAttachment(filename);
     			}
     		}
