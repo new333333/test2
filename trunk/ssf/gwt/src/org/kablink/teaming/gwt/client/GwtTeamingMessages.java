@@ -483,6 +483,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_ProjectInfoWidget();
+	String codeSplitFailure_ProjectStatsWidget();
 	String codeSplitFailure_ProjectManagementWSView();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
@@ -1398,5 +1399,8 @@ public interface GwtTeamingMessages extends Messages
 	String projectStatusOpen();
 	String projectStatusUnknown();
 	String statusLabel();
+
+	// Strings used in the Project Statistics widget
+	String projectStatistics();
 	
 }// end GwtTeamingMessages
