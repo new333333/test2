@@ -52,20 +52,16 @@ public class WebdavResourceFactory implements ResourceFactory {
 
 	private Log log = LogFactory.getLog(getClass());
 	
-	private boolean allowDirectoryBrowsing;
-	private long maxAgeSecondsRoot;
-	private long maxAgeSecondsDav;
-	private long maxAgeSecondsWorkspace;
-	private long maxAgeSecondsFolder;
-	private long maxAgeSecondsFile;
+	private boolean inited = false;
+	
+	private boolean allowDirectoryBrowsing = true;
+	private long maxAgeSecondsRoot = 31536000;
+	private long maxAgeSecondsDav = 86400;
+	private long maxAgeSecondsWorkspace = 10;
+	private long maxAgeSecondsFolder = 10;
+	private long maxAgeSecondsFile = 10;
 	
 	public WebdavResourceFactory() {
-		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
-		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 31536000);
-		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
-		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
-		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
-		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
 	}
 
 	/* (non-Javadoc)
@@ -74,6 +70,9 @@ public class WebdavResourceFactory implements ResourceFactory {
 	@Override
 	public Resource getResource(String host, String path) {
 		log.debug("getResource: " + path);
+		
+		if(!inited)
+			init();
 		
 		Path p = Path.path(path);
 		
@@ -137,5 +136,16 @@ public class WebdavResourceFactory implements ResourceFactory {
 
 	protected Object resolvePath(Path path) {
 		return null; // $$$
+	}
+	
+	protected void init() {
+		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
+		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 31536000);
+		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
+		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
+		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
+		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
+		
+		inited = true;
 	}
 }
