@@ -1393,7 +1393,7 @@ public class GwtTaskHelper {
 		boolean foundStatus   = false;
 
 		// Does the folder have a Statistics custom attribute?
-		CustomAttribute caStats = folder.getCustomAttribute("statistics");
+		CustomAttribute caStats = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);
 		if (null != caStats) {
 			Object o = caStats.getValue();
 			if ((null != o) && (o instanceof Statistics)) {
@@ -1420,11 +1420,11 @@ public class GwtTaskHelper {
 									if (null != completeMap) {
 										Set<String> completeKeys = ((Set<String>) completeMap.keySet());
 										for (String completeKey:  completeKeys) {
-											if (completeKey.equals("total")) {
+											if (completeKey.equals(Statistics.TOTAL_KEY)) {
 												reply.setTotalTasks((Integer) completeMap.get(completeKey));
 											}
 											
-											else if (completeKey.equals("values")) {
+											else if (completeKey.equals(Statistics.VALUES)) {
 												Map cValuesMap = ((Map) completeMap.get(completeKey));
 												Set<String> cKeys = ((Set<String>) cValuesMap.keySet());
 												for (String cKey:  cKeys) {
@@ -1459,11 +1459,11 @@ public class GwtTaskHelper {
 									if (null != priorityMap) {
 										Set<String> priorityKeys = ((Set<String>) priorityMap.keySet());
 										for (String priorityKey:  priorityKeys) {
-											if (priorityKey.equals("total")) {
+											if (priorityKey.equals(Statistics.TOTAL_KEY)) {
 												reply.setTotalTasks((Integer) priorityMap.get(priorityKey));
 											}
 											
-											else if (priorityKey.equals("values")) {
+											else if (priorityKey.equals(Statistics.VALUES)) {
 												Map pValuesMap = ((Map) priorityMap.get(priorityKey));
 												Set<String> pKeys = ((Set<String>) pValuesMap.keySet());
 												for (String pKey:  pKeys) {
@@ -1492,11 +1492,11 @@ public class GwtTaskHelper {
 									if (null != statusMap) {
 										Set<String> statusKeys = ((Set<String>) statusMap.keySet());
 										for (String statusKey:  statusKeys) {
-											if (statusKey.equals("total")) {
+											if (statusKey.equals(Statistics.TOTAL_KEY)) {
 												reply.setTotalTasks((Integer) statusMap.get(statusKey));
 											}
 											
-											else if (statusKey.equals("values")) {
+											else if (statusKey.equals(Statistics.VALUES)) {
 												Map sValuesMap = ((Map) statusMap.get(statusKey));
 												Set<String> sKeys = ((Set<String>) sValuesMap.keySet());
 												for (String sKey:  sKeys) {
