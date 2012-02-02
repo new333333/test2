@@ -46,55 +46,85 @@ public class TaskStatusGraph extends TaskGraphBase {
 	 *  
 	 * @param taskStats
 	 * @param gridStyles
-	 * @param renderAsync
+	 * @param showLegend
 	 */
-	public TaskStatusGraph(TaskStats taskStats, String gridStyles, boolean renderAsync) {
+	public TaskStatusGraph(TaskStats taskStats, String gridStyles, boolean showLegend) {
 		// Simply initialize the super class.
-		super(taskStats, gridStyles, renderAsync);
+		super(taskStats, gridStyles, showLegend);
 	}
 	
 	public TaskStatusGraph(TaskStats taskStats, String gridStyles) {
 		// Always use the initial form of the constructor.
-		this(taskStats, gridStyles, true);
+		this(taskStats, gridStyles, false);
 	}
 
 	/**
 	 * Called by the base class to render the graph.
 	 * 
 	 * Implements the TaskGraphBase.render() method.
+	 * 
+	 * @param showLegend
 	 */
 	@Override
-	protected void render() {
+	protected void render(boolean showLegend) {
+		int		c;
+		int		p;
+		String	m;
+		
 		// Render the various status values into the grid.
 		TaskStats ts = getTaskStatistics();
-		int c = ts.getStatusNeedsAction();
-		int p;
-		String m;
-		if (0 < c) {
-			p = ts.getPercent(c);
-			m = m_messages.taskGraphs_StatusNeedsAction(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsStatus0", m);
+		if (0 < ts.getTotalTasks()) {
+			c = ts.getStatusNeedsAction();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_StatusNeedsAction(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsStatus0", m);
+			}
+			
+			c = ts.getStatusInProcess();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_StatusInProcess(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsStatus1", m);
+			}
+			
+			c = ts.getStatusCompleted();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_StatusCompleted(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsStatus2", m);
+			}
+			
+			c = ts.getStatusCanceled();
+			if (0 < c) {
+				p = ts.getPercent(c);
+				m = m_messages.taskGraphs_StatusCanceled(String.valueOf(p), String.valueOf(c));
+				addBarSegment(c, p, "taskGraphs-statsStatus3", m);
+			}
 		}
 		
-		c = ts.getStatusInProcess();
-		if (0 < c) {
+		// Finally, when requested...
+		if (showLegend) {
+			// ...add the individual status rows.
+			c = ts.getStatusNeedsAction();
 			p = ts.getPercent(c);
-			m = m_messages.taskGraphs_StatusInProcess(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsStatus1", m);
-		}
-		
-		c = ts.getStatusCompleted();
-		if (0 < c) {
+			m = m_messages.taskGraphsStatusNeedsAction(String.valueOf(p), String.valueOf(c));
+			addLegendBar("taskGraphs-statsStatus0", m);
+			
+			c = ts.getStatusInProcess();
 			p = ts.getPercent(c);
-			m = m_messages.taskGraphs_StatusCompleted(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsStatus2", m);
-		}
-		
-		c = ts.getStatusCanceled();
-		if (0 < c) {
+			m = m_messages.taskGraphsStatusInProcess(String.valueOf(p), String.valueOf(c));
+			addLegendBar("taskGraphs-statsStatus1", m);
+			
+			c = ts.getStatusCompleted();
 			p = ts.getPercent(c);
-			m = m_messages.taskGraphs_StatusCanceled(String.valueOf(p), String.valueOf(c));
-			addBarSegment(c, p, "taskGraphs-statsStatus3", m);
+			m = m_messages.taskGraphsStatusCompleted(String.valueOf(p), String.valueOf(c));
+			addLegendBar("taskGraphs-statsStatus2", m);
+			
+			c = ts.getStatusCanceled();
+			p = ts.getPercent(c);
+			m = m_messages.taskGraphsStatusCanceled(String.valueOf(p), String.valueOf(c));
+			addLegendBar("taskGraphs-statsStatus3", m);
 		}
 	}
 }

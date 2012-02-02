@@ -196,9 +196,6 @@
 		.vibe-taskGraphsPrioritiesBar   {width: 300px;}
 		.vibe-taskGraphsRefresh         {}
 		.vibe-taskGraphsRefreshButton   {}
-		.vibe-taskGraphsStatisticBar    {white-space: nowrap;}
-		.vibe-taskGraphsStatisticBox    {margin-top: 2px; margin-right: 2px; width: 12px; height: 12px; float: left;}
-		.vibe-taskGraphsStatisticLabel  {color: #333333; font-size: 0.9em;}
 		.vibe-taskGraphsStatus          {margin-left: 6px;}
 		.vibe-taskGraphsStatusBar       {width: 300px;}
 	/* ...End:  Task graphs panel styles. */
