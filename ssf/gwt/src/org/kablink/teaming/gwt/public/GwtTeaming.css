@@ -3495,3 +3495,20 @@ td.datePickerMonth {
 	text-align: center;
 	padding:10px; z-index: 1999;
 }
+
+/* Start:  Task statistics graph styles. */
+	.taskGraphs-stats           {white-space: nowrap;}
+	.taskGraphs-statsBarSegment {color: white; font-size: 0.75em; font-weight: bold;}
+	.taskGraphs-statsPriority0  {background-color:#EF5612;}
+	.taskGraphs-statsPriority1  {background-color:#EC9112;}
+	.taskGraphs-statsPriority2  {background-color:#617F9F;}
+	.taskGraphs-statsPriority3  {background-color:#995DB2;}
+	.taskGraphs-statsPriority4  {background-color:#70AE55;}
+	.taskGraphs-statsPriority5  {background-color:#72AF58;}
+	.taskGraphs-statsPriority6  {background-color:#617F9F;}
+	.taskGraphs-statsPriority7  {background-color:#547AA5;}
+	.taskGraphs-statsStatus0    {background-color:#EC9112;}
+	.taskGraphs-statsStatus1    {background-color:#617F9F;}
+	.taskGraphs-statsStatus2    {background-color:#70AE55;}
+	.taskGraphs-statsStatus3    {background-color:#995DB2;}
+/* End:  Task statistics graph styles. */

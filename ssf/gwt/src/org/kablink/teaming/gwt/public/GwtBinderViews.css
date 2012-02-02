@@ -131,12 +131,7 @@
 		.vibe-dataTableTaskFolder-enabled         {color: #353838;}
 		.vibe-dataTableTaskFolder-label           {display: inline; color: #135c8f;}
 		.vibe-dataTableTaskFolder-panel           {white-space: nowrap;}
-		.vibe-dataTableTaskFolder-stats           {white-space: nowrap; padding-left: 8px;}
-		.vibe-dataTableTaskFolder-statsBarSegment {color: white; font-size: 0.75em; font-weight: bold;}
-		.vibe-dataTableTaskFolder-statsStatus0    {background-color:#EC9112;}
-		.vibe-dataTableTaskFolder-statsStatus1    {background-color:#617F9F;}
-		.vibe-dataTableTaskFolder-statsStatus2    {background-color:#70AE55;}
-		.vibe-dataTableTaskFolder-statsStatus3    {background-color:#995DB2;}
+		.vibe-dataTableTaskFolder-stats           {padding-left: 8px;}
 		.vibe-dataTableTaskFolder-statsStatusBar  {width: 150px;}
 	/* ...End:  Data table cell styles. */
 
@@ -189,7 +184,6 @@
 	/* ...End:  Task folder view styles. */
 	
 	/* ...Start:  Task graphs panel styles. */
-		.vibe-taskGraphsBarSegment      {color: white; font-size: 0.75em; font-weight: bold;}
 		.vibe-taskGraphsExpander        {display: block;}
 		.vibe-taskGraphsExpanderA       {text-decoration: none; cursor: pointer;}
 		.vibe-taskGraphsExpanderA-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
@@ -200,24 +194,12 @@
 		.vibe-taskGraphsPanel           {}
 		.vibe-taskGraphsPriorities      {margin-left: 6px;}
 		.vibe-taskGraphsPrioritiesBar   {width: 300px;}
-		.vibe-taskGraphsPriority0       {background-color:#EF5612;}
-		.vibe-taskGraphsPriority1       {background-color:#EC9112;}
-		.vibe-taskGraphsPriority2       {background-color:#617F9F;}
-		.vibe-taskGraphsPriority3       {background-color:#995DB2;}
-		.vibe-taskGraphsPriority4       {background-color:#70AE55;}
-		.vibe-taskGraphsPriority5       {background-color:#72AF58;}
-		.vibe-taskGraphsPriority6       {background-color:#617F9F;}
-		.vibe-taskGraphsPriority7       {background-color:#547AA5;}
 		.vibe-taskGraphsRefresh         {}
 		.vibe-taskGraphsRefreshButton   {}
 		.vibe-taskGraphsStatisticBar    {white-space: nowrap;}
 		.vibe-taskGraphsStatisticBox    {margin-top: 2px; margin-right: 2px; width: 12px; height: 12px; float: left;}
 		.vibe-taskGraphsStatisticLabel  {color: #333333; font-size: 0.9em;}
 		.vibe-taskGraphsStatus          {margin-left: 6px;}
-		.vibe-taskGraphsStatus0         {background-color:#EC9112;}
-		.vibe-taskGraphsStatus1         {background-color:#617F9F;}
-		.vibe-taskGraphsStatus2         {background-color:#70AE55;}
-		.vibe-taskGraphsStatus3         {background-color:#995DB2;}
 		.vibe-taskGraphsStatusBar       {width: 300px;}
 	/* ...End:  Task graphs panel styles. */
 	
