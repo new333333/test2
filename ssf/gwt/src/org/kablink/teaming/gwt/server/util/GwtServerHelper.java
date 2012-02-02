@@ -2422,17 +2422,22 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 			
-			// Does the user have rights to "Configure File Sync App"?
-			if ( adminModule.testAccess( AdminOperation.manageFileSynchApp ) )
+			// Yes, are we running the Enterprise version of Teaming?
+			if ( ReleaseInfo.isLicenseRequiredEdition() == true )
 			{
 				// Yes
-				title = NLT.get( "administration.configureVibeDesktop" );
-				
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.CONFIGURE_FILE_SYNC_APP );
-				
-				// Add this action to the "system" category
-				systemCategory.addAdminOption( adminAction );
+				// Does the user have rights to "Configure File Sync App"?
+				if ( adminModule.testAccess( AdminOperation.manageFileSynchApp ) )
+				{
+					// Yes
+					title = NLT.get( "administration.configureVibeDesktop" );
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, "", AdminAction.CONFIGURE_FILE_SYNC_APP );
+					
+					// Add this action to the "system" category
+					systemCategory.addAdminOption( adminAction );
+				}
 			}
 		}
 		
