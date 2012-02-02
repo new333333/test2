@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ProjectInfoWidget;
+import org.kablink.teaming.gwt.client.widgets.ProjectStatsWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -63,6 +64,7 @@ public class ProjectManagementWSView extends ViewBase implements ToolPanelReady
 	private VibeFlowPanel m_descPanel;
 	private VibeFlowPanel m_accessoriesPanel;
 	private VibeFlowPanel m_projectInfoPanel;
+	private VibeFlowPanel m_projectStatsPanel;
 	private VibeFlowPanel m_footerPanel;
 	
 	/**
@@ -176,6 +178,28 @@ public class ProjectManagementWSView extends ViewBase implements ToolPanelReady
 				public void onSuccess( ToolPanelBase projectInfoWidget )
 				{
 					m_projectInfoPanel.add( projectInfoWidget );
+				}
+			} );
+		}
+		
+		// Add a place for the project statistics
+		{
+			m_projectStatsPanel = new VibeFlowPanel();
+			m_projectStatsPanel.addStyleName( "vibe-projectManagementWSView_ProjectStatsPanel" );
+			m_mainPanel.add( m_projectStatsPanel );
+			
+			ProjectStatsWidget.createAsync( this, m_binderInfo, this , new ToolPanelClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ToolPanelBase projectStatsWidget )
+				{
+					m_projectStatsPanel.add( projectStatsWidget );
 				}
 			} );
 		}
