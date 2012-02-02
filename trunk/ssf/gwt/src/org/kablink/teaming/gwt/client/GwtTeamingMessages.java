@@ -1155,12 +1155,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskGraphsAltShow();
 	String taskGraphs();
 	String taskGraphsPriority();
-	String taskGraphsPriorityCritical(String percent, String count);
-	String taskGraphsPriorityHigh(String percent, String count);
-	String taskGraphsPriorityLeast(String percent, String count);
-	String taskGraphsPriorityLow(String percent, String count);
-	String taskGraphsPriorityMedium(String percent, String count);
-	String taskGraphsPriorityNone(String percent, String count);
 	String taskGraphsRefresh();
 	String taskGraphsStatus();
 	String taskGraphsStatusCanceled(String percent, String count);
@@ -1297,10 +1291,6 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
-	String vibeDataTable_TaskFolderStatusCanceled(String percent, String count);
-	String vibeDataTable_TaskFolderStatusCompleted(String percent, String count);
-	String vibeDataTable_TaskFolderStatusInProcess(String percent, String count);
-	String vibeDataTable_TaskFolderStatusNeedsAction(String percent, String count);
 	String vibeDataTable_TrashConfirmPurge();
 	String vibeDataTable_TrashConfirmPurgeAll();
 	String vibeDataTable_TrashConfirmPurgeAllWithSelections();
@@ -1403,4 +1393,15 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Project Statistics widget
 	String projectStatistics();
 	
+	// String used by the task graphs widgets.
+	String taskGraphs_PriorityCritical( String percent, String count);
+	String taskGraphs_PriorityHigh(     String percent, String count);
+	String taskGraphs_PriorityLeast(    String percent, String count);
+	String taskGraphs_PriorityLow(      String percent, String count);
+	String taskGraphs_PriorityMedium(   String percent, String count);
+	String taskGraphs_PriorityNone(     String percent, String count);
+	String taskGraphs_StatusCanceled(   String percent, String count);
+	String taskGraphs_StatusCompleted(  String percent, String count);
+	String taskGraphs_StatusInProcess(  String percent, String count);
+	String taskGraphs_StatusNeedsAction(String percent, String count);
 }// end GwtTeamingMessages

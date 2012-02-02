@@ -45,6 +45,8 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskProvider;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskStats;
+import org.kablink.teaming.gwt.client.widgets.TaskPriorityGraph;
+import org.kablink.teaming.gwt.client.widgets.TaskStatusGraph;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -146,29 +148,6 @@ public class TaskGraphsPanel extends ToolPanelBase
 		InlineLabel il = new InlineLabel(message);
 		il.addStyleName("vibe-taskGraphsStatisticLabel");
 		fp.add(il);
-	}
-
-	/*
-	 * Adds a colored bar segment to a grid.
-	 */
-	private void addBarSegment(FlexTable grid, FlexCellFormatter gridCellFormatter, int count, int percent, String style, String message) {
-		// If this segment doesn't show anything...
-		if (0 == count) {
-			// ...skip it.
-			return;
-		}
-		
-		String width = (percent + "%");
-		InlineLabel il = new InlineLabel(width);
-		il.addStyleName("vibe-taskGraphsBarSegment");
-		il.setWordWrap(false);
-		il.setTitle(message);
-		int cell;
-		try                  {cell = grid.getCellCount(0);}
-		catch (Exception ex) {cell = 0;                   }
-		grid.setWidget(0, cell, il);
-		gridCellFormatter.setWidth(0, cell, width);
-		gridCellFormatter.addStyleName(0, cell, style);
 	}
 
 	/**
@@ -375,89 +354,42 @@ public class TaskGraphsPanel extends ToolPanelBase
 		int    p;
 		String m;
 		if (0 < m_taskStats.getTotalTasks()) {
-			// Yes!  Create a grid for the priorities bar chart...
-			FlexTable grid = new FlexTable();
-			grid.addStyleName("vibe-taskGraphsPrioritiesBar");
-			grid.setCellPadding(0);
-			grid.setCellSpacing(0);
-			m_priorityPanel.add(grid);
-			FlexCellFormatter gridCellFormatter = grid.getFlexCellFormatter();
-			
-			// ...and render the various priorities into that grid.
-			c = m_taskStats.getPriorityCritical();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsPriorityCritical(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsPriority0", m);
-			}
-			
-			c = m_taskStats.getPriorityHigh();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsPriorityHigh(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsPriority1", m);
-			}
-			
-			c = m_taskStats.getPriorityMedium();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsPriorityMedium(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsPriority2", m);
-			}
-			
-			c = m_taskStats.getPriorityLow();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsPriorityLow(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsPriority3", m);
-			}
-			
-			c = m_taskStats.getPriorityLeast();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsPriorityLeast(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsPriority4", m);
-			}
-			
-			c = m_taskStats.getPriorityNone();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsPriorityNone(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsPriority5", m);
-			}
+			// Yes!  Create a grid for the priorities bar chart.
+			TaskPriorityGraph tpgPanel = new TaskPriorityGraph(m_taskStats, "vibe-taskGraphsPrioritiesBar");
+			m_priorityPanel.add(tpgPanel);
 		}
 
 		// Finally, add the individual priority rows.
 		c = m_taskStats.getPriorityCritical();
 		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsPriorityCritical(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "vibe-taskGraphsPriority0", m);
+		m = m_messages.taskGraphs_PriorityCritical(String.valueOf(p), String.valueOf(c));
+		addBar(m_priorityPanel, "taskGraphs-statsPriority0", m);
 		
 		c = m_taskStats.getPriorityHigh();
 		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsPriorityHigh(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "vibe-taskGraphsPriority1", m);
+		m = m_messages.taskGraphs_PriorityHigh(String.valueOf(p), String.valueOf(c));
+		addBar(m_priorityPanel, "taskGraphs-statsPriority1", m);
 		
 		c = m_taskStats.getPriorityMedium();
 		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsPriorityMedium(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "vibe-taskGraphsPriority2", m);
+		m = m_messages.taskGraphs_PriorityMedium(String.valueOf(p), String.valueOf(c));
+		addBar(m_priorityPanel, "taskGraphs-statsPriority2", m);
 		
 		c = m_taskStats.getPriorityLow();
 		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsPriorityLow(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "vibe-taskGraphsPriority3", m);
+		m = m_messages.taskGraphs_PriorityLow(String.valueOf(p), String.valueOf(c));
+		addBar(m_priorityPanel, "taskGraphs-statsPriority3", m);
 		
 		c = m_taskStats.getPriorityLeast();
 		p = m_taskStats.getPercent(c);
-		m = m_messages.taskGraphsPriorityLeast(String.valueOf(p), String.valueOf(c));
-		addBar(m_priorityPanel, "vibe-taskGraphsPriority4", m);
+		m = m_messages.taskGraphs_PriorityLeast(String.valueOf(p), String.valueOf(c));
+		addBar(m_priorityPanel, "taskGraphs-statsPriority4", m);
 		
 		c = m_taskStats.getPriorityNone();
 		if (0 < c) {
 			p = m_taskStats.getPercent(c);
-			m = m_messages.taskGraphsPriorityNone(String.valueOf(p), String.valueOf(c));
-			addBar(m_priorityPanel, "vibe-taskGraphsPriority5", m);
+			m = m_messages.taskGraphs_PriorityNone(String.valueOf(p), String.valueOf(c));
+			addBar(m_priorityPanel, "taskGraphs-statsPriority5", m);
 		}
 	}
 	
@@ -520,63 +452,30 @@ public class TaskGraphsPanel extends ToolPanelBase
 		String m;
 		if (0 < m_taskStats.getTotalTasks()) {
 			// Yes!  Create a grid for the status bar chart...
-			FlexTable grid = new FlexTable();
-			grid.addStyleName("vibe-taskGraphsStatusBar");
-			grid.setCellPadding(0);
-			grid.setCellSpacing(0);
-			m_statusPanel.add(grid);
-			FlexCellFormatter gridCellFormatter = grid.getFlexCellFormatter();
-			
-			// ...and render the various status values into that grid.
-			c = m_taskStats.getStatusNeedsAction();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsStatusNeedsAction(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsStatus0", m);
-			}
-			
-			c = m_taskStats.getStatusInProcess();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsStatusInProcess(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsStatus1", m);
-			}
-			
-			c = m_taskStats.getStatusCompleted();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsStatusCompleted(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsStatus2", m);
-			}
-			
-			c = m_taskStats.getStatusCanceled();
-			if (0 < c) {
-				p = m_taskStats.getPercent(c);
-				m = m_messages.taskGraphsStatusCanceled(String.valueOf(p), String.valueOf(c));
-				addBarSegment(grid, gridCellFormatter, c, p, "vibe-taskGraphsStatus3", m);
-			}
+			TaskStatusGraph tsg = new TaskStatusGraph(m_taskStats, "vibe-taskGraphsStatusBar");
+			m_statusPanel.add(tsg);
 		}
 
 		// Finally, add the individual status value rows.
 		c = m_taskStats.getStatusNeedsAction();
 		p = m_taskStats.getPercent(c);
 		m = m_messages.taskGraphsStatusNeedsAction(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "vibe-taskGraphsStatus0", m);
+		addBar(m_statusPanel, "taskGraphs-statsStatus0", m);
 		
 		c = m_taskStats.getStatusInProcess();
 		p = m_taskStats.getPercent(c);
 		m = m_messages.taskGraphsStatusInProcess(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "vibe-taskGraphsStatus1", m);
+		addBar(m_statusPanel, "taskGraphs-statsStatus1", m);
 		
 		c = m_taskStats.getStatusCompleted();
 		p = m_taskStats.getPercent(c);
 		m = m_messages.taskGraphsStatusCompleted(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "vibe-taskGraphsStatus2", m);
+		addBar(m_statusPanel, "taskGraphs-statsStatus2", m);
 		
 		c = m_taskStats.getStatusCanceled();
 		p = m_taskStats.getPercent(c);
 		m = m_messages.taskGraphsStatusCanceled(String.valueOf(p), String.valueOf(c));
-		addBar(m_statusPanel, "vibe-taskGraphsStatus3", m);
+		addBar(m_statusPanel, "taskGraphs-statsStatus3", m);
 	}
 	
 	/*

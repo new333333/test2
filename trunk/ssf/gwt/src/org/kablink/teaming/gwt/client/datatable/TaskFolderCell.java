@@ -35,10 +35,10 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.TaskStats;
+import org.kablink.teaming.gwt.client.widgets.TaskStatusGraph;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -49,9 +49,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -140,29 +137,6 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
-	}
-
-	/*
-	 * Adds a colored bar segment to a grid.
-	 */
-	private void addBarSegment(FlexTable grid, FlexCellFormatter gridCellFormatter, int count, int percent, String style, String message) {
-		// If this segment doesn't show anything...
-		if (0 == count) {
-			// ...skip it.
-			return;
-		}
-		
-		String width = (percent + "%");
-		InlineLabel il = new InlineLabel(width);
-		il.addStyleName("vibe-dataTableTaskFolder-statsBarSegment");
-		il.setWordWrap(false);
-		il.setTitle(message);
-		int cell;
-		try                  {cell = grid.getCellCount(0);}
-		catch (Exception ex) {cell = 0;                   }
-		grid.setWidget(0, cell, il);
-		gridCellFormatter.setWidth(0, cell, width);
-		gridCellFormatter.addStyleName(0, cell, style);
 	}
 
 	/*
@@ -257,7 +231,6 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 		VibeFlowPanel renderPanel = new VibeFlowPanel();
 
 		// Scan the task folders.
-		GwtTeamingMessages messages = GwtTeaming.getMessages();
 		int taskFolderIndex = 0;
 		for (TaskFolderInfo tfi:  tfiList) {
 			// Generate a panel to hold this task folder...
@@ -277,52 +250,10 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 			// Are there any tasks defined in the folder?
 			TaskStats ts = tfi.getTaskStatistics();
 			if (0 < ts.getTotalTasks()) {
-				// Yes!  Create panel to hold their status graph...
-				VibeFlowPanel sp = new VibeFlowPanel();
-				sp.addStyleName("vibe-dataTableTaskFolder-stats displayBlock verticalAlignTop");
-				
-				// ...create a grid for the status bar chart...
-				FlexTable grid = new FlexTable();
-				grid.addStyleName("vibe-dataTableTaskFolder-statsStatusBar");
-				grid.setCellPadding(0);
-				grid.setCellSpacing(0);
-				sp.add(grid);
-				FlexCellFormatter gridCellFormatter = grid.getFlexCellFormatter();
-				
-				// ...render the various status values into that grid...
-				int c = ts.getStatusNeedsAction();
-				int p;
-				String m;
-				if (0 < c) {
-					p = ts.getPercent(c);
-					m = messages.vibeDataTable_TaskFolderStatusNeedsAction(String.valueOf(p), String.valueOf(c));
-					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus0", m);
-				}
-				
-				c = ts.getStatusInProcess();
-				if (0 < c) {
-					p = ts.getPercent(c);
-					m = messages.vibeDataTable_TaskFolderStatusInProcess(String.valueOf(p), String.valueOf(c));
-					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus1", m);
-				}
-				
-				c = ts.getStatusCompleted();
-				if (0 < c) {
-					p = ts.getPercent(c);
-					m = messages.vibeDataTable_TaskFolderStatusCompleted(String.valueOf(p), String.valueOf(c));
-					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus2", m);
-				}
-				
-				c = ts.getStatusCanceled();
-				if (0 < c) {
-					p = ts.getPercent(c);
-					m = messages.vibeDataTable_TaskFolderStatusCanceled(String.valueOf(p), String.valueOf(c));
-					addBarSegment(grid, gridCellFormatter, c, p, "vibe-dataTableTaskFolder-statsStatus3", m);
-				}
-
-				// ...and put the status panel into the task folder's
-				// ...panel.
-				fp.add(sp);
+				// Yes!  Create panel to hold their status graph.
+				TaskStatusGraph tsgPanel = new TaskStatusGraph(ts, "vibe-dataTableTaskFolder-statsStatusBar", false);
+				tsgPanel.addStyleName("vibe-dataTableTaskFolder-stats displayBlock verticalAlignTop");
+				fp.add(tsgPanel);
 			}
 
 			// Add this task folder's panel to the render panel.
