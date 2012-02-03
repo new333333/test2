@@ -95,6 +95,37 @@ public class TaskStats implements IsSerializable {
 	}
 	
 	/**
+	 * Add'er methods.
+	 * 
+	 * @param
+	 */
+	public void addCompleted0(       int completed0)        {m_completed0        += completed0;       }
+	public void addCompleted10(      int completed10)       {m_completed10       += completed10;      }
+	public void addCompleted20(      int completed20)       {m_completed20       += completed20;      }
+	public void addCompleted30(      int completed30)       {m_completed30       += completed30;      }
+	public void addCompleted40(      int completed40)       {m_completed40       += completed40;      }
+	public void addCompleted50(      int completed50)       {m_completed50       += completed50;      }
+	public void addCompleted60(      int completed60)       {m_completed60       += completed60;      }
+	public void addCompleted70(      int completed70)       {m_completed70       += completed70;      }
+	public void addCompleted80(      int completed80)       {m_completed80       += completed80;      }
+	public void addCompleted90(      int completed90)       {m_completed90       += completed90;      }
+	public void addCompleted100(     int completed100)      {m_completed100      += completed100;     }
+	
+	public void addPriorityCritical( int prioritiyCritical) {m_priorityCritical  += prioritiyCritical;}
+	public void addPriorityHigh(     int prioritiyHigh)     {m_priorityHigh      += prioritiyHigh;    }
+	public void addPriorityLeast(    int prioritiyLeast)    {m_priorityLeast     += prioritiyLeast;   }
+	public void addPriorityLow(      int prioritiyLow)      {m_priorityLow       += prioritiyLow;     }
+	public void addPriorityMedium(   int prioritiyMedium)   {m_priorityMedium    += prioritiyMedium;  }
+	public void addPriorityNone(     int prioritiyNone)     {m_priorityNone      += prioritiyNone;    }
+	
+	public void addStatusCanceled(   int statusCanceled)    {m_statusCanceled    += statusCanceled;   }
+	public void addStatusCompleted(  int statusCompleted)   {m_statusCompleted   += statusCompleted;  }
+	public void addStatusInProcess(  int statusInProcess)   {m_statusInProcess   += statusInProcess;  }
+	public void addStatusNeedsAction(int statusNeedsAction) {m_statusNeedsAction += statusNeedsAction;}
+	
+	public void addTotalTasks(       int totalTasks)        {m_totalTasks        += totalTasks;       }
+
+	/**
 	 * Get'er methods.
 	 * 
 	 * @return
@@ -130,31 +161,31 @@ public class TaskStats implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setCompleted0(       int completed0)        {m_completed0        = completed0;        }
-	public void setCompleted10(      int completed10)       {m_completed10       = completed10;       }
-	public void setCompleted20(      int completed20)       {m_completed20       = completed20;       }
-	public void setCompleted30(      int completed30)       {m_completed30       = completed30;       }
-	public void setCompleted40(      int completed40)       {m_completed40       = completed40;       }
-	public void setCompleted50(      int completed50)       {m_completed50       = completed50;       }
-	public void setCompleted60(      int completed60)       {m_completed60       = completed60;       }
-	public void setCompleted70(      int completed70)       {m_completed70       = completed70;       }
-	public void setCompleted80(      int completed80)       {m_completed80       = completed80;       }
-	public void setCompleted90(      int completed90)       {m_completed90       = completed90;       }
-	public void setCompleted100(     int completed100)      {m_completed100      = completed100;      }
+	public void setCompleted0(       int completed0)        {m_completed0        = completed0;       }
+	public void setCompleted10(      int completed10)       {m_completed10       = completed10;      }
+	public void setCompleted20(      int completed20)       {m_completed20       = completed20;      }
+	public void setCompleted30(      int completed30)       {m_completed30       = completed30;      }
+	public void setCompleted40(      int completed40)       {m_completed40       = completed40;      }
+	public void setCompleted50(      int completed50)       {m_completed50       = completed50;      }
+	public void setCompleted60(      int completed60)       {m_completed60       = completed60;      }
+	public void setCompleted70(      int completed70)       {m_completed70       = completed70;      }
+	public void setCompleted80(      int completed80)       {m_completed80       = completed80;      }
+	public void setCompleted90(      int completed90)       {m_completed90       = completed90;      }
+	public void setCompleted100(     int completed100)      {m_completed100      = completed100;     }
 	
-	public void setPriorityCritical( int prioritiyCritical) {m_priorityCritical  = prioritiyCritical; }
-	public void setPriorityHigh(     int prioritiyHigh)     {m_priorityHigh      = prioritiyHigh;     }
-	public void setPriorityLeast(    int prioritiyLeast)    {m_priorityLeast     = prioritiyLeast;    }
-	public void setPriorityLow(      int prioritiyLow)      {m_priorityLow       = prioritiyLow;      }
-	public void setPriorityMedium(   int prioritiyMedium)   {m_priorityMedium    = prioritiyMedium;   }
-	public void setPriorityNone(     int prioritiyNone)     {m_priorityNone      = prioritiyNone;     }
+	public void setPriorityCritical( int prioritiyCritical) {m_priorityCritical  = prioritiyCritical;}
+	public void setPriorityHigh(     int prioritiyHigh)     {m_priorityHigh      = prioritiyHigh;    }
+	public void setPriorityLeast(    int prioritiyLeast)    {m_priorityLeast     = prioritiyLeast;   }
+	public void setPriorityLow(      int prioritiyLow)      {m_priorityLow       = prioritiyLow;     }
+	public void setPriorityMedium(   int prioritiyMedium)   {m_priorityMedium    = prioritiyMedium;  }
+	public void setPriorityNone(     int prioritiyNone)     {m_priorityNone      = prioritiyNone;    }
 	
-	public void setStatusCanceled(   int statusCanceled)    {m_statusCanceled    = statusCanceled;    }
-	public void setStatusCompleted(  int statusCompleted)   {m_statusCompleted   = statusCompleted;   }
-	public void setStatusInProcess(  int statusInProcess)   {m_statusInProcess   = statusInProcess;   }
-	public void setStatusNeedsAction(int statusNeedsAction) {m_statusNeedsAction = statusNeedsAction; }
+	public void setStatusCanceled(   int statusCanceled)    {m_statusCanceled    = statusCanceled;   }
+	public void setStatusCompleted(  int statusCompleted)   {m_statusCompleted   = statusCompleted;  }
+	public void setStatusInProcess(  int statusInProcess)   {m_statusInProcess   = statusInProcess;  }
+	public void setStatusNeedsAction(int statusNeedsAction) {m_statusNeedsAction = statusNeedsAction;}
 	
-	public void setTotalTasks(       int totalTasks)        {m_totalTasks        = totalTasks;        }
+	public void setTotalTasks(       int totalTasks)        {m_totalTasks        = totalTasks;       }
 
 	/**
 	 * Returns the percentage a given count is of the total.
