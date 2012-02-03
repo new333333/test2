@@ -140,6 +140,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -762,6 +763,18 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private static boolean isColumnTitle(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TITLE);   }
 	private static boolean isColumnView(        String       columnName) {return columnName.equals(ColumnWidth.COLUMN_HTML);    }
 
+	/**
+	 * Returns the widget to use for displaying the table empty message.
+	 * 
+	 * Provided as a convenience method.  Classes that extend this may
+	 * override to provide whatever they want displayed.
+	 * 
+	 * @return
+	 */
+	protected Widget getEmptyTableWidget() {
+		return new Label(m_messages.vibeDataTable_Empty());
+	}
+	
 	/*
 	 * Given a List<Long> of entry IDs from the current folder, returns
 	 * a corresponding List<EntryId> of them.
@@ -1734,7 +1747,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 		
 		// Set a message to display when the table is empty.
-		m_dataTable.setEmptyTableWidget(new Label(m_messages.discussionFolder_Empty()));
+		m_dataTable.setEmptyTableWidget(getEmptyTableWidget());
 
 		// Attach a sort handler to sort the list.
 	    FolderRowSortHandler sortHandler = new FolderRowSortHandler();

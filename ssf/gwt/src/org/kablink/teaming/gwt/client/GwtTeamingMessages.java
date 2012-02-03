@@ -481,6 +481,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ManageSavedSearchesDlg();
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_MilestoneFolderView();
+	String codeSplitFailure_MirroredFileFolderView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_ProjectInfoWidget();
@@ -1210,9 +1211,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskViewAssignedTasks();
 	String taskViewFromFolder();
 	
-	// Strings used by the discussion folder.
-	String discussionFolder_Empty();
-
 	// Strings used in the Landing Page Properties Dialog
 	String landingPagePropertiesDlgHeader();
 	String backgroundRepeatLabel();
@@ -1285,6 +1283,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Confirm_Delete();
 	String vibeDataTable_Confirm_Purge();
 	String vibeDataTable_Download();
+	String vibeDataTable_Error_MirroredDriverNotConfigured();
+	String vibeDataTable_Empty();
 	String vibeDataTable_Event_AllDay();
 	String vibeDataTable_Event_End();
 	String vibeDataTable_Event_Duration(String days);

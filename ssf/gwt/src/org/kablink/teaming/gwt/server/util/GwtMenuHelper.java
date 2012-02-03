@@ -513,7 +513,7 @@ public class GwtMenuHelper {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			BinderModule bm = bs.getBinderModule();
-			if (folderSupportsDeleteAndPurge(folder, viewType)) {
+			if (folderSupportsDeleteAndPurge(folder, viewType) && (!(folder.isMirrored()))) {
 				// ...and for which the user has rights to do it...
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
 					// ...add a Delete item.
@@ -1576,7 +1576,7 @@ public class GwtMenuHelper {
 				  viewType.equals(Definition.VIEW_STYLE_MILESTONE)  ||
 				  viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
 				  viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
-				  viewType.equals(Definition.VIEW_STYLE_TASK))      && (!(folder.isMirrored())));
+				  viewType.equals(Definition.VIEW_STYLE_TASK)));
 		}
 		return reply;
 	}
@@ -1621,52 +1621,63 @@ public class GwtMenuHelper {
 			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
 			ToolbarItem entryToolbar = new ToolbarItem(WebKeys.ENTRY_TOOLBAR);
 			reply.add(entryToolbar);
+			
+			// Access the binder/folder.
+			Binder binder = bs.getBinderModule().getBinder(folderId);
+			Folder folder = ((binder instanceof Folder) ? ((Folder) binder) : null);
 
 			// Are we returning the toolbar items for a trash view?
 			if (FolderType.TRASH == folderType) {
 				// Yes!  Construct the items for viewing the trash.
-				constructEntryTrashItems(entryToolbar, bs, request, bs.getBinderModule().getBinder(folderId));
+				constructEntryTrashItems(entryToolbar, bs, request, binder);
 			}
 			
 			else {
 				// No, we aren't returning the toolbar items for a
-				// trash view!  Can the user can add entries to the
-				// folder?
-				FolderModule fm			= bs.getFolderModule();
-				Folder       folder		= fm.getFolder(folderId);
-				String       viewType	= DefinitionUtils.getViewType(folder);
-				boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry); 
-				if (addAllowed) {				
-					// Yes!  Add the necessary 'add entry' items.
-					constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
-				}
-	
-				// Can we determine the folder's view type?
-				if (MiscUtil.hasString(viewType)) {
-					// Yes!  Is it a blog or photo album?
-					if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
-						// Yes!  Add the necessary 'sort by' items. 
-						constructEntrySortByItems(entryToolbar, bs, request, viewType, folder);
+				// trash view!  Is this is other than a mirrored
+				// folder, or if its a mirrored folder, is its
+				// resource driver configured?
+				boolean isMirrored           = ((null != folder) && folder.isMirrored());
+				boolean isMirroredConfigured = isMirrored && MiscUtil.hasString(folder.getResourceDriverName());
+				if ((!isMirrored) || isMirroredConfigured) {
+					// Yes!  Can the user can add entries to the
+					// folder?
+					FolderModule fm			= bs.getFolderModule();
+					String       viewType	= DefinitionUtils.getViewType(folder);
+					boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry); 
+					if (addAllowed) {				
+						// Yes!  Add the necessary 'add entry' items.
+						constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
 					}
-	
-					// Can the user add entries to the folder and are applets
-					// supported?
-					if (addAllowed && SsfsUtil.supportApplets(request)) {
-						// Yes!  Is it other than a mini-blog or a mirrored
-						// file that can't be written to?
-						if ((!(viewType.equals(Definition.VIEW_STYLE_MINIBLOG))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
-							// Yes!  The the 'drop box' item.
-							constructEntryDropBoxItem(entryToolbar, bs, request, viewType, folder);
+		
+					// Can we determine the folder's view type?
+					if (MiscUtil.hasString(viewType)) {
+						// Yes!  Is it a blog or photo album?
+						if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+							// Yes!  Add the necessary 'sort by' items. 
+							constructEntrySortByItems(entryToolbar, bs, request, viewType, folder);
+						}
+		
+						// Can the user add entries to the folder and
+						// are applets supported?
+						if (addAllowed && SsfsUtil.supportApplets(request)) {
+							// Yes!  Is it other than a mini-blog or a mirrored
+							// file that can't be written to?
+							if ((!(viewType.equals(Definition.VIEW_STYLE_MINIBLOG))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
+								// Yes!  The the 'drop box' item.
+								constructEntryDropBoxItem(entryToolbar, bs, request, viewType, folder);
+							}
 						}
 					}
+		
+					// Constructs the item for deleting the selected
+					// entries.
+					constructEntryDeleteItems(entryToolbar, bs, request, viewType, folder);
+		
+					// Construct the various items that appear in the
+					// more drop down.
+					constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
 				}
-	
-				// Constructs the item for deleting the selected entries.
-				constructEntryDeleteItems(entryToolbar, bs, request, viewType, folder);
-	
-				// Construct the various items that appear in the more drop
-				// down.
-				constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
 			}
 
 			// If we get here, reply refers to the List<ToolbarItem>

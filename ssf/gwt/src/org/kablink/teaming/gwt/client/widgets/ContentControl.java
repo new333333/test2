@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MilestoneFolderView;
+import org.kablink.teaming.gwt.client.binderviews.MirroredFileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
 import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
@@ -68,6 +69,7 @@ import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMilestoneFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowMirroredFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
@@ -127,6 +129,7 @@ public class ContentControl extends Composite
 		ShowLandingPageEvent.Handler,
 		ShowMicroBlogFolderEvent.Handler,
 		ShowMilestoneFolderEvent.Handler,
+		ShowMirroredFileFolderEvent.Handler,
 		ShowProjectManagementWSEvent.Handler,
 		ShowSurveyFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
@@ -163,6 +166,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_MICRO_BLOG_FOLDER,
 		TeamingEvents.SHOW_MILESTONE_FOLDER,
+		TeamingEvents.SHOW_MIRRORED_FILE_FOLDER,
 		TeamingEvents.SHOW_PROJECT_MANAGEMENT_WORKSPACE,
 		TeamingEvents.SHOW_SURVEY_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
@@ -617,6 +621,12 @@ public class ContentControl extends Composite
 							break;
 	
 							
+						case MIRROREDFILE:
+							GwtTeaming.fireEvent( new ShowMirroredFileFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+							break;
+							
+							
 						case SURVEY:
 							GwtTeaming.fireEvent( new ShowSurveyFolderEvent( bi, viewReady ) );
 							m_contentInGWT = true;
@@ -633,12 +643,11 @@ public class ContentControl extends Composite
 							GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
 							m_contentInGWT = true;
 							break;
-	
 							
+	
 						case BLOG:
 						case CALENDAR:
 						case GUESTBOOK:
-						case MIRROREDFILE:
 						case PHOTOALBUM:
 						case WIKI:
 							// These aren't handled!  Let things take
@@ -1267,6 +1276,38 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowMilestoneFolder()
+	
+	/**
+	 * Handles ShowMirroredFileFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowMirroredFileFolderEvent.Handler.onShowMirroredFileFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowMirroredFileFolder( final ShowMirroredFileFolderEvent event )
+	{
+		// Create a MirroredFileFolderView widget for the selected
+		// binder.
+		MirroredFileFolderView.createAsync(
+				event.getFolderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase mffView )
+			{
+				mffView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( mffView );
+			}// end onSuccess()
+		});
+	}// end onShowMirroredFileFolder()
 	
 	/**
 	 * Handles ShowProjectManagementWSEvent's received by this class.
