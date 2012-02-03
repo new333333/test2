@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.user.client.Window;
@@ -184,12 +185,32 @@ public class ContentControl extends Composite
 			setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
 			m_frame.setPixelSize( width, height );
 	
-			// Does the content panel contain a task listing?
-			FrameElement fe = getContentFrame();
-			if ( ( null != fe ) && ( null != fe.getContentDocument().getElementById( "gwtTasks" ) ) )
+			try
 			{
-				// Yes!  Let it resize if it needs to.
-				jsResizeTaskListing();
+				// Does the content panel contain a task listing?
+				FrameElement fe = getContentFrame();
+				if ( null != fe )
+				{
+					Document doc;
+					
+					doc = fe.getContentDocument();
+					if ( doc != null )
+					{
+						if (  null != doc.getElementById( "gwtTasks" ) )
+						{
+							// Yes!  Let it resize if it needs to.
+							jsResizeTaskListing();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				// Nothing we need to do.  This generally happens when the iframe has
+				// been loaded with a url that is not a Vibe url.  Because of the
+				// "Same origin" policy we can't get the frame's content document.
+				// See bug 743444
+				// Window.alert( "in setDimensions() got an exception: " + ex.toString() );
 			}
 		}
 	}// end setDimensions()
