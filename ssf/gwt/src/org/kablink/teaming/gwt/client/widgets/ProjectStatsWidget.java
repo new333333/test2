@@ -38,12 +38,15 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderStatsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
@@ -97,6 +100,28 @@ public class ProjectStatsWidget extends ToolPanelBase
 		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
+
+	/**
+	 * Add a tasks statistics graph to the given panel.
+	 */
+	private void addTaskStatsGraph( TaskStats taskStats, VibeFlowPanel panel )
+	{
+		if ( taskStats != null )
+		{
+			VibeFlowPanel graphPanel;
+			TaskStatusGraph taskGraph;
+			
+			graphPanel = new VibeFlowPanel();
+			graphPanel.addStyleName( "projectStatsWidget_GraphPanel" );
+			
+			// Create a status graph for the tasks.
+			taskGraph = new TaskStatusGraph( taskStats, "projectStatsWidget_TasksStatsPanel", true );
+			graphPanel.add( taskGraph );
+			
+			panel.add( graphPanel );
+		}
+	}
+
 	/**
 	 * Build the ui of this widget with the given data.
 	 */
@@ -143,6 +168,10 @@ public class ProjectStatsWidget extends ToolPanelBase
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
+			
+			// Get the statistics for this binder.  If the binder has any statistics
+			// a graph will be added to the binderPanel.
+			getBinderStatistics( childBinderId, binderPanel );
 
 			binderPanel.add( binderLabel );
 			
@@ -187,6 +216,59 @@ public class ProjectStatsWidget extends ToolPanelBase
 				client.onSuccess( psWidget );
 			}
 		} );
+	}
+	
+	/**
+	 * Issue an ajax call to get the statistics for the given binder.  If the binder
+	 * has statisics we will add a graph to the given binder.
+	 * we are working with.
+	 */
+	private void getBinderStatistics( final String binderId, final VibeFlowPanel panel )
+	{
+		GetBinderStatsCmd cmd;
+		
+		// Get a BinderStats object for the given binder.
+		cmd = new GetBinderStatsCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure(Throwable t)
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBinderStats(),
+					binderId );
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				Scheduler.ScheduledCommand cmd;
+				BinderStats binderStats;
+				final TaskStats taskStats;
+				
+				binderStats = (BinderStats) response.getResponseData();
+				
+				// Do we have any task statistics?
+				taskStats = binderStats.getTaskStats();
+				if ( taskStats != null )
+				{
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							// Add a task statistics graph to the given panel.
+							addTaskStatsGraph( taskStats, panel );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		});
 	}
 	
 	/**

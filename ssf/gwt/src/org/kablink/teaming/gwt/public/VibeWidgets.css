@@ -165,8 +165,20 @@
 {
 }
 
+.projectStatsWidget_GraphPanel
+{
+	margin-left: 20px;
+	margin-top: 6px;
+}
+
 .projectStatsWidget_MainPanel
 {
 }
+
+.projectStatsWidget_TasksStatsPanel
+{
+	width: 300px;
+}
+
 
 /* ########################################################################################################### */
