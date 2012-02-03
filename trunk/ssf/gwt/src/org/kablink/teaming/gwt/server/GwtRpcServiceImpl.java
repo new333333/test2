@@ -113,6 +113,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -458,6 +459,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				gbrsCmd.getBinderId(),
 				gbrsCmd.getRegionId() );
 			return new VibeRpcResponse( responseData );
+		}
+		
+		case GET_BINDER_STATS:
+		{
+			GetBinderStatsCmd gbsCmd;
+			BinderStats responseData;
+			
+			gbsCmd = (GetBinderStatsCmd) cmd;
+			responseData = GwtServerHelper.getBinderStats( this, gbsCmd.getBinderId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
 		}
 		
 		case GET_VIEW_INFO:

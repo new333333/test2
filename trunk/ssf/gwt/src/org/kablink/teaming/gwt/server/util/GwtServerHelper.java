@@ -119,6 +119,7 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -2965,6 +2966,26 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return a BinderStats object that holds all of the statistical information for
+	 * the given binder.
+	 * @throws GwtTeamingException 
+	 * @throws  
+	 */
+	public static BinderStats getBinderStats( AllModulesInjected ami, String binderId ) throws GwtTeamingException
+	{
+		BinderStats binderStats;
+		TaskStats taskStats;
+		
+		binderStats = new BinderStats();
+		
+		// Get the statistics for the tasks that may be in the given binder.
+		taskStats = GwtTaskHelper.getTaskStatistics( ami, Long.valueOf( binderId ) );
+		binderStats.setTaskStats( taskStats );
+		
+		return binderStats; 
+	}
+	
+	/**
 	 * Returns a List<TagInfo> describing the tags defined on a binder.
 	 * 
 	 * @param bs
@@ -5420,6 +5441,7 @@ public class GwtServerHelper {
 		case GET_BINDER_OWNER_AVATAR_INFO:
 		case GET_BINDER_PERMALINK:
 		case GET_BINDER_REGION_STATE:
+		case GET_BINDER_STATS:
 		case GET_BINDER_TAGS:
 		case GET_CLIPBOARD_TEAM_USERS:
 		case GET_CLIPBOARD_USERS:
