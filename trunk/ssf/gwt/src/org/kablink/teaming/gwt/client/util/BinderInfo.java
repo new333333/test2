@@ -46,17 +46,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class BinderInfo implements IsSerializable, VibeRpcResponseData {
-	private BinderType    m_binderType         = BinderType.OTHER;				//
-	private boolean       m_binderDescExpanded = true;							//
-	private boolean       m_binderDescHTML     = false;							//
-	private boolean       m_isLibrary          = false;							//
-	private FolderType    m_folderType         = FolderType.NOT_A_FOLDER;		//
-	private String        m_binderId           = "";							//
-	private String        m_binderTitle        = "";							//
-	private String		  m_binderDesc	       = "";							//
-	private Long		  m_numUnread	       = 0L;							// Number of unread entries in this binder and sub binders.
-	private String        m_entityType         = "";							//
-	private WorkspaceType m_wsType             = WorkspaceType.NOT_A_WORKSPACE;	//
+	private BinderType    m_binderType               = BinderType.OTHER;				//
+	private boolean       m_binderDescExpanded       = true;							//
+	private boolean       m_binderDescHTML           = false;							//
+	private boolean       m_isLibrary                = false;							//
+	private boolean       m_mirroredDriverConfigured = false;							//
+	private FolderType    m_folderType               = FolderType.NOT_A_FOLDER;			//
+	private Long          m_numUnread                = 0L;								// Number of unread entries in this binder and sub binders.
+	private String        m_binderId                 = "";								//
+	private String        m_binderTitle              = "";								//
+	private String		  m_binderDesc	             = "";								//
+	private String        m_entityType               = "";								//
+	private WorkspaceType m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;	//
 	
 	/**
 	 * Constructor method.
@@ -74,17 +75,18 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public BinderInfo copyBinderInfo() {
 		BinderInfo reply = new BinderInfo();
-		reply.setBinderId(          m_binderId          );
-		reply.setBinderTitle(       m_binderTitle       );
-		reply.setBinderDesc(        m_binderDesc        );
-		reply.setBinderDescExpanded(m_binderDescExpanded);
-		reply.setBinderDescHTML(    m_binderDescHTML    );
-		reply.setNumUnread(	        m_numUnread         );
-		reply.setEntityType(        m_entityType        );
-		reply.setBinderType(        m_binderType        );
-		reply.setFolderType(        m_folderType        );
-		reply.setIsLibrary(         m_isLibrary         );
-		reply.setWorkspaceType(     m_wsType            );
+		reply.setBinderId(                m_binderId                );
+		reply.setBinderTitle(             m_binderTitle             );
+		reply.setBinderDesc(              m_binderDesc              );
+		reply.setBinderDescExpanded(      m_binderDescExpanded      );
+		reply.setBinderDescHTML(          m_binderDescHTML          );
+		reply.setNumUnread(               m_numUnread               );
+		reply.setEntityType(              m_entityType              );
+		reply.setBinderType(              m_binderType              );
+		reply.setFolderType(              m_folderType              );
+		reply.setIsLibrary(               m_isLibrary               );
+		reply.setWorkspaceType(           m_wsType                  );
+		reply.setMirroredDriverConfigured(m_mirroredDriverConfigured);
 		return reply;
 	}
 	
@@ -93,18 +95,19 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public BinderType    getBinderType()        {return                m_binderType;        }
-	public boolean       isBinderDescExpanded() {return                m_binderDescExpanded;}
-	public boolean       isBinderDescHTML()     {return                m_binderDescHTML;    }
-	public boolean       isLibrary()            {return                m_isLibrary;         }  
-	public FolderType    getFolderType()        {return                m_folderType;        }
-	public Long          getBinderIdAsLong()    {return Long.parseLong(m_binderId);         }
-	public String        getBinderId()          {return                m_binderId;          }
-	public String        getBinderTitle()       {return                m_binderTitle;       }
-	public String		 getBinderDesc()	    {return				   m_binderDesc;        }
-	public Long			 getNumUnread()		    {return				   m_numUnread;         }
-	public String        getEntityType()        {return                m_entityType;        }
-	public WorkspaceType getWorkspaceType()     {return                m_wsType;            }
+	public BinderType    getBinderType()              {return                m_binderType;              }
+	public boolean       isBinderDescExpanded()       {return                m_binderDescExpanded;      }
+	public boolean       isBinderDescHTML()           {return                m_binderDescHTML;          }
+	public boolean       isLibrary()                  {return                m_isLibrary;               }
+	public boolean       isMirroredDriverConfigured() {return                m_mirroredDriverConfigured;}
+	public FolderType    getFolderType()              {return                m_folderType;              }
+	public Long          getBinderIdAsLong()          {return Long.parseLong(m_binderId);               }
+	public String        getBinderId()                {return                m_binderId;                }
+	public String        getBinderTitle()             {return                m_binderTitle;             }
+	public String		 getBinderDesc()	          {return				 m_binderDesc;              }
+	public Long          getNumUnread()               {return                m_numUnread;               }
+	public String        getEntityType()              {return                m_entityType;              }
+	public WorkspaceType getWorkspaceType()           {return                m_wsType;                  }
 	
 	/**
 	 * Returns true of this BinderInfo defines a Folder and false
@@ -243,12 +246,23 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public void setIsLibrary(boolean isLibrary) {
 		m_isLibrary = isLibrary;
 	}
+
+	/**
+	 * Stores whether the binder as has mirrored driver configured.
+	 * 
+	 * @param mirroredDriverConfigured
+	 */
+	public void setMirroredDriverConfigured(boolean mirroredDriverConfigured) {
+		m_mirroredDriverConfigured = mirroredDriverConfigured;
+	}
 	
 	/**
-	 * Stores the number of unread entries this binder and sub binders have.
+	 * Stores the number of unread entries this binder and sub binders
+	 * have.
+	 * 
+	 * @param numUnread
 	 */
-	public void setNumUnread( Long numUnread )
-	{
+	public void setNumUnread(Long numUnread) {
 		m_numUnread = numUnread;
 	}
 	
@@ -271,5 +285,4 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		// ...and store it.
 		m_wsType = wsType;
 	}
-
 }

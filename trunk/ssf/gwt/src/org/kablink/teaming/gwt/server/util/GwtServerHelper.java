@@ -2932,6 +2932,13 @@ public class GwtServerHelper {
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
 
+		// If this is a mirrored file...
+		if (FolderType.MIRROREDFILE.equals(reply.getFolderType())) {
+			// ...mark whether it has a driver configured.
+			String rdn = binder.getResourceDriverName();
+			reply.setMirroredDriverConfigured(MiscUtil.hasString(rdn));
+		}
+
 		// If the binder has a description...
 		Description binderDesc = binder.getDescription();
 		if (null != binderDesc) {

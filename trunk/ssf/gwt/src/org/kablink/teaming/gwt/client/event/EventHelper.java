@@ -856,6 +856,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_MIRRORED_FILE_FOLDER:
+				// A ShowMirroredFileFolderEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ShowMirroredFileFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowMirroredFileFolderEvent.registerEvent(eventBus, ((ShowMirroredFileFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:
 				// A ShowProjectManagementWSEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof ShowProjectManagementWSEvent.Handler )
@@ -1444,6 +1453,7 @@ public class EventHelper {
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			case SHOW_MICRO_BLOG_FOLDER:				hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		   break;
 			case SHOW_MILESTONE_FOLDER:				    hasHandler = (eventHandler instanceof ShowMilestoneFolderEvent.Handler);		   break;
+			case SHOW_MIRRORED_FILE_FOLDER:				hasHandler = (eventHandler instanceof ShowMirroredFileFolderEvent.Handler);		   break;
 			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:		hasHandler = (eventHandler instanceof ShowProjectManagementWSEvent.Handler);	   break;
 			case SHOW_SURVEY_FOLDER:				    hasHandler = (eventHandler instanceof ShowSurveyFolderEvent.Handler);		       break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;

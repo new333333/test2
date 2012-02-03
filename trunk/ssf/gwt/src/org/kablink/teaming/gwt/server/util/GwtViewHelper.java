@@ -1548,12 +1548,25 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
 		try {
-			Binder          binder               = bs.getBinderModule().getBinder(folderId);
-			Folder			folder               = ((binder instanceof Folder) ? ((Folder) binder) : null);
-			User			user                 = GwtServerHelper.getCurrentUser();
-			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
-			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
-
+			// Access the binder/folder.
+			Binder binder = bs.getBinderModule().getBinder(folderId);
+			Folder folder = ((binder instanceof Folder) ? ((Folder) binder) : null);
+			
+			// If we're reading from a mirrored file folder...
+			if (FolderType.MIRROREDFILE == folderType) {
+				// ...whose driver is not configured...
+				String rdn = binder.getResourceDriverName();
+				if (!(MiscUtil.hasString(rdn))) {
+					// ...we don't read anything.
+					return
+						new FolderRowsRpcResponseData(
+							new ArrayList<FolderRow>(),
+							start,
+							0,
+							new ArrayList<Long>());
+				}
+			}
+			
 			// What type of folder are we dealing with?
 			boolean isDiscussion = false;
 			boolean isFolder     = (null != folder);
@@ -1566,7 +1579,12 @@ public class GwtViewHelper {
 			case SURVEY:      isSurvey     = true; break;
 			case TRASH:       isTrash      = true; break;
 			}
-			
+
+			// Access any other information we need to read the data.
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
+
 			// Setup the current search filter the user has selected
 			// on the folder.
 			Map options;

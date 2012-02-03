@@ -35,46 +35,75 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.FolderType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * File folder view.
+ * Mirrored file folder view.
  * 
  * @author drfoster@novell.com
  */
-public class FileFolderView extends DataTableFolderViewBase {
+public class MirroredFileFolderView extends DataTableFolderViewBase {
 	/**
 	 * Constructor method.
 	 * 
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public FileFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	public MirroredFileFolderView(BinderInfo folderInfo, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-fileFolderDataTable");
+		super(folderInfo, viewReady, "vibe-mirroredFileFolderDataTable");
+	}
+	
+	/**
+	 * Returns the widget to use for displaying the table empty message.
+	 * 
+	 * Provided as a convenience method.  Class that extend this may
+	 * override to provide whatever they want displayed.
+	 * 
+	 * Overrides the DataTableFolderViewBase.getEmptyTableWidget()
+	 * method.
+	 * 
+	 * @return
+	 */
+	@Override
+	protected Widget getEmptyTableWidget() {
+		BinderInfo fi = getFolderInfo();
+		Widget reply;
+		if ((FolderType.MIRROREDFILE != fi.getFolderType()) || fi.isMirroredDriverConfigured()) {
+			reply = super.getEmptyTableWidget();
+		}
+		else {
+			Label l = new Label(m_messages.vibeDataTable_Error_MirroredDriverNotConfigured());
+			l.addStyleName("vibe-mirroredFileFolderNotConfigured");
+			reply = l;
+		}
+		return reply;
 	}
 	
 	/**
 	 * Called from the base class to complete the construction of this
-	 * file folder view.
+	 * mirrored file folder view.
 	 * 
 	 * Implements the FolderViewBase.constructView() method.
 	 */
 	@Override
 	public void constructView() {
-		// Setup the appropriate styles for a file folder, populate the
-		// view's contents and tell the base class that we're done with
-		// the construction.
-		getFlowPanel().addStyleName("vibe-fileFolderFlowPanel");
+		// Setup the appropriate styles for a mirrored file folder,
+		// populate the view's contents and tell the base class that
+		// we're done with the construction.
+		getFlowPanel().addStyleName("vibe-mirroredFileFolderFlowPanel");
 		populateContent();
 		super.viewReady();
 	}
 	
 	/**
-	 * Loads the FileFolderView split point and returns an
+	 * Loads the MirroredFileFolderView split point and returns an
 	 * instance of it via the callback.
 	 * 
 	 * @param folderInfo
@@ -82,16 +111,16 @@ public class FileFolderView extends DataTableFolderViewBase {
 	 * @param vClient
 	 */
 	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
-		GWT.runAsync(FileFolderView.class, new RunAsyncCallback() {			
+		GWT.runAsync(MirroredFileFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				FileFolderView dfView = new FileFolderView(folderInfo, viewReady);
+				MirroredFileFolderView dfView = new MirroredFileFolderView(folderInfo, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(m_messages.codeSplitFailure_FileFolderView());
+				Window.alert(m_messages.codeSplitFailure_MirroredFileFolderView());
 				vClient.onUnavailable();
 			}
 		});
@@ -99,7 +128,7 @@ public class FileFolderView extends DataTableFolderViewBase {
 	
 	/**
 	 * Called from the base class to reset the content of this
-	 * file folder view.
+	 * mirrored file folder view.
 	 * 
 	 * Implements the FolderViewBase.resetView() method.
 	 */
@@ -112,7 +141,7 @@ public class FileFolderView extends DataTableFolderViewBase {
 	
 	/**
 	 * Called from the base class to resize the content of this
-	 * file folder view.
+	 * mirrored file folder view.
 	 * 
 	 * Implements the FolderViewBase.resizeView() method.
 	 */
