@@ -1387,146 +1387,120 @@ public class GwtTaskHelper {
 		// Allocate a TaskStats object we can return.
 		TaskStats reply = new TaskStats();
 		
-		// Initialize some variables we can use to what we find.
+		// Initialize some variables to track what we find.
 		boolean foundComplete = false;
 		boolean foundPriority = false;
 		boolean foundStatus   = false;
 
 		// Does the folder have a Statistics custom attribute?
-		CustomAttribute caStats = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);
-		if (null != caStats) {
-			Object o = caStats.getValue();
-			if ((null != o) && (o instanceof Statistics)) {
-				// Yes!  Does it contain any values?
-				Statistics stats = ((Statistics) o);
-				Map<String, Map> statsMap = stats.getValue();
-				if (null != statsMap) {
-					// Yes!  Scan the map's keys.
-					Set<String> statsKeys = statsMap.keySet();
-					for (String statsKey:  statsKeys) {
-						// Are there any values for this key?
-						Map defsMap = ((Map) statsMap.get(statsKey));
-						if (null != defsMap) {
-							// Yes!  Scan this map's keys.
-							Set<String> defsKeys = ((Set<String>) defsMap.keySet());
-							for (String defsKey:  defsKeys) {
-								// Is this the map for completed percentage
-								// statistics?
-								if (defsKey.equals(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME) && (!foundComplete)) {
-									// Yes!  Extract the completed
-									// values.
-									foundComplete = true;
-									Map completeMap = ((Map) defsMap.get(defsKey));
-									if (null != completeMap) {
-										Set<String> completeKeys = ((Set<String>) completeMap.keySet());
-										for (String completeKey:  completeKeys) {
-											if (completeKey.equals(Statistics.TOTAL_KEY)) {
-												reply.setTotalTasks((Integer) completeMap.get(completeKey));
-											}
-											
-											else if (completeKey.equals(Statistics.VALUES)) {
-												Map cValuesMap = ((Map) completeMap.get(completeKey));
-												Set<String> cKeys = ((Set<String>) cValuesMap.keySet());
-												for (String cKey:  cKeys) {
-													Integer c = ((Integer) cValuesMap.get(cKey));
-													if (null != c) {
-														if      (TaskInfo.COMPLETED_0.equals(  cKey)) reply.setCompleted0(  c);
-														else if (TaskInfo.COMPLETED_10.equals( cKey)) reply.setCompleted10( c);
-														else if (TaskInfo.COMPLETED_20.equals( cKey)) reply.setCompleted20( c);
-														else if (TaskInfo.COMPLETED_30.equals( cKey)) reply.setCompleted30( c);
-														else if (TaskInfo.COMPLETED_40.equals( cKey)) reply.setCompleted40( c);
-														else if (TaskInfo.COMPLETED_50.equals( cKey)) reply.setCompleted50( c);
-														else if (TaskInfo.COMPLETED_60.equals( cKey)) reply.setCompleted60( c);
-														else if (TaskInfo.COMPLETED_70.equals( cKey)) reply.setCompleted70( c);
-														else if (TaskInfo.COMPLETED_80.equals( cKey)) reply.setCompleted80( c);
-														else if (TaskInfo.COMPLETED_90.equals( cKey)) reply.setCompleted90( c);
-														else if (TaskInfo.COMPLETED_100.equals(cKey)) reply.setCompleted100(c);
-													}
-												}
-											}
-										}
-									}
-								}
-								
-								// No, it isn't the map for completed
-								// percentage statistics!  Is this the
-								// map for priority statistics?
-								else if (defsKey.equals(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME) && (!foundPriority)) {
-									// Yes!  Extract the priority
-									// values.
-									foundPriority = true;
-									Map priorityMap = ((Map) defsMap.get(defsKey));
-									if (null != priorityMap) {
-										Set<String> priorityKeys = ((Set<String>) priorityMap.keySet());
-										for (String priorityKey:  priorityKeys) {
-											if (priorityKey.equals(Statistics.TOTAL_KEY)) {
-												reply.setTotalTasks((Integer) priorityMap.get(priorityKey));
-											}
-											
-											else if (priorityKey.equals(Statistics.VALUES)) {
-												Map pValuesMap = ((Map) priorityMap.get(priorityKey));
-												Set<String> pKeys = ((Set<String>) pValuesMap.keySet());
-												for (String pKey:  pKeys) {
-													Integer p = ((Integer) pValuesMap.get(pKey));
-													if (null != p) {
-														if      (TaskInfo.PRIORITY_NONE.equals(    pKey)) reply.setPriorityNone(    p);
-														else if (TaskInfo.PRIORITY_CRITICAL.equals(pKey)) reply.setPriorityCritical(p);
-														else if (TaskInfo.PRIORITY_HIGH.equals(    pKey)) reply.setPriorityHigh(    p);
-														else if (TaskInfo.PRIORITY_MEDIUM.equals(  pKey)) reply.setPriorityMedium(  p);
-														else if (TaskInfo.PRIORITY_LOW.equals(     pKey)) reply.setPriorityLow(     p);
-														else if (TaskInfo.PRIORITY_LEAST.equals(   pKey)) reply.setPriorityLeast(   p);
-													}
-												}
-											}
-										}
-									}
-								}
-								
-								// No, it isn't the map for priority
-								// statistics either!  Is this the map
-								// for status statistics?
-								else if (defsKey.equals(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME) && (!foundStatus)) {
-									// Yes!  Extract the status values.
-									foundStatus = true;
-									Map statusMap = ((Map) defsMap.get(defsKey));
-									if (null != statusMap) {
-										Set<String> statusKeys = ((Set<String>) statusMap.keySet());
-										for (String statusKey:  statusKeys) {
-											if (statusKey.equals(Statistics.TOTAL_KEY)) {
-												reply.setTotalTasks((Integer) statusMap.get(statusKey));
-											}
-											
-											else if (statusKey.equals(Statistics.VALUES)) {
-												Map sValuesMap = ((Map) statusMap.get(statusKey));
-												Set<String> sKeys = ((Set<String>) sValuesMap.keySet());
-												for (String sKey:  sKeys) {
-													Integer s = ((Integer) sValuesMap.get(sKey));
-													if (null != s) {
-														if      (TaskInfo.STATUS_NEEDS_ACTION.equals(sKey)) reply.setStatusNeedsAction(s);
-														else if (TaskInfo.STATUS_IN_PROCESS.equals(  sKey)) reply.setStatusInProcess(  s);
-														else if (TaskInfo.STATUS_COMPLETED.equals(   sKey)) reply.setStatusCompleted(  s);
-														else if (TaskInfo.STATUS_CANCELED.equals(    sKey)) reply.setStatusCanceled(   s);
-													}
-												}
-											}
-										}
-									}
-								}
-								
-								// If we found all the statistics we
-								// need...
-								if (foundComplete && foundPriority && foundStatus) {
-									// ...we're done.
-									break;
+		Statistics stats = GwtStatisticsHelper.getFolderStatistics(folder);
+		if (null != stats) {
+			// Yes!  Does it contain any task definition value maps?
+			List<Map> defMaps = GwtStatisticsHelper.getEntryDefMaps(stats, ObjectKeys.FAMILY_TASK);
+			if ((null != defMaps) && (!(defMaps.isEmpty()))) {
+				// Yes!  Scan them.
+				for (Map defMap:  defMaps) {
+					// Is there a map for completed percentage
+					// statistics in this definition map?
+					int totalThisDef = (-1);
+					Map completeMap = ((Map) defMap.get(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME));
+					if (null != completeMap) {
+						// Yes!  Extract the completed values.
+						foundComplete = true;
+						Integer t = ((Integer) completeMap.get(Statistics.TOTAL_KEY));
+						if ((null != t) && (t != totalThisDef)) {
+							if ((-1) != totalThisDef) {
+								m_logger.error("GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Complete'");
+							}
+							totalThisDef = t;
+						}
+						
+						Map cValuesMap = ((Map) completeMap.get(Statistics.VALUES));
+						if (null != cValuesMap) {
+							Set<String> cKeys = ((Set<String>) cValuesMap.keySet());
+							for (String cKey:  cKeys) {
+								Integer c = ((Integer) cValuesMap.get(cKey));
+								if (null != c) {
+									if      (TaskInfo.COMPLETED_0.equals(  cKey)) reply.addCompleted0(  c);
+									else if (TaskInfo.COMPLETED_10.equals( cKey)) reply.addCompleted10( c);
+									else if (TaskInfo.COMPLETED_20.equals( cKey)) reply.addCompleted20( c);
+									else if (TaskInfo.COMPLETED_30.equals( cKey)) reply.addCompleted30( c);
+									else if (TaskInfo.COMPLETED_40.equals( cKey)) reply.addCompleted40( c);
+									else if (TaskInfo.COMPLETED_50.equals( cKey)) reply.addCompleted50( c);
+									else if (TaskInfo.COMPLETED_60.equals( cKey)) reply.addCompleted60( c);
+									else if (TaskInfo.COMPLETED_70.equals( cKey)) reply.addCompleted70( c);
+									else if (TaskInfo.COMPLETED_80.equals( cKey)) reply.addCompleted80( c);
+									else if (TaskInfo.COMPLETED_90.equals( cKey)) reply.addCompleted90( c);
+									else if (TaskInfo.COMPLETED_100.equals(cKey)) reply.addCompleted100(c);
 								}
 							}
 						}
-						
-						// If we found all the statistics we need...
-						if (foundComplete && foundPriority && foundStatus) {
-							// ...we're done.
-							break;
+					}
+					
+					// Is there a map for priority statistics in this
+					// definition map?
+					Map priorityMap = ((Map) defMap.get(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME));
+					if (null != priorityMap) {
+						// Yes!  Extract the priority values.
+						foundPriority = true;
+						Integer t = ((Integer) completeMap.get(Statistics.TOTAL_KEY));
+						if ((null != t) && (t != totalThisDef)) {
+							if ((-1) != totalThisDef) {
+								m_logger.error("GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Priority'");
+							}
+							totalThisDef = t;
 						}
+						
+						Map pValuesMap = ((Map) priorityMap.get(Statistics.VALUES));
+						if (null != pValuesMap) {
+							Set<String> pKeys = ((Set<String>) pValuesMap.keySet());
+							for (String pKey:  pKeys) {
+								Integer p = ((Integer) pValuesMap.get(pKey));
+								if (null != p) {
+									if      (TaskInfo.PRIORITY_NONE.equals(    pKey)) reply.addPriorityNone(    p);
+									else if (TaskInfo.PRIORITY_CRITICAL.equals(pKey)) reply.addPriorityCritical(p);
+									else if (TaskInfo.PRIORITY_HIGH.equals(    pKey)) reply.addPriorityHigh(    p);
+									else if (TaskInfo.PRIORITY_MEDIUM.equals(  pKey)) reply.addPriorityMedium(  p);
+									else if (TaskInfo.PRIORITY_LOW.equals(     pKey)) reply.addPriorityLow(     p);
+									else if (TaskInfo.PRIORITY_LEAST.equals(   pKey)) reply.addPriorityLeast(   p);
+								}
+							}
+						}
+					}
+					
+					// Is there a map for status statistics in this
+					// definition map?
+					Map statusMap = ((Map) defMap.get(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME));
+					if (null != statusMap) {
+						// Yes!  Extract the status values.
+						foundStatus = true;
+						Integer t = ((Integer) completeMap.get(Statistics.TOTAL_KEY));
+						if ((null != t) && (t != totalThisDef)) {
+							if ((-1) != totalThisDef) {
+								m_logger.error("GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Status'");
+							}
+							totalThisDef = t;
+						}
+						
+						Map sValuesMap = ((Map) statusMap.get(Statistics.VALUES));
+						if (null != sValuesMap) {
+							Set<String> sKeys = ((Set<String>) sValuesMap.keySet());
+							for (String sKey:  sKeys) {
+								Integer s = ((Integer) sValuesMap.get(sKey));
+								if (null != s) {
+									if      (TaskInfo.STATUS_NEEDS_ACTION.equals(sKey)) reply.addStatusNeedsAction(s);
+									else if (TaskInfo.STATUS_IN_PROCESS.equals(  sKey)) reply.addStatusInProcess(  s);
+									else if (TaskInfo.STATUS_COMPLETED.equals(   sKey)) reply.addStatusCompleted(  s);
+									else if (TaskInfo.STATUS_CANCELED.equals(    sKey)) reply.addStatusCanceled(   s);
+								}
+							}
+						}
+					}
+
+					// If we have a total from this definition...
+					if ((-1) != totalThisDef) {
+						// ...add it to the reply.
+						reply.addTotalTasks(totalThisDef);
 					}
 				}
 			}
