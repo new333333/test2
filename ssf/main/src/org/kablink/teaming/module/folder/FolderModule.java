@@ -75,6 +75,7 @@ public interface FolderModule {
 	//usefull for UI's.  Use to determine which operations are allowed
 	//if not listed, you have the entry and the operation only needs read access
    public enum FolderOperation {
+	   // Core operations
 	   readEntry,
 	   addEntry,
 	   addEntryWorkflow,
@@ -98,8 +99,12 @@ public interface FolderModule {
 	   changeEntryTimestamps,
 	   entryOwnerSetAcl,
 	   setEntryAcl,
-	   updateModificationStamp
+	   updateModificationStamp,
 	   
+	   // Derived operations - The following three operations are derived from core operations for the purpose of added convenience
+	   addFile,
+	   modifyFile, 
+	   deleteFile 
    }
  
    /**
