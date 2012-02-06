@@ -282,21 +282,23 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public String getColumnValueAsString(FolderColumn fc) {
-		if (null == m_rowStrings) {
-			return "";
-		}
-		
 		String vk = getValueKey(fc);
-		String reply = m_rowStrings.get(vk);
+		String reply = ((null == m_rowStrings) ? null : m_rowStrings.get(vk));
 		if (null == reply) {
-			PrincipalInfo pi = m_rowPrincipals.get(vk);
+			PrincipalInfo pi = ((null == m_rowPrincipals) ? null : m_rowPrincipals.get(vk));
 			if (null != pi) {
 				reply = pi.getTitle();
 			}
 			else {
-				GuestInfo gi = m_rowGuests.get(vk);
+				GuestInfo gi = ((null == m_rowGuests) ? null : m_rowGuests.get(vk));
 				if (null != gi) {
 					reply = gi.getTitle();
+				}
+				else {
+					DescriptionHtml dh = ((null == m_rowDescriptionHtmls) ? null : m_rowDescriptionHtmls.get(vk));
+					if (null != dh) {
+						reply = dh.getDescription();
+					}
 				}
 			}
 		}

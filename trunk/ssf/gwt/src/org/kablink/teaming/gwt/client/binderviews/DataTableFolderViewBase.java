@@ -42,8 +42,10 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -51,9 +53,11 @@ import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
+import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
+import org.kablink.teaming.gwt.client.datatable.GuestColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
@@ -71,6 +75,7 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
@@ -158,6 +163,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DeleteSelectedEntriesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
+		InvokeSignGuestbookEvent.Handler,
 		LockSelectedEntriesEvent.Handler,
 		MarkReadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
@@ -207,6 +213,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
+		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
 		TeamingEvents.LOCK_SELECTED_ENTRIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
@@ -755,13 +762,15 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Various column type detectors.
 	 */
-	private static boolean isColumnCustom(      FolderColumn column)     {return column.isCustomColumn();                       }
-	private static boolean isColumnDownload(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);}
-	private static boolean isColumnRating(      String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);  }
-	private static boolean isColumnPresence(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_AUTHOR);  }
-	private static boolean isColumnTaskFolders( String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TASKS);   }
-	private static boolean isColumnTitle(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TITLE);   }
-	private static boolean isColumnView(        String       columnName) {return columnName.equals(ColumnWidth.COLUMN_HTML);    }
+	private static boolean isColumnCustom(         FolderColumn column)     {return column.isCustomColumn();                               }
+	private static boolean isColumnDescriptionHtml(String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DESCRIPTION_HTML);}
+	private static boolean isColumnDownload(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);        }
+	private static boolean isColumnGuest(          String       columnName) {return columnName.equals(ColumnWidth.COLUMN_GUEST);           }
+	private static boolean isColumnRating(         String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);          }
+	private static boolean isColumnPresence(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_AUTHOR);          }
+	private static boolean isColumnTaskFolders(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TASKS);           }
+	private static boolean isColumnTitle(          String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TITLE);           }
+	private static boolean isColumnView(           String       columnName) {return columnName.equals(ColumnWidth.COLUMN_HTML);            }
 
 	/**
 	 * Returns the widget to use for displaying the table empty message.
@@ -1024,9 +1033,33 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					}
 				};
 			}
+
+			// No, this column isn't a collection of task folders
+			// either!  Is it an HTML description column?
+			else if (isColumnDescriptionHtml(cName)) {
+				// Yes!  Create a DescriptionHtmlColumn for it.
+				column = new DescriptionHtmlColumn<FolderRow>(fc) {
+					@Override
+					public DescriptionHtml getValue(FolderRow fr) {
+						return fr.getColumnValueAsDescriptionHtml(fc);
+					}
+				};
+			}
+			
+			// No, this column isn't an HTML description column either!
+			// Is it the signer of a guest book?
+			else if (isColumnGuest(cName)) {
+				// Yes!  Create a GuestColumn for it.
+				column = new GuestColumn<FolderRow>(fc) {
+					@Override
+					public GuestInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsGuestInfo(fc);
+					}
+				};
+			}
 			
 			else {
-				// No, this column isn't a collection of task folders
+				// No, this column isn't the signer of a guest book
 				// either!  Define a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
@@ -1337,6 +1370,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Simply show it.
 				showAddFilesDlgNow();
 			}
+		}
+	}
+	
+	/**
+	 * Handles InvokeSignGuestbookEvent's received by this class.
+	 * 
+	 * Implements the InvokeSignGuestbookEvent.Handler.onInvokeSignGuestbook() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeSignGuestbook(InvokeSignGuestbookEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Asynchronously invoke the guest book signing UI.
+			Scheduler.ScheduledCommand doSignGuestbook = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					signGuestbook();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doSignGuestbook);
 		}
 	}
 	
@@ -1904,6 +1960,16 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			m_defaultColumnWidths,
 			m_dataTable,
 			m_fixedLayout);
+	}
+	
+	/**
+	 * Invokes the sign the guest book UI. 
+	 * 
+	 * Stub provided as a convenience method.  Must be overridden by
+	 * those classes that extend this that provide guest book services.
+	 */
+	public void signGuestbook() {
+		Window.alert(m_messages.vibeDataTable_GuestbookInternalErrorOverrideMissing());
 	}
 	
 	/**

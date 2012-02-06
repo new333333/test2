@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
@@ -317,6 +318,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           folderId   ); break;
 					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         folderId   ); break;
 					case INVOKE_DROPBOX:                      event = new InvokeDropBoxEvent(                 folderId   ); break;
+					case INVOKE_SIGN_GUESTBOOK:               event = new InvokeSignGuestbookEvent(           folderId   ); break;
 					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           folderId   ); break;
 					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         folderId   ); break;
 					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       folderId   ); break;

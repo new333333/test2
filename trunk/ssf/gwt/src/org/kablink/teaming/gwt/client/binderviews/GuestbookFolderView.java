@@ -37,11 +37,18 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSignGuestbookUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Guest book folder view.
@@ -49,6 +56,8 @@ import com.google.gwt.user.client.Window;
  * @author drfoster@novell.com
  */
 public class GuestbookFolderView extends DataTableFolderViewBase {
+	private String m_signGuestBookUrl;	//
+	
 	/*
 	 * Class constructor.
 	 * 
@@ -74,10 +83,21 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_GUEST,       new ColumnWidth(15));
-		columnWidths.put(ColumnWidth.COLUMN_TITLE,       new ColumnWidth(10));
-		columnWidths.put(ColumnWidth.COLUMN_DATE,        new ColumnWidth(10));
-		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION, new ColumnWidth(65));
+		columnWidths.put(ColumnWidth.COLUMN_GUEST,            new ColumnWidth(20));
+		columnWidths.put(ColumnWidth.COLUMN_TITLE,            new ColumnWidth(20));
+		columnWidths.put(ColumnWidth.COLUMN_DATE,             new ColumnWidth(15));
+		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION_HTML, new ColumnWidth(45));
+	}
+
+	/**
+	 * Overrides the DataTableFolderViewBase.adjustFloatColumnWidths() method.
+	 * 
+	 * @param columnWidths
+	 */
+	@Override
+	protected void adjustFloatColumnWidths(Map<String, ColumnWidth> columnWidths) {
+		columnWidths.remove(ColumnWidth.COLUMN_TITLE);
+		columnWidths.put(   ColumnWidth.COLUMN_DESCRIPTION_HTML, new ColumnWidth(100, Unit.PCT));
 	}
 
 	/**
@@ -142,5 +162,71 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	@Override
 	public void resizeView() {
 		// Nothing to do.
+	}
+	
+	/**
+	 * Invokes the sign the guest book UI. 
+	 * 
+	 * Overrides the DataTableFolderViewBase.signGuestbook()
+	 * method.
+	 */
+	@Override
+	public void signGuestbook() {
+		// Do we have the URL to launch the signing UI?
+		if (null == m_signGuestBookUrl) {
+			// No!  Can we get it now?
+			GetSignGuestbookUrlCmd cmd = new GetSignGuestbookUrlCmd(getFolderInfo().getBinderIdAsLong());
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						m_messages.rpcFailure_GetSignGuestbookUrl());
+				}
+	
+				@Override
+				public void onSuccess(VibeRpcResponse result) {
+					StringRpcResponseData responseData = ((StringRpcResponseData) result.getResponseData());
+					String url = responseData.getStringValue();
+					if (GwtClientHelper.hasString(url)) {
+						// Yes!  Launch the signing UI.
+						m_signGuestBookUrl = url;
+						signGuestbookAsync();
+					}
+					
+					else {
+						// No, we couln't get the URL to launch the
+						// signer!  Tell the user about the problem.
+						GwtClientHelper.debugAlert(m_messages.guestBook_Error_CouldNotGetSigningURL());
+					}
+				}
+			});
+		}
+		
+		else {
+			// Yes, we have the URL to launch the signing UI.  Launch
+			// it.
+			signGuestbookAsync();
+		}
+	}
+
+	/*
+	 * Asynchronously launches the UI to sign the guest book.
+	 */
+	private void signGuestbookAsync() {
+		Scheduler.ScheduledCommand doSign = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				signGuestbookNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSign);
+	}
+	
+	/*
+	 * Synchronously launches the UI to sign the guest book.
+	 */
+	private void signGuestbookNow() {
+		GwtClientHelper.jsLaunchToolbarPopupUrl(m_signGuestBookUrl, 800, 450);
 	}
 }
