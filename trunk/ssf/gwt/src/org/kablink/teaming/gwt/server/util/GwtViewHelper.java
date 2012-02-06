@@ -77,8 +77,10 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -144,6 +146,7 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
@@ -702,22 +705,24 @@ public class GwtViewHelper {
 	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash) {
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("author"))      {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
-			else if (colName.equals("comments"))    {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
-			else if (colName.equals("date"))        {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
-			else if (colName.equals("description")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
-			else if (colName.equals("download"))    {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
-			else if (colName.equals("dueDate"))     {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
-			else if (colName.equals("html"))        {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
-			else if (colName.equals("location"))    {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
-			else if (colName.equals("number"))      {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
-			else if (colName.equals("rating"))      {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
-			else if (colName.equals("responsible")) {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
-			else if (colName.equals("size"))        {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
-			else if (colName.equals("state"))       {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
-			else if (colName.equals("status"))      {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
-			else if (colName.equals("tasks"))       {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
-			else if (colName.equals("title"))       {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
+			if      (colName.equals("author"))          {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
+			else if (colName.equals("comments"))        {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
+			else if (colName.equals("date"))            {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
+			else if (colName.equals("description"))     {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
+			else if (colName.equals("descriptionHtml")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
+			else if (colName.equals("download"))        {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
+			else if (colName.equals("dueDate"))         {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
+			else if (colName.equals("guest"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                                                                  }
+			else if (colName.equals("html"))            {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
+			else if (colName.equals("location"))        {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
+			else if (colName.equals("number"))          {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
+			else if (colName.equals("rating"))          {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
+			else if (colName.equals("responsible"))     {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
+			else if (colName.equals("size"))            {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
+			else if (colName.equals("state"))           {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
+			else if (colName.equals("status"))          {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
+			else if (colName.equals("tasks"))           {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
+			else if (colName.equals("title"))           {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -1253,10 +1258,11 @@ public class GwtViewHelper {
 				// No, we aren't showing the trash on this folder!  Are
 				// there user defined columns on this folder?
 				switch (folderType) {
-				case MILESTONE:  baseNameKey = "milestone.";       break;
-				case MINIBLOG:   baseNameKey = "miniblog.column."; break;
-				case SURVEY:     baseNameKey = "survey.";          break;
-				default:         baseNameKey = "folder.column.";   break;
+				case GUESTBOOK:  baseNameKey = "guestbook.column."; break;
+				case MILESTONE:  baseNameKey = "milestone.";        break;
+				case MINIBLOG:   baseNameKey = "miniblog.column.";  break;
+				case SURVEY:     baseNameKey = "survey.";           break;
+				default:         baseNameKey = "folder.column.";    break;
 				}
 				Folder folder    = ((Folder) bs.getBinderModule().getBinder(folderId));
 				columnNames      = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
@@ -1269,6 +1275,7 @@ public class GwtViewHelper {
 						String[] defaultCols;
 						switch (folderType) {
 						case FILE:       defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"}; break;
+						case GUESTBOOK:  defaultCols = new String[]{"guest", "title", "date", "descriptionHtml"};                                break;
 						case MILESTONE:  defaultCols = new String[]{"title", "responsible", "tasks", "status", "dueDate"};                       break;
 						case MINIBLOG:   defaultCols = new String[]{"title", "description"};                                                     break;
 						case SURVEY:     defaultCols = new String[]{"title", "author", "dueDate"};                                               break;
@@ -1570,11 +1577,13 @@ public class GwtViewHelper {
 			// What type of folder are we dealing with?
 			boolean isDiscussion = false;
 			boolean isFolder     = (null != folder);
+			boolean isGuestbook  = false;
 			boolean isMilestone  = false;
 			boolean isSurvey     = false;
 			boolean isTrash      = false;
 			switch (folderType) {
 			case DISCUSSION:  isDiscussion = true; break;
+			case GUESTBOOK:   isGuestbook  = true; break;
 			case MILESTONE:   isMilestone  = true; break;
 			case SURVEY:      isSurvey     = true; break;
 			case TRASH:       isTrash      = true; break;
@@ -1659,13 +1668,41 @@ public class GwtViewHelper {
 						// No, this isn't a custom column!  Can we
 						// construct a PrincipalInfo for this column
 						// using the value from Map?
+						String cn      = fc.getColumnName();
 						String csk     = fc.getColumnSearchKey();
 						Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
-						PrincipalInfo pi;
-						if (emValue instanceof Principal)
-						     pi = getPIFromPId(((Principal) emValue).getId());
-						else pi = null;
-						if (null == pi) {
+						GuestInfo     gi = null;
+						PrincipalInfo pi = null;
+						if (emValue instanceof Principal) {
+							// Yes!  Are we looking at the 'guest'
+							// column in a guest book folder?
+							Principal p   = ((Principal) emValue);
+							Long      pId = p.getId();
+							if (isGuestbook && cn.equals("guest")) {
+								// Yes!  Use the principal to generate
+								// a GuestInfo for the column.
+								gi = new GuestInfo(
+									getUserAvatarUrl(bs, request, p),
+									p.getEmailAddress(),
+									PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)),
+									p.getTitle());
+								fr.setColumnValue(fc, gi);
+							}
+							
+							else {
+								// No, we aren't looking at the 
+								// guest' column in a guest book
+								// folder!  If we can create a
+								// PrincipalInfo for the principal...
+								pi = getPIFromPId(pId);
+								if (null != pi) {
+									// ...store it directly.
+									fr.setColumnValue(fc, pi);
+								}
+							}
+						}
+					
+						if ((null == pi) && (null == gi)) {
 							// No!  Does the column contain assignment
 							// information?
 							if (AssignmentInfo.isColumnAssigneeInfo(csk)) {
@@ -1699,7 +1736,7 @@ public class GwtViewHelper {
 								List<TaskFolderInfo> taskFolderList = GwtServerHelper.getTaskFolderInfoListFromEntryMap(bs, request, entryMap, csk);
 								fr.setColumnValue_TaskFolderInfos(fc, taskFolderList);
 							}
-							
+	
 							else {
 								// No, the column doesn't contain a
 								// collection of task folders either!
@@ -1760,12 +1797,23 @@ public class GwtViewHelper {
 										fr.setColumnValue(fc, vfi);
 									}
 								}
+
+								// No, we aren't working on a file ID
+								// field either!  Are we working on an
+								// HTML description field?
+								else if (csk.equals(Constants.DESC_FIELD) && cn.equals("descriptionHtml")) {
+									// Yes!  Check if the description
+									// is in HTML format and store it.
+									String descFmt = GwtServerHelper. getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
+									boolean isHtml = ((null != descFmt) && "1".equals(descFmt));
+									fr.setColumnValue(fc, new DescriptionHtml(value, isHtml));
+								}
 								
 								else {
-									// No, we aren't working on a file
-									// ID field either!  Are we working
-									// on a field whose value is a
-									// Date?
+									// No, we aren't working on an HTML
+									// description field either!  Are
+									// we working on a field whose
+									// value is a Date?
 									if (emValue instanceof Date) {
 										// Yes!  Is that Date overdue?
 										if (DateComparer.isOverdue((Date) emValue)) {
@@ -1822,11 +1870,6 @@ public class GwtViewHelper {
 									fr.setColumnValue(fc, (null == (value) ? "" : value));
 								}
 							}
-						}
-						
-						else {
-							// Yes, we got a PrincipalInfo!  Use that.
-							fr.setColumnValue(fc, pi);
 						}
 					}
 				}
@@ -2288,6 +2331,33 @@ public class GwtViewHelper {
 		     reply = nvMap.get(name.toLowerCase());
 		else reply = null;
 		return ((null == reply) ? "" : reply);
+	}
+
+	/*
+	 * Returns the URL for a user's avatar.
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getUserAvatarUrl(AllModulesInjected bs, HttpServletRequest request, Principal user) {
+		// Can we get the user's workspace ID?
+		String reply = null;
+		Long wsId = ((null == user) ? null : user.getWorkspaceId());
+		if (null != wsId) {
+			// Yes!  Can we access any avatars for the user?
+			ProfileAttribute pa;
+			try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, wsId);}
+			catch (Exception ex) {pa = null;                                                 }
+			List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
+			if((null != paValue) && (!(paValue.isEmpty()))) {
+				// Yes!  We'll use the first one as the URL.  Does it
+				// have a URL?
+				ProfileAttributeListElement paValueItem = paValue.get(0);
+				reply = GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString());
+			}
+		}
+		
+		// If we get here, reply refers to the user's avatar URL or is
+		// null.  Return it.
+		return reply;
 	}
 	
 	/**

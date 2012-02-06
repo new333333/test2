@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,26 +45,28 @@ import com.google.gwt.dom.client.Style.Unit;
  */
 public class ColumnWidth {
 	// The following are the various predefined names used for columns.
-	public final static String COLUMN_AUTHOR		= "author";
-	public final static String COLUMN_COMMENTS		= "comments";
-	public final static String COLUMN_DATE			= "date";
-	public final static String COLUMN_DESCRIPTION	= "description";
-	public final static String COLUMN_DOWNLOAD		= "download";
-	public final static String COLUMN_DUE_DATE		= "dueDate";
-	public final static String COLUMN_HTML			= "html";
-	public final static String COLUMN_LOCATION		= "location";
-	public final static String COLUMN_NUMBER		= "number";
-	public final static String COLUMN_RATING		= "rating";
-	public final static String COLUMN_RESPONSIBLE	= "responsible";
-	public final static String COLUMN_SIZE			= "size";
-	public final static String COLUMN_STATE			= "state";
-	public final static String COLUMN_STATUS		= "status";
-	public final static String COLUMN_TASKS			= "tasks";
-	public final static String COLUMN_TITLE			= "title";
+	public final static String COLUMN_AUTHOR			= "author";
+	public final static String COLUMN_COMMENTS			= "comments";
+	public final static String COLUMN_DATE				= "date";
+	public final static String COLUMN_DESCRIPTION		= "description";
+	public final static String COLUMN_DESCRIPTION_HTML	= "descriptionHtml";
+	public final static String COLUMN_DOWNLOAD			= "download";
+	public final static String COLUMN_DUE_DATE			= "dueDate";
+	public final static String COLUMN_GUEST				= "guest";
+	public final static String COLUMN_HTML				= "html";
+	public final static String COLUMN_LOCATION			= "location";
+	public final static String COLUMN_NUMBER			= "number";
+	public final static String COLUMN_RATING			= "rating";
+	public final static String COLUMN_RESPONSIBLE		= "responsible";
+	public final static String COLUMN_SIZE				= "size";
+	public final static String COLUMN_STATE				= "state";
+	public final static String COLUMN_STATUS			= "status";
+	public final static String COLUMN_TASKS				= "tasks";
+	public final static String COLUMN_TITLE				= "title";
 	
 	// The following are the various internal names used for columns.
-	public final static String COLUMN_SELECT		= "--select--";
-	public final static String COLUMN_PIN			= "--pin--";
+	public final static String COLUMN_SELECT			= "--select--";
+	public final static String COLUMN_PIN				= "--pin--";
 
 	private double	m_width;	//
 	private Unit	m_units;	//
