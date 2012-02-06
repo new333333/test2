@@ -347,6 +347,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_uploadFileAsByteArray(String accessToken,long entryId, String fileUploadDataItemName, String fileName, byte[] fileContent) {
 		getFolderService().folder_uploadFileAsByteArray(accessToken, entryId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, fileContent);
 	}
+	public String folder_validateUploadFile(String accessToken,long entryId, String fileName, long fileSize) {
+		return getFolderService().folder_validateUploadFile(accessToken, entryId, fileName, fileSize);
+	}
 	public void folder_uploadFileStaged(String accessToken, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
 		getFolderService().folder_uploadFileStaged(accessToken, entryId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, stagedFileRelativePath);
 	}
@@ -729,6 +732,12 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 
 	@Override
+	public String folder_validateUploadAttachment(String accessToken,
+			long entryId, String attachmentId, long fileSize) {
+        return getFolderService().folder_validateUploadAttachment(accessToken, entryId, attachmentId, fileSize);
+	}
+
+	@Override
 	public boolean folder_uploadAttachmentAsByteArrayConditional(String accessToken,
 			long entryId, String fileUploadDataItemName, String attachmentId, byte[] fileContent,
 			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
@@ -736,6 +745,14 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
         (accessToken, entryId, fileUploadDataItemName, attachmentId, fileContent, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	}
 
+	@Override
+	public String folder_validateUploadAttachmentConditional(String accessToken,
+			long entryId, String attachmentId, long fileSize,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+        return getFolderService().folder_validateUploadAttachmentConditional
+        (accessToken, entryId, attachmentId, fileSize, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.remoting.ws.service.folder.FolderService#folder_incrementFileMajorVersion(java.lang.String, long, java.lang.String)
 	 */

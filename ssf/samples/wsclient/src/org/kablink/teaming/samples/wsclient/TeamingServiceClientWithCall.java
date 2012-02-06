@@ -143,6 +143,10 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_removeFile", new Object[] {null, Long.parseLong(args[1]), args[2]});
 			} else if(args[0].equals("removeAttachment")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_removeAttachment", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("validateUploadFile")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_validateUploadFile", new Object[] {null, Long.parseLong(args[1]), args[2],  Long.parseLong(args[3])});
+			} else if(args[0].equals("validateUploadAttachment")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_validateUploadAttachment", new Object[] {null, Long.parseLong(args[1]), args[2],  Long.parseLong(args[3])});
 			} else if(args[0].equals("search")) {
 				String s = readText(args[1]);
 				System.out.println("XML: " + s);
@@ -413,6 +417,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("testFolderEntryOperations \"operation name1, operation name2,....\" <folder entry id>");
 		System.out.println("getReleaseInfo");
 		System.out.println("getZoneConfig");
+		System.out.println("validateUploadFile <entry id> <filename> <file size>");
+		System.out.println("validateUploadAttachment <entry id> <attachment id> <file size>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
