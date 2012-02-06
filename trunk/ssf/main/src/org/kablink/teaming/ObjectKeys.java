@@ -287,6 +287,8 @@ public interface ObjectKeys {
     public static final String MASHUP_ATTR_GRAPHIC = "graphic";
     public static final String MASHUP_ATTR_TITLE = "title";
     public static final String MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME = "jspName";
+    public static final String MASHUP_ATTR_ENHANCED_VIEW_MY_CALENDAR_EVENTS = "landing_page_my_calendar_events.jsp";
+    public static final String MASHUP_ATTR_ENHANCED_VIEW_MY_TASKS = "landing_page_my_tasks.jsp";
     public static final String MASHUP_ATTR_ZONE_UUID = "zoneUUID";
     public static final String MASHUP_TYPE_CUSTOM_JSP = "customJsp";
     public static final String MASHUP_TYPE_ENHANCED_VIEW = "enhancedView";
@@ -301,6 +303,8 @@ public interface ObjectKeys {
     public static final String MASHUP_TYPE_TABLE_START = "tableStart";
     public static final String MASHUP_TYPE_TABLE_END = "tableEnd";
     public static final String MASHUP_TYPE_TABLE_END_DELETE = "tableEnd_delete";
+    public static final String MASHUP_VIEW_TYPE_MY_CALENDAR = "MyCalendar";
+    public static final String MASHUP_VIEW_TYPE_MY_TASKS = "MyTasks";
     public static final String MASHUP_TYPE_TABLE_COL = "tableCol";
     public static final String MASHUP_TYPE_LIST = "list";
     public static final String MASHUP_TYPE_LIST_START = "listStart";
