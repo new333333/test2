@@ -69,10 +69,16 @@ public interface FolderService {
 			String fileUploadDataItemName, String fileName);
 	public void folder_uploadFileAsByteArray(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName, byte[] fileContent);
+	public String folder_validateUploadFile(String accessToken,long entryId, String fileName, long fileSize);
 	public void folder_uploadAttachmentAsByteArray(String accessToken, long entryId, 
 			String fileUploadDataItemName, String attachmentId, byte[] fileContent);
+	public String folder_validateUploadAttachment(String accessToken,
+			long entryId, String attachmentId, long fileSize);
 	public boolean folder_uploadAttachmentAsByteArrayConditional(String accessToken, long entryId, 
 			String fileUploadDataItemName, String attachmentId, byte[] fileContent,
+			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
+	public String folder_validateUploadAttachmentConditional(String accessToken,
+			long entryId, String attachmentId, long fileSize,
 			Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber);
 	public void folder_uploadFileStaged(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
