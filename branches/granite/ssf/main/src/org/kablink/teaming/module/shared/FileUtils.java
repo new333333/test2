@@ -59,6 +59,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.NoContentMultipartFile;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
@@ -155,6 +156,21 @@ public class FileUtils {
 			getFolderModule().modifyEntry(null, entry.getId(), 
 					new EmptyInputData(), fileItems, null, null, options);
 		}
+	}
+
+	public static void validateModifyFolderEntryWithFile(FolderEntry entry, String filename, long fileSize) 
+			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException 
+	{
+		String dataName="ss_attachFile1";
+		Map options = null;
+		options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_VALIDATION_ONLY, Boolean.TRUE);
+		MultipartFile mf = new NoContentMultipartFile(filename, fileSize); 					
+
+		Map fileItems = new HashMap(); // Map of names to file items	
+		fileItems.put(dataName, mf); // single file item
+		getFolderModule().modifyEntry(null, entry.getId(), 
+				new EmptyInputData(), fileItems, null, null, options);
 	}
 
 	public static void modifyPrincipalWithFile(Principal principal, String dataName,

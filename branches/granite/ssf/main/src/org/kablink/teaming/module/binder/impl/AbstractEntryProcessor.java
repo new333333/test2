@@ -490,13 +490,26 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
     }
  	
-    //***********************************************************************************************************
     //no transaction expected
     public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
     		throws WriteFilesException, WriteEntryDataException {
-       SimpleProfiler.start("modifyEntry");
+    	if(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_VALIDATION_ONLY))) {
+    		modifyEntryValidationOnly(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, options);
+    	}
+    	else {
+    		modifyEntryNormal(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, options);
+    	}
+    }
+    
+    //***********************************************************************************************************
+    //no transaction expected
+    protected void modifyEntryNormal(final Binder binder, final Entry entry, 
+    		final InputDataAccessor inputData, Map fileItems, 
+    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
+    		throws WriteFilesException, WriteEntryDataException {
+       SimpleProfiler.start("modifyEntryNormal");
 
        final Map ctx = new HashMap();
        if (options != null) ctx.putAll(options);
@@ -626,7 +639,49 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	throw new WriteEntryDataException(entryDataErrors);
  	    }finally {
 		    cleanupFiles(fileUploadItems);
-	        SimpleProfiler.stop("modifyEntry");
+	        SimpleProfiler.stop("modifyEntryNormal");
+	    }
+	}
+
+    //no transaction expected
+    protected void modifyEntryValidationOnly(final Binder binder, final Entry entry, 
+    		final InputDataAccessor inputData, Map fileItems, 
+    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
+    		throws WriteFilesException, WriteEntryDataException {
+       SimpleProfiler.start("modifyEntryFileUploadDryRun");
+
+       final Map ctx = new HashMap();
+       if (options != null) ctx.putAll(options);
+       modifyEntry_setCtx(entry, ctx);
+
+    	Map entryDataAll;
+    	EntryDataErrors entryDataErrors = new EntryDataErrors();
+
+    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
+    	
+	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+	    entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
+        if (entryDataErrors.getProblems().size() > 0) {
+        	//An error occurred processing the entry Data
+        	throw new WriteEntryDataException(entryDataErrors);
+        }
+        
+	    try {	    	
+	    	FilesErrors filesErrors = new FilesErrors();
+	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
+	    		    	
+	    	if(filesErrors.getProblems().size() > 0) {
+	    		// At least one error occurred during the operation. 
+	    		throw new WriteFilesException(filesErrors);
+	    	}	    	
+        } catch(WriteFilesException ex) {
+        	throw ex;
+        } catch(Exception ex) {
+        	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
+        	throw new WriteEntryDataException(entryDataErrors);
+ 	    }finally {
+	        SimpleProfiler.stop("modifyEntryFileUploadDryRun");
 	    }
 	}
 
@@ -709,7 +764,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected FilesErrors modifyEntry_processFiles(Binder binder, 
     		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
-    	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
+    	if(ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_VALIDATION_ONLY)))
+    		return getFileModule().writeFilesValidationOnly(binder, entry, fileUploadItems, filesErrors);
+    	else
+    		return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
     protected void modifyEntry_removeAttachments(Binder binder, Entry entry, 
     		Collection deleteAttachments, List<FileAttachment> filesToDeindex,
