@@ -1126,6 +1126,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_SIGN_GUESTBOOK_URL:
+		{
+			GetSignGuestbookUrlCmd gsgbUrlCmd = ((GetSignGuestbookUrlCmd) cmd);
+			StringRpcResponseData responseData = GwtMenuHelper.getSignGuestbookUrl(
+				this,
+				getRequest( ri ),
+				gsgbUrlCmd.getFolderId() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_SITE_ADMIN_URL:
 		{
 			String url;

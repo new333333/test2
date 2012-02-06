@@ -361,6 +361,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSavedSearches();
 	String rpcFailure_GetSelfRegInfo();
 	String rpcFailure_GetShareBinderPageUrl();
+	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
@@ -1290,6 +1291,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_End();
 	String vibeDataTable_Event_Duration(String days);
 	String vibeDataTable_Event_Start();
+	String vibeDataTable_GuestbookInternalErrorOverrideMissing();
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
@@ -1412,4 +1414,6 @@ public interface GwtTeamingMessages extends Messages
 	String milestoneGraphs_StatusOpen( String percent, String count );
 	String milestoneGraphs_StatusReopened( String percent, String count );
 	
+	// Strings used by the guest book folder.
+	String guestBook_Error_CouldNotGetSigningURL();
 }// end GwtTeamingMessages

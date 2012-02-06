@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -85,6 +86,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -1800,6 +1802,51 @@ public class GwtMenuHelper {
 		
 		// ...and return the List<RecentPlaceInfo>.
 		return reply;
+	}
+
+	/**
+	 * Returns a StringRpcResponseData containing the URL to use to run
+	 * the guest book signing UI.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData getSignGuestbookUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+		try {
+			// Allocate a StringRpcResponseData to return the URL with.
+			StringRpcResponseData reply = new StringRpcResponseData();
+
+			// Can we find the definition of a guest book entry?
+			Definition def = DefinitionHelper.getDefinition(ObjectKeys.DEFAULT_ENTRY_GUESTBOOK_DEF);
+			if (null != def) {
+				// Yes!  Construct the add entry URL for it...
+				AdaptedPortletURL url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(folderId));
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				
+				// ...and store it in the StringRpcResponseData.
+				reply.setStringValue(url.toString());
+			}
+
+			// If we get here, reply refers to a StringRpcResponseData
+			// containing the URL to sign a guest book.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtMenuHelper.getSignGuestbookUrl( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 	
 	/**
