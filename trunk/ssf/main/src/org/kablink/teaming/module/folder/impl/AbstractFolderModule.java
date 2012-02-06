@@ -131,6 +131,7 @@ import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
@@ -280,6 +281,14 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				getAccessControlManager().checkOperation(folder,
 						WorkAreaOperation.GENERATE_REPORTS);
 				break;
+			case addFile:
+				// true iff (the user has "addEntry" right to the folder) AND (the folder is a regular folder OR the folder is a mirrored folder with read/write driver)
+				this.checkAccess(folder, FolderOperation.addEntry);
+				if(folder.isMirrored() && folder.getResourceDriver() != null && folder.getResourceDriver().isReadonly()) {					
+					throw new OperationAccessControlException(RequestContextHolder.getRequestContext().getUser().getName(),
+							operation.name(), folder.toString());
+				}
+				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 				
@@ -343,6 +352,28 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				// so that the top entry gets it's timestamp modified
 				// without regard to access rights on that top entry. 
 				break;
+			case modifyFile: 
+			{
+				// true iff (the user has "modifyEntry" right to the entry) AND (the entry's parent folder is a regular folder OR the entry's parent folder is a mirrored folder with read/write driver)
+				this.checkAccess(entry, FolderOperation.modifyEntry);
+				Folder folder = entry.getParentFolder();
+				if(folder.isMirrored() && folder.getResourceDriver() != null && folder.getResourceDriver().isReadonly()) {					
+					throw new OperationAccessControlException(RequestContextHolder.getRequestContext().getUser().getName(),
+							operation.name(), entry.toString());
+				}
+				break;
+			}
+			case deleteFile:
+			{
+				// true iff (the user has "deleteEntry" right to the entry) AND (the entry's parent folder is a regular folder OR the entry's parent folder is a mirrored folder with read/write driver)
+				this.checkAccess(entry, FolderOperation.deleteEntry);
+				Folder folder = entry.getParentFolder();
+				if(folder.isMirrored() && folder.getResourceDriver() != null && folder.getResourceDriver().isReadonly()) {					
+					throw new OperationAccessControlException(RequestContextHolder.getRequestContext().getUser().getName(),
+							operation.name(), entry.toString());
+				}
+				break;
+			}
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 					
