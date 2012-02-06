@@ -169,8 +169,13 @@ public interface FileModule {
     public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
     		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
+    
     public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
     		List<FileUploadItem> fileUploadItems, FilesErrors errors, Boolean prune) 
+    	throws ReservedByAnotherUserException;
+    
+    public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entity, 
+    		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
     
     /**
