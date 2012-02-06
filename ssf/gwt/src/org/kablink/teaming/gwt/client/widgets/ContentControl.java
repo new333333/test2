@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
+import org.kablink.teaming.gwt.client.binderviews.GuestbookFolderView;
 import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
@@ -65,6 +66,7 @@ import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowGenericWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
+import org.kablink.teaming.gwt.client.event.ShowGuestbookFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
@@ -125,6 +127,7 @@ public class ContentControl extends Composite
 		ShowFileFolderEvent.Handler,
 		ShowGenericWSEvent.Handler,
 		ShowGlobalWSEvent.Handler,
+		ShowGuestbookFolderEvent.Handler,
 		ShowHomeWSEvent.Handler,
 		ShowLandingPageEvent.Handler,
 		ShowMicroBlogFolderEvent.Handler,
@@ -137,6 +140,8 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
+	private final static boolean SHOW_NEW_GUESTBOOK	= false;	// 20120206 (DRF):  Until I get this working!
+	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -162,6 +167,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_FILE_FOLDER,
 		TeamingEvents.SHOW_GENERIC_WORKSPACE,
 		TeamingEvents.SHOW_GLOBAL_WORKSPACE,
+		TeamingEvents.SHOW_GUESTBOOK_FOLDER,
 		TeamingEvents.SHOW_HOME_WORKSPACE,
 		TeamingEvents.SHOW_LANDING_PAGE,
 		TeamingEvents.SHOW_MICRO_BLOG_FOLDER,
@@ -609,6 +615,15 @@ public class ContentControl extends Composite
 							break;
 							
 							
+						case GUESTBOOK:
+							if ( SHOW_NEW_GUESTBOOK )
+							{
+								GwtTeaming.fireEvent( new ShowGuestbookFolderEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+							
+							
 						case MILESTONE:
 							GwtTeaming.fireEvent( new ShowMilestoneFolderEvent( bi, viewReady ) );
 							m_contentInGWT = true;
@@ -647,7 +662,6 @@ public class ContentControl extends Composite
 	
 						case BLOG:
 						case CALENDAR:
-						case GUESTBOOK:
 						case PHOTOALBUM:
 						case WIKI:
 							// These aren't handled!  Let things take
@@ -1154,6 +1168,37 @@ public class ContentControl extends Composite
 	}
 	
 	/**
+	 * Handles ShowGuestbookFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowGuestbookFolderEvent.Handler.onShowGuestbookFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowGuestbookFolder( final ShowGuestbookFolderEvent event )
+	{
+		// Create a GuestbookFolderView widget for the selected binder.
+		GuestbookFolderView.createAsync(
+				event.getFolderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase gbfView )
+			{
+				gbfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( gbfView );
+			}// end onSuccess()
+		});
+	}// end onShowGuestbookFolder()
+	
+	/**
 	 * Handles ShowHomeWSEvent's received by this class.
 	 * 
 	 * Implements the ShowHomeWSEvent.Handler.onShowHomeWS() method.
@@ -1269,10 +1314,10 @@ public class ContentControl extends Composite
 			}// end onUnavailable()
 
 			@Override
-			public void onSuccess( ViewBase mbfView )
+			public void onSuccess( ViewBase msfView )
 			{
-				mbfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( mbfView );
+				msfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( msfView );
 			}// end onSuccess()
 		});
 	}// end onShowMilestoneFolder()

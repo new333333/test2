@@ -635,6 +635,19 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for the sign the guest book UI.
+	 * 
+	 * At the point this gets called, we know that the user has rights
+	 * to add entries to the folder.
+	 */
+	private static void constructEntrySignTheGuestbookItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
+		ToolbarItem signGuestbookTBI = new ToolbarItem("signGuestbool");
+		markTBITitle(signGuestbookTBI, "guestbook.addEntry");
+		markTBIEvent(signGuestbookTBI, TeamingEvents.INVOKE_SIGN_GUESTBOOK);
+		entryToolbar.addNestedItem(signGuestbookTBI);
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for sorting certain folder types.
 	 * 
 	 * At the point this gets called, we know that the folder is a blog
@@ -1651,7 +1664,8 @@ public class GwtMenuHelper {
 					}
 		
 					// Can we determine the folder's view type?
-					if (MiscUtil.hasString(viewType)) {
+					boolean hasVT = MiscUtil.hasString(viewType);
+					if (hasVT) {
 						// Yes!  Is it a blog or photo album?
 						if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 							// Yes!  Add the necessary 'sort by' items. 
@@ -1677,6 +1691,12 @@ public class GwtMenuHelper {
 					// Construct the various items that appear in the
 					// more drop down.
 					constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
+					
+					// If the folder is a guest book...
+					if (hasVT && addAllowed && viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)) {
+						// ...construct a sign the guest book item.
+						constructEntrySignTheGuestbookItem(entryToolbar, bs, request, folder);
+					}
 				}
 			}
 

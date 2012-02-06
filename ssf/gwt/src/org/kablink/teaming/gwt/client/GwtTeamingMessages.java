@@ -468,6 +468,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_FolderColumnsDlg();
 	String codeSplitFailure_FooterPanel();
 	String codeSplitFailure_GenericWSView();
+	String codeSplitFailure_GuestbookFolderView();
 	String codeSplitFailure_HomeWSView();
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();

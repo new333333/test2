@@ -91,6 +91,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_SEND_EMAIL_TO_TEAM,			// Invokes the Send Email To Team dialog.
 	INVOKE_SHARE,						// Invokes the 'share this entry' UI.
 	INVOKE_SHARE_BINDER,				// Invokes the 'share this binder' ui.
+	INVOKE_SIGN_GUESTBOOK,				// Invokes the 'sign the guest book' UI.
 	INVOKE_SIMPLE_PROFILE,				// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,					// Invokes the 'subscribe to this entry' UI.
 	INVOKE_TAG,							// Invokes the 'tag this entry' UI.
@@ -125,6 +126,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_FILE_FOLDER,					// Shows a file       folder.
 	SHOW_GENERIC_WORKSPACE,				// Shows a generic workspace.
 	SHOW_GLOBAL_WORKSPACE,				// Shows the global workspace
+	SHOW_GUESTBOOK_FOLDER,				// Shows a guest book folder.
 	SHOW_HOME_WORKSPACE,				// Shows the home (top) workspace
 	SHOW_LANDING_PAGE,					// Shows a landing page.
 	SHOW_MICRO_BLOG_FOLDER,				// Shows a micro-blog folder.

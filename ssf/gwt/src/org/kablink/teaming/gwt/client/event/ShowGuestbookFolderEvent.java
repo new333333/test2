@@ -41,11 +41,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ShowMilestoneFolderEvent is used to display a milestone folder.
+ * The ShowGuestbookFolderEvent is used to display a guest book.
  * 
  * @author drfoster@novell.com
  */
-public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderEvent.Handler> {
+public class ShowGuestbookFolderEvent extends VibeEventBase<ShowGuestbookFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private BinderInfo	m_folderInfo;	//
@@ -55,13 +55,13 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onShowMilestoneFolder(ShowMilestoneFolderEvent event);
+		void onShowGuestbookFolder(ShowGuestbookFolderEvent event);
 	}
 
 	/**
 	 * Constructor method.
 	 */
-	public ShowMilestoneFolderEvent() {
+	public ShowGuestbookFolderEvent() {
 		super();
 	}
 	
@@ -71,7 +71,7 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public ShowMilestoneFolderEvent(BinderInfo folderInfo, ViewReady viewReady) {
+	public ShowGuestbookFolderEvent(BinderInfo folderInfo, ViewReady viewReady) {
 		this();
 		
 		setViewReady( viewReady );
@@ -103,7 +103,7 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onShowMilestoneFolder(this);
+		handler.onShowGuestbookFolder(this);
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.SHOW_MILESTONE_FOLDER;
+		return TeamingEvents.SHOW_GUESTBOOK_FOLDER;
 	}
 		
 	/**

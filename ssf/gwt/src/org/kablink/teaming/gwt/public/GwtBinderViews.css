@@ -144,7 +144,12 @@
 		.vibe-fileFolderDataTable {}
 		.vibe-fileFolderFlowPanel {}
 	/* ...End:  File folder view styles. */
-	
+
+	/* ...Start:  Guest book folder view styles. */
+		.vibe-guestbookFolderDataTable {}
+		.vibe-guestbookFolderFlowPanel {}
+	/* ...End:  Guest book folder view styles. */
+
 	/* ...Start:  Micro-blog folder view styles. */
 		.vibe-microBlogFolderDataTable {}
 		.vibe-microBlogFolderFlowPanel {}
@@ -154,7 +159,7 @@
 		.vibe-milestoneFolderDataTable {}
 		.vibe-milestoneFolderFlowPanel {}
 		.vibe-milestoneFolderOverdue   {font-style: italic; font-weight: bold; color: red;}
-	/* ...End:  milestone folder view styles. */
+	/* ...End:  Milestone folder view styles. */
 
 	/* ...Start:  Mirrored file folder view styles. */
 		.vibe-mirroredFileFolderDataTable     {}

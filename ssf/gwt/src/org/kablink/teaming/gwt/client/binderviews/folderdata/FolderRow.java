@@ -61,9 +61,11 @@ public class FolderRow implements IsSerializable {
 	private EntryId								m_entryId;				// The entry ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>					m_columns;				// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>				m_rowOverdueDates;		// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
+	private Map<String, DescriptionHtml>		m_rowDescriptionHtmls;	// A map of column names to DescriptionHtml's                     possibly stored for a column.
 	private Map<String, EntryEventInfo>			m_rowEntryEvents;		// A map of column names to EntryEventInfo's                      possibly stored for a column.
 	private Map<String, EntryLinkInfo>			m_rowEntryLinks;		// A map of column names to EntryLinkInfo's                       possibly stored for a column.
 	private Map<String, EntryTitleInfo>			m_rowEntryTitles;		// A map of column names to EntryTitleInfo's                      possibly stored for a column.
+	private Map<String, GuestInfo>				m_rowGuests;			// A map of column names to GuestInfo's                           possibly stored for a column.
 	private Map<String, List<AssignmentInfo>>	m_rowAssigneeInfos;		// A map of column names to List<AssignmentInfo>'s                possibly stored for a column.
 	private Map<String, PrincipalInfo>			m_rowPrincipals;		// A map of column names to PrincipalInfo's                       possibly stored for a column.
 	private Map<String, List<TaskFolderInfo>>	m_rowTaskFolderInfos;	// A map of column names to List<TaskFolderInfo>'s                possibly stored for a column.
@@ -103,22 +105,24 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean                           getCanModify()                 {                           return m_canModify;         }
-	public boolean                           getCanPurge()                  {                           return m_canPurge;          }
-	public boolean                           getCanTrash()                  {                           return m_canTrash;          }
-	public boolean                           getPinned()                    {                           return m_pinned;            }
-	public EntryId                           getEntryId()                   {                           return m_entryId;           }
-	public List<FolderColumn>                getColumns()                   {                           return m_columns;           }
-	public Map<String, Boolean>              getRowOverdueDates()           {validateMapOverdueDates(); return m_rowOverdueDates;   }
-	public Map<String, EntryEventInfo>       getRowEntryEventMap()          {validateMapEvents();       return m_rowEntryEvents;    }
-	public Map<String, EntryLinkInfo>        getRowEntryLinkMap()           {validateMapLinks();        return m_rowEntryLinks;     }
-	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()         {validateMapTitles();       return m_rowEntryTitles;    }
-	public Map<String, List<AssignmentInfo>> getRowAssigneeInfoListsMap()   {validateMapAssignees();    return m_rowAssigneeInfos;  }
-	public Map<String, PrincipalInfo>        getRowPrincipalsMap()          {validateMapPrincipals();   return m_rowPrincipals;     }
-	public Map<String, List<TaskFolderInfo>> getRowTaskFolderInfoListsMap() {validateMapTaskFolders();  return m_rowTaskFolderInfos;}
-	public Map<String, ViewFileInfo>         getRowViewFilesMap()           {validateMapViews();        return m_rowViewFiles;      }
-	public Map<String, String>               getRowStringsMap()             {validateMapStrings();      return m_rowStrings;        }
-	public String                            getEntityType()                {                           return m_entityType;        }
+	public boolean                           getCanModify()                 {                               return m_canModify;          }
+	public boolean                           getCanPurge()                  {                               return m_canPurge;           }
+	public boolean                           getCanTrash()                  {                               return m_canTrash;           }
+	public boolean                           getPinned()                    {                               return m_pinned;             }
+	public EntryId                           getEntryId()                   {                               return m_entryId;            }
+	public List<FolderColumn>                getColumns()                   {                               return m_columns;            }
+	public Map<String, Boolean>              getRowOverdueDates()           {validateMapOverdueDates();     return m_rowOverdueDates;    }
+	public Map<String, DescriptionHtml>      getRowDescriptionHtmlMap()     {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
+	public Map<String, EntryEventInfo>       getRowEntryEventMap()          {validateMapEvents();           return m_rowEntryEvents;     }
+	public Map<String, EntryLinkInfo>        getRowEntryLinkMap()           {validateMapLinks();            return m_rowEntryLinks;      }
+	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()         {validateMapTitles();           return m_rowEntryTitles;     }
+	public Map<String, GuestInfo>            getRowGuestsMap()              {validateMapGuests();           return m_rowGuests;          }
+	public Map<String, List<AssignmentInfo>> getRowAssigneeInfoListsMap()   {validateMapAssignees();        return m_rowAssigneeInfos;   }
+	public Map<String, PrincipalInfo>        getRowPrincipalsMap()          {validateMapPrincipals();       return m_rowPrincipals;      }
+	public Map<String, List<TaskFolderInfo>> getRowTaskFolderInfoListsMap() {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
+	public Map<String, ViewFileInfo>         getRowViewFilesMap()           {validateMapViews();            return m_rowViewFiles;       } 
+	public Map<String, String>               getRowStringsMap()             {validateMapStrings();          return m_rowStrings;         }
+	public String                            getEntityType()                {                               return m_entityType;         }
 
 	/**
 	 * Set'er methods.
@@ -138,13 +142,15 @@ public class FolderRow implements IsSerializable {
 	 */
 	public void setColumnValue(FolderColumn fc, Object v) {
 		String vk = getValueKey(fc);
-		if      (v instanceof String)         {validateMapStrings();    m_rowStrings.put(      vk, ((String)         v));}
-		else if (v instanceof EntryEventInfo) {validateMapEvents();     m_rowEntryEvents.put(  vk, ((EntryEventInfo) v));}
-		else if (v instanceof EntryLinkInfo)  {validateMapLinks();      m_rowEntryLinks.put(   vk, ((EntryLinkInfo)  v));}
-		else if (v instanceof EntryTitleInfo) {validateMapTitles();     m_rowEntryTitles.put(  vk, ((EntryTitleInfo) v));}
-		else if (v instanceof PrincipalInfo)  {validateMapPrincipals(); m_rowPrincipals.put(   vk, ((PrincipalInfo)  v));}
-		else if (v instanceof ViewFileInfo)   {validateMapViews();      m_rowViewFiles.put(    vk, ((ViewFileInfo)   v));}
-		else                                  {validateMapStrings();    m_rowStrings.put(      vk, v.toString());        }
+		if      (v instanceof String)          {validateMapStrings();          m_rowStrings.put(         vk, ((String)          v));}
+		else if (v instanceof DescriptionHtml) {validateMapDescriptionHtmls(); m_rowDescriptionHtmls.put(vk, ((DescriptionHtml) v));}
+		else if (v instanceof EntryEventInfo)  {validateMapEvents();           m_rowEntryEvents.put(     vk, ((EntryEventInfo)  v));}
+		else if (v instanceof EntryLinkInfo)   {validateMapLinks();            m_rowEntryLinks.put(      vk, ((EntryLinkInfo)   v));}
+		else if (v instanceof EntryTitleInfo)  {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)  v));}
+		else if (v instanceof GuestInfo)       {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)       v));}
+		else if (v instanceof PrincipalInfo)   {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)   v));}
+		else if (v instanceof ViewFileInfo)    {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)    v));}
+		else                                   {validateMapStrings();          m_rowStrings.put(         vk, v.toString());         }
 	}
 	
 	public void setColumnValue_AssignmentInfos(FolderColumn fc, List<AssignmentInfo> aiList) {
@@ -181,6 +187,17 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
+	 * Returns the DescriptionHtml value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public DescriptionHtml getColumnValueAsDescriptionHtml(FolderColumn fc) {
+		return ((null == m_rowDescriptionHtmls) ? null : m_rowDescriptionHtmls.get(getValueKey(fc)));
+	}
+
+	/**
 	 * Returns the EntryEventInfo value for a specific column.
 	 * 
 	 * @param fc
@@ -211,6 +228,17 @@ public class FolderRow implements IsSerializable {
 	 */
 	public EntryTitleInfo getColumnValueAsEntryTitle(FolderColumn fc) {
 		return ((null == m_rowEntryTitles) ? null : m_rowEntryTitles.get(getValueKey(fc)));
+	}
+
+	/**
+	 * Returns the GuestInfo value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public GuestInfo getColumnValueAsGuestInfo(FolderColumn fc) {
+		return ((null == m_rowGuests) ? null : m_rowGuests.get(getValueKey(fc)));
 	}
 
 	/**
@@ -265,6 +293,12 @@ public class FolderRow implements IsSerializable {
 			if (null != pi) {
 				reply = pi.getTitle();
 			}
+			else {
+				GuestInfo gi = m_rowGuests.get(vk);
+				if (null != gi) {
+					reply = gi.getTitle();
+				}
+			}
 		}
 		return ((null == reply) ? "" : reply); 
 	}
@@ -312,6 +346,18 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
+	 * Returns true if a column's value is a DescriptionHtml and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueDescriptionHtml(FolderColumn fc) {
+		return ((null != m_rowDescriptionHtmls) && (null != m_rowDescriptionHtmls.get(getValueKey(fc))));
+	}
+
+	/**
 	 * Returns true if a column's value is an EntryEventInfo and false
 	 * otherwise.
 	 * 
@@ -348,6 +394,18 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
+	 * Returns true if a column's value is a GuestInfo and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueGuestInfo(FolderColumn fc) {
+		return ((null != m_rowGuests) && (null != m_rowGuests.get(getValueKey(fc))));
+	}
+
+	/**
 	 * Returns true if a column's value is a PrincipalInfo and false
 	 * otherwise.
 	 * 
@@ -374,13 +432,15 @@ public class FolderRow implements IsSerializable {
 	/*
 	 * Validates that the various Maps have been defined.
 	 */
-	private void validateMapAssignees()    {if (null == m_rowAssigneeInfos)		m_rowAssigneeInfos		= new HashMap<String, List<AssignmentInfo>>();}
-	private void validateMapOverdueDates() {if (null == m_rowOverdueDates)  	m_rowOverdueDates		= new HashMap<String, Boolean>();             }
-	private void validateMapEvents()       {if (null == m_rowEntryEvents)		m_rowEntryEvents		= new HashMap<String, EntryEventInfo>();      }
-	private void validateMapLinks()        {if (null == m_rowEntryLinks)		m_rowEntryLinks			= new HashMap<String, EntryLinkInfo>();       }
-	private void validateMapPrincipals()   {if (null == m_rowPrincipals)		m_rowPrincipals			= new HashMap<String, PrincipalInfo>();       }
-	private void validateMapTaskFolders()  {if (null == m_rowTaskFolderInfos)	m_rowTaskFolderInfos	= new HashMap<String, List<TaskFolderInfo>>();}
-	private void validateMapTitles()       {if (null == m_rowEntryTitles)		m_rowEntryTitles		= new HashMap<String, EntryTitleInfo>();      }
-	private void validateMapStrings()      {if (null == m_rowStrings)			m_rowStrings			= new HashMap<String, String>();              }
-	private void validateMapViews()        {if (null == m_rowViewFiles)			m_rowViewFiles			= new HashMap<String, ViewFileInfo>();        }
+	private void validateMapAssignees()        {if (null == m_rowAssigneeInfos)		m_rowAssigneeInfos		= new HashMap<String, List<AssignmentInfo>>();}
+	private void validateMapOverdueDates()     {if (null == m_rowOverdueDates)  	m_rowOverdueDates		= new HashMap<String, Boolean>();             }
+	private void validateMapDescriptionHtmls() {if (null == m_rowDescriptionHtmls)	m_rowDescriptionHtmls	= new HashMap<String, DescriptionHtml>();     }
+	private void validateMapEvents()           {if (null == m_rowEntryEvents)		m_rowEntryEvents		= new HashMap<String, EntryEventInfo>();      }
+	private void validateMapGuests()           {if (null == m_rowGuests)		    m_rowGuests			    = new HashMap<String, GuestInfo>();           }
+	private void validateMapLinks()            {if (null == m_rowEntryLinks)		m_rowEntryLinks			= new HashMap<String, EntryLinkInfo>();       }
+	private void validateMapPrincipals()       {if (null == m_rowPrincipals)		m_rowPrincipals			= new HashMap<String, PrincipalInfo>();       }
+	private void validateMapTaskFolders()      {if (null == m_rowTaskFolderInfos)	m_rowTaskFolderInfos	= new HashMap<String, List<TaskFolderInfo>>();}
+	private void validateMapTitles()           {if (null == m_rowEntryTitles)		m_rowEntryTitles		= new HashMap<String, EntryTitleInfo>();      }
+	private void validateMapStrings()          {if (null == m_rowStrings)			m_rowStrings			= new HashMap<String, String>();              }
+	private void validateMapViews()            {if (null == m_rowViewFiles)			m_rowViewFiles			= new HashMap<String, ViewFileInfo>();        }
 }

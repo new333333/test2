@@ -30,69 +30,60 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.event;
-
-import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ShowMilestoneFolderEvent is used to display a milestone folder.
+ * The InvokeSignGuestbookEvent is used to invoke Vibe's sign the guest
+ * book UI.
  * 
  * @author drfoster@novell.com
  */
-public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderEvent.Handler> {
-	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo	m_folderInfo;	//
-	private ViewReady	m_viewReady;	//
+public class InvokeSignGuestbookEvent extends VibeEventBase<InvokeSignGuestbookEvent.Handler> {
+    public static Type<Handler> TYPE = new Type<Handler>();
+    
+    public Long m_folderId;	//
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onShowMilestoneFolder(ShowMilestoneFolderEvent event);
+		void onInvokeSignGuestbook(InvokeSignGuestbookEvent event);
+	}
+	
+	/**
+	 * Class constructor.
+	 */
+	public InvokeSignGuestbookEvent() {
+		super();
 	}
 
 	/**
-	 * Constructor method.
-	 */
-	public ShowMilestoneFolderEvent() {
-		super();
-	}
-	
-	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
-	 * @param folderInfo
-	 * @param viewReady
+	 * @param folderId
 	 */
-	public ShowMilestoneFolderEvent(BinderInfo folderInfo, ViewReady viewReady) {
+	public InvokeSignGuestbookEvent(Long folderId) {
 		this();
-		
-		setViewReady( viewReady );
-		setFolderInfo(folderInfo);
+		m_folderId = folderId;
 	}
-	
+
 	/**
-	 * Get'er methods.
+	 * Get'er method.
 	 * 
 	 * @return
 	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
-
+	public Long getFolderId() {return m_folderId;}
+	
 	/**
-	 * Set'er methods.
+	 * Set'er method.
 	 * 
-	 * @param
+	 * @param folderId
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-	public void setViewReady( ViewReady  viewReady)  {m_viewReady  = viewReady; }
+	public void setFolderId(Long folderId) {m_folderId = folderId;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -101,10 +92,10 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 	 * 
 	 * @param handler
 	 */
-	@Override
-	protected void dispatch(Handler handler) {
-		handler.onShowMilestoneFolder(this);
-	}
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onInvokeSignGuestbook(this);
+    }
 	
 	/**
 	 * Returns the GwtEvent.Type of this event.
@@ -113,11 +104,11 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 	 * 
 	 * @return
 	 */
-	@Override
-	public Type<Handler> getAssociatedType() {
-		return TYPE;
-	}
-
+    @Override
+    public Type<Handler> getAssociatedType() {
+        return TYPE;
+    }
+    
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
@@ -128,7 +119,7 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.SHOW_MILESTONE_FOLDER;
+		return TeamingEvents.INVOKE_SIGN_GUESTBOOK;
 	}
 		
 	/**

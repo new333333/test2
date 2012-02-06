@@ -541,6 +541,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_SIGN_GUESTBOOK:
+				// An InvokeSignGuestbookEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeSignGuestbookEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeSignGuestbookEvent.registerEvent(eventBus, ((InvokeSignGuestbookEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_SIMPLE_PROFILE:
 				// An InvokeSimpleProfileEvent!  Can the event handler
 				// we were given handle that?
@@ -817,6 +826,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = ShowGlobalWSEvent.registerEvent( eventBus, ((ShowGlobalWSEvent.Handler) eventHandler) );
+				}
+				break;
+			
+			case SHOW_GUESTBOOK_FOLDER:
+				// A ShowGuestbookFolderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ShowGuestbookFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowGuestbookFolderEvent.registerEvent(eventBus, ((ShowGuestbookFolderEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1421,6 +1439,7 @@ public class EventHelper {
 			case INVOKE_SEND_EMAIL_TO_TEAM:             hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);         break;
 			case INVOKE_SHARE:                      	hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                   break;
 			case INVOKE_SHARE_BINDER:					hasHandler = (eventHandler instanceof InvokeShareBinderEvent.Handler);			   break;
+			case INVOKE_SIGN_GUESTBOOK:					hasHandler = (eventHandler instanceof InvokeSignGuestbookEvent.Handler);           break;
 			case INVOKE_SIMPLE_PROFILE:             	hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);           break;
 			case INVOKE_SUBSCRIBE:                  	hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);               break;
 			case INVOKE_TAG:                        	hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                     break;
@@ -1449,6 +1468,7 @@ public class EventHelper {
 			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
 			case SHOW_GENERIC_WORKSPACE:				hasHandler = (eventHandler instanceof ShowGenericWSEvent.Handler);			   	   break;
 			case SHOW_GLOBAL_WORKSPACE:					hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	   break;
+			case SHOW_GUESTBOOK_FOLDER:				    hasHandler = (eventHandler instanceof ShowGuestbookFolderEvent.Handler);		   break;
 			case SHOW_HOME_WORKSPACE:					hasHandler = (eventHandler instanceof ShowHomeWSEvent.Handler);			   	   	   break;
 			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
 			case SHOW_MICRO_BLOG_FOLDER:				hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		   break;
