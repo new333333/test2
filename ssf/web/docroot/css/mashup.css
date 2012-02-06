@@ -125,10 +125,12 @@ div.ss_mashup_folder_list_closed {
 
 div.ss_mashup_folder_list_open {
   padding: 8px 0 0 0;
-  }
+  margin: 0px 0px 2px 0px;
+}
 div.ss_mashup_folder_list_open_no_border {
-  padding: 8px 0 0 0;
-  }
+  padding: 0px;
+  margin: 0px 0px 2px 0px;
+}
 
 div.ss_mashup_folder_list_open span.ss_size_20px {
   font-size: 15px !important;

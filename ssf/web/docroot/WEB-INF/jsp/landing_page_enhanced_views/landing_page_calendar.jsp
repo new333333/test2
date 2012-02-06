@@ -88,7 +88,7 @@
 <c:if test="${!empty mashup_attributes['overflow']}">
 	<c:set var="calendarOverflow" value="${mashup_attributes['overflow']}" />
 	<c:if test="${mashup_attributes['overflow'] == 'auto'}">
-	  <c:set var="calendarPadding" value="padding: 0 1px 0 0;" />
+	  <c:set var="calendarPadding" value="padding: 0px;" />
 	</c:if>
 </c:if>
 
