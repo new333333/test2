@@ -883,6 +883,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_PERSONAL_WORKSPACES:
+				// A ShowPersonalWorkspacesEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShowPersonalWorkspacesEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowPersonalWorkspacesEvent.registerEvent( eventBus, ((ShowPersonalWorkspacesEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:
 				// A ShowProjectManagementWSEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof ShowProjectManagementWSEvent.Handler )
@@ -1474,6 +1483,7 @@ public class EventHelper {
 			case SHOW_MICRO_BLOG_FOLDER:				hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		   break;
 			case SHOW_MILESTONE_FOLDER:				    hasHandler = (eventHandler instanceof ShowMilestoneFolderEvent.Handler);		   break;
 			case SHOW_MIRRORED_FILE_FOLDER:				hasHandler = (eventHandler instanceof ShowMirroredFileFolderEvent.Handler);		   break;
+			case SHOW_PERSONAL_WORKSPACES:				hasHandler = (eventHandler instanceof ShowPersonalWorkspacesEvent.Handler);		   break;
 			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:		hasHandler = (eventHandler instanceof ShowProjectManagementWSEvent.Handler);	   break;
 			case SHOW_SURVEY_FOLDER:				    hasHandler = (eventHandler instanceof ShowSurveyFolderEvent.Handler);		       break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;

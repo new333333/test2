@@ -132,6 +132,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_MICRO_BLOG_FOLDER,				// Shows a micro-blog folder.
 	SHOW_MILESTONE_FOLDER,				// Shows a milestone folder.
 	SHOW_MIRRORED_FILE_FOLDER,			// Shows a mirrored file folder.
+	SHOW_PERSONAL_WORKSPACES,			// Shows the Personal workspaces binder.
 	SHOW_PROJECT_MANAGEMENT_WORKSPACE,	// Show a project management workspace.
 	SHOW_SURVEY_FOLDER,					// Shows a survey folder.
 	SHOW_TASK_FOLDER,					// Shows a task folder.

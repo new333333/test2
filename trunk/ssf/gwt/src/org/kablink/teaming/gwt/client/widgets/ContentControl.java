@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MilestoneFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MirroredFileFolderView;
+import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
 import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
@@ -72,6 +73,7 @@ import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
 import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMilestoneFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMirroredFileFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
@@ -133,6 +135,7 @@ public class ContentControl extends Composite
 		ShowMicroBlogFolderEvent.Handler,
 		ShowMilestoneFolderEvent.Handler,
 		ShowMirroredFileFolderEvent.Handler,
+		ShowPersonalWorkspacesEvent.Handler,
 		ShowProjectManagementWSEvent.Handler,
 		ShowSurveyFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
@@ -173,6 +176,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_MICRO_BLOG_FOLDER,
 		TeamingEvents.SHOW_MILESTONE_FOLDER,
 		TeamingEvents.SHOW_MIRRORED_FILE_FOLDER,
+		TeamingEvents.SHOW_PERSONAL_WORKSPACES,
 		TeamingEvents.SHOW_PROJECT_MANAGEMENT_WORKSPACE,
 		TeamingEvents.SHOW_SURVEY_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
@@ -838,6 +842,24 @@ public class ContentControl extends Composite
 						}
 							
 						case PROFILE_ROOT:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new personal workspaces?" ) )
+									showNew = false;
+							}
+							
+							if ( showNew )
+							{
+								// Fire the event that will display the personal workspaces binder.
+								GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
 						case USER:
 							// These aren't handled!  Let things take 
 							// the default flow.
@@ -1353,6 +1375,37 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowMirroredFileFolder()
+	
+	/**
+	 * Handles ShowPersonalWorkspacesEvent's received by this class.
+	 * 
+	 * Implements the ShowPersonalWorkspacesEvent.Handler.onShowPersonalWorkspaces() method.
+	 */
+	@Override
+	public void onShowPersonalWorkspaces( ShowPersonalWorkspacesEvent event )
+	{
+		ViewClient vClient;
+		
+		// Display the Personal Workspaces view for the given binder id.
+		vClient = new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase personalWorkspaces )
+			{
+				personalWorkspaces.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( personalWorkspaces );
+			}
+		};
+		
+		// Create a PersonalWorkspacesView widget for the selected binder.
+		PersonalWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+	}
 	
 	/**
 	 * Handles ShowProjectManagementWSEvent's received by this class.

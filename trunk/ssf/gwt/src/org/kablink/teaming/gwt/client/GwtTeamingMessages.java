@@ -484,6 +484,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_MilestoneFolderView();
 	String codeSplitFailure_MirroredFileFolderView();
+	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_ProjectInfoWidget();
