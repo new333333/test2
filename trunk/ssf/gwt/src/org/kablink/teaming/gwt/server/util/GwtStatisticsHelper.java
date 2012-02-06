@@ -38,9 +38,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Document;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -54,6 +57,8 @@ import com.sitescape.team.domain.Statistics;
  * @author drfoster@novell.com
  */
 public class GwtStatisticsHelper {
+	public static final String STATUS_MILESTONE_ENTRY_ATTRIBUTE_NAME = "status";
+	
 	/*
 	 * Inhibits this class from being instantiated. 
 	 */
@@ -70,7 +75,7 @@ public class GwtStatisticsHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static List<Map> getEntryDefMaps(Statistics stats, String entryFamily) {
 		// Allocate a List<Map> we can return.
 		List<Map> reply = new ArrayList<Map>();
@@ -134,4 +139,118 @@ public class GwtStatisticsHelper {
 		// Always use the initial form of the method.
 		return getFolderStatistics(bs.getFolderModule().getFolder(folderId));
 	}
+
+	/**
+	 * Returns a MilestoneStats object for a given milestone folder.
+	 * 
+	 * @param folder
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static MilestoneStats getMilestoneStatistics( Folder folder )
+	{
+		MilestoneStats milestoneStats;
+		Statistics stats;
+		boolean foundStatus;
+
+		// Allocate a MilestoneStats object we can return.
+		milestoneStats = new MilestoneStats();
+		
+		// Initialize some variables to track what we find.
+		foundStatus = false;
+
+		// Does the folder have a Statistics custom attribute?
+		stats = GwtStatisticsHelper.getFolderStatistics( folder );
+		if ( stats != null )
+		{
+			List<Map> defMaps;
+
+			// Yes
+			// Does it contain any milestone definition value maps?
+			defMaps = GwtStatisticsHelper.getEntryDefMaps( stats, ObjectKeys.FAMILY_MILESTONE );
+			if ( defMaps != null && !defMaps.isEmpty() )
+			{
+				// Yes!  Scan them.
+				for (Map defMap:  defMaps)
+				{
+					Map statusMap;
+					
+					// Is there a map for status statistics in this definition map?
+					statusMap = (Map) defMap.get( STATUS_MILESTONE_ENTRY_ATTRIBUTE_NAME );
+					if ( statusMap != null )
+					{
+						Map sValuesMap;
+						
+						// Yes!  Extract the status values.
+						foundStatus = true;
+						
+						sValuesMap = ((Map) statusMap.get( Statistics.VALUES ) );
+						if ( sValuesMap != null )
+						{
+							Set<String> sKeys;
+							
+							sKeys = (Set<String>) sValuesMap.keySet();
+							for (String sKey:  sKeys)
+							{
+								Integer s;
+								
+								s = (Integer) sValuesMap.get( sKey );
+								if ( s != null && sKey != null )
+								{
+									if ( sKey.equalsIgnoreCase( "open" ) )
+										milestoneStats.addStatusOpen( s );
+									else if ( sKey.equalsIgnoreCase( "completed" ) )
+										milestoneStats.addStatusCompleted( s );
+									else if ( sKey.equalsIgnoreCase( "reopen" ) )
+										milestoneStats.addStatusReopen( s );
+								}
+							}
+						}
+
+						// Get a the number of milestone entries.
+						{
+							Integer cnt;
+							
+							cnt = (Integer) statusMap.get( Statistics.TOTAL_KEY );
+							if ( cnt != null )
+							{
+								milestoneStats.setTotalMilestones( cnt );
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// If we found any of the statistic components, return the task
+		// statistics object.  Otherwise, return null.
+		if ( foundStatus )
+			return milestoneStats;
+		
+		return null;
+	}
+
+	/**
+	 * Returns a MilestoneStats object for a given milestone folder.
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static MilestoneStats getMilestoneStatistics( AllModulesInjected ami, Long folderId ) throws GwtTeamingException
+	{
+		try
+		{
+			Folder folder;
+			
+			folder = ami.getFolderModule().getFolder( folderId );
+			
+			return getMilestoneStatistics( folder );
+		}
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw that.
+			throw GwtServerHelper.getGwtTeamingException( e );
+		}
+	}
+	
 }

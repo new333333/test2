@@ -123,6 +123,7 @@ import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
@@ -2982,12 +2983,19 @@ public class GwtServerHelper {
 	{
 		BinderStats binderStats;
 		TaskStats taskStats;
+		MilestoneStats milestoneStats;
+		Long binderIdL;
 		
 		binderStats = new BinderStats();
+		binderIdL = Long.valueOf( binderId );
 		
 		// Get the statistics for the tasks that may be in the given binder.
-		taskStats = GwtTaskHelper.getTaskStatistics( ami, Long.valueOf( binderId ) );
+		taskStats = GwtTaskHelper.getTaskStatistics( ami, binderIdL );
 		binderStats.setTaskStats( taskStats );
+		
+		// Get the statistics for the milestones that may be in the given binder.
+		milestoneStats = GwtStatisticsHelper.getMilestoneStatistics( ami, binderIdL );
+		binderStats.setMilestoneStats( milestoneStats );
 		
 		return binderStats; 
 	}

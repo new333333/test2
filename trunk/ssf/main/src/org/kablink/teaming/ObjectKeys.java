@@ -555,6 +555,7 @@ public interface ObjectKeys {
     // families of entries
     public static final String FAMILY_TASK = "task";
     public static final String FAMILY_CALENDAR = "calendar";
+    public static final String FAMILY_MILESTONE = "milestone";
     
     //xml tags - some used in GenerateLdapList (as strings) - keep in sync
     public static final String XTAG_ATTRIBUTE_DATABASEID="databaseId";

@@ -167,6 +167,7 @@
 
 .projectStatsWidget_GraphPanel
 {
+	margin-bottom: 4px;
 	margin-left: 20px;
 	margin-top: 6px;
 }
@@ -175,7 +176,7 @@
 {
 }
 
-.projectStatsWidget_TasksStatsPanel
+.projectStatsWidget_TasksStatsPanel, .projectStatsWidget_MilestoneStatsPanel
 {
 	width: 300px;
 }

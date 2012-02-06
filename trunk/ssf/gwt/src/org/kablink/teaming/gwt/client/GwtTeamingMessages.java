@@ -1405,4 +1405,10 @@ public interface GwtTeamingMessages extends Messages
 	String taskGraphs_StatusCompleted(  String percent, String count);
 	String taskGraphs_StatusInProcess(  String percent, String count);
 	String taskGraphs_StatusNeedsAction(String percent, String count);
+	
+	// Strings used by the milestone graphs widgets.
+	String milestoneGraphs_StatusCompleted( String percent, String count );
+	String milestoneGraphs_StatusOpen( String percent, String count );
+	String milestoneGraphs_StatusReopened( String percent, String count );
+	
 }// end GwtTeamingMessages

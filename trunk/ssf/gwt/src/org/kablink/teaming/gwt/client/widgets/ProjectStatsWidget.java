@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -59,6 +60,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
@@ -100,6 +102,73 @@ public class ProjectStatsWidget extends ToolPanelBase
 		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
+
+	/**
+	 * Add a tasks statistics graph and a milestone statistics graph to the given panel.
+	 */
+	private void addStatsGraphs( TaskStats taskStats, MilestoneStats milestoneStats, VibeFlowPanel panel )
+	{
+		FlexTable table = null;
+		int col = 0;
+		
+		if ( taskStats != null || milestoneStats != null )
+		{
+			table = new FlexTable();
+			panel.add( table );
+		}
+		
+		if ( taskStats != null )
+		{
+			VibeFlowPanel graphPanel;
+			TaskStatusGraph taskGraph;
+			
+			graphPanel = new VibeFlowPanel();
+			graphPanel.addStyleName( "projectStatsWidget_GraphPanel" );
+			
+			// Create a status graph for the tasks.
+			taskGraph = new TaskStatusGraph( taskStats, "projectStatsWidget_TasksStatsPanel", true );
+			graphPanel.add( taskGraph );
+			
+			table.setWidget( 0, col, graphPanel );
+			++col;
+		}
+
+		if ( milestoneStats != null )
+		{
+			VibeFlowPanel graphPanel;
+			MilestoneStatusGraph milestoneGraph;
+			
+			graphPanel = new VibeFlowPanel();
+			graphPanel.addStyleName( "projectStatsWidget_GraphPanel" );
+			
+			// Create a status graph for the milestones.
+			milestoneGraph = new MilestoneStatusGraph( milestoneStats, "projectStatsWidget_MilestoneStatsPanel", true );
+			graphPanel.add( milestoneGraph );
+			
+			table.setWidget( 0, col, graphPanel );
+		}
+	}
+	
+	/**
+	 * Add a milestones statistics graph to the given panel.
+	 */
+	private void addMilestoneStatsGraph( MilestoneStats milestoneStats, VibeFlowPanel panel )
+	{
+		if ( milestoneStats != null )
+		{
+			VibeFlowPanel graphPanel;
+			MilestoneStatusGraph milestoneGraph;
+			
+			graphPanel = new VibeFlowPanel();
+			graphPanel.addStyleName( "projectStatsWidget_GraphPanel" );
+			
+			// Create a status graph for the milestones.
+			milestoneGraph = new MilestoneStatusGraph( milestoneStats, "projectStatsWidget_MilestoneStatsPanel", true );
+			graphPanel.add( milestoneGraph );
+			
+			panel.add( graphPanel );
+		}
+	}
 
 	/**
 	 * Add a tasks statistics graph to the given panel.
@@ -246,12 +315,14 @@ public class ProjectStatsWidget extends ToolPanelBase
 				Scheduler.ScheduledCommand cmd;
 				BinderStats binderStats;
 				final TaskStats taskStats;
+				final MilestoneStats milestoneStats;
 				
 				binderStats = (BinderStats) response.getResponseData();
 				
-				// Do we have any task statistics?
+				// Do we have any task or milestone statistics?
 				taskStats = binderStats.getTaskStats();
-				if ( taskStats != null )
+				milestoneStats = binderStats.getMilestoneStats();
+				if ( taskStats != null || milestoneStats != null )
 				{
 					cmd = new Scheduler.ScheduledCommand()
 					{
@@ -261,8 +332,9 @@ public class ProjectStatsWidget extends ToolPanelBase
 						@Override
 						public void execute()
 						{
-							// Add a task statistics graph to the given panel.
-							addTaskStatsGraph( taskStats, panel );
+							// Add a task statistics graph and a milestone statistics
+							// graph to the given panel.
+							addStatsGraphs( taskStats, milestoneStats, panel );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );

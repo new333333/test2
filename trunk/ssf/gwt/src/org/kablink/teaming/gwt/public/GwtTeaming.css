@@ -3515,3 +3515,54 @@ td.datePickerMonth {
 	.taskGraphs-statsStatus2     {background-color:#70AE55;}
 	.taskGraphs-statsStatus3     {background-color:#995DB2;}
 /* End:  Task statistics graph styles. */
+
+/* Start:  Milesone statistics graph styles. */
+.milestoneGraphs-stats
+{
+	white-space: nowrap;
+}
+
+.milestoneGraphs-statsBarSegment
+{
+	color: white;
+	font-size: 0.75em;
+	font-weight: bold;
+}
+
+.milestoneGraphs-statsLegendBar
+{
+	white-space: nowrap;
+	display: block;
+}
+
+.milestoneGraphs-statsLegendBox
+{
+	margin-top: 2px;
+	margin-right: 2px;
+	width: 12px;
+	height: 12px;
+	float: left;
+}
+
+.milestoneGraphs-statsLegendLabel
+{
+	color: #333333;
+	font-size: 0.9em;
+}
+
+.milestoneGraphs-statsStatusCompleted
+{
+	background-color:#70AE55;
+}
+
+.milestoneGraphs-statsStatusOpen
+{
+	background-color:#EC9112;
+}
+
+.milestoneGraphs-statsStatusReopened
+{
+	background-color:#617F9F;
+}
+	
+/* End:  Milestone statistics graph styles. */

@@ -32,61 +32,138 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Class used to model binders statistics. 
+ * Class used to model milestone statistics. 
  * 
  * @author jwootton@novell.com
  */
-public class BinderStats implements IsSerializable, VibeRpcResponseData
+public class MilestoneStats implements IsSerializable
 {
-	private TaskStats m_taskStats;	// Statistics for tasks that may be in the binder.
-	private MilestoneStats m_milestoneStats;	// Statistics for milestones that may be in the binder.
+	private int m_statusOpen;
+	private int m_statusReopen;
+	private int m_statusCompleted;
+	
+	private int m_totalMilestones;
 
 	/**
 	 * Constructor method.
 	 * 
 	 * Zero parameter constructor for GWT serialization requirements.
 	 */
-	public BinderStats()
+	public MilestoneStats()
 	{
 		// Initialize the super class.
 		super();
 	}
-
-	/**
-	 * 
-	 */
-	public MilestoneStats getMilestoneStats()
-	{
-		return m_milestoneStats;
-	}
 	
 	/**
 	 * 
 	 */
-	public TaskStats getTaskStats()
+	public void addStatusCompleted( int statusCompleted )
 	{
-		return m_taskStats;
+		m_statusCompleted += statusCompleted;
 	}
 
 	/**
 	 * 
 	 */
-	public void setMilestoneStats( MilestoneStats milestoneStats )
+	public void addStatusOpen( int statusOpen )
 	{
-		m_milestoneStats = milestoneStats;
+		m_statusOpen += statusOpen;
 	}
 	
 	/**
 	 * 
 	 */
-	public void setTaskStats( TaskStats taskStats )
+	public void addStatusReopen( int statusReopen )
 	{
-		m_taskStats = taskStats;
+		m_statusReopen += statusReopen;
 	}
+
+	/**
+	 * 
+	 */
+	public void addTotalMilestones( int totalMilestones )
+	{
+		m_totalMilestones += totalMilestones;
+	}
+
+	/**
+	 * 
+	 */
+	public int getStatusCompleted()
+	{
+		return m_statusCompleted;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getStatusOpen()
+	{
+		return m_statusOpen;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getStatusReopen()
+	{
+		return m_statusReopen;
+	}
+
+	/**
+	 * 
+	 */
+	public int getTotalMilestones()
+	{
+		return m_totalMilestones;
+	}
+
+	/**
+	 * 
+	 */
+	public void setStatusCompleted( int statusCompleted )
+	{
+		m_statusCompleted = statusCompleted;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStatusOpen( int statusOpen )
+	{
+		m_statusOpen = statusOpen;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStatusReopen( int statusReopen )
+	{
+		m_statusReopen = statusReopen;
+	}
+
+	/**
+	 * 
+	 */
+	public void setTotalMilestones( int totalMilestones )
+	{
+		m_totalMilestones = totalMilestones;
+	}
+
+	/**
+	 * Returns the percentage a given count is of the total.
+	 * 
+	 * @param count
+	 * 
+	 * @return
+	 */
+	public int getPercent( int count )
+	{
+		return ((int) Math.round((((double) count) / ((double) m_totalMilestones)) * 100.0));
+	}
+	
 }
