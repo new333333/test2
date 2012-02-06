@@ -133,7 +133,6 @@ import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.NoContentFileUploadItem;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
