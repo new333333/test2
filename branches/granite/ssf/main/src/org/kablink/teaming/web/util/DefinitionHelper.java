@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,10 +62,18 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.teaming.calendar.AbstractIntervalView;
+import org.kablink.teaming.calendar.EventsViewHelper;
+import org.kablink.teaming.calendar.OneDayView;
+import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -76,6 +85,8 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -89,8 +100,10 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.repository.RepositoryUtil;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -101,6 +114,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 import org.springframework.core.io.ClassPathResource;
 
 
@@ -778,10 +792,13 @@ public class DefinitionHelper {
 	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
 			Document definitionConfig, Map model, RenderRequest request ) {
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		String mashupViewType = "";
 		Map mashupEntries = new HashMap();
 		Map mashupEntryReplies = new HashMap();
 		Map mashupBinders = new HashMap();
 		Map mashupBinderEntries = new HashMap();
+		List mashupMyCalendarEntries = new ArrayList();
+		List mashupMyTaskEntries = new ArrayList();
     	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value");
     	if (nodes == null) {
     		return;
@@ -927,6 +944,72 @@ public class DefinitionHelper {
 	        						
 	        			} catch(Exception e) {
 	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  3:  Ignored");
+	        			}
+	        		} else if (ObjectKeys.MASHUP_TYPE_ENHANCED_VIEW.equals( type ) &&
+	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME) && 
+	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME).equals("")) {
+	        			//See what type of view this is
+	        			String jsp = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME);
+	        			if (jsp.equals(ObjectKeys.MASHUP_ATTR_ENHANCED_VIEW_MY_CALENDAR_EVENTS)) {
+	        			} else if (jsp.equals(ObjectKeys.MASHUP_ATTR_ENHANCED_VIEW_MY_TASKS)) {
+	        				mashupViewType = ObjectKeys.MASHUP_VIEW_TYPE_MY_TASKS;
+	        				Map options = new HashMap();
+	        				options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES));
+	        				
+	        				Integer searchUserOffset = 0;
+	        				Integer searchLuceneOffset = 0;
+	        				options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+	        				options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+	        				
+	        				Integer maxHits = new Integer(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES);
+	        				options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+	        				
+	        				Integer summaryWords = new Integer(20);
+	        				options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+	        				
+	        				Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+	        				if (searchUserOffset > 0) {
+	        					intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+	        				}
+	        				options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+	        				int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+	        				int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+	        				
+	        				User user = RequestContextHolder.getRequestContext().getUser();
+	        				UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+
+	        				List groups = new ArrayList();
+	        				List groupsS = new ArrayList();
+	        				List teams = new ArrayList();
+	        				
+	        				ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+	        				groups.addAll(profileDao.getAllGroupMembership(user.getId(), user.getZoneId()));
+	        				Iterator itG = groups.iterator();
+	        				while (itG.hasNext()) {
+	        					groupsS.add(itG.next().toString());
+	        				}
+	        				Iterator teamMembershipsIt = bs.getBinderModule().getTeamMemberships(user.getId()).iterator();
+	        				while (teamMembershipsIt.hasNext()) {
+	        					teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
+	        				}
+	        				
+	        				DateTime today = (new DateMidnight(DateTimeZone.forTimeZone(user.getTimeZone()))).toDateTime();
+	        				DateTime future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
+	        				DateTime fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
+	        				
+	        				if (model.containsKey(WebKeys.TYPE3) && model.get(WebKeys.TYPE3).equals("all")) {
+	        					future = today.plusMonths(SPropsUtil.getInt("relevance.tasksAllMonthsAhead"));
+	        				}
+	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
+	        															(String[])groupsS.toArray(new String[groupsS.size()]), 
+	        															(String[])teams.toArray(new String[teams.size()]),
+	        															fromDate.toDate(),
+	        															future.toDate());
+	        				Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+        					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
+        					mashupViewType = ObjectKeys.MASHUP_VIEW_TYPE_MY_TASKS;
 	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
@@ -1085,9 +1168,13 @@ public class DefinitionHelper {
 			//This user can do site admin functions
 			model.put(WebKeys.MASHUP_SITE_ADMINISTRATOR, true);
 		}
+		model.put(WebKeys.MASHUP_VIEW_TYPE, mashupViewType);
+		model.put(WebKeys.MASHUP_TOP_BINDER_ID, bs.getWorkspaceModule().getTopWorkspaceId());
 		model.put( WebKeys.MASHUP_BINDER, entity );
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
+    	model.put(WebKeys.MASHUP_MY_CALENDAR_ENTRIES, mashupMyCalendarEntries);
+    	model.put(WebKeys.MASHUP_MY_TASK_ENTRIES, mashupMyTaskEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
     	model.put(WebKeys.MASHUP_ENTRY_REPLIES, mashupEntryReplies);
     	String style = (String) model.get(WebKeys.MASHUP_STYLE);

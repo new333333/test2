@@ -57,6 +57,7 @@ public class WebKeys {
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	public static final String CALENDAR_STICKY_ID = "calendarStickyId";
+	public static final String CALENDAR_EVENTS_ONLY = "calendarEventsOnly";
 	public static final String CALENDAR_FREE_BUSY_INFO = "ssCalendarFreeBusyInfo";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
 	public static final String TASK_CAN_MODIFY_LINKAGE = "ssCanModifyTaskLinkage";
@@ -1060,6 +1061,8 @@ public class WebKeys {
     public static final String MASHUP_BINDER = "ss_mashupBinder";
     public static final String MASHUP_BINDERS="ss_mashupBinders"; 
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
+    public static final String MASHUP_MY_CALENDAR_ENTRIES="ss_mashupMyCalendarEntries"; 
+    public static final String MASHUP_MY_TASK_ENTRIES="ss_mashupMyTaskEntries"; 
     public static final String MASHUP_CSS="ss_mashupCss"; 
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
     public static final String MASHUP_ENTRY_REPLIES="ss_mashupEntryReplies";
@@ -1075,6 +1078,8 @@ public class WebKeys {
     public static final String MASHUP_SHOW_FAVORITES_AND_TEAMS="ss_mashupShowFavoritesAndTeams"; 
     public static final String MASHUP_SHOW_NAVIGATION="ss_mashupShowNavigation"; 
     public static final String MASHUP_STYLE="ss_mashupStyle"; 
+    public static final String MASHUP_TOP_BINDER_ID="ss_mashupTopBinderId"; 
+    public static final String MASHUP_VIEW_TYPE="ss_mashupViewType"; 
     public static final String MAX_INACTIVE_INTERVAL="ss_maxInactiveInterval"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
     public static final String MINIBLOG_PAGE="ss_miniblogPage"; 

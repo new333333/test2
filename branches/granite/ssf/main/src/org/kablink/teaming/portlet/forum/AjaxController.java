@@ -2471,6 +2471,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.URL_DASHBOARD_REQUEST, PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_DASHBOARD_REQUEST, false));
 			Binder binder = getBinderModule().getBinder(binderId);
 			String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
+			Boolean calendarEventsOnly = PortletRequestUtils.getBooleanParameter(request, WebKeys.CALENDAR_EVENTS_ONLY, false);
 			
 			
 			Map options = new HashMap();
@@ -2618,7 +2619,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						
 						// Are we searching for virtual events?
-						if (virtual) {
+						if (virtual && !calendarEventsOnly) {
 							// Yes!  Search for the events that are
 							// task entries...
 							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
