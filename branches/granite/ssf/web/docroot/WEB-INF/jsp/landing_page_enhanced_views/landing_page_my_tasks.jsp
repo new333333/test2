@@ -145,6 +145,10 @@
 					  <ssf:nlt tag="task.assigned"/>
 					</th>
 
+					<th class="entry-caption" valign="top" nowrap>
+					  <ssf:nlt tag="task.location"/>
+					</th>
+
 				  </tr>
 	    		<c:forEach var="entryFol2" items="${ss_mashupMyTaskEntries}">
 	    			<jsp:useBean id="entryFol2" type="java.util.Map" />
@@ -296,6 +300,20 @@
 									<div><ssf:showTeam team="${assigned}"/></div>
 								</c:forEach>
 						</c:if>									
+					</td>
+					
+					<td class="entry-element" valign="top">
+						<c:set var="path" value=""/>
+			
+						<c:if test="${!empty ss_mashupMyTaskBinders[entryFol2._binderId]}">
+							<c:set var="path" value="${ss_mashupMyTaskBinders[entryFol2._binderId]}"/>
+							<c:set var="title" value="${ss_mashupMyTaskBinders[entryFol2._binderId].title} (${ss_mashupMyTaskBinders[entryFol2._binderId].parentWorkArea.title})"/>
+				    		<a href="javascript: ;"
+								onclick="return ss_gotoPermalink('${entryFol2._binderId}', '${entryFol2._binderId}', 'folder', '', 'yes');"
+								title="${path}"
+								><span>${ss_mashupMyTaskBinders[entryFol2._binderId].title}</span></a>
+							<span class="ss_smallprint"> (${ss_mashupMyTaskBinders[entryFol2._binderId].parentWorkArea.title})</span>
+						</c:if>
 					</td>
 					
 				  </tr>
