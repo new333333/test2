@@ -2478,9 +2478,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.URL_DASHBOARD_REQUEST, PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_DASHBOARD_REQUEST, false));
 			Binder binder = getBinderModule().getBinder(binderId);
 			String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
-			Boolean calendarEventsOnly = PortletRequestUtils.getBooleanParameter(request, WebKeys.CALENDAR_EVENTS_ONLY, false);
-			
-			
+			String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");
+						
 			Map options = new HashMap();
 			boolean eventsByEntry = PortletRequestUtils.getBooleanParameter(request, "ssEntryEvents", false);
 			if (eventsByEntry) {
@@ -2621,12 +2620,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 						// Search for the events that are calendar
 						// entries.
 						ModeType modeType = (virtual ? ModeType.VIRTUAL : ModeType.PHYSICAL); 
+						if (calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
+							//This is a request for calendar events for the current user
+							modeType = ModeType.MY_EVENTS;
+						}
 						Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
 						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						
 						// Are we searching for virtual events?
-						if (virtual && !calendarEventsOnly) {
+						if (virtual && !calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
 							// Yes!  Search for the events that are
 							// task entries...
 							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
