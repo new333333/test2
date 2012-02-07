@@ -1065,6 +1065,7 @@ public class TaskFolderWidget extends VibeWidget
 				HTMLTable.RowFormatter rowFormatter;
 
 				m_tasksTable = new FlexTable();
+				m_tasksTable.setWidth( "100%" );
 				m_tasksTable.setCellSpacing( 0 );
 			
 				// Add the column headers.
