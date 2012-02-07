@@ -35,13 +35,17 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSignGuestbookUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -83,10 +87,10 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_GUEST,            new ColumnWidth(20));
+		columnWidths.put(ColumnWidth.COLUMN_GUEST,            new ColumnWidth(15));
 		columnWidths.put(ColumnWidth.COLUMN_TITLE,            new ColumnWidth(20));
-		columnWidths.put(ColumnWidth.COLUMN_DATE,             new ColumnWidth(15));
-		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION_HTML, new ColumnWidth(45));
+		columnWidths.put(ColumnWidth.COLUMN_DATE,             new ColumnWidth(10));
+		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION_HTML, new ColumnWidth(55));
 	}
 
 	/**
@@ -227,6 +231,13 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	 * Synchronously launches the UI to sign the guest book.
 	 */
 	private void signGuestbookNow() {
-		GwtClientHelper.jsLaunchToolbarPopupUrl(m_signGuestBookUrl, 800, 450);
+		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+			m_signGuestBookUrl,
+			false,	// false -> Not trash.
+			Instigator.GOTO_CONTENT_URL);
+		
+		if (GwtClientHelper.validateOSBI(osbInfo)) {
+			GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+		}
 	}
 }

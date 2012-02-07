@@ -42,6 +42,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class GuestInfo implements IsSerializable {
+	public Long   m_userId;			//
 	public String m_avatarUrl;		//
 	public String m_emailAddress;	//
 	public String m_profileUrl;		//
@@ -61,16 +62,18 @@ public class GuestInfo implements IsSerializable {
 	/**
 	 * Constructor method.
 	 * 
+	 * @param userId
 	 * @param avatarUrl
 	 * @param emailAddress
 	 * @param profileUrl
 	 * @param title
 	 */
-	public GuestInfo(String avatarUrl, String emailAddress, String profileUrl, String title) {
+	public GuestInfo(Long userId, String avatarUrl, String emailAddress, String profileUrl, String title) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
+		setUserId(      userId      );
 		setAvatarUrl(   avatarUrl   );
 		setEmailAddress(emailAddress);
 		setProfileUrl(  profileUrl  );
@@ -82,6 +85,7 @@ public class GuestInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public Long   getUserId()       {return m_userId;      }
 	public String getAvatarUrl()    {return m_avatarUrl;   }
 	public String getEmailAddress() {return m_emailAddress;}
 	public String getProfileUrl()   {return m_profileUrl;  }
@@ -92,6 +96,7 @@ public class GuestInfo implements IsSerializable {
 	 * 
 	 * @param
 	 */
+	public void setUserId(      Long   userId)       {m_userId       = userId;      }
 	public void setAvatarUrl(   String avatarUrl)    {m_avatarUrl    = avatarUrl;   }
 	public void setEmailAddress(String emailAddress) {m_emailAddress = emailAddress;}
 	public void setProfileUrl(  String profileUrl)   {m_profileUrl   = profileUrl;  }

@@ -55,6 +55,7 @@ public class VibeDataTableConstants {
 	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE		= "entryUnseenImg";
 	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR		= "entryViewAnchor";
 	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL			= "entryViewLabel";
+	public final static String CELL_WIDGET_GUEST_AVATAR				= "guestAvatar";
 	public final static String CELL_WIDGET_PRESENCE					= "presenceControl";
 	public final static String CELL_WIDGET_PRESENCE_LABEL			= "presenceLabel";
 	public final static String CELL_WIDGET_TASK_FOLDER				= "taskFolder";
