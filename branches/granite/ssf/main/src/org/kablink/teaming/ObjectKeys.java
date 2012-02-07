@@ -250,6 +250,10 @@ public interface ObjectKeys {
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
     public static final String GLOBAL_PROPERTY_DEFAULT_TIME_ZONE = "defaultTimeZone";
 
+    public static final String CALENDAR_MODE_TYPE_PHYSICAL = "physical";
+    public static final String CALENDAR_MODE_TYPE_VIRTUAL = "virtual";
+    public static final String CALENDAR_MODE_TYPE_MY_EVENTS = "myEvents";
+
     public static final String CONFIG_PROPERTY_REPOSITORY = "repository";
     public static final String CONFIG_PROPERTY_REPOSITORIES = "repositories";
 

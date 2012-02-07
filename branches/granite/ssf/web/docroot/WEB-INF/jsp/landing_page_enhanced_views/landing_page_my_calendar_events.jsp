@@ -102,7 +102,7 @@ ss_calendar_${prefix} = ss_calendar.createCalendar({
 								"none",
 								"${ssBinder.id}_${componentId}",
 								true,
-								true), 
+								"myEvents"), 
     defaultCalendarId: "<c:choose><c:when test="${defaultCalendarId != ''}">${defaultCalendarId}</c:when><c:otherwise>${ssBinder.id}</c:otherwise></c:choose>",
     weekFirstDayDefault:  "${ssUser.weekFirstDayDefault}",
     <c:if test="${empty ssUserProperties.calendarFirstDayOfWeek}">
@@ -148,7 +148,7 @@ ss_calendar_${prefix} = ss_calendar.createCalendar({
 		}
 	},
 	stickyId : "${ssBinder.id}_${componentId}",
-	calendarEventsOnly : true
+	calendarModeType : "myEvents"
 });
 
 ss_calendar_${prefix}.locale.workDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";

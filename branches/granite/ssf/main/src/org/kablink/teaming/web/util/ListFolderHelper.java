@@ -158,7 +158,7 @@ public class ListFolderHelper {
 	public static final String[] folderColumns= new String[] {"number", "title", "comments", "size", "download", "html", "state", "author", "date", "rating"};
 
 	public enum ModeType {
-		PHYSICAL, VIRTUAL;
+		PHYSICAL, VIRTUAL, MY_EVENTS;
 	}
 	public static final ModeType MODE_TYPE_DEFAULT = ModeType.PHYSICAL;
 

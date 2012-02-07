@@ -314,8 +314,11 @@ public class EventHelper {
      * 
      * @return
      */
-	public static SearchFilter buildSearchFilter(Document baseFilter, PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, SearchUtils.AssigneeType assigneeType) {
+	public static SearchFilter buildSearchFilter(Document baseFilter, PortletRequest request, 
+			ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, 
+			SearchUtils.AssigneeType assigneeType) {
 		SearchFilter searchFilter;
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		// Are we only showing events assigned to something?
 		if (ListFolderHelper.ModeType.VIRTUAL == modeType) {
@@ -343,8 +346,21 @@ public class EventHelper {
 				"",	// No special 'group assignee' setup required.
 				searchAsTeam,
 				assigneeType);
-		}
-		else {
+			
+		} else if (ListFolderHelper.ModeType.MY_EVENTS == modeType) {
+  		   	String searchAsUser = String.valueOf(user.getId());
+  			searchFilter = new SearchFilter(true);
+  		   	
+  		   	// Setup the assignees to search for.
+			SearchUtils.setupAssignees(
+				searchFilter,
+				null,	// null -> No model.
+				searchAsUser,
+				"",	// No special 'group assignee' setup required.
+				"",	// No special 'team assignee' setup required.
+				assigneeType);
+			
+		} else {
 			// No, we are showing physical events!
 			String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
 			searchFilter = new SearchFilter();
