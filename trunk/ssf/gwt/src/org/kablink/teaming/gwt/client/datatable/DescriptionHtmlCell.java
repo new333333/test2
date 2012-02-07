@@ -33,15 +33,14 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
  * Data table cell that represents a description in HTML format.
@@ -53,78 +52,9 @@ public class DescriptionHtmlCell extends AbstractCell<DescriptionHtml> {
 	 * Constructor method.
 	 */
 	public DescriptionHtmlCell() {
-		/*
-		 * Sink the events we need to process an HTML description.
-	     */
-		super(
-			VibeDataTableConstants.CELL_EVENT_CLICK,
-			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
-			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
-			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+		// Nothing to do.
 	}
 
-	/**
-     * Called when an event occurs in a rendered instance of this
-     * cell.  The parent element refers to the element that contains
-     * the rendered cell, NOT to the outermost element that the cell
-     * rendered.
-     * 
-     * @param context
-     * @param parent
-     * @param fileId
-     * @param event
-     * @param valueUpdater
-     * 
-     * Overrides AbstractCell.onBrowserEvent()
-     */
-    @Override
-    public void onBrowserEvent(Context context, Element parent, DescriptionHtml fileId, NativeEvent event, ValueUpdater<DescriptionHtml> valueUpdater) {
-    	// Which of our description widgets is being operated on? 
-		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
-		boolean isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_LABEL ));
-
-		// What type of event are we processing?
-    	String eventType = event.getType();
-    	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
-        	// A key down!  Let AbstractCell handle it.  It will
-    		// convert it to an entry key down, ... as necessary.
-        	super.onBrowserEvent(context, parent, fileId, event, valueUpdater);
-    	}
-
-    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
-    		// A click!  Is it the label being clicked?
-    		if (isLabel) {
-    			// Yes!  Strip off any over style.
-    			eventTarget.removeClassName("vibe-dataTableLink-hover");
-//!				...this needs to be implemented...
-    		}
-    	}
-    	
-    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
-    		// A mouse over!  Add the hover style.
-			eventTarget.addClassName("vibe-dataTableLink-hover");
-    	}
-    	
-    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
-    		// A mouse out!  Remove the hover style.
-			eventTarget.removeClassName("vibe-dataTableLink-hover");
-    	}
-    }
-    
-    /**
-     * Called when the user presses the ENTER key will the cell is
-     * selected.  You are not required to override this method, but
-     * it's a common convention that allows your cell to respond to key
-     * events.
-     * 
-     * Overrides AbstractCell.onEnterKeyDown()
-     */
-    @Override
-    protected void onEnterKeyDown(Context context, Element parent, DescriptionHtml value, NativeEvent event, ValueUpdater<DescriptionHtml> valueUpdater) {
-//!		...this needs to be implemented...
-    }
-    
 	/**
 	 * Called to render an instance of this cell.
 	 * 
@@ -136,8 +66,9 @@ public class DescriptionHtmlCell extends AbstractCell<DescriptionHtml> {
 	 */
 	@Override
 	public void render(Context context, DescriptionHtml dh, SafeHtmlBuilder sb) {
-		// If we weren't given a single fileId...
-		if (null == dh) {
+		// If we don't have any HTML to render...
+		String html = ((null == dh) ? null : dh.getDescription());
+		if (!(GwtClientHelper.hasString(html))) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
@@ -146,8 +77,17 @@ public class DescriptionHtmlCell extends AbstractCell<DescriptionHtml> {
 
 		// Create the description widgets...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		
-//!		...this needs to be implemented...
+		if (dh.isHtml()) {
+			VibeFlowPanel htmlDIV = new VibeFlowPanel();
+			htmlDIV.addStyleName("vibe-dataTableDescription-html");
+			htmlDIV.getElement().setInnerHTML(html);
+			fp.add(htmlDIV);
+		}
+		else {
+			InlineLabel plainTextSPAN = new InlineLabel(html);
+			plainTextSPAN.addStyleName("vibe-dataTableDescription-span");
+			fp.add(plainTextSPAN);
+		}
 		
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());

@@ -1417,4 +1417,5 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the guest book folder.
 	String guestBook_Error_CouldNotGetSigningURL();
+	String guestBook_GotoProfile();
 }// end GwtTeamingMessages

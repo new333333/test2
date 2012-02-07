@@ -712,7 +712,7 @@ public class GwtViewHelper {
 			else if (colName.equals("descriptionHtml")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
 			else if (colName.equals("download"))        {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
 			else if (colName.equals("dueDate"))         {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
-			else if (colName.equals("guest"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                                                                  }
+			else if (colName.equals("guest"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("html"))            {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
 			else if (colName.equals("location"))        {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
 			else if (colName.equals("number"))          {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
@@ -1682,6 +1682,7 @@ public class GwtViewHelper {
 								// Yes!  Use the principal to generate
 								// a GuestInfo for the column.
 								gi = new GuestInfo(
+									pId,
 									getUserAvatarUrl(bs, request, p),
 									p.getEmailAddress(),
 									PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)),

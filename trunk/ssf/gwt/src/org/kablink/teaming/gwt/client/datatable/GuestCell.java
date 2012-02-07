@@ -32,7 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -42,6 +46,9 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 /**
  * Data table cell that represents a signer of a guest book.
@@ -49,6 +56,66 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
  * @author drfoster@novell.com
  */
 public class GuestCell extends AbstractCell<GuestInfo> {
+	/*
+	 * Inner class used to encapsulate information about an event
+	 * received by an GuestCell.
+	 */
+	private static class EventInfo {
+		private boolean	m_isGuestAvatar;		//
+		private int		m_stepsToTD;			//
+		private String	m_eventTag        = "";	//
+		private String	m_widgetAttribute = "";	//
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param parent
+		 * @param event
+		 */
+		public EventInfo(Element parent, NativeEvent event) {
+			// Scan up the event element's parentage until we find
+			// a <TD>.
+			Element eventTarget = Element.as(event.getEventTarget());
+			m_eventTag          = eventTarget.getTagName();
+			while (!(m_eventTag.equalsIgnoreCase("td"))) {
+				// Is this one of our GuestCell widgets?
+				m_widgetAttribute = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+				if ((null != m_widgetAttribute) && (0 < m_widgetAttribute.length())) {
+					// Yes!  Is it the guest avatar?
+					m_isGuestAvatar = m_widgetAttribute.equals(VibeDataTableConstants.CELL_WIDGET_GUEST_AVATAR);
+					break;
+				}
+
+				// We haven't found a GuestCell widget yet.  Move up
+				// a level.
+				m_stepsToTD += 1;
+				eventTarget  = eventTarget.getParentElement();
+				m_eventTag   = eventTarget.getTagName();
+			}
+			
+			// debugDump();
+		}
+		
+		/*
+		 * Displays the contents of the EventInfo in an alert().
+		 */
+		@SuppressWarnings("unused")
+		private void debugDump() {
+			Window.alert(
+				  "T:" + m_eventTag        +
+				", A:" + m_isGuestAvatar   +
+				", W:" + m_widgetAttribute +
+				", S:" + m_stepsToTD);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isGuestAvatar() {return m_isGuestAvatar;}
+	}
+	
 	/**
 	 * Constructor method.
 	 */
@@ -71,45 +138,45 @@ public class GuestCell extends AbstractCell<GuestInfo> {
      * 
      * @param context
      * @param parent
-     * @param fileId
+     * @param gi
      * @param event
      * @param valueUpdater
      * 
      * Overrides AbstractCell.onBrowserEvent()
      */
     @Override
-    public void onBrowserEvent(Context context, Element parent, GuestInfo fileId, NativeEvent event, ValueUpdater<GuestInfo> valueUpdater) {
-    	// Which of our signer widgets is being operated on? 
-		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
-		boolean isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_VIEW_LABEL ));
-
-		// What type of event are we processing?
+    public void onBrowserEvent(Context context, Element parent, GuestInfo gi, NativeEvent event, ValueUpdater<GuestInfo> valueUpdater) {
+		// If we're processing a key down event...
     	String eventType = event.getType();
     	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
-        	// A key down!  Let AbstractCell handle it.  It will
-    		// convert it to an entry key down, ... as necessary.
-        	super.onBrowserEvent(context, parent, fileId, event, valueUpdater);
-    	}
-
-    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
-    		// A click!  Is it the label being clicked?
-    		if (isLabel) {
-    			// Yes!  Strip off any over style.
-    			eventTarget.removeClassName("vibe-dataTableLink-hover");
-//!				...this needs to be implemented...
-    		}
+        	// ...let AbstractCell handle it.  It will convert it to an
+    		// ...entry key down, ... as necessary.
+        	super.onBrowserEvent(context, parent, gi, event, valueUpdater);
+        	return;
     	}
     	
-    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
-    		// A mouse over!  Add the hover style.
-			eventTarget.addClassName("vibe-dataTableLink-hover");
-    	}
-    	
-    	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
-    		// A mouse out!  Remove the hover style.
-			eventTarget.removeClassName("vibe-dataTableLink-hover");
-    	}
+    	// Is this a guest avatar being operated on? 
+		Element eventTarget = Element.as(event.getEventTarget());
+		EventInfo ei = new EventInfo(parent, event);
+		if (ei.isGuestAvatar()) {
+			// Yes!  What event is being processed?
+	    	if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
+	    		// A click!  Strip off any over style and invoke the
+	    		// user profile page on that guest.
+    			eventTarget.removeClassName("vibe-dataTableGuest-avatarHover");
+    			GwtTeaming.fireEvent(new GotoContentUrlEvent(gi.getProfileUrl()));
+	    	}
+	    	
+	    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
+	    		// A mouse over!  Add the hover style.
+				eventTarget.addClassName("vibe-dataTableGuest-avatarHover");
+	    	}
+	    	
+	    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
+	    		// A mouse out!  Remove the hover style.
+				eventTarget.removeClassName("vibe-dataTableGuest-avatarHover");
+	    	}
+		}
     }
     
     /**
@@ -117,12 +184,22 @@ public class GuestCell extends AbstractCell<GuestInfo> {
      * selected.  You are not required to override this method, but
      * it's a common convention that allows your cell to respond to key
      * events.
+     *
+     * @param context
+     * @param parent
+     * @param gi
+     * @param event
+     * @param valueUpdater
      * 
      * Overrides AbstractCell.onEnterKeyDown()
      */
     @Override
-    protected void onEnterKeyDown(Context context, Element parent, GuestInfo value, NativeEvent event, ValueUpdater<GuestInfo> valueUpdater) {
-//!		...this needs to be implemented...
+    protected void onEnterKeyDown(Context context, Element parent, GuestInfo gi, NativeEvent event, ValueUpdater<GuestInfo> valueUpdater) {
+    	// If the key down is targeting a guest avatar...
+		if (new EventInfo(parent, event).isGuestAvatar()) {
+			// ...invoke the user profile page on that guest.
+			GwtTeaming.fireEvent(new GotoContentUrlEvent(gi.getProfileUrl()));
+		}
     }
     
 	/**
@@ -136,21 +213,54 @@ public class GuestCell extends AbstractCell<GuestInfo> {
 	 */
 	@Override
 	public void render(Context context, GuestInfo gi, SafeHtmlBuilder sb) {
-		// If we weren't given a single fileId...
+		// If we done have a guest...
 		if (null == gi) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
 			return;
 		}
-
-		// Create the guest booker signer widgets...
-		VibeFlowPanel fp = new VibeFlowPanel();
 		
-//!		...this needs to be implemented...
+		// Create a panel to render the guest book signer widgets
+		// into...
+		VibeFlowPanel htmlPanel = new VibeFlowPanel();
+
+		// ...add the avatar link...
+		Image avatarImg = new Image();
+		avatarImg.addStyleName("vibe-dataTableGuest-avatar");
+		if (GwtClientHelper.hasString(gi.getProfileUrl())) {
+			avatarImg.getElement().setAttribute(
+				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
+				VibeDataTableConstants.CELL_WIDGET_GUEST_AVATAR);
+		}
+		String avatarUrl = gi.getAvatarUrl();
+		if (!(GwtClientHelper.hasString(avatarUrl)))
+		     avatarImg.setUrl(GwtTeaming.getDataTableImageBundle().userPhoto().getSafeUri());
+		else avatarImg.setUrl(avatarUrl);
+		GwtTeamingMessages messages = GwtTeaming.getMessages();
+		avatarImg.setTitle(messages.guestBook_GotoProfile());
+		htmlPanel.add(avatarImg);
+
+		// ...add the information widgets...
+		VibeFlowPanel infoPanel = new VibeFlowPanel();
+		infoPanel.addStyleName("vibe-dataTableGuest-info");
+		String s = gi.getTitle();
+		if (!(GwtClientHelper.hasString(s))) {
+			s = messages.noTitle();
+		}
+		Label l = new Label(s);
+		l.addStyleName("vibe-dataTableGuest-infoTitle");
+		infoPanel.add(l);		
+		s = gi.getEmailAddress();
+		if (GwtClientHelper.hasString(s)) {
+			l = new Label(s);
+			l.addStyleName("vibe-dataTableGuest-infoEMA");
+			infoPanel.add(l);
+		}
+		htmlPanel.add(infoPanel);
 		
 		// ...and render that into the cell.
-		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
+		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(htmlPanel.getElement().getInnerHTML());
 		sb.append(rendered);
 	}
 }

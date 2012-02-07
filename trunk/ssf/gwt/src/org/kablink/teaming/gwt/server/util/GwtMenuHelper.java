@@ -390,6 +390,7 @@ public class GwtMenuHelper {
 		
 		// Is the folder other than a mirrored folder or is it a
 		// mirrored folder that can be written to?
+		boolean hasVT = MiscUtil.hasString(viewType);
 		AdaptedPortletURL url;
 		if ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) {
 			// Yes!  Does the folder support more than one entry type?
@@ -429,8 +430,9 @@ public class GwtMenuHelper {
 			}
 				
 			// No, the folder doesn't support more than one entry type!
-			// Does it support one and only one entry type?
-			else if (1 == defaultEntryDefs) {
+			// Does it support one and only one entry type and the
+			// folder is other than a guest book?
+			else if ((1 == defaultEntryDefs) && ((!hasVT) || (!(viewType.equals(Definition.VIEW_STYLE_GUESTBOOK))))) {
 				// Yes!  Define the toolbar item for it.
 				Definition def = (Definition) defaultEntryDefinitions.get(0);
 				url = createActionUrl(request);
@@ -449,7 +451,7 @@ public class GwtMenuHelper {
 			}
 		}
 
-		if (MiscUtil.hasString(viewType)) {
+		if (hasVT) {
 			BinderModule bm = bs.getBinderModule();
 			TemplateModule tm = bs.getTemplateModule();
 			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
@@ -1588,6 +1590,7 @@ public class GwtMenuHelper {
 				((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
 				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
+				  viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)  ||
 				  viewType.equals(Definition.VIEW_STYLE_MILESTONE)  ||
 				  viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
 				  viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
@@ -1659,14 +1662,22 @@ public class GwtMenuHelper {
 					// folder?
 					FolderModule fm			= bs.getFolderModule();
 					String       viewType	= DefinitionUtils.getViewType(folder);
-					boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry); 
+					boolean      hasVT      = MiscUtil.hasString(viewType);
+					boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry);
+					
+					// Can the user can add entries to the folder?
 					if (addAllowed) {				
-						// Yes!  Add the necessary 'add entry' items.
+						// Yes!  If the folder is a guest book...
+						if (hasVT && viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)) {
+							// ...construct a sign the guest book item.
+							constructEntrySignTheGuestbookItem(entryToolbar, bs, request, folder);
+						}
+					
+						// ...and add the necessary 'add entry' items.
 						constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
 					}
 		
 					// Can we determine the folder's view type?
-					boolean hasVT = MiscUtil.hasString(viewType);
 					if (hasVT) {
 						// Yes!  Is it a blog or photo album?
 						if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
@@ -1693,12 +1704,6 @@ public class GwtMenuHelper {
 					// Construct the various items that appear in the
 					// more drop down.
 					constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
-					
-					// If the folder is a guest book...
-					if (hasVT && addAllowed && viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)) {
-						// ...construct a sign the guest book item.
-						constructEntrySignTheGuestbookItem(entryToolbar, bs, request, folder);
-					}
 				}
 			}
 
