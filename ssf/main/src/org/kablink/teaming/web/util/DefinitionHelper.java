@@ -799,6 +799,7 @@ public class DefinitionHelper {
 		Map mashupBinderEntries = new HashMap();
 		List mashupMyCalendarEntries = new ArrayList();
 		List mashupMyTaskEntries = new ArrayList();
+		Map mashupMyTaskBinders = new HashMap();
     	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value");
     	if (nodes == null) {
     		return;
@@ -1009,7 +1010,22 @@ public class DefinitionHelper {
 	        				Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
         					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
-        					mashupViewType = ObjectKeys.MASHUP_VIEW_TYPE_MY_TASKS;
+
+        					//Get the task binders so the title can be shown
+    				    	Iterator it2 = mashupMyTaskEntries.iterator();
+    				    	while (it2.hasNext()) {
+    				    		Map entry = (Map)it2.next();
+    							String id = (String)entry.get(Constants.BINDER_ID_FIELD);
+    							if (id != null && !mashupMyTaskBinders.containsKey(id)) {
+    								Long bId = new Long(id);
+    								try {
+    									Binder place = bs.getBinderModule().getBinder(bId);
+    									mashupMyTaskBinders.put(id, place);
+    								} catch(Exception e) {}
+    							}
+    				    	}
+
+        			    	mashupViewType = ObjectKeys.MASHUP_VIEW_TYPE_MY_TASKS;
 	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
@@ -1175,6 +1191,7 @@ public class DefinitionHelper {
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_MY_CALENDAR_ENTRIES, mashupMyCalendarEntries);
     	model.put(WebKeys.MASHUP_MY_TASK_ENTRIES, mashupMyTaskEntries);
+    	model.put(WebKeys.MASHUP_MY_TASK_BINDERS, mashupMyTaskBinders);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
     	model.put(WebKeys.MASHUP_ENTRY_REPLIES, mashupEntryReplies);
     	String style = (String) model.get(WebKeys.MASHUP_STYLE);
