@@ -113,6 +113,30 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	}
 	
 	/**
+	 * Add a footer to this page.
+	 */
+	private void addFooter()
+	{
+		if ( m_binderInfo != null )
+		{
+			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ToolPanelBase tpb )
+				{
+					m_mainPanel.add( tpb );
+				}
+			} );
+		}
+	}
+	
+	/**
 	 * Build this landing page for the given ConfigData.
 	 */
 	private void buildLandingPage( ConfigData configData )
@@ -193,28 +217,12 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 			{
 				// Add the landing page widget to the page.
 				m_mainPanel.add( lpWidget );
+
+				// Add the footer to the page
+				addFooter();
 			}
 		} );
 
-		// Add the footer to the page
-		if ( m_binderInfo != null )
-		{
-			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					m_mainPanel.add( tpb );
-				}
-			} );
-		}
-		
 		// Tell the base class that we're done constructing the landing
 		// page view.
 		if ( configData.isPreviewMode() == false )
