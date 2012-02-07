@@ -690,6 +690,8 @@ public abstract class WSClientBase {
 			System.out.println("Team " + i + " title: " + fb[i].getTitle());
 			System.out.println("Team " + i + " family: " + fb[i].getFamily());
 			System.out.println("Team " + i + " definitionType: " + fb[i].getDefinitionType());
+			System.out.println("Team " + i + " path: " + fb[i].getPath());
+			System.out.println("Team " + i + " permalink: " + fb[i].getPermaLink());
 		}
 	}
 	
