@@ -49,7 +49,7 @@ var calendarNav_DateFormat = "medium";
 // they all can't be displayed in the calendar grid.
 var moreEventsDIVWidth = 150;
 
-function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard, calendarEventsOnly) {
+function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard, calendarModeType) {
 	
 	var binderId = binderId;
 	
@@ -58,7 +58,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 	var stickyId = stickyId;
 	
 	var isDashboard = (typeof isDashboard != "undefined")?isDashboard:false;
-	var calendarEventsOnly = (typeof calendarEventsOnly != "undefined")?calendarEventsOnly:false;
+	var calendarModeType = (typeof calendarModeType != "undefined")?calendarModeType:"";
 	
 	function mergeObj(dest, src) {
 		if (typeof dest == "undefined" || typeof src == "undefined") {
@@ -78,7 +78,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard,
 										binderIds: calendarIds,
 										ssDashboardRequest: isDashboard,
 										calendarStickyId: stickyId, 
-										calendarEventsOnly: calendarEventsOnly},
+										calendarModeType: calendarModeType},
 										reqParams)),
 			handleAs: "json-comment-filtered",
 			error: function(err) {
