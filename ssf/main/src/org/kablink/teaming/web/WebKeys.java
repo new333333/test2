@@ -1076,6 +1076,7 @@ public class WebKeys {
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
     public static final String MASHUP_MY_CALENDAR_ENTRIES="ss_mashupMyCalendarEntries"; 
     public static final String MASHUP_MY_TASK_ENTRIES="ss_mashupMyTaskEntries"; 
+    public static final String MASHUP_MY_TASK_BINDERS="ss_mashupMyTaskBinders"; 
     public static final String MASHUP_CSS="ss_mashupCss"; 
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
     public static final String MASHUP_ENTRY_REPLIES="ss_mashupEntryReplies";
