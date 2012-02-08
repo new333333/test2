@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -67,6 +69,13 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
+	/*
+	 * Called to invoke the full user profile on the principal.
+	 */
+	private void invokeFullProfile(PrincipalInfo pi, Element pElement) {
+		GwtTeaming.fireEvent(new GotoContentUrlEvent(pi.getUserProfileUrl()));
+	}
+	
 	/*
 	 * Called to invoke the simple profile dialog on the principal's
 	 * presence.
@@ -118,7 +127,10 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
     		}
     		
     		// Ignore clicks that occur outside of the outermost element.
-    		if (isLabel || isPresence) {
+    		if (isLabel && (!(pi.isUserHasWS()))) {
+    			invokeFullProfile(pi, eventTarget);
+    		}
+    		else if (isLabel || isPresence) {
     			// Invoke the Simple Profile dialog.
     			invokeSimpleProfile(pi, eventTarget);
     		}
@@ -144,8 +156,20 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
      * Overrides AbstractCell.onEnterKeyDown()
      */
     @Override
-    protected void onEnterKeyDown(Context context, Element parent, PrincipalInfo value, NativeEvent event, ValueUpdater<PrincipalInfo> valueUpdater) {
-    	invokeSimpleProfile(value, Element.as(event.getEventTarget()));
+    protected void onEnterKeyDown(Context context, Element parent, PrincipalInfo pi, NativeEvent event, ValueUpdater<PrincipalInfo> valueUpdater) {
+		Element eventTarget = Element.as(event.getEventTarget());
+		boolean isPresence = (parent.getFirstChildElement().isOrHasChild(eventTarget));
+		boolean isLabel    = (!isPresence);
+		if (isLabel) {
+			String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+			isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL));
+		}
+		if (isLabel && (!(pi.isUserHasWS()))) {
+			invokeFullProfile(pi, eventTarget);
+		}
+		else if (isLabel || isPresence) {
+			invokeSimpleProfile(pi, eventTarget);
+		}
     }
     
 	/**
@@ -180,7 +204,9 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		// ...add a name link for it...
 		Label presenceLabel = new Label(pi.getTitle());
 		presenceLabel.addStyleName("vibe-dataTablePresence-label vibe-dataTablePresence-enabled");
-		presenceLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL);
+		if (!(pi.isUserWSInTrash())) {
+			presenceLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL);
+		}
 		fp.add(presenceLabel);
 		
 		// ...and render that into the cell.
