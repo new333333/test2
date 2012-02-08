@@ -57,7 +57,7 @@
 	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
 	String multiple = (String) request.getAttribute("property_multipleAllowed");
 	if (multiple != null && multiple.equals("true")) {
-		multiple = "multiple";
+		multiple = " multiple ";
 	} else {
 		multiple = "";
 	}
@@ -65,7 +65,7 @@
 	if (size == null || size.equals("")) {
 		size = "";
 	} else {
-		size = "size='" + size + "'";
+		size = " size='" + size + "' ";
 	}
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}
