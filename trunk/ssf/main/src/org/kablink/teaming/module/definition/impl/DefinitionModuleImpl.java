@@ -1143,7 +1143,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("textarea")) {
 							newPropertyEle.setText(value);
 						} else if (type.equals("integer")) {
-							if (!value.matches("^[0-9]+$")) {
+							if (!value.equals("") && !value.matches("^[0-9]+$")) {
 								//The value is not a valid integer
 								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {value, configProperty.attributeValue("caption")});
 							}
