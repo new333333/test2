@@ -132,6 +132,7 @@ import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
@@ -987,6 +988,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gmbuCmd = (GetModifyBinderUrlCmd) cmd;
 			url = getModifyBinderUrl( ri, gmbuCmd.getBinderId() );
 			responseData = new StringRpcResponseData( url );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_MY_TASKS:
+		{
+			List<TaskInfo> results;
+			TaskInfoListRpcResponseData responseData;
+
+			results = getMyTasks();
+			responseData = new TaskInfoListRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -4674,6 +4686,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtServerHelper.getFavorites( this );
 	}// end getFavorites()
 	
+	/*
+	 * Return a list of all the tasks assigned to the logged in user.
+	 */
+	private List<TaskInfo> getMyTasks()
+	{
+		SimpleProfiler.start( "GwtRpcServiceImpl.getMyTasks()" );
+		try
+		{
+			return GwtTaskHelper.getMyTasks( this );
+		}
+		finally
+		{
+			SimpleProfiler.stop( "GwtRpcServiceImpl.getMyTasks()" );
+		}
+	}
+
 	/**
 	 * Returns information about the teams the current user is a member
 	 * of.
