@@ -142,12 +142,13 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * 
 	 * @return
 	 */
-	final public BinderInfo                       getFolderInfo()        {return m_folderInfo;                    }	// The binder being viewed.
-	final public boolean                          isTrash()              {return m_folderInfo.isBinderTrash();    } //
-	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;             }	//
-	final public List<ToolPanelBase>              getToolPanels()        {return m_toolPanels;                    }	//
-	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();}	//
-	final public VibeFlowPanel                    getFlowPanel()         {return m_flowPanel;                     }	// Flow panel holding the view's content (no toolbars, ...)
+	final public BinderInfo                       getFolderInfo()        {return m_folderInfo;                         }	// The binder being viewed.
+	final public boolean                          isProfilesRootWS()     {return m_folderInfo.isBinderProfilesRootWS();}	//
+	final public boolean                          isTrash()              {return m_folderInfo.isBinderTrash();         }	//
+	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;                  }	//
+	final public List<ToolPanelBase>              getToolPanels()        {return m_toolPanels;                         }	//
+	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();     }	//
+	final public VibeFlowPanel                    getFlowPanel()         {return m_flowPanel;                          }	// Flow panel holding the view's content (no toolbars, ...)
 
 	/*
 	 * Returns a Widget to use for tool panels that aren't used.
@@ -589,16 +590,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the display data information for the folder.
 	 */
 	private void loadPart7Now() {
-		final Long folderId = m_folderInfo.getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderDisplayDataCmd(folderId, isTrash()),
+				new GetFolderDisplayDataCmd(m_folderInfo),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetFolderDisplayData(),
-					folderId);
+					m_folderInfo.getBinderIdAsLong());
 			}
 			
 			@Override

@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'save column widths' command.
@@ -41,8 +43,7 @@ import java.util.Map;
  * @author drfoster@novell.com
  */
 public class SaveColumnWidthsCmd extends VibeRpcCmd {
-	private boolean				m_trashColumns;	//
-	private Long				m_folderId;		//
+	private BinderInfo			m_folderInfo;	//
 	private Map<String, String>	m_columnWidths;	//
 	
 	/**
@@ -58,18 +59,16 @@ public class SaveColumnWidthsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param folderId
+	 * @param folderInfo
 	 * @param columnWidths
-	 * @param trashColumns
 	 */
-	public SaveColumnWidthsCmd(Long folderId, Map<String, String> columnWidths, boolean trashColumns) {
+	public SaveColumnWidthsCmd(BinderInfo folderInfo, Map<String, String> columnWidths) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameters.
-		setFolderId(    folderId    );
+		setFolderInfo(  folderInfo  );
 		setColumnWidths(columnWidths);
-		setTrashColumns(trashColumns);
 	}
 
 	/**
@@ -77,8 +76,7 @@ public class SaveColumnWidthsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean             getTrashColumns() {return m_trashColumns;}
-	public Long                getFolderId()     {return m_folderId;    }
+	public BinderInfo          getFolderInfo()   {return m_folderInfo;  }
 	public Map<String, String> getColumnWidths() {return m_columnWidths;}
 	
 	/**
@@ -86,8 +84,7 @@ public class SaveColumnWidthsCmd extends VibeRpcCmd {
 	 * 
 	 * @param
 	 */
-	public void setTrashColumns(boolean             trashColumns) {m_trashColumns = trashColumns;}
-	public void setFolderId(    Long                folderId)     {m_folderId     = folderId;    }
+	public void setFolderInfo(  BinderInfo          folderInfo)   {m_folderInfo   = folderInfo;  }
 	public void setColumnWidths(Map<String, String> columnWidths) {m_columnWidths = columnWidths;}
 	
 	/**

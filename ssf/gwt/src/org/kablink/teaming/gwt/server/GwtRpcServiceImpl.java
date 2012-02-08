@@ -545,8 +545,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ColumnWidthsRpcResponseData result = GwtViewHelper.getColumnWidths(
 				this,
 				getRequest( ri ),
-				gcwCmd.getFolderId(),
-				gcwCmd.getTrashColumns() );
+				gcwCmd.getFolderInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -744,8 +743,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			FolderColumnsRpcResponseData responseData = GwtViewHelper.getFolderColumns(
 				this,
 				getRequest( ri ),
-				gfcCmd.getFolderId(),
-				gfcCmd.getFolderType(),
+				gfcCmd.getFolderInfo(),
 				gfcCmd.isIncludeConfigurationInfo() );
 			return new VibeRpcResponse( responseData );
 		}
@@ -756,8 +754,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			FolderDisplayDataRpcResponseData responseData = GwtViewHelper.getFolderDisplayData(
 				this,
 				getRequest( ri ),
-				gfddCmd.getFolderId(),
-				gfddCmd.getTrashFolder() );
+				gfddCmd.getFolderInfo() );
 			return new VibeRpcResponse( responseData );
 		}
 		
@@ -780,8 +777,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			FolderRowsRpcResponseData responseData = GwtViewHelper.getFolderRows(
 				this,
 				getRequest( ri ),
-				gfrCmd.getFolderId(),
-				gfrCmd.getFolderType(),
+				gfrCmd.getFolderInfo(),
 				gfrCmd.getFolderColumns(),
 				gfrCmd.getStart(),
 				gfrCmd.getLength() );
@@ -795,7 +791,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetToolbarItemsRpcResponseData responseData;
 			
 			gftiCmd = ((GetFolderToolbarItemsCmd) cmd);
-		    result = GwtMenuHelper.getFolderToolbarItems( this, getRequest( ri ), gftiCmd.getFolderId(), gftiCmd.getFolderType() );
+		    result = GwtMenuHelper.getFolderToolbarItems( this, getRequest( ri ), gftiCmd.getFolderInfo() );
 			responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1644,9 +1640,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			BooleanRpcResponseData result = GwtViewHelper.saveColumnWidths(
 				this,
 				getRequest( ri ),
-				scwCmd.getFolderId(),
-				scwCmd.getColumnWidths(),
-				scwCmd.getTrashColumns() );
+				scwCmd.getFolderInfo(),
+				scwCmd.getColumnWidths() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

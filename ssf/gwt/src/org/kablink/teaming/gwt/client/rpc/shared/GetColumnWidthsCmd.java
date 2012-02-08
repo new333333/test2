@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'get column widths' command.
@@ -39,8 +41,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class GetColumnWidthsCmd extends VibeRpcCmd {
-	private boolean	m_trashColumns;	//
-	private Long	m_folderId;		//
+	private BinderInfo	m_folderInfo;	//
 	
 	/**
 	 * Constructor method.
@@ -55,15 +56,14 @@ public class GetColumnWidthsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param folderId
+	 * @param folderInfo
 	 */
-	public GetColumnWidthsCmd(Long folderId, boolean trashColumns) {
+	public GetColumnWidthsCmd(BinderInfo folderInfo) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameter.
-		setFolderId(    folderId    );
-		setTrashColumns(trashColumns);
+		setFolderInfo(folderInfo);
 	}
 
 	/**
@@ -71,16 +71,14 @@ public class GetColumnWidthsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean getTrashColumns() {return m_trashColumns;}
-	public Long getFolderId()        {return m_folderId;    }
+	public BinderInfo getFolderInfo() {return m_folderInfo;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setTrashColumns(boolean trashColumns) {m_trashColumns = trashColumns;}
-	public void setFolderId(    Long    folderId)     {m_folderId     = folderId;    }
+	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
 	
 	/**
 	 * Returns the command's enumeration value.

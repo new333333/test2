@@ -52,9 +52,12 @@ public class ColumnWidth {
 	public final static String COLUMN_DESCRIPTION_HTML	= "descriptionHtml";
 	public final static String COLUMN_DOWNLOAD			= "download";
 	public final static String COLUMN_DUE_DATE			= "dueDate";
+	public final static String COLUMN_EMAIL_ADDRESS		= "emailAddress";
+	public final static String COLUMN_FULL_NAME			= "fullName";
 	public final static String COLUMN_GUEST				= "guest";
 	public final static String COLUMN_HTML				= "html";
 	public final static String COLUMN_LOCATION			= "location";
+	public final static String COLUMN_LOGIN_ID			= "loginId";
 	public final static String COLUMN_NUMBER			= "number";
 	public final static String COLUMN_RATING			= "rating";
 	public final static String COLUMN_RESPONSIBLE		= "responsible";

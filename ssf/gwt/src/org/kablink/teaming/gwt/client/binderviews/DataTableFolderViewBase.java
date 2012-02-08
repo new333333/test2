@@ -260,8 +260,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			final int rowsRequested = range.getLength();
 			GwtClientHelper.executeCommand(
 					new GetFolderRowsCmd(
-						folderId,
-						getFolderType(),
+						getFolderInfo(),
 						m_folderColumnsList,
 						range.getStart(),
 						rowsRequested),
@@ -517,12 +516,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Get'er methods.
 	 */
-	protected AbstractCellTable<FolderRow> getDataTable()          {return m_dataTable;                                                     }
-	private   boolean                      getFolderSortDescend()  {return getFolderDisplayData().getFolderSortDescend();                   }
-	private   int                          getFolderPageSize()     {return getFolderDisplayData().getFolderPageSize();                      }
-	private   FolderType                   getFolderType()         {return (isTrash() ? FolderType.TRASH : getFolderInfo().getFolderType());}
-	private   Map<String, String>          getFolderColumnWidths() {return getFolderDisplayData().getFolderColumnWidths();                  }
-	private   String                       getFolderSortBy()       {return getFolderDisplayData().getFolderSortBy();                        }
+	protected AbstractCellTable<FolderRow> getDataTable()          {return m_dataTable;                                   }
+	private   boolean                      getFolderSortDescend()  {return getFolderDisplayData().getFolderSortDescend(); }
+	private   int                          getFolderPageSize()     {return getFolderDisplayData().getFolderPageSize();    }
+	private   FolderType                   getFolderType()         {return getFolderInfo().getFolderType();               }
+	private   Map<String, String>          getFolderColumnWidths() {return getFolderDisplayData().getFolderColumnWidths();}
+	private   String                       getFolderSortBy()       {return getFolderDisplayData().getFolderSortBy();      }
 	
 	/*
 	 * Set'er methods.
@@ -720,11 +719,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
-	 * Returns true if entries can be pinned in the current folder and
+	 * Returns true if entries can be pinned in the current view and
 	 * false otherwise.
 	 */
 	private boolean canPinEntries() {
 		return (FolderType.DISCUSSION == getFolderType());
+	}
+	
+	/*
+	 * Returns true if entries can be selected in the current view and
+	 * false otherwise.
+	 */
+	private boolean canSelectEntries() {
+		return (!(isProfilesRootWS()));
 	}
 	
 	/*
@@ -735,13 +742,17 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Allocate a List<FolderColumn> we can return...
 		List<FolderColumn> reply = new ArrayList<FolderColumn>();
 
-		// ...add a column for the checkbox selector...
-		FolderColumn fc = new FolderColumn();
-		fc.setColumnName(ColumnWidth.COLUMN_SELECT);
-		fc.setColumnTitle(m_messages.vibeDataTable_Select());
-		reply.add(fc);
+		// ...if this view supports entry selections...
+		FolderColumn fc;
+		if (canSelectEntries()) {
+			// ...add a column for the checkbox selector...
+			fc = new FolderColumn();
+			fc.setColumnName(ColumnWidth.COLUMN_SELECT);
+			fc.setColumnTitle(m_messages.vibeDataTable_Select());
+			reply.add(fc);
+		}
 		
-		// ...if this folder supports entry pinning...
+		// ...if this view supports entry pinning...
 		if (canPinEntries()) {
 			// ...add a column for the pin selector...
 			fc = new FolderColumn();
@@ -765,6 +776,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private static boolean isColumnCustom(         FolderColumn column)     {return column.isCustomColumn();                               }
 	private static boolean isColumnDescriptionHtml(String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DESCRIPTION_HTML);}
 	private static boolean isColumnDownload(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);        }
+	private static boolean isColumnFullName(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_FULL_NAME);       }
 	private static boolean isColumnGuest(          String       columnName) {return columnName.equals(ColumnWidth.COLUMN_GUEST);           }
 	private static boolean isColumnRating(         String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);          }
 	private static boolean isColumnPresence(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_AUTHOR);          }
@@ -908,9 +920,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ColumnSortList csl = m_dataTable.getColumnSortList();
 		csl.clear();
 		
-		// Add a column for a checkbox selector.
+		// If this folder supports entry selections...
 		int colIndex = 0;
-		addSelectColumn(selectionModel, colIndex++);
+		if (canSelectEntries()) {
+			// ...add a column for a checkbox selector.
+			addSelectColumn(selectionModel, colIndex++);
+		}
 
 		// If this folder supports entry pinning...
 		if (canPinEntries()) {
@@ -942,7 +957,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a download link!  Does it
 			// show presence?
-			else if (isColumnPresence(cName)) {
+			else if (isColumnPresence(cName) || isColumnFullName(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>(fc) {
 					@Override
@@ -1116,16 +1131,15 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Synchronously loads the column information for the folder.
 	 */
 	private void loadFolderColumnsNow() {
-		final Long folderId = getFolderInfo().getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderColumnsCmd(folderId, getFolderType()),
+				new GetFolderColumnsCmd(getFolderInfo()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetFolderColumns(),
-					folderId);
+					getFolderInfo().getBinderIdAsLong());
 			}
 			
 			@Override
