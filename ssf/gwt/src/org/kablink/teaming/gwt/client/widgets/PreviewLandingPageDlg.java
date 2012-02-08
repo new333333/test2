@@ -60,6 +60,7 @@ public class PreviewLandingPageDlg extends DlgBox
 {
 	private VibeFlowPanel m_mainPanel = null;
 	private AsyncCallback<VibeRpcResponse> m_rpcCallback = null;
+	private ConfigData m_tmpLpData;
 	
 	/**
 	 * 
@@ -137,9 +138,11 @@ public class PreviewLandingPageDlg extends DlgBox
 	/**
 	 * Issue an rpc request to get the inherited landing page properties
 	 */
-	private void getInheritedLandingPageProperties( final ConfigData lpData )
+	private void getInheritedLandingPageProperties( ConfigData lpData )
 	{
 		GetInheritedLandingPagePropertiesCmd cmd;
+		
+		m_tmpLpData = lpData;
 		
 		if ( m_rpcCallback == null )
 		{
@@ -154,7 +157,7 @@ public class PreviewLandingPageDlg extends DlgBox
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_GetInheritedLandingPageProperties(),
-						lpData.getBinderId() );
+						m_tmpLpData.getBinderId() );
 				}
 		
 				/**
@@ -178,8 +181,8 @@ public class PreviewLandingPageDlg extends DlgBox
 							public void execute()
 							{
 								// Create a Landing Page widget from the inherited properties
-								lpData.initLandingPageProperties( lpProperties );
-								addLandingPageView( lpData );
+								m_tmpLpData.initLandingPageProperties( lpProperties );
+								addLandingPageView( m_tmpLpData );
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
