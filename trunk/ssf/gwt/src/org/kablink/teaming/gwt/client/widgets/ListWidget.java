@@ -201,7 +201,7 @@ public class ListWidget extends VibeWidget
 			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), m_widgetStyles.getHeaderBgColor() );
 			
 			// Set the title text color.
-			GwtClientHelper.setElementTextColor( titlePanel.getElement(), m_widgetStyles.getHeaderTextColor() );
+			GwtClientHelper.setElementTextColor( label.getElement(), m_widgetStyles.getHeaderTextColor() );
 
 			m_layoutPanel.add( titlePanel );
 		}
