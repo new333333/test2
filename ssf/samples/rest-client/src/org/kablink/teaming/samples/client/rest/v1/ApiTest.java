@@ -133,6 +133,15 @@ public class ApiTest {
 	}
 	
 	@Test
+	public void testUploadFileByName2() throws Exception {
+		long entityId = 1;
+		String fileName = "debug5.txt";
+		File inFile = new File("/temp/rest/" + fileName);
+		Date modDate = new Date(System.currentTimeMillis() - 86400000); // yesterday
+		api.writeFile("folderEntry", entityId, fileName, inFile, null, modDate, null, null, null);
+	}
+
+	@Test
 	public void testUploadFileById() throws Exception {
 		String fileId = "24e3531933933d270133934991be0011";
 		String fileName = "debug5.txt";
