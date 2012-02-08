@@ -5500,6 +5500,7 @@ public class GwtServerHelper {
 		case GET_LOGIN_INFO:
 		case GET_MICRO_BLOG_URL:
 		case GET_MODIFY_BINDER_URL:
+		case GET_MY_TASKS:
 		case GET_MY_TEAMS:
 		case GET_PERSONAL_PREFERENCES:
 		case GET_PRESENCE_INFO:

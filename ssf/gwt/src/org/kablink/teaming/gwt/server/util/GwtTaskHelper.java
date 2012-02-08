@@ -41,6 +41,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +55,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
@@ -96,12 +101,15 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.EventHelper;
@@ -112,6 +120,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.cal.Duration;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 
 import com.sitescape.team.domain.Statistics;
 
@@ -1145,6 +1154,171 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
+	/**
+	 * Return a list of all the tasks assigned to the logged-in user
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<TaskInfo> getMyTasks( AllModulesInjected ami )
+	{
+		boolean clientBundle;
+		Map options = new HashMap();
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		Integer maxHits;
+		Integer summaryWords;
+		Integer intInternalNumberOfRecordsToBeFetched;
+		int offset;
+		int maxResults;
+		User user;
+		List groups;
+		List groupsS;
+		List teams;
+		ProfileDao profileDao;
+		Iterator itG;
+		Iterator teamMembershipsIt;
+		DateTime today;
+		DateTime future;
+		DateTime fromDate;
+		Criteria crit; 
+		Map results;
+
+		clientBundle = true;
+		
+		options = new HashMap();
+		options.put( ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer( ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES ) );
+		
+		options.put( ObjectKeys.SEARCH_OFFSET, searchLuceneOffset );
+		options.put( ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset );
+		
+		maxHits = new Integer( ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES );
+		options.put( ObjectKeys.SEARCH_USER_MAX_HITS, maxHits );
+		
+		summaryWords = new Integer( 20 );
+		options.put( WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords );
+		
+		intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if ( searchUserOffset > 0 )
+		{
+			intInternalNumberOfRecordsToBeFetched += searchUserOffset;
+		}
+		options.put( ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched );
+
+		offset = ((Integer) options.get( ObjectKeys.SEARCH_OFFSET )).intValue();
+		maxResults = ((Integer) options.get( ObjectKeys.SEARCH_MAX_HITS )).intValue();
+		
+		user = GwtServerHelper.getCurrentUser();
+
+		groups = new ArrayList();
+		groupsS = new ArrayList();
+		teams = new ArrayList();
+		
+		profileDao = (ProfileDao)SpringContextUtil.getBean( "profileDao" );
+		groups.addAll( profileDao.getAllGroupMembership( user.getId(), user.getZoneId() ) );
+		
+		itG = groups.iterator();
+		while ( itG.hasNext() )
+		{
+			groupsS.add( itG.next().toString() );
+		}
+		
+		teamMembershipsIt = ami.getBinderModule().getTeamMemberships( user.getId() ).iterator();
+		while ( teamMembershipsIt.hasNext() )
+		{
+			teams.add( ((Map)teamMembershipsIt.next()).get( Constants.DOCID_FIELD ) );
+		}
+		
+		today = (new DateMidnight( DateTimeZone.forTimeZone( user.getTimeZone() ) )).toDateTime();
+		future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
+		fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
+		
+		crit = SearchUtils.tasksForUser( user.getId(), 
+										 (String[])groupsS.toArray(new String[groupsS.size()]), 
+										 (String[])teams.toArray(new String[teams.size()]),
+										 fromDate.toDate(),
+										 future.toDate() );
+		results = ami.getBinderModule().executeSearchQuery( crit, offset, maxResults );
+
+		// Create a TaskInfo object for every task we found
+		{
+	    	List<Map> taskEntriesList;
+			List<TaskInfo> reply;
+			SeenMap seenMap;
+
+	    	taskEntriesList = ((List) results.get( ObjectKeys.SEARCH_ENTRIES ) );
+
+			// Did we find any entries?
+			reply = new ArrayList<TaskInfo>();
+			if ( taskEntriesList == null || taskEntriesList.isEmpty() )
+			{
+				// No!  Bail.
+				return reply;
+			}
+			
+			// Scan the task entries that we read.
+			seenMap = ami.getProfileModule().getUserSeenMap( null );
+			for (Map taskEntry:  taskEntriesList)
+			{			
+				TaskInfo ti;
+				String title;
+				String desc;
+				TaskId taskId;
+				
+				ti = new TaskInfo();
+
+				ti.setOverdue( getOverdueFromMap( taskEntry, buildEventFieldName( Constants.EVENT_FIELD_LOGICAL_END_DATE ) ) );
+				ti.setEvent( getEventFromMap( taskEntry, clientBundle ) );
+				ti.setStatus( getStringFromMap( taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME ) );
+				ti.setCompleted( getStringFromMap( taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME ) );
+				ti.setSeen( seenMap.checkIfSeen( taskEntry ) );
+				ti.setEntityType( getStringFromMap( taskEntry, Constants.ENTITY_FIELD ) );
+				ti.setPriority( getStringFromMap( taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME ) );
+				ti.setAssignments( GwtServerHelper.getAssignmentInfoListFromEntryMap( taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.INDIVIDUAL ) );
+				ti.setAssignmentGroups( GwtServerHelper.getAssignmentInfoListFromEntryMap( taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.GROUP ) );
+				ti.setAssignmentTeams( GwtServerHelper.getAssignmentInfoListFromEntryMap( taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.TEAM ) );
+				
+				title = getStringFromMap( taskEntry, Constants.TITLE_FIELD );
+				if ( !(MiscUtil.hasString( title )) )
+				{
+					title = ("--" + NLT.get("entry.noTitle") + "--");
+				}
+				ti.setTitle(title);
+				
+				desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
+				ti.setDesc( desc );
+				
+				taskId = new TaskId();
+				taskId.setBinderId( getLongFromMap( taskEntry, Constants.BINDER_ID_FIELD ) );
+				taskId.setEntryId( getLongFromMap( taskEntry, Constants.DOCID_FIELD ) );
+				ti.setTaskId( taskId );
+
+				ti.setCompletedDate(
+					getTaskDateFromMap(
+						taskEntry,
+						Constants.TASK_COMPLETED_DATE_FIELD,
+						ti.getEvent().getAllDayEvent(),
+						false));	// false -> Don't return a null entry.
+				
+				reply.add( ti );
+			}
+
+			// At this point, the TaskInfo's in the List<TaskInfo> are not
+			// complete.  They're missing things like the user's rights to
+			// the entries, the location of their binders and details about
+			// the task's assignments.  Complete their content.  Note that
+			// we do this AFTER collecting data from the search index so
+			// that we only have to perform a single DB read for each type
+			// of information we need to complete the TaskInfo details.
+			completeTaskRights( ami, reply );
+			if ( clientBundle )
+			{
+				completeBinderLocations( ami, reply );
+				completeAIs( ami, reply );
+			}
+			
+			return reply;
+		}
+	}
+	
 	/**
 	 * Returns the Binder corresponding to an ID, throwing a GwtTeamingException
 	 * as necessary.

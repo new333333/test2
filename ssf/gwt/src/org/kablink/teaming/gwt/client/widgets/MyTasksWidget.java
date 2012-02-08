@@ -35,47 +35,38 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
-import org.kablink.teaming.gwt.client.rpc.shared.GetTaskListCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.TaskListItemListRpcResponseData;
+import org.kablink.teaming.gwt.client.lpe.MyTasksProperties;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskInfoListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 
-
 /**
  * 
- * This class is used to display a task folder widget in a landing page.  We will display the first
- * n tasks found in the given folder.
+ * This class is used to display a widget that displays all the tasks assigned to the
+ * logged-in user.
  * @author jwootton
  *
  */
-public class TaskFolderWidget extends VibeWidget
+public class MyTasksWidget extends VibeWidget
 {
-	private TaskFolderProperties m_properties;
 	private String m_style;
-	private Element m_folderTitleElement;
 	private SimpleListOfTasksWidget m_tasksWidget;
 
 	/**
 	 * 
 	 */
-	public TaskFolderWidget( TaskFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
+	public MyTasksWidget( MyTasksProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		
@@ -88,7 +79,7 @@ public class TaskFolderWidget extends VibeWidget
 	/**
 	 * Add the given tasks to this widget
 	 */
-	private void addTasks( List<TaskListItem> tasks )
+	private void addTasks( List<TaskInfo> tasks )
 	{
 		if ( tasks == null || tasks.size() == 0 )
 			return;
@@ -97,35 +88,19 @@ public class TaskFolderWidget extends VibeWidget
 		if ( m_tasksWidget != null )
 		{
 			// Yes
-			m_tasksWidget.addTasksFromTaskListItems( tasks );
+			m_tasksWidget.addTasksFromTaskInfos( tasks );
 		}
 	}
 	
 	/**
-	 * When the user clicks on the folder's title, fire the ChangeContextEvent event
-	 */
-	private void handleClickOnFolderTitle()
-	{
-		OnSelectBinderInfo binderInfo;
-		
-		binderInfo = new OnSelectBinderInfo( m_properties.getFolderId(), m_properties.getViewFolderUrl(), false, Instigator.UNKNOWN );
-		GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
-	}
-	
-	
-	/**
 	 * 
 	 */
-	private VibeFlowPanel init( TaskFolderProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
+	private VibeFlowPanel init( MyTasksProperties properties, WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
 		VibeFlowPanel contentPanel;
-		int numTasks;
 		InlineLabel label;
 		VibeFlowPanel titlePanel;
-		
-		m_properties = new TaskFolderProperties();
-		m_properties.copy( properties );
 		
 		m_style = landingPageStyle;
 		
@@ -134,77 +109,29 @@ public class TaskFolderWidget extends VibeWidget
 		mainPanel.addStyleName( "taskFolderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
 		
-		// Add a place for the folder's title
+		// Add a place for a header
 		{
+			Element headerElement;
+			
 			// Create a place for the folder title to live.
 			titlePanel = new VibeFlowPanel();
 			titlePanel.addStyleName( "landingPageWidgetTitlePanel" + m_style );
 			titlePanel.addStyleName( "taskFolderWidgetTitlePanel" + m_style );
 			
-			label = new InlineLabel( " " );
+			label = new InlineLabel( GwtTeaming.getMessages().myTasksHeader() );
 			label.addStyleName( "taskFolderWidgetTitleLabel" + m_style );
-			label.addClickHandler( new ClickHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							handleClickOnFolderTitle();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
 			titlePanel.add( label );
-			m_folderTitleElement = label.getElement();
+			headerElement = label.getElement();
 			
 			// Set the title background color.
 			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), widgetStyles.getHeaderBgColor() );
 			
 			// Set the title text color.
-			GwtClientHelper.setElementTextColor( m_folderTitleElement, widgetStyles.getHeaderTextColor() );
+			GwtClientHelper.setElementTextColor( headerElement, widgetStyles.getHeaderTextColor() );
 
 			mainPanel.add( titlePanel );
 		}
 		
-		// Issue an rpc request to get information about the folder.
-		m_properties.getDataFromServer( new GetterCallback<Boolean>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void returnValue( Boolean value )
-			{
-				Scheduler.ScheduledCommand cmd;
-
-				// Did we successfully get the folder information?
-				if ( value )
-				{
-					// Yes
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							// Update this widget with the folder information
-							updateWidget();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}
-		} );
-
 		// Create a panel where all the content will live.
 		{
 			contentPanel = new VibeFlowPanel();
@@ -220,29 +147,27 @@ public class TaskFolderWidget extends VibeWidget
 				style = contentPanel.getElement().getStyle();
 				
 				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-				width = m_properties.getWidth();
-				unit = m_properties.getWidthUnits();
+				width = properties.getWidth();
+				unit = properties.getWidthUnits();
 				if ( width != 100 || unit != Unit.PCT )
 					style.setWidth( width, unit );
 				
 				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-				height = m_properties.getHeight();
-				unit = m_properties.getHeightUnits();
+				height = properties.getHeight();
+				unit = properties.getHeightUnits();
 				if ( height != 100 || unit != Unit.PCT )
 					style.setHeight( height, unit );
 				
-				style.setOverflow( m_properties.getOverflow() );
+				style.setOverflow( properties.getOverflow() );
 			}
 		}
 		
-		// Are we supposed to show tasks from this folder?
-		numTasks = m_properties.getNumTasksToBeShownValue();
-		if ( numTasks > 0 )
+		// Create widget to hold the list of tasks assigned to the logged-in user.
 		{
-			GetTaskListCmd cmd;
+			GetMyTasksCmd cmd;
 			VibeFlowPanel tasksPanel;
 			
-			// Yes, create a panel for the tasks to live in.
+			// Create a panel for the tasks to live in.
 			tasksPanel = new VibeFlowPanel();
 			tasksPanel.addStyleName( "taskFolderWidgetListOfTasksPanel" + m_style );
 			contentPanel.add( tasksPanel );
@@ -251,11 +176,11 @@ public class TaskFolderWidget extends VibeWidget
 			GwtClientHelper.setElementTextColor( tasksPanel.getElement(), widgetStyles.getContentTextColor() );
 			
 			// Create a tasks widget that will hold the tasks
-			m_tasksWidget = new SimpleListOfTasksWidget( numTasks, widgetStyles, m_style );
+			m_tasksWidget = new SimpleListOfTasksWidget( 2000, widgetStyles, m_style );
 			tasksPanel.add( m_tasksWidget );
 
-			// Issue an rpc request to get the last n tasks from the folder.
-			cmd = new GetTaskListCmd( m_properties.getZoneUUID(), m_properties.getFolderIdL(), "ALL", "PHYSICAL" );
+			// Issue an rpc request to get a list of the tasks assigned to the logged-in user.
+			cmd = new GetMyTasksCmd();
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
@@ -276,15 +201,15 @@ public class TaskFolderWidget extends VibeWidget
 				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
-					TaskListItemListRpcResponseData tlilResponse;
+					TaskInfoListRpcResponseData tilResponse;
 					
-					tlilResponse = (TaskListItemListRpcResponseData) response.getResponseData();
+					tilResponse = (TaskInfoListRpcResponseData) response.getResponseData();
 					
-					if ( tlilResponse != null )
+					if ( tilResponse != null )
 					{
-						final List<TaskListItem> tasks;
+						final List<TaskInfo> tasks;
 						
-						tasks = tlilResponse.getTaskList();
+						tasks = tilResponse.getTaskList();
 						if ( tasks != null )
 						{
 							Scheduler.ScheduledCommand cmd;
@@ -306,23 +231,5 @@ public class TaskFolderWidget extends VibeWidget
 		}
 		
 		return mainPanel;
-	}
-	
-	/**
-	 * Update the folder's title 
-	 */
-	private void updateWidget()
-	{
-		// Update the title if we are showing it.
-		if ( m_folderTitleElement != null )
-		{
-			String title;
-			
-			title = m_properties.getFolderTitle();
-			if ( title == null || title.length() == 0 )
-				title = GwtTeaming.getMessages().noTitle();
-
-			m_folderTitleElement.setInnerHTML( title );
-		}
 	}
 }

@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties.EnhancedViewTyp
 import org.kablink.teaming.gwt.client.lpe.EntryProperties;
 import org.kablink.teaming.gwt.client.lpe.FileFolderProperties;
 import org.kablink.teaming.gwt.client.lpe.FolderProperties;
+import org.kablink.teaming.gwt.client.lpe.MyTasksProperties;
 import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.ExecuteEnhancedViewJspCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -213,9 +214,23 @@ public class EnhancedViewWidget extends VibeWidget
 			break;
 		}
 		
+		case DISPLAY_MY_TASKS:
+		{
+			MyTasksProperties myTasksProperties;
+			
+			myTasksProperties = new MyTasksProperties();
+			myTasksProperties.setWidth( properties.getWidth() );
+			myTasksProperties.setWidthUnits( properties.getWidthUnits() );
+			myTasksProperties.setHeight( properties.getHeight() );
+			myTasksProperties.setHeightUnits( properties.getHeightUnits() );
+			myTasksProperties.setOverflow( properties.getOverflow() );
+			
+			widget = new MyTasksWidget( myTasksProperties, widgetStyles, landingPageStyle );
+			break;
+		}
+		
 		case DISPLAY_CALENDAR:
 		case DISPLAY_MY_CALENDAR_EVENTS:
-		case DISPLAY_MY_TASKS:
 		case DISPLAY_SURVEY:
 		case UNKNOWN:
 		default:
@@ -279,6 +294,7 @@ public class EnhancedViewWidget extends VibeWidget
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -292,6 +308,7 @@ public class EnhancedViewWidget extends VibeWidget
 				 * 
 				 * @param result
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
