@@ -120,6 +120,16 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
+	 * Returns true if this BinderInfo defines the root profiles binder
+	 * and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderProfilesRootWS() {
+		return (isBinderWorkspace() && (WorkspaceType.PROFILE_ROOT == m_wsType));
+	}
+	
+	/**
 	 * Returns true if this BinderInfo refers to a trash Binder and
 	 * false otherwise.
 	 *

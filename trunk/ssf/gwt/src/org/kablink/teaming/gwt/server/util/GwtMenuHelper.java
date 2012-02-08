@@ -68,7 +68,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -77,6 +77,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
@@ -635,6 +636,36 @@ public class GwtMenuHelper {
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
 			// ...and the more toolbar to the entry toolbar.
 			entryToolbar.addNestedItem(moreTBI);
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for the root profiles workspace view.
+	 * 
+	 * The logic for this was copied from
+	 * ProfilesBinderHelper.buildViewEntryToolbar().
+	 */
+	@SuppressWarnings("unchecked")
+	private static void constructEntryProfilesRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+		// If the user can add entries...
+		if (bs.getProfileModule().testAccess(((ProfileBinder) ws), ProfileOperation.addEntry)) {
+			// ...and we can find the entry definition...
+			List defaultEntryDefinitions = ws.getEntryDefinitions();
+			if ((null != defaultEntryDefinitions) && (!(defaultEntryDefinitions.isEmpty()))) {
+				// ...add the 'new user' option (only one option
+				// ...available.)
+				Definition def = ((Definition) defaultEntryDefinitions.get(0));
+				AdaptedPortletURL url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
+				url.setParameter(WebKeys.URL_BINDER_ID, ws.getId().toString());
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				ToolbarItem addUserTBI = new ToolbarItem("1_add");
+				markTBITitle(    addUserTBI, NLT.get("toolbar.new_with_arg", new String[] {NLT.getDef(def.getTitle())}));
+				markTBIPopup(    addUserTBI                                                                            );
+				markTBIHighlight(addUserTBI                                                                            );
+				markTBIUrl(      addUserTBI, url                                                                       );
+				entryToolbar.addNestedItem(addUserTBI);
+			}
 		}
 	}
 	
@@ -1626,12 +1657,11 @@ public class GwtMenuHelper {
 	 *
 	 * @param bs
 	 * @param request
-	 * @param folderId
-	 * @param folderType
+	 * @param folderInfo
 	 * 
 	 * @return
 	 */
-	public static List<ToolbarItem> getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType) {
+	public static List<ToolbarItem> getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) {
 		SimpleProfiler.start("GwtMenuHelper.getFolderToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
@@ -1641,20 +1671,31 @@ public class GwtMenuHelper {
 			reply.add(entryToolbar);
 			
 			// Access the binder/folder.
-			Binder binder = bs.getBinderModule().getBinder(folderId);
-			Folder folder = ((binder instanceof Folder) ? ((Folder) binder) : null);
+			Long folderId = folderInfo.getBinderIdAsLong();
+			Binder    binder = bs.getBinderModule().getBinder(folderId);
+			Folder    folder = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
+			Workspace ws     = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
 
 			// Are we returning the toolbar items for a trash view?
-			if (FolderType.TRASH == folderType) {
+			if (folderInfo.isBinderTrash()) {
 				// Yes!  Construct the items for viewing the trash.
 				constructEntryTrashItems(entryToolbar, bs, request, binder);
 			}
 			
+			// No, we aren't returning the toolbar items for a trash
+			// view!  Are we returning them for the root profiles
+			// workspace view?
+			else if (folderInfo.isBinderProfilesRootWS()) {
+				// Yes!  Construct the items for viewing the root
+				// profiles binder.
+				constructEntryProfilesRootWSItems(entryToolbar, bs, request, ws);
+			}
+			
 			else {
-				// No, we aren't returning the toolbar items for a
-				// trash view!  Is this is other than a mirrored
-				// folder, or if its a mirrored folder, is its
-				// resource driver configured?
+				// No, we aren't returning the toolbar items for the
+				// root profiles workspace view either!  Is this is
+				// other than a mirrored folder, or if its a mirrored
+				// folder, is its resource driver configured?
 				boolean isMirrored           = ((null != folder) && folder.isMirrored());
 				boolean isMirroredConfigured = isMirrored && MiscUtil.hasString(folder.getResourceDriverName());
 				if ((!isMirrored) || isMirroredConfigured) {

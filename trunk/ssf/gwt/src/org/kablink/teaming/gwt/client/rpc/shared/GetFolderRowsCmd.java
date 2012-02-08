@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 
 /**
@@ -45,11 +45,10 @@ import org.kablink.teaming.gwt.client.util.FolderType;
  * @author drfoster@novell.com
  */
 public class GetFolderRowsCmd extends VibeRpcCmd {
-	private FolderType			m_folderType;		//
+	private BinderInfo			m_folderInfo;		//
 	private int					m_length;			//
 	private int					m_start;			//
 	private List<FolderColumn>	m_folderColumns;	//
-	private Long				m_folderId;			//
 	
 	/**
 	 * Constructor method.
@@ -57,26 +56,27 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
 	public GetFolderRowsCmd() {
+		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Constructor method
 	 * 
-	 * @param folderId
-	 * @param folderType
+	 * @param folderInfo
 	 * @param folderColumns
 	 * @param start
 	 * @param length
 	 */
-	public GetFolderRowsCmd(Long folderId, FolderType folderType, List<FolderColumn> folderColumns, int start, int length) {
+	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length) {
+		// Initialize this object...
 		this();
-		
-		m_folderId      = folderId;
-		m_folderType    = folderType;
-		m_folderColumns = folderColumns;
-		m_start         = start;
-		m_length        = length;
+
+		// ...and store the parameters.
+		setFolderInfo(   folderInfo   );
+		setFolderColumns(folderColumns);
+		setStart(        start        );
+		setLength(       length       );
 	}
 	
 	/**
@@ -84,11 +84,20 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public FolderType         getFolderType()    {return m_folderType;   }
+	public BinderInfo         getFolderInfo()    {return m_folderInfo;   }
 	public int                getLength()        {return m_length;       }
 	public int                getStart()         {return m_start;        }
 	public List<FolderColumn> getFolderColumns() {return m_folderColumns;}
-	public Long               getFolderId()      {return m_folderId;     }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFolderInfo(   BinderInfo         folderInfo)    {m_folderInfo    = folderInfo;   }
+	public void setLength(       int                length)        {m_length        = length;       }
+	public void setStart(        int                start)         {m_start         = start;        }
+	public void setFolderColumns(List<FolderColumn> folderColumns) {m_folderColumns = folderColumns;}
 	
 	/**
 	 * Returns the command's enumeration value.

@@ -172,7 +172,12 @@
 		.vibe-mirroredFileFolderDataTable     {}
 		.vibe-mirroredFileFolderFlowPanel     {}
 		.vibe-mirroredFileFolderNotConfigured {color: red; font-weight: bold; font-size: 1.2em;}
-/* ...End:  Mirrored file folder view styles. */
+	/* ...End:  Mirrored file folder view styles. */
+
+	/* ...Start:  Personal Workspaces view styles. */
+		.vibe-personalWorkspacesDataTable {}
+		.vibe-personalWorkspacesFlowPanel {}
+	/* ...End:  Personal Workspaces view styles. */
 
 	/* ...Start:  Survey folder view styles. */
 		.vibe-surveyFolderDataTable {}

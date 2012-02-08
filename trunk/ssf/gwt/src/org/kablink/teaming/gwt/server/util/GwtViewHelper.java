@@ -712,9 +712,12 @@ public class GwtViewHelper {
 			else if (colName.equals("descriptionHtml")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
 			else if (colName.equals("download"))        {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
 			else if (colName.equals("dueDate"))         {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
+			else if (colName.equals("emailAddress"))    {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                      }
+			else if (colName.equals("fullName"))        {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
 			else if (colName.equals("guest"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("html"))            {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
 			else if (colName.equals("location"))        {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
+			else if (colName.equals("loginId"))         {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                  }
 			else if (colName.equals("number"))          {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
 			else if (colName.equals("rating"))          {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
 			else if (colName.equals("responsible"))     {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
@@ -1081,20 +1084,19 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param folderId
-	 * @param trashColumns
+	 * @param folderInfo
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static ColumnWidthsRpcResponseData getColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId, boolean trashColumns) throws GwtTeamingException {
+	public static ColumnWidthsRpcResponseData getColumnWidths(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
 		try {
 			// Read the column widths stored in the folder properties...
 			User			user                 = GwtServerHelper.getCurrentUser();
-			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
-			String          propKey              = (ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS + (trashColumns ? ".Trash" : ""));
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderInfo.getBinderIdAsLong());
+			String          propKey              = (ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS + (folderInfo.isBinderTrash() ? ".Trash" : ""));
 			Map<String, String> columnWidths = ((Map<String, String>) userFolderProperties.getProperty(propKey));
 			if ((null != columnWidths) && columnWidths.isEmpty()) {
 				columnWidths = null;
@@ -1222,20 +1224,20 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param folderId
-	 * @param folderType
+	 * @param folderInfo
 	 * 
 	 * @return
 	 */
-	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType) throws GwtTeamingException {
-		Boolean includeConfigurationInfo = Boolean.FALSE;
-		return getFolderColumns(bs, request, folderId, folderType, includeConfigurationInfo);
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
+		return getFolderColumns(bs, request, folderInfo, Boolean.FALSE);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, 
-			Long folderId, FolderType folderType, Boolean includeConfigurationInfo) throws GwtTeamingException {
+	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Boolean includeConfigurationInfo) throws GwtTeamingException {
 		try {
+			Long			folderId             = folderInfo.getBinderIdAsLong();
+			Binder			binder               = bs.getBinderModule().getBinder(folderId);
+			Folder			folder               = ((binder instanceof Folder) ? ((Folder) binder) : null);
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			
@@ -1246,17 +1248,35 @@ public class GwtViewHelper {
 
 			// Are we showing the trash on this folder?
 			String baseNameKey;
-			boolean isTrash = (FolderType.TRASH == folderType);
+			boolean isTrash = folderInfo.isBinderTrash();
 			if (isTrash) {
 				// Yes!  The columns in a trash view are not
 				// configurable.  Use the default trash columns.
 				baseNameKey = "trash.column.";
 				columnNames = getColumnsLHMFromAS(TrashHelper.trashColumns);
 			}
+
+			// No, we aren't showing the trash on this folder!  Are we
+			// looking at the root profiles binder? 
+			else if (folderInfo.isBinderProfilesRootWS()) {
+				// Yes!
+				baseNameKey = "profiles.column.";
+				columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
+			}
 			
 			else {
-				// No, we aren't showing the trash on this folder!  Are
-				// there user defined columns on this folder?
+				// No, we aren't showing the root profiles binder
+				// either!  If we weren't given a folder...
+				if (null == folder) {
+					// ...we can't do anything with it.
+            		throw
+            			new GwtTeamingException(
+            				GwtTeamingException.ExceptionType.FOLDER_EXPECTED,
+            				"GwtViewHelper.getFolderColumns( *Internal Error* ):  The ID could not be resolved to a folder.");
+				}
+				
+				// Are there user defined columns on this folder?
+				FolderType folderType = folderInfo.getFolderType();
 				switch (folderType) {
 				case GUESTBOOK:  baseNameKey = "guestbook.column."; break;
 				case MILESTONE:  baseNameKey = "milestone.";        break;
@@ -1264,8 +1284,7 @@ public class GwtViewHelper {
 				case SURVEY:     baseNameKey = "survey.";           break;
 				default:         baseNameKey = "folder.column.";    break;
 				}
-				Folder folder    = ((Folder) bs.getBinderModule().getBinder(folderId));
-				columnNames      = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
+				columnNames = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS));
 				if (null == columnNames) {
 					// No!  Are there defaults stored on the binder?
 					columnNames = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS));
@@ -1492,13 +1511,13 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param folderId
-	 * @param trashFolder
+	 * @param folderInfo
 	 * 
 	 * @return
 	 */
-	public static FolderDisplayDataRpcResponseData getFolderDisplayData(AllModulesInjected bs, HttpServletRequest request, Long folderId, boolean trashFolder) throws GwtTeamingException {
+	public static FolderDisplayDataRpcResponseData getFolderDisplayData(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
 		try {
+			Long			folderId             = folderInfo.getBinderIdAsLong();
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userProperties       = bs.getProfileModule().getUserProperties(user.getId());
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
@@ -1511,7 +1530,7 @@ public class GwtViewHelper {
 				sortDescend = (("true").equalsIgnoreCase(sortDescendS));
 			}
 			else {
-				sortBy      = Constants.SORTNUMBER_FIELD;
+				sortBy      = (folderInfo.isBinderProfilesRootWS() ? Constants.SORT_TITLE_FIELD : Constants.SORTNUMBER_FIELD);
 				sortDescend = true;
 			}
 
@@ -1521,7 +1540,7 @@ public class GwtViewHelper {
 			catch (Exception ex) {pageSize = 25;                                                       }
 			
 			// Has the user defined any column widths on this folder?
-			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderId, trashFolder);
+			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderInfo);
 			
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
@@ -1544,8 +1563,7 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param folderId
-	 * @param folderType
+	 * @param folderInfo
 	 * @param folderColumns
 	 * @param start
 	 * @param length
@@ -1553,14 +1571,15 @@ public class GwtViewHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, Long folderId, FolderType folderType, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
 		try {
 			// Access the binder/folder.
-			Binder binder = bs.getBinderModule().getBinder(folderId);
-			Folder folder = ((binder instanceof Folder) ? ((Folder) binder) : null);
+			Long   folderId = folderInfo.getBinderIdAsLong();
+			Binder binder   = bs.getBinderModule().getBinder(folderId);
+			Folder folder   = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
 			
 			// If we're reading from a mirrored file folder...
-			if (FolderType.MIRROREDFILE == folderType) {
+			if (FolderType.MIRROREDFILE == folderInfo.getFolderType()) {
 				// ...whose driver is not configured...
 				String rdn = binder.getResourceDriverName();
 				if (!(MiscUtil.hasString(rdn))) {
@@ -1575,18 +1594,18 @@ public class GwtViewHelper {
 			}
 			
 			// What type of folder are we dealing with?
-			boolean isDiscussion = false;
-			boolean isFolder     = (null != folder);
-			boolean isGuestbook  = false;
-			boolean isMilestone  = false;
-			boolean isSurvey     = false;
-			boolean isTrash      = false;
-			switch (folderType) {
+			boolean isDiscussion     = false;
+			boolean isFolder         = (null != folder);
+			boolean isGuestbook      = false;
+			boolean isMilestone      = false;
+			boolean isSurvey         = false;
+			boolean isProfilesRootWS = folderInfo.isBinderProfilesRootWS();
+			boolean isTrash          = folderInfo.isBinderTrash();
+			switch (folderInfo.getFolderType()) {
 			case DISCUSSION:  isDiscussion = true; break;
 			case GUESTBOOK:   isGuestbook  = true; break;
 			case MILESTONE:   isMilestone  = true; break;
 			case SURVEY:      isSurvey     = true; break;
-			case TRASH:       isTrash      = true; break;
 			}
 
 			// Access any other information we need to read the data.
@@ -1604,15 +1623,15 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
 			// Factor in the user's sorting selection.
-			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderId, isTrash);
+			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderInfo);
 			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
 
 			// Read the entries based on the search.
 			Map searchResults;
-			if (isTrash)
-			     searchResults = TrashHelper.getTrashEntries(bs, binder, options);
-			else searchResults = bs.getFolderModule().getEntries(folderId, options);
+			if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder,   options);
+			else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(           options);
+			else                       searchResults = bs.getFolderModule().getEntries(folderId, options);
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 
@@ -2360,7 +2379,7 @@ public class GwtViewHelper {
 		// null.  Return it.
 		return reply;
 	}
-	
+
 	/**
 	 * Returns a ViewInfo used to control folder views based on a URL.
 	 * 
@@ -2757,22 +2776,21 @@ public class GwtViewHelper {
 	 * @param request
 	 * @param folderId
 	 * @param columnWidths
-	 * @param trashColumns
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static BooleanRpcResponseData saveColumnWidths(AllModulesInjected bs, HttpServletRequest request, Long folderId, Map<String, String> columnWidths, boolean trashColumns) throws GwtTeamingException {
+	public static BooleanRpcResponseData saveColumnWidths(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Map<String, String> columnWidths) throws GwtTeamingException {
 		try {
 			// Store the column widths...
 			String propKey = ObjectKeys.USER_PROPERTY_COLUMN_WIDTHS;
-			if (trashColumns) {
+			if (folderInfo.isBinderTrash()) {
 				propKey += ".Trash";
 			}
 			bs.getProfileModule().setUserProperty(
 				GwtServerHelper.getCurrentUser().getId(),
-				folderId,
+				folderInfo.getBinderIdAsLong(),
 				propKey,
 				columnWidths);
 			

@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -42,8 +42,7 @@ import org.kablink.teaming.gwt.client.util.FolderType;
  * @author drfoster@novell.com
  */
 public class GetFolderToolbarItemsCmd extends VibeRpcCmd {
-	private FolderType	m_folderType;	//
-	private Long 		m_folderId;		//
+	private BinderInfo	m_folderInfo;	//
 	
 	/**
 	 * Constructor method.
@@ -57,13 +56,11 @@ public class GetFolderToolbarItemsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 *
-	 * @param folderId
+	 * @param folderInfo
 	 */
-	public GetFolderToolbarItemsCmd(Long folderId, FolderType folderType) {
+	public GetFolderToolbarItemsCmd(BinderInfo folderInfo) {
 		this();
-		
-		setFolderId(  folderId  );
-		setFolderType(folderType);
+		setFolderInfo(folderInfo);
 	}
 	
 	/**
@@ -71,16 +68,14 @@ public class GetFolderToolbarItemsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public FolderType getFolderType() {return m_folderType;}
-	public Long       getFolderId()   {return m_folderId;  }
+	public BinderInfo getFolderInfo() {return m_folderInfo;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderType(FolderType folderType) {m_folderType = folderType;}
-	public void setFolderId(  Long       folderId)   {m_folderId   = folderId;  }
+	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
 	
 	/**
 	 * Returns the command's enumeration value.

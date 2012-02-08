@@ -143,6 +143,8 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
+	private final static boolean SHOW_NEW_PERSONAL_WORKSPACES_VIEW	= false;	// 20120207 (DRF):  Until I get this working.
+	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -837,24 +839,15 @@ public class ContentControl extends Composite
 						}
 							
 						case PROFILE_ROOT:
-						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
+							if ( SHOW_NEW_PERSONAL_WORKSPACES_VIEW )
 							{
-								if ( !Window.confirm( "Show new personal workspaces?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the personal workspaces binder.
-								GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
-								m_contentInGWT = true;
+								if (Window.confirm("Show GWT Personal Workspaces?")) {
+									GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
+									m_contentInGWT = true;
+								}
 							}
 							break;
-						}
-							
+
 						case USER:
 							// These aren't handled!  Let things take 
 							// the default flow.
@@ -1379,28 +1372,27 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowPersonalWorkspaces( ShowPersonalWorkspacesEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display the Personal Workspaces view for the given binder id.
-		vClient = new ViewClient()
+		// Create a PersonalWorkspacesView widget for the selected
+		// binder.
+		PersonalWorkspacesView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(), 
+				new ViewClient()
 		{
 			@Override
 			public void onUnavailable()
 			{
 				// Nothing to do.  Error handled in asynchronous provider.
-			}
+			}// end onUnavailable()
 			
 			@Override
-			public void onSuccess( ViewBase personalWorkspaces )
+			public void onSuccess( ViewBase pwsView )
 			{
-				personalWorkspaces.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( personalWorkspaces );
-			}
-		};
-		
-		// Create a PersonalWorkspacesView widget for the selected binder.
-		PersonalWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
-	}
+				pwsView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( pwsView );
+			}// end onSuccess()
+		} );
+	}// end onShowPersonalWorkspaces()
 	
 	/**
 	 * Handles ShowProjectManagementWSEvent's received by this class.

@@ -672,7 +672,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		};
 		
 		// Issue an RPC request to get the personal preferences from the DB.
-		GetFolderColumnsCmd cmd = new GetFolderColumnsCmd(bi.getBinderIdAsLong(), bi.getFolderType(), Boolean.TRUE);
+		GetFolderColumnsCmd cmd = new GetFolderColumnsCmd(bi, Boolean.TRUE);
 		GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 	}
 	

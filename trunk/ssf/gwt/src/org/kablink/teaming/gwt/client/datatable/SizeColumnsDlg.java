@@ -437,11 +437,10 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			}
 		}
 		SaveColumnWidthsCmd saveCmd = new SaveColumnWidthsCmd(
-			m_folderInfo.getBinderIdAsLong(),
+			m_folderInfo,
 			(saveableColumnWidths.isEmpty() ?
 				null                        :
-				saveableColumnWidths),
-			m_folderInfo.isBinderTrash());
+				saveableColumnWidths));
 
 		// Can we perform the save?
 		GwtClientHelper.executeCommand(

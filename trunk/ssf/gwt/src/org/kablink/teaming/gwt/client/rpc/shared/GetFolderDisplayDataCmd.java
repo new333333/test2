@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+
 
 /**
  * This class holds all of the information necessary to execute the
@@ -40,8 +42,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class GetFolderDisplayDataCmd extends VibeRpcCmd {
-	private boolean	m_trashFolder;	//
-	private Long	m_folderId;		//
+	private BinderInfo	m_folderInfo;	//
 	
 	/**
 	 * Constructor method.
@@ -55,15 +56,14 @@ public class GetFolderDisplayDataCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method
 	 * 
-	 * @param folderId
+	 * @param folderInfo
 	 */
-	public GetFolderDisplayDataCmd(Long folderId, boolean trashFolder) {
+	public GetFolderDisplayDataCmd(BinderInfo folderInfo) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameter.
-		setFolderId(   folderId   );
-		setTrashFolder(trashFolder);
+		setFolderInfo(folderInfo);
 	}
 	
 	/**
@@ -71,16 +71,14 @@ public class GetFolderDisplayDataCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean getTrashFolder() {return m_trashFolder;}
-	public Long getFolderId()       {return m_folderId;   }
+	public BinderInfo getFolderInfo() {return m_folderInfo;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setTrashFolder(boolean trashFolder) {m_trashFolder = trashFolder;}
-	public void setFolderId(   Long    folderId)    {m_folderId    = folderId;   }
+	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
 	
 	/**
 	 * Returns the command's enumeration value.

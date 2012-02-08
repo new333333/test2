@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 
 /**
@@ -42,9 +42,8 @@ import org.kablink.teaming.gwt.client.util.FolderType;
  * @author drfoster@novell.com
  */
 public class GetFolderColumnsCmd extends VibeRpcCmd {
-	private FolderType	m_folderType;
-	private Long		m_folderId;
-	private Boolean		m_includeConfigurationInfo;
+	private BinderInfo	m_folderInfo;				//
+	private Boolean		m_includeConfigurationInfo;	//
 	
 	/**
 	 * Constructor method.
@@ -58,30 +57,23 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method
 	 * 
-	 * @param folderId
-	 * @param folderType
+	 * @param folderInfo
+	 * @param includeConfigurationInfo
 	 */
-	public GetFolderColumnsCmd(Long folderId, FolderType folderType) {
+	public GetFolderColumnsCmd(BinderInfo folderInfo, Boolean includeConfigurationInfo) {
 		this();
 		
-		m_folderId                 = folderId;
-		m_folderType               = folderType;
-		m_includeConfigurationInfo = Boolean.FALSE;
+		setFolderInfo(              folderInfo              );
+		setIncludeConfigurationInfo(includeConfigurationInfo);
 	}
 	
 	/**
 	 * Constructor method
 	 * 
-	 * @param folderId
-	 * @param folderType
-	 * @param includeConfigurationInfo
+	 * @param folderInfo
 	 */
-	public GetFolderColumnsCmd(Long folderId, FolderType folderType, Boolean includeConfigurationInfo) {
-		this();
-		
-		m_folderId                 = folderId;
-		m_folderType               = folderType;
-		m_includeConfigurationInfo = includeConfigurationInfo;
+	public GetFolderColumnsCmd(BinderInfo folderInfo) {
+		this(folderInfo, Boolean.FALSE);
 	}
 	
 	/**
@@ -89,9 +81,16 @@ public class GetFolderColumnsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public FolderType getFolderType() 				{return m_folderType;              }
-	public Long       getFolderId()   				{return m_folderId;                }
-	public Boolean    isIncludeConfigurationInfo()	{return m_includeConfigurationInfo;}
+	public BinderInfo getFolderInfo()              {return m_folderInfo;              }
+	public Boolean    isIncludeConfigurationInfo() {return m_includeConfigurationInfo;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFolderInfo(              BinderInfo folderInfo)               {m_folderInfo               = folderInfo;              }
+	public void setIncludeConfigurationInfo(Boolean    includeConfigurationInfo) {m_includeConfigurationInfo = includeConfigurationInfo;}
 	
 	/**
 	 * Returns the command's enumeration value.

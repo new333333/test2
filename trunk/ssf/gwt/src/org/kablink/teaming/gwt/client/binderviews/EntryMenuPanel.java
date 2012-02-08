@@ -63,7 +63,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -192,7 +191,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private void loadPart1Now() {
 		final Long folderId = m_binderInfo.getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
-				new GetFolderToolbarItemsCmd(folderId, (m_binderInfo.isBinderTrash() ? FolderType.TRASH : m_binderInfo.getFolderType())),
+				new GetFolderToolbarItemsCmd(m_binderInfo),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
