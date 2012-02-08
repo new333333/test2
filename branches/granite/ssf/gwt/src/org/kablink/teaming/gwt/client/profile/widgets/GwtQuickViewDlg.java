@@ -99,7 +99,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	
 	private ProfileActionWidget workspaceBtn;
 	private ProfileActionWidget profileBtn;
-	private ProfileActionWidget conferenceBtn;
 	private QuickViewAction followBtn;
 	
 	private Label statusLabel;
@@ -233,12 +232,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 										 "qView-a",	"qView-action");
 		workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
 		
-		conferenceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewConference(),
-										GwtTeaming.getMessages().qViewConferenceTitle(),
-										"qView-a", "qView-action");
-		conferenceBtn.addClickHandler(new ConferencingClickHandler());
-		conferenceBtn.setVisible(false);
-
 		instantMessageBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewInstantMessage(),
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
 				"qView-a", "qView-action");
@@ -316,7 +309,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		
 		panel.add(profileBtn);
 		panel.add(workspaceBtn);
-		panel.add(conferenceBtn);
 		panel.add(instantMessageBtn);
 		panel.add(followBtn);
 
@@ -497,7 +489,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 				getUserStatus();
 				updateFollowingStatus();
 				
-				conferenceBtn.setVisible(profile.isConferencingEnabled());
 				instantMessageBtn.setVisible(profile.isPresenceEnabled());
 			}
 		};
