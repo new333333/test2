@@ -346,24 +346,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    			} else {
 	    				nodesMap.remove(stateName);
 	    			}	
-    				Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='transitionOnElapsedTime']");
-    				if (timer != null) {
-    					String toState = DefinitionUtils.getPropertyValue(timer, "toState");
-    					long total = 0;
-    					//	get days and convert to minutes
-    					String val=DefinitionUtils.getPropertyValue(timer, "days");
-    					if (!Validator.isNull(val)) total += Long.parseLong(val)*24*60;
-    				
-    					val=DefinitionUtils.getPropertyValue(timer, "hours");
-    					if (!Validator.isNull(val)) total += Long.parseLong(val)*60;				    	
-    				
-    					val=DefinitionUtils.getPropertyValue(timer, "mins");
-	    					if (!Validator.isNull(val)) total += Long.parseLong(val);
-    					addTimer(context, stateNode, "onElapsedTime", String.valueOf(total) + " minutes", toState);
-    				} else {
-    					// 	remove any old timers for this node
+	    			
+    				// 	remove any old timers for this node; timers are now done in Vibe code
+    				try {
     					removeTimer(context, stateNode, "onElapsedTime");
-    				}
+    				} catch(Exception e) {}
 	    		}
 	    	}
 		
