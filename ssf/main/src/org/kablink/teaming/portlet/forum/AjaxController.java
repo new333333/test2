@@ -2488,7 +2488,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 				User user = RequestContextHolder.getRequestContext().getUser();
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
+				if (!calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
+					//See if there is a filter turned on for this folder. But don't do it for the MyEvents display
+					options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
+				}
 				
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
@@ -2552,7 +2555,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, end);
 			
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
+				if (!calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
+					//See if there is a filter turned on for this folder. But don't do it for the MyEvents display
+					options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
+				}
 				Document baseFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
 				boolean filtered = (null != baseFilter); 
 				if (filtered) {
