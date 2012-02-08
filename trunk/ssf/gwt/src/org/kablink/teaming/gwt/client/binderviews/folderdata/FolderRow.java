@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
@@ -62,6 +63,7 @@ public class FolderRow implements IsSerializable {
 	private List<FolderColumn>					m_columns;				// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>				m_rowOverdueDates;		// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
 	private Map<String, DescriptionHtml>		m_rowDescriptionHtmls;	// A map of column names to DescriptionHtml's                     possibly stored for a column.
+	private Map<String, EmailAddressInfo>		m_rowEmailAddresses;	// A map of column names to EmailAddressInfo's                    possibly stored for a column.
 	private Map<String, EntryEventInfo>			m_rowEntryEvents;		// A map of column names to EntryEventInfo's                      possibly stored for a column.
 	private Map<String, EntryLinkInfo>			m_rowEntryLinks;		// A map of column names to EntryLinkInfo's                       possibly stored for a column.
 	private Map<String, EntryTitleInfo>			m_rowEntryTitles;		// A map of column names to EntryTitleInfo's                      possibly stored for a column.
@@ -113,6 +115,7 @@ public class FolderRow implements IsSerializable {
 	public List<FolderColumn>                getColumns()                   {                               return m_columns;            }
 	public Map<String, Boolean>              getRowOverdueDates()           {validateMapOverdueDates();     return m_rowOverdueDates;    }
 	public Map<String, DescriptionHtml>      getRowDescriptionHtmlMap()     {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
+	public Map<String, EmailAddressInfo>     getRowEmailAddressMap()        {validateMapEmailAddresses();   return m_rowEmailAddresses;  }
 	public Map<String, EntryEventInfo>       getRowEntryEventMap()          {validateMapEvents();           return m_rowEntryEvents;     }
 	public Map<String, EntryLinkInfo>        getRowEntryLinkMap()           {validateMapLinks();            return m_rowEntryLinks;      }
 	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()         {validateMapTitles();           return m_rowEntryTitles;     }
@@ -142,15 +145,16 @@ public class FolderRow implements IsSerializable {
 	 */
 	public void setColumnValue(FolderColumn fc, Object v) {
 		String vk = getValueKey(fc);
-		if      (v instanceof String)          {validateMapStrings();          m_rowStrings.put(         vk, ((String)          v));}
-		else if (v instanceof DescriptionHtml) {validateMapDescriptionHtmls(); m_rowDescriptionHtmls.put(vk, ((DescriptionHtml) v));}
-		else if (v instanceof EntryEventInfo)  {validateMapEvents();           m_rowEntryEvents.put(     vk, ((EntryEventInfo)  v));}
-		else if (v instanceof EntryLinkInfo)   {validateMapLinks();            m_rowEntryLinks.put(      vk, ((EntryLinkInfo)   v));}
-		else if (v instanceof EntryTitleInfo)  {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)  v));}
-		else if (v instanceof GuestInfo)       {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)       v));}
-		else if (v instanceof PrincipalInfo)   {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)   v));}
-		else if (v instanceof ViewFileInfo)    {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)    v));}
-		else                                   {validateMapStrings();          m_rowStrings.put(         vk, v.toString());         }
+		if      (v instanceof String)           {validateMapStrings();          m_rowStrings.put(         vk, ((String)           v));}
+		else if (v instanceof DescriptionHtml)  {validateMapDescriptionHtmls(); m_rowDescriptionHtmls.put(vk, ((DescriptionHtml)  v));}
+		else if (v instanceof EmailAddressInfo) {validateMapEmailAddresses();   m_rowEmailAddresses.put(  vk, ((EmailAddressInfo) v));}
+		else if (v instanceof EntryEventInfo)   {validateMapEvents();           m_rowEntryEvents.put(     vk, ((EntryEventInfo)   v));}
+		else if (v instanceof EntryLinkInfo)    {validateMapLinks();            m_rowEntryLinks.put(      vk, ((EntryLinkInfo)    v));}
+		else if (v instanceof EntryTitleInfo)   {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)   v));}
+		else if (v instanceof GuestInfo)        {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)        v));}
+		else if (v instanceof PrincipalInfo)    {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)    v));}
+		else if (v instanceof ViewFileInfo)     {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)     v));}
+		else                                    {validateMapStrings();          m_rowStrings.put(         vk, v.toString());          }
 	}
 	
 	public void setColumnValue_AssignmentInfos(FolderColumn fc, List<AssignmentInfo> aiList) {
@@ -195,6 +199,17 @@ public class FolderRow implements IsSerializable {
 	 */
 	public DescriptionHtml getColumnValueAsDescriptionHtml(FolderColumn fc) {
 		return ((null == m_rowDescriptionHtmls) ? null : m_rowDescriptionHtmls.get(getValueKey(fc)));
+	}
+
+	/**
+	 * Returns the EmailAddressInfo value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public EmailAddressInfo getColumnValueAsEmailAddress(FolderColumn fc) {
+		return ((null == m_rowEmailAddresses) ? null : m_rowEmailAddresses.get(getValueKey(fc)));
 	}
 
 	/**
@@ -299,6 +314,12 @@ public class FolderRow implements IsSerializable {
 					if (null != dh) {
 						reply = dh.getDescription();
 					}
+					else {
+						EmailAddressInfo emai = ((null == m_rowEmailAddresses) ? null : m_rowEmailAddresses.get(vk));
+						if (null != emai) {
+							reply = emai.getEmailAddress(); 
+						}
+					}
 				}
 			}
 		}
@@ -357,6 +378,18 @@ public class FolderRow implements IsSerializable {
 	 */
 	public boolean isColumnValueDescriptionHtml(FolderColumn fc) {
 		return ((null != m_rowDescriptionHtmls) && (null != m_rowDescriptionHtmls.get(getValueKey(fc))));
+	}
+
+	/**
+	 * Returns true if a column's value is an EmailAddressInfo and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueEmailAddressInfo(FolderColumn fc) {
+		return ((null != m_rowEmailAddresses) && (null != m_rowEmailAddresses.get(getValueKey(fc))));
 	}
 
 	/**
@@ -437,6 +470,7 @@ public class FolderRow implements IsSerializable {
 	private void validateMapAssignees()        {if (null == m_rowAssigneeInfos)		m_rowAssigneeInfos		= new HashMap<String, List<AssignmentInfo>>();}
 	private void validateMapOverdueDates()     {if (null == m_rowOverdueDates)  	m_rowOverdueDates		= new HashMap<String, Boolean>();             }
 	private void validateMapDescriptionHtmls() {if (null == m_rowDescriptionHtmls)	m_rowDescriptionHtmls	= new HashMap<String, DescriptionHtml>();     }
+	private void validateMapEmailAddresses()   {if (null == m_rowEmailAddresses)	m_rowEmailAddresses		= new HashMap<String, EmailAddressInfo>();    }
 	private void validateMapEvents()           {if (null == m_rowEntryEvents)		m_rowEntryEvents		= new HashMap<String, EntryEventInfo>();      }
 	private void validateMapGuests()           {if (null == m_rowGuests)		    m_rowGuests			    = new HashMap<String, GuestInfo>();           }
 	private void validateMapLinks()            {if (null == m_rowEntryLinks)		m_rowEntryLinks			= new HashMap<String, EntryLinkInfo>();       }

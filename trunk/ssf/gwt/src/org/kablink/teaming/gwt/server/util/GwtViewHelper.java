@@ -77,6 +77,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -104,6 +105,7 @@ import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
@@ -1714,7 +1716,7 @@ public class GwtViewHelper {
 								// guest' column in a guest book
 								// folder!  If we can create a
 								// PrincipalInfo for the principal...
-								pi = getPIFromPId(pId);
+								pi = getPIFromPId(bs, request, folderInfo, pId);
 								if (null != pi) {
 									// ...store it directly.
 									fr.setColumnValue(fc, pi);
@@ -1756,11 +1758,21 @@ public class GwtViewHelper {
 								List<TaskFolderInfo> taskFolderList = GwtServerHelper.getTaskFolderInfoListFromEntryMap(bs, request, entryMap, csk);
 								fr.setColumnValue_TaskFolderInfos(fc, taskFolderList);
 							}
+							
+							// No, the column doesn't contain a
+							// collection of task folders either!
+							// Does it contain an email address?
+							else if (csk.equals("emailAddress")) {
+								// Yes!  Construct an EmailAddressInfo
+								// from the entry map.
+								EmailAddressInfo emai = GwtServerHelper.getEmailAddressInfoFromEntryMap(bs, entryMap);
+								fr.setColumnValue(fc, emai);
+							}
 	
 							else {
-								// No, the column doesn't contain a
-								// collection of task folders either!
-								// Extract its String value.
+								// No, the column doesn't contain an
+								// email address either!  Extract its
+								// String value.
 								String value = GwtServerHelper.getStringFromEntryMapValue(
 									emValue,
 									DateFormat.MEDIUM,
@@ -1948,7 +1960,7 @@ public class GwtViewHelper {
 	 * equivalent PrincipalInfo object.
 	 */
 	@SuppressWarnings("unchecked")
-	private static PrincipalInfo getPIFromPId(Long pId) {
+	private static PrincipalInfo getPIFromPId(AllModulesInjected bs, HttpServletRequest request, BinderInfo fi, Long pId) {
 		// Can we resolve the ID to an actual Principal object?
 		PrincipalInfo reply = null;
 		List<Long> principalIds = new ArrayList<Long>();
@@ -1964,10 +1976,16 @@ public class GwtViewHelper {
 				if (isUser) {
 					// Yes!  Construct the rest of the PrincipalInfo
 					// required.
-					pId = p.getId();
+					pId   = p.getId();
 					reply = PrincipalInfo.construct(pId);
 					reply.setTitle(p.getTitle());
-					User user = ((User) p);
+					User      user          = ((User) p);
+					Workspace userWS        = GwtServerHelper.getUserWorkspace(user);
+					boolean   userHasWS     = (null != userWS);
+					boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
+					reply.setUserHasWS(    userHasWS    );
+					reply.setUserWSInTrash(userWSInTrash);
+					reply.setUserProfileUrl(getUserProfileUrl(bs, request, pId));
 					reply.setPresenceUserWSId(user.getWorkspaceId());
 					
 					// Setup an appropriate GwtPresenceInfo for the
@@ -2219,7 +2237,7 @@ public class GwtViewHelper {
 		// search Map's for the pinned entries.  Return it.
 		return pinnedEntrySearchMaps;
 	}
-	
+
 	/*
 	 * Returns a Map<String, String> for the query parameters from a
 	 * URL.
@@ -2380,6 +2398,19 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns the URL to use to view a user's profile.
+	 */
+	private static String getUserProfileUrl(AllModulesInjected bs, HttpServletRequest request, Long userId) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		url.setParameter("binderId",       String.valueOf(bs.getProfileModule().getProfileBinder().getId()));
+		url.setParameter("action",         WebKeys.ACTION_VIEW_PROFILE_ENTRY                               );
+		url.setParameter("entryViewStyle", "full"                                                          );
+		url.setParameter("newTab",         "1"                                                             );
+		url.setParameter("entryId",        String.valueOf(userId)                                          );
+		return url.toString();
+	}
+	
 	/**
 	 * Returns a ViewInfo used to control folder views based on a URL.
 	 * 
@@ -2504,6 +2535,11 @@ public class GwtViewHelper {
 		else if (action.equals(WebKeys.ACTION_BUILD_FILTER)) {
 			// A build filter!  Simply mark the ViewInfo as such.
 			vi.setViewType(ViewType.BUILD_FILTER);
+		}
+		
+		else if (action.equals(WebKeys.ACTION_VIEW_PROFILE_ENTRY)) {
+			// A view profile entry!  Simply mark the ViewInfo as such.
+			vi.setViewType(ViewType.VIEW_PROFILE_ENTRY);
 		}
 		
 		// If we get here reply refers to the BinderInfo requested or

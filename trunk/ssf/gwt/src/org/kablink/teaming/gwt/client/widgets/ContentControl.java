@@ -871,6 +871,7 @@ public class ContentControl extends Composite
 				case ADD_PROFILE_ENTRY:
 				case ADVANCED_SEARCH:
 				case BUILD_FILTER:
+				case VIEW_PROFILE_ENTRY:
 					// These aren't handled!  Let things take the
 					// default flow.
 					break;

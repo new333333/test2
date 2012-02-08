@@ -121,6 +121,7 @@ import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
@@ -3197,6 +3198,23 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns a user's EmailAddressInfo from the data in an entry map.
+	 * 
+	 * @param bs
+	 * @param entryMap
+	 * 
+	 * @return
+	 */
+	public static EmailAddressInfo getEmailAddressInfoFromEntryMap(AllModulesInjected bs, Map entryMap) {
+		User      user          = ((User) getValueFromEntryMap(entryMap, Constants.PRINCIPAL_FIELD));
+		String    userEMA       = ((null == user) ? null : user.getEmailAddress());
+		Workspace userWS        = getUserWorkspace(user);
+		boolean   userHasWS     = (null != userWS); 
+		boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
+		return new EmailAddressInfo(userEMA, userHasWS, userWSInTrash);
+	}
+	
+	/**
 	 * Return a GwtFileSyncAppConfiguration object that holds the File Sync App configuration data
 	 * 
 	 * @return
@@ -4629,7 +4647,30 @@ public class GwtServerHelper {
 		// Always use the initial form of the method.
 		return getStringFromEntryMap(em, key, DateFormat.MEDIUM, DateFormat.LONG);		
 	}
-	
+
+	/**
+	 * Returns a String[] for the values out of the entry map from a
+	 * search results.
+	 * 
+	 * @param emValue
+	 * 
+	 * @return
+	 */
+	public static String[] getStringArrayFromEntryMapValue(Object emValue) {
+		ArrayList<String>	strings;
+		if (emValue instanceof SearchFieldResult) {
+			strings = ((SearchFieldResult) emValue).getValueArray();
+		}
+		else {
+			strings = new ArrayList<String>();
+			String string = getStringFromEntryMapValue(emValue, DateFormat.MEDIUM, DateFormat.SHORT);
+			if (MiscUtil.hasString(string)) {
+				strings.add(string);
+			}
+		}
+		return strings.toArray(new String[0]);
+	}
+
 	/**
 	 * Returns a string for a value out of the entry map from a search
 	 * results.
@@ -5046,6 +5087,31 @@ public class GwtServerHelper {
 		else reply = null;
 		return reply;
 	}
+
+	/**
+	 * Returns a user's Workspace, if one exists.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Workspace getUserWorkspace(User user) {
+		// If we can access this user's workspace ID...
+		Workspace reply = null;
+		Long userWSId = ((null == user) ? null : user.getWorkspaceId());
+		if (null != userWSId) {
+			// ...and we can access the Workspace from that...
+			Set userWSSet = ResolveIds.getBinders(String.valueOf(userWSId));
+			if (!(userWSSet.isEmpty())) {
+				// ...return it.
+				reply = ((Workspace) (userWSSet.iterator().next()));
+			}
+		}
+		
+		// If we get here, reply refers to the user's workspace if it
+		// exists or is null.  Return it.
+		return reply;
+	}
 	
 	/**
 	 * Return a view file URL that can be used to view an entry's file
@@ -5262,6 +5328,19 @@ public class GwtServerHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns true if a user's workspace is in the trash and false
+	 * otherwise.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static boolean isUserWSInTrash(User user) {
+		Workspace userWS = getUserWorkspace(user);
+		return ((null != userWS) && userWS.isPreDeleted());
+	}
+	
 	/*
 	 * Returns true if two List<Long>'s contain different values and
 	 * false otherwise.

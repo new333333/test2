@@ -34,21 +34,56 @@ package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * Enumeration used to communicate the type of a view between the
- * client and the server as part of a GWT RPC request.
+ * Class used to model a user's email address.
  * 
  * @author drfoster@novell.com
- *
  */
-public enum ViewType implements IsSerializable {
-	ADD_FOLDER_ENTRY,
-	ADD_PROFILE_ENTRY,
-	ADVANCED_SEARCH,
-	BINDER,
-	BUILD_FILTER,
-	VIEW_PROFILE_ENTRY,
+public class EmailAddressInfo implements IsSerializable {
+	private boolean	m_userHasWS;		//
+	private boolean	m_userWSInTrash;	//
+	private String	m_emailAddress;		//
 	
-	OTHER,
+	/**
+	 * Constructor method.
+	 */
+	public EmailAddressInfo() {
+		// Initialize the super class.
+		super();
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param emailAddress
+	 * @param userHasWS
+	 * @param userWSInTrash
+	 */
+	public EmailAddressInfo(String emailAddress, boolean userHasWS, boolean userWSInTrash) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setEmailAddress( emailAddress );
+		setUserHasWS(    userHasWS    );
+		setUserWSInTrash(userWSInTrash);
+	}
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean isUserHasWS()     {return m_userHasWS;    }
+	public boolean isUserWSInTrash() {return m_userWSInTrash;}
+	public String  getEmailAddress() {return m_emailAddress; }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setUserHasWS(    boolean userHasWS)     {m_userHasWS     = userHasWS;    }
+	public void setUserWSInTrash(boolean userWSInTrash) {m_userWSInTrash = userWSInTrash;}
+	public void setEmailAddress( String  emailAddress)  {m_emailAddress  = emailAddress; }
 }
