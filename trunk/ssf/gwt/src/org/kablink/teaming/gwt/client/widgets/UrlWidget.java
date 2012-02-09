@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Anchor;
 
 
 
@@ -93,12 +93,14 @@ public class UrlWidget extends VibeWidget
 		url = m_properties.getUrl();
 		if ( url != null && url.length() > 0 )
 		{
-			InlineLabel link;
+			Anchor link;
 			
 			if ( title == null || title.length() == 0 )
 				title = url;
 			
-			link = new InlineLabel( title );
+			link = new Anchor();
+			link.setText( title );
+			link.setHref( url );
 			link.addStyleName( "urlWidgetLink" + m_style );
 			
 			link.addClickHandler( new ClickHandler()
@@ -106,8 +108,12 @@ public class UrlWidget extends VibeWidget
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
+					// Kill this event to prevent GWT from sending the url.
+					event.preventDefault();
+					
 					// Should we open the url in a new window?
 					if ( m_properties.getOpenInNewWindow() )
 					{
