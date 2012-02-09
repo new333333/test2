@@ -493,7 +493,7 @@
 	margin: 6px;
 }
 
-.taskFolderWidgetLinkToTask, .taskFolderWidgetLinkToTask_dark
+.taskFolderWidgetLinkToTask, .taskFolderWidgetLinkToTask_dark, .taskFolderWidgetLinkToLocation, .taskFolderWidgetLinkToLocation_dark
 {
 	color: #135c8f;
 	font-size: 14px;
@@ -527,7 +527,7 @@
 	line-height: 15px;
 }
 
-.taskFolderWidgetTitleLabel:hover, .taskFolderWidgetTitleLabel_dark:hover, .taskFolderWidgetLinkToTask:hover, .taskFolderWidgetLinkToTask_dark:hover
+.taskFolderWidgetTitleLabel:hover, .taskFolderWidgetTitleLabel_dark:hover, .taskFolderWidgetLinkToTask:hover, .taskFolderWidgetLinkToTask_dark:hover, .taskFolderWidgetLinkToLocation:hover, .taskFolderWidgetLinkToLocation_dark:hover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
