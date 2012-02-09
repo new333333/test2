@@ -661,7 +661,7 @@ public class WebUrlUtil {
 				else
 					secure = req.isSecure();
 			}
-			else if(ZoneContextHolder.getServerName() != null) {
+			else if(ZoneContextHolder.getServerName() != null && Boolean.TRUE.equals(ZoneContextHolder.getUseRuntimeContext())) {
 				host = ZoneContextHolder.getServerName();
 				if(port == -1)
 					port = ZoneContextHolder.getServerPort();
@@ -689,7 +689,7 @@ public class WebUrlUtil {
 				else
 					secure = req.isSecure();
 			}
-			else if(ZoneContextHolder.getServerName() != null) {
+			else if(ZoneContextHolder.getServerName() != null && Boolean.TRUE.equals(ZoneContextHolder.getUseRuntimeContext())) {
 				host = ZoneContextHolder.getServerName();
 				if(port == -1)
 					port = ZoneContextHolder.getServerPort();
@@ -741,7 +741,7 @@ public class WebUrlUtil {
 				else
 					secure = req.isSecure(); // get the context value from the req object
 			}
-			else if(ZoneContextHolder.getServerName() != null) {
+			else if(ZoneContextHolder.getServerName() != null && Boolean.TRUE.equals(ZoneContextHolder.getUseRuntimeContext())) {
 				host = ZoneContextHolder.getServerName();
 				if(port == -1)
 					port = ZoneContextHolder.getServerPort();
@@ -770,7 +770,7 @@ public class WebUrlUtil {
 				else
 					secure = req.isSecure(); // get the context value from the req object
 			}
-			else if(ZoneContextHolder.getServerName() != null) {
+			else if(ZoneContextHolder.getServerName() != null && Boolean.TRUE.equals(ZoneContextHolder.getUseRuntimeContext())) {
 				host = ZoneContextHolder.getServerName();
 				if(port == -1)
 					port = ZoneContextHolder.getServerPort();
