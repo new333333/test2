@@ -406,6 +406,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     		ensureZoneIsConfigured(zone);
     		SimpleProfiler.stop( "2-AuthenticationModuleImpl.ensureZoneIsConfigured()" );
     	} catch(Exception e) {
+    		logger.error("Unable to configure authentication for zone " + zone, e);
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
 
@@ -537,7 +538,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     	try {
     		ensureZoneIsConfigured(zone);
     	} catch(Exception e) {
-    		logger.error("Unable to configure authentication for zone " + zone + ": " + e.toString());
+    		logger.error("Unable to configure authentication for zone " + zone, e);
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
 		if (externalAuthenticators.containsKey(zone)) {
