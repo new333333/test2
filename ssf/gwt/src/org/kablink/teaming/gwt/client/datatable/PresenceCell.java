@@ -70,13 +70,6 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 	}
 
 	/*
-	 * Called to invoke the full user profile on the principal.
-	 */
-	private void invokeFullProfile(PrincipalInfo pi, Element pElement) {
-		GwtTeaming.fireEvent(new GotoContentUrlEvent(pi.getUserProfileUrl()));
-	}
-	
-	/*
 	 * Called to invoke the simple profile dialog on the principal's
 	 * presence.
 	 */
@@ -84,6 +77,13 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		Long wsId = pi.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
 		GwtClientHelper.invokeSimpleProfile(pElement, wsIdS, pi.getTitle());
+	}
+	
+	/*
+	 * Called to view the profile entry on the principal.
+	 */
+	private void invokeViewProfileEntry(PrincipalInfo pi, Element pElement) {
+		GwtTeaming.fireEvent(new GotoContentUrlEvent(pi.getViewProfileEntryUrl()));
 	}
 	
 	/**
@@ -127,13 +127,8 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
     		}
     		
     		// Ignore clicks that occur outside of the outermost element.
-    		if (isLabel && (!(pi.isUserHasWS()))) {
-    			invokeFullProfile(pi, eventTarget);
-    		}
-    		else if (isLabel || isPresence) {
-    			// Invoke the Simple Profile dialog.
-    			invokeSimpleProfile(pi, eventTarget);
-    		}
+    		if      (isLabel && (!(pi.isUserHasWS()))) invokeViewProfileEntry(pi, eventTarget);
+    		else if (isLabel || isPresence)            invokeSimpleProfile(   pi, eventTarget);
     	}
     	
     	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
@@ -164,12 +159,8 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 			String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
 			isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL));
 		}
-		if (isLabel && (!(pi.isUserHasWS()))) {
-			invokeFullProfile(pi, eventTarget);
-		}
-		else if (isLabel || isPresence) {
-			invokeSimpleProfile(pi, eventTarget);
-		}
+		if      (isLabel && (!(pi.isUserHasWS()))) invokeViewProfileEntry(pi, eventTarget);
+		else if (isLabel || isPresence)            invokeSimpleProfile(   pi, eventTarget);
     }
     
 	/**

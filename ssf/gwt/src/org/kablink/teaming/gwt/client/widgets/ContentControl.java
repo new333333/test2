@@ -143,8 +143,6 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
-	private final static boolean SHOW_NEW_PERSONAL_WORKSPACES_VIEW	= false;	// 20120207 (DRF):  Until I get this working.
-	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -839,13 +837,8 @@ public class ContentControl extends Composite
 						}
 							
 						case PROFILE_ROOT:
-							if ( SHOW_NEW_PERSONAL_WORKSPACES_VIEW )
-							{
-								if (Window.confirm("Show GWT Personal Workspaces?")) {
-									GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
-									m_contentInGWT = true;
-								}
-							}
+							GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 
 						case USER:

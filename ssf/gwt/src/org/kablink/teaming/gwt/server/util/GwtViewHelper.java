@@ -1985,7 +1985,7 @@ public class GwtViewHelper {
 					boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
 					reply.setUserHasWS(    userHasWS    );
 					reply.setUserWSInTrash(userWSInTrash);
-					reply.setUserProfileUrl(getUserProfileUrl(bs, request, pId));
+					reply.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, pId));
 					reply.setPresenceUserWSId(user.getWorkspaceId());
 					
 					// Setup an appropriate GwtPresenceInfo for the
@@ -2398,19 +2398,6 @@ public class GwtViewHelper {
 		return reply;
 	}
 
-	/*
-	 * Returns the URL to use to view a user's profile.
-	 */
-	private static String getUserProfileUrl(AllModulesInjected bs, HttpServletRequest request, Long userId) {
-		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-		url.setParameter("binderId",       String.valueOf(bs.getProfileModule().getProfileBinder().getId()));
-		url.setParameter("action",         WebKeys.ACTION_VIEW_PROFILE_ENTRY                               );
-		url.setParameter("entryViewStyle", "full"                                                          );
-		url.setParameter("newTab",         "1"                                                             );
-		url.setParameter("entryId",        String.valueOf(userId)                                          );
-		return url.toString();
-	}
-	
 	/**
 	 * Returns a ViewInfo used to control folder views based on a URL.
 	 * 
@@ -2550,6 +2537,19 @@ public class GwtViewHelper {
 		return vi;
 	}
 
+	/*
+	 * Returns the URL to use to view a user's profile entry.
+	 */
+	private static String getViewProfileEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long userId) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		url.setParameter(WebKeys.URL_BINDER_ID,        String.valueOf(bs.getProfileModule().getProfileBinder().getId()));
+		url.setParameter(WebKeys.URL_ACTION,           WebKeys.ACTION_VIEW_PROFILE_ENTRY                               );
+		url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL                               );
+		url.setParameter(WebKeys.URL_NEW_TAB,          "1"                                                             );
+		url.setParameter(WebKeys.URL_ENTRY_ID,         String.valueOf(userId)                                          );
+		return url.toString();
+	}
+	
 	/*
 	 * Initializes a ViewInfo based on a binder ID.
 	 * 

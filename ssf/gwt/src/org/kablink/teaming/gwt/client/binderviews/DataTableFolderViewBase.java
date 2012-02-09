@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
+import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
@@ -98,6 +99,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
@@ -776,6 +778,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private static boolean isColumnCustom(         FolderColumn column)     {return column.isCustomColumn();                               }
 	private static boolean isColumnDescriptionHtml(String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DESCRIPTION_HTML);}
 	private static boolean isColumnDownload(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);        }
+	private static boolean isColumnEmailAddress(   String       columnName) {return columnName.equals(ColumnWidth.COLUMN_EMAIL_ADDRESS);   }
 	private static boolean isColumnFullName(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_FULL_NAME);       }
 	private static boolean isColumnGuest(          String       columnName) {return columnName.equals(ColumnWidth.COLUMN_GUEST);           }
 	private static boolean isColumnRating(         String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);          }
@@ -1073,9 +1076,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// No, this column isn't signer of a guest book either!  Is
+			// it an email address?
+			else if (isColumnEmailAddress(cName)) {
+				// Yes!  Create a EmailAddressColumn for it.
+				column = new EmailAddressColumn<FolderRow>(fc) {
+					@Override
+					public EmailAddressInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsEmailAddress(fc);
+					}
+				};
+			}
+			
 			else {
-				// No, this column isn't the signer of a guest book
-				// either!  Define a StringColumn for it.
+				// No, this column isn't an email address either!
+				// Define a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {

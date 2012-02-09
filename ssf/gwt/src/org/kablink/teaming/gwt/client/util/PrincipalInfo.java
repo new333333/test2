@@ -43,15 +43,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class PrincipalInfo implements IsSerializable {
-	private boolean			m_userHasWS;		// true -> The principal's workspace exists.
-	private boolean			m_userWSInTrash;	// true -> The principal's workspace exists and is in the trash.
-	private GwtPresenceInfo m_presence;			// Only used for individual assignees.
-	private int             m_members = (-1);	// Only used for group and team assignees.
-	private Long            m_id;				//
-	private Long			m_presenceUserWSId;	// Only used for individual assignees.
-	private String			m_presenceDude;		// Used for all assignees.
-	private String          m_title;			//
-	private String			m_userProfileUrl;	//
+	private boolean			m_userHasWS;			// true -> The principal's workspace exists.
+	private boolean			m_userWSInTrash;		// true -> The principal's workspace exists and is in the trash.
+	private GwtPresenceInfo m_presence;				// Only used for individual assignees.
+	private int             m_members = (-1);		// Only used for group and team assignees.
+	private Long            m_id;					//
+	private Long			m_presenceUserWSId;		// Only used for individual assignees.
+	private String			m_presenceDude;			// Used for all assignees.
+	private String          m_title;				//
+	private String			m_viewProfileEntryUrl;	//
 
 	/**
 	 * Constructor method.
@@ -67,30 +67,30 @@ public class PrincipalInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean         isUserHasWS()         {return m_userHasWS;       }
-	public boolean         isUserWSInTrash()     {return m_userWSInTrash;   }
-	public GwtPresenceInfo getPresence()         {return m_presence;        }
-	public int             getMembers()          {return m_members;         }
-	public Long            getId()               {return m_id;              }
-	public Long            getPresenceUserWSId() {return m_presenceUserWSId;}
-	public String          getPresenceDude()     {return m_presenceDude;    }
-	public String          getTitle()            {return m_title;           }
-	public String          getUserProfileUrl()   {return m_userProfileUrl;  }
+	public boolean         isUserHasWS()            {return m_userHasWS;          }
+	public boolean         isUserWSInTrash()        {return m_userWSInTrash;      }
+	public GwtPresenceInfo getPresence()            {return m_presence;           }
+	public int             getMembers()             {return m_members;            }
+	public Long            getId()                  {return m_id;                 }
+	public Long            getPresenceUserWSId()    {return m_presenceUserWSId;   }
+	public String          getPresenceDude()        {return m_presenceDude;       }
+	public String          getTitle()               {return m_title;              }
+	public String          getViewProfileEntryUrl() {return m_viewProfileEntryUrl;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setUserHasWS(       boolean         userHasWS)        {m_userHasWS        = userHasWS;       }
-	public void setUserWSInTrash(   boolean         userWSInTrash)    {m_userWSInTrash    = userWSInTrash;   }
-	public void setPresence(        GwtPresenceInfo presence)         {m_presence         = presence;        }
-	public void setMembers(         int             members)          {m_members          = members;         }
-	public void setId(              Long            id)               {m_id               = id;              }
-	public void setPresenceUserWSId(Long            presenceUserWSId) {m_presenceUserWSId = presenceUserWSId;}
-	public void setPresenceDude(    String          presenceDude)     {m_presenceDude     = presenceDude;    }
-	public void setTitle(           String          title)            {m_title            = title;           }
-	public void setUserProfileUrl(  String          userProfileUrl)   {m_userProfileUrl   = userProfileUrl;  }
+	public void setUserHasWS(          boolean         userHasWS)           {m_userHasWS           = userHasWS;          }
+	public void setUserWSInTrash(      boolean         userWSInTrash)       {m_userWSInTrash       = userWSInTrash;      }
+	public void setPresence(           GwtPresenceInfo presence)            {m_presence            = presence;           }
+	public void setMembers(            int             members)             {m_members             = members;            }
+	public void setId(                 Long            id)                  {m_id                  = id;                 }
+	public void setPresenceUserWSId(   Long            presenceUserWSId)    {m_presenceUserWSId    = presenceUserWSId;   }
+	public void setPresenceDude(       String          presenceDude)        {m_presenceDude        = presenceDude;       }
+	public void setTitle(              String          title)               {m_title               = title;              }
+	public void setViewProfileEntryUrl(String          viewProfileEntryUrl) {m_viewProfileEntryUrl = viewProfileEntryUrl;}
 	
 	/**
 	 * Constructs an PrincipalInfo from the parameters.
