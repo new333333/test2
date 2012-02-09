@@ -54,9 +54,9 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoFileByTheNameException;
@@ -106,6 +106,7 @@ import static org.kablink.util.search.Restrictions.disjunction;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
 	private CoreDao coreDao;
+	private ProfileDao profileDao;
 	private AccessControlManager accessControlManager;
 	
 	protected CoreDao getCoreDao() {
@@ -115,6 +116,12 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		this.coreDao = coreDao;
 	}
 	
+	public ProfileDao getProfileDao() {
+		return profileDao;
+	}
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
 	protected AccessControlManager getAccessControlManager() {
 		return accessControlManager;
 	}
@@ -454,7 +461,25 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return getFolders(folderSearcher, firstRecord);
 	}
 	
-	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, final long[] startingBinderIds, final String[] families, final int firstRecord, final int maxRecords) {
+	private Set<Long> getUserEffectiveIds() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Set<Long> principalIds = getProfileDao().getPrincipalIds(user);
+
+		Long allUsersGroupId = Utils.getAllUsersGroupId();
+      	Set<Long> principalIds2 = new HashSet<Long>(principalIds);
+      	
+		//check user can see all users
+      	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
+		if (canOnlySeeCommonGroupMembers) {
+			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId) ) {
+				//This user is not allowed to see all users, so remove the AllUsers group id
+				principalIds2.remove(allUsersGroupId);
+			}
+		}
+		return principalIds2;
+	}
+	
+	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, final long[] startingBinderIds, final String[] families, final boolean restrictByTeamMembership, final int firstRecord, final int maxRecords) {
 		FolderSearcher folderSearcher = new FolderSearcher() {
 			public Map searchFolders() {	
 		    	Criteria crit = new Criteria()
@@ -474,6 +499,16 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		    		crit.add(disj);
 		    	}
 		    	
+		    	if(restrictByTeamMembership) {			
+		    		Set<Long> ids = getUserEffectiveIds();
+		    		if(ids.size() > 0) {
+		    			Disjunction disj = disjunction();
+		    			for(Long id:ids) {
+		    				disj.add(eq(Constants.TEAM_ACL_FIELD, id.toString()));
+		    			}
+		    			crit.add(disj);
+		    		}
+		    	}
 				return getBinderModule().executeSearchQuery(crit, firstRecord, maxRecords);
 			}
 		};
