@@ -60,6 +60,8 @@ public class ZoneContextOverrideFilter implements Filter {
 		// We only need to override this one particular attribute in preparation
 		// for client-server interaction through SOAP API with WSS auth.
 		ZoneContextHolder.setUseRuntimeContext(USE_RUNTIME_CONTEXT);
+		
+		chain.doFilter(request, response);
 	}
 
 	public void init(FilterConfig filterConfig) throws ServletException {
