@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
@@ -54,6 +56,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -62,7 +65,6 @@ import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 
 
 
@@ -678,6 +680,8 @@ public class SimpleListOfTasksWidget extends VibeWidget
 		TaskClickHandler clickHandler;
 		int row;
 		int col;
+		GwtTeamingMessages messages;
+		GwtTeamingTaskListingImageBundle images;
 
 		// Have we reached the max number of tasks to display?
 		if ( m_numTasksDisplayed >= m_maxTasksToDisplay )
@@ -685,7 +689,10 @@ public class SimpleListOfTasksWidget extends VibeWidget
 			// Yes, don't add any more.
 			return;
 		}
-		
+
+		images = GwtTeaming.getTaskListingImageBundle();
+		messages = GwtTeaming.getMessages();
+
 		// Add the tag as the first tag in the table.
 		col = 0;
 		row = 1;
@@ -763,76 +770,180 @@ public class SimpleListOfTasksWidget extends VibeWidget
 		// Add the priority to the next column.
 		{
 			String priority;
-			String value;
-			
+			String altText = null;
+			ImageResource imgResource = null;
+		
 			priority = taskInfo.getPriority();
+			
 			if ( "p1".equalsIgnoreCase( priority ) )
-				value = GwtTeaming.getMessages().taskPriority_p1();
+			{
+				imgResource = images.p1();
+				altText = messages.taskPriority_p1();
+			}
 			else if ( "p2".equalsIgnoreCase( priority ) )
-				value = GwtTeaming.getMessages().taskPriority_p2();
+			{
+				imgResource = images.p2();
+				altText = messages.taskPriority_p2();
+			}
 			else if ( "p3".equalsIgnoreCase( priority ) )
-				value = GwtTeaming.getMessages().taskPriority_p3();
+			{
+				imgResource = images.p3();
+				altText = messages.taskPriority_p3();
+			}
 			else if ( "p4".equalsIgnoreCase( priority ) )
-				value = GwtTeaming.getMessages().taskPriority_p4();
+			{
+				imgResource = images.p4();
+				altText = messages.taskPriority_p4();
+			}
 			else if ( "p5".equalsIgnoreCase( priority ) )
-				value = GwtTeaming.getMessages().taskPriority_p5();
-			else
-				value = priority;
-			m_tasksTable.setText( row, col, value );
+			{
+				imgResource = images.p5();
+				altText = messages.taskPriority_p5();
+			}
+			
+			if ( imgResource != null )
+			{
+				Image img;
+				
+				img = new Image( imgResource );
+				
+				if ( altText != null )
+				{
+					img.setAltText( altText );
+					img.setTitle( altText );
+				}
+				
+				m_tasksTable.setWidget( row, col, img );
+			}
+
 			++col;
 		}
 		
 		// Add the status to the next column.
 		{
 			String status;
-			String statusValue;
+			String altText = null;
+			ImageResource imgResource = null;
 			
 			status = taskInfo.getStatus();
 			if ( "s1".equalsIgnoreCase( status ) )
-				statusValue = GwtTeaming.getMessages().taskStatus_needsAction();
+			{
+				imgResource = images.needsAction();
+				altText = messages.taskStatus_needsAction();
+			}
 			else if ( "s2".equalsIgnoreCase( status ) )
-				statusValue = GwtTeaming.getMessages().taskStatus_inProcess();
+			{
+				imgResource = images.inProcess();
+				altText = messages.taskStatus_inProcess();
+			}
 			else if ( "s3".equalsIgnoreCase( status ) )
-				statusValue = GwtTeaming.getMessages().taskStatus_completed();
+			{
+				imgResource = images.completed();
+				altText = messages.taskStatus_completed();
+			}
 			else if ( "s4".equalsIgnoreCase( status ) )
-				statusValue = GwtTeaming.getMessages().taskStatus_cancelled();
-			else
-				statusValue = status;
-			m_tasksTable.setText( row, col, statusValue );
+			{
+				imgResource = images.cancelled();
+				altText = messages.taskStatus_cancelled();
+			}
+
+			if ( imgResource != null )
+			{
+				Image img;
+				
+				img = new Image( imgResource );
+				
+				if ( altText != null )
+				{
+					img.setAltText( altText );
+					img.setTitle( altText );
+				}
+				
+				m_tasksTable.setWidget( row, col, img );
+			}
+
 			++col;
 		}
 		
 		// Add % done to the next column.
 		{
 			String completed;
-			String completedValue;
+			String altText = null;
+			ImageResource imgResource = null;
 			
 			completed = taskInfo.getCompleted();
+
 			if ( "c000".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c0();
+			{
+				imgResource = images.c0();
+				altText = messages.taskCompleted_c0();
+			}
 			else if ( "c010".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c10();
+			{
+				imgResource = images.c10();
+				altText = messages.taskCompleted_c10();
+			}
 			else if ( "c020".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c20();
+			{
+				imgResource = images.c20();
+				altText = messages.taskCompleted_c20();
+			}
 			else if ( "c030".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c30();
+			{
+				imgResource = images.c30();
+				altText = messages.taskCompleted_c30();
+			}
 			else if ( "c040".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c40();
+			{
+				imgResource = images.c40();
+				altText = messages.taskCompleted_c40();
+			}
 			else if ( "c050".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c50();
+			{
+				imgResource = images.c50();
+				altText = messages.taskCompleted_c50();
+			}
 			else if ( "c060".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c60();
+			{
+				imgResource = images.c60();
+				altText = messages.taskCompleted_c60();
+			}
 			else if ( "c070".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c70();
+			{
+				imgResource = images.c70();
+				altText = messages.taskCompleted_c70();
+			}
 			else if ( "c080".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c80();
+			{
+				imgResource = images.c80();
+				altText = messages.taskCompleted_c80();
+			}
 			else if ( "c090".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c90();
+			{
+				imgResource = images.c90();
+				altText = messages.taskCompleted_c90();
+			}
 			else if ( "c100".equalsIgnoreCase( completed ) )
-				completedValue = GwtTeaming.getMessages().taskCompleted_c100();
-			else
-				completedValue = completed;
-			m_tasksTable.setText( row, col, completedValue );
+			{
+				imgResource = images.c100();
+				altText = messages.taskCompleted_c100();
+			}
+
+			if ( imgResource != null )
+			{
+				Image img;
+				
+				img = new Image( imgResource );
+				
+				if ( altText != null )
+				{
+					img.setAltText( altText );
+					img.setTitle( altText );
+				}
+				
+				m_tasksTable.setWidget( row, col, img );
+			}
+
 			++col;
 		}
 		
