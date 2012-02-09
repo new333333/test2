@@ -251,7 +251,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getFolders")) {
 				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("getAllFoldersOfMatchingFamily")) {
-				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getAllFoldersOfMatchingFamily", new Object[] {null, splitLong(args[1]), split(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])});
+				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getAllFoldersOfMatchingFamily", new Object[] {null, splitLong(args[1]), split(args[2]), Boolean.parseBoolean(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5])});
 			} else if(args[0].equals("getTrashEntries")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTrashEntries", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("preDeleteBinder")) {
@@ -387,7 +387,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("synchronize <mirrored folder id>");
 		System.out.println("getFolders <binder id> <first> <max>");
-		System.out.println("getAllFoldersOfMatchingFamily \"starting-binder-id1, starting-binder-id2,...\" \"family1, family2,...\" <first> <max>");
+		System.out.println("getAllFoldersOfMatchingFamily \"starting-binder-id1, starting-binder-id2,...\" \"family1, family2,...\" <restrictByTeamMembership> <first> <max>");
 		System.out.println("preDeleteBinder <binder id>");
 		System.out.println("restoreBinder <binder id>");
 		System.out.println("preDeleteEntry <entry id>");
