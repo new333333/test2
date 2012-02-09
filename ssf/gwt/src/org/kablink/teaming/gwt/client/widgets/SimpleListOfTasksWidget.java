@@ -38,9 +38,11 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
@@ -48,8 +50,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
+import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 
@@ -675,7 +680,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 	/**
 	 * Add the given task to this widget
 	 */
-	private void addTask( TaskInfo taskInfo )
+	private void addTask( final TaskInfo taskInfo )
 	{
 		TaskClickHandler clickHandler;
 		int row;
@@ -961,6 +966,41 @@ public class SimpleListOfTasksWidget extends VibeWidget
 			m_tasksTable.setWidget( row, col, assignedToPanel );
 			++col;
 		}
+		
+		// Add the location to the next column
+		{
+			InlineLabel locationLabel;
+			
+			locationLabel = new InlineLabel( taskInfo.getLocation() );
+			locationLabel.addStyleName( "taskFolderWidgetLinkToLocation" + m_style );
+			locationLabel.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							TaskId taskId;
+							Long binderId;
+							
+							taskId = taskInfo.getTaskId();
+							binderId = taskId.getBinderId();
+
+							handleClickOnLocation( binderId );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			
+			m_tasksTable.setWidget( row, col, locationLabel );
+			++col;
+		}
 
 		// Add the necessary styles to the cells in the row.
 		{
@@ -1041,6 +1081,68 @@ public class SimpleListOfTasksWidget extends VibeWidget
 	/**
 	 * 
 	 */
+	private void handleClickOnLocation( Long binderId )
+	{
+		if ( binderId != null )
+		{
+			GetBinderPermalinkCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
+			final String binderIdS;
+			
+			binderIdS = String.valueOf( binderId );
+			
+			callback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+						binderIdS );
+				}
+				
+				/**
+				 * 
+				 */
+				@Override
+				public void onSuccess(  VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					StringRpcResponseData responseData;
+					final String binderPermalink;
+	
+					responseData = (StringRpcResponseData) response.getResponseData();
+					binderPermalink = responseData.getStringValue();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							OnSelectBinderInfo binderInfo;
+							
+							// Fire the event that will take us to the binder
+							binderInfo = new OnSelectBinderInfo( binderIdS, binderPermalink, false, Instigator.UNKNOWN );
+							GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			
+			// Issue an ajax request to get the permalink of the given binder.
+			cmd = new GetBinderPermalinkCmd( binderIdS );
+			GwtClientHelper.executeCommand( cmd, callback );
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	private VibeFlowPanel init( WidgetStyles widgetStyles, String landingPageStyle )
 	{
 		VibeFlowPanel mainPanel;
@@ -1093,6 +1195,9 @@ public class SimpleListOfTasksWidget extends VibeWidget
 					colLabel = new InlineLabel( GwtTeaming.getMessages().taskFolderWidget_assignedTo() );
 					m_tasksTable.setWidget( 0, 5, colLabel );
 					
+					colLabel = new InlineLabel( GwtTeaming.getMessages().taskColumn_location() );
+					m_tasksTable.setWidget( 0, 6, colLabel );
+					
 					rowFormatter = m_tasksTable.getRowFormatter();
 					rowFormatter.addStyleName( 0, "oltHeader" );
 
@@ -1101,7 +1206,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 					// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
 					// That is why we are calling DOM.setElementAttribute(...) instead.
 					//!!!m_cellFormatter.setWidth( 0, 2, "*" );
-					DOM.setElementAttribute( m_cellFormatter.getElement( 0, 5 ), "width", "*" );
+					DOM.setElementAttribute( m_cellFormatter.getElement( 0, 6 ), "width", "*" );
 					
 					m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
 					m_cellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );
@@ -1119,10 +1224,13 @@ public class SimpleListOfTasksWidget extends VibeWidget
 					m_cellFormatter.addStyleName( 0, 4, "oltHeaderBorderTop" );
 					m_cellFormatter.addStyleName( 0, 4, "oltHeaderBorderBottom" );
 					m_cellFormatter.addStyleName( 0, 4, "oltHeaderPadding" );
-					m_cellFormatter.addStyleName( 0, 5, "oltBorderRight" );
 					m_cellFormatter.addStyleName( 0, 5, "oltHeaderBorderTop" );
 					m_cellFormatter.addStyleName( 0, 5, "oltHeaderBorderBottom" );
 					m_cellFormatter.addStyleName( 0, 5, "oltHeaderPadding" );
+					m_cellFormatter.addStyleName( 0, 6, "oltBorderRight" );
+					m_cellFormatter.addStyleName( 0, 6, "oltHeaderBorderTop" );
+					m_cellFormatter.addStyleName( 0, 6, "oltHeaderBorderBottom" );
+					m_cellFormatter.addStyleName( 0, 6, "oltHeaderPadding" );
 				}
 
 				tasksPanel.add( m_tasksTable );
