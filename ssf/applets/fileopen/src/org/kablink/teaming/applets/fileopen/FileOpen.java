@@ -33,17 +33,14 @@
 package org.kablink.teaming.applets.fileopen;
 
 import java.applet.*;
-import java.awt.*;
-import java.awt.dnd.*;
-import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import java.security.*;
-import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 //import javax.net.*;
 import javax.swing.JApplet;
 import javax.swing.*;
-import javax.swing.tree.*;
+
 import netscape.javascript.JSObject;
 
 
@@ -55,6 +52,7 @@ public class FileOpen extends JApplet implements Runnable {
     static final int infWidth = 10000; // no restriction but must give value
 
     boolean alreadyStarted;
+    final String vibeAddinEditor = "addinedit";
     final String fileReceiverUrlParamName = "fileReceiverUrl";
     String fileReceiverUrl = ""; // where to post files
     final String startingDirParamName = "startingDir";
@@ -67,11 +65,13 @@ public class FileOpen extends JApplet implements Runnable {
     final String resetEditClicked = "resetEditClicked";
     final String operatingSystem = "operatingSystem";
     
+    String strUserName = "";
     String strFileName = "";
     String strEditorTypes = "";
     String strOperatingSystem = "";
     String uploadErrorMessage = "";
     String editorErrorMessage = "";
+    boolean isLicenseRequiredEdition = false;
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -82,6 +82,7 @@ public class FileOpen extends JApplet implements Runnable {
     public void run () {
         String msg;
     	fileOpen = this;
+        strUserName = getParameter("userName");
 		strFileName = getParameter(fileToOpen);
 		strEditorTypes = getParameter(editorType);
 		strOperatingSystem = getParameter(operatingSystem);
@@ -89,6 +90,7 @@ public class FileOpen extends JApplet implements Runnable {
 		if (uploadErrorMessage == null || uploadErrorMessage.equals("")) uploadErrorMessage = "Error";
 		editorErrorMessage = getParameter("EditorErrorMessage");
 		if (editorErrorMessage == null || editorErrorMessage.equals("")) editorErrorMessage = "Error from command";
+        isLicenseRequiredEdition = Boolean.parseBoolean(getParameter("isLicenseRequiredEdition"));
 		try {
 			boolean ifEditIsClicked = checkEditClicked();
 			resetEditClicked();
@@ -103,11 +105,12 @@ public class FileOpen extends JApplet implements Runnable {
                         String strURL = strFileName;
                         String [] command;
                         if (strOperatingSystem.equalsIgnoreCase("windows")) {
+                            String[] editorAndUrl = getWindowsEditorAndUrl(strEditorType[i], strURL);
                        	 	command =  new String[4];
                             command[0] = "cmd";
                             command[1] = "/C";
-                            command[2] = "start " + strEditorType[i];
-                            command[3] = strURL;
+                            command[2] = "start " + editorAndUrl[0];
+                            command[3] = editorAndUrl[1];
                             //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2] + " " + command[3]);
                         } else if (strOperatingSystem.equalsIgnoreCase("linux") || strOperatingSystem.equalsIgnoreCase("mac")) {
                         	command =  new String[3];
@@ -193,7 +196,78 @@ public class FileOpen extends JApplet implements Runnable {
     	}
     }
 
+    ////////////////////////////////////////////////////////////////////////
+    //
+    //  Swaps out the current editor for the vibe add-in launcher if:
+    //   1) the current editor is one of the ms office editors
+    //   2) we are running the "license required" edition of teaming
+    //   3) the vibe add-in is installed
+    //
+    //  If we are launching the vibe add-in, then we also modify the URL
+    //   to include the user's name so that the add-in can unambiguously
+    //   match it to an account.
+    //
+    ////////////////////////////////////////////////////////////////////////
+    protected String[] getWindowsEditorAndUrl(String strEditor, String strUrl){
+        if(isLicenseRequiredEdition){
+            Pattern p = Pattern.compile("((?:winword)|(?:excel)|(?:powerpnt))(?:\\.exe)?", Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(strEditor);
+            if(m.matches() && isAddinInstalled()){
+                String app = m.group(1);
+                if(app.equalsIgnoreCase("winword"))
+                    app = "word";
+                else if(app.equalsIgnoreCase("powerpnt"))
+                    app = "powerpoint";
+                strEditor = vibeAddinEditor + " /" + app;
+                // Add the username to the URL if available
+                if(strUserName != null && strUserName.length() > 0){
+                    try {
+                        URI uri = new URI(strUrl);
+                        uri = new URI(uri.getScheme(), strUserName,
+                                uri.getHost(), uri.getPort(), uri.getPath(),
+                                uri.getQuery(), uri.getFragment());
+                        strUrl = uri.toString();
+                    } catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        String[] editorAndUrl = new String[2];
+        editorAndUrl[0] = strEditor;
+        editorAndUrl[1] = strUrl;
+        return editorAndUrl;
+    }
 
+    ////////////////////////////////////////////////////////////////////////
+    //
+    //  Determines if the vibe add-in launcher executable is installed by
+    //   querying the windows registry via command line. Note that "reg query"
+    //   will return a non-zero exit code if the specified registry key
+    //   does not exist.
+    //
+    ////////////////////////////////////////////////////////////////////////
+    protected boolean isAddinInstalled(){
+        boolean installed = false;
+        StringBuilder regQuery = new StringBuilder();
+        regQuery.append("reg query \"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\");
+        regQuery.append(vibeAddinEditor);
+        regQuery.append(".exe\" /ve");
+        String[] command = new String[3];
+        command[0] = "cmd";
+        command[1] = "/c";
+        command[2] = regQuery.toString();
+        try
+        {
+            Process p = Runtime.getRuntime().exec(command);
+            p.waitFor();
+            installed = (p.exitValue() == 0);
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return installed;
+    }
 ////////////////////////////////////////////////////////////////////////
 //
 //  The init routine is a standard applet startup routine.
