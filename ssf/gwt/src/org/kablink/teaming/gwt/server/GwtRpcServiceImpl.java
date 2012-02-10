@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -300,10 +301,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			servletContext = getServletContext( ri );
 			elpjCmd = (ExecuteLandingPageCustomJspCmd) cmd;
 
-			// Construct the full path to the jsp
-			jspPath = "/WEB-INF/jsp/custom_jsps/" + elpjCmd.getJspName();
+			// We need to ensure that we are executing a jsp from the /WEB-INF/jsp/custom_jsps
+			// directory.  If the user entered "./../../logs/ssf.log" for the custom jsp
+			// name we don't want to allow them to do that.
+			{
+				File parentDir;
+				File customJspFile;
+				
+				// Construct the full path to the jsp
+				jspPath =  "/WEB-INF/jsp/custom_jsps/" + elpjCmd.getJspName();
+				
+				// Get the directory that holds the given jsp
+				customJspFile = new File( elpjCmd.getJspName() );
+				parentDir = customJspFile.getParentFile();
+				
+				// The parentDir of the custom jsp should be null.  If it is not then
+				// that means the name contains directory paths which is a no, no.
+				if ( parentDir == null )
+				{
+					// Yes
+					result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, elpjCmd.getBinderId(), jspPath, elpjCmd.getConfigStr() );
+					
+				}
+				else
+				{
+					String errMsg;
+					
+					errMsg = NLT.get( "mashup.customJspNotInCustomJspDir" );
+					result = NLT.get( "mashup.customJspError", new Object[]{errMsg} );
+				}
+			}
 			
-			result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, elpjCmd.getBinderId(), jspPath, elpjCmd.getConfigStr() );
 			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
 			return response;
 		}
