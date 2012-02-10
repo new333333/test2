@@ -1120,6 +1120,8 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltFilterOff();
 	String taskAltFilterOn();
 	String taskAltHierarchyDisabled();
+	String taskAltLocationGotoThisFolder();
+	String taskAltLocationIsThisFolder();
 	String taskAltMoveDown();
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
