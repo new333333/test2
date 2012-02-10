@@ -42,11 +42,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class GuestInfo implements IsSerializable {
-	public Long   m_userId;			//
-	public String m_avatarUrl;		//
-	public String m_emailAddress;	//
-	public String m_profileUrl;		//
-	public String m_title;			//
+	public Long   m_userId;		//
+	public String m_avatarUrl;	//
+	public String m_ema;		//
+	public String m_mobileEMA;	//
+	public String m_phone;		//
+	public String m_profileUrl;	//
+	public String m_textEMA;	//
+	public String m_title;		//
 	
 	/**
 	 * Constructor method.
@@ -63,21 +66,17 @@ public class GuestInfo implements IsSerializable {
 	 * Constructor method.
 	 * 
 	 * @param userId
-	 * @param avatarUrl
-	 * @param emailAddress
-	 * @param profileUrl
 	 * @param title
+	 * @param profileUrl
 	 */
-	public GuestInfo(Long userId, String avatarUrl, String emailAddress, String profileUrl, String title) {
+	public GuestInfo(Long userId, String title, String profileUrl) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setUserId(      userId      );
-		setAvatarUrl(   avatarUrl   );
-		setEmailAddress(emailAddress);
-		setProfileUrl(  profileUrl  );
-		setTitle(       title       );
+		setUserId(    userId    );
+		setProfileUrl(profileUrl);
+		setTitle(     title     );
 	}
 	
 	/**
@@ -85,20 +84,26 @@ public class GuestInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public Long   getUserId()       {return m_userId;      }
-	public String getAvatarUrl()    {return m_avatarUrl;   }
-	public String getEmailAddress() {return m_emailAddress;}
-	public String getProfileUrl()   {return m_profileUrl;  }
-	public String getTitle()        {return m_title;       }
+	public Long   getUserId()             {return m_userId;    }
+	public String getAvatarUrl()          {return m_avatarUrl; }
+	public String getEmailAddress()       {return m_ema;       }
+	public String getMobileEmailAddress() {return m_mobileEMA; }
+	public String getPhone()              {return m_phone;     }
+	public String getProfileUrl()         {return m_profileUrl;}
+	public String getTextEmailAddress()   {return m_textEMA;   }
+	public String getTitle()              {return m_title;     }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setUserId(      Long   userId)       {m_userId       = userId;      }
-	public void setAvatarUrl(   String avatarUrl)    {m_avatarUrl    = avatarUrl;   }
-	public void setEmailAddress(String emailAddress) {m_emailAddress = emailAddress;}
-	public void setProfileUrl(  String profileUrl)   {m_profileUrl   = profileUrl;  }
-	public void setTitle(       String title)        {m_title        = title;       }
+	public void setUserId(            Long   userId)     {m_userId     = userId;    }
+	public void setAvatarUrl(         String avatarUrl)  {m_avatarUrl  = avatarUrl; }
+	public void setEmailAddress(      String ema)        {m_ema        = ema;       }
+	public void setMobileEmailAddress(String mobileEMA)  {m_mobileEMA  = mobileEMA; }
+	public void setPhone(             String phone)      {m_phone      = phone;     }
+	public void setProfileUrl(        String profileUrl) {m_profileUrl = profileUrl;}
+	public void setTextEmailAddress(  String textEMA)    {m_textEMA    = textEMA;   }
+	public void setTitle(             String title)      {m_title      = title;     }
 }

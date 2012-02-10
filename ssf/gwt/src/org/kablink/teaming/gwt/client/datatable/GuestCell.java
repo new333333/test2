@@ -130,6 +130,17 @@ public class GuestCell extends AbstractCell<GuestInfo> {
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
+	/*
+	 * Adds an information Label widget to an information panel.
+	 */
+	private void addInfoLabel(VibeFlowPanel infoPanel, String s, String style) {
+		if (GwtClientHelper.hasString(s)) {
+			Label l = new Label(s);
+			l.addStyleName(style);
+			infoPanel.add(l);
+		}
+	}
+	
 	/**
      * Called when an event occurs in a rendered instance of this
      * cell.  The parent element refers to the element that contains
@@ -248,15 +259,11 @@ public class GuestCell extends AbstractCell<GuestInfo> {
 		if (!(GwtClientHelper.hasString(s))) {
 			s = messages.noTitle();
 		}
-		Label l = new Label(s);
-		l.addStyleName("vibe-dataTableGuest-infoTitle");
-		infoPanel.add(l);		
-		s = gi.getEmailAddress();
-		if (GwtClientHelper.hasString(s)) {
-			l = new Label(s);
-			l.addStyleName("vibe-dataTableGuest-infoEMA");
-			infoPanel.add(l);
-		}
+		addInfoLabel(infoPanel, s,                          "vibe-dataTableGuest-infoTitle"    );
+		addInfoLabel(infoPanel, gi.getPhone(),              "vibe-dataTableGuest-infoPhone"    );
+		addInfoLabel(infoPanel, gi.getEmailAddress(),       "vibe-dataTableGuest-infoEMA"      );
+		addInfoLabel(infoPanel, gi.getMobileEmailAddress(), "vibe-dataTableGuest-infoMobileEMA");
+		addInfoLabel(infoPanel, gi.getTextEmailAddress(),   "vibe-dataTableGuest-infoTextEMA"  );
 		htmlPanel.add(infoPanel);
 		
 		// ...and render that into the cell.

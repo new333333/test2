@@ -1704,10 +1704,15 @@ public class GwtViewHelper {
 								// a GuestInfo for the column.
 								gi = new GuestInfo(
 									pId,
-									getUserAvatarUrl(bs, request, p),
-									p.getEmailAddress(),
-									PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)),
-									p.getTitle());
+									p.getTitle(),
+									PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)));
+								gi.setAvatarUrl(getUserAvatarUrl(bs, request, p));
+								gi.setEmailAddress(      p.getEmailAddress()      );
+								gi.setMobileEmailAddress(p.getMobileEmailAddress());
+								gi.setTextEmailAddress(  p.getTxtEmailAddress()   );
+								if (p instanceof User) {
+									gi.setPhone(((User) p).getPhone());
+								}
 								fr.setColumnValue(fc, gi);
 							}
 							

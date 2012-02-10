@@ -129,6 +129,9 @@
 		.vibe-dataTableGuest-avatarHover          {cursor: pointer;}
 		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 10px; color: #333; vertical-align: top; padding-left: 3px;}
 		.vibe-dataTableGuest-infoEMA              {display: block;}
+		.vibe-dataTableGuest-infoMobileEMA        {display: block;}
+		.vibe-dataTableGuest-infoPhone            {display: block;}
+		.vibe-dataTableGuest-infoTextEMA          {display: block;}
 		.vibe-dataTableGuest-infoTitle            {display: block;}
 		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableLink-hoverHint             {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: 300px; -moz-border-radius: 6px; -webkit-border-radius: 6px; }
