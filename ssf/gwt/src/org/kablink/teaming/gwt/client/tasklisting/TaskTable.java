@@ -69,6 +69,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseDa
 import org.kablink.teaming.gwt.client.rpc.shared.CollapseSubtasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandSubtasksCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
@@ -182,6 +183,7 @@ public class TaskTable extends Composite
 	private EventHandler				m_dueDateClickHandler;		//
 	private EventHandler				m_expanderClickHandler;		//
 	private EventHandler				m_newTaskClickHandler;		//
+	private EventHandler				m_taskLocationClickHandler;	//
 	private EventHandler				m_taskOptionClickHandler;	//
 	private EventHandler				m_taskOrderBlurHandler;		//
 	private EventHandler				m_taskOrderClickHandler;	//
@@ -1188,6 +1190,16 @@ public class TaskTable extends Composite
 			}
 		};
 		
+		
+		// Event handler used when the user clicks on a task's location
+		// link to go to that folder.
+		m_taskLocationClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				handleTaskLocation(getTaskFromEventWidget((Widget) event.getSource()));
+			}
+		};
+		
 		// Event handler used when the user clicks on one of a task's
 		// option menus.
 		m_taskOptionClickHandler = new ClickHandler() {
@@ -1817,6 +1829,38 @@ public class TaskTable extends Composite
 		dlg.showRelativeTo(m_taskListing.getTaskToolsWarningDIV());
 	}
 	
+	/*
+	 * Called to switch to the folder location of a task.
+	 */
+	private void handleTaskLocation(TaskListItem task) {
+		final Long folderId = task.getTask().getTaskId().getBinderId();
+		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(String.valueOf(folderId));
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+					String.valueOf(folderId));
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String binderPermalink = responseData.getStringValue();
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+					folderId,
+					binderPermalink,
+					false,	// false -> Not trash.
+					Instigator.GOTO_CONTENT_URL);
+				
+				if (GwtClientHelper.validateOSBI(osbInfo)) {
+					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+				}
+			}
+		});
+	}
+
 	/*
 	 * Called from a JSNI method when the mouse leaves a task.
 	 */
@@ -3301,12 +3345,37 @@ public class TaskTable extends Composite
 	private void renderColumnLocation(final TaskListItem task, int row) {
 		// Are we displaying tasks assigned to the current user?
 		if (!(m_taskBundle.getIsFromFolder())) {
-			// Yes!  Render the column.
-			String location = task.getTask().getLocation();
-			if (null == location) {
+			// Yes!  Do we have a location string for this task?
+			TaskInfo ti = task.getTask();
+			String location = ti.getLocation();
+			if (!(GwtClientHelper.hasString(location))) {
+				// No!  Then we don't render anything.
 				return;
 			}
-			m_flexTable.setHTML(row, getColumnIndex(Column.LOCATION), location);
+			
+			// Yes, we have a location string for this task!  If the
+			// task is from the folder that we're displaying...
+			TaskId tid = ti.getTaskId();
+			InlineLabel locationLabel = new InlineLabel(location);
+			Widget locationWidget;
+			if (tid.getBinderId().equals(m_taskBundle.getBinderId())) {
+				// ...simply render the location as text.
+				locationLabel.setTitle(m_messages.taskAltLocationIsThisFolder());
+				locationWidget = locationLabel;
+			}
+			
+			else {
+				// ...otherwise, render a link for it.
+				Anchor locationAnchor = buildAnchor();
+				locationAnchor.addStyleName("gwtTaskList_task-locationAnchor");
+				locationAnchor.getElement().setAttribute(ATTR_ENTRY_ID, String.valueOf(tid.getEntryId()));
+				EventWrapper.addHandler(locationAnchor, m_taskLocationClickHandler);
+				locationLabel.setTitle(m_messages.taskAltLocationGotoThisFolder());
+				Element taElement = locationAnchor.getElement();
+				taElement.appendChild(locationLabel.getElement());
+				locationWidget = locationAnchor;
+			}
+			m_flexTable.setWidget(row, getColumnIndex(Column.LOCATION), locationWidget);
 		}
 	}
 
