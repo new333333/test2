@@ -119,7 +119,7 @@ public class MyTasksWidget extends VibeWidget
 			titlePanel.addStyleName( "taskFolderWidgetTitlePanel" + m_style );
 			
 			label = new InlineLabel( GwtTeaming.getMessages().myTasksHeader() );
-			label.addStyleName( "taskFolderWidgetTitleLabel" + m_style );
+			label.addStyleName( "myTasksWidgetTitleLabel" + m_style );
 			titlePanel.add( label );
 			headerElement = label.getElement();
 			
