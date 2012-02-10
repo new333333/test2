@@ -1044,7 +1044,8 @@ public class WebKeys {
     public static final String LICENSE_EXTERNAL_USERS="ssLicenseExternalUsers";
     public static final String LICENSE_OPTIONS_LIST="ssLicenseOptionsList";
     public static final String LICENSE_EXTERNAL_ACCESS_LIST="ssLicenseExternalAccessList";
-    
+    public static final String IS_LICENSE_REQUIRED_EDITION="ssIsLicenseRequiredEdition";
+
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
     public static final String LOGIN_ERROR="ss_loginError";

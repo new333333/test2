@@ -149,6 +149,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
@@ -2211,6 +2212,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ATTACHMENT_URL, strURLValue);
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 		model.put(WebKeys.URL_OS_INFO, strOSInfo);
+        model.put(WebKeys.IS_LICENSE_REQUIRED_EDITION, Boolean.toString(ReleaseInfo.isLicenseRequiredEdition()));
+        model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
 	}
@@ -2236,6 +2239,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ATTACHMENT_URL, url);
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 		model.put(WebKeys.URL_OS_INFO, strOSInfo);
+        model.put(WebKeys.IS_LICENSE_REQUIRED_EDITION, Boolean.toString(ReleaseInfo.isLicenseRequiredEdition()));
+        model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
 	}
