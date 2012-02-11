@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -90,7 +91,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	protected Map<Long, ProviderManager> externalAuthenticators = null;
 
 	protected Map<Long, ZoneAwareLocalAuthenticationProvider> localProviders = null;
-	protected Map<Long, Long> lastUpdates = null;
+	protected ConcurrentHashMap<Long, Long> lastUpdates = null;
 	
 	protected Class localAuthenticationProviderClass;
 	protected boolean authenticateLdapMatchingUsersUsingLdapOnly = true;
@@ -98,7 +99,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	public AuthenticationModuleImpl() throws ClassNotFoundException {
 		externalAuthenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, ZoneAwareLocalAuthenticationProvider>();
-		lastUpdates = new HashMap<Long, Long>();
+		lastUpdates = new ConcurrentHashMap<Long, Long>();
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -146,7 +147,11 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 				addZone(zoneConfig);
 			}
 			AuthenticationConfig authConfig = zoneConfig.getAuthenticationConfig();
-			if(authConfig.getLastUpdate().compareTo(lastUpdates.get(zoneId)) > 0) {
+			Long lastUpdateInDb = authConfig.getLastUpdate();
+			Long lastUpdateInMem = lastUpdates.get(zoneId);
+			if((lastUpdateInDb != null) &&
+					((lastUpdateInMem == null) || 
+							(lastUpdateInDb.compareTo(lastUpdateInMem) > 0))) {
 				try {
 					rebuildProvidersForZone(zoneConfig);
 				} catch(Exception e) {
