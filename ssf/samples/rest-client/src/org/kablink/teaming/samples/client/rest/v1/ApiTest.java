@@ -75,7 +75,7 @@ public class ApiTest {
 
 	@Before
 	public void setUp() throws Exception {
-		client = ApiClient.create("http://localhost:8080", "user1", "test");
+		client = ApiClient.create("http://localhost:8080", "admin", "admin");
 		api = client.getApi();
 	}
 	
@@ -84,7 +84,7 @@ public class ApiTest {
 		client.destroy();
 	}
 	
-	@Test
+	//@Test
 	public void testReadFilePropertiesByName() throws Exception {
 		System.out.println("Invoking testReadFilePropertiesByName");
 		long entityId = 13;
@@ -93,7 +93,7 @@ public class ApiTest {
 		Assert.assertEquals(fileName, fp.getName());
 	}
 	
-	@Test
+	//@Test
 	public void testReadFilePropertiesById() throws Exception {
 		System.out.println("Invoking testReadFilePropertiesById");
 		String fileId = "24e3531933933d270133934991be0011";
@@ -101,10 +101,10 @@ public class ApiTest {
 		Assert.assertEquals(fileId, fp.getId());
 	}
 	
-	@Test
+	//@Test
 	public void testDownloadFileByName() throws Exception {
-		long entityId = 13;
-		String fileName = "debug5.txt";
+		long entityId = 47;
+		String fileName = "debug.doc";
 		InputStream is = api.readFile("folderEntry", entityId, fileName);
 		File outFile = new File("/temp/rest/" + fileName);
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
@@ -113,9 +113,9 @@ public class ApiTest {
 		is.close();
 	}
 	
-	@Test
+	//@Test
 	public void testDownloadFileById() throws Exception {
-		String fileId = "24e3531933933d270133934991be0011";
+		String fileId = "4028818a34f29ea50134f2e3a00e0011";
 		InputStream is = api.readFile(fileId);
 		File outFile = new File("/temp/rest/" + fileId);
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
@@ -124,15 +124,15 @@ public class ApiTest {
 		is.close();
 	}
 	
-	@Test
+	//@Test
 	public void testUploadFileByName() throws Exception {
-		long entityId = 13;
-		String fileName = "debug5.txt";
+		long entityId = 43;
+		String fileName = "debug.doc";
 		File inFile = new File("/temp/rest/" + fileName);
 		api.writeFile("folderEntry", entityId, fileName, inFile);
 	}
 	
-	@Test
+	//@Test
 	public void testUploadFileByName2() throws Exception {
 		long entityId = 1;
 		String fileName = "debug5.txt";
@@ -141,7 +141,7 @@ public class ApiTest {
 		api.writeFile("folderEntry", entityId, fileName, inFile, null, modDate, null, null, null);
 	}
 
-	@Test
+	//@Test
 	public void testUploadFileById() throws Exception {
 		String fileId = "24e3531933933d270133934991be0011";
 		String fileName = "debug5.txt";
@@ -149,7 +149,7 @@ public class ApiTest {
 		api.writeFile(fileId, inFile);
 	}
 	
-	@Test
+	//@Test
 	public void testDownloadFileRepeatedly() throws Exception {
 		System.out.println("Start time: " + new Date());
 		for(int i = 0; i < 2; i++) {
@@ -166,5 +166,26 @@ public class ApiTest {
 			//System.out.println("(" + i + ") file downloaded");
 		}
 		System.out.println("End time: " + new Date());
+	}
+	
+	//@Test
+	public void testReadFilePropertiesRepeatedlyAsynchronously() throws Exception {
+		int count = 300;
+		Thread[] threads = new Thread[count];
+		for(int i = 0; i < count; i++) {
+			threads[i] = new Thread("ApiTestThread"+i) {
+				public void run() {
+					long entityId = 13;
+					String fileName = "debug5.txt";
+					FileProperties fp = api.readFileProperties("folderEntry", entityId, fileName);
+					System.out.println("Thread [" + Thread.currentThread().getName() + "] completing normally");
+				}
+			};
+		}
+		for(int i = 0; i < count; i++)
+			threads[i].start();
+		for(int i = 0; i < count; i++)
+			threads[i].join();
+		System.out.println("testReadFilePropertiesRepeatedlyAsynchronously completed");
 	}
 }
