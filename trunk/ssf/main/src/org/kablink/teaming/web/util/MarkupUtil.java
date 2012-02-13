@@ -1381,6 +1381,12 @@ public class MarkupUtil {
     	}
     	
     	int sectionNumber = 0;
+    	int lastSectionDepth = 0;
+    	Map<Integer,Integer> sectionNumbering = new HashMap<Integer,Integer>();
+    	sectionNumbering.put(1, 0);
+    	sectionNumbering.put(2, 0);
+    	sectionNumbering.put(3, 0);
+    	sectionNumbering.put(4, 0);
     	Matcher m1 = sectionPattern.matcher(body);
     	int loopDetector = 0;
     	while (m1.find()) {
@@ -1401,6 +1407,7 @@ public class MarkupUtil {
 			if (sectionDepth > 4) sectionDepth = 4;
 			sectionDepth--;
 			part.put("sectionTitleClass", "ss_sectionHeader" + String.valueOf(sectionDepth));
+			part.put("sectionDepth", sectionDepth);
 			
 			body = body.substring(m1.end(), body.length());
 	    	Matcher m2 = sectionPattern.matcher(body);
@@ -1421,7 +1428,35 @@ public class MarkupUtil {
 	    	}
 			bodyParts.add(part);
 			m1 = sectionPattern.matcher(body);
-    		
+
+			//Calculate the number text for this section
+			if (lastSectionDepth != sectionDepth) {
+				if (sectionDepth > lastSectionDepth) {
+					//Starting a new section in a deeper level; Start it at 1
+					sectionNumbering.put(Integer.valueOf(sectionDepth), 1);
+					//Reset the levels below this one to 0
+					for (int i = sectionDepth + 1; i <= 4; i++) sectionNumbering.put(Integer.valueOf(i), 0);
+				} else if (sectionDepth < lastSectionDepth) {
+					//We are going back up a level or more; increment the new level and reset the lower levels
+					sectionNumbering.put(Integer.valueOf(sectionDepth), sectionNumbering.get(Integer.valueOf(sectionDepth)) + 1);
+					for (int i = sectionDepth + 1; i <= 4; i++) sectionNumbering.put(Integer.valueOf(i), 0);
+				} else {
+					//We are at the same level. Increment this level number
+					sectionNumbering.put(Integer.valueOf(sectionDepth), sectionNumbering.get(Integer.valueOf(sectionDepth)) + 1);
+				}
+				lastSectionDepth = sectionDepth;
+			}
+			//Build the number text for this section
+			String numberText = "";
+			for (int i = 1; i <= 4; i++) {
+				Integer number = sectionNumbering.get(Integer.valueOf(i));
+				if (number > 0) {
+					if (!numberText.equals("")) numberText = numberText + ".";
+					numberText = numberText + String.valueOf(number);
+				}
+			}
+			part.put("sectionNumberText", numberText);
+			
 			sectionNumber++;
 		}
 		return bodyParts;
@@ -1457,6 +1492,7 @@ public class MarkupUtil {
 			int sectionDepth = Integer.valueOf(equalSigns.length());
 			if (sectionDepth > 4) sectionDepth = 4;
 			sectionDepth--;
+			part.put("sectionDepth", sectionDepth);
 			part.put("sectionTitleClass", "ss_sectionHeader" + String.valueOf(sectionDepth));
 			
 			body = body.substring(m1.end(), body.length());
