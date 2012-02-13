@@ -32,6 +32,8 @@ import javax.naming.InitialContext;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
 import org.hibernate.connection.ConnectionProvider;
@@ -46,6 +48,8 @@ import org.kablink.util.JNDIUtil;
  */
 public class DSConnectionProvider implements ConnectionProvider {
 
+	private Log logger = LogFactory.getLog(getClass());
+	
 	public void configure(Properties props) throws HibernateException {
 		String location = props.getProperty(Environment.DATASOURCE);
 
@@ -58,10 +62,14 @@ public class DSConnectionProvider implements ConnectionProvider {
 	}
 
 	public Connection getConnection() throws SQLException {
+		if(logger.isDebugEnabled())
+			logger.debug("Getting connection");
 		return _ds.getConnection();
 	}
 
 	public void closeConnection(Connection con) throws SQLException {
+		if(logger.isDebugEnabled())
+			logger.debug("Closing connection");
 		con.close();
 	}
 
