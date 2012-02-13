@@ -78,6 +78,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
@@ -1233,8 +1234,13 @@ public class DefinitionHelper {
     			String pathType = ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_CUSTOM_JSP;
     			//See if the jsp is part of an extension or really a custom_jsp
     			String jspName = "";
-    			if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME)) 
+    			if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME)) {
     				jspName = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME);
+    			}
+				if (jspName.contains("./") || jspName.contains(".\\") || jspName.contains("~")) {
+					//Illegal value, ignore it
+					throw new DefinitionInvalidException("definition.error.invalidJspPath", new Object[] {"\""+jspName+"\""});
+				}
     			if (!jspName.equals("")) {
     				String jspName2 = jspName;
     				if (File.separator.equals("\\")) {
