@@ -45,6 +45,7 @@ import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.servlet.listener.SessionListener.ActiveSessionCounter;
 import org.kablink.util.EventsStatistics;
+import org.kablink.util.dao.hibernate.DSConnectionProvider;
 import org.springframework.beans.factory.InitializingBean;
 
 public class RuntimeStatistics implements InitializingBean, RuntimeStatisticsMBean {
@@ -179,6 +180,10 @@ public class RuntimeStatistics implements InitializingBean, RuntimeStatisticsMBe
 		return ActiveSessionCounter.getPeakActiveSessionCount();
 	}
 
+	public int getUnreleasedDSConnectionCount() {
+		return DSConnectionProvider.unreleasedConnectionCount.get();
+	}
+	
 	private String propertiesAsString() {
 		StringBuilder sb = new StringBuilder();
 		
