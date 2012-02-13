@@ -97,7 +97,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		// Output the table
 		try {
 			//Get the jsp to execute
-			if (_jsp != null && !_jsp.equals("")) {
+			if (_jsp != null && !_jsp.equals("") && !_jsp.contains("./") && !_jsp.contains(".\\")) {
 				// Output the sliding table using the requested jsp
 				RequestDispatcher rd = httpReq.getRequestDispatcher(_jsp);
 				ServletRequest req = pageContext.getRequest();
