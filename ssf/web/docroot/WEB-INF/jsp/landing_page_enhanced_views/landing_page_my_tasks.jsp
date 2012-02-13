@@ -280,10 +280,7 @@
 					</td>
 					
 				  </tr>
-		 
-		  	  		
-	    	</div>
-		</c:forEach>
+				</c:forEach>
 			    </table>
 			  </div>
 	  </c:if>
