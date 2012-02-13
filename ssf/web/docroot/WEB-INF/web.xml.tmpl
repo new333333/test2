@@ -48,8 +48,8 @@
 	</filter>
 
 	<filter>
-		<filter-name>zoneContextFilter</filter-name>
-		<filter-class>org.kablink.teaming.web.servlet.filter.ZoneContextFilter</filter-class>
+		<filter-name>wsZoneContextOverrideFilter</filter-name>
+		<filter-class>org.kablink.teaming.remoting.ws.servlet.filter.ZoneContextOverrideFilter</filter-class>
 	</filter>
 
 	<filter>
@@ -169,7 +169,7 @@
 	</filter-mapping>
 
 	<filter-mapping>
-		<filter-name>zoneContextFilter</filter-name>
+		<filter-name>wsZoneContextOverrideFilter</filter-name>
 		<servlet-name>axis</servlet-name>
 	</filter-mapping>
 
