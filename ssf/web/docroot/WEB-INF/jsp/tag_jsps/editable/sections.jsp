@@ -49,15 +49,67 @@
 --%><portletadapter:defineObjects1/><%--
 --%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
+<c:if test="${empty ss_editableSectionTOCNumber}">
+<c:set var="ss_editableSectionTOCNumber" value="0" scope="request"/>
+</c:if>
 <c:set var="ss_editableSectionIdNumber" value="0"/>
 <c:forEach var="part" items="${parts}"><%--
 	--%>${part['prefix']}
+	<c:if test="${ss_editableSectionIdNumber == 0}">
+	    <script type="text/javascript">
+	        function ss_showHideToc${ss_editableSectionTOCNumber}() {
+	        	var tocObj = document.getElementById('ss_wiki_toc${ss_editableSectionTOCNumber}');
+	        	var tocButtonObj = document.getElementById('ss_wiki_toc_toggle${ss_editableSectionTOCNumber}');
+	        	if (tocObj.style.display != 'block') {
+		        	tocObj.style.display = 'block';
+		        	tocObj.style.visibility = 'visible';
+		        	tocObj.style.opacity = '1';
+		        	tocButtonObj.innerHTML = "<ssf:nlt tag="button.hide"/>"
+	        	} else {
+	        		ss_hideDivFadeOut('ss_wiki_toc${ss_editableSectionTOCNumber}');
+	        		tocButtonObj.innerHTML = "<ssf:nlt tag="button.show"/>"
+	        	}
+	        }
+	    </script>
+		<table class="ss_editableSectionTOC">
+		<tr>
+		<td>
+		<div class="ss_editableSectionTOC">
+		  <h2><ssf:nlt tag="wiki.editable.toc.contents"/></h2>
+		  <span class="ss_smallprint" style="padding: 0px 6-px;">
+		    [<a href="#" onClick="ss_showHideToc${ss_editableSectionTOCNumber}();return false;">
+		      <span id="ss_wiki_toc_toggle${ss_editableSectionTOCNumber}"><ssf:nlt tag="button.hide"/></span>
+		    </a>]
+		  </span>
+		</div>
+		<div id="ss_wiki_toc${ss_editableSectionTOCNumber}" style="display:block;">
+		<ul class="ss_editableSectionTOC">
+		  <c:set var="ss_TOCeditableSectionIdNumber" value="0"/>
+		  <c:forEach var="tocPart" items="${parts}">
+		    <c:if test="${!empty tocPart['sectionTitle']}">
+		      <c:set var="toc_padding" value="${tocPart['sectionDepth'] * 10}"/>
+		      <li style="padding-left: ${toc_padding}px;">
+		        <a href="#ss_editableSectionDiv${renderResponse.namespace}_${ss_TOCeditableSectionIdNumber}">
+		        <span>${tocPart['sectionNumberText']}</span> 
+		        <span>${tocPart['sectionTitle']}</span>
+		        </a>
+		      </li>
+		    </c:if>
+		    <c:set var="ss_TOCeditableSectionIdNumber" value="${ss_TOCeditableSectionIdNumber + 1}"/>
+		  </c:forEach>
+		</ul>
+		</div>
+		</td>
+		</tr>
+		</table>
+		<c:set var="ss_editableSectionTOCNumber" value="${ss_editableSectionTOCNumber + 1}" scope="request"/>
+	</c:if>
 	<div <%--
     --%> id="ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}"><%--
 	--%><c:if test="${!empty part['sectionTitle']}"><%--
-		--%><table width="100%" cellspacing="0" cellpadding="0"><tr><td width="90%"><%--
+		--%><table width="100%" cellspacing="0" cellpadding="0"><tr><td width="90%" class="ss_editableSectionHeader${part['sectionDepth']}"><%--
 		--%><div class="ss_editableSectionTitle"><span class="${part['sectionTitleClass']}">${part['sectionTitle']}</span></div><%--
-		--%></td><td width="10%"><%--
+		--%></td><td width="10%" class="ss_editableSectionHeader${part['sectionDepth']}"><%--
 		--%><c:if test="${aclMap[entityId]['modifyEntry']}"><%--
 			--%><div align="right" class="ss_editableSectionEditBtn"><a href="javascript:;"<%--
 	    	--%> onMouseOver="ss_editableHighlight('over', this, 'ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}');return false;"<%--

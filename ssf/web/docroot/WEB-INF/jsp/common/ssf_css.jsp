@@ -552,6 +552,37 @@ div.ss_editableSectionEditBtn {
   padding-left: 5px;
 }
 
+table.ss_editableSectionTOC {
+  border: 1px solid #ccc;
+  background: transparent;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+div.ss_editableSectionTOC {
+  text-align: center;
+  margin-bottom: 6px;
+}
+div.ss_editableSectionTOC h2 {
+  display: inline;
+  font-size: ${ss_style_font_largeprint};
+  font-weight: bold;
+}
+ul.ss_editableSectionTOC {
+  list-style-position: outside !important;
+  margin: 0px !important;
+  padding: 0px !important;
+}
+ul.ss_editableSectionTOC li {
+  list-style-type: none !important;
+  margin: 0px !important;
+}
+
+td.ss_editableSectionHeader1 {
+  border-bottom: 1px solid #ccc;
+}
+td.ss_editableSectionHeader2, td.ss_editableSectionHeader3, td.ss_editableSectionHeader4 {
+}
+
 div.ss_editableSectionTitle {
   width:90%;
 }
