@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.naming.InitialContext;
 
@@ -50,6 +51,8 @@ public class DSConnectionProvider implements ConnectionProvider {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
+	public static AtomicInteger unreleasedConnectionCount = new AtomicInteger(0);
+	
 	public void configure(Properties props) throws HibernateException {
 		String location = props.getProperty(Environment.DATASOURCE);
 
@@ -64,13 +67,16 @@ public class DSConnectionProvider implements ConnectionProvider {
 	public Connection getConnection() throws SQLException {
 		if(logger.isDebugEnabled())
 			logger.debug("Getting connection");
-		return _ds.getConnection();
+		Connection conn = _ds.getConnection();
+		unreleasedConnectionCount.incrementAndGet();
+		return conn;
 	}
 
 	public void closeConnection(Connection con) throws SQLException {
 		if(logger.isDebugEnabled())
 			logger.debug("Closing connection");
 		con.close();
+		unreleasedConnectionCount.decrementAndGet();
 	}
 
 	public boolean isStatementCache() {
