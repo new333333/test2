@@ -33,6 +33,8 @@ import javax.naming.NamingException;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.util.JNDIUtil;
 
 /**
@@ -44,11 +46,15 @@ import org.kablink.util.JNDIUtil;
  */
 public class DataAccess {
 
+	private static final Log logger = LogFactory.getLog(DataAccess.class);
+	
 	public static Connection getConnection(String location)
 		throws NamingException, SQLException {
 
 		InitialContext ctx = new InitialContext();
 		DataSource ds = (DataSource)JNDIUtil.lookup(ctx, location);
+		if(logger.isDebugEnabled())
+			logger.debug("Getting connection");
 		Connection con = ds.getConnection();
 
 		return con;
@@ -83,6 +89,8 @@ public class DataAccess {
 
 		try {
 			if (con != null) {
+				if(logger.isDebugEnabled())
+					logger.debug("Closing connection");
 				con.close();
 			}
 		}
