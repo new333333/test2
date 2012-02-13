@@ -85,6 +85,9 @@ public class DynamicDialect extends Dialect {
 
 			dbName = metaData.getDatabaseProductName();
 			dbMajorVersion = metaData.getDatabaseMajorVersion();
+			
+			_log.info("Database product name: " + dbName + ", Database major version: " + dbMajorVersion);
+			
 			//this needs to be tested??
 			if (dbName.equals("MySQL")) 
 				_dialect = new MySQL5InnoDBDialect();
@@ -111,6 +114,8 @@ public class DynamicDialect extends Dialect {
 		if (_dialect == null) {
 			throw new DynamicDialectException("No dialect found");
 		}
+		
+		_log.info("Database dialect class: " + _dialect.getClass().getName());
 
 		String dialectName = _dialect.getClass().getSimpleName().toLowerCase();
 		if(dialectName.startsWith("mysql"))
