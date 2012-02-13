@@ -175,21 +175,23 @@ public class MashupTag extends BodyTagSupport {
 							}
 						}
 						
-						RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
-						ServletRequest req = pageContext.getRequest();
-						StringServletResponse res = new StringServletResponse(httpRes);
-						try {
-							rd.include(req, res);
-							pageContext.getOut().print("\n<!-- " + jsp + " -->\n");
-							pageContext.getOut().print(res.getString().trim());
-							pageContext.getOut().print("\n<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
-						} catch (Exception e) {
-							String errorTag = "errorcode.unexpectedError";
-							if (type.equals("customJsp")) {
-								errorTag = "mashup.customJspError";
+						if (!jsp.equals("") && !jsp.contains("./") && !jsp.contains(".\\")) {
+							RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
+							ServletRequest req = pageContext.getRequest();
+							StringServletResponse res = new StringServletResponse(httpRes);
+							try {
+								rd.include(req, res);
+								pageContext.getOut().print("\n<!-- " + jsp + " -->\n");
+								pageContext.getOut().print(res.getString().trim());
+								pageContext.getOut().print("\n<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
+							} catch (Exception e) {
+								String errorTag = "errorcode.unexpectedError";
+								if (type.equals("customJsp")) {
+									errorTag = "mashup.customJspError";
+								}
+								String[] errorArgs = new String[] {e.getLocalizedMessage()};
+								pageContext.getOut().print(NLT.get(errorTag, errorArgs));
 							}
-							String[] errorArgs = new String[] {e.getLocalizedMessage()};
-							pageContext.getOut().print(NLT.get(errorTag, errorArgs));
 						}
 					}
 				}
