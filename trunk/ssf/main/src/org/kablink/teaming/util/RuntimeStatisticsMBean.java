@@ -97,6 +97,11 @@ public interface RuntimeStatisticsMBean {
 	public int getWebPeakActiveSessionCount();
 	
 	/*
+	 * Return number of unreleased or not yet released data source connection count
+	 */
+	public int getUnreleasedDSConnectionCount();
+
+	/*
 	 * Returns whether method invocation statistics is enabled or not.
 	 */
 	public boolean isMethodInvocationStatisticsEnabled();
