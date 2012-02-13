@@ -38,6 +38,8 @@ public class ZoneContextHolder {
     private static final ThreadLocal<Integer> SERVER_PORT = new ThreadLocal<Integer>();
     private static final ThreadLocal<Boolean> IS_SECURE = new ThreadLocal<Boolean>();
     private static final ThreadLocal<String> CLIENT_ADDR = new ThreadLocal<String>();
+    private static final ThreadLocal<String> WEBAPP_NAME = new ThreadLocal<String>();
+    private static final ThreadLocal<Boolean> USE_RUNTIME_CONTEXT = new ThreadLocal<Boolean>();
 
     public static void setServerName(String serverName) {
     	SERVER_NAME.set(serverName.toLowerCase());
@@ -71,10 +73,28 @@ public class ZoneContextHolder {
     	return CLIENT_ADDR.get();
     }
     
+    public static void setWebappName(String webappName) {
+    	WEBAPP_NAME.set(webappName.toLowerCase());
+    }
+    
+    public static String getWebappName() {
+    	return WEBAPP_NAME.get();
+    }
+    
+    public static void setUseRuntimeContext(Boolean useRuntimeContext) {
+    	USE_RUNTIME_CONTEXT.set(useRuntimeContext);
+    }
+    
+    public static Boolean getUseRuntimeContext() {
+    	return USE_RUNTIME_CONTEXT.get();
+    }
+    
     public static void clear() {
     	SERVER_NAME.set(null);
     	SERVER_PORT.set(null);
     	IS_SECURE.set(null);
     	CLIENT_ADDR.set(null);
+    	WEBAPP_NAME.set(null);
+    	USE_RUNTIME_CONTEXT.set(null);
     }
 }
