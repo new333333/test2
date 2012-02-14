@@ -46,6 +46,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletResponse;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -53,6 +55,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -63,6 +66,8 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.tree.FolderConfigHelper;
+import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
@@ -220,7 +225,8 @@ public class ListFolderController extends  SAbstractController {
 			getProfileModule().setSeenIds(null, ids);
 		} else if (formData.containsKey("deleteEntriesBtn") && WebHelper.isMethodPost(request)) {
 			String deleteEntriesList = PortletRequestUtils.getStringParameter(request, "delete_entries_list", "");
-			String deleteOperation = PortletRequestUtils.getStringParameter(request, "delete_operation", "delete");
+			String deleteOperation = PortletRequestUtils.getStringParameter(request, "delete_operation", "");
+			String destinationFolderId = PortletRequestUtils.getStringParameter(request, "destination_folder_id", "");
 			if (!deleteEntriesList.equals("")) {
 				String[] entryIds = deleteEntriesList.split(",");
 				for (int i=0; i < entryIds.length; i++) {
@@ -232,6 +238,14 @@ public class ListFolderController extends  SAbstractController {
 							TrashHelper.preDeleteEntry(this, binderId, delId);
 						} else if (deleteOperation.equals("purge")) {
 							getFolderModule().deleteEntry(binderId, delId);
+						} else if (deleteOperation.equals("copy")) {
+							if (!destinationFolderId.equals("")) {
+								getFolderModule().copyEntry(binderId, delId, Long.valueOf(destinationFolderId), null);
+							}
+						} else if (deleteOperation.equals("move")) {
+							if (!destinationFolderId.equals("")) {
+								getFolderModule().moveEntry(binderId, delId, Long.valueOf(destinationFolderId), null);
+							}
 						}
 					} catch(Exception e) {
 						continue;
@@ -248,6 +262,7 @@ public class ListFolderController extends  SAbstractController {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
         User user = RequestContextHolder.getRequestContext().getUser();
 		String displayType = BinderHelper.getDisplayType(request);
+		Map formData = request.getParameterMap();
 
 		if ( response instanceof PortletResponseImpl )
 		{
@@ -265,6 +280,31 @@ public class ListFolderController extends  SAbstractController {
 			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (formData.containsKey("deleteEntriesBtn")) {
+			//See if this is a request to move or copy some entries
+			String deleteEntriesList = PortletRequestUtils.getStringParameter(request, "delete_entries_list", "");
+			String deleteOperation = PortletRequestUtils.getStringParameter(request, "delete_operation", "");
+			String destinationFolderId = PortletRequestUtils.getStringParameter(request, "destination_folder_id", "");
+			if (!deleteEntriesList.equals("") && destinationFolderId.equals("") && 
+					(deleteOperation.equals("copy") || deleteOperation.equals("move"))) {
+				//Bring up the form to select the destination folder for the move or copy operation
+				Map<String,Object> model = new HashMap<String,Object>();
+				model.put("delete_entries_list", deleteEntriesList);
+				model.put("delete_operation", deleteOperation);
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+				Workspace ws = getWorkspaceModule().getTopWorkspace();
+				Document wsTree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this,  new FolderConfigHelper()),1);
+				Element top = (Element)wsTree.getRootElement();
+				if (top != null) {
+					//cannot move to top
+					top.addAttribute("displayOnly", "true");
+				}
+				model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+				model.put(WebKeys.OPERATION, deleteOperation);
+				return new ModelAndView("binder/copy_move_entries", model);
+			}
+		}
 		Long entryId = null;
 		try {
 			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);

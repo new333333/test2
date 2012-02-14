@@ -86,13 +86,13 @@ function ss_showDeleteButtons() {
     		delBtn.parentNode.style.backgroundColor = "#949494 !important;"
     	}
     }
-    var purgeBtn = document.getElementById('ss_toolbarPurgeBtn');
-    if (purgeBtn != null) {
+    var moreBtn = document.getElementById('ss_toolbarMoreBtn');
+    if (moreBtn != null) {
     	if (deleteList == "") {
         	//There are no entries selected, gray out the buttons
-    		purgeBtn.parentNode.style.backgroundColor = "#cecece !important;"
+    		moreBtn.parentNode.style.backgroundColor = "#cecece !important;"
     	} else {
-    		purgeBtn.parentNode.style.backgroundColor = "#949494 !important;"
+    		moreBtn.parentNode.style.backgroundColor = "#949494 !important;"
     	}
     }
 }
@@ -102,6 +102,7 @@ function ss_showDeleteButtons() {
  */
 var ss_deleteEntryConfirmText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.deleteEntries.confirm'/></ssf:escapeQuotes>";
 var ss_deleteEntryPurgeConfirmText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.deleteEntriesPurge.confirm'/></ssf:escapeQuotes>";
+var ss_deleteEntryPurgeNoneSelectedText = "<ssf:escapeQuotes><ssf:nlt tag='file.command.noEntriesSelected'/></ssf:escapeQuotes>";
 function ss_deleteSelectedEntries(operation) {
 	var inputTags = document.getElementsByTagName("input");
 	var deleteList = "";
@@ -134,6 +135,39 @@ function ss_deleteSelectedEntries(operation) {
     		formObj.action = url;
     		formObj.submit();
     	}
+    } else {
+    	alert(ss_deleteEntryPurgeNoneSelectedText)
+    }
+}
+
+function ss_copyMoveSelectedEntries(operation) {
+	var inputTags = document.getElementsByTagName("input");
+	var deleteList = "";
+    for (i = 0; i < inputTags.length; i++) {
+    	var inputTag = inputTags.item(i);
+        if (inputTag.name.indexOf("delete_selectOneCB_") == 0) {
+        	var entryId = inputTag.name.substring(19, inputTag.name.length);
+        	if (inputTag.checked) {
+        		if (deleteList != "") deleteList = deleteList + ",";
+        		deleteList = deleteList + entryId;
+        	}
+        }
+	}
+    if (deleteList != "") {
+		//Submit the request to copy or move the selected entries
+		var formObj = document.forms['delete_entries_form'];
+		formObj.delete_entries_list.value = deleteList;
+		formObj.delete_operation.value = operation;
+		var url = '<ssf:url     
+		    adapter="true" 
+		    portletName="ss_forum" 
+		    binderId="${ssBinder.id}" 
+		    action="view_folder_listing" 
+		    actionUrl="true" />';
+		formObj.action = url;
+		formObj.submit();
+    } else {
+    	alert(ss_deleteEntryPurgeNoneSelectedText)
     }
 }
 </script>
@@ -1217,13 +1251,16 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </c:forEach>
 </ssf:slidingTable>
 </div>
-<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+<c:if test="${ss_showDeleteCheckboxes && (ss_accessControlMap[ssBinder.id]['deleteEntries'] || 
+	ss_accessControlMap[ssBinder.id]['copyEntries'] || 
+	ss_accessControlMap[ssBinder.id]['moveEntries'])}">
  <div>
   <form method="post" name="delete_entries_form" >
   <input type="hidden" name="deleteEntriesBtn"
     value="deleteEntriesBtn" />
   <input type="hidden" name="delete_entries_list"/>
   <input type="hidden" name="delete_operation"/>
+  <input type="hidden" name="destination_folder_id"/>
   </form>
  </div>
 </c:if>

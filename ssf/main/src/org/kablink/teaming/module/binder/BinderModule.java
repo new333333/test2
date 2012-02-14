@@ -71,6 +71,7 @@ import org.kablink.util.search.Criteria;
  */
 public interface BinderModule {
 	public enum BinderOperation {
+		addEntry,
 		addFolder,
 		addWorkspace,
 		copyBinder,
