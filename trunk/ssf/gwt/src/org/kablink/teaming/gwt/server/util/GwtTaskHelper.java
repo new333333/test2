@@ -1228,7 +1228,8 @@ public class GwtTaskHelper {
 		}
 		
 		today = (new DateMidnight( DateTimeZone.forTimeZone( user.getTimeZone() ) )).toDateTime();
-		future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
+		//future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
+		future = today.plusMonths( SPropsUtil.getInt( "relevance.tasksAllMonthsAhead" ) ).plusDays( 1 );
 		fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
 		
 		crit = SearchUtils.tasksForUser( user.getId(), 
