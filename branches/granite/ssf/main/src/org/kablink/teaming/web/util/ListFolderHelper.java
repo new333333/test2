@@ -297,6 +297,12 @@ public class ListFolderHelper {
 			if (bs.getBinderModule().testAccess(binder, BinderOperation.deleteEntries)) {
 				accessControlBinderMap.put("deleteEntries", new Boolean(true));
 			}
+			if (bs.getBinderModule().testAccess(binder, BinderOperation.addEntry)) {
+				accessControlBinderMap.put("copyEntries", new Boolean(true));
+			}
+			if (bs.getBinderModule().testAccess(binder, BinderOperation.moveBinder)) {
+				accessControlBinderMap.put("moveEntries", new Boolean(true));
+			}
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
@@ -1569,7 +1575,7 @@ public class ListFolderHelper {
 		}
 		if ((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) || viewType.equals(Definition.VIEW_STYLE_TABLE) || 
 				viewType.equals(Definition.VIEW_STYLE_FILE)) && !folder.isMirrored()) {
-			//Add the Delete and Purge buttons
+			//Add the Delete and More buttons
 			if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries)) {
 				Map qualifiers = new HashMap();
 				String onClickPhrase = "ss_deleteSelectedEntries('delete');return false;";
@@ -1579,14 +1585,43 @@ public class ListFolderHelper {
 				qualifiers.put("textId", "ss_toolbarDeleteBtn");
 				entryToolbar.addToolbarMenu("1_deleteSelected", NLT.get("toolbar.delete"), 
 						"#", qualifiers);
-				qualifiers = new HashMap();
-				onClickPhrase = "ss_deleteSelectedEntries('purge');return false;";
-				qualifiers.put("title", NLT.get("file.command.deleteEntriesPurge"));
-				qualifiers.put("onClick", onClickPhrase);
-				qualifiers.put("linkclass", "ss_toolbarDeleteBtnDisabled");
-				qualifiers.put("textId", "ss_toolbarPurgeBtn");
-				entryToolbar.addToolbarMenu("1_purgeSelected", NLT.get("toolbar.purge"), 
-						"#", qualifiers);
+			}
+
+			if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries) ||
+					bs.getBinderModule().testAccess(folder, BinderOperation.addEntry) ||
+					bs.getBinderModule().testAccess(folder, BinderOperation.moveBinder)) {
+				Map dropdownQualifiers = new HashMap();
+				dropdownQualifiers.put("highlight", new Boolean(true));
+				dropdownQualifiers.put("linkclass", "ss_toolbarDeleteBtnDisabled");
+				dropdownQualifiers.put("textId", "ss_toolbarMoreBtn");
+				entryToolbar.addToolbarMenu("1_more", NLT.get("toolbar.more"), "", dropdownQualifiers);
+				
+				if (bs.getBinderModule().testAccess(folder, BinderOperation.addEntry)) {
+					Map qualifiers = new HashMap();
+					String onClickPhrase = "ss_copyMoveSelectedEntries('copy');return false;";
+					qualifiers.put("title", NLT.get("file.command.copyEntries"));
+					qualifiers.put("onClick", onClickPhrase);
+					qualifiers.put("textId", "ss_toolbarCopyBtn");
+					entryToolbar.addToolbarMenuItem("1_more", "more", NLT.get("toolbar.copy"), "#", qualifiers);
+				}
+				
+				if (bs.getBinderModule().testAccess(folder, BinderOperation.moveBinder)) {
+					Map qualifiers = new HashMap();
+					String onClickPhrase = "ss_copyMoveSelectedEntries('move');return false;";
+					qualifiers.put("title", NLT.get("file.command.moveEntries"));
+					qualifiers.put("onClick", onClickPhrase);
+					qualifiers.put("textId", "ss_toolbarMoveBtn");
+					entryToolbar.addToolbarMenuItem("1_more", "more", NLT.get("toolbar.move"), "#", qualifiers);
+				}
+				
+				if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteEntries)) {
+					Map qualifiers = new HashMap();
+					String onClickPhrase = "ss_deleteSelectedEntries('purge');return false;";
+					qualifiers.put("title", NLT.get("file.command.deleteEntriesPurge"));
+					qualifiers.put("onClick", onClickPhrase);
+					qualifiers.put("textId", "ss_toolbarPurgeBtn");
+					entryToolbar.addToolbarMenuItem("1_more", "more", NLT.get("toolbar.purge"), "#", qualifiers);
+				}
 			}
 		}
 	}
