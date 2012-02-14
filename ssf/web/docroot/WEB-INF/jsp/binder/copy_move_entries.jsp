@@ -68,6 +68,14 @@ function ss_submitMoveBinderForm() {
 <br/>
 <br/>
 </c:if>
+<div style="padding-bottom: 16px;">
+  <c:if test="${delete_entries_count > 1}">
+    <span><ssf:nlt tag="move_copy.selected"><ssf:param name="value" value="${delete_entries_count}"/></ssf:nlt></span>
+  </c:if>
+  <c:if test="${delete_entries_count == 1}">
+    <span><ssf:nlt tag="move_copy.selected1"/></span>
+  </c:if>
+</div>
 <c:if test="${ssBinder.entityType == 'folder'}">
   <span><ssf:nlt tag="move.currentFolder"/>: </span>
 </c:if>
