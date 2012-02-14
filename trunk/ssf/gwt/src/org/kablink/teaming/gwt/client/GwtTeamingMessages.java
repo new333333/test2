@@ -353,6 +353,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
+	String rpcFailure_GetProfileEntryInfo();
 	String rpcFailure_GetProfileInfo();
 	String rpcFailure_GetProfileStats();
 	String rpcFailure_GetProjectInfo();
@@ -486,6 +487,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MirroredFileFolderView();
 	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
+	String codeSplitFailure_ProfileEntryDlg();
 	String codeSplitFailure_ProfilePage();
 	String codeSplitFailure_ProjectInfoWidget();
 	String codeSplitFailure_ProjectStatsWidget();
@@ -1387,6 +1389,9 @@ public interface GwtTeamingMessages extends Messages
 	String changeEntryTypesDlgNote();
 	String changeEntryTypesDlgSelect();
 	
+	// Strings used by the ProfileEntryDlg.
+	String profileEntryDlgHeader();
+	
 	// Strings used in the Project Information widget
 	String dueDateLabel();
 	String managerLabel();
@@ -1422,6 +1427,5 @@ public interface GwtTeamingMessages extends Messages
 	String guestBook_GotoProfile();
 	
 	// Strings used in the "My Tasks" widget
-	String myTasksHeader();
-	
+	String myTasksHeader();	
 }// end GwtTeamingMessages

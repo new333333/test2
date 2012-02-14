@@ -1069,6 +1069,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PROFILE_ENTRY_INFO:
+		{
+			GetProfileEntryInfoCmd gcwCmd = ((GetProfileEntryInfoCmd) cmd);
+			ProfileEntryInfoRpcResponseData result = GwtViewHelper.getProfileEntryInfo(
+				this,
+				getRequest( ri ),
+				gcwCmd.getUserId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_PROFILE_INFO:
 		{
 			GetProfileInfoCmd gpiCmd;

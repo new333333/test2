@@ -72,6 +72,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
@@ -98,6 +99,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseDat
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
@@ -121,6 +123,7 @@ import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
@@ -2017,6 +2020,90 @@ public class GwtViewHelper {
 		// for the principal ID we received or is null.  Return it.
 		return reply;
 	}
+	
+	/**
+	 * Returns a ProfileEntryInfoRpcRequestData containing information
+	 * about a user's profile.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static ProfileEntryInfoRpcResponseData getProfileEntryInfo(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
+		try {
+			// Allocate an profile entry info response we can return.
+			ProfileEntryInfoRpcResponseData reply = new ProfileEntryInfoRpcResponseData();
+
+			// Can we access the user in question?
+			List<String> userIdList = new ArrayList<String>();
+			userIdList.add(String.valueOf(userId));
+			List resolvedList = ResolveIds.getPrincipals( userIdList );
+			if ((null != resolvedList) && (!(resolvedList.isEmpty()))) {
+				// Yes!  Extract the profile information we need to
+				// display.
+				User user = ((User) resolvedList.get(0));
+				addProfileAttribute(reply, "title",              user.getTitle());
+				addProfileAttribute(reply, "emailAddress",       user.getEmailAddress());
+				addProfileAttribute(reply, "mobileEmailAddress", user.getMobileEmailAddress());
+				addProfileAttribute(reply, "txtEmailAddress",    user.getTxtEmailAddress());
+				addProfileAttribute(reply, "phone",              user.getPhone());
+				addProfileAttribute(reply, "timeZone",           user.getTimeZone().getDisplayName());
+				addProfileAttribute(reply, "locale",             user.getLocale().getDisplayName());
+				
+				// Store the URL for the user's avatar, if they have
+				// one.
+				reply.setAvatarUrl(getUserAvatarUrl(bs, request, user));
+
+				// Does the current user have rights to modify users?
+				ProfileModule pm = bs.getProfileModule();
+				String profilesWSId = String.valueOf(pm.getProfileBinderId());
+				if (pm.testAccess(user, ProfileOperation.modifyEntry)) {
+					// Yes!  Store the modify URL for this user.
+					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+					url.setParameter(WebKeys.ACTION,         "modify_profile_entry");
+					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSId);
+					url.setParameter(WebKeys.URL_ENTRY_ID,   String.valueOf(userId));
+					reply.setModifyUrl(url.toString());
+				}
+				
+				// Does the current user have rights to delete users?
+				if (pm.testAccess(user, ProfileOperation.deleteEntry)) {
+					// Yes!  Store the delete URL for this user.
+					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+					url.setParameter(WebKeys.ACTION,         "modify_profile_entry");
+					url.setParameter(WebKeys.OPERATION,      "delete");
+					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSId);
+					url.setParameter(WebKeys.URL_ENTRY_ID,   String.valueOf(userId));
+					reply.setModifyUrl(url.toString());
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ProfileEntryInfoRpcResponseData containing the user's
+			// profile information.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getProfileEntryInfo( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	private static void addProfileAttribute(ProfileEntryInfoRpcResponseData paData, String attributeName, String attributeValue) {
+		if (MiscUtil.hasString(attributeValue)) {
+			paData.addProfileAttribute(attributeName, new ProfileEntryInfoRpcResponseData.ProfileAttribute(NLT.get("__" + attributeName), attributeValue));
+		}
+	}
 
 	/*
 	 * Returns a map containing the search filter to use to read the
@@ -2381,21 +2468,17 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static String getUserAvatarUrl(AllModulesInjected bs, HttpServletRequest request, Principal user) {
-		// Can we get the user's workspace ID?
+		// Can we access any avatars for the user?
 		String reply = null;
-		Long wsId = ((null == user) ? null : user.getWorkspaceId());
-		if (null != wsId) {
-			// Yes!  Can we access any avatars for the user?
-			ProfileAttribute pa;
-			try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, wsId);}
-			catch (Exception ex) {pa = null;                                                 }
-			List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
-			if((null != paValue) && (!(paValue.isEmpty()))) {
-				// Yes!  We'll use the first one as the URL.  Does it
-				// have a URL?
-				ProfileAttributeListElement paValueItem = paValue.get(0);
-				reply = GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString());
-			}
+		ProfileAttribute pa;
+		try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, user);}
+		catch (Exception ex) {pa = null;                                                 }
+		List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
+		if((null != paValue) && (!(paValue.isEmpty()))) {
+			// Yes!  We'll use the first one as the URL.  Does it
+			// have a URL?
+			ProfileAttributeListElement paValueItem = paValue.get(0);
+			reply = GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString());
 		}
 		
 		// If we get here, reply refers to the user's avatar URL or is
@@ -2501,7 +2584,7 @@ public class GwtViewHelper {
 				String filterName = getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER);
 				ProfileModule pm = bs.getProfileModule();
 				Long userId = GwtServerHelper.getCurrentUser().getId();
-				bs.getProfileModule().setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, filterName);
+				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, filterName);
 				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
 				if (MiscUtil.hasString(op2) && op2.equals("global"))
 				     pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL  );
