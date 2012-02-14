@@ -489,6 +489,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 	private int m_numTasksDisplayed;
 	private int m_maxTasksToDisplay;
 	private String m_style;
+	private WidgetStyles m_widgetStyles;
 	private FlexTable m_tasksTable;
 	private FlexTable.FlexCellFormatter m_cellFormatter;
 
@@ -531,6 +532,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 		membersString = GwtTeaming.getMessages().taskMemberCount( String.valueOf( numMembers ) );
 		groupName = new InlineLabel( assignedGroup.getTitle() + " " + membersString );
 		groupName.addStyleName( "taskFolderWidgetAssignedGroup" + m_style );
+		GwtClientHelper.setElementTextColor( groupName.getElement(), m_widgetStyles.getContentTextColor() );
 		tmpPanel.add( groupName );
 		
 		tmpPanel.add( assigneeImg );
@@ -570,6 +572,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 		panel = new VibeFlowPanel();
 		userName = new InlineLabel( assignedPerson.getTitle() );
 		userName.addStyleName( "taskFolderWidgetAssignedPerson" + m_style );
+		GwtClientHelper.setElementTextColor( userName.getElement(), m_widgetStyles.getContentTextColor() );
 		panel.add( userName );
 		
 		// Create a click handler
@@ -603,6 +606,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 		membersString = GwtTeaming.getMessages().taskMemberCount( String.valueOf( numMembers ) );
 		teamName = new InlineLabel( assignedTeam.getTitle() + " " + membersString );
 		teamName.addStyleName( "taskFolderWidgetAssignedTeam" + m_style );
+		GwtClientHelper.setElementTextColor( teamName.getElement(), m_widgetStyles.getContentTextColor() );
 		tmpPanel.add( teamName );
 		
 		tmpPanel.add( assigneeImg );
@@ -718,6 +722,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 			
 			label = new InlineLabel( taskInfo.getTitle() );
 			label.addStyleName( "taskFolderWidgetLinkToTask" + m_style );
+			GwtClientHelper.setElementTextColor( label.getElement(), m_widgetStyles.getContentTextColor() );
 			clickHandler = new TaskClickHandler( taskInfo );
 			label.addClickHandler( clickHandler );
 			
@@ -973,6 +978,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 			
 			locationLabel = new InlineLabel( taskInfo.getLocation() );
 			locationLabel.addStyleName( "taskFolderWidgetLinkToLocation" + m_style );
+			GwtClientHelper.setElementTextColor( locationLabel.getElement(), m_widgetStyles.getContentTextColor() );
 			locationLabel.addClickHandler( new ClickHandler()
 			{
 				@Override
@@ -1148,6 +1154,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 		VibeFlowPanel mainPanel;
 		
 		m_style = landingPageStyle;
+		m_widgetStyles = widgetStyles;
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
@@ -1161,9 +1168,6 @@ public class SimpleListOfTasksWidget extends VibeWidget
 			tasksPanel = new VibeFlowPanel();
 			tasksPanel.addStyleName( "taskFolderWidgetListOfTasksPanel" + m_style );
 			mainPanel.add( tasksPanel );
-			
-			// Set the text color for the content.
-			GwtClientHelper.setElementTextColor( tasksPanel.getElement(), widgetStyles.getContentTextColor() );
 			
 			// Create a table that will hold the tasks
 			{

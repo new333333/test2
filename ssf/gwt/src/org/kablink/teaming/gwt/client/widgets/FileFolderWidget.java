@@ -125,6 +125,7 @@ public class FileFolderWidget extends VibeWidget
 	
 	private FileFolderProperties m_properties;
 	private String m_style;
+	private WidgetStyles m_widgetStyles;
 	private Element m_folderTitleElement;
 	private Element m_folderDescElement;
 	private VibeFlowPanel m_listOfFilesPanel;
@@ -173,6 +174,7 @@ public class FileFolderWidget extends VibeWidget
 				
 				link = new InlineLabel( file.getFileName() );
 				link.addStyleName( "fileFolderWidgetLinkToFile" + m_style );
+				GwtClientHelper.setElementTextColor( link.getElement(), m_widgetStyles.getContentTextColor() );
 				panel.add( link );
 				
 				clickHandler = new FileClickHandler( file.getViewFileUrl() );
@@ -208,6 +210,7 @@ public class FileFolderWidget extends VibeWidget
 		m_properties.copy( properties );
 		
 		m_style = landingPageStyle;
+		m_widgetStyles = widgetStyles;
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
