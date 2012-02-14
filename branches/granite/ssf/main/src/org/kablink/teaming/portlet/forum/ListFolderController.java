@@ -290,6 +290,8 @@ public class ListFolderController extends  SAbstractController {
 				//Bring up the form to select the destination folder for the move or copy operation
 				Map<String,Object> model = new HashMap<String,Object>();
 				model.put("delete_entries_list", deleteEntriesList);
+				String[] entryIds = deleteEntriesList.split(",");
+				model.put("delete_entries_count", entryIds.length);
 				model.put("delete_operation", deleteOperation);
 				Binder binder = getBinderModule().getBinder(binderId);
 				model.put(WebKeys.BINDER, binder);
