@@ -192,17 +192,18 @@ public class GwtProfileHelper {
 	}
 	
 	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
-		
-		ProfileAttribute attribute = new ProfileAttribute();
-		
 		//get the binder
 		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
-		owner = Utils.fixProxy(owner);
-		
-		if (owner != null) {
+		return getProfileAvatars(request, bs, owner);
+	}
+	
+	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Principal principal) {
+		ProfileAttribute attribute = new ProfileAttribute();
+		principal = Utils.fixProxy(principal);		
+		if (principal != null) {
 			//User u = user;
-			User u = (User) bs.getProfileModule().getEntry(owner.getId());
+			User u = (User) bs.getProfileModule().getEntry(principal.getId());
 			u = (User)Utils.fixProxy(u);
 			
 			//Get the Elements name - which is the attribute name

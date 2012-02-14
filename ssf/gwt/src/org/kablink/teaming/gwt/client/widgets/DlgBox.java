@@ -407,6 +407,21 @@ public abstract class DlgBox extends PopupPanel
 	}
 	
 	/**
+	 * Returns a simple EditSuccessfulHandler that simply lets the
+	 * dialog close.
+	 * 
+	 * @return
+	 */
+	public static EditSuccessfulHandler getSimpleSuccessfulHandler() {
+		return new EditSuccessfulHandler() {
+			@Override
+			public boolean editSuccessful(Object callbackData) {
+				return true;
+			}
+		};
+	}
+	
+	/**
 	 * Initialize the controls in the dialog with the values from the PropertiesObj.
 	 */
 //!!!	public abstract void init( PropertiesObj properties );
