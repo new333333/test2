@@ -273,6 +273,7 @@ public class FolderWidget extends VibeWidget
 					
 					link = new InlineLabel( entry.getEntryName() );
 					link.addStyleName( "folderWidgetLinkToEntry" + m_style );
+					GwtClientHelper.setElementTextColor( link.getElement(), m_widgetStyles.getContentTextColor() );
 					panel.add( link );
 					
 					clickHandler = new EntryClickHandler( entry.getViewEntryUrl() );
@@ -297,6 +298,7 @@ public class FolderWidget extends VibeWidget
 							// Yes
 							authorLabel = new InlineLabel( entry.getAuthor() );
 							authorLabel.addStyleName( "entryWidgetAuthorLabel" );
+							GwtClientHelper.setElementTextColor( authorLabel.getElement(), m_widgetStyles.getContentTextColor() );
 							
 							authorClickHandler = new AuthorClickHandler( authorLabel.getElement(), entry.getAuthorWorkspaceId(), entry.getAuthor() );
 							authorLabel.addClickHandler( authorClickHandler );
@@ -312,6 +314,7 @@ public class FolderWidget extends VibeWidget
 							// Yes
 							dateLabel = new InlineLabel( entry.getModificationDate() );
 							dateLabel.addStyleName( "entryWidgetDateLabel" );
+							GwtClientHelper.setElementTextColor( dateLabel.getElement(), m_widgetStyles.getContentTextColor() );
 							
 							miscPanel.add( dateLabel );
 						}
@@ -449,9 +452,6 @@ public class FolderWidget extends VibeWidget
 			label.addStyleName( "folderWidgetDesc" + m_style );
 			descPanel.add( label );
 			m_folderDescElement = label.getElement();
-			
-			// Set the text color for the description.
-			GwtClientHelper.setElementTextColor( descPanel.getElement(), widgetStyles.getContentTextColor() );
 			
 			contentPanel.add( descPanel );
 		}

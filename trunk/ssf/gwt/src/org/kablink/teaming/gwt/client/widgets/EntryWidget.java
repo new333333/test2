@@ -244,6 +244,7 @@ public class EntryWidget extends VibeWidget
 				// Yes
 				authorLabel = new InlineLabel( " " );
 				authorLabel.addStyleName( "entryWidgetAuthorLabel" );
+				GwtClientHelper.setElementTextColor( authorLabel.getElement(), widgetStyles.getContentTextColor() );
 				authorLabel.addClickHandler( new ClickHandler()
 				{
 					/**
@@ -278,6 +279,7 @@ public class EntryWidget extends VibeWidget
 				// Yes
 				dateLabel = new InlineLabel( " " );
 				dateLabel.addStyleName( "entryWidgetDateLabel" );
+				GwtClientHelper.setElementTextColor( dateLabel.getElement(), widgetStyles.getContentTextColor() );
 				m_dateElement = dateLabel.getElement();
 				
 				authorPanel.add( dateLabel );
@@ -298,9 +300,6 @@ public class EntryWidget extends VibeWidget
 			label.addStyleName( "entryWidgetDesc" + m_style );
 			descPanel.add( label );
 			m_descElement = label.getElement();
-			
-			// Set the text color for the description.
-			GwtClientHelper.setElementTextColor( contentPanel.getElement(), widgetStyles.getContentTextColor() );
 			
 			contentPanel.add( descPanel );
 		}

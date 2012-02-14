@@ -247,9 +247,6 @@ public class TaskFolderWidget extends VibeWidget
 			tasksPanel.addStyleName( "taskFolderWidgetListOfTasksPanel" + m_style );
 			contentPanel.add( tasksPanel );
 			
-			// Set the text color for the content.
-			GwtClientHelper.setElementTextColor( tasksPanel.getElement(), widgetStyles.getContentTextColor() );
-			
 			// Create a tasks widget that will hold the tasks
 			m_tasksWidget = new SimpleListOfTasksWidget( numTasks, widgetStyles, m_style );
 			tasksPanel.add( m_tasksWidget );

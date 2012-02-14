@@ -43,6 +43,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 
 
@@ -94,14 +95,20 @@ public class UrlWidget extends VibeWidget
 		if ( url != null && url.length() > 0 )
 		{
 			Anchor link;
+			InlineLabel span;
 			
 			if ( title == null || title.length() == 0 )
 				title = url;
 			
 			link = new Anchor();
-			link.setText( title );
 			link.setHref( url );
 			link.addStyleName( "urlWidgetLink" + m_style );
+
+			// Set the text color for the title.
+			span = new InlineLabel( title );
+			GwtClientHelper.setElementTextColor( span.getElement(), widgetStyles.getContentTextColor() );
+			
+			link.getElement().appendChild( span.getElement() );
 			
 			link.addClickHandler( new ClickHandler()
 			{
