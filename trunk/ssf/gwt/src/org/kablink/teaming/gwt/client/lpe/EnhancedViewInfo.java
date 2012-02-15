@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties.EnhancedViewType;
 
 /**
  * This class is used to hold information about an enhanced view
@@ -46,6 +47,7 @@ public class EnhancedViewInfo
 	private boolean m_folderRequired;
 	private boolean m_entryRequired;
 	private boolean m_titleOptional;	// Can the user specify whether to display the title?
+	private EnhancedViewType m_viewType;
 	
 	/**
 	 * 
@@ -63,6 +65,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayEntryDesc();
 			m_folderRequired = false;
 			m_entryRequired = true;
+			m_viewType = EnhancedViewType.DISPLAY_ENTRY;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
 		{
@@ -70,6 +73,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayRecentEntriesDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
+			m_viewType = EnhancedViewType.DISPLAY_RECENT_ENTRIES;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list.jsp" ) )
 		{
@@ -77,6 +81,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayRecentEntriesListDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
+			m_viewType = EnhancedViewType.DISPLAY_LIST_OF_RECENT_ENTRIES;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list_sorted.jsp" ) )
 		{
@@ -85,6 +90,7 @@ public class EnhancedViewInfo
 			m_folderRequired = true;
 			m_entryRequired = false;
 			m_titleOptional = true;
+			m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_RECENT_ENTRIES;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list_sorted_files.jsp" ) )
 		{
@@ -93,6 +99,7 @@ public class EnhancedViewInfo
 			m_folderRequired = true;
 			m_entryRequired = false;
 			m_titleOptional = true;
+			m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_FILES;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_calendar.jsp" ) )
 		{
@@ -101,6 +108,7 @@ public class EnhancedViewInfo
 			m_folderRequired = true;
 			m_entryRequired = false;
 			m_titleOptional = true;
+			m_viewType = EnhancedViewType.DISPLAY_CALENDAR;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_task_folder.jsp" ) )
 		{
@@ -108,6 +116,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayTaskFolderDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
+			m_viewType = EnhancedViewType.DISPLAY_TASK_FOLDER;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_survey.jsp" ) )
 		{
@@ -115,6 +124,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplaySurveyDesc();
 			m_folderRequired = false;
 			m_entryRequired = true;
+			m_viewType = EnhancedViewType.DISPLAY_SURVEY;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_my_calendar_events.jsp" ) )
 		{
@@ -122,6 +132,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayMyCalendarEventsDesc();
 			m_folderRequired = false;
 			m_entryRequired = false;
+			m_viewType = EnhancedViewType.DISPLAY_MY_CALENDAR_EVENTS;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_my_tasks.jsp" ) )
 		{
@@ -129,6 +140,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayMyTasksDesc();
 			m_folderRequired = false;
 			m_entryRequired = false;
+			m_viewType = EnhancedViewType.DISPLAY_MY_TASKS;
 		}
 		else
 		{
@@ -136,6 +148,7 @@ public class EnhancedViewInfo
 			m_desc = "Unknown";
 			m_folderRequired = false;
 			m_entryRequired = false;
+			m_viewType = EnhancedViewType.UNKNOWN;
 		}
 
 		m_jspName = jspName;
@@ -171,6 +184,14 @@ public class EnhancedViewInfo
 	public boolean getTitleOptional()
 	{
 		return m_titleOptional;
+	}
+	
+	/**
+	 * Return the type of view this is.
+	 */
+	public EnhancedViewType getViewType()
+	{
+		return m_viewType;
 	}
 	
 	
