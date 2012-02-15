@@ -10,6 +10,17 @@
 
     <!-- ============================== Form-based authentication ============================ -->
     
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+		<security:custom-filter position="LOGOUT_FILTER"/>
+		<constructor-arg value="/redirect/vibe?user.logout=true"/>
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+    </bean>
+
     <bean id="authenticationProcessingFilter" class="org.kablink.teaming.spring.security.AuthenticationProcessingFilter">
     	<security:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
 		<property name="authenticationManager" ref="_authenticationManager"/>
@@ -26,17 +37,6 @@
   	
     <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
     	<property name="loginFormUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
-    </bean>
-	
-    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
-		<security:custom-filter position="LOGOUT_FILTER"/>
-		<constructor-arg value="/redirect/vibe?user.logout=true"/>
-		<constructor-arg>
-			<list>
-				<bean class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/>
-			</list>
-		</constructor-arg>
-		<property name="filterProcessesUrl" value="/s/portalLogout"/>
     </bean>
 	
     <security:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
