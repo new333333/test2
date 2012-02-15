@@ -314,13 +314,13 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	public void checkAccess(FolderEntry entry, FolderOperation operation) throws AccessControlException {
 		switch (operation) {
 			case readEntry:
+			case copyEntry:
 				AccessUtils.readCheck(entry);   
 				break;
 			case modifyEntry:
 			case addEntryWorkflow:
 			case deleteEntryWorkflow:
 			case reserveEntry:
-			case copyEntry:
 			case moveEntry:
 			case changeEntryType:
 				AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   
