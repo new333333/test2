@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="138" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="140" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2" display="form"> 
@@ -50,12 +50,12 @@
           </properties> 
         </item>  
         <item name="profileEmailAddress" caption="__emailAddress" type="data" id="8" dataType="email" category="profileEntryData" display="form"> 
-          <properties>
-            <property name="caption" value="__emailAddress"/>
-            <property name="name" value="emailAddress"/>
-            <property name="width" value=""/>
-            <property name="required" value="false"/>
-          </properties>
+          <properties> 
+            <property name="caption" value="__emailAddress"/>  
+            <property name="name" value="emailAddress"/>  
+            <property name="width" value=""/>  
+            <property name="required" value="false"/> 
+          </properties> 
         </item>  
         <item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" category="profileEntryData" id="29"> 
           <properties> 
@@ -71,16 +71,6 @@
             <property name="name" value="txtEmailAddress"/>  
             <property name="width" value=""/>  
             <property name="required" value="false"/> 
-          </properties> 
-        </item>  
-        <item name="profilePhone" caption="__phone" type="data" category="profileEntryData" id="23"> 
-          <properties> 
-            <property name="name" value="phone"/>  
-            <property name="caption" value="__phone"/>  
-            <property name="width" value=""/>  
-            <property name="required" caption="__required" type="boolean" default="false" value="false"> 
-              <help>ihelp.designers.required</help> 
-            </property> 
           </properties> 
         </item> 
       </item>  
@@ -149,6 +139,14 @@
         <properties> 
           <property name="caption" value="__profile_heading_Contact_div"/> 
         </properties>  
+        <item name="profilePhone" caption="__phone" type="data" dataType="phone" category="profileEntryData" display="form" id="138">
+          <properties>
+            <property name="caption" value="__phone"/>
+            <property name="name" value="phone"/>
+            <property name="width" value=""/>
+            <property name="required" value="false"/>
+          </properties>
+        </item>
         <item name="profileWorkPhone" caption="__workPhone" type="data" id="44"> 
           <properties> 
             <property name="caption" value="__workPhone"/>  
@@ -188,14 +186,14 @@
             <property name="width" value=""/>  
             <property name="required" value=""/> 
           </properties> 
-        </item>
-        <item name="profileBccEmailAddress" caption="__bccEmailAddress" type="data" dataType="email" category="profileEntryData" display="form" id="137">
-          <properties>
-            <property name="caption" value="__bccEmailAddressWithHelp"/>
-            <property name="name" value="bccEmailAddress"/>
-            <property name="width" value=""/>
-            <property name="required" value="false"/>
-          </properties>
+        </item>  
+        <item name="profileBccEmailAddress" caption="__bccEmailAddress" type="data" dataType="email" category="profileEntryData" display="form" id="137"> 
+          <properties> 
+            <property name="caption" value="__bccEmailAddressWithHelp"/>  
+            <property name="name" value="bccEmailAddress"/>  
+            <property name="width" value=""/>  
+            <property name="required" value="false"/> 
+          </properties> 
         </item>  
         <item name="profilePresence" caption="__presenceID" type="data" id="50"> 
           <properties> 
@@ -282,10 +280,10 @@
           </properties> 
         </item> 
       </item>  
-      <properties>
-        <property name="name" value="form1"/>
-        <property name="type" value="profile"/>
-      </properties>
+      <properties> 
+        <property name="name" value="form1"/>  
+        <property name="type" value="profile"/> 
+      </properties> 
     </item> 
   </item>  
   <item name="profileEntryView" caption="__profile_entry_view_definition" id="13" display="view"> 
@@ -413,6 +411,12 @@
       <properties> 
         <property name="caption" value="__profile_heading_Contact_div"/> 
       </properties>  
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="139" formItem="profilePhone">
+        <properties>
+          <property name="caption" value="__phone"/>
+          <property name="name" value="phone"/>
+        </properties>
+      </item>
       <item name="profileWorkPhone" caption="__workPhone" type="data" id="69"> 
         <properties> 
           <property name="caption" value="__workPhone"/>  
