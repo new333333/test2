@@ -73,6 +73,8 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -163,6 +165,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
+		DisableSelectedUsersEvent.Handler,
+		EnableSelectedUsersEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
@@ -213,6 +217,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.DISABLE_SELECTED_USERS,
+		TeamingEvents.ENABLE_SELECTED_USERS,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
@@ -733,7 +739,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * false otherwise.
 	 */
 	private boolean canSelectEntries() {
-		return (!(isProfilesRootWS()));
+		return true;
 	}
 	
 	/*
@@ -1307,6 +1313,40 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.copyEntries(
 				getFolderType(),
 				getEntryIdListFromEntryIdLongs(getSelectedEntryIds()));
+		}
+	}
+	
+	/**
+	 * Handles DisableSelectedUsersEvent's received by this class.
+	 * 
+	 * Implements the DisableSelectedUsersEvent.Handler.onDisableSelectedUsers() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDisableSelectedUsers(DisableSelectedUsersEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Invoke the disable.
+			BinderViewsHelper.disableUsers(getSelectedEntryIds());
+		}
+	}
+	
+	/**
+	 * Handles EnableSelectedUsersEvent's received by this class.
+	 * 
+	 * Implements the EnableSelectedUsersEvent.Handler.onEnableSelectedUsers() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEnableSelectedUsers(EnableSelectedUsersEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Invoke the enable.
+			BinderViewsHelper.enableUsers(getSelectedEntryIds());
 		}
 	}
 	

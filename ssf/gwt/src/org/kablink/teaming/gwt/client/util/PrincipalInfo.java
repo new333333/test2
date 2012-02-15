@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class PrincipalInfo implements IsSerializable {
+	private boolean			m_userDisabled;			// true -> The principal is disabled.  false -> It's not.
 	private boolean			m_userHasWS;			// true -> The principal's workspace exists.
 	private boolean			m_userWSInTrash;		// true -> The principal's workspace exists and is in the trash.
 	private GwtPresenceInfo m_presence;				// Only used for individual assignees.
@@ -67,6 +68,7 @@ public class PrincipalInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public boolean         isUserDisabled()         {return m_userDisabled;       }
 	public boolean         isUserHasWS()            {return m_userHasWS;          }
 	public boolean         isUserWSInTrash()        {return m_userWSInTrash;      }
 	public GwtPresenceInfo getPresence()            {return m_presence;           }
@@ -82,6 +84,7 @@ public class PrincipalInfo implements IsSerializable {
 	 * 
 	 * @param
 	 */
+	public void setUserDisabled(       boolean         userDisabled)        {m_userDisabled        = userDisabled;       }
 	public void setUserHasWS(          boolean         userHasWS)           {m_userHasWS           = userHasWS;          }
 	public void setUserWSInTrash(      boolean         userWSInTrash)       {m_userWSInTrash       = userWSInTrash;      }
 	public void setPresence(           GwtPresenceInfo presence)            {m_presence            = presence;           }

@@ -223,7 +223,8 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		
 		// ...add a name link for it...
 		Label presenceLabel = new Label(pi.getTitle());
-		presenceLabel.addStyleName("vibe-dataTablePresence-label vibe-dataTablePresence-enabled");
+		presenceLabel.addStyleName("vibe-dataTablePresence-label");
+		presenceLabel.addStyleName(pi.isUserDisabled() ? "vibe-dataTablePresence-disabled" : "vibe-dataTablePresence-enabled");
 		if (!(pi.isUserWSInTrash())) {
 			presenceLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL);
 		}
