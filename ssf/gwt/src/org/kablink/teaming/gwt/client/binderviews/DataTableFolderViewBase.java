@@ -962,7 +962,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// show presence?
 			else if (isColumnPresence(cName) || isColumnFullName(cName)) {
 				// Yes!  Create a PresenceColumn for it.
-				column = new PresenceColumn<FolderRow>(fc) {
+				column = new PresenceColumn<FolderRow>(fc, showProfileEntryForPresenceWithNoWS()) {
 					@Override
 					public PrincipalInfo getValue(FolderRow fr) {
 						return fr.getColumnValueAsPrincipalInfo(fc);
@@ -1989,6 +1989,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			m_defaultColumnWidths,
 			m_dataTable,
 			m_fixedLayout);
+	}
+
+	/**
+	 * Returns true if the PresenceColumn should show the profile entry
+	 * dialog for presence when a user has no workspace and false if it
+	 * shouldn't.
+	 * 
+	 * Stub provided as a convenience method.  Should only be
+	 * overridden by PersonalWorkspacesView so that access is provided
+	 * to modify a user profile when that user has no workspace.
+	 * 
+	 * @return
+	 */
+	public boolean showProfileEntryForPresenceWithNoWS() {
+		// Return false since by default, we don't show the profile
+		// entry dialog if a user doesn't have a workspace.
+		return false;
 	}
 	
 	/**

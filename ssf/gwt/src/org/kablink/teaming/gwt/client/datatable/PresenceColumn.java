@@ -46,7 +46,7 @@ public abstract class PresenceColumn<T> extends VibeColumn<T, PrincipalInfo> {
   /**
    * Constructor method.
    */
-  public PresenceColumn(FolderColumn fc) {
-	  super(fc, new PresenceCell());
+  public PresenceColumn(FolderColumn fc, boolean showProfileEntryForPresenceWithNoWS) {
+	  super(fc, new PresenceCell(showProfileEntryForPresenceWithNoWS));
   }
 }

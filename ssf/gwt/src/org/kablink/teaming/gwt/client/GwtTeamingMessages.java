@@ -1390,7 +1390,10 @@ public interface GwtTeamingMessages extends Messages
 	String changeEntryTypesDlgSelect();
 	
 	// Strings used by the ProfileEntryDlg.
+	String profileEntryDlgDelete();
 	String profileEntryDlgHeader();
+	String profileEntryDlgLabelize(String label);
+	String profileEntryDlgModify();
 	
 	// Strings used in the Project Information widget
 	String dueDateLabel();

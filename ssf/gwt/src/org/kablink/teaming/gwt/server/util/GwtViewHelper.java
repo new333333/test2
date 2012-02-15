@@ -72,7 +72,6 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
@@ -2041,7 +2040,8 @@ public class GwtViewHelper {
 
 			// Can we access the user in question?
 			List<String> userIdList = new ArrayList<String>();
-			userIdList.add(String.valueOf(userId));
+			String userIdS = String.valueOf(userId);
+			userIdList.add(userIdS);
 			List resolvedList = ResolveIds.getPrincipals( userIdList );
 			if ((null != resolvedList) && (!(resolvedList.isEmpty()))) {
 				// Yes!  Extract the profile information we need to
@@ -2061,13 +2061,13 @@ public class GwtViewHelper {
 
 				// Does the current user have rights to modify users?
 				ProfileModule pm = bs.getProfileModule();
-				String profilesWSId = String.valueOf(pm.getProfileBinderId());
+				String profilesWSIdS = String.valueOf(pm.getProfileBinderId());
 				if (pm.testAccess(user, ProfileOperation.modifyEntry)) {
 					// Yes!  Store the modify URL for this user.
 					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-					url.setParameter(WebKeys.ACTION,         "modify_profile_entry");
-					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSId);
-					url.setParameter(WebKeys.URL_ENTRY_ID,   String.valueOf(userId));
+					url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSIdS                      );
+					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
 					reply.setModifyUrl(url.toString());
 				}
 				
@@ -2075,11 +2075,11 @@ public class GwtViewHelper {
 				if (pm.testAccess(user, ProfileOperation.deleteEntry)) {
 					// Yes!  Store the delete URL for this user.
 					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-					url.setParameter(WebKeys.ACTION,         "modify_profile_entry");
-					url.setParameter(WebKeys.OPERATION,      "delete");
-					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSId);
-					url.setParameter(WebKeys.URL_ENTRY_ID,   String.valueOf(userId));
-					reply.setModifyUrl(url.toString());
+					url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_DELETE           );
+					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSIdS                      );
+					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
+					reply.setDeleteUrl(url.toString());
 				}
 			}
 

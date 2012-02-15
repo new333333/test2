@@ -32,10 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.Set;
+import java.util.Map;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GetProfileEntryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData.ProfileAttribute;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -46,9 +50,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
@@ -59,7 +70,6 @@ import com.google.gwt.user.client.ui.Panel;
 public class ProfileEntryDlg extends DlgBox {
 	private GwtTeamingMessages	m_messages;	// Access to Vibe's messages.
 	private PrincipalInfo					m_pi;				// The user whose profile entry we're dealing with.
-	@SuppressWarnings("unused")
 	private ProfileEntryInfoRpcResponseData	m_profileEntryInfo;	//
 	private VibeFlowPanel					m_fp;				// The panel holding the dialog's content.
 
@@ -98,7 +108,7 @@ public class ProfileEntryDlg extends DlgBox {
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-profileEntryRootPanel");
+		m_fp.addStyleName("vibe-profileEntryDlg-rootPanel");
 		return m_fp;
 	}
 
@@ -128,6 +138,18 @@ public class ProfileEntryDlg extends DlgBox {
 	}
 
 	/*
+	 * Ensures a string being used for label ends with a ':'.
+	 */
+	private String labelizeCaption(String s) {
+		if (null != s) s = s.trim();
+		int l = ((null == s) ? 0 : s.length());
+		if ((0 < l) && (':' != s.charAt(l - 1))) {
+			s = m_messages.profileEntryDlgLabelize(s);
+		}
+		return s;
+	}
+	
+	/*
 	 * Asynchronously loads the entry types the user can select from.
 	 */
 	private void loadPart1Async() {
@@ -156,7 +178,8 @@ public class ProfileEntryDlg extends DlgBox {
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Store the folder columns and complete the population of the view.
+				// Store the profile entry information and complete the
+				// population of the dialog.
 				m_profileEntryInfo = ((ProfileEntryInfoRpcResponseData) response.getResponseData());
 				populateDlgAsync();
 			}
@@ -184,9 +207,102 @@ public class ProfileEntryDlg extends DlgBox {
 		// usage, ...)
 		m_fp.clear();
 
-//!		...this needs to be implemented...
+		// ...create a grid to hold the dialog's contents...
+		FlexTable grid = new FlexTable();
+		grid.addStyleName("vibe-profileEntryDlg-grid");
+		m_fp.add(grid);
+		FlexCellFormatter fcm = grid.getFlexCellFormatter();
 
-		// ...and show the dialog.
+		// ...add the user's title...
+		Map<String, ProfileAttribute> attrMap = m_profileEntryInfo.getProfileEntryInfo();
+		ProfileAttribute pa = attrMap.get("title");
+		String title = pa.getAttributeValue();
+		InlineLabel il = new InlineLabel(title);
+		il.addStyleName("vibe-profileEntryDlg-title");
+		il.setWordWrap(false);
+		grid.setWidget(0, 0, il);
+		fcm.setColSpan(0, 0, 2);
+		
+		// ...and add the user's avatar.
+		Image avatarImg = new Image();
+		avatarImg.addStyleName("vibe-profileEntryDlg-avatar");
+		String avatarUrl = m_profileEntryInfo.getAvatarUrl();
+		if (!(GwtClientHelper.hasString(avatarUrl)))
+		     avatarImg.setUrl(GwtTeaming.getDataTableImageBundle().userPhoto().getSafeUri());
+		else avatarImg.setUrl(avatarUrl);
+		avatarImg.setTitle(title);
+		grid.setWidget(1, 0, avatarImg);
+		fcm.setColSpan(1, 0, 2);
+
+		// Scan the attributes we have for the user...
+		Set<String> attrKeys = attrMap.keySet();
+		for (String attrKey:  attrKeys) {
+			// ...skipping the title...
+			if (attrKey.equals("title")) {
+				continue;
+			}
+
+			// ...and adding the attribute's caption...
+			int row = grid.getRowCount();
+			pa = attrMap.get(attrKey);
+			il = new InlineLabel(labelizeCaption(pa.getAttributeCaption()));
+			il.addStyleName("vibe-profileEntryDlg-attrCaption");
+			il.setWordWrap(false);
+			grid.setWidget(row, 0, il);
+
+			// ...and value.
+			String v = pa.getAttributeValue();
+			il = new InlineLabel((null == v) ? "" : v);
+			il.addStyleName("vibe-profileEntryDlg-attrValue");
+			il.setWordWrap(false);
+			grid.setWidget(row, 1, il);
+		}
+
+		// Do we have a URL for this user to modify this entry?
+		VibeFlowPanel buttonPanel = new VibeFlowPanel();
+		buttonPanel.addStyleName("vibe-profileEntryDlg-buttons");
+		final String modifyUrl = m_profileEntryInfo.getModifyUrl();
+		boolean hasModify = GwtClientHelper.hasString(modifyUrl);
+		if (hasModify) {
+			// Yes!  Create a push button so they can.
+			Button button = new Button(m_messages.profileEntryDlgModify());
+			button.addStyleName("vibe-profileEntryDlg-button vibe-profileEntryDlg-modify");
+			buttonPanel.add(button);
+			button.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					hide();
+					GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
+				}
+			});
+		}
+
+		// Do we have a URL for this user to delete this entry?
+		final String deleteUrl = m_profileEntryInfo.getDeleteUrl();
+		boolean hasDelete = GwtClientHelper.hasString(deleteUrl);
+		if (hasDelete) {
+			// Yes!  Create a push button so they can.
+			Button button = new Button(m_messages.profileEntryDlgDelete());
+			button.addStyleName("vibe-profileEntryDlg-button vibe-profileEntryDlg-delete");
+			buttonPanel.add(button);
+			button.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					hide();
+					GwtClientHelper.jsLaunchToolbarPopupUrl(deleteUrl, 900, 150);
+				}
+			});
+		}
+
+		// If we created an push buttons...
+		if (hasModify || hasDelete) {
+			// ...add the button panel to the grid.
+			int row = grid.getRowCount();
+			grid.setWidget(row, 0, buttonPanel);
+			fcm.setColSpan(row, 0, 2);
+		}
+
+		// Finally, show the dialog.
 		show(true);
 	}
 	
@@ -209,13 +325,8 @@ public class ProfileEntryDlg extends DlgBox {
 	 * dialog.
 	 */
 	private void runDlgNow(PrincipalInfo pi) {
-		// Store the parameter...
+		// Store the parameter and populate the dialog.
 		m_pi = pi;
-		
-		// ...initialize any other data members...
-//!		...this needs to be implemented...
-		
-		// ...and populate the dialog.
 		loadPart1Async();
 	}
 

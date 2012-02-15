@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Principal;
@@ -63,14 +62,15 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.GetterUtil;
-import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
  * @author Peter Hurley
  *
  */
+@SuppressWarnings("unchecked")
 public class ModifyEntryController extends SAbstractController {
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
@@ -84,10 +84,7 @@ public class ModifyEntryController extends SAbstractController {
 			Map options = new HashMap();
 			options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, GetterUtil.getBoolean(deleteWs, false));
 			getProfileModule().deleteEntry(entryId, options);			
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+			setupReloadOpener(response, binderId, entryId);
 		} else if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_DISABLE) && WebHelper.isMethodPost(request)) {
 			getProfileModule().disableEntry(entryId, true);			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
@@ -176,6 +173,7 @@ public class ModifyEntryController extends SAbstractController {
 				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 	
 				//See if there was a request to reorder the graphic files
+				@SuppressWarnings("unused")
 				String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
 	        }
 	       
@@ -213,11 +211,13 @@ public class ModifyEntryController extends SAbstractController {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
 	}
+	@SuppressWarnings("unused")
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 	}
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 
