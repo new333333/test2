@@ -326,6 +326,14 @@
 	border-width: 2px;
 }
 
+.iFrameWidgetTitleLabel, .iFrameWidgetTitleLabel_dark
+{
+	color: #135c8f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+
 /* ##################################################################### */
 
 

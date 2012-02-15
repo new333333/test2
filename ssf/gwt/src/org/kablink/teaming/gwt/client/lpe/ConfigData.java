@@ -79,6 +79,7 @@ public class ConfigData
 		/**
 		 * 
 		 */
+		@Override
 		public void addChild( ConfigItem configItem )
 		{
 			m_configItems.add( configItem );
@@ -97,6 +98,7 @@ public class ConfigData
 		/**
 		 * This is just a place holder.  Nothing to do.
 		 */
+		@Override
 		public VibeWidget createWidget( WidgetStyles widgetStyles )
 		{
 			return null;
@@ -105,6 +107,7 @@ public class ConfigData
 		/**
 		 * This is just a place holder.  Nothing to do.
 		 */
+		@Override
 		public DropWidget createDropWidget( LandingPageEditor lpe )
 		{
 			return null;
@@ -308,7 +311,7 @@ public class ConfigData
 				}
 				else if ( itemName.equalsIgnoreCase( "iframe" ) )
 				{
-					configItem = new IFrameConfig( itemData[i] );
+					configItem = new IFrameConfig( itemData[i], getLandingPageStyle() );
 					++i;
 				}
 				else
