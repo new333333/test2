@@ -7,10 +7,18 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+	    
+    <!-- ============================== Pre-authentication using HTTP BASIC authorization header  ============================ -->
+
+	<bean id="basicProcessingFilter" class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
+		<security:custom-filter before="AUTHENTICATION_PROCESSING_FILTER"/>
+		<property name="authenticationManager" ref="_authenticationManager"/>
+		<property name="ignoreFailure"><value>true</value></property>
+	</bean>
 
     <!-- ============================== Form-based authentication ============================ -->
     
-    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.PreAuthenticationLogoutFilter" depends-on="sPropsUtil">
 		<security:custom-filter position="LOGOUT_FILTER"/>
 		<constructor-arg value="/redirect/vibe?user.logout=true"/>
 		<constructor-arg>
@@ -19,6 +27,7 @@
 			</list>
 		</constructor-arg>
 		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+		<property name="preAuthenticationLogoutSuccessUrl" value="/bitbucket"/>
     </bean>
 
     <bean id="authenticationProcessingFilter" class="org.kablink.teaming.spring.security.AuthenticationProcessingFilter">
