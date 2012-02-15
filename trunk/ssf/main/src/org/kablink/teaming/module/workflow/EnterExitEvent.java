@@ -86,6 +86,8 @@ import org.kablink.teaming.jobs.WorkflowProcess;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.definition.notify.Notify;
+import org.kablink.teaming.module.definition.notify.Notify.NotifyType;
 import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.definition.notify.NotifyVisitor;
 import org.kablink.teaming.module.mail.EmailUtil;
@@ -625,6 +627,13 @@ public class EnterExitEvent extends AbstractActionHandler {
 			}
 		}
 		
+		Notify n_notify = null;
+		if (notify.isIncludeFullEntry()) {
+			//Get the notify object needed to get the full entry
+			User user = getProfileDao().loadUser(entry.getOwnerId(), entry.getZoneId());
+			n_notify = new Notify(NotifyType.full, user.getLocale(), user.getTimeZone(), new Date());
+		}
+		
 		if (addrs == null || addrs.isEmpty()) return; //need a to list
 		details.put(MailModule.TO, addrs);
 		
@@ -671,6 +680,12 @@ public class EnterExitEvent extends AbstractActionHandler {
 			tMsg.append(permaLink);
 			tMsg.append("\n\n");
 		}
+		if (notify.isIncludeFullEntry()) {
+			writer = new StringWriter();
+			NotifyBuilderUtil.buildElements(entry, n_notify, writer, NotifyVisitor.WriterType.TEXT, new HashMap());
+			tMsg.append(writer.toString());
+			tMsg.append("\n\n");
+		}
 		
 		String bodyText = MarkupUtil.markupStringReplacement(null, null, null, null, entry, notify.getBody(), WebKeys.MARKUP_VIEW);
 		tMsg.append(Html.stripHtml(bodyText));
@@ -705,6 +720,12 @@ public class EnterExitEvent extends AbstractActionHandler {
 				hMsg.append(entry.getTitle());
 			}
 			hMsg.append("</a>");
+			hMsg.append("<br /><br />");
+		}
+		if (notify.isIncludeFullEntry()) {
+			writer = new StringWriter();
+			NotifyBuilderUtil.buildElements(entry, n_notify, writer, NotifyVisitor.WriterType.HTML, new HashMap());
+			hMsg.append(writer.toString());
 			hMsg.append("<br /><br />");
 		}
 		hMsg.append(bodyTextHtml);

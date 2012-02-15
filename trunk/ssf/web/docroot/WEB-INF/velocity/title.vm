@@ -71,7 +71,7 @@
     #ss_printLn("--$ssVisitor.getNLT('entry.noTitle')--")
   #end
 
-  #ss_print("${property_caption} $ssVisitor.getUserTitle(${ssVisitor.Entity.Creation.Principal})")
+  #ss_print("$ssVisitor.getUserTitle(${ssVisitor.Entity.Creation.Principal})")
   #if ($ssVisitor.Entity.PostedBy)
     #ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
   #end 
