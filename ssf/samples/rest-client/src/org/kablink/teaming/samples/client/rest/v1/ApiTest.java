@@ -170,7 +170,7 @@ public class ApiTest {
 	
 	//@Test
 	public void testReadFilePropertiesRepeatedlyAsynchronously() throws Exception {
-		int count = 300;
+		int count = 500;
 		Thread[] threads = new Thread[count];
 		for(int i = 0; i < count; i++) {
 			threads[i] = new Thread("ApiTestThread"+i) {
