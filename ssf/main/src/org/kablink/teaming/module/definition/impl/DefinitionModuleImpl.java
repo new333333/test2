@@ -1557,7 +1557,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 	}
 	private boolean checkIfNameReserved(String name) {
-		if (ReservedItemNames.contains(" " + name + " ")) return true;
+		if (ReservedItemNames.contains(" " + name.toLowerCase() + " ")) return true;
 		else return false;
 	}
 	private boolean checkStateInUse(Definition def, String state) {
