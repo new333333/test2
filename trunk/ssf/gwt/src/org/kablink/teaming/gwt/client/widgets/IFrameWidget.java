@@ -39,7 +39,10 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 
 /**
@@ -74,6 +77,7 @@ public class IFrameWidget extends VibeWidget
 		VibeFlowPanel mainPanel;
 		Frame iframe;
 		Element element;
+		String title;
 		
 		m_properties = new IFrameProperties();
 		properties = config.getProperties();
@@ -84,6 +88,57 @@ public class IFrameWidget extends VibeWidget
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "iFrameWidgetMainPanel" + m_style );
+
+		// Turn borders on/off
+		if ( properties.getShowBorder() )
+		{
+			mainPanel.removeStyleName( "landingPageWidgetNoBorder" );
+			mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+			
+			// Set the border width and color.
+			GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
+		}
+		else
+		{
+			mainPanel.removeStyleName( "landingPageWidgetShowBorder" );
+			mainPanel.addStyleName( "landingPageWidgetNoBorder" );
+		}
+
+		// Set the width of the panel
+		{
+			Style style;
+			int width;
+			
+			style = mainPanel.getElement().getStyle();
+			
+			width = m_properties.getWidth();
+			style.setWidth( width, Unit.PX );
+		}
+		
+		// Is there a title?
+		title = properties.getTitle();
+		if ( title != null && title.length() > 0 )
+		{
+			VibeFlowPanel titlePanel;
+			InlineLabel label;
+			
+			// Yes, create a place for the title to live.
+			titlePanel = new VibeFlowPanel();
+			titlePanel.addStyleName( "landingPageWidgetTitlePanel" + m_style );
+			titlePanel.addStyleName( "iFrameWidgetTitlePanel" + m_style );
+			
+			label = new InlineLabel( title );
+			label.addStyleName( "iFrameWidgetTitleLabel" + m_style );
+			titlePanel.add( label );
+			
+			// Set the title background color.
+			GwtClientHelper.setElementBackgroundColor( titlePanel.getElement(), widgetStyles.getHeaderBgColor() );
+			
+			// Set the title text color.
+			GwtClientHelper.setElementTextColor( label.getElement(), widgetStyles.getHeaderTextColor() );
+
+			mainPanel.add( titlePanel );
+		}
 		
 		iframe = new Frame();
 		mainPanel.add( iframe );
@@ -96,17 +151,6 @@ public class IFrameWidget extends VibeWidget
 			String value;
 			
 			iframeElement = (IFrameElement) element;
-			
-			// Update the frame's properties.
-			if ( m_properties.getShowBorder() == true )
-			{
-				iframe.addStyleName( "iFrameWidgetShowBorder" );
-
-				// Set the border width and color.
-				GwtClientHelper.setElementBorderStyles( iframeElement, widgetStyles );
-			}
-			else
-				iframe.addStyleName( "iFrameWidgetNoBorder" );
 			
 			iframeElement.setName( m_properties.getName() );
 			
