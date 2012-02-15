@@ -4300,6 +4300,7 @@
 			<property name="subjText" caption="__notification_subject_text" type="text" />
 			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
 			<property name="includeLink" caption="__notification_include_link" type="boolean" default="true" />
+			<property name="includeFullEntry" caption="__notification_include_full_entry" type="boolean" default="false" />
 			<property name="bodyText" caption="__notification_body_text" type="textarea" />
 			<property name="appendBody" caption="__notification_append_body" type="checkbox" />
 		</properties>
