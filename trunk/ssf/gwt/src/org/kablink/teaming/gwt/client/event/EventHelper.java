@@ -325,6 +325,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DISABLE_SELECTED_USERS:
+				// A DisableSelectedUsersEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof DisableSelectedUsersEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DisableSelectedUsersEvent.registerEvent(eventBus, ((DisableSelectedUsersEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case EDIT_CURRENT_BINDER_BRANDING:
 				// A EditCurrentBinderBrandingEvent!  Can the event
 				// handler we were given handle that?
@@ -358,6 +367,15 @@ public class EventHelper {
 				if (eventHandler instanceof EditSiteBrandingEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = EditSiteBrandingEvent.registerEvent(eventBus, ((EditSiteBrandingEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case ENABLE_SELECTED_USERS:
+				// A EnableSelectedUsersEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof EnableSelectedUsersEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EnableSelectedUsersEvent.registerEvent(eventBus, ((EnableSelectedUsersEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1538,6 +1556,8 @@ public class EventHelper {
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);break;
 			case COPY_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);           break;
 			case DELETE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);         break;
+			case DISABLE_SELECTED_USERS:                hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);          break;
+			case ENABLE_SELECTED_USERS:                 hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);           break;
 			case LOCK_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);           break;
 			case MARK_READ_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);       break;
 			case MOVE_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);           break;

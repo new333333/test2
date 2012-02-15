@@ -180,7 +180,17 @@ public class GwtViewHelper {
 	private GwtViewHelper() {
 		// Nothing to do.
 	}
-	
+
+	/*
+	 * If there's an attribute value, constructs a ProfileAttribute for
+	 * it and adds it to a ProfileEntryInfoRpcResponseData object.
+	 */
+	private static void addProfileAttribute(ProfileEntryInfoRpcResponseData paData, String attributeName, String attributeValue) {
+		if (MiscUtil.hasString(attributeValue)) {
+			paData.addProfileAttribute(attributeName, new ProfileEntryInfoRpcResponseData.ProfileAttribute(NLT.get("__" + attributeName), attributeValue));
+		}
+	}
+
 	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
@@ -265,7 +275,7 @@ public class GwtViewHelper {
 		boolean                    isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
 		if (hasPrincipals) {
 			List principals = null;
-			try {principals = ResolveIds.getPrincipals(principalIds);}
+			try {principals = ResolveIds.getPrincipals(principalIds, false);}
 			catch (Exception ex) {/* Ignored. */}
 			if ((null != principals) && (!(principals.isEmpty()))) {
 				for (Object o:  principals) {
@@ -451,6 +461,80 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/**
+	 * Disables the users.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData disableUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any users to disable?
+			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			if ((null != userIds) && (!(userIds.isEmpty()))) {
+				// Yes!  Scan them.
+				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				for (Long userId:  userIds) {
+					// Can we resolve the user being disabled?
+					User user = getResolvedUser(userId);
+					if (null != user) {
+						// Yes!  Is it the user that's logged in?
+						if (user.getId().equals(currentUserId)) {
+							// Yes!  They can't disable themselves.
+							// Ignore it.
+							reply.addError(NLT.get("disableUserError.self"));
+							continue;
+						}
+
+						// Is it a reserved user?
+						if (user.isReserved()) {
+							// Yes!  They can't do that.  Ignore it.
+							String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+							reply.addError(NLT.get("disableUserError.reserved", new String[]{userTitle}));
+							continue;
+						}
+					}
+					
+					try {
+						// Can we disable this user?
+						bs.getProfileModule().disableEntry(userId, true);	// true -> Disable.
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+						String messageKey;
+						if      (e instanceof AccessControlException) messageKey = "disableUserError.AccssControlException";
+						else                                          messageKey = "disableUserError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.disableUsers( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Dumps the contents of a ViewInfo object.
 	 */
@@ -509,6 +593,60 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Enables the users.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData enableUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any users to enable?
+			if ((null != userIds) && (!(userIds.isEmpty()))) {
+				// Yes!  Scan them.
+				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				for (Long userId:  userIds) {
+					try {
+						// Can we enable this user?
+						bs.getProfileModule().disableEntry(userId, false);	// false -> Enable.
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						User   user      = getResolvedUser(userId);
+						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+						String messageKey;
+						if      (e instanceof AccessControlException) messageKey = "enableUserError.AccssControlException";
+						else                                          messageKey = "enableUserError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.enableUsers( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Checks for assignment column search key in the folder columns.
 	 * If there's a column for it, simply returns.  If there's not a
@@ -1973,7 +2111,7 @@ public class GwtViewHelper {
 		List<Long> principalIds = new ArrayList<Long>();
 		principalIds.add(pId);
 		List principals = null;
-		try {principals = ResolveIds.getPrincipals(principalIds);}
+		try {principals = ResolveIds.getPrincipals(principalIds, false);}
 		catch (Exception ex) {/* Ignored. */}
 		if ((null != principals) && (!(principals.isEmpty()))) {
 			for (Object o:  principals) {
@@ -1990,8 +2128,9 @@ public class GwtViewHelper {
 					Workspace userWS        = GwtServerHelper.getUserWorkspace(user);
 					boolean   userHasWS     = (null != userWS);
 					boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
-					reply.setUserHasWS(    userHasWS    );
-					reply.setUserWSInTrash(userWSInTrash);
+					reply.setUserDisabled( user.isDisabled());
+					reply.setUserHasWS(    userHasWS        );
+					reply.setUserWSInTrash(userWSInTrash    );
 					reply.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, pId));
 					reply.setPresenceUserWSId(user.getWorkspaceId());
 					
@@ -2042,7 +2181,7 @@ public class GwtViewHelper {
 			List<String> userIdList = new ArrayList<String>();
 			String userIdS = String.valueOf(userId);
 			userIdList.add(userIdS);
-			List resolvedList = ResolveIds.getPrincipals( userIdList );
+			List resolvedList = ResolveIds.getPrincipals(userIdList, false);
 			if ((null != resolvedList) && (!(resolvedList.isEmpty()))) {
 				// Yes!  Extract the profile information we need to
 				// display.
@@ -2099,12 +2238,6 @@ public class GwtViewHelper {
 		}
 	}
 	
-	private static void addProfileAttribute(ProfileEntryInfoRpcResponseData paData, String attributeName, String attributeValue) {
-		if (MiscUtil.hasString(attributeValue)) {
-			paData.addProfileAttribute(attributeName, new ProfileEntryInfoRpcResponseData.ProfileAttribute(NLT.get("__" + attributeName), attributeValue));
-		}
-	}
-
 	/*
 	 * Returns a map containing the search filter to use to read the
 	 * rows from a folder.
@@ -2463,6 +2596,25 @@ public class GwtViewHelper {
 		return ((null == reply) ? "" : reply);
 	}
 
+	/*
+	 * Resolves, if possible, a user ID to a User object.
+	 */
+	@SuppressWarnings("rawtypes")
+	private static User getResolvedUser(Long userId) {
+		User user = null;
+		String userIdS = String.valueOf(userId);
+		List<String> userIdList = new ArrayList<String>();
+		userIdList.add(userIdS);
+		List resolvedList = ResolveIds.getPrincipals(userIdList, false);
+		if ((null != resolvedList) && (!(resolvedList.isEmpty()))) {
+			Object o = resolvedList.get(0);
+			if (o instanceof User) {
+				user = ((User) o);
+			}
+		}
+		return user;
+	}
+		
 	/*
 	 * Returns the URL for a user's avatar.
 	 */

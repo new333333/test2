@@ -667,6 +667,28 @@ public class GwtMenuHelper {
 				entryToolbar.addNestedItem(addUserTBI);
 			}
 		}
+		
+		// If the user can manage entries...
+		if (bs.getProfileModule().testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries)) {
+			// ...add the 'more' with disable/enable users...
+			ToolbarItem moreTBI = new ToolbarItem("1_more");
+			markTBITitle(moreTBI, "toolbar.more");
+
+			// ...add the disable item...
+			ToolbarItem tbi = new ToolbarItem("1_disableSelected");
+			markTBITitle(tbi, "toolbar.disable");
+			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...and add the enable item.
+			tbi = new ToolbarItem("1_enableSelected");
+			markTBITitle(tbi, "toolbar.enable");
+			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS);
+			moreTBI.addNestedItem(tbi);
+			
+			// Finally, add the more toolbar to the entry toolbar.
+			entryToolbar.addNestedItem(moreTBI);
+		}
 	}
 	
 	/*

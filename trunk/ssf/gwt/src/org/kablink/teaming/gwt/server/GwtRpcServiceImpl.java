@@ -269,6 +269,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DISABLE_USERS:
+		{
+			DisableUsersCmd duCmd = ((DisableUsersCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.disableUsers( this, getRequest( ri ), duCmd.getUserIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case ENABLE_USERS:
+		{
+			EnableUsersCmd euCmd = ((EnableUsersCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.enableUsers( this, getRequest( ri ), euCmd.getUserIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case EXECUTE_ENHANCED_VIEW_JSP:
 		{
 			HttpServletResponse resp;

@@ -297,6 +297,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CopyEntries();
 	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteTasks();
+	String rpcFailure_DisableUsers();
+	String rpcFailure_EnableUsers();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_executeCustomJsp();
 	String rpcFailure_executeEnhancedViewJsp();
@@ -1372,10 +1374,14 @@ public interface GwtTeamingMessages extends Messages
 	String moveEntriesDlgSelectDestination();
 	String moveEntriesDlgWarningNoSelection();
 
-	// String used by the lock selected entries facility.
+	// Strings used by the enable/disable selected users facility.
+	String enableUsersError();
+	String disableUsersError();
+	
+	// Strings used by the lock selected entries facility.
 	String lockEntriesError();
 
-	// String used by the unlock selected entries facility.
+	// Strings used by the unlock selected entries facility.
 	String unlockEntriesError();
 	
 	// Strings used by ChangeEntryTypesDlg.

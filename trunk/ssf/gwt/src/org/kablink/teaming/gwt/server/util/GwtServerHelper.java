@@ -5089,6 +5089,48 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns the title for a target user, based on their ID, that we
+	 * should display to the current user based on their access to the
+	 * target user.
+	 * 
+	 * @param pm
+	 * @param isOtherUserAccessRestricted
+	 * @param targetUserId
+	 * @param defaultTitle
+	 * 
+	 * @return
+	 */
+	public static String getUserTitle(ProfileModule pm, boolean isOtherUserAccessRestricted, String targetUserId, String defaultTitle) {
+		// Can the current user only see other users that are common
+		// group members?
+		String reply = defaultTitle;
+		if (isOtherUserAccessRestricted) {
+			// Yes!  Can we resolve the target user's ID?  (This will
+			// take care of securing their title, if necessary.)
+			List<String> targetUserIdList = new ArrayList<String>();
+			targetUserIdList.add(targetUserId);
+			List targetUsersList = ResolveIds.getPrincipals(targetUserIdList, false);
+			if ((null != targetUsersList) && (!(targetUsersList.isEmpty()))) {
+				// Yes!  Return the title from the user we resolved to.
+				// This will either be the actual title, if the current
+				// user has rights to see it, or the secured title.
+				User targetUser = ((User) targetUsersList.get(0));
+				reply = targetUser.getTitle();
+			}
+			
+			else {
+				// No, we couldn't resolve the target user ID!  Display
+				// the default secured title.
+				reply = NLT.get("user.redacted.title");
+			}
+		}
+		
+		// If we get here, reply refers the title the current user
+		// should display for the target user in question.  Return it.
+		return reply;
+	}
+	
+	/**
 	 * Returns a user's Workspace, if one exists.
 	 * 
 	 * @param user
@@ -5518,6 +5560,8 @@ public class GwtServerHelper {
 		case COPY_ENTRIES:
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_TASKS:
+		case DISABLE_USERS:
+		case ENABLE_USERS:
 		case EXECUTE_ENHANCED_VIEW_JSP:
 		case EXECUTE_LANDING_PAGE_CUSTOM_JSP:
 		case EXECUTE_SEARCH:

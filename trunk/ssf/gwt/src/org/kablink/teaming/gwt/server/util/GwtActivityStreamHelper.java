@@ -74,7 +74,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -189,7 +188,7 @@ public class GwtActivityStreamHelper {
 
 			// Finally, store the title for the author based on the
 			// user's access to it.
-			reply.m_authorTitle = getUserTitle(
+			reply.m_authorTitle = GwtServerHelper.getUserTitle(
 				bs.getProfileModule(),
 				isOtherUserAccessRestricted,
 				reply.m_authorId,
@@ -1249,42 +1248,6 @@ public class GwtActivityStreamHelper {
 		return reply;
 	}
 	
-	/*
-	 * Returns the title for a target user, based on their ID, that we
-	 * should display to the current user based on their access to the
-	 * target user. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static String getUserTitle(ProfileModule pm, boolean isOtherUserAccessRestricted, String targetUserId, String defaultTitle) {
-		// Can the current user only see other users that are common
-		// group members?
-		String reply = defaultTitle;
-		if (isOtherUserAccessRestricted) {
-			// Yes!  Can we resolve the target user's ID?  (This will
-			// take care of securing their title, if necessary.)
-			List<String> targetUserIdList = new ArrayList<String>();
-			targetUserIdList.add(targetUserId);
-			List targetUsersList = ResolveIds.getPrincipals(targetUserIdList);
-			if ((null != targetUsersList) && (!(targetUsersList.isEmpty()))) {
-				// Yes!  Return the title from the user we resolved to.
-				// This will either be the actual title, if the current
-				// user has rights to see it, or the secured title.
-				User targetUser = ((User) targetUsersList.get(0));
-				reply = targetUser.getTitle();
-			}
-			
-			else {
-				// No, we couldn't resolve the target user ID!  Display
-				// the default secured title.
-				reply = NLT.get("user.redacted.title");
-			}
-		}
-		
-		// If we get here, reply refers the title the current user
-		// should display for the target user in question.  Return it.
-		return reply;
-	}
-	
 	/**
 	 * Returns a TreeInfo object containing the display information for
 	 * and activity streams tree using the current Binder referred to
@@ -1477,7 +1440,7 @@ public class GwtActivityStreamHelper {
 							bs,
 							false,
 							id,
-							getUserTitle(pm, isOtherUserAccessRestricted, id, user.getTitle()),
+							GwtServerHelper.getUserTitle(pm, isOtherUserAccessRestricted, id, user.getTitle()),
 							null,
 							ActivityStream.FOLLOWED_PERSON);					
 						asTIChildren.add(asTIChild);
