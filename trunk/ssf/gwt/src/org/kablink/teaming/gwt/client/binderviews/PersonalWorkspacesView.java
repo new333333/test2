@@ -146,6 +146,20 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	}
 
 	/**
+	 * Returns true so that the PresenceColumn shows the profile entry
+	 * dialog for presence when a user has no workspace.
+	 *
+	 * Overrides the DataTableFolderViewBase.showProfileEntryForPresenceWithNoWS()
+	 * method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean showProfileEntryForPresenceWithNoWS() {
+		return true;
+	}
+	
+	/**
 	 * Called from the base class to reset the content of this
 	 * personal workspaces view.
 	 * 

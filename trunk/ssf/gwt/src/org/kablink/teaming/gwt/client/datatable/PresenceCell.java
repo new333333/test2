@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg;
+import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -55,18 +57,22 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class PresenceCell extends AbstractCell<PrincipalInfo> {
+	private boolean			m_showProfileEntryForPresenceWithNoWS;	//
+	private ProfileEntryDlg	m_profileEntryDlg;						//
+	
 	/**
 	 * Constructor method.
 	 */
-	public PresenceCell() {
-		/*
-		 * Sink the events we need to process presence.
-	     */
+	public PresenceCell(boolean showProfileEntryForPresenceWithNoWS) {
+		// Sink the events we need to process presence...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+		
+		// ...and store the parameter.
+		m_showProfileEntryForPresenceWithNoWS = showProfileEntryForPresenceWithNoWS;
 	}
 
 	/*
@@ -82,8 +88,31 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 	/*
 	 * Called to view the profile entry on the principal.
 	 */
-	private void invokeViewProfileEntry(PrincipalInfo pi, Element pElement) {
-		GwtTeaming.fireEvent(new GotoContentUrlEvent(pi.getViewProfileEntryUrl()));
+	private void invokeViewProfileEntry(final PrincipalInfo pi, Element pElement) {
+		// Have we instantiated a profile entry dialog yet?
+		if (null == m_profileEntryDlg) {
+			// No!  Instantiate one now.
+			ProfileEntryDlg.createAsync(new ProfileEntryDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ProfileEntryDlg cpDlg) {
+					// ...and show it.
+					m_profileEntryDlg = cpDlg;
+					showProfileEntryDlgAsync(pi);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated a profile entry dialog already!
+			// Simply show it.
+			showProfileEntryDlgAsync(pi);
+		}
 	}
 	
 	/**
@@ -127,8 +156,8 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
     		}
     		
     		// Ignore clicks that occur outside of the outermost element.
-    		if      (isLabel && (!(pi.isUserHasWS()))) invokeViewProfileEntry(pi, eventTarget);
-    		else if (isLabel || isPresence)            invokeSimpleProfile(   pi, eventTarget);
+    		if      (isLabel && (!(pi.isUserHasWS())) && m_showProfileEntryForPresenceWithNoWS) invokeViewProfileEntry(pi, eventTarget);
+    		else if (isLabel || isPresence)                                                     invokeSimpleProfile(   pi, eventTarget);
     	}
     	
     	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
@@ -159,8 +188,8 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 			String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
 			isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL));
 		}
-		if      (isLabel && (!(pi.isUserHasWS()))) invokeViewProfileEntry(pi, eventTarget);
-		else if (isLabel || isPresence)            invokeSimpleProfile(   pi, eventTarget);
+		if      (isLabel && (!(pi.isUserHasWS())) && m_showProfileEntryForPresenceWithNoWS) invokeViewProfileEntry(pi, eventTarget);
+		else if (isLabel || isPresence)                                                     invokeSimpleProfile(   pi, eventTarget);
     }
     
 	/**
@@ -203,5 +232,25 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
 		sb.append(rendered);
+	}
+
+	/*
+	 * Asynchronously shows the profile entry dialog.
+	 */
+	private void showProfileEntryDlgAsync(final PrincipalInfo pi) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showProfileEntryDlgNow(pi);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
+	 * Synchronously shows the profile entry dialog.
+	 */
+	private void showProfileEntryDlgNow(PrincipalInfo pi) {
+		ProfileEntryDlg.initAndShow(m_profileEntryDlg, pi);
 	}
 }

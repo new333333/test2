@@ -313,9 +313,9 @@
 		font-weight: bold;
 		border: 1px solid #949494;
 	}
-/* End:  Size columns dialog  styles. */
+/* End:  Size columns dialog styles. */
 
-/* Start:  Copy/Move entries dialog  styles. */
+/* Start:  Copy/Move entries dialog styles. */
 	.vibe-cmeDlg_CaptionLeft     {font-size: 1.1em; font-weight: bold;}
 	.vibe-cmeDlg_CaptionPanel    {white-space: nowrap;}
 	.vibe-cmeDlg_CaptionRight    {padding-left: 3px;}
@@ -329,9 +329,9 @@
 	.vibe-cmeDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold; padding-top: 10px;}
 	.vibe-cmdDlg_ProgressSpinner {}
 	.vibe-cmeDlg_RootPanel       {padding: 6px;}
-/* End:  Copy/Move entries dialog  styles. */
+/* End:  Copy/Move entries dialog styles. */
 
-/* Start:  Change entry types dialog  styles. */
+/* Start:  Change entry types dialog styles. */
 	.vibe-changeEntryTypesCurDef     {margin-left: 2px;}
 	.vibe-changeEntryTypesCurLabel   {}
 	.vibe-changeEntryTypesCurPanel   {white-space: none; padding-bottom: 8px;}
@@ -340,4 +340,17 @@
 	.vibe-changeEntryTypesNewLabel   {font-weight: bold;}
 	.vibe-changeEntryTypesNewSelect  {padding-left: 2px;}
 	.vibe-changeEntryTypesRootPanel  {padding: 6px;}
-/* End:  Change entry types dialog  styles. */
+/* End:  Change entry types dialog styles. */
+
+/* Start:  Profile entry dialog styles. */
+	.vibe-profileEntryDlg-attrCaption {font-weight: bold; padding-right: 3px;}
+	.vibe-profileEntryDlg-attrValue   {}
+	.vibe-profileEntryDlg-avatar      {border-width: 1px; border-style: solid; border-color: #ccc; width: 100px; height: 100px;}
+	.vibe-profileEntryDlg-button      {}
+	.vibe-profileEntryDlg-buttons     {padding-top: 5px;}
+	.vibe-profileEntryDlg-delete      {}
+	.vibe-profileEntryDlg-grid        {padding: 5px;}
+	.vibe-profileEntryDlg-modify      {}
+	.vibe-profileEntryDlg-rootPanel   {}
+	.vibe-profileEntryDlg-title       {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important;}
+/* End:  Profile entry dialog styles. */

@@ -32,8 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -44,10 +43,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ProfileEntryInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private SortedMap<String, ProfileAttribute>	m_profileEntryInfo;	// A map of profile entry attribute names to ProfileAttribute's.
-	private String								m_avatarUrl;		// The URL of the user's avatar, if they've defined one.
-	private String								m_deleteUrl;		// The URL to use to delete the user.
-	private String								m_modifyUrl;		// The URL to use to modify the user's profile.
+	private LinkedHashMap<String, ProfileAttribute>	m_profileEntryInfo;	// A map of profile entry attribute names to ProfileAttribute's.
+	private String									m_avatarUrl;		// The URL of the user's avatar, if they've defined one.
+	private String									m_deleteUrl;		// The URL to use to delete the user.
+	private String									m_modifyUrl;		// The URL to use to modify the user's profile.
 	
 	/**
 	 * Inner class that encapsulates information about a profile
@@ -108,7 +107,7 @@ public class ProfileEntryInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 */
 	public ProfileEntryInfoRpcResponseData() {
 		// Initialize the this object.
-		this(new TreeMap<String, ProfileAttribute>());
+		this(new LinkedHashMap<String, ProfileAttribute>());
 	}
 	
 	/**
@@ -116,7 +115,7 @@ public class ProfileEntryInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 * 
 	 * @param profileEntryInfo
 	 */
-	public ProfileEntryInfoRpcResponseData(SortedMap<String, ProfileAttribute> profileEntryInfo) {
+	public ProfileEntryInfoRpcResponseData(LinkedHashMap<String, ProfileAttribute> profileEntryInfo) {
 		// Initialize the super class...
 		super();
 		
@@ -129,20 +128,20 @@ public class ProfileEntryInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 * 
 	 * @return
 	 */
-	public SortedMap<String, ProfileAttribute> getProfileEntryInfo() {return m_profileEntryInfo;}
-	public String                              getAvatarUrl()        {return m_avatarUrl;       }
-	public String                              getDeleteUrl()        {return m_deleteUrl;       }
-	public String                              getModifyUrl()        {return m_modifyUrl;       }
+	public LinkedHashMap<String, ProfileAttribute> getProfileEntryInfo() {return m_profileEntryInfo;}
+	public String                                  getAvatarUrl()        {return m_avatarUrl;       }
+	public String                                  getDeleteUrl()        {return m_deleteUrl;       }
+	public String                                  getModifyUrl()        {return m_modifyUrl;       }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setProfileEntryInfo(SortedMap<String, ProfileAttribute> profileEntryInfo) {m_profileEntryInfo = profileEntryInfo;}
-	public void setAvatarUrl(       String                              avatarUrl)        {m_avatarUrl        = avatarUrl;       }
-	public void setDeleteUrl(       String                              deleteUrl)        {m_deleteUrl        = deleteUrl;       }
-	public void setModifyUrl(       String                              modifyUrl)        {m_modifyUrl        = modifyUrl;       }
+	public void setProfileEntryInfo(LinkedHashMap<String, ProfileAttribute> profileEntryInfo) {m_profileEntryInfo = profileEntryInfo;}
+	public void setAvatarUrl(       String                                  avatarUrl)        {m_avatarUrl        = avatarUrl;       }
+	public void setDeleteUrl(       String                                  deleteUrl)        {m_deleteUrl        = deleteUrl;       }
+	public void setModifyUrl(       String                                  modifyUrl)        {m_modifyUrl        = modifyUrl;       }
 	
 	/**
 	 * Adds a ProfileAttribute to the map.
