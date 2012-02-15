@@ -2102,6 +2102,7 @@
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
 		<options optionCaption="__profile_options">
+			<option name="profilePhone" initial="false" />
 			<option name="profileWorkPhone" initial="true" />
 			<option name="profileMobilePhone" initial="true" />
 			<option name="profileHomePhone" initial="false" />
