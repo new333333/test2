@@ -239,7 +239,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  	  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}" tableStyle="${slidingTableTableStyle}">
 	<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
 
-  	<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+  	<c:if test="${ss_showDeleteCheckboxes && 
+  	        (ss_accessControlMap[ssBinder.id]['deleteEntries'] ||
+  	        ss_accessControlMap[ssBinder.id]['copyEntries'] ||
+  	        ss_accessControlMap[ssBinder.id]['moveEntries'])}">
 		<!-- Delete Entries Header Column:  Select All -->
 		<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="4%">
 			<div class="ss_title_menu" id="delete_selectAllCB_DIV">
@@ -746,7 +749,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <ssf:slidingTableRow style="${slidingTableRowStyle}" 
   oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}" id="${folderLineId}" >
 
-   	<c:if test="${ss_showDeleteCheckboxes && ss_accessControlMap[ssBinder.id]['deleteEntries']}">
+   	<c:if test="${ss_showDeleteCheckboxes && 
+   			(ss_accessControlMap[ssBinder.id]['deleteEntries'] ||
+   			ss_accessControlMap[ssBinder.id]['copyEntries'] ||
+   			ss_accessControlMap[ssBinder.id]['moveEntries'])}">
 		<!-- Delete entry  -->
 		<ssf:slidingTableColumn  style="${slidingTableColStyle} ss_sliding_table_checkbox">
 			<div class="ss_title_menu">
