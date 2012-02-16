@@ -35,7 +35,7 @@
 <div style="padding:10px;">
 <table cellspacing="2" cellpadding="6" border="1" style="width:100%; background:#cecece;">
   <tr>
-    <td valign="top" nowrap width="10%">
+    <td valign="middle" nowrap width="10%">
       <span>
         <c:if test="${empty ssSimpleUrlNames}"><ssf:nlt tag="permalink"/></c:if>
         <c:if test="${!empty ssSimpleUrlNames}"><ssf:nlt tag="permalinks"/></c:if>
@@ -109,11 +109,14 @@
 
   <c:if test="${!empty ss_toolbar_url_ical}">
     <tr>
-      <td valign="top" nowrap>
+      <td valign="middle" nowrap>
         <span><ssf:nlt tag="permalink.icalUrl"/></span>
       </td>
       <td valign="top" nowrap>
-        <span>${ss_toolbar_url_ical}</span>
+        <a href="${ss_toolbar_url_ical}" 
+			onclick="ss_openUrlInWindow(this, 'teamingSubscribe', null, null);return false;">
+		  <span>${ss_toolbar_url_ical}</span>
+		</a>
       </td>
     </tr>
   </c:if>
