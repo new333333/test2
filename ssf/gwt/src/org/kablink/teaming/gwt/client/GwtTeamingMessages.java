@@ -1400,6 +1400,7 @@ public interface GwtTeamingMessages extends Messages
 	String profileEntryDlgHeader();
 	String profileEntryDlgLabelize(String label);
 	String profileEntryDlgModify();
+	String profileEntryDlgNote();
 	
 	// Strings used in the Project Information widget
 	String dueDateLabel();

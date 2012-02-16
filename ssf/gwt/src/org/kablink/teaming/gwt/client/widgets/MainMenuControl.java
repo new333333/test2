@@ -106,6 +106,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -829,20 +831,22 @@ public class MainMenuControl extends Composite
 			m_aboutPopup.setWidget(aboutImg);
 			m_aboutPopup.setGlassEnabled(true);
 			m_aboutPopup.setGlassStyleName("teamingDlgBox_Glass");
+			m_aboutPopup.addAttachHandler(new Handler() {
+				@Override
+				public void onAttachOrDetach(AttachEvent event) {
+					// Is this an attach event? 
+					if (event.isAttached()) {
+						// Yes!  At this point, the about has been
+						// rendered and we need to center it in the
+						// window.
+						m_aboutPopup.center();
+					}
+				}
+			});
 		}
 		
 		// ...and show it.
-		m_aboutPopup.center();
-		ScheduledCommand doCenter = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				// We do this twice, once deferred so that it can be
-				// rendered before it's really centered, by this 2nd
-				// call.
-				m_aboutPopup.center();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doCenter);
+		m_aboutPopup.show();
 	}
 	
 	/**

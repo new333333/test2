@@ -60,6 +60,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
@@ -206,7 +207,7 @@ public class ProfileEntryDlg extends DlgBox {
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
 		m_fp.clear();
-
+		
 		// ...create a grid to hold the dialog's contents...
 		FlexTable grid = new FlexTable();
 		grid.addStyleName("vibe-profileEntryDlg-grid");
@@ -302,7 +303,13 @@ public class ProfileEntryDlg extends DlgBox {
 			fcm.setColSpan(row, 0, 2);
 		}
 
-		// Finally, show the dialog.
+		// Finally, create a footer note about why the Quick View
+		// profile is not being shown...
+		Label footer = new Label(m_messages.profileEntryDlgNote());
+		footer.addStyleName("vibe-profileEntryDlg-footer");
+		m_fp.add(footer);
+
+		// ...and show the dialog.
 		show(true);
 	}
 	
