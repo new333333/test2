@@ -80,21 +80,24 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * expansion widgets.
 	 */
 	private class BinderExpander implements ClickHandler {
-		private Grid m_nodeGrid;
-		private Image m_expanderImg;
-		private TreeInfo m_ti;
+		private Grid		m_contentGrid;	//
+		private Grid		m_nodeGrid;		//
+		private Image		m_expanderImg;	//
+		private TreeInfo	m_ti;			//
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param ti
+		 * @param contentGrid
 		 * @param nodeGrid
 		 * @param expanderImg
 		 */
-		BinderExpander(TreeInfo ti, Grid nodeGrid, Image expanderImg) {
+		BinderExpander(TreeInfo ti, Grid contentGrid, Grid nodeGrid, Image expanderImg) {
 			// Simply store the parameters.
-			m_ti = ti;
-			m_nodeGrid = nodeGrid;
+			m_ti          = ti;
+			m_contentGrid = contentGrid;
+			m_nodeGrid    = nodeGrid;
 			m_expanderImg = expanderImg;
 		}
 
@@ -119,7 +122,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			m_expanderImg.setResource(getImages().tree_closer());
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
-			reRenderNode(m_ti, m_nodeGrid);
+			reRenderNode(m_ti, m_contentGrid, m_nodeGrid);
 			
 			// ...and tell everybody that it's been expanded.
 			GwtTeaming.fireEventAsync(new TreeNodeExpandedEvent(getSelectedBinderId(), getTreeMode()));
@@ -137,7 +140,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// Yes!  Mark it as being closed and re-render it...
 				m_expanderImg.setResource(getImages().tree_opener());
 				m_ti.setBinderExpanded(false);
-				reRenderNode(m_ti, m_nodeGrid);
+				reRenderNode(m_ti, m_contentGrid, m_nodeGrid);
 				
 				// ...and tell everybody that it's been collapsed.
 				GwtTeaming.fireEventAsync(new TreeNodeCollapsedEvent(getSelectedBinderId(), getTreeMode()));
@@ -304,8 +307,11 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		
 		// Is this item a bucket?
 		String baseLabelStyle = "breadCrumb_ContentNode_Anchor";
-		if (rootNode && ti.isRootTail() && getTreeMode().isHorizontalBinder()) {
-			baseLabelStyle += (" breadCrumb_ContentNode_AnchorTail");
+		if (getTreeMode().isHorizontalBinder()) {
+			baseLabelStyle += (" breadCrumb_ContentNode_AnchorBC");
+			if (rootNode && ti.isRootTail()) {
+				baseLabelStyle += (" breadCrumb_ContentNode_AnchorTail");
+			}
 		}
 		if (ti.isBucket()) {
 			// Yes!  Generate the appropriate widgets. 
@@ -365,11 +371,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		List<TreeInfo> rootTIList = getRootTreeInfoList();
 		int count = rootTIList.size();
 		boolean trash = isTrash();
+		boolean binderBreadcrumb = getTreeMode().isHorizontalBinder();
 		Grid contentGrid = createGrid(
-			1,
+			(binderBreadcrumb ? 2 : 1),
 			(trash ? (count + 1) : count),
 			("breadCrumb_Content " +
-				(getTreeMode().isHorizontalBinder() ?
+				(binderBreadcrumb ?
 					"breadCrumb_ContentBinder"      :
 					"breadCrumb_ContentPopup")));
 		if (trash) {
@@ -386,7 +393,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			contentGrid.setWidget(0, (trash ? (i + 1) : i), nodeGrid);
 			TreeInfo ti = rootTIList.get(i);
 			ti.setRootTail((i + 1) == count);
-			renderNode(ti, nodeGrid);
+			renderNode(ti, contentGrid, nodeGrid);
 		}
 		
 		// ...and add the content Grid to the root panel.
@@ -396,7 +403,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/*
 	 * Renders a TreeInfo into the next position in a HorizontalPanel.
 	 */
-	private void renderNode(TreeInfo ti, Grid nodeGrid) {
+	private void renderNode(TreeInfo ti, Grid contentGrid, Grid nodeGrid) {
 		// Is this Binder expandable?
 		Widget expanderWidget;
 		Image expanderImg;
@@ -409,7 +416,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImg");
 			Anchor expanderA = new Anchor();
 			expanderA.getElement().appendChild(expanderImg.getElement());
-			expanderA.addClickHandler(new BinderExpander(ti, nodeGrid, expanderImg));
+			expanderA.addClickHandler(new BinderExpander(ti, contentGrid, nodeGrid, expanderImg));
 			expanderWidget = expanderA;
 		}
 		else {
@@ -435,7 +442,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		
 		// Add the expander and selector to the Grid.
 		nodeGrid.setWidget(0, 0, expanderWidget);
-		nodeGrid.setWidget(0, 1, selectorA);
+		if (selectorLabel.getStyleName().contains("breadCrumb_ContentNode_AnchorTail"))
+		     contentGrid.setWidget(1, 0, selectorA);
+		else nodeGrid.setWidget(   0, 1, selectorA);
 
 		// Is the node showing an expander and is expanded?
 		if (showExpander && ti.isBinderExpanded()) {
@@ -451,7 +460,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				expansionGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, String.valueOf(depth + 1));
 				vp.add(expansionGrid);
 				tii.setRootTail(false);	// Nested node -> Can never be a root tail.
-				renderNode(tii, expansionGrid);
+				renderNode(tii, contentGrid, expansionGrid);
 			}
 		}
 	}
@@ -459,9 +468,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/*
 	 * Clears and re-renders a TreeInfo object into a node's Grid.
 	 */
-	private void reRenderNode(TreeInfo ti, Grid nodeGrid) {
+	private void reRenderNode(TreeInfo ti, Grid contentGrid, Grid nodeGrid) {
 		clearNode(nodeGrid);
-		renderNode(ti, nodeGrid);
+		renderNode(ti, contentGrid, nodeGrid);
 	}
 	
 	/**
