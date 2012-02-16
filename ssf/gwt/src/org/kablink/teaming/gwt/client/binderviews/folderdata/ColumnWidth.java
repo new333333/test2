@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.dom.client.Style.Unit;
@@ -112,8 +113,10 @@ public class ColumnWidth {
 	 * 
 	 * @return
 	 */
-	public double getWidth() {return m_width;}
-	public Unit   getUnits() {return m_units;}
+	public boolean isPCT()    {return (Unit.PCT == m_units);}
+	public boolean isPX()     {return (Unit.PX  == m_units);}
+	public double  getWidth() {return m_width;              }
+	public Unit    getUnits() {return m_units;              }
 	
 	/**
 	 * Set'er methods.
@@ -176,7 +179,7 @@ public class ColumnWidth {
 		// otherwise.
 		return (cw.getWidth() == getWidth() && cw.getUnits().equals(getUnits()));
 	}
-	
+
 	/**
 	 * Returns a Column width as a String for use in a style.
 	 * 
@@ -191,29 +194,34 @@ public class ColumnWidth {
 	}
 
 	/**
-	 * Returns true of a Map<String, ColumnWidth> contains any percent
+	 * Returns true if a Map<String, ColumnWidth> contains any percent
 	 * based widths and false otherwise.
 	 * 
+	 * @param folderColumns
 	 * @param columnWidths
+	 * @param defaultColumnWidth
 	 * 
 	 * @return
 	 */
-	public static boolean hasPercentWidths(Map<String, ColumnWidth> columnWidths) {
-		// Were we given a Map?
-		if (null != columnWidths) {
-			// Yes!  Scan the ColumnWidth's in the Map.
-			for (String cName:  columnWidths.keySet()) {
-				// Is this ColumnWidth percentage based?
-				ColumnWidth cw = columnWidths.get(cName);
-				if (Unit.PCT == cw.getUnits()) {
+	public static boolean hasPCTWidths(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
+		// Were we given a column list and a column widths map?
+		if ((null != folderColumns) && (null != columnWidths)) {
+			// Yes!  Scan the columns.
+			for (FolderColumn fc:  folderColumns) {
+				// Is this column percent based?
+				ColumnWidth cw = columnWidths.get(fc.getColumnName());
+				if (null == cw) {
+					cw = defaultColumnWidth;
+				}
+				if ((null != cw) && cw.isPCT()) {
 					// Yes!  Return true.
 					return true;
 				}
 			}
 		}
 
-		// If we get here, there were no percentage base ColumnWidths
-		// in the Map.  Return false.
+		// If we get here, there were no percent based ColumnWidths in
+		// the map for any of the columns.  Return false.
 		return false;
 	}
 
@@ -237,5 +245,50 @@ public class ColumnWidth {
 			cwS = cwS.substring(0, unitPos);
 		}
 		return new ColumnWidth(Double.parseDouble(cwS), units);
+	}
+
+	/**
+	 * Returns a double value with pctWidth scaled based on a
+	 * percentage total of pctTotal.
+	 * 
+	 * @param pctWidth
+	 * @param pctTotal
+	 * 
+	 * @return
+	 */
+	public static double scalePCTWidth(double pctWidth, double pctTotal) {
+		return ((pctWidth / pctTotal) * ((double) 100));
+	}
+	
+	/**
+	 * Returns the sum of the percent widths in a column widths Map.
+	 * 
+	 * @param folderColumns
+	 * @param columnWidths
+	 * @param defaultColumnWidth
+	 * 
+	 * @return
+	 */
+	public static double sumPCTWidths(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
+		// Were we given a column list and a column widths map?
+		double pctTotal = 0;
+		if ((null != folderColumns) && (null != columnWidths)) {
+			// Yes!  Scan the columns.
+			for (FolderColumn fc:  folderColumns) {
+				// Is this column percent based?
+				ColumnWidth cw = columnWidths.get(fc.getColumnName());
+				if (null == cw) {
+					cw = defaultColumnWidth;
+				}
+				if ((null != cw) && cw.isPCT()) {
+					// Yes!  Add its width to the total.
+					pctTotal += cw.getWidth();
+				}
+			}
+		}
+		
+		// If we get here, pctTotal contains the total value of all the
+		// percent based columns.  Return it.
+		return pctTotal;
 	}
 }
