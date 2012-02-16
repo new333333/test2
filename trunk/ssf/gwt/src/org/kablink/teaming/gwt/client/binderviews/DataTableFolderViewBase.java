@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
@@ -159,7 +160,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public abstract class DataTableFolderViewBase extends FolderViewBase
-	implements
+	implements ApplyColumnWidths,
 	// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntriesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
@@ -540,7 +541,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Adds a column to manage pinning entries.
 	 */
-	private void addPinColumn(final FolderRowSelectionModel selectionModel, int colIndex) {
+	private void addPinColumn(final FolderRowSelectionModel selectionModel, int colIndex, double pctTotal) {
 		// Define the pin header...
 		VibeFlowPanel fp = new VibeFlowPanel();
 		Image i = new Image(m_images.grayPin());
@@ -563,8 +564,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		
 		// ...and connect it all together.
 	    m_dataTable.addColumn(column, pinHeader);
-	    setColumnStyles(column, ColumnWidth.COLUMN_PIN, colIndex);
-	    setColumnWidth(         ColumnWidth.COLUMN_PIN, column  );
+	    setColumnStyles(column, ColumnWidth.COLUMN_PIN, colIndex        );
+	    setColumnWidth(         ColumnWidth.COLUMN_PIN, column, pctTotal);
 	}
 	
 	/*
@@ -573,7 +574,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * 
 	 * @author rvasudevan@novell.com
 	 */
-	private void addSelectColumn(final FolderRowSelectionModel selectionModel, int colIndex) {
+	private void addSelectColumn(final FolderRowSelectionModel selectionModel, int colIndex, double pctTotal) {
 		// Define the select all checkbox in the header...
 		CheckboxCell cbCell = new CheckboxCell();
 		final SelectAllHeader saHeader = new SelectAllHeader(cbCell);
@@ -628,8 +629,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// ...and connect it all together.
 	    m_dataTable.addColumn(column, saHeader);
-	    setColumnStyles(column, ColumnWidth.COLUMN_SELECT, colIndex);
-	    setColumnWidth(         ColumnWidth.COLUMN_SELECT, column  );
+	    setColumnStyles(column, ColumnWidth.COLUMN_SELECT, colIndex        );
+	    setColumnWidth(         ColumnWidth.COLUMN_SELECT, column, pctTotal);
 	}
 
 	/**
@@ -644,6 +645,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	
 	protected void adjustFloatColumnWidths(Map<String, ColumnWidth> columnWidths) {
 		// By default, there are no adjustments.
+	}
+
+	/**
+	 * Applies the column widths in a column widths Map.
+	 *  
+	 * Implements the ApplyColumnWidths.applyColumnWidths() method.
+	 * 
+	 * @param folderColumns
+	 * @param columnWidths
+	 */
+	@Override
+	public void applyColumnWidths(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
+		double pctTotal = ColumnWidth.sumPCTWidths(folderColumns, columnWidths, defaultColumnWidth);
+		for (FolderColumn fc:  folderColumns) {
+			String      cName = fc.getColumnName();
+			ColumnWidth cw    = columnWidths.get(cName);
+			setColumnWidth(
+				((null == cw) ? defaultColumnWidth : cw),
+				m_dataTable.getColumn(getColumnIndex(folderColumns, cName)),
+				pctTotal);
+		}
 	}
 
 	/**
@@ -740,6 +762,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private boolean canSelectEntries() {
 		return true;
+	}
+	
+	/*
+	 * Returns the index of a named FolderColumn from a
+	 * List<FolderColumn>.
+	 */
+	private static int getColumnIndex(List<FolderColumn> folderColumns, String cName) {
+		// Scan the List<FolderColumn>...
+		int reply = 0;
+		for (FolderColumn fc:  folderColumns) {
+			// ...is this the column in question?
+			if (fc.getColumnName().equals(cName)) {
+				// Yes!  Return its index.
+				return reply;
+			}
+			reply += 1;
+		}
+		
+		// If we get here, we couldn't find the column in question. 
+		// Return -1.
+		return (-1);
 	}
 	
 	/*
@@ -928,18 +971,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Clear the data table's column sort list.
 		ColumnSortList csl = m_dataTable.getColumnSortList();
 		csl.clear();
-		
+
 		// If this folder supports entry selections...
+		double pctTotal = ColumnWidth.sumPCTWidths(m_folderColumnsList, m_columnWidths, m_defaultColumnWidth);
 		int colIndex = 0;
 		if (canSelectEntries()) {
 			// ...add a column for a checkbox selector.
-			addSelectColumn(selectionModel, colIndex++);
+			addSelectColumn(selectionModel, colIndex++, pctTotal);
 		}
 
 		// If this folder supports entry pinning...
 		if (canPinEntries()) {
 			// ...add a column to manage pinning the entry.
-			addPinColumn(selectionModel, colIndex++);
+			addPinColumn(selectionModel, colIndex++, pctTotal);
 		}
 
 	    // Scan the columns defined in this folder.
@@ -1106,11 +1150,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 
 			// Complete the initialization of the column.
-			fc.setDisplayIndex(   colIndex                   );
-			column.setSortable(   true                       );
-			m_dataTable.addColumn(column, fc.getColumnTitle());
-		    setColumnStyles(      column, cName, colIndex++  );
-		    setColumnWidth(               cName, column      );
+			fc.setDisplayIndex(   colIndex                       );
+			column.setSortable(   true                           );
+			m_dataTable.addColumn(column, fc.getColumnTitle()    );
+		    setColumnStyles(      column, cName, colIndex++      );
+		    setColumnWidth(               cName, column, pctTotal);
 
 		    // Is this the column we're sorted on?
 		    if (fc.getColumnSortKey().equalsIgnoreCase(getFolderSortBy())) {
@@ -1978,20 +2022,51 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	    styles.append(columnName.equals(ColumnWidth.COLUMN_SELECT) ? STYLE_COL_SELECT : columnName);
 	    m_dataTable.addColumnStyleName(colIndex, styles.toString());
 	}
-	
+
 	/*
 	 * Sets the width of a column in the data table based on the
 	 * column's name.
 	 */
-	private void setColumnWidth(String cName, Column<FolderRow, ?> column) {
-		// Determine the width for the column...
+	private void setColumnWidth(String cName, Column<FolderRow, ?> column, double pctTotal) {
+		// Set the width for the column.
 		ColumnWidth cw = m_columnWidths.get(cName);
+		setColumnWidth(
+			((null == cw) ? m_defaultColumnWidth : cw),
+			column,
+			pctTotal);
+	}
+	
+	/*
+	 * Sets the width of a column in the data table based on a
+	 * ColumnWidth object.
+	 */
+	private void setColumnWidth(ColumnWidth cw, Column<FolderRow, ?> column, double pctTotal) {
+		// Do we have a column width to set?
 		if (null == cw) {
-			cw = m_defaultColumnWidth;
+			// No!  Remove any setting that's already there.
+			m_dataTable.clearColumnWidth(column);
 		}
 		
-		// ...and put it into affect.
-		m_dataTable.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
+		else {
+			// Yes, we have a column width to set!  Is it a percent we
+			// need to adjust?
+			double  currentWidth  = cw.getWidth();
+			boolean adjustedWidth = (cw.isPCT() && (pctTotal != ((double) 100)));
+			if (adjustedWidth) {
+				// Yes!  Scale the width used so that the actual values sum
+				// to 100%.
+				cw.setWidth(
+					ColumnWidth.scalePCTWidth(
+						currentWidth,
+						pctTotal));
+			}
+			
+			// Put the width into affect.
+			m_dataTable.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
+			if (adjustedWidth) {
+				cw.setWidth(currentWidth);
+			}
+		}
 	}
 	
 	/*
@@ -2027,7 +2102,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			m_columnWidths,
 			m_defaultColumnWidth,
 			m_defaultColumnWidths,
-			m_dataTable,
+			this,
+			m_dataTable.getAbsoluteTop(),
 			m_fixedLayout);
 	}
 

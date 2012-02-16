@@ -88,12 +88,13 @@ import com.google.gwt.user.client.ui.Widget;
  */
 @SuppressWarnings("unused")
 public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private AbstractCellTable<FolderRow>	m_dt;					// The data table containing the columns.
+	private ApplyColumnWidths				m_acw;					// Interface to apply column width changes.
 	private BinderInfo						m_folderInfo;			// The folder the dialog is running against.
 	private boolean							m_warnOnUnitMix;		// true -> Warn the user about mixing %/pixel values.  false -> Don't.
 	private ColumnWidth						m_defaultColumnWidth;	// The default column width for the data table.
 	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
+	private int								m_dtAbsTop;				// The absolute top of the data table whose columns are being sized.  Used to position the dialog.
 	private List<FolderColumn> 				m_fcList;				// The columns the dialog is sizing.
 	private Map<String, ColumnWidth>		m_columnWidths;			// The current widths of the columns.
 	private Map<String, ColumnWidth>		m_defaultColumnWidths;	// The default widths of the columns in the data table.
@@ -167,21 +168,16 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Changes a column width, both in the data table and the data
 	 * structures used to persist the changes.
 	 */
-	private void adjustColumnWidth(String cName, Column<FolderRow, ?> column, ColumnWidth cw) {
-		// Adjust the table to show the width...
-		m_dt.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
-		
-		// ...and persist the ColumnWidth value.
+	private void adjustColumnWidth(String cName, ColumnWidth cw) {
+		// Adjust the columns...
 		if (null == cw)
 		     m_columnWidths.remove(cName);
 		else m_columnWidths.put(cName, cw);
+		
+		// ...and table to show the width.
+		m_acw.applyColumnWidths(m_fcList, m_columnWidths, m_defaultColumnWidth);
 	}
 	
-	private void adjustColumnWidth(String cName, ColumnWidth cw) {
-		// Always use the initial form of the method.
-		adjustColumnWidth(cName, m_dt.getColumn(getColumnIndex(cName)), cw);
-	}
-
 	/*
 	 * Changes a column width based on a unit change.
 	 */
@@ -268,7 +264,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 
 					// Do we need to warn the user about mixing pixel
 					// widths with percentage widths?
-					if (m_warnOnUnitMix && ColumnWidth.hasPercentWidths(m_columnWidths)) {
+					if (m_warnOnUnitMix && ColumnWidth.hasPCTWidths(m_fcList, m_columnWidths, m_defaultColumnWidth)) {
 						// Yes!  Warn them.
 						m_warnOnUnitMix = false;
 						Window.alert(m_messages.sizeColumnsDlgWarnPercents());
@@ -315,18 +311,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		}
 
 		// ...restore the widths in the data table as well...
-		for (FolderColumn fc:  m_fcList) {
-			String cName = fc.getColumnName();
-			ColumnWidth cw = m_initialColumnWidths.get(cName);
-			if (null == cw) {
-				cw = m_defaultColumnWidths.get(cName);
-				if (null == cw) {
-					cw = m_defaultColumnWidth;
-				}
-			}
-			Column<FolderRow, ?> column = m_dt.getColumn(getColumnIndex(cName));
-			m_dt.setColumnWidth(column, ColumnWidth.getWidthStyle(cw));
-		}
+		m_acw.applyColumnWidths(m_fcList, m_columnWidths, m_defaultColumnWidth);
 		
 		// ...and return true to close the dialog.
 		return true;
@@ -352,27 +337,6 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		return false;
 	}
 
-	/*
-	 * Returns the index of a named FolderColumn from the global
-	 * List<FolderColumn>.
-	 */
-	private int getColumnIndex(String cName) {
-		// Scan the List<FolderColumn>...
-		int reply = 0;
-		for (FolderColumn fc:  m_fcList) {
-			// ...is this the column in question?
-			if (fc.getColumnName().equals(cName)) {
-				// Yes!  Return its index.
-				return reply;
-			}
-			reply += 1;
-		}
-		
-		// If we get here, we couldn't find the column in question. 
-		// Return -1.
-		return (-1);
-	}
-	
 	/**
 	 * Unused.
 	 * 
@@ -506,7 +470,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 				int left  = ((0 >= wDiff) ? 0 : (wDiff / 2));
 
 				// ...and top dialog positions...
-				int hDiff = (m_dt.getAbsoluteTop() - (offsetHeight + PADDING_BEWTEEN_DLG_AND_DT));
+				int hDiff = (m_dtAbsTop - (offsetHeight + PADDING_BEWTEEN_DLG_AND_DT));
 				int top   = ((0 >= hDiff) ? 0 : hDiff);
 				
 				// ...and put the dialog there.
@@ -553,8 +517,8 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 				if (null == cw) {
 					cw = new ColumnWidth(
 						1,
-						(ColumnWidth.hasPercentWidths(m_columnWidths) ?
-							Unit.PCT                                  :
+						(ColumnWidth.hasPCTWidths(m_fcList, m_columnWidths, m_defaultColumnWidth) ?
+							Unit.PCT                                                              :
 							Unit.PX));
 				}
 			}
@@ -623,7 +587,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Asynchronously runs the given instance of the size columns
 	 * dialog.
 	 */
-	private static void runDlgAsync(final SizeColumnsDlg cbDlg, final BinderInfo fi, final List<FolderColumn> fcList, final Map<String, ColumnWidth> columnWidths, final ColumnWidth defaultColumnWidth, final Map<String, ColumnWidth> defaultColumnWidths, final AbstractCellTable<FolderRow> dt, final boolean fixedLayout) {
+	private static void runDlgAsync(final SizeColumnsDlg cbDlg, final BinderInfo fi, final List<FolderColumn> fcList, final Map<String, ColumnWidth> columnWidths, final ColumnWidth defaultColumnWidth, final Map<String, ColumnWidth> defaultColumnWidths, final ApplyColumnWidths acw, final int dtAbsTop, final boolean fixedLayout) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -633,7 +597,8 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 					columnWidths,
 					defaultColumnWidth,
 					defaultColumnWidths,
-					dt,
+					acw,
+					dtAbsTop,
 					fixedLayout);
 			}
 		};
@@ -644,14 +609,15 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Synchronously runs the given instance of the size columns
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, Map<String, ColumnWidth> defaultColumnWidths, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
+	private void runDlgNow(BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, Map<String, ColumnWidth> defaultColumnWidths, ApplyColumnWidths acw, int dtAbsTop, boolean fixedLayout) {
 		// Store the parameters...
 		m_folderInfo          = fi;
 		m_fcList              = fcList;
 		m_columnWidths        = columnWidths;
 		m_defaultColumnWidth  = defaultColumnWidth;
 		m_defaultColumnWidths = defaultColumnWidths;
-		m_dt                  = dt;
+		m_acw                 = acw;
+		m_dtAbsTop            = dtAbsTop;
 		
 		// ...initialize any other data members...
 		m_warnOnUnitMix = (!fixedLayout);	// We need to warn the user about mixing %/pixel widths when not using a fixed table layout.
@@ -697,14 +663,15 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			final SizeColumnsDlgClient scDlgClient,
 			
 			// initAndShow parameters,
-			final SizeColumnsDlg					scDlg,
-			final BinderInfo						fi,
-			final List<FolderColumn>				fcList,
-			final Map<String, ColumnWidth>			columnWidths,
-			final ColumnWidth						defaultColumnWidth,
-			final Map<String, ColumnWidth>			defaultColumnWidths,
-			final AbstractCellTable<FolderRow>		dt,
-			final boolean							fixedLayout) {
+			final SizeColumnsDlg			scDlg,
+			final BinderInfo				fi,
+			final List<FolderColumn>		fcList,
+			final Map<String, ColumnWidth>	columnWidths,
+			final ColumnWidth				defaultColumnWidth,
+			final Map<String, ColumnWidth>	defaultColumnWidths,
+			final ApplyColumnWidths			acw,
+			final int						dtAbsTop,
+			final boolean					fixedLayout) {
 		GWT.runAsync(SizeColumnsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -734,7 +701,8 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 						columnWidths,
 						defaultColumnWidth,
 						defaultColumnWidths,
-						dt,
+						acw,
+						dtAbsTop,
 						fixedLayout);
 				}
 			}
@@ -748,7 +716,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @param cbDlgClient
 	 */
 	public static void createAsync(SizeColumnsDlgClient cbDlgClient) {
-		doAsyncOperation(cbDlgClient, null, null, null, null, null, null, null, false);
+		doAsyncOperation(cbDlgClient, null, null, null, null, null, null, null, (-1), false);
 	}
 	
 	/**
@@ -760,10 +728,11 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * @param columnWidths
 	 * @param defaultColumnWidth
 	 * @param defaultColumnWidths
-	 * @param dt
+	 * @param acw
+	 * @param dtAbsTop
 	 * @param fixedLayout
 	 */
-	public static void initAndShow(SizeColumnsDlg cbDlg, BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, Map<String, ColumnWidth> defaultColumnWidths, AbstractCellTable<FolderRow> dt, boolean fixedLayout) {
+	public static void initAndShow(SizeColumnsDlg cbDlg, BinderInfo fi, List<FolderColumn> fcList, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth, Map<String, ColumnWidth> defaultColumnWidths, ApplyColumnWidths acw, int dtAbsTop, boolean fixedLayout) {
 		doAsyncOperation(
 			null,
 			cbDlg,
@@ -772,7 +741,8 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			columnWidths,
 			defaultColumnWidth,
 			defaultColumnWidths,
-			dt,
+			acw,
+			dtAbsTop,
 			fixedLayout);
 	}
 }
