@@ -2633,7 +2633,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						
 						// Are we searching for virtual events?
-						if (virtual && !calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
+						if (virtual) {
 							// Yes!  Search for the events that are
 							// task entries...
 							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
