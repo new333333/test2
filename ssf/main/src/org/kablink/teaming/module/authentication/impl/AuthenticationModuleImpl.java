@@ -143,8 +143,10 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	{
 		try {
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-			if(!externalAuthenticators.containsKey(zoneId)) {
-				addZone(zoneConfig);
+			synchronized(this) {
+				if(!externalAuthenticators.containsKey(zoneId)) {
+					addZone(zoneConfig);
+				}
 			}
 			AuthenticationConfig authConfig = zoneConfig.getAuthenticationConfig();
 			Long lastUpdateInDb = authConfig.getLastUpdate();
