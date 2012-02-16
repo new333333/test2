@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -123,6 +122,10 @@ public class TaskFolderWidget extends VibeWidget
 		int numTasks;
 		InlineLabel label;
 		VibeFlowPanel titlePanel;
+		int width;
+		Unit widthUnits;
+		int height;
+		Unit heightUnits;
 		
 		m_properties = new TaskFolderProperties();
 		m_properties.copy( properties );
@@ -133,6 +136,19 @@ public class TaskFolderWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "taskFolderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+		
+		// Get the width and height
+		width = m_properties.getWidth();
+		widthUnits = m_properties.getWidthUnits();
+		height = m_properties.getHeight();
+		heightUnits = m_properties.getHeightUnits();
+		
+		// Set the width of the entire widget
+		GwtClientHelper.setWidth( width, widthUnits, mainPanel );
+		
+		// If the height is a percentage, set the height of the entire widget.
+		if ( heightUnits == Unit.PCT )
+			GwtClientHelper.setHeight( height, heightUnits, mainPanel );
 		
 		// Add a place for the folder's title
 		{
@@ -210,29 +226,12 @@ public class TaskFolderWidget extends VibeWidget
 			contentPanel = new VibeFlowPanel();
 			mainPanel.add( contentPanel );
 			
-			// Set the width and height
-			{
-				Style style;
-				int width;
-				int height;
-				Unit unit;
-				
-				style = contentPanel.getElement().getStyle();
-				
-				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-				width = m_properties.getWidth();
-				unit = m_properties.getWidthUnits();
-				if ( width != 100 || unit != Unit.PCT )
-					style.setWidth( width, unit );
-				
-				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-				height = m_properties.getHeight();
-				unit = m_properties.getHeightUnits();
-				if ( height != 100 || unit != Unit.PCT )
-					style.setHeight( height, unit );
-				
-				style.setOverflow( m_properties.getOverflow() );
-			}
+			// If the height is not a percentage, set the height of the contentPanel.
+			if ( heightUnits != Unit.PCT )
+				GwtClientHelper.setHeight( height, heightUnits, contentPanel );
+
+			// Set the overflow value
+			GwtClientHelper.setOverflow( m_properties.getOverflow(), contentPanel );
 		}
 		
 		// Are we supposed to show tasks from this folder?

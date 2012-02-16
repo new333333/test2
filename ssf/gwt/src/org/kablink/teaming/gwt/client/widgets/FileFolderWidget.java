@@ -51,8 +51,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -205,6 +203,10 @@ public class FileFolderWidget extends VibeWidget
 		VibeFlowPanel mainPanel;
 		VibeFlowPanel contentPanel;
 		int numEntries;
+		int width;
+		Unit widthUnits;
+		int height;
+		Unit heightUnits;
 		
 		m_properties = new FileFolderProperties();
 		m_properties.copy( properties );
@@ -220,33 +222,29 @@ public class FileFolderWidget extends VibeWidget
 		// Set the border width and color.
 		GwtClientHelper.setElementBorderStyles( mainPanel.getElement(), widgetStyles );
 		
+		// Get the width and height
+		width = m_properties.getWidth();
+		widthUnits = m_properties.getWidthUnits();
+		height = m_properties.getHeight();
+		heightUnits = m_properties.getHeightUnits();
+		
+		// Set the width of the entire widget
+		GwtClientHelper.setWidth( width, widthUnits, mainPanel );
+		
+		// If the height is a percentage, set the height of the entire widget.
+		if ( heightUnits == Unit.PCT )
+			GwtClientHelper.setHeight( height, heightUnits, mainPanel );
+		
 		// Create a panel that will hold the content
 		{
 			contentPanel = new VibeFlowPanel();
 			
-			// Set the width and height
-			{
-				Style style;
-				int width;
-				int height;
-				Unit unit;
-				
-				style = contentPanel.getElement().getStyle();
-				
-				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-				width = m_properties.getWidth();
-				unit = m_properties.getWidthUnits();
-				if ( width != 100 || unit != Unit.PCT )
-					style.setWidth( width, unit );
-				
-				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-				height = m_properties.getHeight();
-				unit = m_properties.getHeightUnits();
-				if ( height != 100 || unit != Unit.PCT )
-					style.setHeight( height, unit );
-				
-				style.setOverflow( m_properties.getOverflow() );
-			}
+			// If the height is not a percentage, set the height of the contentPanel.
+			if ( heightUnits != Unit.PCT )
+				GwtClientHelper.setHeight( height, heightUnits, contentPanel );
+
+			// Set the overflow value
+			GwtClientHelper.setOverflow( m_properties.getOverflow(), contentPanel );
 		}
 
 		// Should we show the name of the folder?

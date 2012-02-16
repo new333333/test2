@@ -68,6 +68,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -965,6 +966,50 @@ public class GwtClientHelper {
 			style = element.getStyle();
 			
 			style.setColor( color );
+		}
+	}
+	
+	/**
+	 * Set the overflow style on the given UIObject
+	 */
+	public static void setOverflow( Style.Overflow overflow, UIObject uiObj )
+	{
+		Style style;
+		
+		style = uiObj.getElement().getStyle();
+		if ( style != null )
+			style.setOverflow( overflow );
+	}
+	
+	/**
+	 * Set the height of the given UIObject
+	 */
+	public static void setHeight( int height, Unit unit, UIObject uiObj )
+	{
+		Style style;
+		
+		style = uiObj.getElement().getStyle();
+		if ( style != null )
+		{
+			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
+			if ( height != 100 || unit != Unit.PCT )
+				style.setHeight( height, unit );
+		}
+	}
+	
+	/**
+	 * Set the width of the given UIObject
+	 */
+	public static void setWidth( int width, Unit unit, UIObject uiObj )
+	{
+		Style style;
+		
+		style = uiObj.getElement().getStyle();
+		if ( style != null )
+		{
+			// Don't set the width if it is 100%.  This causes a scroll bar to appear
+			if ( width != 100 || unit != Unit.PCT )
+				style.setWidth( width, unit );
 		}
 	}
 	
