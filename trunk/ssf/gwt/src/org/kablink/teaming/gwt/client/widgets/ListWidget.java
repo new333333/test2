@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.lpe.ListConfig;
 import org.kablink.teaming.gwt.client.lpe.ListProperties;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -154,6 +153,10 @@ public class ListWidget extends VibeWidget
 	{
 		String title;
 		ListProperties properties;
+		int width;
+		Unit widthUnits;
+		int height;
+		Unit heightUnits;
 		
 		properties = config.getProperties();
 		m_style = config.getLandingPageStyle();
@@ -180,7 +183,20 @@ public class ListWidget extends VibeWidget
 			m_layoutPanel.removeStyleName( "landingPageWidgetShowBorder" );
 			m_layoutPanel.addStyleName( "landingPageWidgetNoBorder" );
 		}
-
+		
+		// Get the width and height
+		width = m_properties.getWidth();
+		widthUnits = m_properties.getWidthUnits();
+		height = m_properties.getHeight();
+		heightUnits = m_properties.getHeightUnits();
+		
+		// Set the width of the entire widget
+		GwtClientHelper.setWidth( width, widthUnits, m_layoutPanel );
+		
+		// If the height is a percentage, set the height of the entire widget.
+		if ( heightUnits == Unit.PCT )
+			GwtClientHelper.setHeight( height, heightUnits, m_layoutPanel );
+		
 		// Is there a title?
 		title = properties.getTitle();
 		if ( title != null && title.length() > 0 )
@@ -211,30 +227,13 @@ public class ListWidget extends VibeWidget
 			m_contentPanel = new VibeFlowPanel();
 			m_contentPanel.addStyleName( "listWidgetContentPanel" + m_style );
 			m_layoutPanel.add( m_contentPanel );
-		}
 
-		// Set the width and height
-		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
-			
-			style = m_contentPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			style.setOverflow( m_properties.getOverflow() );
+			// If the height is not a percentage, set the height of the contentPanel.
+			if ( heightUnits != Unit.PCT )
+				GwtClientHelper.setHeight( height, heightUnits, m_contentPanel );
+
+			// Set the overflow value
+			GwtClientHelper.setOverflow( m_properties.getOverflow(), m_contentPanel );
 		}
 	}
 }

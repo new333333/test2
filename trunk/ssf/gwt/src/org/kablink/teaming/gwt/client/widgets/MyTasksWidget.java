@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -101,6 +100,10 @@ public class MyTasksWidget extends VibeWidget
 		VibeFlowPanel contentPanel;
 		InlineLabel label;
 		VibeFlowPanel titlePanel;
+		int width;
+		Unit widthUnits;
+		int height;
+		Unit heightUnits;
 		
 		m_style = landingPageStyle;
 		
@@ -108,6 +111,19 @@ public class MyTasksWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "taskFolderWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "landingPageWidgetShowBorder" );
+		
+		// Get the width and height
+		width = properties.getWidth();
+		widthUnits = properties.getWidthUnits();
+		height = properties.getHeight();
+		heightUnits = properties.getHeightUnits();
+		
+		// Set the width of the entire widget
+		GwtClientHelper.setWidth( width, widthUnits, mainPanel );
+		
+		// If the height is a percentage, set the height of the entire widget.
+		if ( heightUnits == Unit.PCT )
+			GwtClientHelper.setHeight( height, heightUnits, mainPanel );
 		
 		// Add a place for a header
 		{
@@ -137,29 +153,12 @@ public class MyTasksWidget extends VibeWidget
 			contentPanel = new VibeFlowPanel();
 			mainPanel.add( contentPanel );
 			
-			// Set the width and height
-			{
-				Style style;
-				int width;
-				int height;
-				Unit unit;
-				
-				style = contentPanel.getElement().getStyle();
-				
-				// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-				width = properties.getWidth();
-				unit = properties.getWidthUnits();
-				if ( width != 100 || unit != Unit.PCT )
-					style.setWidth( width, unit );
-				
-				// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-				height = properties.getHeight();
-				unit = properties.getHeightUnits();
-				if ( height != 100 || unit != Unit.PCT )
-					style.setHeight( height, unit );
-				
-				style.setOverflow( properties.getOverflow() );
-			}
+			// If the height is not a percentage, set the height of the contentPanel.
+			if ( heightUnits != Unit.PCT )
+				GwtClientHelper.setHeight( height, heightUnits, contentPanel );
+
+			// Set the overflow value
+			GwtClientHelper.setOverflow( properties.getOverflow(), contentPanel );
 		}
 		
 		// Create widget to hold the list of tasks assigned to the logged-in user.
