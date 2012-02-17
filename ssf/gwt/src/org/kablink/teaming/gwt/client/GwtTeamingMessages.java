@@ -1438,4 +1438,9 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the "My Tasks" widget
 	String myTasksHeader();	
+	
+	// Strings used in the 'Binder View Helper' APIs.
+	String binderViewsConfirmDeleteUserWS();
+	String binderViewsConfirmPurgeUsers();
+	String binderViewsConfirmPurgeUserWS();
 }// end GwtTeamingMessages

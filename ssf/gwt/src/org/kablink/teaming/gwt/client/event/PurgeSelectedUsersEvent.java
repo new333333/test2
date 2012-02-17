@@ -37,12 +37,13 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The DisableSelectedUsersEvent is used to disable the currently
- * selected users in the personal workspace binder.
+ * The PurgeSelectedUsersEvent is used to purge both the workspaces and
+ * user objects of the currently selected users in the personal
+ * workspace binder.
  * 
  * @author drfoster@novell.com
  */
-public class DisableSelectedUsersEvent extends VibeEventBase<DisableSelectedUsersEvent.Handler> {
+public class PurgeSelectedUsersEvent extends VibeEventBase<PurgeSelectedUsersEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long m_workspaceId;	// The ID of the personal workspaces binder.
@@ -51,13 +52,13 @@ public class DisableSelectedUsersEvent extends VibeEventBase<DisableSelectedUser
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onDisableSelectedUsers(DisableSelectedUsersEvent event);
+		void onPurgeSelectedUsers(PurgeSelectedUsersEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public DisableSelectedUsersEvent() {
+	public PurgeSelectedUsersEvent() {
 		super();
 	}
 	
@@ -66,7 +67,7 @@ public class DisableSelectedUsersEvent extends VibeEventBase<DisableSelectedUser
 	 * 
 	 * @param workspaceId
 	 */
-	public DisableSelectedUsersEvent(Long workspaceId) {
+	public PurgeSelectedUsersEvent(Long workspaceId) {
 		super();
 		m_workspaceId = workspaceId;
 	}
@@ -94,7 +95,7 @@ public class DisableSelectedUsersEvent extends VibeEventBase<DisableSelectedUser
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onDisableSelectedUsers(this);
+        handler.onPurgeSelectedUsers(this);
     }    
 	
 	/**
@@ -119,7 +120,7 @@ public class DisableSelectedUsersEvent extends VibeEventBase<DisableSelectedUser
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.DISABLE_SELECTED_USERS;
+		return TeamingEvents.PURGE_SELECTED_USERS;
 	}
 		
 	/**

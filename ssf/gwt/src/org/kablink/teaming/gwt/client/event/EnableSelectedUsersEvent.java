@@ -45,7 +45,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class EnableSelectedUsersEvent extends VibeEventBase<EnableSelectedUsersEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    public Long m_workspaceId;	//
+    public Long m_workspaceId;	// The ID of the personal workspaces binder.
     
 	/**
 	 * Handler interface for this event.

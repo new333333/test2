@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -169,6 +170,30 @@ public class BinderViewsHelper {
 			// Run it to copy.
 			showCMEDlgNow(m_cmeDlg, true, folderType, entryIds);
 		}
+	}
+
+	/**
+	 * Deletes the user workspaces based on a List<Long> of their user
+	 * IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void deleteUserWorkspaces(final List<Long> userIds) {
+		// If we weren't given any user IDs to be deleted...
+		if ((null == userIds) || userIds.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the user sure they want to delete the selected user
+		// workspaces?
+		if (!(Window.confirm(GwtTeaming.getMessages().binderViewsConfirmDeleteUserWS()))) {
+			// No!  Bail.
+			return;
+		}
+		
+//!		...this needs to be implemented...
+		Window.alert("BinderViewsHelper.deleteUserWorkspaces():  ...this needs to be implemented...");
 	}
 
 	/**
@@ -398,6 +423,54 @@ public class BinderViewsHelper {
 		}
 	}
 	
+	/**
+	 * Purges the user workspaces and user objects based on a
+	 * List<Long> of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void purgeUsers(final List<Long> userIds) {
+		// If we weren't given any user IDs to be purged...
+		if ((null == userIds) || userIds.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the user sure they want to the selected user workspaces
+		// and user objects?
+		if (!(Window.confirm(GwtTeaming.getMessages().binderViewsConfirmPurgeUsers()))) {
+			// No!  Bail.
+			return;
+		}
+		
+//!		...this needs to be implemented...
+		Window.alert("BinderViewsHelper.purgeUsers():  ...this needs to be implemented...");
+	}
+
+	/**
+	 * Purges the user workspaces based on a List<Long> of their user
+	 * IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void purgeUserWorkspaces(final List<Long> userIds) {
+		// If we weren't given any user IDs to be purged...
+		if ((null == userIds) || userIds.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the user sure they want to purge the selected user
+		// workspaces?
+		if (!(Window.confirm(GwtTeaming.getMessages().binderViewsConfirmPurgeUserWS()))) {
+			// No!  Bail.
+			return;
+		}
+		
+//!		...this needs to be implemented...
+		Window.alert("BinderViewsHelper.purgeUserWorkspaces():  ...this needs to be implemented...");
+	}
+
 	/**
 	 * Invokes the appropriate UI to share the entries based on a
 	 * List<EntryId> of the entries.

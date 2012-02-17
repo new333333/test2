@@ -325,6 +325,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DELETE_SELECTED_USER_WORKSPACES:
+				// A DeleteSelectedUserWorkspacesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DeleteSelectedUserWorkspacesEvent.registerEvent(eventBus, ((DeleteSelectedUserWorkspacesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case DISABLE_SELECTED_USERS:
 				// A DisableSelectedUsersEvent!  Can the event handler
 				// we were given handle that?
@@ -655,6 +664,24 @@ public class EventHelper {
 				if (eventHandler instanceof PurgeSelectedEntriesEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = PurgeSelectedEntriesEvent.registerEvent(eventBus, ((PurgeSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case PURGE_SELECTED_USER_WORKSPACES:
+				// A PurgeSelectedUserWorkspacesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = PurgeSelectedUserWorkspacesEvent.registerEvent(eventBus, ((PurgeSelectedUserWorkspacesEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case PURGE_SELECTED_USERS:
+				// A PurgeSelectedUsersEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof PurgeSelectedUsersEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = PurgeSelectedUsersEvent.registerEvent(eventBus, ((PurgeSelectedUsersEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1556,12 +1583,15 @@ public class EventHelper {
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);break;
 			case COPY_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);           break;
 			case DELETE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);         break;
+			case DELETE_SELECTED_USER_WORKSPACES:       hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);  break;
 			case DISABLE_SELECTED_USERS:                hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);          break;
 			case ENABLE_SELECTED_USERS:                 hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);           break;
 			case LOCK_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);           break;
 			case MARK_READ_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);       break;
 			case MOVE_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);           break;
 			case PURGE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);          break;
+			case PURGE_SELECTED_USER_WORKSPACES:        hasHandler = (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler);   break;
+			case PURGE_SELECTED_USERS:                  hasHandler = (eventHandler instanceof PurgeSelectedUsersEvent.Handler);            break;
 			case SHARE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);          break;
 			case SUBSCRIBE_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);      break;
 			case UNLOCK_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);         break;
