@@ -3581,3 +3581,10 @@ td.datePickerMonth {
 }
 	
 /* End:  Milestone statistics graph styles. */
+
+/* Start:  Progress dialog styles. */
+	.vibe-progressDlg_ProgressLabel   {margin-left: 3px;}
+	.vibe-progressDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold; padding-top: 10px;}
+	.vibe-progressDlg_ProgressSpinner {}
+	.vibe-progressDlg_RootPanel       {padding: 6px;}
+/* End:  Progress entries dialog styles. */

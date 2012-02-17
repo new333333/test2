@@ -313,10 +313,15 @@ public class GwtClientHelper {
         return new Date(date.getTime() - getTimeZoneOffsetMillis());
     }
    
-	/*
+	/**
 	 * Applies patches to a message string.
+	 * 
+	 * @param msg
+	 * @param patches
+	 * 
+	 * @return
 	 */
-	private static String patchMessage(String msg, String[] patches) {
+	public static String patchMessage(String msg, String[] patches) {
 		int count = ((null == patches) ? 0 : patches.length);
     	for (int i = 0; i < count; i += 1) {
             String delimiter = ("[" + i + "]");
@@ -326,6 +331,11 @@ public class GwtClientHelper {
             }
         }
 		return msg;
+	}
+	
+	public static String patchMessage(String msg, String patch) {
+		// Always use the initial form of the method.
+		return patchMessage(msg, new String[]{patch});
 	}
 	
 	/**

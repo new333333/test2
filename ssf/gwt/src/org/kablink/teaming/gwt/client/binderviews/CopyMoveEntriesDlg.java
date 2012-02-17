@@ -675,7 +675,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		m_progressPanel.setVisible(false);
 		m_progressPanel.add(buildSpinnerImage("vibe-cmeDlg_ProgressSpinner"));
 		m_progressIndicator = new InlineLabel("");
-		m_progressIndicator.addStyleName("vibe-cmdDlg_ProgressLabel");
+		m_progressIndicator.addStyleName("vibe-cmeDlg_ProgressLabel");
 		m_progressPanel.add(m_progressIndicator);
 
 		// ...and finally, show the dialog.
