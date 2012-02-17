@@ -133,7 +133,7 @@ public class DSConnectionProvider implements ConnectionProvider {
 			return sb.toString();
 		}
 		else {
-			return "To enable DS connection debug info, add ds.connection.debug.enabled=true in system-ext.properties. This adds SERIOUS overhead! ";
+			return "To enable DS connection debug info, add ds.connection.debug.enabled=true in system-ext.properties.\nThis adds SERIOUS overhead, so should not be used in a production mode.";
 		}
 	}
 	
