@@ -491,6 +491,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfileEntryDlg();
 	String codeSplitFailure_ProfilePage();
+	String codeSplitFailure_ProgressDlg();
 	String codeSplitFailure_ProjectInfoWidget();
 	String codeSplitFailure_ProjectStatsWidget();
 	String codeSplitFailure_ProjectManagementWSView();
@@ -1443,4 +1444,7 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmDeleteUserWS();
 	String binderViewsConfirmPurgeUsers();
 	String binderViewsConfirmPurgeUserWS();
+
+	// Strings used by the 'Progress' dialog.
+	String progressDlgConfirmCancel();
 }// end GwtTeamingMessages

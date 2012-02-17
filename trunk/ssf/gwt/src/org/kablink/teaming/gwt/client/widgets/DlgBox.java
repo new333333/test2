@@ -81,6 +81,7 @@ public abstract class DlgBox extends PopupPanel
 	private static int m_uniqueId = 100;
 	
 	public enum DlgButtonMode {
+		Cancel,
 		Close,
 		Ok,
 		OkCancel,
@@ -241,10 +242,11 @@ public abstract class DlgBox extends PopupPanel
 	public void createFooterButtons( DlgButtonMode dlgBtnMode )
 	{
 		switch ( dlgBtnMode ) {
+		case Cancel:
 		case Close:
 			if ( m_cancelBtn == null )
 			{
-				m_cancelBtn = new Button( GwtTeaming.getMessages().close() );
+				m_cancelBtn = new Button( (DlgButtonMode.Cancel == dlgBtnMode) ? GwtTeaming.getMessages().cancel() : GwtTeaming.getMessages().close() );
 			
 				m_cancelBtn.addClickHandler( this );
 				m_cancelBtn.addStyleName( "teamingButton" );
@@ -546,6 +548,19 @@ public abstract class DlgBox extends PopupPanel
 	}// end onClick()
 
 	/**
+	 * Enables/disables the cancel push button.
+	 * 
+	 * @param enabled
+	 */
+	public void setCancelEnabled( boolean enabled )
+	{
+		if ( null != m_cancelBtn )
+		{
+			m_cancelBtn.setEnabled(enabled);
+		}
+	}// end setCancelEnabled()
+	
+	/**
 	 * Updates the dialog's caption.
 	 * 
 	 * @param caption
@@ -554,6 +569,19 @@ public abstract class DlgBox extends PopupPanel
 	{
 		m_caption.setText( caption );
 	}// end setCaption()
+	
+	/**
+	 * Enables/disables the ok push button.
+	 * 
+	 * @param enabled
+	 */
+	public void setOkEnabled( boolean enabled )
+	{
+		if ( null != m_okBtn )
+		{
+			m_okBtn.setEnabled(enabled);
+		}
+	}// end setOkEnabled()
 	
 	/**
 	 * Show this dialog.
