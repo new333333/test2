@@ -26,8 +26,8 @@ package org.kablink.util.dao.hibernate;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import java.util.LinkedList;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.naming.InitialContext;
 
@@ -51,7 +51,7 @@ public class DSConnectionProvider implements ConnectionProvider {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
-	public static AtomicInteger unreleasedConnectionCount = new AtomicInteger(0);
+	private static LinkedList<WrappedConnection> borrowedConnections = null;
 	
 	public void configure(Properties props) throws HibernateException {
 		String location = props.getProperty(Environment.DATASOURCE);
@@ -62,21 +62,28 @@ public class DSConnectionProvider implements ConnectionProvider {
 		catch (Exception e) {
 			throw new HibernateException(e.getLocalizedMessage());
 		}
+		
+		String str = System.getProperty("ds.connection.debug.enabled");
+		if("true".equals(str))
+			borrowedConnections = new LinkedList<WrappedConnection>();
 	}
 
 	public Connection getConnection() throws SQLException {
 		if(logger.isDebugEnabled())
-			logger.debug("Getting connection");
+			logger.debug("Borrowing connection");
 		Connection conn = _ds.getConnection();
-		unreleasedConnectionCount.incrementAndGet();
-		return conn;
+		if(logger.isDebugEnabled())
+			logger.debug("Connection borrowed");
+		return addWrappedConnection(conn);
 	}
 
 	public void closeConnection(Connection con) throws SQLException {
 		if(logger.isDebugEnabled())
-			logger.debug("Closing connection");
+			logger.debug("Returning connection");
 		con.close();
-		unreleasedConnectionCount.decrementAndGet();
+		if(logger.isDebugEnabled())
+			logger.debug("Connection returned");
+		removeWrappedConnection(con);
 	}
 
 	public boolean isStatementCache() {
@@ -90,4 +97,44 @@ public class DSConnectionProvider implements ConnectionProvider {
 	}
 	private DataSource _ds;
 
+	private Connection addWrappedConnection(Connection conn) {
+		if(borrowedConnections != null) {
+			WrappedConnection wc = new WrappedConnection(conn);
+			synchronized(borrowedConnections) {
+				borrowedConnections.add(wc);
+			}
+			return wc;
+		}
+		else {
+			return conn;
+		}
+	}
+	
+	private void removeWrappedConnection(Connection conn) {
+		if(borrowedConnections != null) {		
+			synchronized(borrowedConnections) {
+				borrowedConnections.remove(conn);
+			}
+		}
+	}
+	
+	public static String debugInfoAsString() {
+		if(borrowedConnections != null) {
+			StringBuilder sb = new StringBuilder();
+			synchronized(borrowedConnections) {
+				sb.append("Number of borrowed connections: " + borrowedConnections.size()).append("\n\n");
+				int i = 1;
+				for(WrappedConnection wc:borrowedConnections) {
+					sb.append("[Connection ").append(i++).append("]\n");
+					wc.asString(sb);
+					sb.append("\n");
+				}
+			}
+			return sb.toString();
+		}
+		else {
+			return "To enable DS connection debug info, add ds.connection.debug.enabled=true in system-ext.properties. This adds SERIOUS overhead! ";
+		}
+	}
+	
 }

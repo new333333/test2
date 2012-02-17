@@ -180,10 +180,6 @@ public class RuntimeStatistics implements InitializingBean, RuntimeStatisticsMBe
 		return ActiveSessionCounter.getPeakActiveSessionCount();
 	}
 
-	public int getUnreleasedDSConnectionCount() {
-		return DSConnectionProvider.unreleasedConnectionCount.get();
-	}
-	
 	private String propertiesAsString() {
 		StringBuilder sb = new StringBuilder();
 		
@@ -369,6 +365,11 @@ public class RuntimeStatistics implements InitializingBean, RuntimeStatisticsMBe
 	@Override
 	public String dumpDaoInvocationStatisticsAsString() {
 		return "DAO Invocation Statistics, " + daoInvocationStatistics.asString();
+	}
+
+	@Override
+	public String dumpDSConnectionDebugInfoAsString() {
+		return DSConnectionProvider.debugInfoAsString();
 	}
 
 }
