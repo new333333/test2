@@ -67,7 +67,7 @@
   </c:if>
 >
  <div class="ss_mashup_round_top"><div></div></div>
- <div class="ss_mashup_graphic_content" style="height: ${mHeight}; overflow: ${mOverflow};">
+ <div class="ss_mashup_graphic_content" style="width: ${mWidth}; height: ${mHeight}; overflow: ${mOverflow};">
   <c:if test="${!empty mashup_attributes['graphic']}">
     <c:set var="graphicFileTitle" value="${mashup_attributes['title']}"/>
     <c:if test="${!empty graphicFileTitle}">
