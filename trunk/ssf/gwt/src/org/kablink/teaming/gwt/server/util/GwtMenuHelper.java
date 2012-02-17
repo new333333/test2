@@ -77,6 +77,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -648,7 +649,8 @@ public class GwtMenuHelper {
 	@SuppressWarnings("unchecked")
 	private static void constructEntryProfilesRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
 		// If the user can add entries...
-		if (bs.getProfileModule().testAccess(((ProfileBinder) ws), ProfileOperation.addEntry)) {
+		ProfileModule pm = bs.getProfileModule();
+		if (pm.testAccess(((ProfileBinder) ws), ProfileOperation.addEntry)) {
 			// ...and we can find the entry definition...
 			List defaultEntryDefinitions = ws.getEntryDefinitions();
 			if ((null != defaultEntryDefinitions) && (!(defaultEntryDefinitions.isEmpty()))) {
@@ -668,14 +670,16 @@ public class GwtMenuHelper {
 			}
 		}
 		
-		// If the user can manage entries...
-		if (bs.getProfileModule().testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries)) {
-			// ...add the 'more' with disable/enable users...
-			ToolbarItem moreTBI = new ToolbarItem("1_more");
-			markTBITitle(moreTBI, "toolbar.more");
-
+		// Create a 'more' item for the disable/enable and purge/delete
+		// items.
+		ToolbarItem tbi;
+		ToolbarItem moreTBI = new ToolbarItem("1_more");
+		markTBITitle(moreTBI, "toolbar.more");
+		
+		// If the user can manage entries in the workspace...
+		if (pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries)) {
 			// ...add the disable item...
-			ToolbarItem tbi = new ToolbarItem("1_disableSelected");
+			tbi = new ToolbarItem("1_disableSelected");
 			markTBITitle(tbi, "toolbar.disable");
 			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS);
 			moreTBI.addNestedItem(tbi);
@@ -685,8 +689,49 @@ public class GwtMenuHelper {
 			markTBITitle(tbi, "toolbar.enable");
 			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS);
 			moreTBI.addNestedItem(tbi);
+		}
+		
+		// If the user can delete binders from the workspace...
+		BinderModule bm = bs.getBinderModule();
+		boolean canTrash = bm.testAccess(ws, BinderOperation.preDeleteBinder);
+		if (canTrash) {
+			// ...if needed...
+			if (!(moreTBI.getNestedItemsList().isEmpty())) {
+				// ...add a separator item...
+				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			}
 			
-			// Finally, add the more toolbar to the entry toolbar.
+			// ...and add the delete workspaces item.
+			tbi = new ToolbarItem("1_deletedSelectedWS");
+			markTBITitle(tbi, "toolbar.delete.workspaces");
+			markTBIEvent(tbi, TeamingEvents.DELETE_SELECTED_USER_WORKSPACES);
+			moreTBI.addNestedItem(tbi);
+		}
+			
+		// If the user can purge binders from the workspace...
+		if (bm.testAccess(ws, BinderOperation.deleteBinder)) {
+			// ...if needed...
+			if ((!canTrash) && (!(moreTBI.getNestedItemsList().isEmpty()))) {
+				// ...add a separator item...
+				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			}
+			
+			// ...add the purge workspaces item...
+			tbi = new ToolbarItem("1_purgeSelectedWS");
+			markTBITitle(tbi, "toolbar.purge.workspaces");
+			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USER_WORKSPACES);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...and add the purge users item.
+			tbi = new ToolbarItem("1_purgeSelectedUsers");
+			markTBITitle(tbi, "toolbar.purge.users");
+			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USERS);
+			moreTBI.addNestedItem(tbi);
+		}
+			
+		// Finally, if we added anything to the more toolbar...
+		if (!(moreTBI.getNestedItemsList().isEmpty())) {
+			// ...and the more toolbar to the entry toolbar.
 			entryToolbar.addNestedItem(moreTBI);
 		}
 	}
