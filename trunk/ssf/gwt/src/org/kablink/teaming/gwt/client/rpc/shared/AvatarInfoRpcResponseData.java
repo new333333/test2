@@ -32,17 +32,21 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * This class holds the response data for any command that information
  * about an avatar in response.
  * 
+ * For the avatar, we simply wrap a GuestInfo object as that provides
+ * the avatar and other useful information about a user.
+ * 
  * @author drfoster@novell.com
  */
 public class AvatarInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private String	m_title;	//
-	private String	m_url;		//
+	private GuestInfo	m_gi;	//
 	
 	/**
 	 * Constructor method.
@@ -57,14 +61,12 @@ public class AvatarInfoRpcResponseData implements IsSerializable, VibeRpcRespons
 	/**
 	 * Constructor method.
 	 *
-	 * @param url
-	 * @param title
+	 * @param gi
 	 */
-	public AvatarInfoRpcResponseData(String url, String title) {
+	public AvatarInfoRpcResponseData(GuestInfo gi) {
 		this();
 		
-		setUrl(  url  );
-		setTitle(title);
+		setGuestInfo(gi);
 	}
 	
 	/**
@@ -72,14 +74,12 @@ public class AvatarInfoRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * 
 	 * @return
 	 */
-	public String getTitle() {return m_title;}
-	public String getUrl()   {return m_url;  }
+	public GuestInfo getGuestInfo() {return m_gi;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setTitle(String title) {m_title = title;}
-	public void setUrl(  String url)   {m_url   = url;  }
+	public void setGuestInfo(GuestInfo gi) {m_gi = gi;}
 }
