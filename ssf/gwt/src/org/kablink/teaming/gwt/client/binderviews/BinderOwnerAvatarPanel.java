@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderOwnerAvatarInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -47,6 +48,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RequiresResize;
 
 /**
@@ -72,7 +74,7 @@ public class BinderOwnerAvatarPanel extends ToolPanelBase {
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-binderViewTools vibe-binderOwnerAvatarPanel");
+		m_fp.addStyleName("vibe-binderViewTools vibe-binderOwnerAvatar-panel");
 		initWidget(m_fp);
 		loadPart1Async();
 	}
@@ -102,6 +104,17 @@ public class BinderOwnerAvatarPanel extends ToolPanelBase {
 		});
 	}
 
+	/*
+	 * Adds an information Label widget to an information panel.
+	 */
+	private void addInfoLabel(VibeFlowPanel infoPanel, String s, String style) {
+		if (GwtClientHelper.hasString(s)) {
+			Label l = new Label(s);
+			l.addStyleName(style);
+			infoPanel.add(l);
+		}
+	}
+	
 	/*
 	 * Asynchronously loads the URL for the binder owner's avatar.
 	 */
@@ -159,27 +172,36 @@ public class BinderOwnerAvatarPanel extends ToolPanelBase {
 			return;
 		}
 
-		// Pull the URL and title from the avatar information...
-		String url   = m_binderOwnerAvatar.getUrl();   boolean hasUrl   = GwtClientHelper.hasString(url  );
-		String title = m_binderOwnerAvatar.getTitle(); boolean hasTitle = GwtClientHelper.hasString(title);
+		// Create a panel to the HTML we generate for the avatar...
+		VibeFlowPanel htmlPanel = new VibeFlowPanel();
+		
+		// ...add the avatar link...
+		Image avatarImg = new Image();
+		avatarImg.addStyleName("vibe-binderOwnerAvatar-image");
+		GuestInfo gi = m_binderOwnerAvatar.getGuestInfo();
+		String avatarUrl = gi.getAvatarUrl();
+		if (!(GwtClientHelper.hasString(avatarUrl)))
+		     avatarImg.setUrl(GwtTeaming.getDataTableImageBundle().userPhoto().getSafeUri());
+		else avatarImg.setUrl(avatarUrl);
+		String title = gi.getTitle();
+		if (!(GwtClientHelper.hasString(title))) {
+			title = m_messages.noTitle();
+		}
+		avatarImg.setTitle(title);
+		htmlPanel.add(avatarImg);
 
-		// ...and add an Image to the panel for it.
-		Image img;
-		if (hasUrl) {
-		    img = new Image(url);
-		}
-		else {
-			// Note:  We use the setUrl(getSafeUri) approach here so
-			// that the width setting applied by the style actually
-			// works.
-			img = new Image();
-			img.setUrl(GwtTeaming.getDataTableImageBundle().userPhoto().getSafeUri());
-		}
-		img.addStyleName("vibe-binderOwnerAvatarImage");
-		if (hasTitle) {
-			img.setTitle(title);
-		}
-		m_fp.add(img);
+		// ...add the information widgets...
+		VibeFlowPanel infoPanel = new VibeFlowPanel();
+		infoPanel.addStyleName("vibe-binderOwnerAvatar-info");
+		addInfoLabel(infoPanel, title,                      "vibe-binderOwnerAvatar-infoTitle"    );
+		addInfoLabel(infoPanel, gi.getPhone(),              "vibe-binderOwnerAvatar-infoPhone"    );
+		addInfoLabel(infoPanel, gi.getEmailAddress(),       "vibe-binderOwnerAvatar-infoEMA"      );
+		addInfoLabel(infoPanel, gi.getMobileEmailAddress(), "vibe-binderOwnerAvatar-infoMobileEMA");
+		addInfoLabel(infoPanel, gi.getTextEmailAddress(),   "vibe-binderOwnerAvatar-infoTextEMA"  );
+		htmlPanel.add(infoPanel);
+		
+		// ...and render that into the panel.
+		m_fp.getElement().setInnerHTML(htmlPanel.getElement().getInnerHTML());
 		
 		// Finally, tell our container that we're ready.
 		toolPanelReady();

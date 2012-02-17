@@ -1142,23 +1142,13 @@ public class GwtViewHelper {
 	 */
 	public static AvatarInfoRpcResponseData getBinderOwnerAvatarInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
 		try {
-			AvatarInfoRpcResponseData reply = new AvatarInfoRpcResponseData();
-
-			// If the binder owner has any avatars defined..
-			ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, binderId);
-			@SuppressWarnings("unchecked")
-			List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
-			if((null != paValue) && (!(paValue.isEmpty()))) {
-				// ...use the URL from first one.
-				ProfileAttributeListElement paValueItem = paValue.get(0);
-				reply.setUrl(GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString()));
-			}
-
-			// Get the title of of the binder's owner.
+			// Construct a GuestInfo from the binder's owner...
 			Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
-			Principal owner = binder.getCreation().getPrincipal(); //creator is user
-			owner = Utils.fixProxy(owner);
-			reply.setTitle(owner.getTitle());
+			Principal p = binder.getCreation().getPrincipal(); //creator is user
+			GuestInfo gi = getGuestInfoFromPrincipal(bs, request, Utils.fixProxy(p));
+			
+			// ...and use that to construct an AvatarInfoRpcResponseData.
+			AvatarInfoRpcResponseData reply = new AvatarInfoRpcResponseData(gi);
 
 			// If we get here, reply refers to the
 			// AvatarInfoRpcResponseData for the binder's owner.
@@ -1838,21 +1828,10 @@ public class GwtViewHelper {
 							// Yes!  Are we looking at the 'guest'
 							// column in a guest book folder?
 							Principal p   = ((Principal) emValue);
-							Long      pId = p.getId();
 							if (isGuestbook && cn.equals("guest")) {
 								// Yes!  Use the principal to generate
 								// a GuestInfo for the column.
-								gi = new GuestInfo(
-									pId,
-									p.getTitle(),
-									PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)));
-								gi.setAvatarUrl(getUserAvatarUrl(bs, request, p));
-								gi.setEmailAddress(      p.getEmailAddress()      );
-								gi.setMobileEmailAddress(p.getMobileEmailAddress());
-								gi.setTextEmailAddress(  p.getTxtEmailAddress()   );
-								if (p instanceof User) {
-									gi.setPhone(((User) p).getPhone());
-								}
+								gi = getGuestInfoFromPrincipal(bs, request, p);
 								fr.setColumnValue(fc, gi);
 							}
 							
@@ -1861,7 +1840,7 @@ public class GwtViewHelper {
 								// guest' column in a guest book
 								// folder!  If we can create a
 								// PrincipalInfo for the principal...
-								pi = getPIFromPId(bs, request, folderInfo, pId);
+								pi = getPIFromPId(bs, request, folderInfo, p.getId());
 								if (null != pi) {
 									// ...store it directly.
 									fr.setColumnValue(fc, pi);
@@ -2087,6 +2066,25 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Constructs and returns a GuestInfo from a Principal.
+	 */
+	private static GuestInfo getGuestInfoFromPrincipal(AllModulesInjected bs, HttpServletRequest request, Principal p) {
+		Long pId = p.getId();
+		GuestInfo reply = new GuestInfo(
+			pId,
+			p.getTitle(),
+			PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)));
+		reply.setAvatarUrl(getUserAvatarUrl(bs, request, p));
+		reply.setEmailAddress(      p.getEmailAddress()      );
+		reply.setMobileEmailAddress(p.getMobileEmailAddress());
+		reply.setTextEmailAddress(  p.getTxtEmailAddress()   );
+		if (p instanceof User) {
+			reply.setPhone(((User) p).getPhone());
+		}
+		return reply;
+	}
+	
 	/*
 	 * Extracts a Long value from a entry Map.
 	 */
