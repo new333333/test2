@@ -80,7 +80,10 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR4 = "(?i)(?:style[\\s]*=[\\s]*\"[^\">]*\"|style[\\s]*=[\\s]*'[^'>]*'|style[\\s]*=[^<>\\s\"']*)";
 	private static final String PATTERN_STR5 = "(?i)((?:^url\\W|\\Wurl\\W|^expression\\W|\\Wexpression\\W))";
 	private static final String PATTERN_STR5a = "(?i)(/\\*[^*]*\\*/)";
-	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s]*))([^>]*>)";
+	
+	//Pattern_str6 is used to find onxxx statements (e.g., onClick, onload, onerror)
+	//It is important to realize that these can be preceeded by either a space or a "/"
+	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s/]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s]*))([^>]*>)";
 	
 	private Pattern pattern1;
 	private Pattern pattern1file;
