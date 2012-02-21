@@ -81,6 +81,9 @@ public abstract class Dashboard extends PersistentTimestampObject {
 	public final static String NARROW_VARIABLE = "narrow_variable";
 	public final static String WIDE_BOTTOM = "wide_bottom";
 	
+	//Component data keys
+	public final static String COMPONENT_DATA_URL = "url";
+	
 	
     protected Map properties;
 	private int nextComponentId=0;

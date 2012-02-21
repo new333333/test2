@@ -134,6 +134,14 @@ public class StringCheckUtil implements InitializingBean {
 		return survey;
 	}
 	
+	public static String checkUrl(String url) throws StringCheckException {
+		String urlTag = "<a href=\"" + url + "\">xss</a>";
+		if (!urlTag.equals(getInstance().checkAll(urlTag, false))) {
+			throw new StringCheckException("errorcode.xss.invalidUrl", new String[]{url});
+		}
+		return url;
+	}
+	
 	//Only if checkOnly=true and the check fails will StringCheckException be thrown.
 	private String checkAll(String input, boolean checkOnly) throws StringCheckException {
 		boolean changed = false;
