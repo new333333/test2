@@ -371,7 +371,7 @@ public class BrowserSniffer {
 		}
 		if (is_iphone(req)) return true;
 		if (is_blackberry(req)) return true;
-		if (is_droid(req)) return true;
+		if (is_droid(req) && !is_tablet(req)) return true;
 		if (is_otherMobile(req, userAgents)) return true;
 		if (is_wap_xhtml(req)) return true;
 
@@ -455,6 +455,27 @@ public class BrowserSniffer {
 		agent = agent.toLowerCase();
 
 		if (agent.indexOf("android") != -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean is_tablet(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (agent.indexOf("mobile") == -1) {
 			return true;
 		}
 		else {
