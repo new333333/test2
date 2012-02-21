@@ -111,6 +111,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.Validator;
@@ -997,12 +998,8 @@ public class DefinitionHelper {
 	        				}
 	        				
 	        				DateTime today = (new DateMidnight(DateTimeZone.forTimeZone(user.getTimeZone()))).toDateTime();
-	        				DateTime future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
+	        				DateTime future = future = today.plusMonths(SPropsUtil.getInt("relevance.tasksAllMonthsAhead"));
 	        				DateTime fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
-	        				
-	        				if (model.containsKey(WebKeys.TYPE3) && model.get(WebKeys.TYPE3).equals("all")) {
-	        					future = today.plusMonths(SPropsUtil.getInt("relevance.tasksAllMonthsAhead"));
-	        				}
 	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
 	        															(String[])groupsS.toArray(new String[groupsS.size()]), 
 	        															(String[])teams.toArray(new String[teams.size()]),
@@ -1253,7 +1250,13 @@ public class DefinitionHelper {
     				if (f.isFile()) pathType = ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_EXTENSION;
     			}
     			mashupValues[i] = mashupValues[i].replaceFirst(",", ",pathType="+pathType+",");
-    		}
+    		
+    		} else if (ObjectKeys.MASHUP_TYPE_IFRAME.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_URL)) {
+    			//This is a url. It must be checked for xss
+    			String url = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_URL);
+    			StringCheckUtil.checkUrl(url);
+   		}
     		
     		// Is this an html configuration?
     		if ( ObjectKeys.MASHUP_TYPE_HTML.equalsIgnoreCase( type ) )

@@ -87,6 +87,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeHelper;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
@@ -1363,6 +1364,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					Long topId = TreeHelper.getSelectedId(request.getParameterMap());
 					if (topId != null) {
 						componentData.put("topId", topId.toString());
+					}
+				} else if (ObjectKeys.DASHBOARD_COMPONENT_IFRAME.equals(cName)) {
+					if (componentData.containsKey(Dashboard.COMPONENT_DATA_URL)) {
+						String url = (String)componentData.get(Dashboard.COMPONENT_DATA_URL);
+						//Make sure this URL is proper
+						StringCheckUtil.checkUrl(url);
 					}
 				}
 				//Save the title and data map
