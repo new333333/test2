@@ -170,21 +170,23 @@ public class ApiTest {
 	
 	//@Test
 	public void testReadFilePropertiesRepeatedlyAsynchronously() throws Exception {
-		int count = 500;
-		Thread[] threads = new Thread[count];
-		for(int i = 0; i < count; i++) {
+		int threadCount = 30;
+		Thread[] threads = new Thread[threadCount];
+		final int repeatCount = 30;
+		final long entityId = 13;
+		final String fileName = "debug5.txt";
+		for(int i = 0; i < threadCount; i++) {
 			threads[i] = new Thread("ApiTestThread"+i) {
 				public void run() {
-					long entityId = 13;
-					String fileName = "debug5.txt";
-					FileProperties fp = api.readFileProperties("folderEntry", entityId, fileName);
+					for(int j = 0; j < repeatCount; j++)
+						api.readFileProperties("folderEntry", entityId, fileName);
 					System.out.println("Thread [" + Thread.currentThread().getName() + "] completing normally");
 				}
 			};
 		}
-		for(int i = 0; i < count; i++)
+		for(int i = 0; i < threadCount; i++)
 			threads[i].start();
-		for(int i = 0; i < count; i++)
+		for(int i = 0; i < threadCount; i++)
 			threads[i].join();
 		System.out.println("testReadFilePropertiesRepeatedlyAsynchronously completed");
 	}
