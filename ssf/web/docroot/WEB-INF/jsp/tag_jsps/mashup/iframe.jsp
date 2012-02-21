@@ -44,13 +44,23 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<c:set var="mWidth" value="100%" />
+<c:set var="mHeight" value="100%" />
+<c:set var="mOverflow" value="hidden" />
+<c:if test="${!empty mashup_attributes['width']}">
+  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['height']}">
+  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+</c:if>
+<c:if test="${!empty mashup_attributes['overflow']}">
+  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+</c:if>
 <% if (ss_mashupListDepth > 0) { %>
 	<li>
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
-  <div class="ss_mashup_element">
-	<div class="ss_mashup_url_content">
 		<c:set var="url" value="" />
 		<c:if test="${!empty mashup_attributes['url']}">
 			<c:set var="url" value="${mashup_attributes['url']}" />
@@ -59,11 +69,6 @@
 		<c:set var="frameBorder" value="0" />
 		<c:if test="${!empty mashup_attributes['frameBorder']}">
 			<c:set var="frameBorder" value="${mashup_attributes['frameBorder']}" />
-		</c:if>
-		
-		<c:set var="height" value="200" />
-		<c:if test="${!empty mashup_attributes['height']}">
-			<c:set var="height" value="${mashup_attributes['height']}" />
 		</c:if>
 		
 		<c:set var="name" value="" />
@@ -76,21 +81,14 @@
 			<c:set var="scrolling" value="scrolling='${mashup_attributes['scrolling']}'" />
 		</c:if>
 		
-		<c:set var="width" value="400" />
-		<c:if test="${!empty mashup_attributes['width']}">
-			<c:set var="width" value="${mashup_attributes['width']}" />
-		</c:if>
-		
 		<iframe src="${url}" 
 				frameborder="${frameBorder}"
-				height="${height}"
+				height="${mHeight}"
 				name="${name}"
 				id="lpIFrame"
 				${scrolling}
-				width="${width}">
+				width="${mWidth}">
 		</iframe>
-	</div>
-  </div>
 </c:if>
 
 <% if (ss_mashupListDepth > 0) { %>

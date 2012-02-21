@@ -61,13 +61,6 @@
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
-<div class="ss_mashup_element"
-  <c:if test="${ssConfigJspStyle != 'form'}">
-    style="width: ${mWidth}; overflow: hidden;"
-  </c:if>
->
- <div class="ss_mashup_round_top"><div></div></div>
- <div class="ss_mashup_graphic_content" style="width: ${mWidth}; height: ${mHeight}; overflow: ${mOverflow};">
   <c:if test="${!empty mashup_attributes['graphic']}">
     <c:set var="graphicFileTitle" value="${mashup_attributes['title']}"/>
     <c:if test="${!empty graphicFileTitle}">
@@ -77,7 +70,7 @@
     	graphicFileTitle = org.kablink.util.Http.encodeURL(graphicFileTitle);
       %>
     </c:if>
-    <img src="<ssf:url 
+    <img style="width: ${mWidth}; height: ${mHeight};" src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssBinder.id}"
 		    entityType="${ssBinder.entityType}" >
@@ -87,9 +80,6 @@
         <c:if test="${mashup_attributes['showBorder'] == '1'}"> style="border: 2px solid #ccc !important;" </c:if>
 	>
   </c:if>
- </div>
- <div class="ss_mashup_round_bottom"><div></div></div>
-</div>
 </c:if>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
