@@ -8,22 +8,27 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 	    
-    <!-- ============================== Pre-authentication using cookie ============================ -->
 
-    <bean id="requestCookiePreAuthenticatedProcessingFilter" class="org.kablink.teaming.asmodule.spring.security.preauth.RequestCookiePreAuthenticatedProcessingFilter">
-		<security:custom-filter position="PRE_AUTH_FILTER"/>
+    <!-- ============================== Form-based authentication ============================ -->
+    
+    <bean id="authenticationProcessingFilter" class="org.kablink.teaming.spring.security.AuthenticationProcessingFilter">
+    	<security:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
 		<property name="authenticationManager" ref="_authenticationManager"/>
-		<property name="continueFilterChainOnUnsuccessfulAuthentication"><value>false</value></property>
-		<property name="principalRequestCookie"><value>dummy</value></property>
-		<property name="noPrincipalCookie"><value>null</value></property>
-		<property name="noPrincipal"><value>null</value></property>
-		<property name="noCredentialsCookie"><value>empty</value></property>
-		<property name="noCredentials"><value>empty</value></property>
+		<property name="authenticationFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
+		<property name="defaultTargetUrl" value="/a/"/>
+		<property name="filterProcessesUrl" value="/s/portalLogin"/>
+		<property name="invalidateSessionOnSuccessfulAuthentication" value="true"/>
+		<property name="migrateInvalidatedSessionAttributes" value="false"/>
+		<property name="targetUrlResolver" ref="targetUrlResolver" />
     </bean>
   	
-    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.preauth.PreAuthenticatedProcessingFilterEntryPoint">
+  	<bean id="targetUrlResolver" class="org.kablink.teaming.spring.security.TargetUrlResolverImpl">
+  	</bean>
+  	
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+    	<property name="loginFormUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
     </bean>
-  
+	
     <security:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
         <security:intercept-url pattern="/ws/**" filters="none" />
         <security:intercept-url pattern="/rss/**" filters="none" />
@@ -37,8 +42,11 @@
         <security:intercept-url pattern="/redirect/**" filters="none" />
         <security:intercept-url pattern="/bitbucket/**" filters="none" />
         <security:intercept-url pattern="/html/**" filters="none" />
+        
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
 
-        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        <security:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
+
     </security:http>
-   
+    
 </beans>
