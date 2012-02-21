@@ -272,6 +272,7 @@ public interface ObjectKeys {
     public static final String DASHBOARD_COMPONENT_WIKI_SUMMARY = "wiki";    
     public static final String DASHBOARD_COMPONENT_WORKSPACE_TREE = "workspaceTree";
     public static final String DASHBOARD_COMPONENT_REMOTE_APPLICATION = "remoteApplication";
+    public static final String DASHBOARD_COMPONENT_IFRAME = "iframe";
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
     public static final String FOLDER_MODE_TYPE = "folderModeType";
@@ -290,6 +291,7 @@ public interface ObjectKeys {
     public static final String MASHUP_ATTR_BINDER_ID = "binderId";
     public static final String MASHUP_ATTR_GRAPHIC = "graphic";
     public static final String MASHUP_ATTR_TITLE = "title";
+    public static final String MASHUP_ATTR_URL = "url";
     public static final String MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME = "jspName";
     public static final String MASHUP_ATTR_ENHANCED_VIEW_MY_CALENDAR_EVENTS = "landing_page_my_calendar_events.jsp";
     public static final String MASHUP_ATTR_ENHANCED_VIEW_MY_TASKS = "landing_page_my_tasks.jsp";
