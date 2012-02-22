@@ -46,7 +46,10 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%  
 String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request, userAgents);  
+String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+boolean isMobile = (org.kablink.util.BrowserSniffer.is_mobile(request, userAgents) && 
+	!org.kablink.util.BrowserSniffer.is_tablet(request, tabletUserAgents, testForAndroid));  
 %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
