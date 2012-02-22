@@ -70,6 +70,7 @@
     	graphicFileTitle = org.kablink.util.Http.encodeURL(graphicFileTitle);
       %>
     </c:if>
+    <div>
     <img style="width: ${mWidth}; height: ${mHeight};" src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssBinder.id}"
@@ -79,6 +80,7 @@
 	    	</ssf:url>" alt="${mashup_attributes['title']}"
         <c:if test="${mashup_attributes['showBorder'] == '1'}"> style="border: 2px solid #ccc !important;" </c:if>
 	>
+	</div>
   </c:if>
 </c:if>
 

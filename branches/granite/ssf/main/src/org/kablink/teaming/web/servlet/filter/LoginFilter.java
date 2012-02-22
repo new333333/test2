@@ -104,7 +104,10 @@ public class LoginFilter  implements Filter {
 				// We're at the root URL. Re-direct the client to its workspace.
 				// Do this only if the request method is GET.
 				String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-				if (BrowserSniffer.is_mobile(req, userAgents) && !mobileFullUI) {
+				String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+				Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+				if (BrowserSniffer.is_mobile(req, userAgents) && !mobileFullUI && 
+						!BrowserSniffer.is_tablet(req, tabletUserAgents, testForAndroid)) {
 					String landingPageUrl = getWapLandingPageURL(req);
 					res.sendRedirect(landingPageUrl);
 				} else {
