@@ -191,11 +191,11 @@ public class BinderViewsHelper {
 			// No!  Bail.
 			return;
 		}
-		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.deleteUserWorkspaces():  ...this needs to be implemented...");
-	}
 
+		// Perform the delete.
+		DeletePurgeUsersHelper.deleteUserWorkspacesAsync(userIds);
+	}
+	
 	/**
 	 * Disables the users based on a List<Long> of their user IDs.
 	 *
@@ -443,8 +443,8 @@ public class BinderViewsHelper {
 			return;
 		}
 		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.purgeUsers():  ...this needs to be implemented...");
+		// Perform the purge.
+		DeletePurgeUsersHelper.purgeUsersAsync(userIds);
 	}
 
 	/**
@@ -467,8 +467,8 @@ public class BinderViewsHelper {
 			return;
 		}
 		
-//!		...this needs to be implemented...
-		Window.alert("BinderViewsHelper.purgeUserWorkspaces():  ...this needs to be implemented...");
+		// Perform the purge.
+		DeletePurgeUsersHelper.purgeUserWorkspacesAsync(userIds);
 	}
 
 	/**

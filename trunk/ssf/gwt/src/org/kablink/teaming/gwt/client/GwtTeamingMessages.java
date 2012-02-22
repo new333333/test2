@@ -296,6 +296,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
 	String rpcFailure_DeleteFolderEntries();
+	String rpcFailure_DeleteUserWorkspaces();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_DisableUsers();
 	String rpcFailure_EnableUsers();
@@ -399,6 +400,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_PinEntry();
 	String rpcFailure_PurgeFolderEntries();
 	String rpcFailure_PurgeTasks();
+	String rpcFailure_PurgeUsers();
+	String rpcFailure_PurgeUserWorkspaces();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
@@ -1375,9 +1378,12 @@ public interface GwtTeamingMessages extends Messages
 	String moveEntriesDlgSelectDestination();
 	String moveEntriesDlgWarningNoSelection();
 
-	// Strings used by the enable/disable selected users facility.
+	// Strings used by the operations against selected users.
 	String enableUsersError();
+	String deleteUserWorkspacesError();
 	String disableUsersError();
+	String purgeUserWorkspacesError();
+	String purgeUsersError();
 	
 	// Strings used by the lock selected entries facility.
 	String lockEntriesError();
@@ -1444,6 +1450,12 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmDeleteUserWS();
 	String binderViewsConfirmPurgeUsers();
 	String binderViewsConfirmPurgeUserWS();
+	String binderViewsDeleteUserWorkspacesCaption();
+	String binderViewsDeleteUserWorkspacesProgress();
+	String binderViewsPurgeUsersCaption();
+	String binderViewsPurgeUsersProgress();
+	String binderViewsPurgeUserWorkspacesCaption();
+	String binderViewsPurgeUserWorkspacesProgress();
 
 	// Strings used by the 'Progress' dialog.
 	String progressDlgConfirmCancel();

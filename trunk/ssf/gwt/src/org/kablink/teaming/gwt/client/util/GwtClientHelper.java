@@ -256,7 +256,7 @@ public class GwtClientHelper {
 			// Some potential causes of this problem:
 			// 1. Missing check in the if/else-if above.
 			// 2. The GWT UI component failed to load. 
-			Window.alert(GwtTeaming.getMessages().missingRequestInfo());
+			deferredAlert(GwtTeaming.getMessages().missingRequestInfo());
 		}
 		return reply;
 	}
@@ -403,7 +403,7 @@ public class GwtClientHelper {
 		
 		if (hasString(errorMessage) && (displayAlert || isDebugUI())) {
 			errorMessage = patchMessage(errorMessage, patches);
-			Window.alert(errorMessage);
+			deferredAlert(errorMessage);
 		}
 	}
 	

@@ -58,6 +58,7 @@ import com.google.gwt.user.client.ui.Panel;
 @SuppressWarnings("unused")
 public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	private boolean				m_canCancel;			// true -> The operation can be canceled.  false -> It can't be.
+	private boolean				m_dialogReady;			//
 	private InlineLabel			m_progressIndicator;	// Label containing the 'x of y' progress indicator.
 	private int					m_totalCount;			// Tracks the total number of steps that need to be performed while.
 	private int					m_totalDone;			// Tracks the number of steps that have been performed while the operation is in progress.
@@ -65,14 +66,15 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	private String				m_progressString;		//
 	private VibeVerticalPanel	m_vp;					// The panel holding the dialog's content.
 
-	private final static int CHUNK_SIZE			=  5;	// Number of operation in a chunk that are performed when doing them by chunks.
-	private final static int CHUNK_THRESHOLD	= 20;	// Number of operations beyond which we send them across in chunks so that we can show a progress indicator.
+	public final static int CHUNK_SIZE		=  5;	// Number of operation in a chunk that are performed when doing them by chunks.
+	public final static int CHUNK_THRESHOLD	= 20;	// Number of operations beyond which we send them across in chunks so that we can show a progress indicator.
 
 	/**
 	 * Interface used by the dialog to inform the caller about what's
 	 * going on. 
 	 */
 	public interface ProgressCallback {
+		public void dialogReady();
 		public void operationCanceled();
 		public void operationComplete();
 	}
@@ -126,6 +128,21 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		return m_vp;
 	}
 
+	/*
+	 * Marks the dialog as being ready and shows it.
+	 */
+	private void doDialogReady() {
+		m_dialogReady = true;
+		show(true);
+		ScheduledCommand doReady = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				m_progressCallback.dialogReady();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doReady);
+	}
+	
 	/**
 	 * This method gets called when user user presses the Cancel push
 	 * button.
@@ -234,12 +251,18 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		progressPanel.addStyleName("vibe-progressDlg_ProgressPanel");
 		m_vp.add(progressPanel);
 		progressPanel.add(buildSpinnerImage("vibe-progressDlg_ProgressSpinner"));
-		m_progressIndicator = new InlineLabel("");
+		m_progressIndicator = new InlineLabel(
+			GwtClientHelper.patchMessage(
+				m_progressString,
+				new String[] {
+					String.valueOf(m_totalDone ),
+					String.valueOf(m_totalCount)
+				}));
 		m_progressIndicator.addStyleName("vibe-progressDlg_ProgressLabel");
 		progressPanel.add(m_progressIndicator);
-
-		// ...and finally, show the dialog.
-		show(true);
+		
+		// ...finally, mark the dialog as being ready and show it.
+		doDialogReady();
 	}
 	
 	/*
@@ -287,7 +310,21 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	 * @return
 	 */
 	public boolean needProgressDialog(int totalCount) {
-		return (totalCount < CHUNK_THRESHOLD);
+		return (totalCount > CHUNK_THRESHOLD);
+	}
+
+	/**
+	 * Shows the dialog if it's ready.
+	 * 
+	 * Overrides the DlgBox.show() method.
+	 */
+	@Override
+	public void show() {
+		// If the dialog is ready to be shown...
+		if (m_dialogReady) {
+			// ...pass this on to the suer class.
+			super.show();
+		}
 	}
 	
 	/*
@@ -314,7 +351,13 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		if (m_totalDone == m_totalCount) {
 			// ...hide the dialog and tell the caller we're done.
 			hide();
-			m_progressCallback.operationComplete();
+			ScheduledCommand doComplete = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					m_progressCallback.operationComplete();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doComplete);
 		}
 		
 		else {
@@ -376,8 +419,15 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 				// Is this a request to create a dialog?
 				if (null != pDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					ProgressDlg pDlg = new ProgressDlg();
-					pDlgClient.onSuccess(pDlg);
+					final ProgressDlg pDlg = new ProgressDlg();
+					pDlg.hide();
+					ScheduledCommand doSuccess = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							pDlgClient.onSuccess(pDlg);
+						}
+					};
+					Scheduler.get().scheduleDeferred(doSuccess);
 				}
 				
 				// No, it's not a request to create a dialog!  Is it a

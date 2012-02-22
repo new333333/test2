@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -124,8 +125,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 	
-	private final static int CHUNK_SIZE			=  5;	// Number of entries in a chunk that are copied/moved when sending them by chunks.
-	private final static int CHUNK_THRESHOLD	= 20;	// Number of entries being copied/moved beyond which we send them across in chunks so that we can show a progress indicator.
+	private final static int CHUNK_SIZE			= ProgressDlg.CHUNK_SIZE;		// Number of entries in a chunk that are copied/moved when sending them by chunks.
+	private final static int CHUNK_THRESHOLD	= ProgressDlg.CHUNK_THRESHOLD;	// Number of entries being copied/moved beyond which we send them across in chunks so that we can show a progress indicator.
 	
 	/*
 	 * Class constructor.
