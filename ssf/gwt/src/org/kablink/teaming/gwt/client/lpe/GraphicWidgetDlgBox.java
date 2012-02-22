@@ -140,6 +140,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		// Add the size control
 		m_sizeCtrl = new SizeCtrl();
+		m_sizeCtrl.hideOverflowCheckbox();
 		mainPanel.add( m_sizeCtrl );
 
 		// Add a checkbox for "Show border"
