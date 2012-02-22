@@ -81,6 +81,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		GraphicProperties properties;
@@ -140,6 +141,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		// Add the size control
 		m_sizeCtrl = new SizeCtrl();
+		m_sizeCtrl.hideOverflowCheckbox();
 		mainPanel.add( m_sizeCtrl );
 
 		// Add a checkbox for "Show border"
@@ -159,6 +161,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
+	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		GraphicProperties	properties;
@@ -259,6 +262,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		if ( m_graphicListBox != null )
