@@ -889,7 +889,9 @@ public class ViewEntryController extends  SAbstractController {
 
 			HttpServletRequest req = WebHelper.getHttpServletRequest(request);
 			String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-			if (BrowserSniffer.is_mobile(req, userAgents)) {
+			String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+			Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+			if (BrowserSniffer.is_mobile(req, userAgents) && !BrowserSniffer.is_tablet(req, tabletUserAgents, testForAndroid)) {
 				//The "Mobile UI" menu
 				Map qualifiers = new HashMap();
 				qualifiers.put("nosort", true);

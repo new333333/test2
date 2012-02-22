@@ -434,7 +434,9 @@ public class GwtUIHelper {
 		//Is this a mobile device?
 		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
 		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-		if (BrowserSniffer.is_mobile(req, userAgents)) {
+		String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+		Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+		if (BrowserSniffer.is_mobile(req, userAgents) && !BrowserSniffer.is_tablet(req, tabletUserAgents, testForAndroid)) {
 			// Construct a URL to go to the mobile ui
 			AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);

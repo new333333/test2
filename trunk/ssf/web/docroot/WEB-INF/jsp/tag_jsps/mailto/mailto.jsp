@@ -36,7 +36,10 @@
 --%><%@ page import="org.kablink.util.BrowserSniffer" %><%--
 --%><%
 	String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-	boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request, userAgents);  
+	String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+	Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+	boolean isMobile = (org.kablink.util.BrowserSniffer.is_mobile(request, userAgents) && 
+		!org.kablink.util.BrowserSniffer.is_tablet(request, tabletUserAgents, testForAndroid));  
 %><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
 --%><c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/><%--
 --%><c:set var="isMobileDevice" value="<%= isMobile %>"/>
