@@ -22,6 +22,9 @@
 
 package org.kablink.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -371,7 +374,7 @@ public class BrowserSniffer {
 		}
 		if (is_iphone(req)) return true;
 		if (is_blackberry(req)) return true;
-		if (is_droid(req) && !is_tablet(req)) return true;
+		if (is_droid(req)) return true;
 		if (is_otherMobile(req, userAgents)) return true;
 		if (is_wap_xhtml(req)) return true;
 
@@ -462,10 +465,15 @@ public class BrowserSniffer {
 		}
 	}
 
-	public static boolean is_tablet(HttpServletRequest req) {
+	public static boolean is_tablet(HttpServletRequest req, String userAgentRegexp, Boolean testForAndroid) {
 		if (req == null) {
 			return false;
 		}
+		String pattern = "(?:ipad|xoom|playbook|tablet|kindle|sch-i800)";
+		if (userAgentRegexp != null && !userAgentRegexp.equals("")) {
+			pattern = userAgentRegexp;
+		}
+		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 
 		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
@@ -475,10 +483,11 @@ public class BrowserSniffer {
 
 		agent = agent.toLowerCase();
 
-		if (agent.indexOf("mobile") == -1) {
+		Matcher m = p.matcher(agent);
+		if (m.find()) return true;
+		if (testForAndroid && agent.indexOf("android") > -1 && agent.indexOf("mobile") == -1) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}

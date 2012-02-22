@@ -96,7 +96,12 @@ public class ViewPermalinkController  extends SAbstractController {
 		HttpServletRequest httpReq = WebHelper.getHttpServletRequest(request);
 		boolean isMobile = false;
 		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-		if (httpReq != null) isMobile = BrowserSniffer.is_mobile(httpReq, userAgents);
+		String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+		Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+		if (httpReq != null) {
+			isMobile = (BrowserSniffer.is_mobile(httpReq, userAgents) && 
+					!BrowserSniffer.is_tablet(httpReq, tabletUserAgents, testForAndroid));
+		}
 		if (WebUrlUtil.isMobileFullUI(httpReq)) isMobile = false;
 		
 		try {
@@ -232,8 +237,10 @@ public class ViewPermalinkController  extends SAbstractController {
 		HttpServletRequest httpReq = WebHelper.getHttpServletRequest(request);
 		boolean isMobile = false;
 		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+		String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+		Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
 		if (httpReq != null) {
-			isMobile = BrowserSniffer.is_mobile(httpReq, userAgents);
+			isMobile = (BrowserSniffer.is_mobile(httpReq, userAgents) && !BrowserSniffer.is_tablet(httpReq, tabletUserAgents, testForAndroid));
 			if (WebUrlUtil.isMobileFullUI(httpReq)) isMobile = false;
 		}
 		//binderId is not longer required on all entries
