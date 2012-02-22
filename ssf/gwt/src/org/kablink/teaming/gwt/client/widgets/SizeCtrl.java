@@ -235,6 +235,15 @@ public class SizeCtrl extends VibeWidget
 	}
 	
 	/**
+	 * 
+	 */
+	public void hideOverflowCheckbox()
+	{
+		if ( m_overflowCheckbox != null )
+			m_overflowCheckbox.setVisible( false );
+	}
+	
+	/**
 	 * Initialize the width and height controls.
 	 */
 	public void init( int width, Style.Unit widthUnits, int height, Style.Unit heightUnits, Style.Overflow overflow )

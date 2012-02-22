@@ -77,7 +77,6 @@ public class GraphicWidget extends VibeWidget
 	{
 		GraphicProperties properties;
 		VibeFlowPanel mainPanel;
-		VibeFlowPanel imgPanel;
 		
 		m_properties = new GraphicProperties();
 		properties = config.getProperties();
@@ -89,12 +88,8 @@ public class GraphicWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "graphicWidgetMainPanel" + m_style );
 		
-		imgPanel = new VibeFlowPanel();
-		imgPanel.addStyleName( "graphicWidgetImgPanel" + m_style );
-		mainPanel.add( imgPanel );
-		
 		m_img = new Image();
-		imgPanel.add( m_img );
+		mainPanel.add( m_img );
 		if ( m_properties.getShowBorderValue() == true )
 		{
 			m_img.addStyleName( "landingPageWidgetShowBorder" );
@@ -118,6 +113,9 @@ public class GraphicWidget extends VibeWidget
 			if ( width != 100 || unit != Unit.PCT )
 				style.setWidth( width, unit );
 			
+			// Set the width of the entire widget
+			GwtClientHelper.setWidth( width, unit, mainPanel );
+			
 			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
 			height = m_properties.getHeight();
 			unit = m_properties.getHeightUnits();
@@ -134,6 +132,7 @@ public class GraphicWidget extends VibeWidget
 			/**
 			 * 
 			 */
+			@Override
 			public void returnValue( String url )
 			{
 				m_img.setUrl( url );
