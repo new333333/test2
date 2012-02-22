@@ -3587,18 +3587,12 @@ public class GwtServerHelper {
 				ExceptionType exType;
 				
 				if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+				else if (ex instanceof ExtensionDefinitionInUseException    ) exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
+				else if (ex instanceof FavoritesLimitExceededException      ) exType = ExceptionType.FAVORITES_LIMIT_EXCEEDED;
 				else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
 				else if (ex instanceof NoFolderEntryByTheIdException        ) exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
 				else if (ex instanceof NoUserByTheIdException               ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
 				else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-				else if ( ex instanceof FavoritesLimitExceededException )
-				{
-					exType = ExceptionType.FAVORITES_LIMIT_EXCEEDED;
-				}
-				else if ( ex instanceof ExtensionDefinitionInUseException )
-				{
-					exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
-				}
 				else                                                          exType = ExceptionType.UNKNOWN;
 				
 				reply.setExceptionType(exType);
@@ -5560,6 +5554,7 @@ public class GwtServerHelper {
 		case COPY_ENTRIES:
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_TASKS:
+		case DELETE_USER_WORKSPACES:
 		case DISABLE_USERS:
 		case ENABLE_USERS:
 		case EXECUTE_ENHANCED_VIEW_JSP:
@@ -5675,6 +5670,8 @@ public class GwtServerHelper {
 		case PIN_ENTRY:
 		case PURGE_FOLDER_ENTRIES:
 		case PURGE_TASKS:
+		case PURGE_USER_WORKSPACES:
+		case PURGE_USERS:
 		case REMOVE_EXTENSION:
 		case REMOVE_FAVORITE:
 		case REMOVE_TASK_LINKAGE:

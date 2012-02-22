@@ -2056,8 +2056,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		}
 		
-		m_logger.warn( "In GwtRpcServiceImpl.executeCommand(), unknown command: " + cmdEnum.name() + " (" +cmd.getClass().getName() + ")" );
-		return null;
+		String details = ("Unknown command: " + cmdEnum.name() + " (" +cmd.getClass().getName() + ")");
+		m_logger.warn( "In GwtRpcServiceImpl.executeCommand():  " + details);
+		throw new GwtTeamingException(ExceptionType.NO_RPC_HANDLER, details);
 	}
 	
 	
