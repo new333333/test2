@@ -2501,18 +2501,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
 		final Set remM = CollectionUtil.differences(oldMembers, newMembers);
 
-        // The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		for (Iterator iter=remM.iterator(); iter.hasNext();) {
-        			Membership c = (Membership)iter.next();
-       				getCoreDao().delete(c);
-        		}
-		
-        		getCoreDao().save(newM);
-        		return null;
-        	}});
-		sessionFactory.evictCollection("org.kablink.teaming.domain.UserPrincipal.memberOf");
+        if(!newM.isEmpty() || !remM.isEmpty()) { // membership changed
+	        // The following part requires update database transaction.
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		for (Iterator iter=remM.iterator(); iter.hasNext();) {
+	        			Membership c = (Membership)iter.next();
+	       				getCoreDao().delete(c);
+	        		}
+			
+	        		getCoreDao().save(newM);
+	        		return null;
+	        	}});
+        
+        	sessionFactory.evictCollection("org.kablink.teaming.domain.UserPrincipal.memberOf");
+        	sessionFactory.getCache().evictCollection("org.kablink.teaming.domain.Group.members", groupId);
+        }
 		
 		// Add this group to the list of sync results if the group membership changed.
 		if ( syncResults != null && (newM.size() > 0 || remM.size() > 0) )
