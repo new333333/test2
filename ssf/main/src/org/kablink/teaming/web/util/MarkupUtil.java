@@ -143,9 +143,9 @@ public class MarkupUtil {
 	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlTextPattern2 = Pattern.compile("text%3d(.*)$", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern youtubeUrlPattern = Pattern.compile("(\\{\\{youtubeUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width=([^\\s]*)", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height=([^\\s]*)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url(?:=|%3d)([^\\s]*)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width(?:=|%3d)([^\\s]*)", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height(?:=|%3d)([^\\s]*)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	protected final static Pattern sectionPattern =Pattern.compile("(<p>)?(==[=]*)([^=]+)(==[=]*)(</p>)?", Pattern.CASE_INSENSITIVE );	// See comments below regarding Bugzilla 692804.
