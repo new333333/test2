@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.DashboardPortlet;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
@@ -1370,6 +1371,17 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						String url = (String)componentData.get(Dashboard.COMPONENT_DATA_URL);
 						//Make sure this URL is proper
 						StringCheckUtil.checkUrl(url);
+					}
+				} else if (ObjectKeys.DASHBOARD_COMPONENT_HTML.equals(cName)) {
+					if (componentData.containsKey(Dashboard.COMPONENT_DATA_HTML)) {
+						String html = (String)componentData.get(Dashboard.COMPONENT_DATA_HTML);
+						// Deal with any markup language transformations before storing the html
+						Description desc = new Description(html);
+						MarkupUtil.scanDescriptionForAttachmentFileUrls( desc );
+						MarkupUtil.scanDescriptionForICLinks( desc );
+						MarkupUtil.scanDescriptionForYouTubeLinks( desc );
+						MarkupUtil.scanDescriptionForExportTitleUrls( desc );
+						componentData.put(Dashboard.COMPONENT_DATA_HTML, desc.getText());
 					}
 				}
 				//Save the title and data map
