@@ -34,4 +34,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:out value="${ssDashboard.dashboard.components[ssComponentId].data.html}" escapeXml="false"/>
+<ssf:markup entity="${ssBinder}"><c:out 
+value="${ssDashboard.dashboard.components[ssComponentId].data.html}" 
+escapeXml="false"/></ssf:markup>
