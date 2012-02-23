@@ -1696,37 +1696,66 @@
         <addPrimaryKey columnNames="BINDER, ENTRYDEFINITION" tableName="SS_WORKFLOWMAP"/>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-108">
-        <addUniqueConstraint columnNames="ZONEID, BINDERID, NAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_DEFINITIONS"/>
+        <createIndex indexName="ZONEID" tableName="SS_DEFINITIONS" unique="true">
+            <column name="ZONEID"/>
+            <column name="BINDERID"/>
+            <column name="NAME"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-109">
-        <addUniqueConstraint columnNames="ZONEID, NAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_EXTENSIONS"/>
+        <createIndex indexName="ZONEID" tableName="SS_EXTENSIONS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-110">
-        <addUniqueConstraint columnNames="ENTRY_SORTKEY" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_FOLDERENTRIES"/>
+        <createIndex indexName="ENTRY_SORTKEY" tableName="SS_FOLDERENTRIES" unique="true">
+            <column name="ENTRY_SORTKEY"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-111">
-        <addUniqueConstraint columnNames="BINDER_SORTKEY" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_FORUMS"/>
+        <createIndex indexName="BINDER_SORTKEY" tableName="SS_FORUMS" unique="true">
+            <column name="BINDER_SORTKEY"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-112">
-        <addUniqueConstraint columnNames="ZONEID, NAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_FUNCTIONS"/>
+        <createIndex indexName="ZONEID" tableName="SS_FUNCTIONS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-113">
-        <addUniqueConstraint columnNames="NODENAME, INDEXNAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_INDEXNODE"/>
+        <createIndex indexName="NODENAME" tableName="SS_INDEXNODE" unique="true">
+            <column name="NODENAME"/>
+            <column name="INDEXNAME"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-114">
-        <addUniqueConstraint columnNames="ZONEID, NAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_PRINCIPALS"/>
+        <createIndex indexName="NAME_PRINCIPAL" tableName="SS_PRINCIPALS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-115">
-        <addUniqueConstraint columnNames="ZONEID, FOREIGNNAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_PRINCIPALS"/>
+        <createIndex indexName="FOREIGNNAME_PRINCIPAL" tableName="SS_PRINCIPALS" unique="true">
+            <column name="ZONEID"/>
+            <column name="FOREIGNNAME"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-116">
-        <addUniqueConstraint columnNames="ZONEID" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_ZONEINFO"/>
+        <createIndex indexName="ZONEID" tableName="SS_ZONEINFO" unique="true">
+            <column name="ZONEID"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-117">
-        <addUniqueConstraint columnNames="ZONENAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_ZONEINFO"/>
+        <createIndex indexName="ZONENAME" tableName="SS_ZONEINFO" unique="true">
+            <column name="ZONENAME"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-118">
-        <addUniqueConstraint columnNames="VIRTUALHOST" deferrable="false" disabled="false" initiallyDeferred="false" tableName="SS_ZONEINFO"/>
+        <createIndex indexName="VIRTUALHOST" tableName="SS_ZONEINFO" unique="true">
+            <column name="VIRTUALHOST"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-119">
         <addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_ACTNDEL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
