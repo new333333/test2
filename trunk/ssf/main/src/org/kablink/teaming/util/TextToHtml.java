@@ -193,7 +193,7 @@ public class TextToHtml {
 							url = httpMatcher.replaceFirst(href);
 						}
 
-				    	matcher.appendReplacement(buf, url.replace("$", "\\$"));
+				    	matcher.appendReplacement(buf, Matcher.quoteReplacement(url));
 			    	} while (matcher.find());
 					matcher.appendTail(buf);
 

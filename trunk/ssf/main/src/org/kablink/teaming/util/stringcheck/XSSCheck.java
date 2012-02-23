@@ -288,7 +288,7 @@ public class XSSCheck implements StringCheck {
 				tagString = matcher2a.replaceAll(StringPool.BLANK);
 				result = false;
 			}
-			matcher2.appendReplacement( buf, tagString );
+			matcher2.appendReplacement( buf, Matcher.quoteReplacement(tagString) );
 		}
 		matcher2.appendTail(buf);
 		sequence = buf.toString();
@@ -307,7 +307,7 @@ public class XSSCheck implements StringCheck {
 					result = false;
 				}
 			}
-			matcher2b1.appendReplacement( buf, tagString );
+			matcher2b1.appendReplacement( buf, Matcher.quoteReplacement(tagString) );
 		}
 		matcher2b1.appendTail(buf);
 		sequence = buf.toString();
@@ -327,7 +327,7 @@ public class XSSCheck implements StringCheck {
 					result = false;
 				}
 			}
-			matcher3.appendReplacement( buf, tagString );
+			matcher3.appendReplacement( buf, Matcher.quoteReplacement(tagString) );
 		}
 		matcher3.appendTail(buf);
 		sequence = buf.toString();
