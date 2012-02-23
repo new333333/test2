@@ -38,8 +38,8 @@
 <span class="ss_bold"><ssf:nlt tag="dashboard.enterHtml"/></span>
 <br/>
 <div class="ss_form_color">
-<ssf:htmleditor id="data_html" name="data_html"
-	initText="${ssDashboard.dashboard.components[ssComponentId].data.html}" />
+<ssf:htmleditor id="data_html" name="data_html"><ssf:markup type="form" leaveSectionsUnchanged="true"
+    entity="${ssBinder}">${ssDashboard.dashboard.components[ssComponentId].data.html}</ssf:markup></ssf:htmleditor>
 </div>
 <br/>
 <script type="text/javascript">
