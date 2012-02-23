@@ -408,7 +408,7 @@ public class MarkupUtil {
 		    	if (!s_zoneUUID.equals("") && s_zoneUUID.equals(String.valueOf(zoneInfo.getId()))) {
 		    		link = link.replaceFirst("zoneUUID=" + String.valueOf(zoneInfo.getId()), "");
 		    	}
-    			matcher.appendReplacement(outputBuf, link.toString().replace("$", "\\$"));
+    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(link));
 	    	} while (matcher.find());
 			matcher.appendTail(outputBuf);
 			if (!outputBuf.toString().equals(description.getText())) description.setText(outputBuf.toString());
@@ -957,7 +957,7 @@ public class MarkupUtil {
 						} else {
 							link = root + link;
 						}
-						matcher.appendReplacement(outputBuf, "$2" + link.replace("$", "\\$") + "\"");
+						matcher.appendReplacement(outputBuf, "$2" + Matcher.quoteReplacement(link) + "\"");
 						//outputString = matcher.replaceFirst("$2" + link.replace("$", "\\$") + "\"");
 						//matcher = hrefPattern.matcher(outputString);
 					} while (matcher.find());
@@ -986,7 +986,7 @@ public class MarkupUtil {
 		        		} catch (Exception ex) {};
 	
 						String webUrl = builder.getFileUrlByName(fileName);
-						matcher.appendReplacement(outputBuf, webUrl.replace("$", "\\$"));
+						matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(webUrl));
 					}
 				} while (matcher.find());
 				matcher.appendTail(outputBuf);
@@ -1020,7 +1020,7 @@ public class MarkupUtil {
 				    				WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + 
 				    				"&" + WebKeys.URL_FILE_ID + "=" + fileId; 
 				    		}
-				    		matcher.appendReplacement(outputBuf, webUrl.replace("$", "\\$"));
+				    		matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(webUrl));
 				    	}
 					}
 				} while (matcher.find());
@@ -1083,7 +1083,7 @@ public class MarkupUtil {
 			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
 			    		
 			    	}
-	    			matcher.appendReplacement(outputBuf, titleLink.toString().replace("$", "\\$"));
+	    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
 		    	} while (matcher.find());
 				matcher.appendTail(outputBuf);
 			}
@@ -1175,7 +1175,7 @@ public class MarkupUtil {
 			        	titleLink.append("\">");
 			        	titleLink.append(s_url).append("</a>");
 			    	}
-	    			matcher.appendReplacement(outputBuf, titleLink.toString().replace("$", "\\$"));
+	    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
 		    	} while (matcher.find());
 				matcher.appendTail(outputBuf);
 			}
@@ -1197,7 +1197,7 @@ public class MarkupUtil {
 						//Parse and execute the vibe function
 						String replacementText = builder.getVibeFunctionResult(functionString);
 						
-		    			matcher.appendReplacement(outputBuf, replacementText.replace("$", "\\$"));
+		    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(replacementText));
 			    	} while (matcher.find());
 					matcher.appendTail(outputBuf);
 				}
@@ -1233,7 +1233,7 @@ public class MarkupUtil {
 			    				
 			    			}
 					    	//use substring so don't have to parse $ out of replacement string
-			    			matcher.appendReplacement(outputBuf, titleLink.toString().replace("$", "\\$"));
+			    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
 			    		}
 					} while (matcher.find());
 					matcher.appendTail(outputBuf);
@@ -1310,7 +1310,7 @@ public class MarkupUtil {
 				//rebuild the link
 	    		String titleLink = "{{titleUrl: binderId" + s_binderIdEquals + s_binderId + " zoneUUID" + s_zoneUUIDEquals + s_zoneUUID + 
 	    			" title" + normalizedTitleEquals + normalizedTitle + " text" + titleEquals + Html.stripHtml(title) + "}}";
-    			matcher.appendReplacement(outputBuf, titleLink.replace("$", "\\$"));
+    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
 	    	} while (matcher.find());
 			matcher.appendTail(outputBuf);
 		}
@@ -1334,7 +1334,7 @@ public class MarkupUtil {
 					s_url = s_url.replaceFirst("/action/view_permalink/", "/action/view_permalink/zoneUUID/" + String.valueOf(zoneInfo.getId()) + "/");
 				}
 		    		
-    			matcher.appendReplacement(outputBuf, s_url);
+    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(s_url));
 	    	} while (matcher.find());
 			matcher.appendTail(outputBuf);
 		}
@@ -1621,7 +1621,7 @@ public class MarkupUtil {
 					    	if (!s_zoneUUID.equals("") && s_zoneUUID.equals(ExportHelper.getZoneInfo().getId().toString())) {
 					    		link = link.replaceFirst("zoneUUID=" + s_zoneUUID, "");
 					    	}
-			    			matcher.appendReplacement(outputBuf, link.toString().replace("$", "\\$"));
+			    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(link.toString()));
 				    	} while (matcher.find());
 						matcher.appendTail(outputBuf);
 						if (!outputBuf.toString().equals(description.getText())) {
@@ -1694,7 +1694,7 @@ public class MarkupUtil {
 								}
 							}
 					    		
-			    			matcher.appendReplacement(outputBuf, s_url);
+			    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(s_url));
 				    	} while (matcher.find());
 						matcher.appendTail(outputBuf);
 						if (!outputBuf.toString().equals(description.getText())) {
