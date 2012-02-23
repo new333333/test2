@@ -2376,13 +2376,13 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-301">
-        <createIndex indexName="zoneId" tableName="SS_Principals" unique="true">
+        <createIndex indexName="name_principal" tableName="SS_Principals" unique="true">
             <column name="zoneId"/>
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-302">
-        <createIndex indexName="zoneId_2" tableName="SS_Principals" unique="true">
+        <createIndex indexName="foreignName_principal" tableName="SS_Principals" unique="true">
             <column name="zoneId"/>
             <column name="foreignName"/>
         </createIndex>
