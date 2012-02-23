@@ -141,9 +141,9 @@ public class MarkupUtil {
 	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$");
 	protected final static Pattern titleUrlTextPattern2 = Pattern.compile("text%3d(.*)$");
 	protected final static Pattern youtubeUrlPattern = Pattern.compile("(\\{\\{youtubeUrl: ([^\\}]*)\\}\\})");
-	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url=([^\\s]*)");
-	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width=([^\\s]*)");
-	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height=([^\\s]*)");
+	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url(?:=|%3d)([^\\s]*)");
+	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width(?:=|%3d)([^\\s]*)");
+	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height(?:=|%3d)([^\\s]*)");
 	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	protected final static Pattern sectionPattern =Pattern.compile("(<p>)?(==[=]*)([^=]+)(==[=]*)(</p>)?");	// See comments below regarding Bugzilla 692804.
